@@ -158,12 +158,10 @@ core.register_entity(":__builtin:falling_node", {
 				or def.drawtype == "normal"
 				or def.drawtype == "nodebox" then
 			if (def.paramtype2 == "facedir" or def.paramtype2 == "colorfacedir") then
-				local fdir = node.param2 % 32
+				local fdir = node.param2 % 32 % 24
 				-- Get rotation from a precalculated lookup table
 				local euler = facedir_to_euler[fdir + 1]
-				if euler then
-					self.object:set_rotation(euler)
-				end
+				self.object:set_rotation(euler)
 			elseif (def.drawtype ~= "plantlike" and def.drawtype ~= "plantlike_rooted" and
 					(def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted" or def.drawtype == "signlike")) then
 				local rot = node.param2 % 8
@@ -264,7 +262,7 @@ core.register_entity(":__builtin:falling_node", {
 		end
 
 		-- Decide if we're replacing the node or placing on top
-		local np = vector.new(bcp)
+		local np = vector.copy(bcp)
 		if bcd and bcd.buildable_to and
 				(not self.floats or bcd.liquidtype == "none") then
 			core.remove_node(bcp)
@@ -436,7 +434,7 @@ local function drop_attached_node(p)
 	if def and def.preserve_metadata then
 		local oldmeta = core.get_meta(p):to_table().fields
 		-- Copy pos and node because the callback can modify them.
-		local pos_copy = vector.new(p)
+		local pos_copy = vector.copy(p)
 		local node_copy = {name=n.name, param1=n.param1, param2=n.param2}
 		local drop_stacks = {}
 		for k, v in pairs(drops) do
@@ -461,7 +459,7 @@ end
 
 function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
-	local d = vector.new()
+	local d = vector.zero()
 	if def.paramtype2 == "wallmounted" or
 			def.paramtype2 == "colorwallmounted" then
 		-- The fallback vector here is in case 'wallmounted to dir' is nil due

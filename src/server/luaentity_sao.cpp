@@ -117,13 +117,13 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	}
 }
 
-void LuaEntitySAO::dispatchScriptDeactivate()
+void LuaEntitySAO::dispatchScriptDeactivate(bool removal)
 {
 	// Ensure that this is in fact a registered entity,
 	// and that it isn't already gone.
 	// The latter also prevents this from ever being called twice.
 	if (m_registered && !isGone())
-		m_env->getScriptIface()->luaentity_Deactivate(m_id);
+		m_env->getScriptIface()->luaentity_Deactivate(m_id, removal);
 }
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
@@ -290,7 +290,7 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 		os<<serializeString32(m_init_state);
 	}
 	writeU16(os, m_hp);
-	writeV3F1000(os, m_velocity);
+	writeV3F1000(os, clampToF1000(m_velocity));
 	// yaw
 	writeF1000(os, m_rotation.Y);
 

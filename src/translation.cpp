@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2017 Nore, Nathanaël Courant <nore@mesecons.net>
+Copyright (C) 2017 Nore, Nathanaëlle Courant <nore@mesecons.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <ctime>
 #include <mutex>
+#include <unordered_map>
+#include <unordered_set>
 #include "mapblock_mesh.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
@@ -81,8 +83,9 @@ public:
 private:
 	Client *m_client;
 	std::vector<QueuedMeshUpdate *> m_queue;
-	std::set<v3s16> m_urgents;
-	std::map<v3s16, CachedMapBlockData *> m_cache;
+	std::unordered_set<v3s16> m_urgents;
+	std::unordered_map<v3s16, CachedMapBlockData *> m_cache;
+	u64 m_next_cache_cleanup; // milliseconds
 	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes

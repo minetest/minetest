@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-25 23:19+0100\n"
+"POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,6 +134,34 @@ msgstr ""
 msgid "Protocol version mismatch. "
 msgstr ""
 
+#: builtin/mainmenu/common.lua
+msgid "Client Mods"
+msgstr ""
+
+#: builtin/mainmenu/common.lua
+msgid "A new $1 version is available"
+msgstr ""
+
+#: builtin/mainmenu/common.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+
+#: builtin/mainmenu/common.lua
+msgid "Visit website"
+msgstr ""
+
+#: builtin/mainmenu/common.lua
+msgid "Later"
+msgstr ""
+
+#: builtin/mainmenu/common.lua
+msgid "Never"
+msgstr ""
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
 msgstr ""
@@ -144,6 +172,14 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "(Unsatisfied)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "(Enabled, has error)"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -179,11 +215,10 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
-#: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr ""
 
@@ -226,12 +261,10 @@ msgid "All packages"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr ""
 
@@ -458,7 +491,7 @@ msgid "You have no games installed."
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download one from minetest.net"
+msgid "Install a game"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -508,14 +541,6 @@ msgid "Mapgen-specific flags"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The Development Test is meant for developers."
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr ""
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr ""
 
@@ -528,8 +553,12 @@ msgstr ""
 msgid "Mapgen"
 msgstr ""
 
-#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-msgid "Game"
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Development Test is meant for developers."
+msgstr ""
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Install another game"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -566,6 +595,36 @@ msgstr ""
 msgid "Delete World \"$1\"?"
 msgstr ""
 
+#: builtin/mainmenu/dlg_register.lua
+msgid "Joining $1"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
+#: builtin/mainmenu/tab_online.lua
+msgid "Name"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
+#: builtin/mainmenu/tab_online.lua
+msgid "Password"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
+msgid "Confirm Password"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
+msgid "Register"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua
+msgid "Missing name"
+msgstr ""
+
+#: builtin/mainmenu/dlg_register.lua
+msgid "Passwords do not match"
+msgstr ""
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr ""
@@ -578,6 +637,14 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Content: Games"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Content: Mods"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
@@ -707,7 +774,7 @@ msgstr ""
 msgid "Restore Default"
 msgstr ""
 
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Show technical names"
 msgstr ""
 
@@ -785,6 +852,10 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Share debug log"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
@@ -873,14 +944,6 @@ msgstr ""
 msgid "Announce Server"
 msgstr ""
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-msgid "Name"
-msgstr ""
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-msgid "Password"
-msgstr ""
-
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
 msgstr ""
@@ -922,11 +985,11 @@ msgid "Server Description"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-msgid "Connect"
+msgid "Login"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-msgid "Del. Favorite"
+msgid "Remove favorite"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
@@ -1035,7 +1098,7 @@ msgid "High"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Ultra High"
+msgid "Very High"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -1066,14 +1129,6 @@ msgstr ""
 msgid "Antialiasing:"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Autosave Screen Size"
-msgstr ""
-
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr ""
@@ -1095,7 +1150,15 @@ msgid "All Settings"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
+msgid "Touch threshold (px):"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Screen:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
@@ -1115,7 +1178,11 @@ msgid "Waving Plants"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows: "
+msgid "Dynamic shadows:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "(game support required)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
@@ -1128,6 +1195,10 @@ msgstr ""
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
+msgstr ""
+
+#: src/client/client.cpp
+msgid "Connection aborted (protocol error?)."
 msgstr ""
 
 #: src/client/client.cpp
@@ -1227,6 +1298,11 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
+msgstr ""
+
+#: src/client/game.cpp
+#, c-format
+msgid "Error creating client: %s"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1344,6 +1420,10 @@ msgid "Cinematic mode disabled"
 msgstr ""
 
 #: src/client/game.cpp
+msgid "Can't show block bounds (disabled by mod or game)"
+msgstr ""
+
+#: src/client/game.cpp
 msgid "Block bounds hidden"
 msgstr ""
 
@@ -1357,10 +1437,6 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Can't show block bounds (need 'basic_debug' privilege)"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1867,30 +1943,12 @@ msgstr ""
 msgid "Failed to open webpage"
 msgstr ""
 
-#: src/gui/guiConfirmRegistration.cpp
-#, c-format
-msgid ""
-"You are about to join this server with the name \"%s\" for the first time.\n"
-"If you proceed, a new account using your credentials will be created on this "
-"server.\n"
-"Please retype your password and click 'Register and Join' to confirm account "
-"creation, or click 'Cancel' to abort."
-msgstr ""
-
-#: src/gui/guiConfirmRegistration.cpp
-msgid "Register and Join"
-msgstr ""
-
-#: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
-msgid "Passwords do not match!"
-msgstr ""
-
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+msgid "Keybindings."
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
@@ -1989,7 +2047,7 @@ msgstr ""
 msgid "Autoforward"
 msgstr ""
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Chat"
 msgstr ""
 
@@ -2046,11 +2104,11 @@ msgid "New Password"
 msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
-msgid "Confirm Password"
+msgid "Change"
 msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
-msgid "Change"
+msgid "Passwords do not match!"
 msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
@@ -2066,10 +2124,13 @@ msgstr ""
 msgid "Muted"
 msgstr ""
 
-#. ~ Imperative, as in "Enter/type in text".
-#. Don't forget the space.
-#: src/gui/modalMenu.cpp
-msgid "Enter "
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Name is not registered. To create an account on this server, click 'Register'"
+msgstr ""
+
+#: src/network/clientpackethandler.cpp
+msgid "Name is taken. Please choose another name"
 msgstr ""
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
@@ -2084,6 +2145,10 @@ msgid "Controls"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr ""
 
@@ -2092,47 +2157,6 @@ msgid ""
 "If enabled, you can place blocks at the position (feet + eye level) where "
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2162,22 +2186,6 @@ msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Invert mouse"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Invert vertical mouse movement."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mouse sensitivity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mouse sensitivity multiplier."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr ""
 
@@ -2197,7 +2205,7 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Always fly and fast"
+msgid "Always fly fast"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2231,21 +2239,27 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Random input"
+msgid "Keyboard and Mouse"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable random user input (only used for testing)."
+msgid "Invert mouse"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
+msgid "Invert vertical mouse movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
+msgid "Mouse sensitivity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mouse sensitivity multiplier."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Touchscreen"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2278,827 +2292,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable joysticks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Joystick ID"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "The identifier of the joystick to use"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Joystick type"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "The type of joystick"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Joystick button repetition interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The time in seconds it takes between repeated events\n"
-"when holding down a joystick button combination."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Joystick dead zone"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "The dead zone of the joystick"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Joystick frustum sensitivity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The sensitivity of the joystick axes for moving the\n"
-"in-game view frustum around."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgid "Graphics and Audio"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3106,39 +2300,114 @@ msgid "Graphics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "In-Game"
+msgid "Screen"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Basic"
+msgid "Screen width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Show name tag backgrounds by default"
+msgid "Width component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Whether name tag backgrounds should be shown by default.\n"
-"Mods may still set a background."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "VBO"
+msgid "Screen height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enable vertex buffer objects.\n"
-"This should greatly improve graphics performance."
+"Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Fog"
+msgid "Autosave screen size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Whether to fog out the end of the visible area."
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Full screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fullscreen mode."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Pause on lost window focus"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Open the pause menu when the window's focus is lost. Does not pause if a "
+"formspec is\n"
+"open."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "FPS"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum FPS"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If FPS would go higher than this, limit it by sleeping\n"
+"to not waste CPU power for no benefit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "VSync"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Vertical screen synchronization."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "FPS when unfocused or paused"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum FPS when the window is not focused, or when the game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Viewing range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "View distance in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Undersampling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Undersampling is similar to using a lower screen resolution, but it applies\n"
+"to the game world only, keeping the GUI intact.\n"
+"It should give a significant performance boost at the cost of less detailed "
+"image.\n"
+"Higher values result in a less detailed image."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Graphics Effects"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Opaque liquids"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Makes all liquids opaque"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3182,6 +2451,243 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Digging particles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Adds particles when digging a node."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3d"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D support.\n"
+"Currently supported:\n"
+"-    none: no 3d output.\n"
+"-    anaglyph: cyan/magenta color 3d.\n"
+"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    topbottom: split screen top/bottom.\n"
+"-    sidebyside: split screen side by side.\n"
+"-    crossview: Cross-eyed 3d\n"
+"-    pageflip: quadbuffer based 3d.\n"
+"Note that the interlaced mode requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D mode parallax strength"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strength of 3D mode parallax."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bobbing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Arm inertia"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Arm inertia, gives a more realistic movement of\n"
+"the arm when the camera moves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "View bobbing factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable view bobbing and amount of view bobbing.\n"
+"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fall bobbing factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Multiplier for fall bobbing.\n"
+"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Camera"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Near plane"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+"Only works on GLES platforms. Most users will not need to change this.\n"
+"Increasing can reduce artifacting on weaker GPUs.\n"
+"0.1 = Default, 0.25 = Good value for weaker tablets."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Field of view"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Field of view in degrees."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve gamma"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Alters the light curve by applying 'gamma correction' to it.\n"
+"Higher values make middle and lower light levels brighter.\n"
+"Value '1.0' leaves the light curve unaltered.\n"
+"This only has significant effect on daylight and artificial\n"
+"light, it has very little effect on natural night light."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Ambient occlusion gamma"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The strength (darkness) of node ambient-occlusion shading.\n"
+"Lower is darker, Higher is lighter. The valid range of values for this\n"
+"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
+"set to the nearest valid value."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshots"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshot folder"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path to save screenshots at. Can be an absolute or relative path.\n"
+"The folder will be created if it doesn't already exist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshot format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Format of screenshots."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshot quality"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Node and Entity Highlighting"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Node highlighting"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Method used to highlight selected object."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Show entity selection boxes\n"
+"A restart is required after changing this."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Selection box color"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Selection box border color (R,G,B)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Selection box width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Width of the selection box lines around nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Crosshair color"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Crosshair color (R,G,B).\n"
+"Also controls the object crosshair color"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Crosshair alpha"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Crosshair alpha (opaqueness, between 0 and 255).\n"
+"This also applies to the object crosshair."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fog"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether to fog out the end of the visible area."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Colored fog"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fog start"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fraction of the visible distance at which fog starts to be rendered"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Clouds"
 msgstr ""
 
@@ -3198,23 +2704,7 @@ msgid "Use 3D cloud look instead of flat."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Node highlighting"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Method used to highlight selected object."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Digging particles"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Adds particles when digging a node."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Filtering"
+msgid "Filtering and Antialiasing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3296,34 +2786,11 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Undersampling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Undersampling is similar to using a lower screen resolution, but it applies\n"
-"to the game world only, keeping the GUI intact.\n"
-"It should give a significant performance boost at the cost of less detailed "
-"image.\n"
-"Higher values result in a less detailed image."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video\n"
 "cards.\n"
 "This only works with the OpenGL video backend."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Shader path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Path to shader directory. If no path is defined, default location will be "
-"used."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3340,6 +2807,26 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Waving leaves"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to enable waving leaves.\n"
+"Requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Waving plants"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to enable waving plants.\n"
+"Requires shaders to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3387,38 +2874,19 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Waving leaves"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Waving plants"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Shadow strength"
+msgid "Shadow strength gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the shadow strength.\n"
+"Set the shadow strength gamma.\n"
+"Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
 msgstr ""
 
@@ -3504,7 +2972,7 @@ msgstr ""
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
-"Minimum value: 1.0; maximum value: 10.0"
+"Minimum value: 1.0; maximum value: 15.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3519,283 +2987,68 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Advanced"
+msgid "Audio"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Arm inertia"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Arm inertia, gives a more realistic movement of\n"
-"the arm when the camera moves."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum FPS"
+msgid "Volume"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If FPS would go higher than this, limit it by sleeping\n"
-"to not waste CPU power for no benefit."
+"Volume of all sounds.\n"
+"Requires the sound system to be enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FPS when unfocused or paused"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum FPS when the window is not focused, or when the game is paused."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Pause on lost window focus"
+msgid "Mute sound"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Open the pause menu when the window's focus is lost. Does not pause if a "
-"formspec is\n"
-"open."
+"Whether to mute sounds. You can unmute sounds at any time, unless the\n"
+"sound system is disabled (enable_sound=false).\n"
+"In-game, you can toggle the mute state with the mute key or by using the\n"
+"pause menu."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Viewing range"
+msgid "User Interfaces"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "View distance in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screen width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screen height"
+msgid "Language"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+"Set the language. Leave empty to use the system language.\n"
+"A restart is required after changing this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
+msgid "GUIs"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Full screen"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fullscreen mode."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "VSync"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Field of view"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Field of view in degrees."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Light curve gamma"
+msgid "GUI scaling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Alters the light curve by applying 'gamma correction' to it.\n"
-"Higher values make middle and lower light levels brighter.\n"
-"Value '1.0' leaves the light curve unaltered.\n"
-"This only has significant effect on daylight and artificial\n"
-"light, it has very little effect on natural night light."
+"Scale GUI by a user specified value.\n"
+"Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
+"This will smooth over some of the rough edges, and blend\n"
+"pixels when scaling down, at the cost of blurring some\n"
+"edge pixels when images are scaled by non-integer sizes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Light curve low gradient"
+msgid "Inventory items animations"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Gradient of light curve at minimum light level.\n"
-"Controls the contrast of the lowest light levels."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Light curve high gradient"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Gradient of light curve at maximum light level.\n"
-"Controls the contrast of the highest light levels."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Light curve boost"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Strength of light curve boost.\n"
-"The 3 'boost' parameters define a range of the light\n"
-"curve that is boosted in brightness."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Light curve boost center"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Center of light curve boost range.\n"
-"Where 0.0 is minimum light level, 1.0 is maximum light level."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Light curve boost spread"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Spread of light curve boost range.\n"
-"Controls the width of the range to be boosted.\n"
-"Standard deviation of the light curve boost Gaussian."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Video driver"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Cloud radius"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Radius of cloud area stated in number of 64 node cloud squares.\n"
-"Values larger than 26 will start to produce sharp cutoffs at cloud area "
-"corners."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View bobbing factor"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable view bobbing and amount of view bobbing.\n"
-"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fall bobbing factor"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Multiplier for fall bobbing.\n"
-"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "3D mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"3D support.\n"
-"Currently supported:\n"
-"-    none: no 3d output.\n"
-"-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
-"-    topbottom: split screen top/bottom.\n"
-"-    sidebyside: split screen side by side.\n"
-"-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
-"Note that the interlaced mode requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "3D mode parallax strength"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Strength of 3D mode parallax."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Console height"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Console color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "In-game chat console background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Console alpha"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
+msgid "Enables animation of inventory items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3812,256 +3065,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Selection box color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Selection box border color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Selection box width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Width of the selection box lines around nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Crosshair color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Crosshair color (R,G,B).\n"
-"Also controls the object crosshair color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Crosshair alpha"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Crosshair alpha (opaqueness, between 0 and 255).\n"
-"This also applies to the object crosshair."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Recent Chat Messages"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum number of recent chat messages to show"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Desynchronize block animation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum hotbar width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum proportion of current window to be used for hotbar.\n"
-"Useful if there's something to be displayed right or left of hotbar."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "HUD scale factor"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modifies the size of the HUD elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mesh cache"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables caching of facedir rotated meshes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generation delay"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Delay between mesh updates on the client in ms. Increasing this will slow\n"
-"down the rate of mesh updates, thus reducing jitter on slower clients."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock mesh generator's MapBlock cache size in MB"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
-"increase the cache hit %, reducing the data being copied from the main\n"
-"thread, thus reducing jitter."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Minimap scan height"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"True = 256\n"
-"False = 128\n"
-"Usable to make minimap smoother on slower machines."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Colored fog"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Ambient occlusion gamma"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The strength (darkness) of node ambient-occlusion shading.\n"
-"Lower is darker, Higher is lighter. The valid range of values for this\n"
-"setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
-"set to the nearest valid value."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Inventory items animations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables animation of inventory items."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fog start"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Opaque liquids"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Makes all liquids opaque"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "World-aligned textures mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Textures on a node may be aligned either to the node or to the world.\n"
-"The former mode suits better things like machines, furniture, etc., while\n"
-"the latter makes stairs and microblocks fit surroundings better.\n"
-"However, as this possibility is new, thus may not be used by older servers,\n"
-"this option allows enforcing it for certain node types. Note though that\n"
-"that is considered EXPERIMENTAL and may not work properly."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Autoscaling mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"World-aligned textures may be scaled to span several nodes. However,\n"
-"the server may not send the scale you want, especially if you use\n"
-"a specially-designed texture pack; with this option, the client tries\n"
-"to determine the scale automatically basing on the texture size.\n"
-"See also texture_min_size.\n"
-"Warning: This option is EXPERIMENTAL!"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Show entity selection boxes"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Show entity selection boxes\n"
-"A restart is required after changing this."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Menus"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Clouds in menu"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Use a cloud animation for the main menu background."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "GUI scaling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Scale GUI by a user specified value.\n"
-"Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
-"This will smooth over some of the rough edges, and blend\n"
-"pixels when scaling down, at the cost of blurring some\n"
-"edge pixels when images are scaled by non-integer sizes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4104,226 +3107,75 @@ msgid "Append item name to tooltip."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font bold by default"
+msgid "Clouds in menu"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font italic by default"
+msgid "Use a cloud animation for the main menu background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font shadow"
+msgid "HUD"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Shadow offset (in pixels) of the default font. If 0, then shadow will not be "
-"drawn."
+msgid "HUD scaling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font shadow alpha"
+msgid "Modifies the size of the HUD elements."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Font size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Font size divisible by"
+msgid "Show name tag backgrounds by default"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"For pixel-style fonts that do not scale well, this ensures that font sizes "
-"used\n"
-"with this font will always be divisible by this value, in pixels. For "
-"instance,\n"
-"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
-"be\n"
-"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+"Whether name tag backgrounds should be shown by default.\n"
+"Mods may still set a background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Regular font path"
+msgid "Recent Chat Messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Path to the default font. Must be a TrueType font.\n"
-"The fallback font will be used if the font cannot be loaded."
+msgid "Maximum number of recent chat messages to show"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bold font path"
+msgid "Console height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Italic font path"
+msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bold and italic font path"
+msgid "Console color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Monospace font size"
+msgid "In-game chat console background color (R,G,B)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
+msgid "Console alpha"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Monospace font size divisible by"
+msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Monospace font path"
+msgid "Maximum hotbar width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Path to the monospace font. Must be a TrueType font.\n"
-"This font is used for e.g. the console and profiler screen."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Bold monospace font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Italic monospace font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Bold and italic monospace font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fallback font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Path of the fallback font. Must be a TrueType font.\n"
-"This font will be used for certain languages or if the default font is "
-"unavailable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat font size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Font size of the recent chat text and chat prompt in point (pt).\n"
-"Value 0 will use the default font size."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot folder"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Path to save screenshots at. Can be an absolute or relative path.\n"
-"The folder will be created if it doesn't already exist."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot format"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Format of screenshots."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot quality"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Screenshot quality. Only used for JPEG format.\n"
-"1 means worst quality; 100 means best quality.\n"
-"Use 0 for default quality."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "DPI"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
-"screens."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Display Density Scaling Factor"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable console window"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Windows systems only: Start Minetest with the command line window in the "
-"background.\n"
-"Contains the same information as the file debug.txt (default name)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Volume"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Volume of all sounds.\n"
-"Requires the sound system to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mute sound"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether to mute sounds. You can unmute sounds at any time, unless the\n"
-"sound system is disabled (enable_sound=false).\n"
-"In-game, you can toggle the mute state with the mute key or by using the\n"
-"pause menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Client"
+"Maximum proportion of current window to be used for hotbar.\n"
+"Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4345,40 +3197,59 @@ msgid "Optional override for chat weblink color."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Network"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Server address"
+msgid "Chat font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
+"Font size of the recent chat text and chat prompt in point (pt).\n"
+"Value 0 will use the default font size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Remote port"
+msgid "Content Repository"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ContentDB URL"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The URL for the content repository"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ContentDB Flag Blacklist"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
+"Comma-separated list of flags to hide in the content repository.\n"
+"\"nonfree\" can be used to hide packages which do not qualify as 'free "
+"software',\n"
+"as defined by the Free Software Foundation.\n"
+"You can also specify content ratings.\n"
+"These flags are independent from Minetest versions,\n"
+"so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Prometheus listener address"
+msgid "ContentDB Max Concurrent Downloads"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Prometheus listener address.\n"
-"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
-"enable metrics listener for Prometheus on that address.\n"
-"Metrics can be fetched on http://127.0.0.1:30000/metrics"
+"Maximum number of concurrent downloads. Downloads exceeding this limit will "
+"be queued.\n"
+"This should be lower than curl_parallel_limit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Client and Server"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4390,28 +3261,6 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Connect to external media server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable usage of remote media server (if provided by server).\n"
-"Remote servers offer a significantly faster way to download media (e.g. "
-"textures)\n"
-"when connecting to the server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Client modding"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable Lua modding support on client.\n"
-"This support is experimental and API can change."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Serverlist URL"
 msgstr ""
 
@@ -4420,65 +3269,32 @@ msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Serverlist file"
+msgid "Enable split login/register"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"File in client/serverlist/ that contains your favorite servers displayed in "
-"the\n"
-"Multiplayer Tab."
+"If enabled, account registration is separate from login in the UI.\n"
+"If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
+msgid "Server"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Maximum size of the out chat queue.\n"
-"0 to disable queueing and -1 to make the queue size unlimited."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable register confirmation"
+msgid "Admin name"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Enable register confirmation when connecting to server.\n"
-"If disabled, new account will be registered automatically."
+"Name of the player.\n"
+"When running a server, clients connecting with this name are admins.\n"
+"When starting from the main menu, this is overridden."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapblock unload timeout"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Timeout for client to remove unused map data from memory."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapblock limit"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum number of mapblocks for client to be kept in memory.\n"
-"Set to -1 for unlimited amount."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Show debug info"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Server / Singleplayer"
+msgid "Serverlist and MOTD"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4498,6 +3314,10 @@ msgstr ""
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Server address"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4525,13 +3345,31 @@ msgid "Announce to this serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Strip color codes"
+msgid "Message of the day"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Remove color codes from incoming chat messages\n"
-"Use this to stop players from being able to use color in their messages"
+msgid "Message of the day displayed to players connecting."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum users"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of players that can be connected simultaneously."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Static spawnpoint"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "If this is set, players will always (re)spawn at the given position."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Networking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4589,132 +3427,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneous block sends per client"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum number of blocks that are simultaneously sent per client.\n"
-"The maximum total count is calculated dynamically:\n"
-"max_total = ceil((#clients + max_users) * per_client / 4)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Delay in sending blocks after building"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"To reduce lag, block transfers are slowed down when a player is building "
-"something.\n"
-"This determines how long they are slowed down after placing or removing a "
-"node."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Max. packets per iteration"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum number of packets sent per send step, if you have a slow connection\n"
-"try reducing it, but don't reduce it to a number below double of targeted\n"
-"client number."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Map Compression Level for Network Transfer"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Compression level to use when sending mapblocks to the client.\n"
-"-1 - use default compression level\n"
-"0 - least compression, fastest\n"
-"9 - best compression, slowest"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Message of the day"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Message of the day displayed to players connecting."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum users"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum number of players that can be connected simultaneously."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Map directory"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"World directory (everything in the world is stored here).\n"
-"Not needed if starting from the main menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Item entity TTL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Time in seconds for item entity (dropped items) to live.\n"
-"Setting it to -1 disables the feature."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Default stack size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Specifies the default stack size of nodes, items and tools.\n"
-"Note that mods or games may explicitly set a stack for certain (or all) "
-"items."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Creative"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fixed map seed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"A chosen map seed for a new map, leave empty for random.\n"
-"Will be overridden when creating a new world in the main menu."
+msgid "Server Security"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4723,6 +3436,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Disallow empty passwords"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, players cannot join without a password or change theirs to an "
+"empty password."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4744,56 +3467,6 @@ msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Unlimited player transfer distance"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Whether players are shown to clients without any range limit.\n"
-"Deprecated, use the setting player_transfer_distance instead."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Player transfer distance"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Player versus player"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mod channels"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod channels support."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Disallow empty passwords"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "If enabled, new players cannot join with an empty password."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr ""
 
@@ -4812,103 +3485,75 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Chat message format"
+msgid "Client-side Modding"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Client side modding restrictions"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Format of player chat messages. The following strings are valid "
-"placeholders:\n"
-"@name, @message, @timestamp (optional)"
+"Restricts the access of certain client-side functions on servers.\n"
+"Combine the byteflags below to restrict client-side features, or set to 0\n"
+"for no restrictions:\n"
+"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
+"CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
+"READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
+"READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
+"LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
+"csm_restriction_noderange)\n"
+"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Chat command time message threshold"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If the execution of a chat command takes longer than this specified time in\n"
-"seconds, add the time information to the chat command message"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Shutdown message"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Crash message"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Ask to reconnect after crash"
+msgid "Client side node lookup range restriction"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to ask clients to reconnect after a (Lua) crash.\n"
-"Set this to true if your server is set up to restart automatically."
+"If the CSM restriction for node range is enabled, get_node calls are "
+"limited\n"
+"to this distance from the player to the node."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Active object send range"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"From how far clients know about objects, stated in mapblocks (16 nodes).\n"
-"\n"
-"Setting this larger than active_block_range will also cause the server\n"
-"to maintain active objects up to this distance in the direction the\n"
-"player is looking. (This can avoid mobs suddenly disappearing from view)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Active block range"
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The radius of the volume of blocks around every player that is subject to "
-"the\n"
-"active block stuff, stated in mapblocks (16 nodes).\n"
-"In active blocks objects are loaded and ABMs run.\n"
-"This is also the minimum range in which active objects (mobs) are "
-"maintained.\n"
-"This should be configured together with active_object_send_range_blocks."
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Max block send distance"
+msgid "Chat message max length"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
+"Set the maximum length of a chat message (in characters) sent by clients."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum forceloaded blocks"
+msgid "Chat message count limit"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
+msgid "Amount of messages a player may send per 10 seconds."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Time send interval"
+msgid "Chat message kick threshold"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Interval of sending time of day to clients."
+msgid "Kick players who sent more than X messages per 10 seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Server Gameplay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4931,35 +3576,24 @@ msgid "Time of day when a new world is started, in millihours (0-23999)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Map save interval"
+msgid "Item entity TTL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Interval of saving important changes in the world, stated in seconds."
+msgid ""
+"Time in seconds for item entity (dropped items) to live.\n"
+"Setting it to -1 disables the feature."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Chat message max length"
+msgid "Default stack size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Set the maximum character length of a chat message sent by clients."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat message count limit"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat message kick threshold"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Kick players who sent more than X messages per 10 seconds."
+msgid ""
+"Specifies the default stack size of nodes, items and tools.\n"
+"Note that mods or games may explicitly set a stack for certain (or all) "
+"items."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5041,7 +3675,9 @@ msgid "Liquid fluidity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Decrease this to increase liquid resistance to movement."
+msgid ""
+"How much you are slowed down when moving inside a liquid.\n"
+"Decrease this to increase liquid resistance to movement."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5059,7 +3695,9 @@ msgid "Liquid sinking"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Controls sinking speed in liquid."
+msgid ""
+"Controls sinking speed in liquid when idling. Negative values will cause\n"
+"you to rise instead."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5071,466 +3709,13 @@ msgid "Acceleration of gravity, in nodes per second per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Deprecated Lua API handling"
+msgid "Fixed map seed"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Handling for deprecated Lua API calls:\n"
-"-    none: Do not log deprecated calls\n"
-"-    log: mimic and log backtrace of deprecated call (default).\n"
-"-    error: abort on usage of deprecated call (suggested for mod developers)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Max. clearobjects extra blocks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Number of extra blocks that can be loaded by /clearobjects at once.\n"
-"This is a trade-off between SQLite transaction overhead and\n"
-"memory consumption (4096=100MB, as a rule of thumb)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Unload unused server data"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How much the server will wait before unloading unused mapblocks.\n"
-"Higher value is smoother, but will use more RAM."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum objects per block"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maximum number of statically stored objects in a block."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Synchronous SQLite"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Map Compression Level for Disk Storage"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Compression level to use when saving mapblocks to disk.\n"
-"-1 - use default compression level\n"
-"0 - least compression, fastest\n"
-"9 - best compression, slowest"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dedicated server step"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Length of a server tick and the interval at which objects are generally "
-"updated over\n"
-"network."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Active block management interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Length of time between active block management cycles"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "ABM interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Length of time between Active Block Modifier (ABM) execution cycles"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "ABM time budget"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The time budget allowed for ABMs to execute on each step\n"
-"(as a fraction of the ABM Interval)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "NodeTimer interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Ignore world errors"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled, invalid world data won't cause the server to shut down.\n"
-"Only enable this if you know what you are doing."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Liquid loop max"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Max liquids processed per step."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Liquid queue purge time"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The time (in seconds) that the liquids queue may grow beyond processing\n"
-"capacity until an attempt is made to decrease its size by dumping old queue\n"
-"items.  A value of 0 disables the functionality."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Liquid update tick"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Liquid update interval in seconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Block send optimize distance"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"At this distance the server will aggressively optimize which blocks are sent "
-"to\n"
-"clients.\n"
-"Small values potentially improve performance a lot, at the expense of "
-"visible\n"
-"rendering glitches (some blocks will not be rendered under water and in "
-"caves,\n"
-"as well as sometimes on land).\n"
-"Setting this to a value greater than max_block_send_distance disables this\n"
-"optimization.\n"
-"Stated in mapblocks (16 nodes)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Client side modding restrictions"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Restricts the access of certain client-side functions on servers.\n"
-"Combine the byteflags below to restrict client-side features, or set to 0\n"
-"for no restrictions:\n"
-"LOAD_CLIENT_MODS: 1 (disable loading client-provided mods)\n"
-"CHAT_MESSAGES: 2 (disable send_chat_message call client-side)\n"
-"READ_ITEMDEFS: 4 (disable get_item_def call client-side)\n"
-"READ_NODEDEFS: 8 (disable get_node_def call client-side)\n"
-"LOOKUP_NODES_LIMIT: 16 (limits get_node call client-side to\n"
-"csm_restriction_noderange)\n"
-"READ_PLAYERINFO: 32 (disable get_player_names call client-side)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If the CSM restriction for node range is enabled, get_node calls are "
-"limited\n"
-"to this distance from the player to the node."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Security"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable mod security"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Prevent mods from doing insecure things like running shell commands."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Trusted mods"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "HTTP mods"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Profiling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Load the game profiler"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Load the game profiler to collect game profiling data.\n"
-"Provides a /profiler command to access the compiled profile.\n"
-"Useful for mod developers and server operators."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Default report format"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The default format in which profiles are being saved,\n"
-"when calling `/profiler save [format]` without format."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Report path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Instrumentation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Entity methods"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Instrument the methods of entities on registration."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Active Block Modifiers"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Loading Block Modifiers"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Instrument the action function of Loading Block Modifiers on registration."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat commands"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Instrument chat commands on registration."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Global callbacks"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Instrument global callback functions on registration.\n"
-"(anything you pass to a minetest.register_*() function)"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Builtin"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Instrument builtin.\n"
-"This is usually only needed by core/builtin contributors"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Profiler"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Have the profiler instrument itself:\n"
-"* Instrument an empty function.\n"
-"This estimates the overhead, that instrumentation is adding (+1 function "
-"call).\n"
-"* Instrument the sampler being used to update the statistics."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Client and Server"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Player name"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Name of the player.\n"
-"When running a server, clients connecting with this name are admins.\n"
-"When starting from the main menu, this is overridden."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Language"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the language. Leave empty to use the system language.\n"
-"A restart is required after changing this."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Debug log level"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Level of logging to be written to debug.txt:\n"
-"-    <nothing> (no logging)\n"
-"-    none (messages with no level)\n"
-"-    error\n"
-"-    warning\n"
-"-    action\n"
-"-    info\n"
-"-    verbose"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Debug log file size threshold"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If the file size of debug.txt exceeds the number of megabytes specified in\n"
-"this setting when it is opened, the file is moved to debug.txt.1,\n"
-"deleting an older debug.txt.1 if it exists.\n"
-"debug.txt is only moved if this setting is positive."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Chat log level"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Minimal level of logging to be written to chat."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "IPv6"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable IPv6 support (for both client and server).\n"
-"Required for IPv6 connections to work at all."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "cURL interactive timeout"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum time an interactive request (e.g. server list fetch) may take, "
-"stated in milliseconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "cURL parallel limit"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Limits number of parallel HTTP requests. Affects:\n"
-"-    Media fetch if server uses remote_media setting.\n"
-"-    Serverlist download and server announcement.\n"
-"-    Downloads performed by main menu (e.g. mod manager).\n"
-"Only has an effect if compiled with cURL."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "cURL file download timeout"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum time a file download (e.g. a mod download) may take, stated in "
-"milliseconds."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Main menu script"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Replaces the default main menu with a custom one."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Engine profiling data print interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Print the engine's profiling data in regular intervals (in seconds).\n"
-"0 = disable. Useful for developers."
+"A chosen map seed for a new map, leave empty for random.\n"
+"Will be overridden when creating a new world in the main menu."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5582,7 +3767,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Biome API temperature and humidity noise parameters"
+msgid "Biome API noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6533,6 +4718,927 @@ msgid "Valley slope"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Advanced"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Developer Options"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Client modding"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable Lua modding support on client.\n"
+"This support is experimental and API can change."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Main menu script"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Replaces the default main menu with a custom one."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mod Security"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable mod security"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Prevent mods from doing insecure things like running shell commands."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Trusted mods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Comma-separated list of trusted mods that are allowed to access insecure\n"
+"functions even when mod security is on (via request_insecure_environment())."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "HTTP mods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Debugging"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Debug log level"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Level of logging to be written to debug.txt:\n"
+"-    <nothing> (no logging)\n"
+"-    none (messages with no level)\n"
+"-    error\n"
+"-    warning\n"
+"-    action\n"
+"-    info\n"
+"-    verbose\n"
+"-    trace"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Debug log file size threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If the file size of debug.txt exceeds the number of megabytes specified in\n"
+"this setting when it is opened, the file is moved to debug.txt.1,\n"
+"deleting an older debug.txt.1 if it exists.\n"
+"debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat log level"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Minimal level of logging to be written to chat."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Deprecated Lua API handling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Handling for deprecated Lua API calls:\n"
+"-    none: Do not log deprecated calls\n"
+"-    log: mimic and log backtrace of deprecated call (default).\n"
+"-    error: abort on usage of deprecated call (suggested for mod developers)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Random input"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable random user input (only used for testing)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mod channels"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable mod channels support."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mod Profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Report path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved to."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Loading Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat commands"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chat commands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Engine profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds).\n"
+"0 = disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "IPv6"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable IPv6 support (for both client and server).\n"
+"Required for IPv6 connections to work at all."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Ignore world errors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, invalid world data won't cause the server to shut down.\n"
+"Only enable this if you know what you are doing."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shader path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path to shader directory. If no path is defined, default location will be "
+"used."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Video driver"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The rendering back-end.\n"
+"A restart is required after changing this.\n"
+"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
+"otherwise.\n"
+"On other platforms, OpenGL is recommended.\n"
+"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Transparency Sorting Distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Distance in nodes at which transparency depth sorting is enabled\n"
+"Use this to limit the performance impact of transparency depth sorting"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "VBO"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable vertex buffer objects.\n"
+"This should greatly improve graphics performance."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cloud radius"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Radius of cloud area stated in number of 64 node cloud squares.\n"
+"Values larger than 26 will start to produce sharp cutoffs at cloud area "
+"corners."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Desynchronize block animation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether node texture animations should be desynchronized per mapblock."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mesh cache"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables caching of facedir rotated meshes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock mesh generation delay"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Delay between mesh updates on the client in ms. Increasing this will slow\n"
+"down the rate of mesh updates, thus reducing jitter on slower clients."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock mesh generator's MapBlock cache size in MB"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+"increase the cache hit %, reducing the data being copied from the main\n"
+"thread, thus reducing jitter."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Minimap scan height"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"True = 256\n"
+"False = 128\n"
+"Usable to make minimap smoother on slower machines."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "World-aligned textures mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Textures on a node may be aligned either to the node or to the world.\n"
+"The former mode suits better things like machines, furniture, etc., while\n"
+"the latter makes stairs and microblocks fit surroundings better.\n"
+"However, as this possibility is new, thus may not be used by older servers,\n"
+"this option allows enforcing it for certain node types. Note though that\n"
+"that is considered EXPERIMENTAL and may not work properly."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Autoscaling mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"World-aligned textures may be scaled to span several nodes. However,\n"
+"the server may not send the scale you want, especially if you use\n"
+"a specially-designed texture pack; with this option, the client tries\n"
+"to determine the scale automatically basing on the texture size.\n"
+"See also texture_min_size.\n"
+"Warning: This option is EXPERIMENTAL!"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font bold by default"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font italic by default"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font shadow"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Shadow offset (in pixels) of the default font. If 0, then shadow will not be "
+"drawn."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font shadow alpha"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"For pixel-style fonts that do not scale well, this ensures that font sizes "
+"used\n"
+"with this font will always be divisible by this value, in pixels. For "
+"instance,\n"
+"a pixel font 16 pixels tall should have this set to 16, so it will only ever "
+"be\n"
+"sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Regular font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path to the default font. Must be a TrueType font.\n"
+"The fallback font will be used if the font cannot be loaded."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bold font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Italic font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bold and italic font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Monospace font size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Monospace font size divisible by"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Monospace font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path to the monospace font. Must be a TrueType font.\n"
+"This font is used for e.g. the console and profiler screen."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bold monospace font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Italic monospace font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bold and italic monospace font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fallback font path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path of the fallback font. Must be a TrueType font.\n"
+"This font will be used for certain languages or if the default font is "
+"unavailable."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lighting"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve low gradient"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Gradient of light curve at minimum light level.\n"
+"Controls the contrast of the lowest light levels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve high gradient"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Gradient of light curve at maximum light level.\n"
+"Controls the contrast of the highest light levels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve boost"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Strength of light curve boost.\n"
+"The 3 'boost' parameters define a range of the light\n"
+"curve that is boosted in brightness."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve boost center"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Center of light curve boost range.\n"
+"Where 0.0 is minimum light level, 1.0 is maximum light level."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Light curve boost spread"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Spread of light curve boost range.\n"
+"Controls the width of the range to be boosted.\n"
+"Standard deviation of the light curve boost Gaussian."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Prometheus listener address"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Prometheus listener address.\n"
+"If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
+"enable metrics listener for Prometheus on that address.\n"
+"Metrics can be fetched on http://127.0.0.1:30000/metrics"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue.\n"
+"0 to disable queueing and -1 to make the queue size unlimited."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock unload timeout"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Timeout for client to remove unused map data from memory, in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock limit"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of mapblocks for client to be kept in memory.\n"
+"Set to -1 for unlimited amount."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Show debug info"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether to show the client debug info (has the same effect as hitting F5)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum simultaneous block sends per client"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of blocks that are simultaneously sent per client.\n"
+"The maximum total count is calculated dynamically:\n"
+"max_total = ceil((#clients + max_users) * per_client / 4)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"To reduce lag, block transfers are slowed down when a player is building "
+"something.\n"
+"This determines how long they are slowed down after placing or removing a "
+"node."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Max. packets per iteration"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum number of packets sent per send step, if you have a slow connection\n"
+"try reducing it, but don't reduce it to a number below double of targeted\n"
+"client number."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Network Transfer"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when sending mapblocks to the client.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat message format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Format of player chat messages. The following strings are valid "
+"placeholders:\n"
+"@name, @message, @timestamp (optional)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat command time message threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If the execution of a chat command takes longer than this specified time in\n"
+"seconds, add the time information to the chat command message"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shutdown message"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "A message to be displayed to all clients when the server shuts down."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Crash message"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "A message to be displayed to all clients when the server crashes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Ask to reconnect after crash"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether to ask clients to reconnect after a (Lua) crash.\n"
+"Set this to true if your server is set up to restart automatically."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Server/Env Performance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dedicated server step"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Length of a server tick and the interval at which objects are generally "
+"updated over\n"
+"network, stated in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Unlimited player transfer distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether players are shown to clients without any range limit.\n"
+"Deprecated, use the setting player_transfer_distance instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Player transfer distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active object send range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"From how far clients know about objects, stated in mapblocks (16 nodes).\n"
+"\n"
+"Setting this larger than active_block_range will also cause the server\n"
+"to maintain active objects up to this distance in the direction the\n"
+"player is looking. (This can avoid mobs suddenly disappearing from view)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active block range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The radius of the volume of blocks around every player that is subject to "
+"the\n"
+"active block stuff, stated in mapblocks (16 nodes).\n"
+"In active blocks objects are loaded and ABMs run.\n"
+"This is also the minimum range in which active objects (mobs) are "
+"maintained.\n"
+"This should be configured together with active_object_send_range_blocks."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Max block send distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum forceloaded blocks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of forceloaded mapblocks."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Time send interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Interval of sending time of day to clients, stated in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map save interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Interval of saving important changes in the world, stated in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Unload unused server data"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"How long the server will wait before unloading unused mapblocks, stated in "
+"seconds.\n"
+"Higher value is smoother, but will use more RAM."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of statically stored objects in a block."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active block management interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Length of time between active block management cycles, stated in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ABM interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Length of time between Active Block Modifier (ABM) execution cycles, stated "
+"in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "ABM time budget"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The time budget allowed for ABMs to execute on each step\n"
+"(as a fraction of the ABM Interval)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "NodeTimer interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles, stated in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Liquid loop max"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Max liquids processed per step."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Liquid queue purge time"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The time (in seconds) that the liquids queue may grow beyond processing\n"
+"capacity until an attempt is made to decrease its size by dumping old queue\n"
+"items.  A value of 0 disables the functionality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Liquid update tick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Liquid update interval in seconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Block send optimize distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"At this distance the server will aggressively optimize which blocks are sent "
+"to\n"
+"clients.\n"
+"Small values potentially improve performance a lot, at the expense of "
+"visible\n"
+"rendering glitches (some blocks will not be rendered under water and in "
+"caves,\n"
+"as well as sometimes on land).\n"
+"Setting this to a value greater than max_block_send_distance disables this\n"
+"optimization.\n"
+"Stated in mapblocks (16 nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Server side occlusion culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client 50-80%. The client will not longer receive most "
+"invisible\n"
+"so that the utility of noclip mode is reduced."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Chunk size"
 msgstr ""
 
@@ -6601,39 +5707,1134 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Online Content Repository"
+msgid "cURL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "ContentDB URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "The URL for the content repository"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "ContentDB Flag Blacklist"
+msgid "cURL interactive timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of flags to hide in the content repository.\n"
-"\"nonfree\" can be used to hide packages which do not qualify as 'free "
-"software',\n"
-"as defined by the Free Software Foundation.\n"
-"You can also specify content ratings.\n"
-"These flags are independent from Minetest versions,\n"
-"so see a full list at https://content.minetest.net/help/content_flags/"
+"Maximum time an interactive request (e.g. server list fetch) may take, "
+"stated in milliseconds."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "ContentDB Max Concurrent Downloads"
+msgid "cURL parallel limit"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum number of concurrent downloads. Downloads exceeding this limit will "
-"be queued.\n"
-"This should be lower than curl_parallel_limit."
+"Limits number of parallel HTTP requests. Affects:\n"
+"-    Media fetch if server uses remote_media setting.\n"
+"-    Serverlist download and server announcement.\n"
+"-    Downloads performed by main menu (e.g. mod manager).\n"
+"Only has an effect if compiled with cURL."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "cURL file download timeout"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum time a file download (e.g. a mod download) may take, stated in "
+"milliseconds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Misc"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "DPI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
+"screens."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Display Density Scaling Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Adjust the detected display density, used for scaling UI elements."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable console window"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Windows systems only: Start Minetest with the command line window in the "
+"background.\n"
+"Contains the same information as the file debug.txt (default name)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Max. clearobjects extra blocks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Number of extra blocks that can be loaded by /clearobjects at once.\n"
+"This is a trade-off between SQLite transaction overhead and\n"
+"memory consumption (4096=100MB, as a rule of thumb)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map directory"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"World directory (everything in the world is stored here).\n"
+"Not needed if starting from the main menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Synchronous SQLite"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Map Compression Level for Disk Storage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Compression level to use when saving mapblocks to disk.\n"
+"-1 - use default compression level\n"
+"0 - least compression, fastest\n"
+"9 - best compression, slowest"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Connect to external media server"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable usage of remote media server (if provided by server).\n"
+"Remote servers offer a significantly faster way to download media (e.g. "
+"textures)\n"
+"when connecting to the server."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Serverlist file"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"File in client/serverlist/ that contains your favorite servers displayed in "
+"the\n"
+"Multiplayer Tab."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Gamepads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable joysticks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable joysticks. Requires a restart to take effect"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick ID"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The identifier of the joystick to use"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick type"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The type of joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick button repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The time in seconds it takes between repeated events\n"
+"when holding down a joystick button combination."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick dead zone"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The dead zone of the joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick frustum sensitivity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The sensitivity of the joystick axes for moving the\n"
+"in-game view frustum around."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Temporary Settings"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Texture path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Path to texture directory. All textures are first searched from here."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Minimap"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables minimap."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Round minimap"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shape of the minimap. Enabled = round, disabled = square."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Address to connect to.\n"
+"Leave this blank to start a local server.\n"
+"Note that the address field in the main menu overrides this setting."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Remote port"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Port to connect to (UDP).\n"
+"Note that the port field in the main menu overrides this setting."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Default game"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Default game when creating a new world.\n"
+"This will be overridden when creating a world from the main menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Damage"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable players getting damage and dying."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Creative"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable creative mode for all players"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Player versus player"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether to allow players to damage and kill each other."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Flying"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Player is able to fly without being affected by gravity.\n"
+"This requires the \"fly\" privilege on the server."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Pitch move mode"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, makes move directions relative to the player's pitch when flying "
+"or swimming."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fast movement"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Fast movement (via the \"Aux1\" key).\n"
+"This requires the \"fast\" privilege on the server."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Noclip"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled together with fly mode, player is able to fly through solid "
+"nodes.\n"
+"This requires the \"noclip\" privilege on the server."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Continuous forward"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Continuous forward movement, toggled by autoforward key.\n"
+"Press the autoforward key again or the backwards movement to disable."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Formspec Default Background Opacity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Formspec default background opacity (between 0 and 255)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Formspec Default Background Color"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Formspec default background color (R,G,B)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether to show technical names.\n"
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names in All Settings.\n"
+"Controlled by the checkbox in the \"All settings\" menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Sound"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enables the sound system.\n"
+"If disabled, this completely disables all sounds everywhere and the in-game\n"
+"sound controls will be non-functional.\n"
+"Changing this setting requires a restart."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Forward key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for moving the player forward.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Backward key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for moving the player backward.\n"
+"Will also disable autoforward, when active.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Left key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for moving the player left.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Right key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for moving the player right.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Jump key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for jumping.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Sneak key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for sneaking.\n"
+"Also used for climbing down and descending in water if aux1_descends is "
+"disabled.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dig key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for digging.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Place key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for placing.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Inventory key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for opening the inventory.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Aux1 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for moving fast in fast mode.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for opening the chat window.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Command key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for opening the chat window to type commands.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for opening the chat window to type local commands.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Range select key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling unlimited view range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fly key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling flying.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Pitch move key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling pitch move mode.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fast key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling fast mode.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Noclip key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling noclip mode.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar next key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the next item in the hotbar.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar previous key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the previous item in the hotbar.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mute key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for muting the game.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Inc. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for increasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Dec. volume key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for decreasing the volume.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Automatic forward key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling autoforward.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cinematic mode key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling cinematic mode.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Minimap key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling display of minimap.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for taking screenshots.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Drop item key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for dropping the currently selected item.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "View zoom key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key to use view zoom when possible.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 1 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the first hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 2 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the second hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 3 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the third hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 4 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the fourth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 5 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the fifth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 6 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the sixth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 7 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the seventh hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 8 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the eighth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 9 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the ninth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 10 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the tenth hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 11 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 11th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 12 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 12th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 13 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 13th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 14 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 14th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 15 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 15th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 16 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 16th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 17 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 17th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 18 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 18th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 19 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 19th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 20 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 20th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 21 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 21st hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 22 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 22nd hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 23 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 23rd hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 24 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 24th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 25 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 25th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 26 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 26th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 27 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 27th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 28 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 28th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 29 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 29th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 30 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 30th hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 31 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 31st hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar slot 32 key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for selecting the 32nd hotbar slot.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "HUD toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of the HUD.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Chat toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of chat.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Large chat console key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of the large chat console.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fog toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of fog.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Camera update toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the camera update. Only used for development\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Debug info toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of debug info.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Profiler toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling the display of the profiler. Used for development.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Toggle camera mode key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for switching between first- and third-person camera.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "View range increase key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for increasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "View range decrease key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for decreasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""

@@ -40,7 +40,7 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_menumgr(menumgr),
 		m_remap_dbl_click(remap_dbl_click)
 {
-	m_gui_scale = g_settings->getFloat("gui_scaling");
+	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
 #ifdef HAVE_TOUCHSCREENGUI
 	float d = RenderingEngine::getDisplayDensity();
 	m_gui_scale *= 1.1 - 0.3 * d + 0.2 * d * d;
@@ -252,11 +252,6 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				return retval;
 
 			m_jni_field_name = field_name;
-			std::string label = wide_to_utf8(getLabelByID(hovered->getID()));
-			if (label.empty())
-				label = "text";
-			/*~ Imperative, as in "Type in text" */
-			std::string message = fmtgettext("Enter %s:");
 
 			// single line text input
 			int type = 2;

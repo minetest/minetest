@@ -61,12 +61,68 @@ local function init_data(data)
 	data.list:set_sortmode("alphabetic")
 end
 
+
+-- Returns errors errors and a list of all enabled mods (inc. game and world mods)
+--
+-- `with_errors` is a table from mod virtual path to `{ type = "error" | "warning" }`.
+-- `enabled_mods_by_name` is a table from mod virtual path to `true`.
+--
+-- @param world_path Path to the world
+-- @param all_mods List of mods, with `enabled` property.
+-- @returns with_errors, enabled_mods_by_name
+local function check_mod_configuration(world_path, all_mods)
+	-- Build up lookup tables for enabled mods and all mods by vpath
+	local enabled_mod_paths = {}
+	local all_mods_by_vpath = {}
+	for _, mod in ipairs(all_mods)  do
+		if mod.type == "mod" then
+			all_mods_by_vpath[mod.virtual_path] = mod
+		end
+		if mod.enabled then
+			enabled_mod_paths[mod.virtual_path] = mod.path
+		end
+	end
+
+	-- Use the engine's mod configuration code to resolve dependencies and return any errors
+	local config_status = core.check_mod_configuration(world_path, enabled_mod_paths)
+
+	-- Build the list of enabled mod virtual paths
+	local enabled_mods_by_name = {}
+	for _, mod in ipairs(config_status.satisfied_mods) do
+		assert(mod.virtual_path ~= "")
+		enabled_mods_by_name[mod.name] = all_mods_by_vpath[mod.virtual_path] or mod
+	end
+	for _, mod in ipairs(config_status.unsatisfied_mods) do
+		assert(mod.virtual_path ~= "")
+		enabled_mods_by_name[mod.name] = all_mods_by_vpath[mod.virtual_path] or mod
+	end
+
+	-- Build the table of errors
+	local with_error = {}
+	for _, mod in ipairs(config_status.unsatisfied_mods) do
+		local error = { type = "warning" }
+		with_error[mod.virtual_path] = error
+
+		for _, depname in ipairs(mod.unsatisfied_depends) do
+			if not enabled_mods_by_name[depname] then
+				error.type = "error"
+				break
+			end
+		end
+	end
+
+	return with_error, enabled_mods_by_name
+end
+
 local function get_formspec(data)
 	if not data.list then
 		init_data(data)
 	end
 
-	local mod = data.list:get_list()[data.selected_mod] or {name = ""}
+	local all_mods = data.list:get_list()
+	local with_error, enabled_mods_by_name = check_mod_configuration(data.worldspec.path, all_mods)
+
+	local mod = all_mods[data.selected_mod] or {name = ""}
 
 	local retval =
 		"size[11.5,7.5,true]" ..
@@ -87,6 +143,29 @@ local function get_formspec(data)
 			"textarea[0.25,0.7;5.75,7.2;;" .. info .. ";]"
 	else
 		local hard_deps, soft_deps = pkgmgr.get_dependencies(mod.path)
+
+		-- Add error messages to dep lists
+		if mod.enabled or mod.is_game_content then
+			for i, dep_name in ipairs(hard_deps) do
+				local dep = enabled_mods_by_name[dep_name]
+				if not dep then
+					hard_deps[i] = mt_color_red .. dep_name .. " " .. fgettext("(Unsatisfied)")
+				elseif with_error[dep.virtual_path] then
+					hard_deps[i] = mt_color_orange .. dep_name .. " " .. fgettext("(Enabled, has error)")
+				else
+					hard_deps[i] = mt_color_green .. dep_name
+				end
+			end
+			for i, dep_name in ipairs(soft_deps) do
+				local dep = enabled_mods_by_name[dep_name]
+				if dep and with_error[dep.virtual_path] then
+					soft_deps[i] = mt_color_orange .. dep_name .. " " .. fgettext("(Enabled, has error)")
+				elseif dep then
+					soft_deps[i] = mt_color_green .. dep_name
+				end
+			end
+		end
+
 		local hard_deps_str = table.concat(hard_deps, ",")
 		local soft_deps_str = table.concat(soft_deps, ",")
 
@@ -138,7 +217,6 @@ local function get_formspec(data)
 
 	if mod.name ~= "" and not mod.is_game_content then
 		if mod.is_modpack then
-
 			if pkgmgr.is_modpack_entirely_enabled(data, mod.name) then
 				retval = retval ..
 					"button[5.5,0.125;3,0.5;btn_mp_disable;" ..
@@ -167,9 +245,12 @@ local function get_formspec(data)
 	local use_technical_names = core.settings:get_bool("show_technical_names")
 
 	return retval ..
-		"tablecolumns[color;tree;text]" ..
+		"tablecolumns[color;tree;image,align=inline,width=1.5,0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") ..
+			",1=" .. core.formspec_escape(defaulttexturedir .. "checkbox_16_white.png") ..
+			",2=" .. core.formspec_escape(defaulttexturedir .. "error_icon_orange.png") ..
+			",3=" .. core.formspec_escape(defaulttexturedir .. "error_icon_red.png") .. ";text]" ..
 		"table[5.5,0.75;5.75,6;world_config_modlist;" ..
-		pkgmgr.render_packagelist(data.list, use_technical_names) .. ";" .. data.selected_mod .."]"
+		pkgmgr.render_packagelist(data.list, use_technical_names, with_error) .. ";" .. data.selected_mod .."]"
 end
 
 local function handle_buttons(this, fields)

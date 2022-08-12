@@ -9,7 +9,6 @@ stages:
   - deploy
 
 variables:
-  IRRLICHT_TAG: "1.9.0mt6"
   MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
   CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
 
@@ -19,7 +18,7 @@ variables:
    - apt-get update
    - DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential git cmake libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libleveldb-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev libzstd-dev
   script:
-    - git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
+    - git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
     - mkdir build && cd build
     - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
     - make -j $(($(nproc) + 1))

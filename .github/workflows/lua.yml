@@ -19,33 +19,42 @@ jobs:
     name: "Compile and run multiplayer tests"
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps clang-10 gdb libluajit-5.1-dev
+    - uses: actions/checkout@v3
+    - name: Install deps
+      run: |
+        source ./util/ci/common.sh
+        install_linux_deps clang-10 gdb libluajit-5.1-dev
 
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: clang-10
-          CXX: clang++-10
-          CMAKE_FLAGS: "-DENABLE_GETTEXT=0 -DBUILD_SERVER=0"
+    - name: Build
+      run: |
+        ./util/ci/build.sh
+      env:
+        CC: clang-10
+        CXX: clang++-10
+        CMAKE_FLAGS: "-DENABLE_GETTEXT=0 -DBUILD_SERVER=0"
 
-      - name: Integration test + devtest
-        run: |
-          ./util/test_multiplayer.sh
+    - name: Integration test + devtest
+      run: |
+        ./util/test_multiplayer.sh
 
   luacheck:
     name: "Builtin Luacheck and Unit Tests"
     runs-on: ubuntu-20.04
+
     steps:
+
     - uses: actions/checkout@v3
     - uses: leafo/gh-actions-lua@v9
       with:
         luaVersion: "5.1.5"
     - uses: leafo/gh-actions-luarocks@v4
+
+    - name: Install LuaJIT
+      run: |
+        cd $HOME
+        git clone https://github.com/LuaJIT/LuaJIT/
+        cd LuaJIT
+        make -j$(nproc)
 
     - name: Install luarocks tools
       run: |
@@ -56,6 +65,7 @@ jobs:
       run: |
         $HOME/.luarocks/bin/luacheck builtin
         $HOME/.luarocks/bin/busted builtin
+        $HOME/.luarocks/bin/busted builtin --lua=$HOME/LuaJIT/src/luajit
 
     - name: Run checks (devtest)
       run: |

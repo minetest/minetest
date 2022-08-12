@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "content/mods.h"
+#include "content/mod_configuration.h"
 #include <memory>
 
 class MetricsBackend;
@@ -31,8 +31,10 @@ class ServerScripting;
  *
  * All new calls to this class must be tested in test_servermodmanager.cpp
  */
-class ServerModManager : public ModConfiguration
+class ServerModManager
 {
+	ModConfiguration configuration;
+
 public:
 	/**
 	 * Creates a ServerModManager which targets worldpath
@@ -42,6 +44,23 @@ public:
 	void loadMods(ServerScripting *script);
 	const ModSpec *getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist) const;
+
+	inline const std::vector<ModSpec> &getMods() const {
+		return configuration.getMods();
+	}
+
+	inline const std::vector<ModSpec> &getUnsatisfiedMods() const {
+		return configuration.getUnsatisfiedMods();
+	}
+
+	inline bool isConsistent() const {
+		return configuration.isConsistent();
+	}
+
+	inline void printUnsatisfiedModsError() const {
+		return configuration.printUnsatisfiedModsError();
+	}
+
 	/**
 	 * Recursively gets all paths of mod folders that can contain media files.
 	 *

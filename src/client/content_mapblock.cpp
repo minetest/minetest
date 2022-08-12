@@ -377,10 +377,6 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
-
-	box.MinEdge += origin;
-	box.MaxEdge += origin;
-
 	if (scale) {
 		if (!txc) { // generate texture coords before scaling
 			generateCuboidTextureCoords(box, texture_coord_buf);
@@ -389,11 +385,12 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		box.MinEdge *= f->visual_scale;
 		box.MaxEdge *= f->visual_scale;
 	}
+	box.MinEdge += origin;
+	box.MaxEdge += origin;
 	if (!txc) {
 		generateCuboidTextureCoords(box, texture_coord_buf);
 		txc = texture_coord_buf;
 	}
-
 	if (!tiles) {
 		tiles = &tile;
 		tile_count = 1;

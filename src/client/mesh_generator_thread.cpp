@@ -50,7 +50,8 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 */
 
 MeshUpdateQueue::MeshUpdateQueue(Client *client):
-	m_client(client)
+	m_client(client),
+	m_next_cache_cleanup(0)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
@@ -157,8 +158,7 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 			size_t *cache_hit_counter)
 {
 	CachedMapBlockData *cached_block = nullptr;
-	std::map<v3s16, CachedMapBlockData*>::iterator it =
-			m_cache.find(p);
+	auto it = m_cache.find(p);
 
 	if (it != m_cache.end()) {
 		cached_block = it->second;
@@ -192,7 +192,7 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 
 CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
 {
-	std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.find(p);
+	auto it = m_cache.find(p);
 	if (it != m_cache.end()) {
 		return it->second;
 	}
@@ -231,6 +231,15 @@ void MeshUpdateQueue::cleanupCache()
 	g_profiler->avg("MeshUpdateQueue MapBlock cache size kB",
 			mapblock_kB * m_cache.size());
 
+	// Iterating the entire cache can get pretty expensive so don't do it too often
+	{
+		constexpr int cleanup_interval = 250;
+		const u64 now = porting::getTimeMs();
+		if (m_next_cache_cleanup > now)
+			return;
+		m_next_cache_cleanup = now + cleanup_interval;
+	}
+
 	// The cache size is kept roughly below cache_soft_max_size, not letting
 	// anything get older than cache_seconds_max or deleted before 2 seconds.
 	const int cache_seconds_max = 10;
@@ -240,12 +249,11 @@ void MeshUpdateQueue::cleanupCache()
 
 	int t_now = time(0);
 
-	for (std::map<v3s16, CachedMapBlockData*>::iterator it = m_cache.begin();
-			it != m_cache.end(); ) {
+	for (auto it = m_cache.begin(); it != m_cache.end(); ) {
 		CachedMapBlockData *cached_block = it->second;
 		if (cached_block->refcount_from_queue == 0 &&
 				cached_block->last_used_timestamp < t_now - cache_seconds) {
-			m_cache.erase(it++);
+			it = m_cache.erase(it);
 			delete cached_block;
 		} else {
 			++it;

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-25 23:19+0100\n"
-"PO-Revision-Date: 2022-01-30 18:51+0000\n"
+"POT-Creation-Date: 2022-07-20 21:43+0200\n"
+"PO-Revision-Date: 2022-07-24 09:25+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -115,6 +115,34 @@ msgid "The server has requested a reconnect:"
 msgstr "Pelayan meminta anda untuk menyambung semula:"
 
 #: builtin/mainmenu/common.lua
+msgid "A new $1 version is available"
+msgstr "Versi $1 baharu kini tersedia"
+
+#: builtin/mainmenu/common.lua
+msgid "Client Mods"
+msgstr "Mods Klien"
+
+#: builtin/mainmenu/common.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Versi terpasang: $1\n"
+"Versi baharu: $2\n"
+"Lawati $3 untuk ketahui cara untuk mendapatkan versi terbaru dan kekal "
+"dikemas kini dengan sifat dan pembaikan pepijat."
+
+#: builtin/mainmenu/common.lua
+msgid "Later"
+msgstr "Kemudian"
+
+#: builtin/mainmenu/common.lua
+msgid "Never"
+msgstr "Tidak Selamanya"
+
+#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Versi protokol tidak serasi. "
 
@@ -127,6 +155,10 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Pelayan menyokong protokol versi $1 hingga $2. "
 
 #: builtin/mainmenu/common.lua
+msgid "Visit website"
+msgstr "Lawati laman sesawang"
+
+#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Kami hanya menyokong protokol versi $1."
 
@@ -134,14 +166,21 @@ msgstr "Kami hanya menyokong protokol versi $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Kami menyokong protokol versi $1 hingga $2."
 
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "(Enabled, has error)"
+msgstr "(Dibolehkan, ada ralat)"
+
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "(Unsatisfied)"
+msgstr "(Tidak dipenuhi)"
+
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
-#: src/gui/guiConfirmRegistration.cpp src/gui/guiKeyChangeMenu.cpp
-#: src/gui/guiPasswordChange.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Batal"
 
@@ -280,7 +319,6 @@ msgid "Failed to download $1"
 msgstr "Gagal memuat turun $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
 msgstr "Permainan"
 
@@ -301,7 +339,6 @@ msgid "Install: Unsupported file type or broken archive"
 msgstr "Pasang: Jenis fail tidak disokong atau arkib rosak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Mods"
 msgstr "Mods"
 
@@ -394,12 +431,8 @@ msgid "Decorations"
 msgstr "Hiasan"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Download a game, such as Minetest Game, from minetest.net"
-msgstr "Muat turun permainan, contohnya Minetest Game, dari minetest.net"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "Download one from minetest.net"
-msgstr "Muat turun satu dari minetest.net"
+msgid "Development Test is meant for developers."
+msgstr "Development Test hanyalah untuk kegunaan pembangun."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -415,11 +448,7 @@ msgstr "Jisim bumi terapung atas langit"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Tanah terapung (dalam ujikaji)"
-
-#: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-msgid "Game"
-msgstr "Permainan"
+msgstr "Tanah terapung (dalam uji kaji)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -436,6 +465,14 @@ msgstr "Sungai lembap"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
 msgstr "Tingkatkan kelembapan sekitar sungai"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Install a game"
+msgstr "Pasang suatu permainan"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Install another game"
+msgstr "Pasang permainan lain"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -539,10 +576,6 @@ msgid "Very large caverns deep in the underground"
 msgstr "Gua gergasi yang sangat mendalam bawah tanah"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Warning: The Development Test is meant for developers."
-msgstr "Amaran: The Development Test hanyalah untuk kegunaan pembangun."
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "Nama dunia"
 
@@ -571,6 +604,36 @@ msgstr "pkgmgr: laluan tidak sah \"$1\""
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "Padam Dunia \"$1\"?"
+
+#: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
+msgid "Confirm Password"
+msgstr "Sahkan Kata Laluan"
+
+#: builtin/mainmenu/dlg_register.lua
+msgid "Joining $1"
+msgstr "Menyertai $1"
+
+#: builtin/mainmenu/dlg_register.lua
+msgid "Missing name"
+msgstr "Nama tidak ditulis"
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
+#: builtin/mainmenu/tab_online.lua
+msgid "Name"
+msgstr "Nama"
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
+#: builtin/mainmenu/tab_online.lua
+msgid "Password"
+msgstr "Kata laluan"
+
+#: builtin/mainmenu/dlg_register.lua
+msgid "Passwords do not match"
+msgstr "Kata laluan tidak padan"
+
+#: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
+msgid "Register"
+msgstr "Daftar"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -603,6 +666,14 @@ msgstr "< Kembali ke halaman Tetapan"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Layar"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Content: Games"
+msgstr "Kandungan: Permainan"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Content: Mods"
+msgstr "Kandungan: Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -660,7 +731,7 @@ msgstr "Pilih direktori"
 msgid "Select file"
 msgstr "Pilih fail"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Show technical names"
 msgstr "Tunjukkan nama teknikal"
 
@@ -809,6 +880,10 @@ msgstr "Penyumbang Terdahulu"
 msgid "Previous Core Developers"
 msgstr "Pembangun Teras Terdahulu"
 
+#: builtin/mainmenu/tab_about.lua
+msgid "Share debug log"
+msgstr "Kongsikan log nyahpepijat"
+
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
 msgstr "Layari kandungan dalam talian"
@@ -877,10 +952,6 @@ msgstr "Hos Pelayan"
 msgid "Install games from ContentDB"
 msgstr "Pasangkan permainan daripada ContentDB"
 
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-msgid "Name"
-msgstr "Nama"
-
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
 msgstr "Buat Baru"
@@ -888,10 +959,6 @@ msgstr "Buat Baru"
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
 msgstr "Tiada dunia dicipta atau dipilih!"
-
-#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
-msgid "Password"
-msgstr "Kata laluan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -926,10 +993,6 @@ msgid "Clear"
 msgstr "Padam"
 
 #: builtin/mainmenu/tab_online.lua
-msgid "Connect"
-msgstr "Sambung"
-
-#: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
 msgstr "Mod Kreatif"
 
@@ -937,10 +1000,6 @@ msgstr "Mod Kreatif"
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
 msgstr "Boleh cedera / PvP"
-
-#: builtin/mainmenu/tab_online.lua
-msgid "Del. Favorite"
-msgstr "Padam Kegemaran"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -955,6 +1014,10 @@ msgid "Join Game"
 msgstr "Sertai Permainan"
 
 #: builtin/mainmenu/tab_online.lua
+msgid "Login"
+msgstr "Log Masuk"
+
+#: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
@@ -967,8 +1030,16 @@ msgid "Refresh"
 msgstr "Segarkan semula"
 
 #: builtin/mainmenu/tab_online.lua
+msgid "Remove favorite"
+msgstr "Buang kegemaran"
+
+#: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
 msgstr "Keterangan Pelayan"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "(game support required)"
+msgstr "(sokongan permainan diperlukan)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1015,8 +1086,8 @@ msgid "Dynamic shadows"
 msgstr "Bayang dinamik"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows: "
-msgstr "Bayang dinamik: "
+msgid "Dynamic shadows:"
+msgstr "Bayang dinamik:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1088,7 +1159,7 @@ msgstr "Pembayang"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
-msgstr "Pembayang (dalam ujikaji)"
+msgstr "Pembayang (dalam uji kaji)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
@@ -1111,16 +1182,16 @@ msgid "Tone Mapping"
 msgstr "Pemetaan Tona"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Touchthreshold: (px)"
-msgstr "Nilai Ambang Sentuhan: (px)"
+msgid "Touch threshold (px):"
+msgstr "Nilai ambang sentuhan (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Penapisan Trilinear"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Ultra High"
-msgstr "Ultra Tinggi"
+msgid "Very High"
+msgstr "Sangat Tinggi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
@@ -1137,6 +1208,10 @@ msgstr "Cecair Bergelora"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Tumbuhan Bergoyang"
+
+#: src/client/client.cpp
+msgid "Connection aborted (protocol error?)."
+msgstr "Sambungan digugurkan (ralat protokol?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1274,8 +1349,8 @@ msgid "Camera update enabled"
 msgstr "Kemas kini kamera dibolehkan"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (need 'basic_debug' privilege)"
-msgstr "Tidak boleh tunjuk batas blok (perlukan keistimewaan 'basic_debug')"
+msgid "Can't show block bounds (disabled by mod or game)"
+msgstr "Tidak boleh tunjuk batas blok (dilumpuhkan oleh mods atau permainan)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1402,6 +1477,11 @@ msgstr "Jarak pandang tanpa had dilumpuhkan"
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
 msgstr "Jarak pandang tanpa had dibolehkan"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Error creating client: %s"
+msgstr "Ralat dalam mencipta klien: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1910,29 +1990,6 @@ msgstr "Gagal buka laman sesawang"
 msgid "Opening webpage"
 msgstr "Membuka laman sesawang"
 
-#: src/gui/guiConfirmRegistration.cpp src/gui/guiPasswordChange.cpp
-msgid "Passwords do not match!"
-msgstr "Kata laluan tidak padan!"
-
-#: src/gui/guiConfirmRegistration.cpp
-msgid "Register and Join"
-msgstr "Daftar dan Sertai"
-
-#: src/gui/guiConfirmRegistration.cpp
-#, c-format
-msgid ""
-"You are about to join this server with the name \"%s\" for the first time.\n"
-"If you proceed, a new account using your credentials will be created on this "
-"server.\n"
-"Please retype your password and click 'Register and Join' to confirm account "
-"creation, or click 'Cancel' to abort."
-msgstr ""
-"Anda akan sertai pelayan dengan nama \"%s\" untuk kali pertama.\n"
-"Jika anda teruskan, akaun baru dengan maklumat anda akan dicipta di pelayan "
-"ini.\n"
-"Sila taip semula kata laluan anda dan klik 'Daftar dan Sertai' untuk sahkan "
-"penciptaan akaun, atau klik 'Batal' untuk membatalkan."
-
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
 msgstr "Teruskan"
@@ -1965,7 +2022,7 @@ msgstr "Batas blok"
 msgid "Change camera"
 msgstr "Tukar kamera"
 
-#: src/gui/guiKeyChangeMenu.cpp
+#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Chat"
 msgstr "Sembang"
 
@@ -2018,10 +2075,8 @@ msgid "Key already in use"
 msgstr "Kekunci telah digunakan untuk fungsi lain"
 
 #: src/gui/guiKeyChangeMenu.cpp
-msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
-"Ikatan kekunci. (Jika menu ini berselerak, buang sesetengah benda dari fail "
-"minetest.conf)"
+msgid "Keybindings."
+msgstr "Ikatan kekunci."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2092,16 +2147,16 @@ msgid "Change"
 msgstr "Tukar"
 
 #: src/gui/guiPasswordChange.cpp
-msgid "Confirm Password"
-msgstr "Sahkan Kata Laluan"
-
-#: src/gui/guiPasswordChange.cpp
 msgid "New Password"
 msgstr "Kata Laluan Baru"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
 msgstr "Kata Laluan Lama"
+
+#: src/gui/guiPasswordChange.cpp
+msgid "Passwords do not match!"
+msgstr "Kata laluan tidak padan!"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
@@ -2116,18 +2171,22 @@ msgstr "Dibisukan"
 msgid "Sound Volume: %d%%"
 msgstr "Kekuatan Bunyi: %d%%"
 
-#. ~ Imperative, as in "Enter/type in text".
-#. Don't forget the space.
-#: src/gui/modalMenu.cpp
-msgid "Enter "
-msgstr "Masukkan "
-
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
 msgstr "ms"
+
+#: src/network/clientpackethandler.cpp
+msgid ""
+"Name is not registered. To create an account on this server, click 'Register'"
+msgstr ""
+"Nama belum berdaftar. Untuk mencipta akaun di pelayan ini, klik 'Daftar'"
+
+#: src/network/clientpackethandler.cpp
+msgid "Name is taken. Please choose another name"
+msgstr "Nama sudah diambil. Sila pilih nama yang lain"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2293,6 +2352,10 @@ msgstr ""
 "Ambil perhatian bahawa mod selang-seli memerlukan pembayang."
 
 #: src/settings_translation_file.cpp
+msgid "3d"
+msgstr "3d"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
@@ -2389,6 +2452,10 @@ msgstr ""
 "bergantung kepada tetapan 'mgv7_np_floatland', sentiasa cuba untuk pastikan)."
 
 #: src/settings_translation_file.cpp
+msgid "Admin name"
+msgstr "Nama pentadbir"
+
+#: src/settings_translation_file.cpp
 msgid "Advanced"
 msgstr "Tetapan mendalam"
 
@@ -2407,8 +2474,8 @@ msgstr ""
 "dan cahaya buatan, kesannya pada cahaya malam amat rendah."
 
 #: src/settings_translation_file.cpp
-msgid "Always fly and fast"
-msgstr "Sentiasa terbang dan bergerak pantas"
+msgid "Always fly fast"
+msgstr "Sentiasa terbang pantas"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2488,6 +2555,10 @@ msgstr ""
 "Nyatakan dalam unit blokpeta (16 nod)."
 
 #: src/settings_translation_file.cpp
+msgid "Audio"
+msgstr "Audio"
+
+#: src/settings_translation_file.cpp
 msgid "Automatic forward key"
 msgstr "Kekunci autopergerakan"
 
@@ -2528,10 +2599,6 @@ msgid "Base terrain height."
 msgstr "Ketinggian rupa bumi asas."
 
 #: src/settings_translation_file.cpp
-msgid "Basic"
-msgstr "Asas"
-
-#: src/settings_translation_file.cpp
 msgid "Basic privileges"
 msgstr "Keistimewaan asas"
 
@@ -2552,8 +2619,8 @@ msgid "Bind address"
 msgstr "Alamat ikatan"
 
 #: src/settings_translation_file.cpp
-msgid "Biome API temperature and humidity noise parameters"
-msgstr "Parameter suhu API biom dan hingar kelembapan"
+msgid "Biome API noise parameters"
+msgstr "Parameter hingar API biom"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2562,6 +2629,10 @@ msgstr "Hingar biom"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Jarak optimum penghantaran blok"
+
+#: src/settings_translation_file.cpp
+msgid "Bobbing"
+msgstr "Apungan"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2586,6 +2657,10 @@ msgstr "Bina dalam pemain"
 #: src/settings_translation_file.cpp
 msgid "Builtin"
 msgstr "Terbina dalam"
+
+#: src/settings_translation_file.cpp
+msgid "Camera"
+msgstr "Kamera"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2753,6 +2828,10 @@ msgid "Client side node lookup range restriction"
 msgstr "Sekatan jarak carian nod pihak klien"
 
 #: src/settings_translation_file.cpp
+msgid "Client-side Modding"
+msgstr "Mods Pihak Klien"
+
+#: src/settings_translation_file.cpp
 msgid "Climbing speed"
 msgstr "Kelajuan memanjat"
 
@@ -2871,6 +2950,10 @@ msgid "Console height"
 msgstr "Ketinggian konsol"
 
 #: src/settings_translation_file.cpp
+msgid "Content Repository"
+msgstr "Repositori Kandungan"
+
+#: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
 msgstr "Senarai Hitam Bendera ContentDB"
 
@@ -2911,8 +2994,12 @@ msgstr ""
 "tidak berubah."
 
 #: src/settings_translation_file.cpp
-msgid "Controls sinking speed in liquid."
-msgstr "Mengawal kelajuan tenggelam dalam cecair."
+msgid ""
+"Controls sinking speed in liquid when idling. Negative values will cause\n"
+"you to rise instead."
+msgstr ""
+"Mengawal kelajuan tenggelam dalam cecair ketika tidak berbuat apa-apa.\n"
+"Nilai negatif akan menyebabkan anda timbul."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2985,13 +3072,12 @@ msgid "Debug log level"
 msgstr "Tahap log nyahpepijat"
 
 #: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Kekunci perlahankan bunyi"
+msgid "Debugging"
+msgstr "Nyahpepijat"
 
 #: src/settings_translation_file.cpp
-msgid "Decrease this to increase liquid resistance to movement."
-msgstr ""
-"Kurangkan nilai untuk meningkatkan rintangan cecair terhadap pergerakan."
+msgid "Dec. volume key"
+msgstr "Kekunci perlahankan bunyi"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3149,6 +3235,10 @@ msgid "Desynchronize block animation"
 msgstr "Menyahsegerakkan animasi blok"
 
 #: src/settings_translation_file.cpp
+msgid "Developer Options"
+msgstr "Pilihan Pembangun"
+
+#: src/settings_translation_file.cpp
 msgid "Dig key"
 msgstr "Kekunci gali"
 
@@ -3167,6 +3257,15 @@ msgstr "Menolak kata laluan kosong"
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
 msgstr "Faktor Skala Ketumpatan Paparan"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Distance in nodes at which transparency depth sorting is enabled\n"
+"Use this to limit the performance impact of transparency depth sorting"
+msgstr ""
+"Jarak dalam nod ketika mana pengisihan kedalaman lut sinar dibolehkan\n"
+"Gunakan ini untuk mengehadkan hentaman prestasi akibat pengisihan kedalaman "
+"lut sinar"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3215,7 +3314,7 @@ msgid ""
 "This support is experimental and API can change."
 msgstr ""
 "Membolehkan sokongan pembuatan mods Lua dekat klien.\n"
-"Sokongan ini dalam ujikaji dan API boleh berubah."
+"Sokongan ini dalam uji kaji dan API boleh berubah."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3249,6 +3348,10 @@ msgid "Enable joysticks"
 msgstr "Membolehkan kayu bedik"
 
 #: src/settings_translation_file.cpp
+msgid "Enable joysticks. Requires a restart to take effect"
+msgstr "Membolehkan kayu bedik. Perlu dimulakan semula untuk mengambil kesan"
+
+#: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
 msgstr "Membolehkan sokongan saluran mods."
 
@@ -3265,24 +3368,16 @@ msgid "Enable random user input (only used for testing)."
 msgstr "Membolehkan input pengguna secara rawak (hanya untuk percubaan)."
 
 #: src/settings_translation_file.cpp
-msgid "Enable register confirmation"
-msgstr "Bolehkan pengesahan pendaftaran"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enable register confirmation when connecting to server.\n"
-"If disabled, new account will be registered automatically."
-msgstr ""
-"Membolehkan pengesahan pendaftaran apabila menyambung kepada pelayan.\n"
-"Jika dilumpuhkan, akaun baru akan didaftarkan secara automatik."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
 "Membolehkan pencahayaan lembut dengan oklusi sekitar yang ringkas.\n"
 "Lumpuhkannya untuk kelajuan atau untuk kelihatan berlainan."
+
+#: src/settings_translation_file.cpp
+msgid "Enable split login/register"
+msgstr "Membolehkan pemisahan log masuk/daftar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3384,6 +3479,10 @@ msgstr ""
 "kebolehan bermain permainan."
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiler"
+msgstr "Pembukah enjin"
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Selang masa cetak data pemprofilan enjin"
 
@@ -3406,6 +3505,10 @@ msgstr ""
 "yang terpisah antara satu sama lain.\n"
 "Nilai < 1.0 (contohnya 0.25) mencipta aras permukaan lebih jelas dengan\n"
 "bahagian tanah yang lebih rata, sesuai untuk lapisan tanah terapung pejal."
+
+#: src/settings_translation_file.cpp
+msgid "FPS"
+msgstr "FPS"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3497,8 +3600,8 @@ msgstr ""
 "mip dibolehkan."
 
 #: src/settings_translation_file.cpp
-msgid "Filtering"
-msgstr "Penapisan"
+msgid "Filtering and Antialiasing"
+msgstr "Tapisan dan Antialias"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3564,6 +3667,10 @@ msgstr "Mula Kabut"
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
 msgstr "Kekunci togol kabut"
+
+#: src/settings_translation_file.cpp
+msgid "Font"
+msgstr "Fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3743,6 +3850,18 @@ msgid "GUI scaling filter txr2img"
 msgstr "Penapis skala GUI txr2img"
 
 #: src/settings_translation_file.cpp
+msgid "GUIs"
+msgstr "GUI"
+
+#: src/settings_translation_file.cpp
+msgid "Gamepads"
+msgstr "Pad permainan"
+
+#: src/settings_translation_file.cpp
+msgid "General"
+msgstr "Umum"
+
+#: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "Panggil balik sejagat"
 
@@ -3778,6 +3897,14 @@ msgid "Graphics"
 msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
+msgid "Graphics Effects"
+msgstr "Kesan Grafik"
+
+#: src/settings_translation_file.cpp
+msgid "Graphics and Audio"
+msgstr "Grafik dan Audio"
+
+#: src/settings_translation_file.cpp
 msgid "Gravity"
 msgstr "Graviti"
 
@@ -3794,8 +3921,12 @@ msgid "HTTP mods"
 msgstr "Mods HTTP"
 
 #: src/settings_translation_file.cpp
-msgid "HUD scale factor"
-msgstr "Faktor skala papar pandu (HUD)"
+msgid "HUD"
+msgstr "Papar Pandu (HUD)"
+
+#: src/settings_translation_file.cpp
+msgid "HUD scaling"
+msgstr "Skala papar pandu (HUD)"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -4054,12 +4185,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"How much the server will wait before unloading unused mapblocks.\n"
+"How long the server will wait before unloading unused mapblocks, stated in "
+"seconds.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
 "Berapa lama pelayan akan tunggu sebelum menyahmuat blokpeta yang tidak "
-"digunakan.\n"
+"digunakan, dinyatakan dalam saat.\n"
 "Nilai lebih tinggi lebih lembut, tetapi akan menggunakan lebih banyak RAM."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"How much you are slowed down when moving inside a liquid.\n"
+"Decrease this to increase liquid resistance to movement."
+msgstr ""
+"Berapa banyak anda diperlahankan ketika bergerak di dalam cecair.\n"
+"Kurangkan nilai untuk meningkatkan rintangan cecair terhadap pergerakan."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4136,6 +4276,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"If enabled, account registration is separate from login in the UI.\n"
+"If disabled, new accounts will be registered automatically when logging in."
+msgstr ""
+"Jika dibolehkan, pendaftaran akaun dipisahkan dari log masuk dalam UI.\n"
+"Jika dilumpuhkan, akaun baharu akan didaftarkan secara automatik ketika log "
+"masuk."
+
+#: src/settings_translation_file.cpp
+msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
@@ -4165,10 +4314,12 @@ msgstr ""
 "apabila terbang atau berenang."
 
 #: src/settings_translation_file.cpp
-msgid "If enabled, new players cannot join with an empty password."
+msgid ""
+"If enabled, players cannot join without a password or change theirs to an "
+"empty password."
 msgstr ""
-"Jika dibolehkan, pemain-pemain baru tidak boleh masuk dengan kata laluan "
-"yang kosong."
+"Jika dibolehkan, pemain tidak boleh sertai tanpa kata laluan atau tukar "
+"kepada kata laluan yang kosong."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4220,10 +4371,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
 msgstr "Abaikan ralat dunia"
-
-#: src/settings_translation_file.cpp
-msgid "In-Game"
-msgstr "Dalam Permainan"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
@@ -4284,18 +4431,16 @@ msgid "Instrument the methods of entities on registration."
 msgstr "Memasang kaedah entiti ketika pendaftaran."
 
 #: src/settings_translation_file.cpp
-msgid "Instrumentation"
-msgstr "Instrumentasi"
-
-#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 "Selang masa di antara penyimpanan perubahan penting dalam dunia, dinyatakan "
 "dalam unit saat."
 
 #: src/settings_translation_file.cpp
-msgid "Interval of sending time of day to clients."
-msgstr "Selang di antara penghantaran maklumat masa pelayan kepada klien."
+msgid "Interval of sending time of day to clients, stated in seconds."
+msgstr ""
+"Selang di antara penghantaran maklumat waktu dalam hari kepada klien, "
+"dinyatakan dalam saat."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
@@ -4369,8 +4514,8 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen W tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen W buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Tiada kesan terhadap fraktal 3D.\n"
 "Julat kasarnya -2 hingga 2."
@@ -4382,8 +4527,8 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen X tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen X buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
@@ -4394,8 +4539,8 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen Y tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen Y buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
@@ -4406,26 +4551,26 @@ msgid ""
 "Alters the shape of the fractal.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Set julia sahaja.\n"
-"Komponen Z tetapan hiperkompleks.\n"
+"Set Julia sahaja.\n"
+"Komponen Z buat pemalar hiperkompleks.\n"
 "Mengubah bentuk fraktal.\n"
 "Julat kasarnya -2 hingga 2."
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr "W julia"
+msgstr "W Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
-msgstr "X julia"
+msgstr "X Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia y"
-msgstr "Y julia"
+msgstr "Y Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia z"
-msgstr "Z julia"
+msgstr "Z Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -5153,6 +5298,10 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+msgid "Keyboard and Mouse"
+msgstr "Papan Kekunci dan Tetikus"
+
+#: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
 msgstr "Tendang pemain yang menghantar mesej lebih daripada X setiap 10 saat."
 
@@ -5213,11 +5362,11 @@ msgstr "Kekunci ke kiri"
 msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over\n"
-"network."
+"network, stated in seconds."
 msgstr ""
 "Panjang setiap detik pelayan dan selang masa ketika mana objek-objek "
 "selalunya\n"
-"dikemaskini menerusi rangkaian."
+"dikemaskini menerusi rangkaian, dinyatakan dalam saat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5228,16 +5377,23 @@ msgstr ""
 "Memerlukan tetapan cecair bergelora dibolehkan."
 
 #: src/settings_translation_file.cpp
-msgid "Length of time between Active Block Modifier (ABM) execution cycles"
-msgstr "Panjang masa di antara kitaran pelaksanaan Pengubah Blok Aktif (ABM)"
+msgid ""
+"Length of time between Active Block Modifier (ABM) execution cycles, stated "
+"in seconds."
+msgstr ""
+"Panjang masa di antara kitaran pelaksanaan Pengubah Blok Aktif (ABM), "
+"dinyatakan dalam saat."
 
 #: src/settings_translation_file.cpp
-msgid "Length of time between NodeTimer execution cycles"
-msgstr "Jumlah masa selangan di antara kitaran pelaksanaan NodeTimer"
+msgid "Length of time between NodeTimer execution cycles, stated in seconds."
+msgstr ""
+"Panjang masa di antara kitaran pelaksanaan PemasaNod, dinyatakan dalam saat."
 
 #: src/settings_translation_file.cpp
-msgid "Length of time between active block management cycles"
-msgstr "Panjang masa di antara setiap kitaran pengurusan blok aktif"
+msgid ""
+"Length of time between active block management cycles, stated in seconds."
+msgstr ""
+"Panjang masa di antara kitaran pengurusan blok aktif, dinyatakan dalam saat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5248,16 +5404,18 @@ msgid ""
 "-    warning\n"
 "-    action\n"
 "-    info\n"
-"-    verbose"
+"-    verbose\n"
+"-    trace"
 msgstr ""
-"Tahap pengelogan untuk ditulis kepada fail debug.txt:\n"
+"Tahap pengelogan untuk ditulis ke fail debug.txt:\n"
 "-    <tidak ada apa-apa> (tidak mengelog)\n"
-"-    tiada (mesej tanpa tahap)\n"
-"-    ralat\n"
-"-    amaran\n"
-"-    perbuatan\n"
-"-    maklumat\n"
-"-    berjela-jela"
+"-    none: tiada (mesej tanpa tahap)\n"
+"-    error: ralat\n"
+"-    warning: amaran\n"
+"-    action: perbuatan\n"
+"-    info: maklumat\n"
+"-    verbose: berjela-jela\n"
+"-    trace: jejak"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
@@ -5282,6 +5440,10 @@ msgstr "Kecerunan tinggi lengkung cahaya"
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
 msgstr "Kecerunan rendah lengkung cahaya"
+
+#: src/settings_translation_file.cpp
+msgid "Lighting"
+msgstr "Pencahayaan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5730,10 +5892,6 @@ msgid "Maximum users"
 msgstr "Had jumlah pengguna"
 
 #: src/settings_translation_file.cpp
-msgid "Menus"
-msgstr "Menu"
-
-#: src/settings_translation_file.cpp
 msgid "Mesh cache"
 msgstr "Cache jejaring"
 
@@ -5780,6 +5938,18 @@ msgstr "Saiz tekstur minimum"
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Pemetaan Mip"
+
+#: src/settings_translation_file.cpp
+msgid "Misc"
+msgstr "Lain-lain"
+
+#: src/settings_translation_file.cpp
+msgid "Mod Profiler"
+msgstr "Pembukah Mods"
+
+#: src/settings_translation_file.cpp
+msgid "Mod Security"
+msgstr "Keselamatan Mods"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
@@ -5881,16 +6051,16 @@ msgid "Near plane"
 msgstr "Dekat satah"
 
 #: src/settings_translation_file.cpp
-msgid "Network"
-msgstr "Rangkaian"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
 msgstr ""
 "Port rangkaian untuk dengar (UDP).\n"
 "Nilai ini akan diatasi apabila memulakan pelayan dari menu utama."
+
+#: src/settings_translation_file.cpp
+msgid "Networking"
+msgstr "Rangkaian"
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
@@ -5903,6 +6073,10 @@ msgstr "Tembus blok"
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
 msgstr "Kekunci tembus blok"
+
+#: src/settings_translation_file.cpp
+msgid "Node and Entity Highlighting"
+msgstr "Tonjolan Nod dan Entiti"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -5958,10 +6132,6 @@ msgstr ""
 "sesuatu masa.\n"
 "Ini merupakan keseimbangan antara overhed urus niaga SQLite\n"
 "dan penggunaan ingatan (4096=100MB, mengikut kebiasaan)."
-
-#: src/settings_translation_file.cpp
-msgid "Online Content Repository"
-msgstr "Repositori Kandungan Dalam Talian"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -6072,10 +6242,6 @@ msgstr ""
 "Ini memerlukan keistimewaan \"terbang\" dalam pelayan tersebut."
 
 #: src/settings_translation_file.cpp
-msgid "Player name"
-msgstr "Nama pemain"
-
-#: src/settings_translation_file.cpp
 msgid "Player transfer distance"
 msgstr "Jarak pemindahan pemain"
 
@@ -6132,10 +6298,6 @@ msgstr "Pembukah"
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
 msgstr "Kekunci togol pembukah"
-
-#: src/settings_translation_file.cpp
-msgid "Profiling"
-msgstr "Pemprofilan"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6332,6 +6494,10 @@ msgstr ""
 "di sisi apabila imej disesuaikan dengan saiz bukan integer."
 
 #: src/settings_translation_file.cpp
+msgid "Screen"
+msgstr "Skrin"
+
+#: src/settings_translation_file.cpp
 msgid "Screen height"
 msgstr "Tinggi skrin"
 
@@ -6362,6 +6528,10 @@ msgstr ""
 "Gunakan 0 untuk kualiti lalai."
 
 #: src/settings_translation_file.cpp
+msgid "Screenshots"
+msgstr "Tangkap layar"
+
+#: src/settings_translation_file.cpp
 msgid "Seabed noise"
 msgstr "Hingar dasar laut"
 
@@ -6374,10 +6544,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Second of two 3D noises that together define tunnels."
 msgstr "Hingar 3D kedua daripada dua yang mentakrifkan terowong."
-
-#: src/settings_translation_file.cpp
-msgid "Security"
-msgstr "Keselamatan"
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -6438,8 +6604,16 @@ msgstr ""
 "18 = Set Julia \"Mandelbulb\" 4D."
 
 #: src/settings_translation_file.cpp
-msgid "Server / Singleplayer"
-msgstr "Pelayan / Pemain perseorangan"
+msgid "Server"
+msgstr "Pelayan"
+
+#: src/settings_translation_file.cpp
+msgid "Server Gameplay"
+msgstr "Gaya Main Pelayan"
+
+#: src/settings_translation_file.cpp
+msgid "Server Security"
+msgstr "Keselamatan Pelayan"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -6466,8 +6640,16 @@ msgid "Server side occlusion culling"
 msgstr "Penakaian oklusi pihak pelayan"
 
 #: src/settings_translation_file.cpp
+msgid "Server/Env Performance"
+msgstr "Prestasi Pelayan/Persekitaran"
+
+#: src/settings_translation_file.cpp
 msgid "Serverlist URL"
 msgstr "URL senarai pelayan"
+
+#: src/settings_translation_file.cpp
+msgid "Serverlist and MOTD"
+msgstr "Senarai Pelayan dan Mesej Harian"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
@@ -6482,15 +6664,20 @@ msgstr ""
 "Sebuah mula semula diperlukan selepas menukar tetapan ini."
 
 #: src/settings_translation_file.cpp
-msgid "Set the maximum character length of a chat message sent by clients."
-msgstr "Tetapkan panjang aksara maksimum mesej sembang dihantar oleh klien."
+msgid ""
+"Set the maximum length of a chat message (in characters) sent by clients."
+msgstr ""
+"Menetapkan panjang maksimum mesej sembang (dalam jumlah aksara) yang "
+"dihantar oleh klien."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the shadow strength.\n"
+"Set the shadow strength gamma.\n"
+"Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
 msgstr ""
-"Menetapkan kekuatan bayang.\n"
+"Menetapkan gama kekuatan bayang.\n"
+"Melaraskan keamatan bayang dinamik dalam permainan.\n"
 "Nilai lebih rendah untuk bayang lebih terang, nilai lebih tinggi untuk "
 "bayang lebih gelap."
 
@@ -6498,12 +6685,12 @@ msgstr ""
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
-"Minimum value: 1.0; maximum value: 10.0"
+"Minimum value: 1.0; maximum value: 15.0"
 msgstr ""
 "Menetapkan saiz jejari bayang lembut.\n"
 "Nilai lebih rendah untuk bayang lebih tajam, nilai lebih tinggi untuk bayang "
 "lebih lembut.\n"
-"Nilai minimum: 1.0; nilai maksimum: 10.0"
+"Nilai minimum: 1.0; nilai maksimum: 15.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6598,8 +6785,8 @@ msgstr ""
 "dilukis."
 
 #: src/settings_translation_file.cpp
-msgid "Shadow strength"
-msgstr "Kekuatan bayang"
+msgid "Shadow strength gamma"
+msgstr "Gama kekuatan bayang"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -6849,6 +7036,10 @@ msgid "Temperature variation for biomes."
 msgstr "Variasi suhu untuk biom."
 
 #: src/settings_translation_file.cpp
+msgid "Temporary Settings"
+msgstr "Tetapan Sementara"
+
+#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr "Hingar rupa bumi alternatif"
 
@@ -6886,7 +7077,7 @@ msgid ""
 msgstr ""
 "Nilai ambang hingar rupa bumi untuk tasik.\n"
 "Mengawal perkadaran untuk kawasan dunia dilitupi laut.\n"
-"Laras menjadi 0.0 untuk perkadaran yang lebih besar."
+"Laraskan kepada 0.0 untuk perkadaran yang lebih besar."
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
@@ -6923,7 +7114,7 @@ msgstr ""
 "pelayan lama,\n"
 "pilihan ini membolehkan pemaksaan ia untuk jenis nod tertentu. Ambil "
 "perhatian\n"
-"bahawa ia dianggap DALAM UJIKAJI dan mungkin tidak berfungsi dengan betul."
+"bahawa ia dianggap DALAM UJI KAJI dan mungkin tidak berfungsi dengan betul."
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -7017,7 +7208,7 @@ msgstr ""
 "Nota: Di Android, kekalkan dengan OGLES1 jika tidak pasti! Apl mungkin gagal "
 "dimulakan jika ditukar.\n"
 "Di platform lain, OpenGL digalakkan.\n"
-"Pembayang disokong oleh OpenGL (komputer sahaja) dan OGLES2 (dalam ujikaji)"
+"Pembayang disokong oleh OpenGL (komputer sahaja) dan OGLES2 (dalam uji kaji)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7117,8 +7308,10 @@ msgid "Time speed"
 msgstr "Kelajuan masa"
 
 #: src/settings_translation_file.cpp
-msgid "Timeout for client to remove unused map data from memory."
-msgstr "Had masa untuk klien membuang peta yang tidak digunakan dari ingatan."
+msgid "Timeout for client to remove unused map data from memory, in seconds."
+msgstr ""
+"Had masa untuk klien membuang data peta yang tidak digunakan dari ingatan, "
+"dalam saat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7145,8 +7338,16 @@ msgid "Touch screen threshold"
 msgstr "Nilai ambang skrin sentuh"
 
 #: src/settings_translation_file.cpp
+msgid "Touchscreen"
+msgstr "Skrin Sentuh"
+
+#: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
 msgstr "Keseimbangan untuk prestasi"
+
+#: src/settings_translation_file.cpp
+msgid "Transparency Sorting Distance"
+msgstr "Jarak Pengisihan Lut Sinar"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -7257,6 +7458,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
 msgstr "Gunakan penapisan trilinear apabila menyesuaikan tekstur."
+
+#: src/settings_translation_file.cpp
+msgid "User Interfaces"
+msgstr "Antara Muka Pengguna"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -7532,7 +7737,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr "Sama ada hendak mengkabutkan penghujung kawasan yang kelihatan."
+msgstr "Sama ada ingin papar kabut di penghujung kawasan yang kelihatan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7548,10 +7753,24 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Whether to show technical names.\n"
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names in All Settings.\n"
+"Controlled by the checkbox in the \"All settings\" menu."
+msgstr ""
+"Sama ada ingin tunjukkan nama teknikal.\n"
+"Memberi kesan kepada mods dan pek tekstur dalam menu Kandungan dan Pilih "
+"Mods,\n"
+"dan juga nama tetapan dalam Semua Tetapan.\n"
+"Dikawal oleh kotak pilihan dalam menu \"Semua tetapan\"."
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
-"Tetapkan sama ada hendak menunjukkan maklumat nyahpepijat (kesannya sama "
-"seperti menekan butang F5)."
+"Sama ada ingin menunjukkan maklumat nyahpepijat (kesannya sama seperti "
+"menekan butang F5)."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
@@ -7597,7 +7816,7 @@ msgstr ""
 "inginkan, terutamanya jika anda gunakan pek tekstur yang direka secara\n"
 "khusus; dengan pilihan ini, klien akan cuba untuk menentukan skala secara\n"
 "automatik berdasarkan saiz tekstur. Juga lihat texture_min_size.\n"
-"Amaran: Pilihan ini DALAM UJIKAJI!"
+"Amaran: Pilihan ini DALAM UJI KAJI!"
 
 #: src/settings_translation_file.cpp
 msgid "World-aligned textures mode"
@@ -7658,6 +7877,10 @@ msgid "Y-level of seabed."
 msgstr "Aras Y untuk dasar laut."
 
 #: src/settings_translation_file.cpp
+msgid "cURL"
+msgstr "cURL"
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "Had masa muat turun fail cURL"
 
@@ -7705,6 +7928,9 @@ msgstr "Had cURL selari"
 #~ msgid "Back"
 #~ msgstr "Backspace"
 
+#~ msgid "Basic"
+#~ msgstr "Asas"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bit per piksel (atau kedalaman warna) dalam mod skrin penuh."
 
@@ -7737,6 +7963,12 @@ msgstr "Had cURL selari"
 
 #~ msgid "Configure"
 #~ msgstr "Konfigurasi"
+
+#~ msgid "Connect"
+#~ msgstr "Sambung"
+
+#~ msgid "Controls sinking speed in liquid."
+#~ msgstr "Mengawal kelajuan tenggelam dalam cecair."
 
 #~ msgid ""
 #~ "Controls the density of mountain-type floatlands.\n"
@@ -7782,6 +8014,9 @@ msgstr "Had cURL selari"
 #~ "Mentakrifkan tahap persampelan tekstur.\n"
 #~ "Nilai lebih tinggi menghasilkan peta normal lebih lembut."
 
+#~ msgid "Del. Favorite"
+#~ msgstr "Padam Kegemaran"
+
 #~ msgid ""
 #~ "Deprecated, define and locate cave liquids using biome definitions "
 #~ "instead.\n"
@@ -7791,11 +8026,20 @@ msgstr "Had cURL selari"
 #~ "pentakrifan biom menggantikan cara asal.\n"
 #~ "Had Y atasan lava di gua-gua besar."
 
+#~ msgid "Download a game, such as Minetest Game, from minetest.net"
+#~ msgstr "Muat turun permainan, contohnya Minetest Game, dari minetest.net"
+
+#~ msgid "Download one from minetest.net"
+#~ msgstr "Muat turun satu dari minetest.net"
+
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Sedang muat turun dan memasang $1, sila tunggu..."
 
 #~ msgid "Enable VBO"
 #~ msgstr "Membolehkan VBO"
+
+#~ msgid "Enable register confirmation"
+#~ msgstr "Bolehkan pengesahan pendaftaran"
 
 #~ msgid ""
 #~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
@@ -7825,6 +8069,9 @@ msgstr "Had cURL selari"
 #~ "Membolehkan pemetaan oklusi paralaks.\n"
 #~ "Memerlukan pembayang untuk dibolehkan."
 
+#~ msgid "Enter "
+#~ msgstr "Masukkan "
+
 #~ msgid ""
 #~ "Experimental option, might cause visible spaces between blocks\n"
 #~ "when set to higher number than 0."
@@ -7844,6 +8091,9 @@ msgstr "Had cURL selari"
 #~ msgid "Fallback font size"
 #~ msgstr "Saiz fon berbalik"
 
+#~ msgid "Filtering"
+#~ msgstr "Penapisan"
+
 #~ msgid "Floatland base height noise"
 #~ msgstr "Hingar ketinggian asas tanah terapung"
 
@@ -7862,6 +8112,9 @@ msgstr "Had cURL selari"
 #~ msgid "Full screen BPP"
 #~ msgstr "BPP skrin penuh"
 
+#~ msgid "Game"
+#~ msgstr "Permainan"
+
 #~ msgid "Gamma"
 #~ msgstr "Gama"
 
@@ -7871,14 +8124,29 @@ msgstr "Had cURL selari"
 #~ msgid "Generate normalmaps"
 #~ msgstr "Jana peta normal"
 
+#~ msgid "HUD scale factor"
+#~ msgstr "Faktor skala papar pandu (HUD)"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "Unit titik terapung (FPU) ketepatan tinggi"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Sokongan IPv6."
 
+#~ msgid "In-Game"
+#~ msgstr "Dalam Permainan"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Pasang: fail: \"$1\""
+
+#~ msgid "Instrumentation"
+#~ msgstr "Instrumentasi"
+
+#~ msgid ""
+#~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+#~ msgstr ""
+#~ "Ikatan kekunci. (Jika menu ini berselerak, buang sesetengah benda dari "
+#~ "fail minetest.conf)"
 
 #~ msgid "Lava depth"
 #~ msgstr "Kedalaman lava"
@@ -7899,6 +8167,9 @@ msgstr "Had cURL selari"
 #~ msgstr ""
 #~ "Membuatkan DirectX bekerja dengan LuaJIT. Lumpuhkan tetapan jika "
 #~ "bermasalah."
+
+#~ msgid "Menus"
+#~ msgstr "Menu"
 
 #~ msgid "Minimap in radar mode, Zoom x2"
 #~ msgstr "Peta mini dalam mod radar, Zum 2x"
@@ -7973,6 +8244,12 @@ msgstr "Had cURL selari"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Laluan untuk simpan tangkap layar."
 
+#~ msgid "Player name"
+#~ msgstr "Nama pemain"
+
+#~ msgid "Profiling"
+#~ msgstr "Pemprofilan"
+
 #~ msgid "Projecting dungeons"
 #~ msgstr "Kurungan bawah tanah melunjur"
 
@@ -7984,6 +8261,9 @@ msgstr "Had cURL selari"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Pilih Fail Pakej:"
+
+#~ msgid "Server / Singleplayer"
+#~ msgstr "Pelayan / Pemain perseorangan"
 
 #~ msgid ""
 #~ "Set the shadow update time.\n"
@@ -8074,6 +8354,21 @@ msgstr "Had cURL selari"
 
 #~ msgid "Yes"
 #~ msgstr "Ya"
+
+#, c-format
+#~ msgid ""
+#~ "You are about to join this server with the name \"%s\" for the first "
+#~ "time.\n"
+#~ "If you proceed, a new account using your credentials will be created on "
+#~ "this server.\n"
+#~ "Please retype your password and click 'Register and Join' to confirm "
+#~ "account creation, or click 'Cancel' to abort."
+#~ msgstr ""
+#~ "Anda akan sertai pelayan dengan nama \"%s\" untuk kali pertama.\n"
+#~ "Jika anda teruskan, akaun baru dengan maklumat anda akan dicipta di "
+#~ "pelayan ini.\n"
+#~ "Sila taip semula kata laluan anda dan klik 'Daftar dan Sertai' untuk "
+#~ "sahkan penciptaan akaun, atau klik 'Batal' untuk membatalkan."
 
 #~ msgid "You died."
 #~ msgstr "Anda telah meninggal."

@@ -366,7 +366,8 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 
 void Clouds::readSettings()
 {
-	m_cloud_radius_i = g_settings->getU16("cloud_radius");
+	// Upper limit was chosen due to posible render bugs
+	m_cloud_radius_i = rangelim(g_settings->getU16("cloud_radius"), 1, 62);
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }
 

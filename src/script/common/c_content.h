@@ -42,6 +42,7 @@ extern "C" {
 // We do a explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud.h, which is not good on server only build
 #include "../../hud.h"
+#include "content/mods.h"
 
 namespace Json { class Value; }
 
@@ -53,7 +54,7 @@ struct ItemDefinition;
 struct ToolCapabilities;
 struct ObjectProperties;
 struct SimpleSoundSpec;
-struct ServerSoundParams;
+struct ServerPlayingSound;
 class Inventory;
 class InventoryList;
 struct NodeBox;
@@ -91,7 +92,7 @@ void               read_soundspec            (lua_State *L, int index,
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_server_sound_params  (lua_State *L, int index,
-                                              ServerSoundParams &params);
+                                              ServerPlayingSound &params);
 
 void               push_dig_params           (lua_State *L,
                                               const DigParams &params);
@@ -204,3 +205,5 @@ void push_hud_element          (lua_State *L, HudElement *elem);
 bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *elem, void **value);
 
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res);
+
+void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied);
