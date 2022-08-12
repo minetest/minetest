@@ -180,6 +180,9 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushnumber(L, player->physics_override_speed_climb);
 	lua_setfield(L, -2, "speed_climb");
 
+	lua_pushnumber(L, player->physics_override_speed_crouch);
+	lua_setfield(L, -2, "speed_crouch");
+
 	lua_pushnumber(L, player->physics_override_liquid_fluidity);
 	lua_setfield(L, -2, "liquid_fluidity");
 

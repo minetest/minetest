@@ -1783,6 +1783,7 @@ void GenericCAO::processMessage(const std::string &data)
 		bool new_move = !readU8(is);
 
 		float override_speed_climb = readF32(is);
+		float override_speed_crouch = readF32(is);
 		float override_liquid_fluidity = readF32(is);
 		float override_liquid_fluidity_smooth = readF32(is);
 		float override_liquid_sink = readF32(is);
@@ -1798,6 +1799,7 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.sneak_glitch = sneak_glitch;
 			phys.new_move = new_move;
 			phys.speed_climb = override_speed_climb;
+			phys.speed_crouch = override_speed_crouch;
 			phys.liquid_fluidity = override_liquid_fluidity;
 			phys.liquid_fluidity_smooth = override_liquid_fluidity_smooth;
 			phys.liquid_sink = override_liquid_sink;

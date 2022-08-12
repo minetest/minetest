@@ -7688,6 +7688,8 @@ child will follow movement and rotation of that bone.
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
             * Note: The actual climb speed is the product of `speed` and `speed_climb`
+        * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
+            * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
         * `liquid_fluidity`: multiplier to liquid movement resistance value;
           the higher this value, the lower the resistance to movement.
           At `math.huge`, the resistance is zero and you can move through any
