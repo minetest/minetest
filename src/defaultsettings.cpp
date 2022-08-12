@@ -64,7 +64,7 @@ void set_default_settings()
 	settings->setDefault("enable_client_modding", "false");
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
-	settings->setDefault("enable_register_confirmation", "true");
+	settings->setDefault("enable_split_login_register", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap
@@ -335,6 +335,12 @@ void set_default_settings()
 	settings->setDefault("contentdb_flag_blacklist", "nonfree, desktop_default");
 #endif
 
+	settings->setDefault("update_information_url", "https://www.minetest.net/release_info.json");
+#if ENABLE_UPDATE_CHECKER
+	settings->setDefault("update_last_checked", "");
+#else
+	settings->setDefault("update_last_checked", "disabled");
+#endif
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
@@ -456,7 +462,6 @@ void set_default_settings()
 	// Altered settings for macOS
 #if defined(__MACH__) && defined(__APPLE__)
 	settings->setDefault("keymap_sneak", "KEY_SHIFT");
-	settings->setDefault("fps_max", "0");
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -480,7 +485,6 @@ void set_default_settings()
 	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("enable_3d_clouds", "false");
-	settings->setDefault("fps_max", "30");
 	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("map_compression_level_disk", "-1");

@@ -457,6 +457,8 @@ private:
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);
 
+	bool parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect);
+
 	void tryClose();
 
 	void showTooltip(const std::wstring &text, const irr::video::SColor &color,

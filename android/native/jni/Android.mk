@@ -102,6 +102,7 @@ LOCAL_CFLAGS += \
 	-DVERSION_MINOR=${versionMinor} \
 	-DVERSION_PATCH=${versionPatch} \
 	-DVERSION_EXTRA=${versionExtra} \
+	-DDEVELOPMENT_BUILD=${developmentBuild} \
 	$(GPROF_DEF)
 
 ifdef USE_BUILTIN_LUA

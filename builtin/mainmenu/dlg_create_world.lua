@@ -15,9 +15,6 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
--- cf. tab_local, the gamebar already provides game selection so we hide the list from here
-local hide_gamelist = PLATFORM ~= "Android"
-
 local function table_to_flags(ftable)
 	-- Convert e.g. { jungles = true, caves = false } to "jungles,nocaves"
 	local str = {}
@@ -94,14 +91,14 @@ local mgv6_biomes = {
 
 local function create_world_formspec(dialogdata)
 
-	-- Error out when no games found
+	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
-		return "size[12.25,3,true]" ..
-			"box[0,0;12,2;" .. mt_color_orange .. "]" ..
-			"textarea[0.3,0;11.7,2;;;"..
-			fgettext("You have no games installed.") .. "\n" ..
-			fgettext("Download one from minetest.net") .. "]" ..
-			"button[4.75,2.5;3,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		return "size[8,2.5,true]" ..
+			"style[label_button;border=false]" ..
+			"button[0.5,0.5;7,0.5;label_button;" ..
+			fgettext("You have no games installed.") .. "]" ..
+			"button[0.5,1.5;2.5,0.5;world_create_open_cdb;" .. fgettext("Install a game") .. "]" ..
+			"button[5.0,1.5;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 	end
 
 	local current_mg = dialogdata.mg
@@ -111,14 +108,11 @@ local function create_world_formspec(dialogdata)
 
 	local flags = dialogdata.flags
 
-	local game, gameidx = pkgmgr.find_by_gameid(gameid)
-	if game == nil and hide_gamelist then
+	local game = pkgmgr.find_by_gameid(gameid)
+	if game == nil then
 		-- should never happen but just pick the first game
 		game = pkgmgr.get_game(1)
-		gameidx = 1
 		core.settings:set("menu_last_game", game.id)
-	elseif game == nil then
-		gameidx = 0
 	end
 
 	local disallowed_mapgen_settings = {}
@@ -296,17 +290,6 @@ local function create_world_formspec(dialogdata)
 		label_spflags = "label[0,"..y_start..";" .. fgettext("Mapgen-specific flags") .. "]"
 	end
 
-	-- Warning if only devtest is installed
-	local devtest_only = ""
-	local gamelist_height = 2.3
-	if #pkgmgr.games == 1 and pkgmgr.games[1].id == "devtest" then
-		devtest_only = "box[0,0;5.8,1.7;#ff8800]" ..
-				"textarea[0.3,0;6,1.8;;;"..
-				fgettext("Warning: The Development Test is meant for developers.") .. "\n" ..
-				fgettext("Download a game, such as Minetest Game, from minetest.net") .. "]"
-		gamelist_height = 0.5
-	end
-
 	local retval =
 		"size[12.25,7,true]" ..
 
@@ -329,13 +312,14 @@ local function create_world_formspec(dialogdata)
 		"label[0,2;" .. fgettext("Mapgen") .. "]"..
 		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]"
 
-	if not hide_gamelist or devtest_only ~= "" then
+	-- Warning if only devtest is installed
+	if #pkgmgr.games == 1 and pkgmgr.games[1].id == "devtest" then
 		retval = retval ..
-			"label[0,3.35;" .. fgettext("Game") .. "]"..
-			"textlist[0,3.85;5.8,"..gamelist_height..";games;" ..
-			pkgmgr.gamelist() .. ";" .. gameidx .. ";false]" ..
-			"container[0,4.5]" ..
-			devtest_only ..
+			"container[0,3.5]" ..
+			"box[0,0;5.8,1.7;#ff8800]" ..
+			"textarea[0.4,0.1;6,1.8;;;"..
+			fgettext("Development Test is meant for developers.") .. "]" ..
+			"button[1,1;4,0.5;world_create_open_cdb;" .. fgettext("Install another game") .. "]" ..
 			"container_end[]"
 	end
 
@@ -358,17 +342,20 @@ end
 
 local function create_world_buttonhandler(this, fields)
 
+	if fields["world_create_open_cdb"] then
+		local dlg = create_store_dlg("game")
+		dlg:set_parent(this.parent)
+		this:delete()
+		this.parent:hide()
+		dlg:show()
+		return true
+	end
+
 	if fields["world_create_confirm"] or
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local game, gameindex
-		if hide_gamelist then
-			game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
-		else
-			gameindex = core.get_textlist_index("games")
-			game = pkgmgr.get_game(gameindex)
-		end
+		local game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 
 		local message
 		if game == nil then
@@ -417,9 +404,7 @@ local function create_world_buttonhandler(this, fields)
 
 		if message == nil then
 			core.settings:set("menu_last_game", game.id)
-			if this.data.update_worldlist_filter then
-				menudata.worldlist:set_filtercriteria(game.id)
-			end
+			menudata.worldlist:set_filtercriteria(game.id)
 			menudata.worldlist:refresh()
 			core.settings:set("mainmenu_last_selected_world",
 					menudata.worldlist:raw_index_by_uid(worldname))
@@ -477,13 +462,12 @@ local function create_world_buttonhandler(this, fields)
 end
 
 
-function create_create_world_dlg(update_worldlistfilter)
+function create_create_world_dlg()
 	local retval = dialog_create("sp_create_world",
 					create_world_formspec,
 					create_world_buttonhandler,
 					nil)
 	retval.data = {
-		update_worldlist_filter = update_worldlistfilter,
 		worldname = "",
 		-- settings the world is created with:
 		seed = core.settings:get("fixed_map_seed") or "",

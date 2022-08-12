@@ -191,7 +191,7 @@ end
 
 local function queue_download(package, reason)
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
-	if number_downloading < max_concurrent_downloads then
+	if number_downloading < math.max(max_concurrent_downloads, 1) then
 		start_install(package, reason)
 	else
 		table.insert(download_queue, { package = package, reason = reason })
@@ -488,12 +488,10 @@ local confirm_overwrite = {}
 function confirm_overwrite.get_formspec()
 	local package = confirm_overwrite.package
 
-	return "size[11.5,4.5,true]" ..
-			"label[2,2;" ..
-			fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name) .. "]"..
-			"style[install;bgcolor=red]" ..
-			"button[3.25,3.5;2.5,0.5;install;" .. fgettext("Overwrite") .. "]" ..
-			"button[5.75,3.5;2.5,0.5;cancel;" .. fgettext("Cancel") .. "]"
+	return confirmation_formspec(
+		fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name),
+		'install', fgettext("Overwrite"),
+		'cancel', fgettext("Cancel"))
 end
 
 function confirm_overwrite.handle_submit(this, fields)

@@ -223,6 +223,8 @@ u32 myrand();
 void mysrand(unsigned int seed);
 void myrand_bytes(void *out, size_t len);
 int myrand_range(int min, int max);
+float myrand_range(float min, float max);
+float myrand_float();
 
 /*
 	Miscellaneous functions
@@ -445,4 +447,25 @@ inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, fl
 			core::clamp<u32>(color.getRed() * mod, 0, 255),
 			core::clamp<u32>(color.getGreen() * mod, 0, 255),
 			core::clamp<u32>(color.getBlue() * mod, 0, 255));
+}
+
+template <typename T> inline T numericAbsolute(T v) { return v < 0 ? T(-v) : v;                }
+template <typename T> inline T numericSign(T v)     { return T(v < 0 ? -1 : (v == 0 ? 0 : 1)); }
+
+inline v3f vecAbsolute(v3f v)
+{
+	return v3f(
+		numericAbsolute(v.X),
+		numericAbsolute(v.Y),
+		numericAbsolute(v.Z)
+	);
+}
+
+inline v3f vecSign(v3f v)
+{
+	return v3f(
+		numericSign(v.X),
+		numericSign(v.Y),
+		numericSign(v.Z)
+	);
 }

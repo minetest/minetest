@@ -96,6 +96,18 @@ struct PlayerControl
 	float movement_direction = 0.0f;
 };
 
+struct PlayerPhysicsOverride
+{
+	float speed = 1.f;
+	float jump = 1.f;
+	float gravity = 1.f;
+
+	bool sneak = true;
+	bool sneak_glitch = false;
+	// "Temporary" option for old move code
+	bool new_move = true;
+};
+
 struct PlayerSettings
 {
 	bool free_move = false;
@@ -134,12 +146,12 @@ public:
 			std::vector<CollisionInfo> *collision_info)
 	{}
 
-	const v3f &getSpeed() const
+	v3f getSpeed() const
 	{
 		return m_speed;
 	}
 
-	void setSpeed(const v3f &speed)
+	void setSpeed(v3f speed)
 	{
 		m_speed = speed;
 	}
@@ -182,6 +194,7 @@ public:
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
+	PlayerPhysicsOverride physics_override;
 	PlayerSettings &getPlayerSettings() { return m_player_settings; }
 	static void settingsChangedCallback(const std::string &name, void *data);
 

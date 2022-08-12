@@ -13,6 +13,20 @@ minetest.register_node("testnodes:falling", {
 	groups = { falling_node = 1, dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:falling_facedir", {
+	description = S("Falling Facedir Node"),
+	tiles = {
+		"testnodes_1.png",
+		"testnodes_2.png",
+		"testnodes_3.png",
+		"testnodes_4.png",
+		"testnodes_5.png",
+		"testnodes_6.png",
+	},
+	paramtype2 = "facedir",
+	groups = { falling_node = 1, dig_immediate = 3 },
+})
+
 -- Same as falling node, but will stop falling on top of liquids
 minetest.register_node("testnodes:falling_float", {
 	description = S("Falling+Floating Node"),

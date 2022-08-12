@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/mods.h"
 #include "settings.h"
 #include "test_config.h"
+#include "util/string.h"
 
 class TestServerModManager : public TestBase
 {
@@ -190,4 +191,11 @@ void TestServerModManager::testGetModMediaPaths()
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
+
+	// Test media overriding:
+	// unittests depends on basenodes to override default_dirt.png,
+	// thus the unittests texture path must come first in the returned media paths to take priority
+	auto it = std::find(result.begin(), result.end(), sm.getModSpec("unittests")->path + DIR_DELIM + "textures");
+	UASSERT(it != result.end());
+	UASSERT(std::find(++it, result.end(), sm.getModSpec("basenodes")->path + DIR_DELIM + "textures") != result.end());
 }

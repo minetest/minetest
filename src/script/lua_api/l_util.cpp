@@ -159,6 +159,17 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
+// get_tool_wear_after_use(uses[, initial_wear])
+int ModApiUtil::l_get_tool_wear_after_use(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	u32 uses = readParam<int>(L, 1);
+	u16 initial_wear = readParam<int>(L, 2, 0);
+	u16 wear = calculateResultWear(uses, initial_wear);
+	lua_pushnumber(L, wear);
+	return 1;
+}
+
 // get_dig_params(groups, tool_capabilities[, wear])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
@@ -469,6 +480,8 @@ int ModApiUtil::l_get_version(lua_State *L)
 		lua_setfield(L, table, "hash");
 	}
 
+	lua_pushboolean(L, DEVELOPMENT_BUILD);
+	lua_setfield(L, table, "is_dev");
 	return 1;
 }
 
@@ -586,6 +599,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(parse_json);
 	API_FCT(write_json);
 
+	API_FCT(get_tool_wear_after_use);
 	API_FCT(get_dig_params);
 	API_FCT(get_hit_params);
 
@@ -647,6 +661,9 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+
+	LuaSettings::create(L, g_settings, g_settings_path);
+	lua_setfield(L, top, "settings");
 }
 
 void ModApiUtil::InitializeAsync(lua_State *L, int top)

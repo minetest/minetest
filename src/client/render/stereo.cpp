@@ -27,7 +27,7 @@ RenderingCoreStereo::RenderingCoreStereo(
 	IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: RenderingCore(_device, _client, _hud)
 {
-	eye_offset = BS * g_settings->getFloat("3d_paralax_strength");
+	eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f);
 }
 
 void RenderingCoreStereo::beforeDraw()

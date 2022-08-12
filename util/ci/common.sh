@@ -10,7 +10,8 @@ install_linux_deps() {
 	if [[ "$1" == "--no-irr" ]]; then
 		shift
 	else
-		wget "https://github.com/minetest/irrlicht/releases/download/1.9.0mt6/ubuntu-bionic.tar.gz"
+		local ver=$(cat misc/irrlichtmt_tag.txt)
+		wget "https://github.com/minetest/irrlicht/releases/download/$ver/ubuntu-bionic.tar.gz"
 		sudo tar -xaf ubuntu-bionic.tar.gz -C /usr/local
 	fi
 

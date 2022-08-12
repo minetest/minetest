@@ -101,11 +101,20 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	// Authenticate using that method, or abort if there wasn't any method found
 	if (chosen_auth_mechanism != AUTH_MECHANISM_NONE) {
-		if (chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP &&
-				!m_simple_singleplayer_mode &&
-				!getServerAddress().isLocalhost() &&
-				g_settings->getBool("enable_register_confirmation")) {
-			promptConfirmRegistration(chosen_auth_mechanism);
+		bool is_register = chosen_auth_mechanism == AUTH_MECHANISM_FIRST_SRP;
+		ELoginRegister mode = is_register ? ELoginRegister::Register : ELoginRegister::Login;
+		if (m_allow_login_or_register != ELoginRegister::Any &&
+				m_allow_login_or_register != mode) {
+			m_chosen_auth_mech = AUTH_MECHANISM_NONE;
+			m_access_denied = true;
+			if (m_allow_login_or_register == ELoginRegister::Login) {
+				m_access_denied_reason =
+						gettext("Name is not registered. To create an account on this server, click 'Register'");
+			} else {
+				m_access_denied_reason =
+						gettext("Name is taken. Please choose another name");
+			}
+			m_con->Disconnect();
 		} else {
 			startAuth(chosen_auth_mechanism);
 		}
@@ -561,6 +570,10 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 	u16 hp;
 	*pkt >> hp;
+	bool damage_effect = true;
+	try {
+		*pkt >> damage_effect;
+	} catch (PacketError &e) {};
 
 	player->hp = hp;
 
@@ -572,6 +585,7 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 		ClientEvent *event = new ClientEvent();
 		event->type = CE_PLAYER_DAMAGE;
 		event->player_damage.amount = oldhp - hp;
+		event->player_damage.effect = damage_effect;
 		m_client_event_queue.push(event);
 	}
 }
@@ -764,7 +778,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	m_nodedef->deSerialize(tmp_os);
+	m_nodedef->deSerialize(tmp_os, m_proto_ver);
 	m_nodedef_received = true;
 }
 
@@ -783,7 +797,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	decompressZlib(tmp_is, tmp_os);
 
 	// Deserialize node definitions
-	m_itemdef->deSerialize(tmp_os);
+	m_itemdef->deSerialize(tmp_os, m_proto_ver);
 	m_itemdef_received = true;
 }
 
@@ -804,44 +818,38 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	*/
 
 	s32 server_id;
-	std::string name;
 
-	float gain;
-	u8 type; // 0=local, 1=positional, 2=object
+	SimpleSoundSpec spec;
+	SoundLocation type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
-	bool loop;
-	float fade = 0.0f;
-	float pitch = 1.0f;
 	bool ephemeral = false;
 
-	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+	*pkt >> server_id >> spec.name >> spec.gain >> (u8 &)type >> pos >> object_id >> spec.loop;
 
 	try {
-		*pkt >> fade;
-		*pkt >> pitch;
+		*pkt >> spec.fade;
+		*pkt >> spec.pitch;
 		*pkt >> ephemeral;
 	} catch (PacketError &e) {};
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
-		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain, fade, pitch);
-			break;
-		case 1: // positional
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
-			break;
-		case 2:
-		{ // object
+	case SoundLocation::Local:
+		client_id = m_sound->playSound(spec);
+		break;
+	case SoundLocation::Position:
+		client_id = m_sound->playSoundAt(spec, pos);
+		break;
+	case SoundLocation::Object:
+		{
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
+			client_id = m_sound->playSoundAt(spec, pos);
 			break;
 		}
-		default:
-			break;
 	}
 
 	if (client_id != -1) {
@@ -986,18 +994,18 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
-	p.minpos             = readV3F32(is);
-	p.maxpos             = readV3F32(is);
-	p.minvel             = readV3F32(is);
-	p.maxvel             = readV3F32(is);
-	p.minacc             = readV3F32(is);
-	p.maxacc             = readV3F32(is);
-	p.minexptime         = readF32(is);
-	p.maxexptime         = readF32(is);
-	p.minsize            = readF32(is);
-	p.maxsize            = readF32(is);
+
+	// older protocols do not support tweening, and send only
+	// static ranges, so we can't just use the normal serialization
+	// functions for the older values.
+	p.pos.start.legacyDeSerialize(is);
+	p.vel.start.legacyDeSerialize(is);
+	p.acc.start.legacyDeSerialize(is);
+	p.exptime.start.legacyDeSerialize(is);
+	p.size.start.legacyDeSerialize(is);
+
 	p.collisiondetection = readU8(is);
-	p.texture            = deSerializeString32(is);
+	p.texture.string     = deSerializeString32(is);
 
 	server_id = readU32(is);
 
@@ -1010,6 +1018,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.glow = readU8(is);
 	p.object_collision = readU8(is);
 
+	bool legacy_format = true;
+
 	// This is kinda awful
 	do {
 		u16 tmp_param0 = readU16(is);
@@ -1018,7 +1028,70 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param0 = tmp_param0;
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
-	} while (0);
+
+		// v >= 5.6.0
+		f32 tmp_sbias = readF32(is);
+		if (is.eof())
+			break;
+
+		// initial bias must be stored separately in the stream to preserve
+		// backwards compatibility with older clients, which do not support
+		// a bias field in their range "format"
+		p.pos.start.bias = tmp_sbias;
+		p.vel.start.bias = readF32(is);
+		p.acc.start.bias = readF32(is);
+		p.exptime.start.bias = readF32(is);
+		p.size.start.bias = readF32(is);
+
+		p.pos.end.deSerialize(is);
+		p.vel.end.deSerialize(is);
+		p.acc.end.deSerialize(is);
+		p.exptime.end.deSerialize(is);
+		p.size.end.deSerialize(is);
+
+		// properties for legacy texture field
+		p.texture.deSerialize(is, m_proto_ver, true);
+
+		p.drag.deSerialize(is);
+		p.jitter.deSerialize(is);
+		p.bounce.deSerialize(is);
+		ParticleParamTypes::deSerializeParameterValue(is, p.attractor_kind);
+		using ParticleParamTypes::AttractorKind;
+		if (p.attractor_kind != AttractorKind::none) {
+			p.attract.deSerialize(is);
+			p.attractor_origin.deSerialize(is);
+			p.attractor_attachment = readU16(is);
+			/* we only check the first bit, in order to allow this value
+			 * to be turned into a bit flag field later if needed */
+			p.attractor_kill = !!(readU8(is) & 1);
+			if (p.attractor_kind != AttractorKind::point) {
+				p.attractor_direction.deSerialize(is);
+				p.attractor_direction_attachment = readU16(is);
+			}
+		}
+		p.radius.deSerialize(is);
+
+		u16 texpoolsz = readU16(is);
+		p.texpool.reserve(texpoolsz);
+		for (u16 i = 0; i < texpoolsz; ++i) {
+			ServerParticleTexture newtex;
+			newtex.deSerialize(is, m_proto_ver);
+			p.texpool.push_back(newtex);
+		}
+
+		legacy_format = false;
+	} while(0);
+
+	if (legacy_format) {
+		// there's no tweening data to be had, so we need to set the
+		// legacy params to constant values, otherwise everything old
+		// will tween to zero
+		p.pos.end = p.pos.start;
+		p.vel.end = p.vel.start;
+		p.acc.end = p.acc.start;
+		p.exptime.end = p.exptime.start;
+		p.size.end = p.size.start;
+	}
 
 	auto event = new ClientEvent();
 	event->type                            = CE_ADD_PARTICLESPAWNER;
@@ -1330,10 +1403,13 @@ void Client::handleCommand_HudSetMoon(NetworkPacket *pkt)
 
 void Client::handleCommand_HudSetStars(NetworkPacket *pkt)
 {
-	StarParams stars;
+	StarParams stars = SkyboxDefaults::getStarDefaults();
 
 	*pkt >> stars.visible >> stars.count
 		>> stars.starcolor >> stars.scale;
+	try {
+		*pkt >> stars.day_opacity;
+	} catch (PacketError &e) {};
 
 	ClientEvent *event = new ClientEvent();
 	event->type        = CE_SET_STARS;

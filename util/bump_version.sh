@@ -26,6 +26,7 @@ perform_release() {
 	sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMakeLists.txt
 
 	sed -i 's/project.ext.set("versionExtra", "-dev")/project.ext.set("versionExtra", "")/' android/build.gradle
+	sed -i 's/project.ext.set("developmentBuild", 1)/project.ext.set("developmentBuild", 0)/' android/build.gradle
 	sed -i -re "s/\"versionCode\", [0-9]+/\"versionCode\", $NEW_ANDROID_VERSION_CODE/" android/build.gradle
 
 	sed -i '/\<release/s/\(version\)="[^"]*"/\1="'"$RELEASE_VERSION"'"/' misc/net.minetest.minetest.appdata.xml
@@ -55,6 +56,7 @@ back_to_devel() {
 
 	# Update Android versions
 	sed -i 's/set("versionExtra", "")/set("versionExtra", "-dev")/' android/build.gradle
+	sed -i 's/project.ext.set("developmentBuild", 0)/project.ext.set("developmentBuild", 1)/' android/build.gradle
 	sed -i -re "s/set\(\"versionMajor\", [0-9]+\)/set(\"versionMajor\", $NEXT_VERSION_MAJOR)/" android/build.gradle
 	sed -i -re "s/set\(\"versionMinor\", [0-9]+\)/set(\"versionMinor\", $NEXT_VERSION_MINOR)/" android/build.gradle
 	sed -i -re "s/set\(\"versionPatch\", [0-9]+\)/set(\"versionPatch\", $NEXT_VERSION_PATCH)/" android/build.gradle

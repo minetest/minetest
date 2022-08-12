@@ -1187,6 +1187,9 @@ core.register_chatcommand("ban", {
 				return true, S("Ban list: @1", ban_list)
 			end
 		end
+		if core.is_singleplayer() then
+			return false, S("You cannot ban players in singleplayer!")
+		end
 		if not core.get_player_by_name(param) then
 			return false, S("Player is not online.")
 		end

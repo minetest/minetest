@@ -18,7 +18,7 @@ set(CLANG_MINIMUM_VERSION "3.5")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 5)
-set(VERSION_MINOR 6)
+set(VERSION_MINOR 7)
 set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
@@ -60,6 +60,9 @@ if(NOT CMAKE_BUILD_TYPE)
 	# Default to release
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
 endif()
+
+set(ENABLE_UPDATE_CHECKER (NOT ${DEVELOPMENT_BUILD}) CACHE BOOL
+	"Whether to enable update checks by default")
 
 # Included stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -117,8 +120,20 @@ else()
 	endif()
 endif()
 
-if(TARGET IrrlichtMt::IrrlichtMt)
+if(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
+	# retrieve version somehow
+	if(NOT IrrlichtMt_VERSION)
+		get_target_property(IrrlichtMt_VERSION IrrlichtMt VERSION)
+	endif()
 	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
+
+	set(TARGET_VER_S 1.9.0mt7)
+	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
+	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
+		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")
+	elseif(NOT DEVELOPMENT_BUILD AND IrrlichtMt_VERSION VERSION_GREATER ${TARGET_VER})
+		message(FATAL_ERROR "IrrlichtMt ${TARGET_VER_S} is required to build")
+	endif()
 endif()
 
 

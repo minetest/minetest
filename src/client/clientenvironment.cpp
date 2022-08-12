@@ -199,7 +199,7 @@ void ClientEnvironment::step(float dtime)
 			v3f speed = lplayer->getSpeed();
 			if (!is_climbing && !lplayer->in_liquid)
 				speed.Y -= lplayer->movement_gravity *
-					lplayer->physics_override_gravity * dtime_part * 2.0f;
+					lplayer->physics_override.gravity * dtime_part * 2.0f;
 
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&

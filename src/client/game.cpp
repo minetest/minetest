@@ -43,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "gettext.h"
 #include "gui/guiChatConsole.h"
-#include "gui/guiConfirmRegistration.h"
 #include "gui/guiFormSpecMenu.h"
 #include "gui/guiKeyChangeMenu.h"
 #include "gui/guiPasswordChange.h"
@@ -283,7 +282,7 @@ public:
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
-				m_sound->playSound(m_player_step_sound, false);
+				m_sound->playSound(m_player_step_sound);
 		}
 	}
 
@@ -291,7 +290,7 @@ public:
 	{
 		if (m_player_jump_timer <= 0.0f) {
 			m_player_jump_timer = 0.2f;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f), false);
+			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f));
 		}
 	}
 
@@ -316,32 +315,32 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
+		sm->m_sound->playSound(sm->m_player_rightpunch_sound);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		NodeDugEvent *nde = (NodeDugEvent *)e;
-		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
+		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5));
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5), false);
+		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5));
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -422,6 +421,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
 	Client *m_client;
 
 public:
@@ -456,6 +456,7 @@ public:
 		m_camera_offset_vertex("cameraOffset"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
+		m_texture_flags("textureFlags"),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
@@ -525,9 +526,12 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0, normal_tex = 1;
+		SamplerLayer_t base_tex = 0,
+				normal_tex = 1,
+				flags_tex = 2;
 		m_base_texture.set(&base_tex, services);
 		m_normal_texture.set(&normal_tex, services);
+		m_texture_flags.set(&flags_tex, services);
 	}
 };
 
@@ -842,7 +846,6 @@ private:
 
 	EventManager *eventmgr = nullptr;
 	QuicktuneShortcutter *quicktune = nullptr;
-	bool registration_confirmation_shown = false;
 
 	std::unique_ptr<GameUI> m_game_ui;
 	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
@@ -1480,7 +1483,8 @@ bool Game::connectToServer(const GameStartData &start_data,
 				start_data.password, start_data.address,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound, eventmgr,
-				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get());
+				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
+				start_data.allow_login_or_register);
 		client->migrateModStorage();
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
@@ -1543,28 +1547,16 @@ bool Game::connectToServer(const GameStartData &start_data,
 				break;
 			}
 
-			if (client->m_is_registration_confirmation_state) {
-				if (registration_confirmation_shown) {
-					// Keep drawing the GUI
-					m_rendering_engine->draw_menu_scene(guienv, dtime, true);
-				} else {
-					registration_confirmation_shown = true;
-					(new GUIConfirmRegistration(guienv, guienv->getRootGUIElement(), -1,
-						   &g_menumgr, client, start_data.name, start_data.password,
-						   connection_aborted, texture_src))->drop();
-				}
-			} else {
-				wait_time += dtime;
-				// Only time out if we aren't waiting for the server we started
-				if (!start_data.address.empty() && wait_time > 10) {
-					*error_message = gettext("Connection timed out.");
-					errorstream << *error_message << std::endl;
-					break;
-				}
-
-				// Update status
-				showOverlayMessage(N_("Connecting to server..."), dtime, 20);
+			wait_time += dtime;
+			// Only time out if we aren't waiting for the server we started
+			if (!start_data.address.empty() && wait_time > 10) {
+				*error_message = gettext("Connection timed out.");
+				errorstream << *error_message << std::endl;
+				break;
 			}
+
+			// Update status
+			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error
@@ -1743,6 +1735,8 @@ void Game::processQueues()
 void Game::updateDebugState()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// debug UI and wireframe
 	bool has_debug = client->checkPrivilege("debug");
 	bool has_basic_debug = has_debug || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
 
@@ -1757,6 +1751,9 @@ void Game::updateDebugState()
 		hud->disableBlockBounds();
 	if (!has_debug)
 		draw_control->show_wireframe = false;
+
+	// noclip
+	draw_control->allow_noclip = m_cache_enable_noclip && client->checkPrivilege("noclip");
 }
 
 void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times,
@@ -1912,7 +1909,7 @@ void Game::processKeyInput()
 		if (client->modsLoaded())
 			openConsole(0.2, L".");
 		else
-			m_game_ui->showStatusText(wgettext("Client side scripting is disabled"));
+			m_game_ui->showTranslatedStatusText("Client side scripting is disabled");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
@@ -1939,7 +1936,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.0f, 0.9f) + 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -1948,7 +1945,7 @@ void Game::processKeyInput()
 		}
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		if (g_settings->getBool("enable_sound")) {
-			float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+			float new_volume = g_settings->getFloat("sound_volume", 0.1f, 1.0f) - 0.1f;
 			g_settings->setFloat("sound_volume", new_volume);
 			std::wstring msg = fwgettext("Volume changed to %d%%", myround(new_volume * 100));
 			m_game_ui->showStatusText(msg);
@@ -2512,11 +2509,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->getMovementDirection()
 	);
 
-	// autoforward if set: move towards pointed position at maximum speed
+	// autoforward if set: move at maximum speed
 	if (player->getPlayerSettings().continuous_forward &&
 			client->activeObjectsReceived() && !player->isDead()) {
 		control.movement_speed = 1.0f;
-		control.movement_direction = 0.0f;
+		// sideways movement only
+		float dx = sin(control.movement_direction);
+		control.movement_direction = atan2(dx, 1.0f);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -2611,6 +2610,9 @@ void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation 
 {
 	if (client->modsLoaded())
 		client->getScript()->on_damage_taken(event->player_damage.amount);
+
+	if (!event->player_damage.effect)
+		return;
 
 	// Damage flash and hurt tilt are not used at death
 	if (client->getHP() > 0) {
@@ -2880,6 +2882,7 @@ void Game::handleClientEvent_SetStars(ClientEvent *event, CameraOrientation *cam
 	sky->setStarCount(event->star_params->count);
 	sky->setStarColor(event->star_params->starcolor);
 	sky->setStarScale(event->star_params->scale);
+	sky->setStarDayOpacity(event->star_params->day_opacity);
 	delete event->star_params;
 }
 
@@ -3766,7 +3769,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	float direct_brightness;
 	bool sunlight_seen;
 
-	if (m_cache_enable_noclip && m_cache_enable_free_move) {
+	// When in noclip mode force same sky brightness as above ground so you
+	// can see properly
+	if (draw_control->allow_noclip && m_cache_enable_free_move &&
+		client->checkPrivilege("fly")) {
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
@@ -4086,10 +4092,10 @@ void FpsControl::reset()
  */
 void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 {
-	const u64 frametime_min = 1000000.0f / (
-		device->isWindowFocused() && !g_menumgr.pausesGame()
+	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
 			? g_settings->getFloat("fps_max")
-			: g_settings->getFloat("fps_max_unfocused"));
+			: g_settings->getFloat("fps_max_unfocused");
+	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
 
 	u64 time = porting::getTimeUs();
 
@@ -4138,9 +4144,9 @@ void Game::readSettings()
 	m_cache_enable_joysticks             = g_settings->getBool("enable_joysticks");
 	m_cache_enable_particles             = g_settings->getBool("enable_particles");
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
-	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
+	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
+	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.25f, 2.0);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

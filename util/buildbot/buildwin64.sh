@@ -8,7 +8,7 @@ GAME_GIT=https://github.com/minetest/minetest_game
 GAME_BRANCH=master
 GAME_NAME=minetest_game
 
-dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+topdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 <build directory>"
 	exit 1
@@ -28,7 +28,7 @@ if [ -z "$compiler" ]; then
 	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
-toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
+toolchain_file=$topdir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
 # Try to find runtime DLLs in various paths (varies by distribution, sigh)
@@ -45,7 +45,7 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=1.9.0mt6
+irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
 ogg_version=1.3.5
 openal_version=1.21.1
 vorbis_version=1.3.7

@@ -25,12 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)
 {
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1)) {
-		return 0;
-	}
-
-	std::string mod_name = readParam<std::string>(L, -1);
+	// Note that this is wrapped in Lua, see builtin/common/mod_storage.lua
+	std::string mod_name = readParam<std::string>(L, 1);
 
 	ModMetadata *store = nullptr;
 

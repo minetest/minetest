@@ -24,7 +24,7 @@ local function test_dynamic_media(cb, player)
 		to_player = player:get_player_name(),
 	}, function(name)
 		if not call_ok then
-			cb("impossible condition")
+			return cb("impossible condition")
 		end
 		cb()
 	end)
@@ -48,3 +48,35 @@ local function test_v3s16_metatable(player, pos)
 	assert(vector.check(found_pos))
 end
 unittests.register("test_v3s16_metatable", test_v3s16_metatable, {map=true})
+
+local function test_clear_meta(_, pos)
+	local ref = core.get_meta(pos)
+
+	for way = 1, 3 do
+		ref:set_string("foo", "bar")
+		assert(ref:contains("foo"))
+
+		if way == 1 then
+			ref:from_table({})
+		elseif way == 2 then
+			ref:from_table(nil)
+		else
+			ref:set_string("foo", "")
+		end
+
+		assert(#core.find_nodes_with_meta(pos, pos) == 0, "clearing failed " .. way)
+	end
+end
+unittests.register("test_clear_meta", test_clear_meta, {map=true})
+
+local on_punch_called
+minetest.register_on_punchnode(function()
+	on_punch_called = true
+end)
+unittests.register("test_punch_node", function(_, pos)
+	minetest.place_node(pos, {name="basenodes:dirt"})
+	on_punch_called = false
+	minetest.punch_node(pos)
+	minetest.remove_node(pos)
+	-- currently failing: assert(on_punch_called)
+end, {map=true})

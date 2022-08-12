@@ -51,6 +51,8 @@ struct NodeToApply
 class ShadowRenderer
 {
 public:
+	static const int TEXTURE_LAYER_SHADOW = 3;
+
 	ShadowRenderer(IrrlichtDevice *device, Client *client);
 
 	~ShadowRenderer();
