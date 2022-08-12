@@ -221,12 +221,6 @@ private:
 	Metadata m_meta;
 
 public:
-	float m_physics_override_speed = 1.0f;
-	float m_physics_override_jump = 1.0f;
-	float m_physics_override_gravity = 1.0f;
-	bool m_physics_override_sneak = true;
-	bool m_physics_override_sneak_glitch = false;
-	bool m_physics_override_new_move = true;
 	bool m_physics_override_sent = false;
 };
 

@@ -6,3 +6,4 @@ This document contains a list of breaking changes to be made in the next major v
 * `get_sky()` returns a table (without arg)
 * `game.conf` name/id mess
 * remove `depends.txt` / `description.txt` (would simplify ContentDB and Minetest code a little)
+* remove undocumented `set_physics_override(num, num, num)`
