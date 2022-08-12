@@ -165,41 +165,34 @@ void main(void)
 		smoothTriangleWave(animationTimer * 13.0 + tOffset)) * 0.5;
 #endif
 
-	worldPosition = (mWorld * inVertexPosition).xyz;
-
+	vec4 pos = inVertexPosition;
 // OpenGL < 4.3 does not support continued preprocessor lines
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_OPAQUE || MATERIAL_TYPE == TILE_MATERIAL_WAVING_LIQUID_BASIC) && ENABLE_WAVING_WATER
 	// Generate waves with Perlin-type noise.
 	// The constants are calibrated such that they roughly
 	// correspond to the old sine waves.
-	vec4 pos = inVertexPosition;
-	vec3 wavePos = worldPosition + cameraOffset;
+	vec3 wavePos = (mWorld * pos).xyz + cameraOffset;
 	// The waves are slightly compressed along the z-axis to get
 	// wave-fronts along the x-axis.
 	wavePos.x /= WATER_WAVE_LENGTH * 3.0;
 	wavePos.z /= WATER_WAVE_LENGTH * 2.0;
 	wavePos.z += animationTimer * WATER_WAVE_SPEED * 10.0;
 	pos.y += (snoise(wavePos) - 1.0) * WATER_WAVE_HEIGHT * 5.0;
-	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
-	vec4 pos = inVertexPosition;
 	pos.x += disp_x;
 	pos.y += disp_z * 0.1;
 	pos.z += disp_z;
-	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
-	vec4 pos = inVertexPosition;
 	if (varTexCoord.y < 0.05) {
 		pos.x += disp_x;
 		pos.z += disp_z;
 	}
-	gl_Position = mWorldViewProj * pos;
-#else
-	gl_Position = mWorldViewProj * inVertexPosition;
 #endif
+	worldPosition = (mWorld * pos).xyz;
+	gl_Position = mWorldViewProj * pos;
 
 	vPosition = gl_Position.xyz;
-	eyeVec = -(mWorldView * inVertexPosition).xyz;
+	eyeVec = -(mWorldView * pos).xyz;
 	vNormal = inVertexNormal;
 
 	// Calculate color.
@@ -228,18 +221,25 @@ void main(void)
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
+#if MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
+		// The shadow shaders don't apply waving when creating the shadow-map.
+		// We are using the not waved inVertexPosition to avoid ugly self-shadowing.
+		vec4 shadow_pos = inVertexPosition;
+#else
+		vec4 shadow_pos = pos;
+#endif
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
 		   z_bias is in light space coordinates */
 		float normalOffsetScale, z_bias;
-		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
+		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * shadow_pos));
 		if (f_normal_length > 0.0) {
 			nNormal = normalize(vNormal);
 			cosLight = dot(nNormal, -v_LightDirection);
 			float sinLight = pow(1 - pow(cosLight, 2.0), 0.5);
-			normalOffsetScale = 2.0 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) / 
+			normalOffsetScale = 2.0 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) /
 					xyPerspectiveBias1 / f_textureresolution;
 			z_bias = 1.0 * sinLight / cosLight;
 		}
@@ -252,7 +252,7 @@ void main(void)
 		}
 		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
 
-		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
+		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (shadow_pos + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
 		shadow_position.z -= z_bias;
 		perspective_factor = pFactor;
 

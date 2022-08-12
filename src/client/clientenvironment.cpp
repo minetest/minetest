@@ -198,7 +198,7 @@ void ClientEnvironment::step(float dtime)
 		if (!free_move) {
 			// Gravity
 			if (!is_climbing && !lplayer->in_liquid)
-				gravity = lplayer->movement_gravity * lplayer->physics_override_gravity;
+				gravity = lplayer->movement_gravity * lplayer->physics_override.gravity;
 
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&
