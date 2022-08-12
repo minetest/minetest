@@ -303,14 +303,16 @@ end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
 
 function core.craft_predict(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_craft_predicts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
