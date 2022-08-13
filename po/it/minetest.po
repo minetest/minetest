@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-06-20 09:52+0000\n"
+"PO-Revision-Date: 2022-08-14 20:15+0000\n"
 "Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -368,7 +368,7 @@ msgstr "In coda"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr "Raccolte di texture"
+msgstr "pacchetti texture"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -632,9 +632,8 @@ msgid "Passwords do not match"
 msgstr "Le password non corrispondono!"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Registrati e accedi"
+msgstr "Registrati"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -874,8 +873,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
-"Apre l'indirizzo contenente mondi, giochi, mod e raccolte di\n"
-"textures forniti dall'utente in un gestore / visualizzatore di file ."
+"Apre la cartella contenente mondi, giochi, mod e pacchetti\n"
+"texture forniti dall'utente in un gestore / visualizzatore di file ."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -928,7 +927,7 @@ msgstr "Disinstalla il Contenuto"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Utilizza la Raccolta di Textures"
+msgstr "Usa la Raccolta di Texture"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1021,7 +1020,7 @@ msgstr "Unisciti al Gioco"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Accedi"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
