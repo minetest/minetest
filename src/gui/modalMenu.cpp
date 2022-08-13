@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <cstdlib>
+#include "client/renderingengine.h"
 #include "modalMenu.h"
 #include "gettext.h"
 #include "porting.h"
@@ -40,7 +41,8 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_menumgr(menumgr),
 		m_remap_dbl_click(remap_dbl_click)
 {
-	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
+	const double screen_dpi_scale = RenderingEngine::getDisplayDensity();
+	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f) * screen_dpi_scale;
 #ifdef HAVE_TOUCHSCREENGUI
 	float d = RenderingEngine::getDisplayDensity();
 	m_gui_scale *= 1.1 - 0.3 * d + 0.2 * d * d;
