@@ -196,6 +196,9 @@ void read_object_properties(lua_State *L, int index,
 	int hp_max = 0;
 	if (getintfield(L, -1, "hp_max", hp_max)) {
 		prop->hp_max = (u16)rangelim(hp_max, 0, U16_MAX);
+		// hp_max = 0 is sometimes used as a hack to keep players dead, only validate for entities
+		if (prop->hp_max == 0 && sao->getType() != ACTIVEOBJECT_TYPE_PLAYER)
+			throw LuaError("The hp_max property may not be 0 for entities!");
 
 		if (prop->hp_max < sao->getHP()) {
 			PlayerHPChangeReason reason(PlayerHPChangeReason::SET_HP_MAX);
