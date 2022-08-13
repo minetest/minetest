@@ -40,11 +40,12 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 		m_menumgr(menumgr),
 		m_remap_dbl_click(remap_dbl_click)
 {
+	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f);
 	const float screen_dpi_scale = RenderingEngine::getDisplayDensity();
 #ifdef HAVE_TOUCHSCREENGUI
 	m_gui_scale *= 1.1 - 0.3 * screen_dpi_scale + 0.2 * screen_dpi_scale * screen_dpi_scale;
 #else
-	m_gui_scale = std::max(g_settings->getFloat("gui_scaling"), 0.5f) * screen_dpi_scale;
+	m_gui_scale *= screen_dpi_scale;
 #endif
 	setVisible(true);
 	Environment->setFocus(this);
