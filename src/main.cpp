@@ -87,6 +87,7 @@ typedef std::map<std::string, ValueSpec> OptionList;
  * Private functions
  **********************************************************************/
 
+static void get_env_opts(Settings &args);
 static bool get_cmdline_opts(int argc, char *argv[], Settings *cmd_args);
 static void set_allowed_options(OptionList *allowed_options);
 
@@ -123,8 +124,6 @@ static bool determine_subgame(GameParams *game_params);
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
 static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
-
-static void get_env_opts(Settings& settings);
 
 /**********************************************************************/
 
@@ -275,6 +274,29 @@ int main(int argc, char *argv[])
  * Startup / Init
  *****************************************************************************/
 
+
+static void get_env_opts(Settings &args)
+{
+	// CLICOLOR is a de-facto standard option for colors <https://bixense.com/clicolors/>
+	// CLICOLOR != 0: ANSI colors are supported (auto-detection, this is the default)
+	// CLICOLOR == 0: ANSI colors are NOT supported
+	const char *clicolor = std::getenv(ENV_CLICOLOR);
+	if (clicolor && std::string(clicolor) == "0") {
+		args.set("color", "never");
+	}
+	// NO_COLOR only specifies that no color is allowed.
+	// Implemented according to <http://no-color.org/>
+	const char *no_color = std::getenv(ENV_NO_COLOR);
+	if (no_color && no_color[0]) {
+		args.set("color", "never");
+	}
+	// CLICOLOR_FORCE is another option, which should turn on colors "no matter what".
+	const char *clicolor_force = std::getenv(ENV_CLICOLOR_FORCE);
+	if (clicolor_force && std::string(clicolor_force) != "0") {
+		// should ALWAYS have colors, so we ignore tty (no "auto")
+		args.set("color", "always");
+	}
+}
 
 static bool get_cmdline_opts(int argc, char *argv[], Settings *cmd_args)
 {
@@ -1134,27 +1156,4 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 
 	actionstream << "Done, " << count << " blocks were recompressed." << std::endl;
 	return true;
-}
-
-static void get_env_opts(Settings &args)
-{
-	// CLICOLOR is a de-facto standard option for colors <https://bixense.com/clicolors/>
-	// CLICOLOR != 0: ANSI colors are supported (auto-detection, this is the default)
-	// CLICOLOR == 0: ANSI colors are NOT supported
-	const char *clicolor = std::getenv(ENV_CLICOLOR);
-	if (clicolor && std::string(clicolor) == "0") {
-		args.set("color", "never");
-	}
-	// NO_COLOR only specifies that no color is allowed.
-	// Implemented according to <http://no-color.org/>
-	const char *no_color = std::getenv(ENV_NO_COLOR);
-	if (no_color && no_color[0]) {
-		args.set("color", "never");
-	}
-	// CLICOLOR_FORCE is another option, which should turn on colors "no matter what".
-	const char *clicolor_force = std::getenv(ENV_CLICOLOR_FORCE);
-	if (clicolor_force && std::string(clicolor_force) != "0") {
-		// should ALWAYS have colors, so we ignore tty (no "auto")
-		args.set("color", "always");
-	}
 }
