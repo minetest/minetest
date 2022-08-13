@@ -1445,44 +1445,52 @@ void NodeDefManager::applyTextureOverrides(const std::vector<TextureOverride> &o
 
 		ContentFeatures &nodedef = m_content_features[id];
 
+		auto apply = [&] (TileDef &tile) {
+			tile.name = texture_override.texture;
+			if (texture_override.world_scale > 0) {
+				tile.align_style = ALIGN_STYLE_WORLD;
+				tile.scale = texture_override.world_scale;
+			}
+		};
+
 		// Override tiles
 		if (texture_override.hasTarget(OverrideTarget::TOP))
-			nodedef.tiledef[0].name = texture_override.texture;
+			apply(nodedef.tiledef[0]);
 
 		if (texture_override.hasTarget(OverrideTarget::BOTTOM))
-			nodedef.tiledef[1].name = texture_override.texture;
+			apply(nodedef.tiledef[1]);
 
 		if (texture_override.hasTarget(OverrideTarget::RIGHT))
-			nodedef.tiledef[2].name = texture_override.texture;
+			apply(nodedef.tiledef[2]);
 
 		if (texture_override.hasTarget(OverrideTarget::LEFT))
-			nodedef.tiledef[3].name = texture_override.texture;
+			apply(nodedef.tiledef[3]);
 
 		if (texture_override.hasTarget(OverrideTarget::BACK))
-			nodedef.tiledef[4].name = texture_override.texture;
+			apply(nodedef.tiledef[4]);
 
 		if (texture_override.hasTarget(OverrideTarget::FRONT))
-			nodedef.tiledef[5].name = texture_override.texture;
+			apply(nodedef.tiledef[5]);
 
 
 		// Override special tiles, if applicable
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_1))
-			nodedef.tiledef_special[0].name = texture_override.texture;
+			apply(nodedef.tiledef_special[0]);
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_2))
-			nodedef.tiledef_special[1].name = texture_override.texture;
+			apply(nodedef.tiledef_special[1]);
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_3))
-			nodedef.tiledef_special[2].name = texture_override.texture;
+			apply(nodedef.tiledef_special[2]);
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_4))
-			nodedef.tiledef_special[3].name = texture_override.texture;
+			apply(nodedef.tiledef_special[3]);
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_5))
-			nodedef.tiledef_special[4].name = texture_override.texture;
+			apply(nodedef.tiledef_special[4]);
 
 		if (texture_override.hasTarget(OverrideTarget::SPECIAL_6))
-			nodedef.tiledef_special[5].name = texture_override.texture;
+			apply(nodedef.tiledef_special[5]);
 	}
 }
 
