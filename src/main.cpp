@@ -527,7 +527,7 @@ static bool create_userdata_path()
 	}
 #else
 	// Create user data directory
-	success = fs::CreateDir(porting::path_user);
+	success = fs::CreateAllDirs(porting::path_user);
 #endif
 
 	return success;
