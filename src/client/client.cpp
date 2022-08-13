@@ -574,7 +574,8 @@ void Client::step(float dtime)
 					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
-						force_update_shadows = true;
+						if (r.urgent)
+							force_update_shadows = true;
 					}
 				}
 			} else {

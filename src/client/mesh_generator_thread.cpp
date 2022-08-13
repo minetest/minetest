@@ -149,6 +149,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 		m_queue.erase(i);
 		m_urgents.erase(q->p);
 		fillDataFromMapBlockCache(q);
+		q->urgent = must_be_urgent;
 		return q;
 	}
 	return NULL;
@@ -310,6 +311,7 @@ void MeshUpdateThread::doUpdate()
 		r.p = q->p;
 		r.mesh = mesh_new;
 		r.ack_block_to_server = q->ack_block_to_server;
+		r.urgent = q->urgent;
 
 		m_queue_out.push_back(r);
 
