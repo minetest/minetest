@@ -597,8 +597,8 @@ core.nodedef_default = {
 	-- Node properties
 	drawtype = "normal",
 	visual_scale = 1.0,
-	tiles = {},
-	special_tiles = {},
+	tiles = nil,
+	special_tiles = nil,
 	post_effect_color = {a=0, r=0, g=0, b=0},
 	paramtype = "none",
 	paramtype2 = "none",
