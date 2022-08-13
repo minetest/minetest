@@ -204,9 +204,12 @@ Here are targets you can choose from:
 | special6      | The sixth entry in the special_tiles list         |
 | inventory     | The inventory texture                             |
 | wield         | The texture used when held by the player          |
+| align_world=N | Overrides the "world align" behaviour of tiles ¹  |
 
 Nodes support all targets, but other items only support 'inventory'
 and 'wield'.
+
+¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.txt for details.
 
 ### Using the special targets
 
