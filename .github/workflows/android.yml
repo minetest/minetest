@@ -40,3 +40,13 @@ jobs:
       with:
         name: Minetest-arm64-v8a.apk
         path: android/app/build/outputs/apk/release/app-arm64-v8a-release-unsigned.apk
+    - name: Save x86 artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Minetest-x86.apk
+        path: android/app/build/outputs/apk/release/app-x86-release-unsigned.apk
+    - name: Save x86_64 artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Minetest-x86_64.apk
+        path: android/app/build/outputs/apk/release/app-x86_64-release-unsigned.apk

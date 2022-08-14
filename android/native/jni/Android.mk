@@ -291,7 +291,6 @@ ifndef USE_BUILTIN_LUA
 endif
 LOCAL_STATIC_LIBRARIES += android_native_app_glue $(PROFILER_LIBS)
 
-# Irrlicht uses zlib
 LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES -lz
 
 include $(BUILD_SHARED_LIBRARY)
