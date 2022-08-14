@@ -283,23 +283,23 @@ int ModApiServer::l_get_player_window_information(lua_State *L)
 
 	auto dynamic = server->getClientDynamicInfo(player->getPeerId());
 
-	if (dynamic && dynamic->render_target_size != v2u32()) {
-		lua_newtable(L);
-		int dyn_table = lua_gettop(L);
+	if (!dynamic || dynamic->render_target_size == v2u32())
+		return 0;
 
-		lua_pushstring(L, "size");
-		push_v2u32(L, dynamic->render_target_size);
-		lua_settable(L, dyn_table);
+	lua_newtable(L);
+	int dyn_table = lua_gettop(L);
 
-		lua_pushstring(L, "real_gui_scaling");
-		lua_pushnumber(L, dynamic->real_gui_scaling);
-		lua_settable(L, dyn_table);
+	lua_pushstring(L, "size");
+	push_v2u32(L, dynamic->render_target_size);
+	lua_settable(L, dyn_table);
 
-		lua_pushstring(L, "real_hud_scaling");
-		lua_pushnumber(L, dynamic->real_hud_scaling);
-		lua_settable(L, dyn_table);
-	}
+	lua_pushstring(L, "real_gui_scaling");
+	lua_pushnumber(L, dynamic->real_gui_scaling);
+	lua_settable(L, dyn_table);
 
+	lua_pushstring(L, "real_hud_scaling");
+	lua_pushnumber(L, dynamic->real_hud_scaling);
+	lua_settable(L, dyn_table);
 	return 1;
 }
 
