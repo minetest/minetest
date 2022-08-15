@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-02-01 11:39+0000\n"
-"Last-Translator: Metehan Özyürek <metehanc8s9@yandex.com>\n"
+"PO-Revision-Date: 2022-08-16 15:16+0000\n"
+"Last-Translator: ahdplayer <ahdplayer8@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
 "minetest/tr/>\n"
 "Language: tr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -123,20 +123,25 @@ msgid "Client Mods"
 msgstr "Mod seçin"
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid ""
 "Installed version: $1\n"
 "New version: $2\n"
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"İndirili versiyon: $1\n"
+"Yeni versiyon: $2\n"
+"$3'ü ziyaret et ve nasıl en yeni versiyona geçebileceğini ve en yeni "
+"özellikler ve ayıklanmış hatalarla güncel kalabileceğini öğren."
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "sonra"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "asla"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -152,7 +157,7 @@ msgstr "Bu sunucu $1 ve $2 arası tüm protokol sürümlerini destekler. "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "siteyi ziyaret et"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -164,7 +169,7 @@ msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Etkinleştirildi, hata var)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
@@ -183,11 +188,11 @@ msgstr "İptal"
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr "Bağımlılıklar:"
+msgstr "Gereklilikler:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr "Tümü devre dışı"
+msgstr "Hepsini devre dışı bırak"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
