@@ -610,7 +610,7 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 		} else {
 			if (si == delim) {
 				tokens.push_back(current);
-				current = std::basic_string<T>();
+				current.clear();
 				last_was_escape = false;
 			} else if (si == '\\') {
 				last_was_escape = true;

@@ -600,7 +600,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		if(def.type == ITEM_NODE)
 			def.node_placement_prediction = name;
 		else
-			def.node_placement_prediction = "";
+			def.node_placement_prediction.clear();
 	}
 
 	// Register item definition

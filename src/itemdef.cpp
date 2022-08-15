@@ -99,14 +99,14 @@ void ItemDefinition::resetInitial()
 void ItemDefinition::reset()
 {
 	type = ITEM_NONE;
-	name = "";
-	description = "";
-	short_description = "";
-	inventory_image = "";
-	inventory_overlay = "";
-	wield_image = "";
-	wield_overlay = "";
-	palette_image = "";
+	name.clear();
+	description.clear();
+	short_description.clear();
+	inventory_image.clear();
+	inventory_overlay.clear();
+	wield_image.clear();
+	wield_overlay.clear();
+	palette_image.clear();
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
@@ -118,7 +118,7 @@ void ItemDefinition::reset()
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
 	range = -1;
-	node_placement_prediction = "";
+	node_placement_prediction.clear();
 	place_param2 = 0;
 }
 
@@ -462,7 +462,7 @@ public:
 		//   "ignore" is the ignore node
 
 		ItemDefinition* hand_def = new ItemDefinition;
-		hand_def->name = "";
+		hand_def->name.clear();
 		hand_def->wield_image = "wieldhand.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));

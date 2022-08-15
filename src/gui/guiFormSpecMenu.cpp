@@ -647,7 +647,6 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[3];
-	std::string value = parts[4];
 
 	MY_CHECKPOS("scrollbar",0);
 	MY_CHECKGEOM("scrollbar",1);
@@ -1180,7 +1179,6 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	std::string name = parts[2];
 	std::vector<std::string> items = split(parts[3],',');
 	std::string str_initial_selection;
-	std::string str_transparent = "false";
 
 	if (parts.size() >= 5)
 		str_initial_selection = parts[4];
@@ -3047,7 +3045,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element = "";
+		m_focused_element.clear();
 	}
 
 	// Remove children
@@ -3865,7 +3863,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 
 		if (!current_field_enter_pending.empty()) {
 			fields["key_enter_field"] = current_field_enter_pending;
-			current_field_enter_pending = "";
+			current_field_enter_pending.clear();
 		}
 
 		if (current_keys_pending.key_escape) {
@@ -4600,7 +4598,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
-					s.fdefault = L"";
+					s.fdefault.clear();
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
 						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));

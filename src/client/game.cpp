@@ -112,7 +112,7 @@ struct TextDestPlayerInventory : public TextDest
 	TextDestPlayerInventory(Client *client)
 	{
 		m_client = client;
-		m_formname = "";
+		m_formname.clear();
 	}
 	TextDestPlayerInventory(Client *client, const std::string &formname)
 	{
@@ -3149,7 +3149,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound.name = "";
+	soundmaker->m_player_leftpunch_sound.name.clear();
 
 	// Prepare for repeating, unless we're not supposed to
 	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))

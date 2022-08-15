@@ -582,8 +582,8 @@ void ClientLauncher::speed_tests()
 		TimeTaker timer("Testing std::string speed");
 		const u32 jj = 10000;
 		for (u32 j = 0; j < jj; j++) {
-			tempstring = "";
-			tempstring2 = "";
+			tempstring.clear();
+			tempstring2.clear();
 			const u32 ii = 10;
 			for (u32 i = 0; i < ii; i++) {
 				tempstring2 += "asd";

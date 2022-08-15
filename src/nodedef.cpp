@@ -354,12 +354,12 @@ void ContentFeatures::reset()
 		NOTE: Most of this is always overridden by the default values given
 		      in builtin.lua
 	*/
-	name = "";
+	name.clear();
 	groups.clear();
 	// Unknown nodes can be dug
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
-	mesh = "";
+	mesh.clear();
 #ifndef SERVER
 	for (auto &i : mesh_ptr)
 		i = NULL;
@@ -387,9 +387,9 @@ void ContentFeatures::reset()
 	leveled = 0;
 	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
-	liquid_alternative_flowing = "";
+	liquid_alternative_flowing.clear();
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
-	liquid_alternative_source = "";
+	liquid_alternative_source.clear();
 	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
@@ -410,7 +410,7 @@ void ContentFeatures::reset()
 	connects_to_ids.clear();
 	connect_sides = 0;
 	color = video::SColor(0xFFFFFFFF);
-	palette_name = "";
+	palette_name.clear();
 	palette = NULL;
 	node_dig_prediction = "air";
 	move_resistance = 0;

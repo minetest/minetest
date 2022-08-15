@@ -195,7 +195,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	try {
 		m_script->setMainMenuData(&m_data->script_data);
-		m_data->script_data.errormessage = "";
+		m_data->script_data.errormessage.clear();
 
 		if (!loadMainMenuScript()) {
 			errorstream << "No future without main menu!" << std::endl;
