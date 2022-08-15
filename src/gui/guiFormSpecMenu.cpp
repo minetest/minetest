@@ -2262,7 +2262,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 	}
 
 	// bgcolor
-	if (parameter_count >= 1 && parts[0] != "")
+	if (parameter_count >= 1 && !parts[0].empty())
 		parseColorString(parts[0], m_bgcolor, false);
 
 	// fullscreen
@@ -2273,14 +2273,14 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 		} else if (parts[1] == "neither") {
 			m_bgnonfullscreen = false;
 			m_bgfullscreen = false;
-		} else if (parts[1] != "" || m_formspec_version < 3) {
+		} else if (!parts[1].empty() || m_formspec_version < 3) {
 			m_bgfullscreen = is_yes(parts[1]);
 			m_bgnonfullscreen = !m_bgfullscreen;
 		}
 	}
 
 	// fbgcolor
-	if (parameter_count >= 3 && parts[2] != "")
+	if (parameter_count >= 3 && !parts[2].empty())
 		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 

@@ -979,8 +979,9 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 				<< std::endl;
 			return NULL;
 		}
-		core::dimension2d<u32> dim = tmp->getDimension();
+		
 		if (baseimg) {
+			core::dimension2d<u32> dim = tmp->getDimension();
 			blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
 			tmp->drop();
 		} else {

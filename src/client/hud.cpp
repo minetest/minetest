@@ -411,7 +411,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			case HUD_ELEM_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
-				v3f p_pos = player->getPosition() / BS;
+				
 				pos += v2s32(e->offset.X, e->offset.Y);
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -429,6 +429,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0) * bounds.getWidth() / 2, 0), color);
 				if (draw_precision) {
 					std::ostringstream os;
+					v3f p_pos = player->getPosition() / BS;
 					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
 					os << distance << unit;
 					text = unescape_translate(utf8_to_wide(os.str()));

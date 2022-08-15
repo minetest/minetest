@@ -1355,7 +1355,7 @@ void NodeDefManager::eraseIdFromGroups(content_t id)
 content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
 	// Pre-conditions
-	assert(name != "");
+	assert(!name.empty());
 	assert(name != "ignore");
 	assert(name == def.name);
 
@@ -1395,7 +1395,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 
 content_t NodeDefManager::allocateDummy(const std::string &name)
 {
-	assert(name != "");	// Pre-condition
+	assert(!name.empty());	// Pre-condition
 	ContentFeatures f;
 	f.name = name;
 	return set(name, f);
@@ -1405,7 +1405,7 @@ content_t NodeDefManager::allocateDummy(const std::string &name)
 void NodeDefManager::removeNode(const std::string &name)
 {
 	// Pre-condition
-	assert(name != "");
+	assert(!name.empty());
 
 	// Erase name from name ID mapping
 	content_t id = CONTENT_IGNORE;

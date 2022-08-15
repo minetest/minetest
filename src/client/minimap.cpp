@@ -327,7 +327,7 @@ void Minimap::addMode(MinimapModeDef mode)
 	int zoom = -1;
 
 	// Build a default standard label
-	if (mode.label == "") {
+	if (mode.label.empty()) {
 		switch (mode.type) {
 			case MINIMAP_TYPE_OFF:
 				mode.label = gettext("Minimap hidden");

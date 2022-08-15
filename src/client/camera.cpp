@@ -679,11 +679,12 @@ void Camera::drawNametags()
 			screen_pos.Y = screensize.Y *
 				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
 			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
-			core::rect<s32> bg_size(-2, 0, textsize.Width+2, textsize.Height);
 
 			auto bgcolor = nametag->getBgColor(m_show_nametag_backgrounds);
-			if (bgcolor.getAlpha() != 0)
+			if (bgcolor.getAlpha() != 0) {
+				core::rect<s32> bg_size(-2, 0, textsize.Width + 2, textsize.Height);
 				driver->draw2DRectangle(bgcolor, bg_size + screen_pos);
+			}
 
 			font->draw(
 				translate_string(utf8_to_wide(nametag->text)).c_str(),
