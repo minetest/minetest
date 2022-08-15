@@ -492,10 +492,10 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
-	std::deque<u16> remove_queue;
+	std::vector<u16> remove_queue;
 	{
 		MutexAutoLock listlock(m_map_mutex);
-		for (auto &i : m_buf) {
+		for (const auto &i : m_buf) {
 			IncomingSplitPacket *p = i.second;
 			// Reliable ones are not removed by timeout
 			if (p->reliable)
@@ -505,7 +505,7 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 				remove_queue.push_back(i.first);
 		}
 	}
-	for (u16 j : remove_queue) {
+	for (const auto &j : remove_queue) {
 		MutexAutoLock listlock(m_map_mutex);
 		LOG(dout_con<<"NOTE: Removing timed out unreliable split packet"<<std::endl);
 		delete m_buf[j];

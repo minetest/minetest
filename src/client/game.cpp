@@ -91,7 +91,7 @@ struct TextDestNodeMetadata : public TextDest
 	// This is deprecated I guess? -celeron55
 	void gotText(const std::wstring &text)
 	{
-		std::string ntext = wide_to_utf8(text);
+		const std::string& ntext = wide_to_utf8(text);
 		infostream << "Submitting 'text' field of node at (" << m_p.X << ","
 			   << m_p.Y << "," << m_p.Z << "): " << ntext << std::endl;
 		StringMap fields;

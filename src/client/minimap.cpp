@@ -361,8 +361,8 @@ void Minimap::addMode(MinimapModeDef mode)
 	m_modes.push_back(mode);
 }
 
-void Minimap::addMode(MinimapType type, u16 size, std::string label,
-		std::string texture, u16 scale)
+void Minimap::addMode(MinimapType type, u16 size, const std::string &label,
+		const std::string &texture, u16 scale)
 {
 	MinimapModeDef mode;
 	mode.type = type;
