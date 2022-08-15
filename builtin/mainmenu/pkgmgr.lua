@@ -608,11 +608,10 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		end
 
 		local from = basefolder and basefolder.path or path
-		if targetpath then
-			core.delete_dir(targetpath)
-		else
+		if not targetpath then
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
+		core.delete_dir(targetpath)
 		if not core.copy_dir(from, targetpath, false) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
@@ -690,6 +689,7 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 	end
 
 	-- Copy it
+	core.delete_dir(targetpath)
 	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
