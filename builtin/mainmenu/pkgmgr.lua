@@ -244,11 +244,7 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.is_valid_modname(modpath)
-	if modpath:find("-") ~= nil then
-		return false
-	end
-
-	return true
+	return modpath:match("[^a-z0-9_]") == nil
 end
 
 --------------------------------------------------------------------------------
@@ -521,6 +517,8 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 	local basefolder = pkgmgr.get_base_folder(path)
 
 	if expected_type == "txp" then
+		assert(basename)
+
 		-- There's no good way to detect a texture pack, so let's just assume
 		-- it's correct for now.
 		if basefolder and basefolder.type ~= "invalid" and basefolder.type ~= "txp" then
@@ -544,7 +542,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 
 	-- Check type
 	if basefolder.type ~= expected_type and (basefolder.type ~= "modpack" or expected_type ~= "mod") then
-		return nil, fgettext("Unable to install a $1 as a $1", basefolder.type, expected_type)
+		return nil, fgettext("Unable to install a $1 as a $2", basefolder.type, expected_type)
 	end
 
 	-- Set targetpath if not predetermined
