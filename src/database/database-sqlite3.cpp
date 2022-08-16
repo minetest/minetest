@@ -857,8 +857,12 @@ void ModMetadataDatabaseSQLite3::listMods(std::vector<std::string> *res)
 	char *errmsg;
 	int status = sqlite3_exec(m_database,
 		"SELECT `modname` FROM `entries` GROUP BY `modname`;",
-		[](void *res_vp, int n_col, char **cols, char **col_names) -> int {
-			((decltype(res)) res_vp)->emplace_back(cols[0]);
+		[](void *res_vp, int n_col, char **cols, char **col_names) noexcept -> int {
+			try {
+				((decltype(res)) res_vp)->emplace_back(cols[0]);
+			} catch (...) {
+				return 1;
+			}
 			return 0;
 		}, (void *) res, &errmsg);
 	if (status != SQLITE_OK) {
