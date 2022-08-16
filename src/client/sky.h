@@ -110,8 +110,6 @@ public:
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
 
-	float getSkyBodyOrbitTilt() const { return m_sky_body_orbit_tilt; }
-
 private:
 	aabb3f m_box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
