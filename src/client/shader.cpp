@@ -59,7 +59,7 @@ MutexedMap<std::string, std::string> g_shadername_to_path_cache;
 std::string getShaderPath(const std::string &name_of_shader,
 		const std::string &filename)
 {
-	const std::string& combined = name_of_shader + DIR_DELIM + filename;
+	std::string combined = name_of_shader + DIR_DELIM + filename;
 	std::string fullpath;
 	/*
 		Check from cache
@@ -71,9 +71,9 @@ std::string getShaderPath(const std::string &name_of_shader,
 	/*
 		Check from shader_path
 	*/
-	const std::string& shader_path = g_settings->get("shader_path");
+	std::string shader_path = g_settings->get("shader_path");
 	if (!shader_path.empty()) {
-		const std::string& testpath = shader_path + DIR_DELIM + combined;
+		std::string testpath = shader_path + DIR_DELIM + combined;
 		if(fs::PathExists(testpath))
 			fullpath = testpath;
 	}
@@ -82,11 +82,11 @@ std::string getShaderPath(const std::string &name_of_shader,
 		Check from default data directory
 	*/
 	if (fullpath.empty()) {
-		const std::string& rel_path = std::string("client") + DIR_DELIM
+		std::string rel_path = std::string("client") + DIR_DELIM
 				+ "shaders" + DIR_DELIM
 				+ name_of_shader + DIR_DELIM
 				+ filename;
-		const std::string& testpath = porting::path_share + DIR_DELIM + rel_path;
+		std::string testpath = porting::path_share + DIR_DELIM + rel_path;
 		if(fs::PathExists(testpath))
 			fullpath = testpath;
 	}
@@ -111,7 +111,7 @@ public:
 		std::string combined = name_of_shader + DIR_DELIM + filename;
 		// Try to use local shader instead if asked to
 		if(prefer_local){
-			const std::string& path = getShaderPath(name_of_shader, filename);
+			std::string path = getShaderPath(name_of_shader, filename);
 			if(!path.empty()){
 				std::string p = readFile(path);
 				if (!p.empty()) {

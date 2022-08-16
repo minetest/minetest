@@ -33,7 +33,7 @@ void ToolGroupCap::toJson(Json::Value &object) const
 	object["uses"] = uses;
 
 	Json::Value times_object;
-	for (const auto &time : times)
+	for (auto time : times)
 		times_object[time.first] = time.second;
 	object["times"] = std::move(times_object);
 }

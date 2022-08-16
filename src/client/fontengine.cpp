@@ -90,7 +90,7 @@ void FontEngine::cleanCache()
 }
 
 /******************************************************************************/
-irr::gui::IGUIFont *FontEngine::getFont(const FontSpec &spec)
+irr::gui::IGUIFont *FontEngine::getFont(FontSpec spec)
 {
 	return getFont(spec, false);
 }

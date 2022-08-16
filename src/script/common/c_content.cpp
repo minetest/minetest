@@ -1447,9 +1447,9 @@ ToolCapabilities read_tool_capabilities(
 		int table_groupcaps = lua_gettop(L);
 		lua_pushnil(L);
 		while(lua_next(L, table_groupcaps) != 0){
+			// key at index -2 and value at index -1
+			std::string groupname = luaL_checkstring(L, -2);
 			if(lua_istable(L, -1)){
-				// key at index -2 and value at index -1
-				std::string groupname = luaL_checkstring(L, -2);
 				int table_groupcap = lua_gettop(L);
 				// This will be created
 				ToolGroupCap groupcap;

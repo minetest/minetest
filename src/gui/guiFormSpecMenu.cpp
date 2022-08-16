@@ -647,6 +647,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	std::vector<std::string> v_pos = split(parts[0],',');
 	std::vector<std::string> v_geom = split(parts[1],',');
 	std::string name = parts[3];
+	std::string value = parts[4];
 
 	MY_CHECKPOS("scrollbar",0);
 	MY_CHECKGEOM("scrollbar",1);
@@ -693,7 +694,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	e->setMax(max);
 	e->setMin(min);
 
-	e->setPos(stoi(parts[4]));
+	e->setPos(stoi(value));
 
 	e->setSmallStep(data->scrollbar_options.small_step);
 	e->setLargeStep(data->scrollbar_options.large_step);

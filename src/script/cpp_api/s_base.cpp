@@ -159,23 +159,17 @@ int ScriptApiBase::luaPanic(lua_State *L)
 
 void ScriptApiBase::clientOpenLibs(lua_State *L)
 {
+	static const std::vector<std::pair<std::string, lua_CFunction>> m_libs = {
+		{"", luaopen_base},
+		{LUA_TABLIBNAME, luaopen_table},
+		{LUA_OSLIBNAME, luaopen_os},
+		{LUA_STRLIBNAME, luaopen_string},
+		{LUA_MATHLIBNAME, luaopen_math},
+		{LUA_DBLIBNAME, luaopen_debug},
 #if USE_LUAJIT
-#define M_LIBS_SIZE 7
-#else
-#define M_LIBS_SIZE 6
+		{LUA_JITLIBNAME, luaopen_jit},
 #endif
-	static const std::array<std::pair<std::string, lua_CFunction>, M_LIBS_SIZE> m_libs = {
-			{
-					{"", luaopen_base},
-					{LUA_TABLIBNAME, luaopen_table},
-					{LUA_OSLIBNAME, luaopen_os},
-					{LUA_STRLIBNAME, luaopen_string},
-					{LUA_MATHLIBNAME, luaopen_math},
-					{LUA_DBLIBNAME, luaopen_debug},
-#if USE_LUAJIT
-					{LUA_JITLIBNAME, luaopen_jit},
-#endif
-			} };
+	};
 
 	for (const auto &lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);

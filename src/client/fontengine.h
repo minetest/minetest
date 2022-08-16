@@ -65,7 +65,7 @@ public:
 	~FontEngine();
 
 	// Get best possible font specified by FontSpec
-	irr::gui::IGUIFont *getFont(const FontSpec &spec);
+	irr::gui::IGUIFont *getFont(FontSpec spec);
 
 	irr::gui::IGUIFont *getFont(unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)

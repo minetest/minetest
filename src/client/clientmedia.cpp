@@ -405,7 +405,7 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 				RemoteServerStatus *remote =
 					m_remotes[remote_id];
 
-				const std::string& url = remote->baseurl +
+				std::string url = remote->baseurl +
 					hex_encode(filestatus->sha1);
 				verbosestream << "Client: "
 					<< "Requesting remote media file "
@@ -770,7 +770,7 @@ void SingleMediaDownloader::remoteMediaReceived(
 
 void SingleMediaDownloader::startRemoteMediaTransfer()
 {
-	const std::string& url = m_remotes.at(m_current_remote) + hex_encode(m_file_sha1);
+	std::string url = m_remotes.at(m_current_remote) + hex_encode(m_file_sha1);
 	verbosestream << "Client: Requesting remote media file "
 		<< "\"" << m_file_name << "\" " << "\"" << url << "\"" << std::endl;
 
