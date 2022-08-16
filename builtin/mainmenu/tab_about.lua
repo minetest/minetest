@@ -79,7 +79,7 @@ local previous_contributors = {
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest logo]",
 	"red-001 <red-001@outlook.ie>",
 	"Giuseppe Bilotta",
-	"ClobberXD",
+	"ANAND (ClobberXD)",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
 	"MoNTE48",
