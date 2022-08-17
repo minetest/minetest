@@ -215,9 +215,6 @@ void ClientMap::updateDrawList()
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
-	// Read the vision range, unless unlimited range is enabled.
-	float range = m_control.range_all ? 1e7 : m_control.wanted_range;
-
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
@@ -242,6 +239,10 @@ void ClientMap::updateDrawList()
 	float use_new_frustum_cull_f = 0.0f;
 	QUICKTUNE_AUTONAME(QVT_FLOAT, use_new_frustum_cull_f, 0, 100);
 	bool use_new_frustum_cull = use_new_frustum_cull_f > 0.001f;
+
+	float use_old_frustum_cull_f = 0.0f;
+	QUICKTUNE_AUTONAME(QVT_FLOAT, use_old_frustum_cull_f, 0, 100);
+	bool use_old_frustum_cull = use_old_frustum_cull_f > 0.001f;
 
 	float frustum_cull_extra_bias_per_radian = 200.0f;
 	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_radian, 0, 500);
@@ -306,8 +307,8 @@ void ClientMap::updateDrawList()
 			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
 			// First, perform a simple distance check, with a padding of one extra block.
-			if (!m_control.range_all &&
-					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE)
+			f32 distance_nodes = block_position.getDistanceFrom(cam_pos_nodes);
+			if (!m_control.range_all && distance_nodes > m_control.wanted_range)
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
@@ -315,21 +316,23 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			float d = 0.0;
-			if (!isBlockInSight(block_coord, camera_position,
-					camera_direction, camera_fov, range * BS, &d)) {
-				blocks_frustum_culled_old++;
-				continue;
-			}
-
 			if (frustum_cull(block_position)) {
 				blocks_frustum_culled_new++;
 				continue;
 			}
 
+			if (use_old_frustum_cull) {
+				// Read the vision range, unless unlimited range is enabled.
+				float range = m_control.range_all ? 1e7 : m_control.wanted_range;
+				if (!isBlockInSight(block_coord, camera_position,
+						camera_direction, camera_fov, range * BS, nullptr)) {
+					blocks_frustum_culled_old++;
+					continue;
+				}
+			}
+
 			// Occlusion culling
-			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
-					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
+			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
