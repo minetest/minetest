@@ -505,7 +505,7 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 				remove_queue.push_back(i.first);
 		}
 	}
-	for (const auto &j : remove_queue) {
+	for (u16 j : remove_queue) {
 		MutexAutoLock listlock(m_map_mutex);
 		LOG(dout_con<<"NOTE: Removing timed out unreliable split packet"<<std::endl);
 		delete m_buf[j];
