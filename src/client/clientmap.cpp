@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
 #include <algorithm>
+#include <cmath>
 #include "client/renderingengine.h"
 
 // struct MeshBufListList
@@ -106,6 +107,8 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 {
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
+
+	m_camera_dirspeed = std::acos(m_camera_direction.dotProduct(dir));
 
 	m_camera_position = pos;
 	m_camera_direction = dir;
@@ -240,8 +243,14 @@ void ClientMap::updateDrawList()
 	QUICKTUNE_AUTONAME(QVT_FLOAT, use_new_frustum_cull_f, 0, 100);
 	bool use_new_frustum_cull = use_new_frustum_cull_f > 0.001f;
 
+	float frustum_cull_extra_bias_per_radian = 200.0f;
+	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_radian, 0, 500);
+
 	const auto *camera = m_client->getCamera();
 	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
+	// hacky fix
+	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
+			+ m_camera_dirspeed * frustum_cull_extra_bias_per_radian * BS;
 
 	auto frustum_cull = [&](v3s16 block_position) {
 		using irr::scene::SViewFrustum;
@@ -251,7 +260,7 @@ void ClientMap::updateDrawList()
 		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
 					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
 			f32 dist = frustum_planes[plane_name].getDistanceTo(block_pos);
-			if (dist > BLOCK_MAX_RADIUS)
+			if (dist > frustum_cull_bias)
 				return true;
 		}
 		return false;

@@ -191,6 +191,7 @@ private:
 
 	v3f m_camera_position = v3f(0,0,0);
 	v3f m_camera_direction = v3f(0,0,1);
+	f32 m_camera_dirspeed = 0.0f;
 	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 	bool m_needs_update_transparent_meshes = true;
