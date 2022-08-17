@@ -61,17 +61,18 @@ end
 -- Serializes Lua nil, booleans, numbers, strings, tables and even functions
 -- Tables are referenced by reference, strings are referenced by value. Supports circular tables.
 local function serialize(value, write)
-	local reference, refnum = "r1", 1
-	-- [object] = reference string
+	local reference, refnum = "1", 1
+	-- [object] = reference
 	local references = {}
 	-- Circular tables that must be filled using `table[key] = value` statements
 	local to_fill = {}
 	for object, count in pairs(count_objects(value)) do
 		local type_ = type(object)
 		-- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
-		if count >= 2 and (type_ ~= "string" or #reference + 2 < #object) then
+		if count >= 2 and (type_ ~= "string" or #reference + 5 < #object) then
+			write"_["
 			write(reference)
-			write("=")
+			write("]=")
 			if type_ == "table" then
 				write("{}")
 			elseif type_ == "function" then
@@ -85,7 +86,7 @@ local function serialize(value, write)
 				to_fill[object] = reference
 			end
 			refnum = refnum + 1
-			reference = ("r%X"):format(refnum)
+			reference = ("%d"):format(refnum)
 		end
 	end
 	-- Used to decide whether we should do "key=..."
@@ -110,7 +111,9 @@ local function serialize(value, write)
 		-- Reference types: table, function and string
 		local ref = references[value]
 		if ref then
-			return write(ref)
+			write"_["
+			write(ref)
+			return write"]"
 		end
 		if type_ == "string" then
 			return write(quote(value))
@@ -156,7 +159,9 @@ local function serialize(value, write)
 	-- Write the statements to fill circular tables
 	for table, ref in pairs(to_fill) do
 		for k, v in pairs(table) do
+			write("_[")
 			write(ref)
+			write("]")
 			if use_short_key(k) then
 				write(".")
 				write(k)
@@ -202,7 +207,7 @@ function core.deserialize(str, safe)
 	if not func then return nil, err end
 
 	-- math.huge is serialized to inf, NaNs are serialized to nan by Lua
-	local env = {inf = math_huge, nan = nan}
+	local env = {inf = math_huge, nan = nan, _ = {}}
 	if safe then
 		env.loadstring = dummy_func
 	else
