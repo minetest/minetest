@@ -70,6 +70,9 @@ local function serialize(value, write)
 		local type_ = type(object)
 		-- Object must appear more than once. If it is a string, the reference has to be shorter than the string.
 		if count >= 2 and (type_ ~= "string" or #reference + 5 < #object) then
+			if refnum == 1 then
+				write"local _={};" -- initialize reference table
+			end
 			write"_["
 			write(reference)
 			write("]=")
@@ -106,7 +109,15 @@ local function serialize(value, write)
 		end
 		local type_ = type(value)
 		if type_ == "number" then
-			return write(string_format("%.17g", value))
+			if value ~= value then -- nan
+				return write"0/0"
+			elseif value == math_huge then
+				return write"1/0"
+			elseif value == -math_huge then
+				return write"-1/0"
+			else
+				return write(string_format("%.17g", value))
+			end
 		end
 		-- Reference types: table, function and string
 		local ref = references[value]
@@ -190,8 +201,6 @@ end
 
 local function dummy_func() end
 
-local nan = (0/0)^1 -- +nan
-
 function core.deserialize(str, safe)
 	-- Backwards compatibility
 	if str == nil then
@@ -206,8 +215,8 @@ function core.deserialize(str, safe)
 	local func, err = loadstring(str)
 	if not func then return nil, err end
 
-	-- math.huge is serialized to inf, NaNs are serialized to nan by Lua
-	local env = {inf = math_huge, nan = nan, _ = {}}
+	-- math.huge is serialized to inf, NaNs are serialized to nan by Lua in Minetest 5.6 and earlier
+	local env = {inf = math_huge, nan = 0/0}
 	if safe then
 		env.loadstring = dummy_func
 	else
