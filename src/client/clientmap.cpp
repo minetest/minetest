@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
+#include <SViewFrustum.h>
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
@@ -219,6 +220,9 @@ void ClientMap::updateDrawList()
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
 
+	u32 blocks_frustum_culled_old = 0;
+	u32 blocks_frustum_culled_new = 0;
+
 	// No occlusion culling when free_move is on and camera is inside ground
 	bool occlusion_culling_enabled = true;
 	if (m_control.allow_noclip) {
@@ -229,6 +233,37 @@ void ClientMap::updateDrawList()
 
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+
+	const irr::scene::SViewFrustum *frustum = m_client->getCamera()->getCameraNode()->getViewFrustum();
+	//~ using v4f = std::array<f32, 4>;
+	//~ auto get_frustum_plane = [&](VFPLANES plane_name) {
+		//~ const core::plane3d<f32> &plane_irr = frustum->planes[plane_name];
+		//~ return v4f{plane_irr.Normal.X, plane_irr.Normal.Y, plane_irr.Normal.Z, -plane_irr.D};
+	//~ };
+	//~ std::array<v4f, 4> frustum_planes{
+		//~ get_frustum_plane(VF_LEFT_PLANE),
+		//~ get_frustum_plane(VF_RIGHT_PLANE),
+		//~ get_frustum_plane(VF_BOTTOM_PLANE),
+		//~ get_frustum_plane(VF_TOP_PLANE),
+	//~ };
+	using irr::scene::SViewFrustum;
+	const core::plane3d<f32> (&frustum_planes)[SViewFrustum::VF_PLANE_COUNT] = frustum->planes;
+	for (int i = 0; i < SViewFrustum::VF_PLANE_COUNT; ++i) {
+		if (std::abs(frustum_planes[i].Normal.getLength() - 1.0f) > 0.0001f) {
+			errorstream << "irrlicht could store planes better" << std::endl;
+		}
+	}
+	auto frustum_cull = [&](v3s16 block_position) {
+		v3f block_pos((f32)block_position.X, (f32)block_position.Y, (f32)block_position.Z);
+		block_pos *= BS;
+		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
+					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
+			f32 dist = frustum_planes[plane_name].getDistanceTo(block_pos);
+			if (dist > BLOCK_MAX_RADIUS)
+				return true;
+		}
+		return false;
+	};
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -281,8 +316,15 @@ void ClientMap::updateDrawList()
 			// Frustum culling
 			float d = 0.0;
 			if (!isBlockInSight(block_coord, camera_position,
-					camera_direction, camera_fov, range * BS, &d))
+					camera_direction, camera_fov, range * BS, &d)) {
+				blocks_frustum_culled_old++;
 				continue;
+			}
+
+			if (frustum_cull(block_position)) {
+				blocks_frustum_culled_new++;
+				continue;
+			}
 
 			// Occlusion culling
 			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
@@ -301,6 +343,10 @@ void ClientMap::updateDrawList()
 		if (sector_blocks_drawn != 0)
 			m_last_drawn_sectors.insert(sp);
 	}
+
+	errorstream << "blocks_frustum_culled_old: " << blocks_frustum_culled_old
+			<< ", blocks_frustum_culled_new: " << blocks_frustum_culled_new
+			<< std::endl;
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
@@ -772,9 +818,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	for (auto &lists : grouped_buffers.lists)
 		for (MeshBufList &list : lists)
 			buffer_count += list.bufs.size();
-	
+
 	draw_order.reserve(draw_order.size() + buffer_count);
-	
+
 	// Capture draw order for all solid meshes
 	for (auto &lists : grouped_buffers.lists) {
 		for (MeshBufList &list : lists) {
@@ -910,8 +956,8 @@ void ClientMap::updateTransparentMeshBuffers()
 		MapBlock* block = it->second;
 		if (!block->mesh)
 			continue;
-		
-		if (m_needs_update_transparent_meshes || 
+
+		if (m_needs_update_transparent_meshes ||
 				block->mesh->getTransparentBuffers().size() == 0) {
 
 			v3s16 block_pos = block->getPos();
