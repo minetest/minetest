@@ -133,6 +133,12 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
+	// A heuristic value based on yaw and pitch change
+	inline f32 getHeadTurnSpeed() const
+	{
+		return m_head_turn_speed;
+	}
+
 	// Notify about new server-sent FOV and initialize smooth FOV transition
 	void notifyFovChange();
 
@@ -228,6 +234,10 @@ private:
 	v2f m_cam_vel;
 	v2f m_cam_vel_old;
 	v2f m_last_cam_pos;
+
+	f32 m_head_turn_speed = 0.0f;
+	f32 m_yaw = 0.0f;
+	f32 m_pitch = 0.0f;
 
 	// Field of view and aspect ratio stuff
 	f32 m_aspect = 1.0f;

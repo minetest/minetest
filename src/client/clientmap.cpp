@@ -108,8 +108,6 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
 
-	m_camera_dirspeed = std::acos(m_camera_direction.dotProduct(dir));
-
 	m_camera_position = pos;
 	m_camera_direction = dir;
 	m_camera_fov = fov;
@@ -244,21 +242,19 @@ void ClientMap::updateDrawList()
 	QUICKTUNE_AUTONAME(QVT_FLOAT, use_old_frustum_cull_f, 0, 100);
 	bool use_old_frustum_cull = use_old_frustum_cull_f > 0.001f;
 
-	float frustum_cull_extra_bias_per_radian = 200.0f;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_radian, 0, 500);
-
 	const auto *camera = m_client->getCamera();
-	camera->getCameraNode()->updateMatrices();
+	//~ camera->getCameraNode()->updateMatrices();
 	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
-	// hacky fix
+
+	// Do less culling on fast camera movements.
+	// Otherwise there are some culled blocks in the edges of the screen when
+	// spinning around, for some reason.
+	float frustum_cull_extra_bias_per_deg = 3.0f;
+	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_deg, 0, 5);
 	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
-			+ m_camera_dirspeed * frustum_cull_extra_bias_per_radian * BS;
+			+ camera->getHeadTurnSpeed() * frustum_cull_extra_bias_per_deg * BS;
 
-	//~ std::array<plane3df, 4> frustum_planes = [&] {
-		//~ f32 x = std::sin(camera->getFovX() * 0.5f);
-		//~ f32 y = std::sin(camera->getFovY() * 0.5f);
-	//~ }();
-
+	errorstream << "m_camera_offset: "<< PP(m_camera_offset) << std::endl;
 	auto frustum_cull = [&](v3s16 block_position) {
 		using irr::scene::SViewFrustum;
 		if (!use_new_frustum_cull)
@@ -266,10 +262,7 @@ void ClientMap::updateDrawList()
 		v3f block_pos = intToFloat(block_position - m_camera_offset, BS);
 		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
 					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
-			f32 dist = frustum_planes[plane_name].getDistanceTo(block_pos);
-		//~ for (const auto &plane : frustum_planes) {
-			//~ f32 dist = plane.getDistanceTo(block_pos);
-			if (dist > frustum_cull_bias)
+			if (frustum_planes[plane_name].getDistanceTo(block_pos) > frustum_cull_bias)
 				return true;
 		}
 		return false;

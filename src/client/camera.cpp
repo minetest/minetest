@@ -318,6 +318,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position = player->getPosition();
 
+	f32 yaw = player->getYaw();
+	f32 pitch = player->getPitch();
+	m_head_turn_speed = std::fmod(std::abs(yaw - m_yaw), 360.0f)
+			+ std::abs(pitch - m_pitch);
+	m_yaw = yaw;
+	m_pitch = pitch;
+
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
@@ -342,7 +349,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Set player node transformation
 	m_playernode->setPosition(player_position);
-	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
+	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
@@ -379,7 +386,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		// Set head node transformation
 		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
 		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(player->getPitch(), 0,
+		m_headnode->setRotation(v3f(pitch, 0,
 			cameratilt * player->hurt_tilt_strength));
 		m_headnode->updateAbsolutePosition();
 	}
@@ -511,8 +518,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
+	// Make new matrices and frustum
+	m_cameranode->updateMatrices();
+
 	if (m_arm_inertia)
-		addArmInertia(player->getYaw());
+		addArmInertia(yaw);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
