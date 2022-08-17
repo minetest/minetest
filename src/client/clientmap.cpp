@@ -207,7 +207,7 @@ void ClientMap::updateDrawList()
 
 	// Use a higher fov to accomodate faster camera movements.
 	// Blocks are cropped better when they are drawn.
-	const f32 camera_fov = m_camera_fov * 1.1f;
+	const f32 camera_fov = m_camera_fov * 1.1f; // again?!
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 
@@ -248,10 +248,16 @@ void ClientMap::updateDrawList()
 	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_radian, 0, 500);
 
 	const auto *camera = m_client->getCamera();
+	camera->getCameraNode()->updateMatrices();
 	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
 	// hacky fix
 	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
 			+ m_camera_dirspeed * frustum_cull_extra_bias_per_radian * BS;
+
+	//~ std::array<plane3df, 4> frustum_planes = [&] {
+		//~ f32 x = std::sin(camera->getFovX() * 0.5f);
+		//~ f32 y = std::sin(camera->getFovY() * 0.5f);
+	//~ }();
 
 	auto frustum_cull = [&](v3s16 block_position) {
 		using irr::scene::SViewFrustum;
@@ -261,6 +267,8 @@ void ClientMap::updateDrawList()
 		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
 					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
 			f32 dist = frustum_planes[plane_name].getDistanceTo(block_pos);
+		//~ for (const auto &plane : frustum_planes) {
+			//~ f32 dist = plane.getDistanceTo(block_pos);
 			if (dist > frustum_cull_bias)
 				return true;
 		}
