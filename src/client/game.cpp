@@ -4065,10 +4065,7 @@ void Game::updateShadows()
 	timeoftheday = fmod(timeoftheday + 0.75f, 0.5f) + 0.25f;
 	const float offset_constant = 10000.0f;
 
-	v3f light(0.0f, 0.0f, -1.0f);
-	light.rotateXZBy(90);
-	light.rotateXYBy(timeoftheday * 360 - 90);
-	light.rotateYZBy(sky->getSkyBodyOrbitTilt());
+	v3f light = is_day ? sky->getSunDirection() : sky->getMoonDirection();
 
 	v3f sun_pos = light * offset_constant;
 
