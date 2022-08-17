@@ -185,6 +185,8 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
+#include "util/quicktune.h"
+
 void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
@@ -234,28 +236,18 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	const irr::scene::SViewFrustum *frustum = m_client->getCamera()->getCameraNode()->getViewFrustum();
-	//~ using v4f = std::array<f32, 4>;
-	//~ auto get_frustum_plane = [&](VFPLANES plane_name) {
-		//~ const core::plane3d<f32> &plane_irr = frustum->planes[plane_name];
-		//~ return v4f{plane_irr.Normal.X, plane_irr.Normal.Y, plane_irr.Normal.Z, -plane_irr.D};
-	//~ };
-	//~ std::array<v4f, 4> frustum_planes{
-		//~ get_frustum_plane(VF_LEFT_PLANE),
-		//~ get_frustum_plane(VF_RIGHT_PLANE),
-		//~ get_frustum_plane(VF_BOTTOM_PLANE),
-		//~ get_frustum_plane(VF_TOP_PLANE),
-	//~ };
-	using irr::scene::SViewFrustum;
-	const core::plane3d<f32> (&frustum_planes)[SViewFrustum::VF_PLANE_COUNT] = frustum->planes;
-	for (int i = 0; i < SViewFrustum::VF_PLANE_COUNT; ++i) {
-		if (std::abs(frustum_planes[i].Normal.getLength() - 1.0f) > 0.0001f) {
-			errorstream << "irrlicht could store planes better" << std::endl;
-		}
-	}
+	float use_new_frustum_cull_f = 0.0f;
+	QUICKTUNE_AUTONAME(QVT_FLOAT, use_new_frustum_cull_f, 0, 100);
+	bool use_new_frustum_cull = use_new_frustum_cull_f > 0.001f;
+
+	const auto *camera = m_client->getCamera();
+	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
+
 	auto frustum_cull = [&](v3s16 block_position) {
-		v3f block_pos((f32)block_position.X, (f32)block_position.Y, (f32)block_position.Z);
-		block_pos *= BS;
+		using irr::scene::SViewFrustum;
+		if (!use_new_frustum_cull)
+			return false;
+		v3f block_pos = intToFloat(block_position - m_camera_offset, BS);
 		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
 					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
 			f32 dist = frustum_planes[plane_name].getDistanceTo(block_pos);
