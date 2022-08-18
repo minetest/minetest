@@ -203,18 +203,11 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
-	const v3f camera_position = m_camera_position;
-	const v3f camera_direction = m_camera_direction;
-
 	const auto *camera = m_client->getCamera();
 
 	m_head_turn_speed = camera->getHeadTurnSpeed();
 
-	// Use a higher fov to accomodate faster camera movements.
-	// Blocks are cropped better when they are drawn.
-	const f32 camera_fov = m_camera_fov * 1.1f; // again?!
-
-	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
@@ -227,9 +220,6 @@ void ClientMap::updateDrawList()
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
 
-	u32 blocks_frustum_culled_old = 0;
-	u32 blocks_frustum_culled_new = 0;
-
 	// No occlusion culling when free_move is on and camera is inside ground
 	bool occlusion_culling_enabled = true;
 	if (m_control.allow_noclip) {
@@ -241,26 +231,15 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	float use_new_frustum_cull_f = 0.0f;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, use_new_frustum_cull_f, 0, 100);
-	bool use_new_frustum_cull = use_new_frustum_cull_f > 0.001f;
-
-	float use_old_frustum_cull_f = 0.0f;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, use_old_frustum_cull_f, 0, 100);
-	bool use_old_frustum_cull = use_old_frustum_cull_f > 0.001f;
-
 	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
 
 	// Do less culling on fast camera movement.
-	float frustum_cull_extra_bias_per_deg = 2.0f;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_deg, 0, 5);
+	constexpr float frustum_cull_extra_bias_per_deg = 2.0f;
 	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
 			+ m_head_turn_speed * frustum_cull_extra_bias_per_deg * BS;
 
 	auto is_frustum_culled = [&](v3s16 block_position) {
 		using irr::scene::SViewFrustum;
-		if (!use_new_frustum_cull)
-			return false;
 		v3f block_pos = intToFloat(block_position - m_camera_offset, BS);
 		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
 					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
@@ -319,20 +298,8 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			if (is_frustum_culled(block_position)) {
-				blocks_frustum_culled_new++;
+			if (is_frustum_culled(block_position))
 				continue;
-			}
-
-			if (use_old_frustum_cull) {
-				// Read the vision range, unless unlimited range is enabled.
-				float range = m_control.range_all ? 1e7 : m_control.wanted_range;
-				if (!isBlockInSight(block_coord, camera_position,
-						camera_direction, camera_fov, range * BS, nullptr)) {
-					blocks_frustum_culled_old++;
-					continue;
-				}
-			}
 
 			// Occlusion culling
 			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
@@ -350,10 +317,6 @@ void ClientMap::updateDrawList()
 		if (sector_blocks_drawn != 0)
 			m_last_drawn_sectors.insert(sp);
 	}
-
-	errorstream << "blocks_frustum_culled_old: " << blocks_frustum_culled_old
-			<< ", blocks_frustum_culled_new: " << blocks_frustum_culled_new
-			<< std::endl;
 
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
