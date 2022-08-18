@@ -31,10 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include "client/renderingengine.h"
 
-#include "util/quicktune.h"
-
-static bool use_new_frustcull = true;
-
 // struct MeshBufListList
 void MeshBufListList::clear()
 {
@@ -224,10 +220,6 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	float use_new_frustcull_f = 5.0f;
-	QUICKTUNE_AUTONAME(QVT_FLOAT, use_new_frustcull_f, 0, 100);
-	use_new_frustcull = (use_new_frustcull_f > 0.01f);
-
 	// Only do coarse culling here, to account for fast camera movement.
 	// This is needed because this function is not called every frame.
 	constexpr float frustum_cull_extra_radius = 300.0f;
@@ -283,14 +275,8 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			if (use_new_frustcull) {
-				if (is_frustum_culled(intToFloat(block_position, BS)))
-					continue;
-			} else {
-				if (!isBlockInSight(block_coord, m_camera_position, m_camera_direction,
-						m_camera_fov*1.1f, m_control.wanted_range * BS, nullptr))
-					continue;
-			}
+			if (is_frustum_culled(intToFloat(block_position, BS)))
+				continue;
 
 			// Occlusion culling
 			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
@@ -379,7 +365,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		// Do exact frustum culling
 		// (The one in updateDrawList is only coarse.)
-		if (use_new_frustcull && is_frustum_culled(block_pos_r))
+		if (is_frustum_culled(block_pos_r))
 			continue;
 
 		float d = camera_position.getDistanceFrom(block_pos_r);
