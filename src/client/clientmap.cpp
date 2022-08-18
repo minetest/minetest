@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
 #include <algorithm>
-#include <cmath>
 #include "client/renderingengine.h"
 
 // struct MeshBufListList
@@ -311,8 +310,8 @@ void ClientMap::updateDrawList()
 			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
 
 			// First, perform a simple distance check, with a padding of one extra block.
-			f32 distance_nodes = block_position.getDistanceFrom(cam_pos_nodes);
-			if (!m_control.range_all && distance_nodes > m_control.wanted_range)
+			if (!m_control.range_all &&
+					block_position.getDistanceFrom(cam_pos_nodes) > m_control.wanted_range)
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
