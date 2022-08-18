@@ -470,6 +470,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Set camera node transformation
 	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
+	m_cameranode->updateAbsolutePosition();
 	m_cameranode->setUpVector(abs_cam_up);
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
@@ -656,6 +657,7 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 		irr::core::vector3df camera_pos =
 				(startMatrix * *translation).getTranslation();
 		cam->setPosition(camera_pos);
+		cam->updateAbsolutePosition();
 		cam->setTarget(focusPoint);
 	}
 	m_wieldmgr->drawAll();

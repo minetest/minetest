@@ -245,6 +245,7 @@ void ClientMap::updateDrawList()
 	const auto *camera = m_client->getCamera();
 	//~ camera->getCameraNode()->updateMatrices();
 	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
+	const auto *frustum = camera->getCameraNode()->getViewFrustum();
 
 	// Do less culling on fast camera movements.
 	// Otherwise there are some culled blocks in the edges of the screen when
@@ -253,9 +254,19 @@ void ClientMap::updateDrawList()
 	QUICKTUNE_AUTONAME(QVT_FLOAT, frustum_cull_extra_bias_per_deg, 0, 5);
 	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
 			+ camera->getHeadTurnSpeed() * frustum_cull_extra_bias_per_deg * BS;
+	//~ errorstream << "frustum_cull_bias: "<< frustum_cull_bias
+			//~ <<", camera->getHeadTurnSpeed(): "<<camera->getHeadTurnSpeed()<<std::endl;
+	//~ v3f bla_nld = frustum->getNearLeftDown() - camera_position;
+	//~ v3f bla_fld = frustum->getFarLeftDown() - camera_position;
+	//~ errorstream << "camera_position: "<< PP(camera_position)
+			//~ <<", bla_nld: "<<PP(bla_nld)
+			//~ <<", bla_fld: "<<PP(bla_fld)
+			//~ <<", dir: "<<PP((bla_fld-bla_nld).normalize())
+			//~ <<", cam_node_pos_offset: "<<PP(camera->getCameraNode()->getPosition() - camera_position+intToFloat(m_camera_offset,BS))
+			//~ <<", cam_offset_offset: "<<PP(camera->getOffset() - m_camera_offset)
+			//~ <<std::endl;
 
-	errorstream << "m_camera_offset: "<< PP(m_camera_offset) << std::endl;
-	auto frustum_cull = [&](v3s16 block_position) {
+	auto is_frustum_culled = [&](v3s16 block_position) {
 		using irr::scene::SViewFrustum;
 		if (!use_new_frustum_cull)
 			return false;
@@ -317,7 +328,7 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			if (frustum_cull(block_position)) {
+			if (is_frustum_culled(block_position)) {
 				blocks_frustum_culled_new++;
 				continue;
 			}
