@@ -360,6 +360,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller(BLOCK_MAX_RADIUS);
+
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
@@ -369,6 +371,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			continue;
 
 		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
+
+		// Do exact frustum culling
+		// (The one in updateDrawList is only coarse.)
+		if (is_frustum_culled(block_pos_r))
+			continue;
+
 		float d = camera_position.getDistanceFrom(block_pos_r);
 		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
 
