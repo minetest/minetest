@@ -118,10 +118,6 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	if (previous_block != current_block)
 		m_needs_update_drawlist = true;
 
-	// on abrupt changes of camera rotation, we need to do less frustum culling
-	if (m_client->getCamera()->getHeadTurnSpeed() > m_head_turn_speed * 1.1f)
-		m_needs_update_drawlist = true;
-
 	// reorder transparent meshes when camera crosses node boundary
 	if (previous_node != current_node)
 		m_needs_update_transparent_meshes = true;
@@ -204,8 +200,6 @@ void ClientMap::updateDrawList()
 
 	const auto *camera = m_client->getCamera();
 
-	m_head_turn_speed = camera->getHeadTurnSpeed();
-
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
@@ -230,10 +224,11 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	// Do less culling on fast camera movement.
-	constexpr float frustum_cull_extra_radius_per_deg = 2.0f;
+	// Only do coarse culling here, to account for fast camera movement.
+	// This is needed because this function is not called every frame.
+	constexpr float frustum_cull_extra_radius = 300.0f;
 	auto is_frustum_culled = camera->getFrustumCuller(BLOCK_MAX_RADIUS
-			+ m_head_turn_speed * frustum_cull_extra_radius_per_deg * BS);
+			+ frustum_cull_extra_radius);
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting

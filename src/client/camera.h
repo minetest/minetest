@@ -135,12 +135,6 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
-	// A heuristic value based on yaw and pitch change
-	inline f32 getHeadTurnSpeed() const
-	{
-		return m_head_turn_speed;
-	}
-
 	// Returns a lambda that when called with an object's position (in BS space)
 	// returns true if, and only if the object should be frustum-culled.
 	// radius is the radius of the object.
@@ -254,10 +248,6 @@ private:
 	v2f m_cam_vel;
 	v2f m_cam_vel_old;
 	v2f m_last_cam_pos;
-
-	f32 m_head_turn_speed = 0.0f;
-	f32 m_yaw = 0.0f;
-	f32 m_pitch = 0.0f;
 
 	// Field of view and aspect ratio stuff
 	f32 m_aspect = 1.0f;

@@ -321,10 +321,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	f32 yaw = player->getYaw();
 	f32 pitch = player->getPitch();
-	m_head_turn_speed = std::fmod(std::abs(yaw - m_yaw), 360.0f)
-			+ std::abs(pitch - m_pitch);
-	m_yaw = yaw;
-	m_pitch = pitch;
 
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
