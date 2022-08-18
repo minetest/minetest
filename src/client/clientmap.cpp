@@ -184,8 +184,6 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-#include "util/quicktune.h"
-
 void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
@@ -197,8 +195,6 @@ void ClientMap::updateDrawList()
 		block->refDrop();
 	}
 	m_drawlist.clear();
-
-	const auto *camera = m_client->getCamera();
 
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
@@ -227,8 +223,8 @@ void ClientMap::updateDrawList()
 	// Only do coarse culling here, to account for fast camera movement.
 	// This is needed because this function is not called every frame.
 	constexpr float frustum_cull_extra_radius = 300.0f;
-	auto is_frustum_culled = camera->getFrustumCuller(BLOCK_MAX_RADIUS
-			+ frustum_cull_extra_radius);
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller(
+			BLOCK_MAX_RADIUS + frustum_cull_extra_radius);
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
