@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
-#include <SViewFrustum.h>
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
@@ -231,23 +230,10 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	const auto &frustum_planes = camera->getCameraNode()->getViewFrustum()->planes;
-
 	// Do less culling on fast camera movement.
-	constexpr float frustum_cull_extra_bias_per_deg = 2.0f;
-	const f32 frustum_cull_bias = BLOCK_MAX_RADIUS
-			+ m_head_turn_speed * frustum_cull_extra_bias_per_deg * BS;
-
-	auto is_frustum_culled = [&](v3s16 block_position) {
-		using irr::scene::SViewFrustum;
-		v3f block_pos = intToFloat(block_position - m_camera_offset, BS);
-		for (auto plane_name : {SViewFrustum::VF_LEFT_PLANE, SViewFrustum::VF_RIGHT_PLANE,
-					SViewFrustum::VF_BOTTOM_PLANE, SViewFrustum::VF_TOP_PLANE}) {
-			if (frustum_planes[plane_name].getDistanceTo(block_pos) > frustum_cull_bias)
-				return true;
-		}
-		return false;
-	};
+	constexpr float frustum_cull_extra_radius_per_deg = 2.0f;
+	auto is_frustum_culled = camera->getFrustumCuller(BLOCK_MAX_RADIUS
+			+ m_head_turn_speed * frustum_cull_extra_radius_per_deg * BS);
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -298,7 +284,7 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			if (is_frustum_culled(block_position))
+			if (is_frustum_culled(intToFloat(block_position, BS)))
 				continue;
 
 			// Occlusion culling

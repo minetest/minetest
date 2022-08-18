@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "script/scripting_client.h"
 #include "gettext.h"
+#include <SViewFrustum.h>
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -717,4 +718,16 @@ void Camera::removeNametag(Nametag *nametag)
 {
 	m_nametags.remove(nametag);
 	delete nametag;
+}
+
+std::array<core::plane3d<f32>, 4> Camera::getFrustumCullPlanes() const
+{
+	using irr::scene::SViewFrustum;
+	const auto &frustum_planes = m_cameranode->getViewFrustum()->planes;
+	return {
+		frustum_planes[SViewFrustum::VF_LEFT_PLANE],
+		frustum_planes[SViewFrustum::VF_RIGHT_PLANE],
+		frustum_planes[SViewFrustum::VF_BOTTOM_PLANE],
+		frustum_planes[SViewFrustum::VF_TOP_PLANE],
+	};
 }

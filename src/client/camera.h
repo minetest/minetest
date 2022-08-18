@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
+#include <plane3d.h>
+#include <array>
 #include <list>
 #include "util/Optional.h"
 
@@ -139,6 +141,22 @@ public:
 		return m_head_turn_speed;
 	}
 
+	// Returns a lambda that when called with an object's position (in BS space)
+	// returns true if, and only if the object should be frustum-culled.
+	// radius is the radius of the object.
+	auto getFrustumCuller(f32 radius) const
+	{
+		return [planes = getFrustumCullPlanes(), camera_offset = intToFloat(m_camera_offset, BS),
+				radius](v3f position) {
+			v3f pos_camspace = position - camera_offset;
+			for (auto &plane : planes) {
+				if (plane.getDistanceTo(pos_camspace) > radius)
+					return true;
+			}
+			return false;
+		};
+	}
+
 	// Notify about new server-sent FOV and initialize smooth FOV transition
 	void notifyFovChange();
 
@@ -196,6 +214,8 @@ public:
 	inline void addArmInertia(f32 player_yaw);
 
 private:
+	std::array<core::plane3d<f32>, 4> getFrustumCullPlanes() const;
+
 	// Nodes
 	scene::ISceneNode *m_playernode = nullptr;
 	scene::ISceneNode *m_headnode = nullptr;
