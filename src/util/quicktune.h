@@ -80,7 +80,7 @@ void setQuicktuneValue(const std::string &name, const QuicktuneValue &val);
 
 void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 
-#ifndef NDEBUG
+//~ #ifndef NDEBUG
 	#define QUICKTUNE(type_, var, min_, max_, name){\
 		QuicktuneValue qv;\
 		qv.type = type_;\
@@ -90,9 +90,9 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 		updateQuicktuneValue(name, qv);\
 		var = qv.value_##type_.current;\
 	}
-#else // NDEBUG
-	#define QUICKTUNE(type, var, min_, max_, name){}
-#endif
+//~ #else // NDEBUG
+	//~ #define QUICKTUNE(type, var, min_, max_, name){}
+//~ #endif
 
 #define QUICKTUNE_AUTONAME(type_, var, min_, max_)\
 	QUICKTUNE(type_, var, min_, max_, #var)
