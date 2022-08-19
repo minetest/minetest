@@ -213,9 +213,10 @@ void Client::loadMods()
 	}
 
 	m_mods = modconf.getMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+		errorstream << modconf.getUnsatisfiedModsError() << std::endl;
 		return;
 	}
 
