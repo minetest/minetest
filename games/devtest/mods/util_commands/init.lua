@@ -62,6 +62,28 @@ minetest.register_chatcommand("zoomfov", {
 	end,
 })
 
+minetest.register_chatcommand("min_repeat_place_time", {
+	params = "[<min_repeat_place_time>]",
+	description = "Set or display your min_repeat_place_time physics override",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		if param == "" then
+			local mrpt = player:get_physics_override().min_repeat_place_time
+			return true, "min_repeat_place_time = "..tostring(mrpt)
+		end
+		local mrpt = tonumber(param)
+		if not mrpt then
+			return false, "Missing or incorrect min_repeat_place_time parameter!"
+		end
+		player:set_physics_override({min_repeat_place_time = mrpt})
+		mrpt = player:get_physics_override().min_repeat_place_time
+		return true, "min_repeat_place_time = "..tostring(mrpt)
+	end,
+})
+
 local s_infplace = minetest.settings:get("devtest_infplace")
 if s_infplace == "true" then
 	infplace = true

@@ -900,7 +900,7 @@ private:
 	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
-	f32  m_repeat_place_time;
+	f32  m_repeat_place_time_setting;
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
@@ -3332,8 +3332,11 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		}
 	}
 
+	f32 repeat_place_time = std::max(m_repeat_place_time_setting,
+			client->getEnv().getLocalPlayer()->physics_override.min_repeat_place_time);
+
 	if ((wasKeyPressed(KeyType::PLACE) ||
-			runData.repeat_place_timer >= m_repeat_place_time) &&
+			runData.repeat_place_timer >= repeat_place_time) &&
 			client->checkPrivilege("interact")) {
 		runData.repeat_place_timer = 0;
 		infostream << "Place button pressed while looking at ground" << std::endl;
@@ -4145,7 +4148,7 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.25f, 2.0);
+	m_repeat_place_time_setting          = g_settings->getFloat("repeat_place_time", 0.001f, 2.0);
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

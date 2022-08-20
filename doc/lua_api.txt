@@ -4710,13 +4710,13 @@ Privileges
 
 Privileges provide a means for server administrators to give certain players
 access to special abilities in the engine, games or mods.
-For example, game moderators may need to travel instantly to any place in the world, 
+For example, game moderators may need to travel instantly to any place in the world,
 this ability is implemented in `/teleport` command which requires `teleport` privilege.
 
 Registering privileges
 ----------------------
 
-A mod can register a custom privilege using `minetest.register_privilege` function 
+A mod can register a custom privilege using `minetest.register_privilege` function
 to give server administrators fine-grained access control over mod functionality.
 
 For consistency and practical reasons, privileges should strictly increase the abilities of the user.
@@ -4725,7 +4725,7 @@ Do not register custom privileges that e.g. restrict the player from certain in-
 Checking privileges
 -------------------
 
-A mod can call `minetest.check_player_privs` to test whether a player has privileges 
+A mod can call `minetest.check_player_privs` to test whether a player has privileges
 to perform an operation.
 Also, when registering a chat command with `minetest.register_chatcommand` a mod can
 declare privileges that the command requires using the `privs` field of the command
@@ -4789,7 +4789,7 @@ Minetest includes the following settings to control behavior of privileges:
 
    * `default_privs`: defines privileges granted to new players.
    * `basic_privs`: defines privileges that can be granted/revoked by players having
-    the `basic_privs` privilege. This can be used, for example, to give 
+    the `basic_privs` privilege. This can be used, for example, to give
     limited moderation powers to selected users.
 
 'minetest' namespace reference
@@ -7081,6 +7081,11 @@ child will follow movement and rotation of that bone.
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behaviour (default: `true`)
+        * `min_repeat_place_time`: minimum time in seconds between places when
+          the player holds the place button (default: `0`)
+          The player can set any higher value via the `repeat_place_time` setting.
+          Note: This does not limit node placement speed (neither server-, nor
+          client-side).
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success

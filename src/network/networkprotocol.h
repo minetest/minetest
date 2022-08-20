@@ -208,7 +208,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 40:
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 		Added new particlespawner parameters
-		[scheduled bump for 5.6.0]
+	PROTOCOL VERSION 41:
+		Added physics override: min_repeat_place_time
 */
 
 #define LATEST_PROTOCOL_VERSION 41

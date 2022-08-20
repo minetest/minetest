@@ -1766,7 +1766,8 @@ void GenericCAO::processMessage(const std::string &data)
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
-
+		readU8(is); // padding, always 0
+		float min_repeat_place_time = readF32(is);
 
 		if (m_is_local_player) {
 			auto &phys = m_env->getLocalPlayer()->physics_override;
@@ -1776,6 +1777,7 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.sneak = sneak;
 			phys.sneak_glitch = sneak_glitch;
 			phys.new_move = new_move;
+			phys.min_repeat_place_time = min_repeat_place_time;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value

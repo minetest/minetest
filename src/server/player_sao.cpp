@@ -322,6 +322,8 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeU8(os, !phys.sneak);
 	writeU8(os, !phys.sneak_glitch);
 	writeU8(os, !phys.new_move);
+	writeU8(os, 0); // padding, always 0
+	writeF32(os, phys.min_repeat_place_time);
 	return os.str();
 }
 

@@ -101,6 +101,7 @@ struct PlayerPhysicsOverride
 	float speed = 1.f;
 	float jump = 1.f;
 	float gravity = 1.f;
+	float min_repeat_place_time = 0.0f;
 
 	bool sneak = true;
 	bool sneak_glitch = false;

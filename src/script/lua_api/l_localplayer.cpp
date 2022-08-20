@@ -177,6 +177,9 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
 
+	lua_pushboolean(L, phys.min_repeat_place_time);
+	lua_setfield(L, -2, "min_repeat_place_time");
+
 	return 1;
 }
 
