@@ -83,7 +83,6 @@ private:
 	RenderTarget *m_target;
 };
 
-RenderStep *create3DStage();
 RenderStep *create3DStage(Client *client, v2f scale);
 v2f getDownscaleFactor();
 RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor);

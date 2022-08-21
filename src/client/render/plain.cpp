@@ -94,11 +94,6 @@ void UpscaleStep::run(PipelineContext &context)
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 
-RenderStep *create3DStage()
-{
-	return new Draw3D();
-}
-
 RenderStep *create3DStage(Client *client, v2f scale)
 {
 	RenderStep *step = new Draw3D();
