@@ -52,7 +52,7 @@ void createPipeline(const std::string &stereo_mode, IrrlichtDevice *device, Clie
 	result.pipeline = new RenderPipeline();
 
 	if (result.shadow_renderer)
-		result.pipeline->addStep(result.pipeline->own(new RenderShadowMapStep()));
+		result.pipeline->addStep<RenderShadowMapStep>();
 
 	if (stereo_mode == "none") {
 		populatePlainPipeline(result.pipeline, client);

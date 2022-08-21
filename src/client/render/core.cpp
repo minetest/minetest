@@ -39,7 +39,7 @@ RenderingCore::~RenderingCore()
 void RenderingCore::initialize()
 {
 	if (shadow_renderer)
-		pipeline->addStep(pipeline->own(new RenderShadowMapStep()));
+		pipeline->addStep<RenderShadowMapStep>();
 
 	createPipeline();
 }

@@ -67,25 +67,25 @@ void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client)
 {
 	// clear depth buffer every time 3D is rendered
 	auto step3D = pipeline->own(create3DStage(client, v2f(1.0)));
-	auto screen = pipeline->own(new ScreenTarget());
-	auto clear_depth = pipeline->own(new ClearDepthBufferTarget(screen));
-	auto enable_override_material = pipeline->own(new ConfigureOverrideMaterialTarget(clear_depth, true));
+	auto screen = pipeline->createOwned<ScreenTarget>();
+	auto clear_depth = pipeline->createOwned<ClearDepthBufferTarget>(screen);
+	auto enable_override_material = pipeline->createOwned<ConfigureOverrideMaterialTarget>(clear_depth, true);
 	step3D->setRenderTarget(enable_override_material);
 
 	// left eye
-	pipeline->addStep(pipeline->own(new OffsetCameraStep(false)));
-	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_RED)));
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(false));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_RED));
 	pipeline->addStep(step3D);
 
 	// right eye
-	pipeline->addStep(pipeline->own(new OffsetCameraStep(true)));
-	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_GREEN | video::ECP_BLUE)));
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(true));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_GREEN | video::ECP_BLUE));
 	pipeline->addStep(step3D);
 
 	// reset
-	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
-	pipeline->addStep(pipeline->own(new SetColorMaskStep(video::ECP_ALL)));
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(0.0f));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_ALL));
 	
-	pipeline->addStep(pipeline->own(new MapPostFxStep()));
-	pipeline->addStep(pipeline->own(new DrawHUD()));
+	pipeline->addStep(pipeline->createOwned<MapPostFxStep>());
+	pipeline->addStep(pipeline->createOwned<DrawHUD>());
 }

@@ -61,31 +61,31 @@ void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool h
 		offset = v2f(0.5f, 0.0f);
 	}
 
-	TextureBuffer *buffer = new TextureBuffer();
+	TextureBuffer *buffer = pipeline->createOwned<TextureBuffer>();
 	buffer->setTexture(TEXTURE_LEFT, virtual_size_scale, "3d_render_left", video::ECF_A8R8G8B8);
 	buffer->setTexture(TEXTURE_RIGHT, virtual_size_scale, "3d_render_right", video::ECF_A8R8G8B8);
-	pipeline->own(buffer);
 
 	auto step3D = pipeline->own(create3DStage(client, virtual_size_scale));
 
 	// eyes
 	for (bool right : { false, true }) {
-		pipeline->addStep(pipeline->own(new OffsetCameraStep(flipped ? !right : right)));
-		auto output = pipeline->own(new TextureBufferOutput(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT));
-		pipeline->addStep(pipeline->own(new SetRenderTargetStep(step3D, output)));
+		pipeline->addStep<OffsetCameraStep>(flipped ? !right : right);
+		auto output = pipeline->createOwned<TextureBufferOutput>(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
+		pipeline->addStep<SetRenderTargetStep>(step3D, output);
 		pipeline->addStep(step3D);
-		pipeline->addStep(pipeline->own(new MapPostFxStep()));
-		pipeline->addStep(pipeline->own(new DrawHUD()));
+		pipeline->addStep<MapPostFxStep>();
+		pipeline->addStep<DrawHUD>();
 	}
 
-	pipeline->addStep(pipeline->own(new OffsetCameraStep(0.0f)));
+	pipeline->addStep<OffsetCameraStep>(0.0f);
 
-	auto screen = pipeline->own(new ScreenTarget());
+	auto screen = pipeline->createOwned<ScreenTarget>();
 
 	for (bool right : { false, true }) {
-		auto step = new DrawImageStep(right ? TEXTURE_RIGHT : TEXTURE_LEFT, right ? offset : v2f());
+		auto step = pipeline->addStep<DrawImageStep>(
+				right ? TEXTURE_RIGHT : TEXTURE_LEFT,
+				right ? offset : v2f());
 		step->setRenderSource(buffer);
 		step->setRenderTarget(screen);
-		pipeline->addStep(pipeline->own(step));
 	}
 }

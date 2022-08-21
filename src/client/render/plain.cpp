@@ -94,19 +94,19 @@ void UpscaleStep::run(PipelineContext &context)
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 
-RenderStep *create3DStage(Client *client, v2f scale)
+std::unique_ptr<RenderStep> create3DStage(Client *client, v2f scale)
 {
 	RenderStep *step = new Draw3D();
 	if (g_settings->getBool("enable_shaders")) {
 		RenderPipeline *pipeline = new RenderPipeline();
-		pipeline->addStep(pipeline->own(step));
+		pipeline->addStep(pipeline->own(std::unique_ptr<RenderStep>(step)));
 
 		auto effect = addPostProcessing(pipeline, step, scale, client);
-		pipeline->addStep(pipeline->own(effect));
+		pipeline->addStep(effect);
 		effect->setRenderTarget(pipeline->getOutput());
 		step = pipeline;
 	}
-	return step;
+	return std::unique_ptr<RenderStep>(step);
 }
 
 v2f getDownscaleFactor()
@@ -115,7 +115,7 @@ v2f getDownscaleFactor()
 	return v2f(1.0f / undersampling);
 }
 
-RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor)
+RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f downscale_factor)
 {
 	const int TEXTURE_UPSCALE = 0;
 
@@ -123,18 +123,17 @@ RenderStep *addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 		return previousStep;
 
 	// Initialize buffer
-	TextureBuffer *buffer = new TextureBuffer();
+	TextureBuffer *buffer = pipeline->createOwned<TextureBuffer>();
 	buffer->setTexture(TEXTURE_UPSCALE, downscale_factor, "upscale", video::ECF_A8R8G8B8);
-	pipeline->own(buffer);
 
 	// Attach previous step to the buffer
-	TextureBufferOutput *buffer_output = new TextureBufferOutput(buffer, TEXTURE_UPSCALE);
-	previousStep->setRenderTarget(pipeline->own(buffer_output));
+	TextureBufferOutput *buffer_output = pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_UPSCALE);
+	previousStep->setRenderTarget(buffer_output);
 
 	// Add upscaling step
-	RenderStep *upscale = new UpscaleStep();
+	RenderStep *upscale = pipeline->createOwned<UpscaleStep>();
 	upscale->setRenderSource(buffer);
-	pipeline->addStep(pipeline->own(upscale));
+	pipeline->addStep(upscale);
 
 	return upscale;
 }
@@ -144,11 +143,11 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 	auto downscale_factor = getDownscaleFactor();
 	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
 	pipeline->addStep(step3D);
-	pipeline->addStep(pipeline->own(new MapPostFxStep()));
+	pipeline->addStep<MapPostFxStep>();
 
 	step3D = addUpscaling(pipeline, step3D, downscale_factor);
 
-	step3D->setRenderTarget(pipeline->own(new ScreenTarget()));
+	step3D->setRenderTarget(pipeline->createOwned<ScreenTarget>());
 
-	pipeline->addStep(pipeline->own(new DrawHUD()));
+	pipeline->addStep<DrawHUD>();
 }

@@ -91,13 +91,12 @@ void PostProcessingStep::run(PipelineContext &context)
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
-	auto buffer = new TextureBuffer();
+	auto buffer = pipeline->createOwned<TextureBuffer>();
 
 	// init post-processing buffer
 	buffer->setTexture(0, scale, "3d_render", video::ECF_A8R8G8B8);
 	buffer->setTexture(1, scale, "3d_normalmap", video::ECF_A8R8G8B8);
 	buffer->setDepthTexture(2, scale, "3d_depthmap", video::ECF_D32);
-	pipeline->own(buffer);
 
 	// attach buffer to the previous step
 	previousStep->setRenderTarget(buffer);
@@ -108,7 +107,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	u32 shader_index = s->getShader("second_stage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
-	PostProcessingStep *effect = new PostProcessingStep(shader, std::vector<u8> {0, 1, 0, 2});
+	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader, std::vector<u8> {0, 1, 0, 2});
 	effect->setRenderSource(buffer);
 	return effect;
 }
