@@ -95,14 +95,13 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// init post-processing buffer
 	buffer->setTexture(0, scale, "3d_render", video::ECF_A8R8G8B8);
-	buffer->setTexture(1, scale, "3d_normalmap", video::ECF_A8R8G8B8);
 
 	video::ECOLOR_FORMAT depth_format = video::ECF_D32;
 #if ENABLE_GLES
 	if (g_settings->get("video_driver") == "ogles2")
 		depth_format = video::ECF_D16;
 #endif
-	buffer->setDepthTexture(2, scale, "3d_depthmap", depth_format);
+	buffer->setDepthTexture(3, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
 	previousStep->setRenderTarget(buffer);
@@ -113,7 +112,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	u32 shader_index = s->getShader("second_stage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
-	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> {0, 1, 0, 2});
+	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> { 0 });
 	effect->setRenderSource(buffer);
 	return effect;
 }

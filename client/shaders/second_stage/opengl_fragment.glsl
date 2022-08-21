@@ -1,18 +1,6 @@
 uniform sampler2D baseTexture;
-uniform sampler2D normalTexture;
-uniform sampler2D ShadowMapSampler;
 
 #define rendered baseTexture
-#define normalmap normalTexture
-#define depthmap ShadowMapSampler
-
-const float far = 20000.;
-const float near = 1.;
-float mapDepth(float depth)
-{
-	depth = 2. * near / (far + near - depth * (far - near));
-	return clamp(pow(depth, 1./2.5), 0.0, 1.0);
-}
 
 #if ENABLE_TONE_MAPPING
 
