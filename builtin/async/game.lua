@@ -13,11 +13,12 @@ end
 
 -- Import a bunch of individual files from builtin/game/
 local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
+local commonpath = core.get_builtin_path() .. "common" .. DIR_DELIM
 
 local builtin_shared = {}
 
 dofile(gamepath .. "constants.lua")
-assert(loadfile(gamepath .. "item_s.lua"))(builtin_shared)
+assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 dofile(gamepath .. "misc_s.lua")
 dofile(gamepath .. "features.lua")
 dofile(gamepath .. "voxelarea.lua")
