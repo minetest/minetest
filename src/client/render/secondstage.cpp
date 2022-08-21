@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 PostProcessingStep::PostProcessingStep(video::E_MATERIAL_TYPE shader, const std::vector<u8> &_texture_map) :
 	texture_map(_texture_map)
 {
+	assert(texture_map.size() <= video::MATERIAL_MAX_TEXTURES);
 	createMaterial(shader);
 }
 
@@ -36,7 +37,7 @@ void PostProcessingStep::createMaterial(video::E_MATERIAL_TYPE shader)
 	material.ZBuffer = true;
 	material.ZWriteEnable = video::EZW_ON;
 	material.MaterialType = shader;
-	for (u32 k = 0; k < MYMIN(video::MATERIAL_MAX_TEXTURES, texture_map.size()); ++k) {
+	for (u32 k = 0; k < texture_map.size(); ++k) {
 		material.TextureLayer[k].AnisotropicFilter = false;
 		material.TextureLayer[k].BilinearFilter = false;
 		material.TextureLayer[k].TrilinearFilter = false;
