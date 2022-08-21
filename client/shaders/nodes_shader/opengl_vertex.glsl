@@ -42,9 +42,6 @@ centroid varying vec2 varTexCoord;
 	varying float perspective_factor;
 #endif
 
-varying vec3 lightVec;
-varying vec3 tsEyeVec;
-varying vec3 tsLightVec;
 varying float area_enable_parallax;
 
 varying vec3 eyeVec;
