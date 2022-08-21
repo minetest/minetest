@@ -50,26 +50,10 @@ void main(void)
 {
 	vec2 uv = gl_TexCoord[0].st;
 	vec4 color = texture2D(rendered, uv).rgba;
-#ifdef SECONDSTAGE_DEBUG
-	vec4 normal_and_depth = texture2D(normalmap, uv);
-	vec3 normal = normal_and_depth.rgb;
-	float draw_type = normal_and_depth.a * 256. / 25.;
-	float depth = mapDepth(texture2D(depthmap, uv).r);
-
-	if (uv.x < 0.5 && uv.y < 0.5)
-		gl_FragColor = color;
-	else if (uv.y < 0.5)
-		gl_FragColor = vec4(depth, depth, depth, 1);
-	else if (uv.x < 0.5)
-		gl_FragColor = vec4(normal, 1);
-	else
-		gl_FragColor = vec4(draw_type, draw_type, draw_type, 1);
-#else
 
 #if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
 #endif
 
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
-#endif
 }
