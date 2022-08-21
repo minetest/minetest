@@ -107,7 +107,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	u32 shader_index = s->getShader("second_stage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
-	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader, std::vector<u8> {0, 1, 0, 2});
+	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> {0, 1, 0, 2});
 	effect->setRenderSource(buffer);
 	return effect;
 }

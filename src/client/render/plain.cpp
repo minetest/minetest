@@ -102,7 +102,6 @@ std::unique_ptr<RenderStep> create3DStage(Client *client, v2f scale)
 		pipeline->addStep(pipeline->own(std::unique_ptr<RenderStep>(step)));
 
 		auto effect = addPostProcessing(pipeline, step, scale, client);
-		pipeline->addStep(effect);
 		effect->setRenderTarget(pipeline->getOutput());
 		step = pipeline;
 	}
