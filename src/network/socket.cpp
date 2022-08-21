@@ -91,7 +91,7 @@ UDPSocket::UDPSocket(bool ipv6)
 bool UDPSocket::init(bool ipv6, bool noExceptions)
 {
 	if (!g_sockets_initialized) {
-		dstream << "Sockets not initialized" << std::endl;
+		tracestream << "Sockets not initialized" << std::endl;
 		return false;
 	}
 
@@ -100,7 +100,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 	m_handle = socket(m_addr_family, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (socket_enable_debug_output) {
-		dstream << "UDPSocket(" << (int)m_handle
+		tracestream << "UDPSocket(" << (int)m_handle
 			<< ")::UDPSocket(): ipv6 = " << (ipv6 ? "true" : "false")
 			<< std::endl;
 	}
@@ -131,7 +131,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 UDPSocket::~UDPSocket()
 {
 	if (socket_enable_debug_output) {
-		dstream << "UDPSocket( " << (int)m_handle << ")::~UDPSocket()"
+		tracestream << "UDPSocket( " << (int)m_handle << ")::~UDPSocket()"
 			<< std::endl;
 	}
 
@@ -145,7 +145,7 @@ UDPSocket::~UDPSocket()
 void UDPSocket::Bind(Address addr)
 {
 	if (socket_enable_debug_output) {
-		dstream << "UDPSocket(" << (int)m_handle
+		tracestream << "UDPSocket(" << (int)m_handle
 			<< ")::Bind(): " << addr.serializeString() << ":"
 			<< addr.getPort() << std::endl;
 	}
@@ -182,7 +182,7 @@ void UDPSocket::Bind(Address addr)
 	}
 
 	if (ret < 0) {
-		dstream << (int)m_handle << ": Bind failed: "
+		tracestream << (int)m_handle << ": Bind failed: "
 			<< SOCKET_ERR_STR(LAST_SOCKET_ERR()) << std::endl;
 		throw SocketException("Failed to bind socket");
 	}
@@ -197,31 +197,31 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 
 	if (socket_enable_debug_output) {
 		// Print packet destination and size
-		dstream << (int)m_handle << " -> ";
-		destination.print(dstream);
-		dstream << ", size=" << size;
+		tracestream << (int)m_handle << " -> ";
+		destination.print(tracestream);
+		tracestream << ", size=" << size;
 
 		// Print packet contents
-		dstream << ", data=";
+		tracestream << ", data=";
 		for (int i = 0; i < size && i < 20; i++) {
 			if (i % 2 == 0)
-				dstream << " ";
+				tracestream << " ";
 			unsigned int a = ((const unsigned char *)data)[i];
-			dstream << std::hex << std::setw(2) << std::setfill('0') << a;
+			tracestream << std::hex << std::setw(2) << std::setfill('0') << a;
 		}
 
 		if (size > 20)
-			dstream << "...";
+			tracestream << "...";
 
 		if (dumping_packet)
-			dstream << " (DUMPED BY INTERNET_SIMULATOR)";
+			tracestream << " (DUMPED BY INTERNET_SIMULATOR)";
 
-		dstream << std::endl;
+		tracestream << std::endl;
 	}
 
 	if (dumping_packet) {
 		// Lol let's forget it
-		dstream << "UDPSocket::Send(): INTERNET_SIMULATOR: dumping packet."
+		tracestream << "UDPSocket::Send(): INTERNET_SIMULATOR: dumping packet."
 			<< std::endl;
 		return;
 	}
@@ -294,22 +294,22 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 
 	if (socket_enable_debug_output) {
 		// Print packet sender and size
-		dstream << (int)m_handle << " <- ";
-		sender.print(dstream);
-		dstream << ", size=" << received;
+		tracestream << (int)m_handle << " <- ";
+		sender.print(tracestream);
+		tracestream << ", size=" << received;
 
 		// Print packet contents
-		dstream << ", data=";
+		tracestream << ", data=";
 		for (int i = 0; i < received && i < 20; i++) {
 			if (i % 2 == 0)
-				dstream << " ";
+				tracestream << " ";
 			unsigned int a = ((const unsigned char *)data)[i];
-			dstream << std::hex << std::setw(2) << std::setfill('0') << a;
+			tracestream << std::hex << std::setw(2) << std::setfill('0') << a;
 		}
 		if (received > 20)
-			dstream << "...";
+			tracestream << "...";
 
-		dstream << std::endl;
+		tracestream << std::endl;
 	}
 
 	return received;
@@ -358,7 +358,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	}
 
 	if (result < 0) {
-		dstream << (int)m_handle << ": Select failed: " << SOCKET_ERR_STR(e)
+		tracestream << (int)m_handle << ": Select failed: " << SOCKET_ERR_STR(e)
 			<< std::endl;
 
 		throw SocketException("Select failed");

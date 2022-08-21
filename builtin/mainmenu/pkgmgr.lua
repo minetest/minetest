@@ -243,99 +243,10 @@ function pkgmgr.get_base_folder(temppath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.isValidModname(modpath)
-	if modpath:find("-") ~= nil then
-		return false
-	end
-
-	return true
+function pkgmgr.is_valid_modname(modpath)
+	return modpath:match("[^a-z0-9_]") == nil
 end
 
---------------------------------------------------------------------------------
-function pkgmgr.parse_register_line(line)
-	local pos1 = line:find("\"")
-	local pos2 = nil
-	if pos1 ~= nil then
-		pos2 = line:find("\"",pos1+1)
-	end
-
-	if pos1 ~= nil and pos2 ~= nil then
-		local item = line:sub(pos1+1,pos2-1)
-
-		if item ~= nil and
-			item ~= "" then
-			local pos3 = item:find(":")
-
-			if pos3 ~= nil then
-				local retval = item:sub(1,pos3-1)
-				if retval ~= nil and
-					retval ~= "" then
-					return retval
-				end
-			end
-		end
-	end
-	return nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.parse_dofile_line(modpath,line)
-	local pos1 = line:find("\"")
-	local pos2 = nil
-	if pos1 ~= nil then
-		pos2 = line:find("\"",pos1+1)
-	end
-
-	if pos1 ~= nil and pos2 ~= nil then
-		local filename = line:sub(pos1+1,pos2-1)
-
-		if filename ~= nil and
-			filename ~= "" and
-			filename:find(".lua") then
-			return pkgmgr.identify_modname(modpath,filename)
-		end
-	end
-	return nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.identify_modname(modpath,filename)
-	local testfile = io.open(modpath .. DIR_DELIM .. filename,"r")
-	if testfile ~= nil then
-		local line = testfile:read()
-
-		while line~= nil do
-			local modname = nil
-
-			if line:find("minetest.register_tool") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-			if line:find("minetest.register_craftitem") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-
-			if line:find("minetest.register_node") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-			if line:find("dofile") then
-				modname = pkgmgr.parse_dofile_line(modpath,line)
-			end
-
-			if modname ~= nil then
-				testfile:close()
-				return modname
-			end
-
-			line = testfile:read()
-		end
-		testfile:close()
-	end
-
-	return nil
-end
 --------------------------------------------------------------------------------
 function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 	if not render_list then
@@ -597,22 +508,28 @@ function pkgmgr.get_worldconfig(worldpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install_dir(type, path, basename, targetpath)
+function pkgmgr.install_dir(expected_type, path, basename, targetpath)
+	assert(type(expected_type) == "string")
+	assert(type(path) == "string")
+	assert(basename == nil or type(basename) == "string")
+	assert(targetpath == nil or type(targetpath) == "string")
+
 	local basefolder = pkgmgr.get_base_folder(path)
 
-	-- There's no good way to detect a texture pack, so let's just assume
-	-- it's correct for now.
-	if type == "txp" then
+	if expected_type == "txp" then
+		assert(basename)
+
+		-- There's no good way to detect a texture pack, so let's just assume
+		-- it's correct for now.
 		if basefolder and basefolder.type ~= "invalid" and basefolder.type ~= "txp" then
 			return nil, fgettext("Unable to install a $1 as a texture pack", basefolder.type)
 		end
 
 		local from = basefolder and basefolder.path or path
-		if targetpath then
-			core.delete_dir(targetpath)
-		else
+		if not targetpath then
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
+		core.delete_dir(targetpath)
 		if not core.copy_dir(from, targetpath, false) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
@@ -620,76 +537,38 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		return targetpath, nil
 
 	elseif not basefolder then
-		return nil, fgettext("Unable to find a valid mod or modpack")
+		return nil, fgettext("Unable to find a valid mod, modpack, or game")
 	end
 
-	--
-	-- Get destination
-	--
-	if basefolder.type == "modpack" then
-		if type ~= "mod" then
-			return nil, fgettext("Unable to install a modpack as a $1", type)
-		end
+	-- Check type
+	if basefolder.type ~= expected_type and (basefolder.type ~= "modpack" or expected_type ~= "mod") then
+		return nil, fgettext("Unable to install a $1 as a $2", basefolder.type, expected_type)
+	end
 
-		-- Get destination name for modpack
-		if targetpath then
-			core.delete_dir(targetpath)
+	-- Set targetpath if not predetermined
+	if not targetpath then
+		local content_path
+		if basefolder.type == "modpack" or basefolder.type == "mod" then
+			if not basename then
+				basename = get_last_folder(cleanup_path(basefolder.path))
+			end
+			content_path = core.get_modpath()
+		elseif basefolder.type == "game" then
+			content_path = core.get_gamepath()
 		else
-			local clean_path = nil
-			if basename ~= nil then
-				clean_path = basename
-			end
-			if not clean_path then
-				clean_path = get_last_folder(cleanup_path(basefolder.path))
-			end
-			if clean_path then
-				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
-			else
-				return nil,
-					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
-					path)
-			end
-		end
-	elseif basefolder.type == "mod" then
-		if type ~= "mod" then
-			return nil, fgettext("Unable to install a mod as a $1", type)
+			error("Unknown content type")
 		end
 
-		if targetpath then
-			core.delete_dir(targetpath)
+		if basename and (basefolder.type ~= "mod" or pkgmgr.is_valid_modname(basename)) then
+			targetpath = content_path .. DIR_DELIM .. basename
 		else
-			local targetfolder = basename
-			if targetfolder == nil then
-				targetfolder = pkgmgr.identify_modname(basefolder.path, "init.lua")
-			end
-
-			-- If heuristic failed try to use current foldername
-			if targetfolder == nil then
-				targetfolder = get_last_folder(basefolder.path)
-			end
-
-			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
-				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
-			else
-				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", path)
-			end
+			return nil,
+				fgettext("Install: Unable to find suitable folder name for $1", path)
 		end
-
-	elseif basefolder.type == "game" then
-		if type ~= "game" then
-			return nil, fgettext("Unable to install a game as a $1", type)
-		end
-
-		if targetpath then
-			core.delete_dir(targetpath)
-		else
-			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
-		end
-	else
-		error("basefolder didn't return a recognised type, this shouldn't happen")
 	end
 
 	-- Copy it
+	core.delete_dir(targetpath)
 	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)

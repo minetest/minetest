@@ -554,6 +554,25 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 }
 
+static v3f getSkyBodyPosition(float horizon_position, float day_position, float orbit_tilt)
+{
+	v3f result = v3f(0, 0, -1);
+	result.rotateXZBy(horizon_position);
+	result.rotateXYBy(day_position);
+	result.rotateYZBy(orbit_tilt);
+	return result;
+}
+
+v3f Sky::getSunDirection()
+{
+	return getSkyBodyPosition(90, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+}
+
+v3f Sky::getMoonDirection()
+{
+	return getSkyBodyPosition(270, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+}
+
 void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
 	const video::SColor &suncolor2, float wicked_time_of_day)
 	/* Draw sun in the sky.
@@ -703,15 +722,13 @@ void Sky::place_sky_body(
 	* day_position: turn the body around the Z axis, to place it depending of the time of the day
 	*/
 {
-	v3f centrum(0, 0, -1);
-	centrum.rotateXZBy(horizon_position);
-	centrum.rotateXYBy(day_position);
-	centrum.rotateYZBy(m_sky_body_orbit_tilt);
+	v3f centrum = getSkyBodyPosition(horizon_position, day_position, m_sky_body_orbit_tilt);
+	v3f untilted_centrum = getSkyBodyPosition(horizon_position, day_position, 0.f);
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
-		vertex.Pos.Z += centrum.Z;
+		vertex.Pos += centrum - untilted_centrum;
 	}
 }
 

@@ -71,12 +71,14 @@ public:
 	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
 	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
 	void setSunriseTexture(const std::string &sunglow_texture, ITextureSource* tsrc);
+	v3f getSunDirection();
 
 	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
 	bool getMoonVisible() const { return m_moon_params.visible; }
 	void setMoonTexture(const std::string &moon_texture,
 		const std::string &moon_tonemap, ITextureSource *tsrc);
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
+	v3f getMoonDirection();
 
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
 	void setStarCount(u16 star_count);
@@ -107,8 +109,6 @@ public:
 	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
-
-	float getSkyBodyOrbitTilt() const { return m_sky_body_orbit_tilt; }
 
 private:
 	aabb3f m_box;

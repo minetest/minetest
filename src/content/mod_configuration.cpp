@@ -21,16 +21,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 #include "filesys.h"
+#include "gettext.h"
 
-void ModConfiguration::printUnsatisfiedModsError() const
+
+std::string ModConfiguration::getUnsatisfiedModsError() const
 {
+	std::ostringstream error;
+	error << gettext("Some mods have unsatisfied dependencies:") << std::endl;
+
 	for (const ModSpec &mod : m_unsatisfied_mods) {
-		errorstream << "mod \"" << mod.name
-					<< "\" has unsatisfied dependencies: ";
+		//~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+		error << " - " << fmtgettext("%s is missing:", mod.name.c_str());
 		for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
-			errorstream << " \"" << unsatisfied_depend << "\"";
-		errorstream << std::endl;
+			error << " " << unsatisfied_depend;
+		error << "\n";
 	}
+
+	error << "\n"
+		<< gettext("Install and enable the required mods, or disable the mods causing errors.") << "\n"
+		<< gettext("Note: this may be caused by a dependency cycle, in which case try updating the mods.");
+
+	return error.str();
 }
 
 void ModConfiguration::addModsInPath(const std::string &path, const std::string &virtual_path)

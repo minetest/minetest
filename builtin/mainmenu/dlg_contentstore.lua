@@ -89,7 +89,7 @@ local function download_and_extract(param)
 	if filename == "" or not core.download_file(param.url, filename) then
 		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
-			msg = fgettext("Failed to download $1", package.name)
+			msg = fgettext("Failed to download \"$1\"", package.title)
 		}
 	end
 
@@ -105,7 +105,7 @@ local function download_and_extract(param)
 	os.remove(filename)
 	if not tempfolder then
 		return {
-			msg = fgettext("Install: Unsupported file type or broken archive"),
+			msg = fgettext("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
 		}
 	end
 
@@ -129,7 +129,7 @@ local function start_install(package, reason)
 			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
 			core.delete_dir(result.path)
 			if not path then
-				gamedata.errormessage = msg
+				gamedata.errormessage = fgettext("Error installing \"$1\": $2", package.title, msg)
 			else
 				core.log("action", "Installed package to " .. path)
 
