@@ -176,7 +176,15 @@ private:
 		video::ECOLOR_FORMAT format;
 	};
 
-	bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context);
+	/**
+	 * Make sure the texture in the given slot matches the texture definition given the current context.
+	 * @param textureSlot address of the texture pointer to verify and populate.
+	 * @param definition logical definition of the texture
+	 * @param context current context of the rendering pipeline
+	 * @return true if a new texture was created and put into the slot
+	 * @return false if the slot was not modified
+	 */
+	bool ensureTexture(video::ITexture **textureSlot, const TextureDefinition& definition, PipelineContext &context);
 
 	video::IVideoDriver *m_driver { nullptr };
 	std::vector<TextureDefinition> m_definitions;
