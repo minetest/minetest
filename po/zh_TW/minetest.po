@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-06-20 09:52+0000\n"
-"Last-Translator: Ivon Huang <qj985n2@protonmail.com>\n"
+"PO-Revision-Date: 2022-08-22 17:15+0000\n"
+"Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -127,14 +127,17 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"已安裝版本：$1\n"
+"新版本：$2\n"
+"造訪 $3 取得最新版本、功能與錯誤修復。"
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "稍後提醒"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "永不"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -150,7 +153,7 @@ msgstr "伺服器支援協定版本 $1 到 $2。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "造訪網站"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -162,11 +165,11 @@ msgstr "我們支援協定版本 $1 到 $2。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(已啓用，有錯誤)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(未啓用)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -665,14 +668,12 @@ msgid "Browse"
 msgstr "瀏覽"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "內容"
+msgstr "內容：子遊戲"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "內容"
+msgstr "內容：模組"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -1015,7 +1016,7 @@ msgstr "加入遊戲"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "登錄"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1040,7 +1041,7 @@ msgstr "伺服器描述"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(需遊戲支援)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1087,9 +1088,8 @@ msgid "Dynamic shadows"
 msgstr "動態陰影"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "動態陰影: "
+msgstr "動態陰影:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1484,9 +1484,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "已啟用無限視野"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "正在建立用戶端..."
+msgstr "建立用戶端時發生錯誤：%s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1590,11 +1590,11 @@ msgstr "開啟"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr "已停用 Pitch 移動模式"
+msgstr "已停止沿視角移動"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr "已啟用 Pitch 移動模式"
+msgstr "已開始沿視角移動"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
