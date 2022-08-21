@@ -45,8 +45,9 @@ protected:
 	virtual void createPipeline() {}
 
 public:
-	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
-			ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, v2f virtual_size_scale);
+	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud, 
+			ShadowRenderer *shadow_renderer, RenderPipeline *pipeline,
+			v2f virtual_size_scale);
 	RenderingCore(const RenderingCore &) = delete;
 	RenderingCore(RenderingCore &&) = delete;
 	virtual ~RenderingCore();
