@@ -47,11 +47,13 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 
 void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
 {
+	assert(index != NO_DEPTH_TEXTURE);
+
 	if (m_definitions.size() <= index)
 		m_definitions.resize(index + 1);
 
 	if (m_depth_texture_index == index)
-		m_depth_texture_index = 255;
+		m_depth_texture_index = NO_DEPTH_TEXTURE;
 	
 	auto &definition = m_definitions[index];
 	definition.valid = true;
@@ -64,11 +66,13 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 
 void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
 {
+	assert(index != NO_DEPTH_TEXTURE);
+
 	if (m_definitions.size() <= index)
 		m_definitions.resize(index + 1);
 	
 	if (m_depth_texture_index == index)
-		m_depth_texture_index = 255;
+		m_depth_texture_index = NO_DEPTH_TEXTURE;
 
 	auto &definition = m_definitions[index];
 	definition.valid = true;
@@ -81,12 +85,14 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 
 void TextureBuffer::setDepthTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
 {
+	assert(index != NO_DEPTH_TEXTURE);
 	setTexture(index, size, name, format);
 	m_depth_texture_index = index;
 }
 
 void TextureBuffer::setDepthTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
 {
+	assert(index != NO_DEPTH_TEXTURE);
 	setTexture(index, scale_factor, name, format);
 	m_depth_texture_index = index;
 }
@@ -127,7 +133,7 @@ void TextureBuffer::reset(PipelineContext &context)
 	}
 	
 	// make sude depth texture is removed and reset
-	if (m_depth_texture_index == 255 && m_depth_texture) {
+	if (m_depth_texture_index == NO_DEPTH_TEXTURE && m_depth_texture) {
 		m_driver->removeTexture(m_depth_texture);
 		m_depth_texture = nullptr;
 	}

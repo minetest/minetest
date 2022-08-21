@@ -163,6 +163,8 @@ public:
 	virtual void activate(PipelineContext &context) override;
 	virtual void reset(PipelineContext &context) override;
 private:
+	static const u8 NO_DEPTH_TEXTURE = 255;
+
 	struct TextureDefinition
 	{
 		bool valid { false };
@@ -180,7 +182,7 @@ private:
 	std::vector<TextureDefinition> m_definitions;
 	core::array<video::ITexture *> m_textures;
 	video::ITexture *m_depth_texture { nullptr };
-	u8 m_depth_texture_index { 255 /* assume unused */ };
+	u8 m_depth_texture_index { NO_DEPTH_TEXTURE };
 	video::IRenderTarget *m_render_target { nullptr };
 };
 
