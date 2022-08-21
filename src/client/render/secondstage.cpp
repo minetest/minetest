@@ -96,7 +96,13 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// init post-processing buffer
 	buffer->setTexture(0, scale, "3d_render", video::ECF_A8R8G8B8);
 	buffer->setTexture(1, scale, "3d_normalmap", video::ECF_A8R8G8B8);
-	buffer->setDepthTexture(2, scale, "3d_depthmap", video::ECF_D32);
+
+	video::ECOLOR_FORMAT depth_format = video::ECF_D32;
+#if ENABLE_GLES
+	if (g_settings->get("video_driver") == "ogles2")
+		depth_format = video::ECF_D16;
+#endif
+	buffer->setDepthTexture(2, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
 	previousStep->setRenderTarget(buffer);
