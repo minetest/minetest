@@ -91,10 +91,10 @@ void TextureBuffer::setDepthTexture(u8 index, v2f scale_factor, const std::strin
 	m_depth_texture_index = index;
 }
 
-void TextureBuffer::reset(PipelineContext *context)
+void TextureBuffer::reset(PipelineContext &context)
 {
 	if (!m_driver)
-		m_driver = context->device->getVideoDriver();
+		m_driver = context.device->getVideoDriver();
 
 	// remove extra textures
 	if (m_textures.size() > m_definitions.size()) {
@@ -141,13 +141,13 @@ void TextureBuffer::reset(PipelineContext *context)
 	RenderTarget::reset(context);
 }
 
-void TextureBuffer::activate(PipelineContext *context)
+void TextureBuffer::activate(PipelineContext &context)
 {
-	m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, context->clear_color);
+	m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, context.clear_color);
 	RenderTarget::activate(context);
 }
 
-bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context)
+bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
 {
 	bool modify;
 	core::dimension2du size;
@@ -156,8 +156,8 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 			size = definition.size;
 		else
 			size = core::dimension2du(
-					(u32)(context->target_size.X * definition.scale_factor.X),
-					(u32)(context->target_size.Y * definition.scale_factor.Y));
+					(u32)(context.target_size.X * definition.scale_factor.X),
+					(u32)(context.target_size.Y * definition.scale_factor.Y));
 		
 		modify = definition.dirty || (*texture == nullptr) || (*texture)->getSize() != size;
 	}
@@ -183,11 +183,11 @@ TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, u8 _texture_ind
 	: buffer(_buffer), texture_index(_texture_index)
 {}
 
-void TextureBufferOutput::activate(PipelineContext *context)
+void TextureBufferOutput::activate(PipelineContext &context)
 {
 	auto texture = buffer->getTexture(texture_index);
-	auto driver = context->device->getVideoDriver();
-	driver->setRenderTarget(texture, m_clear, m_clear, context->clear_color);
+	auto driver = context.device->getVideoDriver();
+	driver->setRenderTarget(texture, m_clear, m_clear, context.clear_color);
 	driver->OnResize(texture->getSize());
 
 	RenderTarget::activate(context);
@@ -205,25 +205,25 @@ video::ITexture *DynamicSource::getTexture(u8 index)
 	return upstream->getTexture(index);
 }
 
-void ScreenTarget::activate(PipelineContext *context)
+void ScreenTarget::activate(PipelineContext &context)
 {
-	auto driver = context->device->getVideoDriver();
-	driver->setRenderTarget(nullptr, m_clear, m_clear, context->clear_color);
+	auto driver = context.device->getVideoDriver();
+	driver->setRenderTarget(nullptr, m_clear, m_clear, context.clear_color);
 	driver->OnResize(size);
 	RenderTarget::activate(context);
 }
 
-void DynamicTarget::activate(PipelineContext *context)
+void DynamicTarget::activate(PipelineContext &context)
 {
 	if (!isConfigured())
 		throw std::logic_error("Dynamic render target is not configured before activation.");
 	upstream->activate(context);
 }
 
-void ScreenTarget::reset(PipelineContext *context)
+void ScreenTarget::reset(PipelineContext &context)
 {
 	RenderTarget::reset(context);
-	size = context->device->getVideoDriver()->getScreenSize();
+	size = context.device->getVideoDriver()->getScreenSize();
 }
 
 SetRenderTargetStep::SetRenderTargetStep(RenderStep *_step, RenderTarget *_target)
@@ -231,7 +231,7 @@ SetRenderTargetStep::SetRenderTargetStep(RenderStep *_step, RenderTarget *_targe
 {
 }
 
-void SetRenderTargetStep::run(PipelineContext *context)
+void SetRenderTargetStep::run(PipelineContext &context)
 {
 	step->setRenderTarget(target);
 }
@@ -246,10 +246,10 @@ RenderTarget *RenderPipeline::getOutput()
 	return &m_output;
 }
 
-void RenderPipeline::run(PipelineContext *context)
+void RenderPipeline::run(PipelineContext &context)
 {
-	v2u32 original_size = context->target_size;
-	context->target_size = v2u32(original_size.X * scale.X, original_size.Y * scale.Y);
+	v2u32 original_size = context.target_size;
+	context.target_size = v2u32(original_size.X * scale.X, original_size.Y * scale.Y);
 
 	for (auto &object : m_objects)
 		object->reset(context);
@@ -257,7 +257,7 @@ void RenderPipeline::run(PipelineContext *context)
 	for (auto &step: m_pipeline)
 		step->run(context);
 	
-	context->target_size = original_size;
+	context.target_size = original_size;
 }
 
 void RenderPipeline::setRenderSource(RenderSource *source)

@@ -28,38 +28,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shadows/dynamicshadowsrender.h"
 
 /// Draw3D pipeline step
-void Draw3D::run(PipelineContext *context)
+void Draw3D::run(PipelineContext &context)
 {
 	if (m_target)
 		m_target->activate(context);
 
-	context->device->getSceneManager()->drawAll();
-	context->device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-	if (!context->show_hud)
+	context.device->getSceneManager()->drawAll();
+	context.device->getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	if (!context.show_hud)
 		return;
-	context->hud->drawBlockBounds();
-	context->hud->drawSelectionMesh();
-	if (context->draw_wield_tool)
-		context->client->getCamera()->drawWieldedTool();
+	context.hud->drawBlockBounds();
+	context.hud->drawSelectionMesh();
+	if (context.draw_wield_tool)
+		context.client->getCamera()->drawWieldedTool();
 }
 
-void DrawHUD::run(PipelineContext *context)
+void DrawHUD::run(PipelineContext &context)
 {
-	if (context->show_hud) {
-		if (context->shadow_renderer)
-			context->shadow_renderer->drawDebug();
+	if (context.show_hud) {
+		if (context.shadow_renderer)
+			context.shadow_renderer->drawDebug();
 
-		if (context->draw_crosshair)
-			context->hud->drawCrosshair();
+		if (context.draw_crosshair)
+			context.hud->drawCrosshair();
 
-		context->hud->drawHotbar(context->client->getEnv().getLocalPlayer()->getWieldIndex());
-		context->hud->drawLuaElements(context->client->getCamera()->getOffset());
-		context->client->getCamera()->drawNametags();
-		auto mapper = context->client->getMinimap();
-		if (mapper && context->show_minimap)
+		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
+		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
+		context.client->getCamera()->drawNametags();
+		auto mapper = context.client->getMinimap();
+		if (mapper && context.show_minimap)
 			mapper->drawMinimap();
 	}
-	context->device->getGUIEnvironment()->drawAll();
+	context.device->getGUIEnvironment()->drawAll();
 }
 
 
@@ -68,29 +68,29 @@ void MapPostFxStep::setRenderTarget(RenderTarget * _target)
 	target = _target;
 }
 
-void MapPostFxStep::run(PipelineContext *context)
+void MapPostFxStep::run(PipelineContext &context)
 {
 	if (target)
 		target->activate(context);
 
-	context->client->getEnv().getClientMap().renderPostFx(context->client->getCamera()->getCameraMode());
+	context.client->getEnv().getClientMap().renderPostFx(context.client->getCamera()->getCameraMode());
 }
 
-void RenderShadowMapStep::run(PipelineContext *context)
+void RenderShadowMapStep::run(PipelineContext &context)
 {
 	// This is necessary to render shadows for animations correctly
-	context->device->getSceneManager()->getRootSceneNode()->OnAnimate(context->device->getTimer()->getTime());
-	context->shadow_renderer->update();
+	context.device->getSceneManager()->getRootSceneNode()->OnAnimate(context.device->getTimer()->getTime());
+	context.shadow_renderer->update();
 }
 
 // class UpscaleStep
 
-void UpscaleStep::run(PipelineContext *context)
+void UpscaleStep::run(PipelineContext &context)
 {
 	video::ITexture *lowres = m_source->getTexture(0);
 	m_target->activate(context);
-	context->device->getVideoDriver()->draw2DImage(lowres,
-			core::rect<s32>(0, 0, context->target_size.X, context->target_size.Y),
+	context.device->getVideoDriver()->draw2DImage(lowres,
+			core::rect<s32>(0, 0, context.target_size.X, context.target_size.Y),
 			core::rect<s32>(0, 0, lowres->getSize().Width, lowres->getSize().Height));
 }
 

@@ -30,8 +30,8 @@ public:
 	
 	void setRenderSource(RenderSource *source) override;
 	void setRenderTarget(RenderTarget *target) override;
-	void reset(PipelineContext *context) override;
-	void run(PipelineContext *context) override;
+	void reset(PipelineContext &context) override;
+	void run(PipelineContext &context) override;
 
 private:
 	std::vector<u8> texture_map;

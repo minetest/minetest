@@ -31,8 +31,8 @@ public:
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
 
-	virtual void reset(PipelineContext *context) override {}
-	virtual void run(PipelineContext *context) override;
+	virtual void reset(PipelineContext &context) override {}
+	virtual void run(PipelineContext &context) override;
 
 private:
 	RenderTarget *m_target {nullptr};
@@ -47,15 +47,15 @@ public:
 	virtual void setRenderSource(RenderSource *) override {}
 	virtual void setRenderTarget(RenderTarget *) override {}
 
-	virtual void reset(PipelineContext *context) override {}
-	virtual void run(PipelineContext *context) override;
+	virtual void reset(PipelineContext &context) override {}
+	virtual void run(PipelineContext &context) override;
 };
 
 class MapPostFxStep : public TrivialRenderStep
 {
 public:
 	virtual void setRenderTarget(RenderTarget *) override;
-	virtual void run(PipelineContext *context) override;
+	virtual void run(PipelineContext &context) override;
 private:
 	RenderTarget *target;
 };
@@ -63,7 +63,7 @@ private:
 class RenderShadowMapStep : public TrivialRenderStep
 {
 public:
-	virtual void run(PipelineContext *context) override;
+	virtual void run(PipelineContext &context) override;
 };
 
 /**
@@ -76,8 +76,8 @@ public:
 
     virtual void setRenderSource(RenderSource *source) override { m_source = source; }
     virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
-    virtual void reset(PipelineContext *context) override {};
-    virtual void run(PipelineContext *context) override;
+    virtual void reset(PipelineContext &context) override {};
+    virtual void run(PipelineContext &context) override;
 private:
 	RenderSource *m_source;
 	RenderTarget *m_target;

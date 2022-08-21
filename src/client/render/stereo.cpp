@@ -36,12 +36,12 @@ OffsetCameraStep::OffsetCameraStep(bool right_eye)
 	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
-void OffsetCameraStep::reset(PipelineContext *context)
+void OffsetCameraStep::reset(PipelineContext &context)
 {
-	base_transform = context->client->getCamera()->getCameraNode()->getRelativeTransformation();
+	base_transform = context.client->getCamera()->getCameraNode()->getRelativeTransformation();
 }
 
-void OffsetCameraStep::run(PipelineContext *context)
+void OffsetCameraStep::run(PipelineContext &context)
 {
-	context->client->getCamera()->getCameraNode()->setPosition((base_transform * move).getTranslation());
+	context.client->getCamera()->getCameraNode()->setPosition((base_transform * move).getTranslation());
 }

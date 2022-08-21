@@ -28,9 +28,9 @@ SetColorMaskStep::SetColorMaskStep(int _color_mask)
 	: color_mask(_color_mask)
 {}
 
-void SetColorMaskStep::run(PipelineContext *context)
+void SetColorMaskStep::run(PipelineContext &context)
 {
-	video::SOverrideMaterial &mat = context->device->getVideoDriver()->getOverrideMaterial();
+	video::SOverrideMaterial &mat = context.device->getVideoDriver()->getOverrideMaterial();
 	mat.reset();
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
@@ -45,10 +45,10 @@ ClearDepthBufferTarget::ClearDepthBufferTarget(RenderTarget *_target) :
 	target(_target)
 {}
 
-void ClearDepthBufferTarget::activate(PipelineContext *context)
+void ClearDepthBufferTarget::activate(PipelineContext &context)
 {
 	target->activate(context);
-	context->device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
+	context.device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 }
 
 ConfigureOverrideMaterialTarget::ConfigureOverrideMaterialTarget(RenderTarget *_upstream, bool _enable) :
@@ -56,10 +56,10 @@ ConfigureOverrideMaterialTarget::ConfigureOverrideMaterialTarget(RenderTarget *_
 {
 }
 
-void ConfigureOverrideMaterialTarget::activate(PipelineContext *context)
+void ConfigureOverrideMaterialTarget::activate(PipelineContext &context)
 {
 	upstream->activate(context);
-	context->device->getVideoDriver()->getOverrideMaterial().Enabled = enable;
+	context.device->getVideoDriver()->getOverrideMaterial().Enabled = enable;
 }
 
 

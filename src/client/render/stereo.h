@@ -33,8 +33,8 @@ public:
 	OffsetCameraStep(float eye_offset);
 	OffsetCameraStep(bool right_eye);
 
-	void run(PipelineContext *context) override;
-	void reset(PipelineContext *context) override;
+	void run(PipelineContext &context) override;
+	void reset(PipelineContext &context) override;
 private:
 	core::matrix4 base_transform;
 	core::matrix4 move;

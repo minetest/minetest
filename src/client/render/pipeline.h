@@ -59,7 +59,7 @@ class RenderPipelineObject
 {
 public:
 	virtual ~RenderPipelineObject() = default;
-	virtual void reset(PipelineContext *context) {}
+	virtual void reset(PipelineContext &context) {}
 };
 
 /**
@@ -90,7 +90,7 @@ public:
 	 * Activate the render target and configure OpenGL state for the output.
 	 * This is usually done by @see RenderStep implementations.
 	 */
-	virtual void activate(PipelineContext *context)
+	virtual void activate(PipelineContext &context)
 	{
 		m_clear = false;
 	}
@@ -98,7 +98,7 @@ public:
 	/**
 	 * Resets the state of the object for the next pipeline iteration
 	 */
-	virtual void reset(PipelineContext *context) override
+	virtual void reset(PipelineContext &context) override
 	{
 		m_clear = true;
 	}
@@ -160,8 +160,8 @@ public:
 
 	virtual u8 getTextureCount() override { return m_textures.size(); }
 	virtual video::ITexture *getTexture(u8 index) override;
-	virtual void activate(PipelineContext *context) override;
-	virtual void reset(PipelineContext *context) override;
+	virtual void activate(PipelineContext &context) override;
+	virtual void reset(PipelineContext &context) override;
 private:
 	struct TextureDefinition
 	{
@@ -174,7 +174,7 @@ private:
 		video::ECOLOR_FORMAT format;
 	};
 
-	bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext *context);
+	bool ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context);
 
 	video::IVideoDriver *m_driver { nullptr };
 	std::vector<TextureDefinition> m_definitions;
@@ -191,7 +191,7 @@ class TextureBufferOutput : public RenderTarget
 {
 public:
 	TextureBufferOutput(TextureBuffer *buffer, u8 texture_index);
-	void activate(PipelineContext *context) override;
+	void activate(PipelineContext &context) override;
 private:
 	TextureBuffer *buffer;
 	u8 texture_index;
@@ -270,8 +270,8 @@ private:
 class ScreenTarget : public RenderTarget
 {
 public:
-	virtual void activate(PipelineContext *context) override;
-	virtual void reset(PipelineContext *context) override;
+	virtual void activate(PipelineContext &context) override;
+	virtual void reset(PipelineContext &context) override;
 private:
 	core::dimension2du size;
 };
@@ -281,7 +281,7 @@ class DynamicTarget : public RenderTarget
 public:
 	bool isConfigured() { return upstream != nullptr; }
 	void setRenderTarget(RenderTarget *value) { upstream = value; }
-	virtual void activate(PipelineContext *context) override;
+	virtual void activate(PipelineContext &context) override;
 private:
 	RenderTarget *upstream { nullptr };
 };
@@ -309,7 +309,7 @@ public:
 	/**
 	 * Runs the step. This method is invoked by the pipeline.
 	 */
-	virtual void run(PipelineContext *context) = 0;
+	virtual void run(PipelineContext &context) = 0;
 };
 
 /**
@@ -320,7 +320,7 @@ class TrivialRenderStep : public RenderStep
 public:
 	virtual void setRenderSource(RenderSource *source) override {}
 	virtual void setRenderTarget(RenderTarget *target) override {}
-	virtual void reset(PipelineContext *) override {}
+	virtual void reset(PipelineContext &) override {}
 };
 
 /**
@@ -332,7 +332,7 @@ class SetRenderTargetStep : public TrivialRenderStep
 {
 public:
 	SetRenderTargetStep(RenderStep *step, RenderTarget *target);
-	virtual void run(PipelineContext *context) override;
+	virtual void run(PipelineContext &context) override;
 private:
 	RenderStep *step;
 	RenderTarget *target;
@@ -377,8 +377,8 @@ public:
 	v2f getScale() { return scale; }
 	void setScale(v2f value) { scale = value; }
 
-	virtual void reset(PipelineContext *context) override {}
-	virtual void run(PipelineContext *context) override;
+	virtual void reset(PipelineContext &context) override {}
+	virtual void run(PipelineContext &context) override;
 
 	virtual void setRenderSource(RenderSource *source) override;
 	virtual void setRenderTarget(RenderTarget *target) override;

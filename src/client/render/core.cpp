@@ -56,8 +56,8 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	context.show_hud = _show_hud;
 	context.show_minimap = _show_minimap;
 
-	pipeline->reset(&context);
-	pipeline->run(&context);
+	pipeline->reset(context);
+	pipeline->run(context);
 }
 
 v2u32 RenderingCore::getVirtualSize() const

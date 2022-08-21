@@ -55,16 +55,16 @@ void PostProcessingStep::setRenderTarget(RenderTarget *_target)
 	target = _target;
 }
 
-void PostProcessingStep::reset(PipelineContext *context)
+void PostProcessingStep::reset(PipelineContext &context)
 {
 }
 
-void PostProcessingStep::run(PipelineContext *context)
+void PostProcessingStep::run(PipelineContext &context)
 {
 	if (target)
 		target->activate(context);
 
-	auto driver = context->device->getVideoDriver();
+	auto driver = context.device->getVideoDriver();
 
 	for (u32 i = 0; i < MYMIN(texture_map.size(), video::MATERIAL_MAX_TEXTURES); i++)
 		material.TextureLayer[i].Texture = source->getTexture(texture_map[i]);

@@ -35,15 +35,15 @@ void DrawImageStep::setRenderTarget(RenderTarget *_target)
 	target = _target;
 }
 
-void DrawImageStep::run(PipelineContext *context)
+void DrawImageStep::run(PipelineContext &context)
 {
 	if (target)
 		target->activate(context);
 	
 	auto texture = source->getTexture(texture_index);
-	core::dimension2du output_size = context->device->getVideoDriver()->getScreenSize();
+	core::dimension2du output_size = context.device->getVideoDriver()->getScreenSize();
 	v2s32 pos(offset.X * output_size.Width, offset.Y * output_size.Height);
-	context->device->getVideoDriver()->draw2DImage(texture, pos);
+	context.device->getVideoDriver()->draw2DImage(texture, pos);
 }
 
 void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool horizontal, bool flipped, v2f &virtual_size_scale)

@@ -29,8 +29,8 @@ public:
 	void setRenderSource(RenderSource *_source) override;
 	void setRenderTarget(RenderTarget *_target) override;
 
-	void reset(PipelineContext *context) override {}
-	void run(PipelineContext *context) override;
+	void reset(PipelineContext &context) override {}
+	void run(PipelineContext &context) override;
 private:
 	u8 texture_index;
 	v2f offset;

@@ -30,7 +30,7 @@ class SetColorMaskStep : public TrivialRenderStep
 public:
 	SetColorMaskStep(int color_mask);
 
-	void run(PipelineContext *context) override;
+	void run(PipelineContext &context) override;
 private:
 	int color_mask;
 };
@@ -44,8 +44,8 @@ class ClearDepthBufferTarget : public RenderTarget
 public:
 	ClearDepthBufferTarget(RenderTarget *target);
 
-	void reset(PipelineContext *context) override {}
-	void activate(PipelineContext *context) override;
+	void reset(PipelineContext &context) override {}
+	void activate(PipelineContext &context) override;
 private:
 	video::IVideoDriver *driver;
 	RenderTarget *target;
@@ -61,7 +61,7 @@ class ConfigureOverrideMaterialTarget : public RenderTarget
 public:
 	ConfigureOverrideMaterialTarget(RenderTarget *upstream, bool enable);
 
-	virtual void activate(PipelineContext *context) override;
+	virtual void activate(PipelineContext &context) override;
 private:
 	RenderTarget *upstream;
 	bool enable;
