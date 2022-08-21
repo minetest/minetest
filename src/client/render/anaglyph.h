@@ -47,7 +47,6 @@ public:
 	void reset(PipelineContext &context) override {}
 	void activate(PipelineContext &context) override;
 private:
-	video::IVideoDriver *driver;
 	RenderTarget *target;
 };
 
