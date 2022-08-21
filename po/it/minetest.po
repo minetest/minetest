@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
 "PO-Revision-Date: 2022-08-22 17:15+0000\n"
-"Last-Translator: Pietro Cappuccino <p.cappuccino@tiscali.it>\n"
+"Last-Translator: Simone Starace <simone.starace93@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -115,7 +115,7 @@ msgstr "Il server ha richiesto la riconnessione:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Una nuova versione di $1 è disponibile"
 
 #: builtin/mainmenu/common.lua
 #, fuzzy
@@ -172,7 +172,7 @@ msgstr "(Attivato, errore rilevato)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Insoddisfatto)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -474,7 +474,7 @@ msgstr "Installa $1"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Installa un altro gioco"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -3895,7 +3895,7 @@ msgstr "Filtro di scala txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "GUIs"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7991,7 +7991,7 @@ msgstr "Livello Y del fondale marino."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
