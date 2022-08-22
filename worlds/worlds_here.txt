@@ -1,0 +1,3 @@
+If you have downloaded a world somewhere, you can put it in here.
+A world is a folder that contains the world.mt, map_meta.txt and similar files.
+If you are facing problems, try creating a world in-game first.

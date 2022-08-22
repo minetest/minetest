@@ -50,7 +50,8 @@ build/.cmake/
 !/mods/minetest/
 /mods/minetest/*
 !/mods/minetest/mods_here.txt
-/worlds
+/worlds/*
+!/worlds/worlds_here.txt
 /world/
 /clientmods/*
 !/clientmods/preview/
