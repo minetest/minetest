@@ -215,7 +215,7 @@ function core.deserialize(str, safe)
 	local func, err = loadstring(str)
 	if not func then return nil, err end
 
-	-- math.huge is serialized to inf, NaNs are serialized to nan by Lua in Minetest 5.6 and earlier
+	-- math.huge was serialized to inf and NaNs to nan by Lua in Minetest 5.6, so we have to support this here
 	local env = {inf = math_huge, nan = 0/0}
 	if safe then
 		env.loadstring = dummy_func
