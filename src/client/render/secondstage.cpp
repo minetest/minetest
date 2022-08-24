@@ -92,16 +92,19 @@ void PostProcessingStep::run(PipelineContext &context)
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
 	auto buffer = pipeline->createOwned<TextureBuffer>();
+	static const u8 TEXTURE_COLOR = 0;
+	static const u8 TEXTURE_DEPTH = 3;
 
 	// init post-processing buffer
-	buffer->setTexture(0, scale, "3d_render", video::ECF_A8R8G8B8);
+	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", video::ECF_A8R8G8B8);
 
-	video::ECOLOR_FORMAT depth_format = video::ECF_D32;
-#if ENABLE_GLES
-	if (g_settings->get("video_driver") == "ogles2")
-		depth_format = video::ECF_D16;
-#endif
-	buffer->setDepthTexture(3, scale, "3d_depthmap", depth_format);
+	video::ECOLOR_FORMAT depth_format = video::ECF_D16; // fallback depth format
+	auto driver = client->getSceneManager()->getVideoDriver();
+	if (driver->queryTextureFormat(video::ECF_D32))
+		depth_format = video::ECF_D32;
+	else if (driver->queryTextureFormat(video::ECF_D24S8))
+		depth_format = video::ECF_D24S8;
+	buffer->setDepthTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
 	previousStep->setRenderTarget(buffer);
@@ -112,7 +115,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	u32 shader_index = s->getShader("second_stage", TILE_MATERIAL_BASIC, NDT_NORMAL);
 	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
 
-	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> { 0 });
+	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> { TEXTURE_COLOR });
 	effect->setRenderSource(buffer);
 	return effect;
 }
