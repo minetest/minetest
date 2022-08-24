@@ -279,7 +279,7 @@ void TextureSettings::readSettings()
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
-	node_texture_size              = std::min<u16>(g_settings->getU16("texture_min_size"), 1);
+	node_texture_size              = std::max<u16>(g_settings->getU16("texture_min_size"), 1);
 	std::string leaves_style_str   = g_settings->get("leaves_style");
 	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
 	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
