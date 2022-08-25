@@ -44,7 +44,7 @@ public:
 
 	virtual bool contains(const std::string &name) const = 0;
 
-	// May put a string in *place and return a reference to that string.
+	// May (not must!) put a string in `place` and return a reference to that string.
 	const std::string &getString(const std::string &name, std::string *place,
 			u16 recursion = 0) const;
 
@@ -57,7 +57,7 @@ public:
 
 	inline bool removeString(const std::string &name) { return setString(name, ""); }
 
-	// May put strings in *place and return a reference to these strings.
+	// May (not must!) put strings in `place` and return a reference to these strings.
 	virtual const StringMap &getStrings(StringMap *place) const = 0;
 
 	// Add support for variable names in values. Uses place like getString.
