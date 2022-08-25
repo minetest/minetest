@@ -9,7 +9,4 @@ void main(void)
 	vec4 color = texture2D(baseTexture, uv);
 	color.rgb *= varColor.rgb;
 	gl_FragData[0] = color;
-	gl_FragData[1] = vec4(0,0,0, DRAW_TYPE / 256.);
-	gl_FragData[2] = vec4(1,0,0,0);
-
 }
