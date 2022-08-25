@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
-"Last-Translator: Hùng Nguyễn <www.thuphan@gmail.com>\n"
+"PO-Revision-Date: 2022-08-26 10:18+0000\n"
+"Last-Translator: Văn Chí <chiv8331@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
 "minetest/vi/>\n"
 "Language: vi\n"
@@ -182,7 +182,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Hủy bỏ"
+msgstr "Hủy"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -339,8 +339,9 @@ msgid "Install: Unsupported file type or broken archive"
 msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Mods"
-msgstr "Mod"
+msgstr "Sửa đổi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -424,7 +425,7 @@ msgstr "Hang động"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Tạo"
+msgstr "Tạo ra"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -636,7 +637,7 @@ msgstr "Mật khẩu không khớp"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Đăng kí"
+msgstr "Đăng ký"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -1137,7 +1138,7 @@ msgstr "Phác thảo node"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Không"
+msgstr "Không có"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -5860,9 +5861,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Màn hình:"
+msgstr "Ảnh chụp màn hình"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
