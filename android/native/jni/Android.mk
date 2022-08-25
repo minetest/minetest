@@ -43,6 +43,16 @@ LOCAL_MODULE := Irrlicht
 LOCAL_SRC_FILES := deps/$(APP_ABI)/Irrlicht/libIrrlichtMt.a
 include $(PREBUILT_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE := Irrlicht-libpng
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Irrlicht/libpng.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := Irrlicht-libjpeg
+LOCAL_SRC_FILES := deps/$(APP_ABI)/Irrlicht/libjpeg.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 ifndef USE_BUILTIN_LUA
 
 include $(CLEAR_VARS)
@@ -270,7 +280,7 @@ LOCAL_STATIC_LIBRARIES += \
 	Curl libmbedcrypto libmbedtls libmbedx509 \
 	Freetype \
 	Iconv libcharset \
-	Irrlicht \
+	Irrlicht Irrlicht-libpng Irrlicht-libjpeg \
 	OpenAL \
 	Gettext \
 	SQLite3 \
@@ -281,7 +291,7 @@ ifndef USE_BUILTIN_LUA
 endif
 LOCAL_STATIC_LIBRARIES += android_native_app_glue $(PROFILER_LIBS)
 
-LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES
+LOCAL_LDLIBS := -lEGL -lGLESv1_CM -lGLESv2 -landroid -lOpenSLES -lz
 
 include $(BUILD_SHARED_LIBRARY)
 
