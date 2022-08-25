@@ -1,6 +1,11 @@
+#ifdef GL_ES
+varying mediump vec2 varTexCoord;
+#else
+centroid varying vec2 varTexCoord;
+#endif
+
 void main(void)
 {
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = gl_Vertex;
-	gl_FrontColor = gl_BackColor = gl_Color;
+	varTexCoord.st = inTexCoord0.st;
+	gl_Position = inVertexPosition;
 }

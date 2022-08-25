@@ -2,6 +2,12 @@ uniform sampler2D baseTexture;
 
 #define rendered baseTexture
 
+#ifdef GL_ES
+varying mediump vec2 varTexCoord;
+#else
+centroid varying vec2 varTexCoord;
+#endif
+
 #if ENABLE_TONE_MAPPING
 
 /* Hable's UC2 Tone mapping parameters
@@ -36,7 +42,7 @@ vec4 applyToneMapping(vec4 color)
 
 void main(void)
 {
-	vec2 uv = gl_TexCoord[0].st;
+	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
 
 #if ENABLE_TONE_MAPPING
