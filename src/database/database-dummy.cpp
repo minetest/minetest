@@ -101,7 +101,7 @@ bool Database_Dummy::getModEntry(const std::string &modname,
 	const StringMap &meta = mod_pair->second;
 
 	auto pair = meta.find(key);
-	if (pair == meta.end()) {
+	if (pair != meta.end()) {
 		*value = pair->second;
 		return true;
 	}
