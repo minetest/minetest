@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_storage.h"
 #include "l_internal.h"
-#include "content/mods.h"
 #include "server.h"
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)
@@ -29,7 +28,7 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 	std::string mod_name = readParam<std::string>(L, 1);
 
 	if (IGameDef *gamedef = getGameDef(L)) {
-		StorageRef::create(L, new ModMetadata(mod_name, gamedef->getModStorageDatabase()));
+		StorageRef::create(L, mod_name, gamedef->getModStorageDatabase());
 	} else {
 		assert(false); // this should not happen
 		lua_pushnil(L);
@@ -42,19 +41,9 @@ void ModApiStorage::Initialize(lua_State *L, int top)
 	API_FCT(get_mod_storage);
 }
 
-StorageRef::StorageRef(ModMetadata *object):
-	m_object(object)
+void StorageRef::create(lua_State *L, const std::string &mod_name, ModMetadataDatabase *db)
 {
-}
-
-StorageRef::~StorageRef()
-{
-	delete m_object;
-}
-
-void StorageRef::create(lua_State *L, ModMetadata *object)
-{
-	StorageRef *o = new StorageRef(object);
+	StorageRef *o = new StorageRef(mod_name, db);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -108,20 +97,14 @@ StorageRef* StorageRef::checkobject(lua_State *L, int narg)
 	return *(StorageRef**)ud;  // unbox pointer
 }
 
-ModMetadata* StorageRef::getobject(StorageRef *ref)
-{
-	ModMetadata *co = ref->m_object;
-	return co;
-}
-
 IMetadata* StorageRef::getmeta(bool auto_create)
 {
-	return m_object;
+	return &m_object;
 }
 
 void StorageRef::clearMeta()
 {
-	m_object->clear();
+	m_object.clear();
 }
 
 const char StorageRef::className[] = "StorageRef";
