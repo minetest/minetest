@@ -682,6 +682,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// map legacy semantic texture names to texture identifiers
+	fragment_header += R"(
+		#define baseTexture texture0
+		#define normalTexture texture1
+		#define textureFlags texture2
+	)";
+
 	// Since this is the first time we're using the GL bindings be extra careful.
 	// This should be removed before 5.6.0 or similar.
 	if (!GL.GetString) {

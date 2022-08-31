@@ -405,6 +405,7 @@ typedef s32 SamplerLayer_t;
 class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
 	Sky *m_sky;
+	Client *m_client;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
@@ -419,10 +420,10 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
-	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
-	Client *m_client;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture0;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -441,6 +442,7 @@ public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
 			f32 *fog_range, Client *client) :
 		m_sky(sky),
+		m_client(client),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
 		m_sky_bg_color("skyBgColor"),
@@ -454,10 +456,10 @@ public:
 		m_minimap_yaw("yawVec"),
 		m_camera_offset_pixel("cameraOffset"),
 		m_camera_offset_vertex("cameraOffset"),
-		m_base_texture("baseTexture"),
-		m_normal_texture("normalTexture"),
-		m_texture_flags("textureFlags"),
-		m_client(client)
+		m_texture0("texture0"),
+		m_texture1("texture1"),
+		m_texture2("texture2"),
+		m_texture3("texture3")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
@@ -526,12 +528,15 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0,
-				normal_tex = 1,
-				flags_tex = 2;
-		m_base_texture.set(&base_tex, services);
-		m_normal_texture.set(&normal_tex, services);
-		m_texture_flags.set(&flags_tex, services);
+		SamplerLayer_t tex_id;
+		tex_id = 0;
+		m_texture0.set(&tex_id, services);
+		tex_id = 1;
+		m_texture1.set(&tex_id, services);
+		tex_id = 2;
+		m_texture2.set(&tex_id, services);
+		tex_id = 3;
+		m_texture3.set(&tex_id, services);
 	}
 };
 
