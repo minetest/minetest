@@ -24,19 +24,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/tile.h"
 
-PostProcessingStep::PostProcessingStep(video::E_MATERIAL_TYPE shader, const std::vector<u8> &_texture_map) :
-	texture_map(_texture_map)
+PostProcessingStep::PostProcessingStep(u32 _shader_id, const std::vector<u8> &_texture_map) :
+	shader_id(_shader_id), texture_map(_texture_map)
 {
 	assert(texture_map.size() <= video::MATERIAL_MAX_TEXTURES);
-	createMaterial(shader);
+	configureMaterial();
 }
 
-void PostProcessingStep::createMaterial(video::E_MATERIAL_TYPE shader)
+void PostProcessingStep::configureMaterial()
 {
 	material.UseMipMaps = false;
 	material.ZBuffer = true;
 	material.ZWriteEnable = video::EZW_ON;
-	material.MaterialType = shader;
 	for (u32 k = 0; k < texture_map.size(); ++k) {
 		material.TextureLayer[k].AnisotropicFilter = false;
 		material.TextureLayer[k].BilinearFilter = false;
@@ -65,14 +64,14 @@ void PostProcessingStep::run(PipelineContext &context)
 	if (target)
 		target->activate(context);
 
+	// attach the shader
+	material.MaterialType = context.client->getShaderSource()->getShaderInfo(shader_id).material;
+
 	auto driver = context.device->getVideoDriver();
 
-	for (u32 i = 0; i < MYMIN(texture_map.size(), video::MATERIAL_MAX_TEXTURES); i++)
+	for (u32 i = 0; i < texture_map.size(); i++)
 		material.TextureLayer[i].Texture = source->getTexture(texture_map[i]);
 
-	// driver->setTransform(video::ETS_VIEW, core::matrix4::EM4CONST_IDENTITY);
-	// driver->setTransform(video::ETS_PROJECTION, core::matrix4::EM4CONST_IDENTITY);
-	// driver->setTransform(video::ETS_WORLD, core::matrix4::EM4CONST_IDENTITY);
 	static const video::SColor color = video::SColor(0, 0, 0, 255);
 	static const video::S3DVertex vertices[4] = {
 			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
@@ -111,11 +110,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// post-processing stage
 	// set up shader
-	IWritableShaderSource *s = client->getShaderSource();
-	u32 shader_index = s->getShader("second_stage", TILE_MATERIAL_BASIC, NDT_NORMAL);
-	video::E_MATERIAL_TYPE shader = s->getShaderInfo(shader_index).material;
+	u32 shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
 
-	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader, std::vector<u8> { TEXTURE_COLOR });
+	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
 	effect->setRenderSource(buffer);
 	return effect;
 }

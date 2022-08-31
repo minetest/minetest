@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class PostProcessingStep : public RenderStep
 {
 public:
-	PostProcessingStep(video::E_MATERIAL_TYPE shader, const std::vector<u8> &texture_map);
+	PostProcessingStep(u32 shader_id, const std::vector<u8> &texture_map);
 
 	
 	void setRenderSource(RenderSource *source) override;
@@ -34,12 +34,13 @@ public:
 	void run(PipelineContext &context) override;
 
 private:
+	u32 shader_id;
 	std::vector<u8> texture_map;
 	RenderSource *source { nullptr };
 	RenderTarget *target { nullptr };
 	video::SMaterial material;
 
-	void createMaterial(video::E_MATERIAL_TYPE shader);
+	void configureMaterial();
 };
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client);
