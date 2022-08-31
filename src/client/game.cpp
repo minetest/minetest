@@ -424,6 +424,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
+	CachedPixelShaderSetting<float, 2> m_texel_size0;
+	std::array<float, 2> m_texel_size0_values;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -459,7 +461,8 @@ public:
 		m_texture0("texture0"),
 		m_texture1("texture1"),
 		m_texture2("texture2"),
-		m_texture3("texture3")
+		m_texture3("texture3"),
+		m_texel_size0("texelSize0")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
@@ -537,6 +540,22 @@ public:
 		m_texture2.set(&tex_id, services);
 		tex_id = 3;
 		m_texture3.set(&tex_id, services);
+
+		m_texel_size0.set(m_texel_size0_values.data(), services);
+	}
+
+	void onSetMaterial(const video::SMaterial &material)
+	{
+		video::ITexture *texture = material.getTexture(0);
+		if (texture) {
+			core::dimension2du size = texture->getSize();
+			m_texel_size0_values[0] = 1.f / size.Width;
+			m_texel_size0_values[1] = 1.f / size.Height;
+		}
+		else {
+			m_texel_size0_values[0] = 0.f;
+			m_texel_size0_values[1] = 0.f;
+		}
 	}
 };
 
