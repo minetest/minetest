@@ -1,12 +1,17 @@
-uniform sampler2D baseTexture;
+#define rendered texture0
+#define bloom texture1
 
-#define rendered baseTexture
+uniform sampler2D rendered;
+uniform sampler2D bloom;
+
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
+
+const float bloomLuminanceThreshold = 0.7;
 
 #if ENABLE_TONE_MAPPING
 
@@ -44,6 +49,9 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
+	float luminance = dot(color.rgb, vec3(0.213, 0.715, 0.072)) + 1e-4;
+	color.rgb *= min(1., bloomLuminanceThreshold / luminance);
+	color.rgb += texture2D(bloom, uv).rgb;
 
 #if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
