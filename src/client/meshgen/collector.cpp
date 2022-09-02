@@ -50,12 +50,6 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 				vertices[i].Color, scale * vertices[i].TCoords);
 		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
 				(vertices[i].Pos - m_center_pos).getLengthSQ());
-		static int s_num_prints = 50;
-		if (s_num_prints > 0 && m_center_pos.X > 1.0f*BS
-				&& std::abs((-m_center_pos + vertices[i].Pos).Y) >= 7.9f*BS) {
-			errorstream << "[append] pos: "<<PP(vertices[i].Pos) << ",\trel: "<<PP(-m_center_pos + vertices[i].Pos) <<std::endl;
-			s_num_prints -= 1;
-		}
 	}
 
 	for (u32 i = 0; i < numIndices; i++)
@@ -95,11 +89,6 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 				scale * vertices[i].TCoords);
 		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
 				(vpos - m_center_pos).getLengthSQ());
-		static int s_num_prints = 50;
-		if (s_num_prints > 0) {
-			errorstream << "[append(p)] vpos: "<<PP(vpos) <<std::endl;
-			s_num_prints -= 1;
-		}
 	}
 
 	for (u32 i = 0; i < numIndices; i++)
