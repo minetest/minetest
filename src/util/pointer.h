@@ -264,5 +264,5 @@ public:
 	void grab() noexcept { ++m_refcount; }
 	void drop() noexcept { if (--m_refcount == 0) delete this; }
 private:
-	u64 m_refcount = 1;
+	u32 m_refcount = 1;
 };
