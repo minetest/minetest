@@ -62,6 +62,8 @@ public:
 	ItemStackMetaRef(LuaItemStack *istack);
 	~ItemStackMetaRef();
 
+	DISABLE_CLASS_COPY(ItemStackMetaRef)
+
 	// Creates an ItemStackMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
 	static void create(lua_State *L, LuaItemStack *istack);
