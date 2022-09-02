@@ -94,7 +94,7 @@ local function get_formspec(tabview, name, tabdata)
 		-- Name / Password
 		"container[0,4.8]" ..
 		"label[0.25,0;" .. fgettext("Name") .. "]" ..
-		"label[3,0;" .. fgettext("Password") .. "]" ..
+		"label[2.875,0;" .. fgettext("Password") .. "]" ..
 		"field[0.25,0.2;2.625,0.75;te_name;;" .. core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[2.875,0.2;2.625,0.75;te_pwd;]" ..
 		"container_end[]" ..
