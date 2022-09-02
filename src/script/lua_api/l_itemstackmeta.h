@@ -58,6 +58,7 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 public:
+	// takes a reference
 	ItemStackMetaRef(LuaItemStack *istack);
 	~ItemStackMetaRef();
 
