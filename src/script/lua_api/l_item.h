@@ -142,6 +142,8 @@ private:
 	static int l_peek_item(lua_State *L);
 
 public:
+	DISABLE_CLASS_COPY(LuaItemStack)
+
 	inline const ItemStack& getItem() const { return m_stack; }
 	inline ItemStack& getItem() { return m_stack; }
 
