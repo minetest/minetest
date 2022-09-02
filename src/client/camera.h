@@ -135,13 +135,14 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
-	// Returns a lambda that when called with an object's position (in BS space)
-	// returns true if, and only if the object should be frustum-culled.
-	// radius is the radius of the object.
-	auto getFrustumCuller(f32 radius) const
+	// Returns a lambda that when called with an object's position and bounding-sphere
+	// radius (both in BS space) returns true if, and only if the object should be
+	// frustum-culled.
+	auto getFrustumCuller() const
 	{
-		return [planes = getFrustumCullPlanes(), camera_offset = intToFloat(m_camera_offset, BS),
-				radius](v3f position) {
+		return [planes = getFrustumCullPlanes(),
+				camera_offset = intToFloat(m_camera_offset, BS)
+				](v3f position, f32 radius) {
 			v3f pos_camspace = position - camera_offset;
 			for (auto &plane : planes) {
 				if (plane.getDistanceTo(pos_camspace) > radius)

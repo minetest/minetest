@@ -1031,9 +1031,9 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 
 /**
  * @brief Find a candidate plane to split a set of triangles in two
- * 
+ *
  * The candidate plane is represented by one of the triangles from the set.
- * 
+ *
  * @param list Vector of indexes of the triangles in the set
  * @param triangles Vector of all triangles in the BSP tree
  * @return Address of the triangle that represents the proposed split plane
@@ -1225,7 +1225,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	MeshCollector collector;
+	MeshCollector collector(m_bounding_sphere_center);
 
 	{
 		// avg 0ms (100ms spikes when loading textures the first time)
@@ -1260,6 +1260,14 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	const bool desync_animations = g_settings->getBool(
 		"desynchronize_mapblock_texture_animation");
+
+	m_bounding_radius = std::sqrt(collector.m_bounding_radius_sq);
+	static int s_num_prints = 50;
+	if (s_num_prints > 0 && m_bounding_radius > 0.0f) {
+		errorstream << "m_bounding_radius: "<<m_bounding_radius
+				<< ",\tdiff: "<<(m_bounding_radius-BLOCK_MAX_RADIUS)<<std::endl;
+		s_num_prints -= 1;
+	}
 
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 		for(u32 i = 0; i < collector.prebuffers[layer].size(); i++)

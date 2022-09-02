@@ -45,9 +45,18 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		scale = 1.0f / layer.scale;
 
 	u32 vertex_count = p.vertices.size();
-	for (u32 i = 0; i < numVertices; i++)
+	for (u32 i = 0; i < numVertices; i++) {
 		p.vertices.emplace_back(vertices[i].Pos, vertices[i].Normal,
 				vertices[i].Color, scale * vertices[i].TCoords);
+		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
+				(vertices[i].Pos - m_center_pos).getLengthSQ());
+		static int s_num_prints = 50;
+		if (s_num_prints > 0 && m_center_pos.X > 1.0f*BS
+				&& std::abs((-m_center_pos + vertices[i].Pos).Y) >= 7.9f*BS) {
+			errorstream << "[append] pos: "<<PP(vertices[i].Pos) << ",\trel: "<<PP(-m_center_pos + vertices[i].Pos) <<std::endl;
+			s_num_prints -= 1;
+		}
+	}
 
 	for (u32 i = 0; i < numIndices; i++)
 		p.indices.push_back(indices[i] + vertex_count);
@@ -81,8 +90,16 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 		video::SColor color = c;
 		if (!light_source)
 			applyFacesShading(color, vertices[i].Normal);
-		p.vertices.emplace_back(vertices[i].Pos + pos, vertices[i].Normal, color,
+		auto vpos = vertices[i].Pos + pos;
+		p.vertices.emplace_back(vpos, vertices[i].Normal, color,
 				scale * vertices[i].TCoords);
+		m_bounding_radius_sq = std::max(m_bounding_radius_sq,
+				(vpos - m_center_pos).getLengthSQ());
+		static int s_num_prints = 50;
+		if (s_num_prints > 0) {
+			errorstream << "[append(p)] vpos: "<<PP(vpos) <<std::endl;
+			s_num_prints -= 1;
+		}
 	}
 
 	for (u32 i = 0; i < numIndices; i++)

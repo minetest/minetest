@@ -220,11 +220,7 @@ void ClientMap::updateDrawList()
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	// Only do coarse culling here, to account for fast camera movement.
-	// This is needed because this function is not called every frame.
-	constexpr float frustum_cull_extra_radius = 300.0f;
-	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller(
-			BLOCK_MAX_RADIUS + frustum_cull_extra_radius);
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -275,7 +271,14 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			if (is_frustum_culled(intToFloat(block_position, BS)))
+			// Only do coarse culling here, to account for fast camera movement.
+			// This is needed because this function is not called every frame.
+			constexpr float frustum_cull_extra_radius = 300.0f;
+			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+					+ block->mesh->getBoundingSphereCenter();
+			f32 mesh_sphere_radius = block->mesh->getBoundingRadius();
+			if (is_frustum_culled(mesh_sphere_center,
+					mesh_sphere_radius + frustum_cull_extra_radius))
 				continue;
 
 			// Occlusion culling
@@ -351,41 +354,43 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
-	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller(BLOCK_MAX_RADIUS);
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
+		MapBlockMesh *block_mesh = block->mesh;
 
 		// If the mesh of the block happened to get deleted, ignore it
-		if (!block->mesh)
+		if (!block_mesh)
 			continue;
-
-		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
 
 		// Do exact frustum culling
 		// (The one in updateDrawList is only coarse.)
-		if (is_frustum_culled(block_pos_r))
+		v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+				+ block_mesh->getBoundingSphereCenter();
+		f32 mesh_sphere_radius = block_mesh->getBoundingRadius();
+		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
 			continue;
+
+		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
 
 		float d = camera_position.getDistanceFrom(block_pos_r);
 		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
 
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
-			MapBlockMesh *mapBlockMesh = block->mesh;
-			assert(mapBlockMesh);
 			// Pretty random but this should work somewhat nicely
 			bool faraway = d >= BS * 50;
-			if (mapBlockMesh->isAnimationForced() || !faraway ||
+			if (block_mesh->isAnimationForced() || !faraway ||
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
-				bool animated = mapBlockMesh->animate(faraway, animation_time,
+				bool animated = block_mesh->animate(faraway, animation_time,
 					crack, daynight_ratio);
 				if (animated)
 					mesh_animate_count++;
 			} else {
-				mapBlockMesh->decreaseAnimationForceTimer();
+				block_mesh->decreaseAnimationForceTimer();
 			}
 		}
 
@@ -395,17 +400,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_transparent_pass) {
 			// In transparent pass, the mesh will give us
 			// the partial buffers in the correct order
-			for (auto &buffer : block->mesh->getTransparentBuffers())
+			for (auto &buffer : block_mesh->getTransparentBuffers())
 				draw_order.emplace_back(block_pos, &buffer);
 		}
 		else {
 			// otherwise, group buffers across meshes
 			// using MeshBufListList
-			MapBlockMesh *mapBlockMesh = block->mesh;
-			assert(mapBlockMesh);
-
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
 
 				u32 c = mesh->getMeshBufferCount();
