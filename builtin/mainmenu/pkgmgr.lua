@@ -787,6 +787,9 @@ end
 --------------------------------------------------------------------------------
 function pkgmgr.update_gamelist()
 	pkgmgr.games = core.get_games()
+	table.sort(pkgmgr.games, function(a, b)
+		return a.title:lower() < b.title:lower()
+	end)
 end
 
 --------------------------------------------------------------------------------
