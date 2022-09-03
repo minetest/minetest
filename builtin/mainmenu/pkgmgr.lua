@@ -177,7 +177,7 @@ function pkgmgr.get_texture_packs()
 	end
 
 	table.sort(retval, function(a, b)
-		return a.name < b.name
+		return a.title:lower() < b.title:lower()
 	end)
 
 	return retval
