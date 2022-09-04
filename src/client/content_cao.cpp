@@ -881,7 +881,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
-	video::SColor light = encode_light(light_at_pos, m_prop.glow);
+	video::SColor light = encode_light(light_at_pos, decode_light(m_prop.glow));
 	if (!m_enable_shaders)
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
