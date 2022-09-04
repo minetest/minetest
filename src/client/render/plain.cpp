@@ -108,7 +108,7 @@ std::unique_ptr<RenderStep> create3DStage(Client *client, v2f scale)
 	return std::unique_ptr<RenderStep>(step);
 }
 
-v2f getDownscaleFactor()
+static v2f getDownscaleFactor()
 {
 	u16 undersampling = MYMAX(g_settings->getU16("undersampling"), 1);
 	return v2f(1.0f / undersampling);
