@@ -127,7 +127,7 @@ void ParticleParameters::serialize(std::ostream &os, u16 protocol_ver) const
 	os << serializeString32(texture.string);
 	writeU8(os, vertical);
 	writeU8(os, collision_removal);
-	animation.serialize(os, 6); /* NOT the protocol ver */
+	animation.serialize(os, protocol_ver);
 	writeU8(os, glow);
 	writeU8(os, object_collision);
 	writeU16(os, node.param0);
@@ -160,7 +160,7 @@ void ParticleParameters::deSerialize(std::istream &is, u16 protocol_ver)
 	texture.string     = deSerializeString32(is);
 	vertical           = readU8(is);
 	collision_removal  = readU8(is);
-	animation.deSerialize(is, 6); /* NOT the protocol ver */
+	animation.deSerialize(is, protocol_ver);
 	glow               = readU8(is);
 	object_collision   = readU8(is);
 
