@@ -19,21 +19,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "util/serialize.h"
 
-void TileAnimationParams::serialize(std::ostream &os, u16 protocol_version) const
+void TileAnimationParams::serialize(std::ostream &os, u16 protocol_ver) const
 {
+	// The particle code overloads the length parameter so that negative numbers
+	// indicate an extra feature which old clients don't understand (crash).
+	// In hindsight it would have been better to use an extra parameter for this
+	// but we're stuck with this now.
+	const bool need_abs = protocol_ver < 40;
+
 	writeU8(os, type);
 	if (type == TAT_VERTICAL_FRAMES) {
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
-		writeF32(os, vertical_frames.length);
+		writeF32(os, need_abs ? fabs(vertical_frames.length) : vertical_frames.length);
 	} else if (type == TAT_SHEET_2D) {
 		writeU8(os, sheet_2d.frames_w);
 		writeU8(os, sheet_2d.frames_h);
-		writeF32(os, sheet_2d.frame_length);
+		writeF32(os, need_abs ? fabs(sheet_2d.frame_length) : sheet_2d.frame_length);
 	}
 }
 
-void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_version)
+void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_ver)
 {
 	type = (TileAnimationType) readU8(is);
 
