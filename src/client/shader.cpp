@@ -214,8 +214,8 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
-	CachedPixelShaderSetting<f32, 3> m_light_direction;
+	CachedPixelShaderSetting<f32, 16, false> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 3, false> m_light_direction;
 	CachedPixelShaderSetting<f32> m_texture_res;
 	CachedPixelShaderSetting<f32> m_shadow_strength;
 	CachedPixelShaderSetting<f32> m_time_of_day;
