@@ -43,6 +43,7 @@ local register_functions = {
 	register_on_item_eat = 0,
 	register_on_punchplayer = 0,
 	register_on_player_hpchange = 0,
+	register_on_mapblocks_changed = 0,
 }
 
 ---

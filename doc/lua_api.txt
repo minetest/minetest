@@ -5372,6 +5372,16 @@ Call these functions only at load time!
     * `pos_list` is an array of all modified positions.
     * `node_list` is an array of the old node that was previously at the position
       with the corresponding index in pos_list.
+* `minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_count))`
+    * Called soon after any nodes or node metadata have been modified. No
+      modifications will be missed, but there may be false positives.
+    * Will never be called more than once per server step.
+    * `modified_blocks` is the set of modified mapblock position hashes. These
+      are in the same format as those produced by `minetest.hash_node_position`,
+      and can be converted to positions with `minetest.get_position_from_hash`.
+      The set is a table where the keys are hashes and the values are `true`.
+    * `modified_block_count` is the number of entries in the set.
+    * Note: callbacks must be registered at mod load time.
 
 Setting-related
 ---------------
