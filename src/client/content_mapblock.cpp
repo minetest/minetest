@@ -1131,7 +1131,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		getSmoothLightFrame();
 	} else {
 		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		light = LightPair(getInteriorLight(ntop, 1, nodedef));
+		light = LightPair(getInteriorLight(ntop, 0, nodedef));
 	}
 	drawPlantlike(true);
 	p.Y--;
@@ -1594,7 +1594,7 @@ void MapblockMeshGenerator::drawNode()
 	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else
-		light = LightPair(getInteriorLight(n, 1, nodedef));
+		light = LightPair(getInteriorLight(n, 0, nodedef));
 	switch (f->drawtype) {
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
