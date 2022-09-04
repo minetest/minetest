@@ -869,7 +869,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		bool this_ok;
 		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
 		if (this_ok) {
-			u16 this_light = getInteriorLight(n, 0, m_client->ndef());
+			u16 this_light = getInteriorLight(n, m_prop.glow, m_client->ndef());
 			u8 this_light_intensity = MYMAX(this_light & 0xFF, this_light >> 8);
 			if (this_light_intensity > light_at_pos_intensity) {
 				light_at_pos = this_light;
@@ -881,7 +881,7 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
-	video::SColor light = encode_light(light_at_pos, decode_light(m_prop.glow));
+	video::SColor light = encode_light(light_at_pos, m_prop.glow);
 	if (!m_enable_shaders)
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
