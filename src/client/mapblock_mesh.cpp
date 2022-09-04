@@ -103,8 +103,7 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	const NodeDefManager *ndef)
 {
 	u8 light = n.getLight(bank, ndef->getLightingFlags(n));
-	if (light > 0)
-		light = rangelim(light + increment, 0, LIGHT_SUN);
+	light = rangelim(light + increment, 0, LIGHT_SUN);
 	return decode_light(light);
 }
 
