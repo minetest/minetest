@@ -555,6 +555,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	// synchronize animation length with particle life if desired
 	if (pp.animation.type != TAT_NONE) {
+		// FIXME: this should be moved into a TileAnimationParams class method
 		if (pp.animation.type == TAT_VERTICAL_FRAMES &&
 			pp.animation.vertical_frames.length < 0) {
 			auto& a = pp.animation.vertical_frames;
