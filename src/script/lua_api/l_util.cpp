@@ -519,10 +519,7 @@ int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
 
 	video::SColor color(0);
 	if (read_color(L, 1, &color)) {
-		char colorstring[10];
-		snprintf(colorstring, 10, "#%02X%02X%02X%02X",
-			color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-		lua_pushstring(L, colorstring);
+		lua_pushstring(L, to_color_string(color).c_str());
 		return 1;
 	}
 

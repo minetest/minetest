@@ -583,6 +583,14 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
 	return success;
 }
 
+std::string to_color_string(video::SColor color)
+{
+	char colorstring[10];
+	snprintf(colorstring, 10, "#%02X%02X%02X%02X",
+			color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	return colorstring;
+}
+
 void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <map>
 #include <sstream>
+#include <initializer_list>
 #include <iomanip>
 #include <cctype>
 #include <unordered_map>
@@ -82,7 +83,7 @@ char *mystrtok_r(char *s, const char *sep, char **lasts);
 u64 read_seed(const char *str);
 bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
 		unsigned char default_alpha = 0xff);
-
+std::string to_color_string(video::SColor color);
 
 /**
  * Returns a copy of \p str with spaces inserted at the right hand side to ensure
@@ -710,12 +711,13 @@ inline const std::string duration_to_string(int sec)
 }
 
 /**
- * Joins a vector of strings by the string \p delimiter.
+ * Joins a container of values that can be written to a stream with the string
+ * \p delimiter.
  *
  * @return A std::string
  */
-inline std::string str_join(const std::vector<std::string> &list,
-		const std::string &delimiter)
+template<typename Container>
+std::string str_join(const Container &list, const std::string &delimiter)
 {
 	std::ostringstream oss;
 	bool first = true;
@@ -761,3 +763,29 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  * brackets (e.g. "a\x1eb" -> "a<1e>b").
  */
 void safe_print_string(std::ostream &os, const std::string &str);
+
+template<typename T>
+using EnumNameMap = std::initializer_list<std::pair<const char *, T>>;
+
+template<typename T>
+bool str_to_enum(T *value, const EnumNameMap<T> &map, const char *name)
+{
+	for (const auto &pair : map) {
+		if (strcmp(pair.first, name) == 0) {
+			*value = pair.second;
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename T>
+const char *enum_to_str(const EnumNameMap<T> &map, T value)
+{
+	for (const auto &pair : map) {
+		if (pair.second == value) {
+			return pair.first;
+		}
+	}
+	return nullptr;
+}
