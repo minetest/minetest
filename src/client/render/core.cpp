@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/hud.h"
 #include "client/minimap.h"
 #include "client/shadows/dynamicshadowsrender.h"
+#include "gui/manager.h"
 
 RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
 	: device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
@@ -121,6 +122,7 @@ void RenderingCore::drawHUD()
 			mapper->drawMinimap();
 	}
 	guienv->drawAll();
+	ui::g_manager.drawAll();
 }
 
 void RenderingCore::drawPostFx()

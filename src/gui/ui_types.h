@@ -57,8 +57,26 @@ namespace ui
 	template<typename T>
 	const T &bottom(const Rect<T> &rect) { return rect.LowerRightCorner.Y; }
 
+	template<typename T>
+	Rect<T> add_rect_edges(const Rect<T> &rect, const Rect<T> &edges)
+	{
+		return Rect<T>(
+			left(rect) + left(edges),
+			top(rect) + top(edges),
+			right(rect) - right(edges),
+			bottom(rect) - bottom(edges)
+		);
+	}
+
 	struct UiException : BaseException
 	{
 		UiException(const std::string &message) : BaseException(message) {}
 	};
+
+	constexpr const char *NO_ID = "";
+
+	constexpr const char *MAIN_ID_CHARS =
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-";
+	constexpr const char *VIRT_ID_CHARS =
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-@";
 }

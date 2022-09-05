@@ -4,7 +4,11 @@ if(ENABLE_TOUCH)
 endif()
 
 set(gui_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/design.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/drawable.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/elem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/elem_registry.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/env.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiAnimatedImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBackgroundImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBox.cpp
@@ -29,6 +33,7 @@ set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/guiHyperText.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiVolumeChange.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/json_reader.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/modalMenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/profilergraph.cpp
 	${extra_gui_SRCS}

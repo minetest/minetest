@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiPasswordChange.h"
 #include "gui/guiVolumeChange.h"
 #include "gui/mainmenumanager.h"
+#include "gui/manager.h"
 #include "gui/profilergraph.h"
 #include "mapblock.h"
 #include "minimap.h"
@@ -1166,6 +1167,8 @@ void Game::shutdown()
 	if (formspec)
 		formspec->quitMenu();
 
+	ui::g_manager.resetAll();
+
 #ifdef HAVE_TOUCHSCREENGUI
 	g_touchscreengui->hide();
 #endif
@@ -1413,6 +1416,8 @@ bool Game::createClient(const GameStartData &start_data)
 
 	if (mapper && client->modsLoaded())
 		client->getScript()->on_minimap_ready(mapper);
+
+	ui::g_manager.setClient(client);
 
 	return true;
 }
@@ -2658,7 +2663,21 @@ void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *
 
 void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
 {
-	if (event->show_formspec.formspec->empty()) {
+	if (*event->show_formspec.formname == "__builtin:__ui_update") {
+		std::istringstream json_stream(*event->show_formspec.formspec);
+
+		Json::CharReaderBuilder builder;
+		builder.settings_["collectComments"] = false;
+		builder.settings_["rejectDupKeys"] = true;
+
+		std::string error;
+		Json::Value root;
+		if (Json::parseFromStream(builder, json_stream, &root, &error)) {
+			ui::g_manager.applyJson(ui::JsonReader(std::move(root)));
+		} else {
+			throw ui::UiException("Bad UI JSON syntax: "s + error);
+		}
+	} else if (event->show_formspec.formspec->empty()) {
 		auto formspec = m_game_ui->getFormspecGUI();
 		if (formspec && (event->show_formspec.formname->empty()
 				|| *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
@@ -4374,6 +4393,10 @@ void the_game(bool *kill,
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;
+	} catch (const ui::UiException &e) {
+		error_message = "UiError: "s + e.what();
+		errorstream << error_message << std::endl;
 	}
+
 	game.shutdown();
 }
