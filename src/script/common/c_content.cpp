@@ -481,7 +481,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	else if(lua_istable(L, index))
 	{
 		// name="default_lava.png"
-		tiledef.name = "";
+		tiledef.name.clear();
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
 		tiledef.backface_culling = getboolfield_default(

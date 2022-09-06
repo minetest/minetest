@@ -227,7 +227,7 @@ void ModConfiguration::resolveDependencies()
 
 	// Step 2: get dependencies (including optional dependencies)
 	// of each mod, split mods into satisfied and unsatisfied
-	std::list<ModSpec> satisfied;
+	std::vector<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
 	for (ModSpec mod : m_unsatisfied_mods) {
 		mod.unsatisfied_depends = mod.depends;

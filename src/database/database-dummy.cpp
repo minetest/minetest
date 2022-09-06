@@ -36,7 +36,7 @@ void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
 	s64 i = getBlockAsInteger(pos);
 	auto it = m_database.find(i);
 	if (it == m_database.end()) {
-		*block = "";
+		block->clear();
 		return;
 	}
 

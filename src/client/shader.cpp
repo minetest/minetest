@@ -184,7 +184,7 @@ public:
 	ShaderCallback(const Factories &factories)
 	{
 		for (auto &&factory : factories)
-			m_setters.push_back(std::unique_ptr<IShaderConstantSetter>(factory->create()));
+			m_setters.emplace_back(factory->create());
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
@@ -402,7 +402,7 @@ public:
 
 	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
-		m_setter_factories.push_back(std::unique_ptr<IShaderConstantSetterFactory>(setter));
+		m_setter_factories.emplace_back(setter);
 	}
 
 private:

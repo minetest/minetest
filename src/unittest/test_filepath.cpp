@@ -238,7 +238,7 @@ void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
 
 void TestFilePath::testRemoveRelativePathComponent()
 {
-	std::string path, result, removed;
+	std::string path, result;
 
 	path = p("/home/user/minetest/bin");
 	result = fs::RemoveRelativePathComponents(path);

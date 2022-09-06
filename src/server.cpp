@@ -424,7 +424,7 @@ void Server::init()
 	m_mod_storage_database->beginSave();
 
 	m_modmgr = std::make_unique<ServerModManager>(m_path_world);
-	std::vector<ModSpec> unsatisfied_mods = m_modmgr->getUnsatisfiedMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!m_modmgr->isConsistent()) {
 		std::string error = m_modmgr->getUnsatisfiedModsError();
@@ -1359,8 +1359,6 @@ void Server::Send(session_t peer_id, NetworkPacket *pkt)
 
 void Server::SendMovement(session_t peer_id)
 {
-	std::ostringstream os(std::ios_base::binary);
-
 	NetworkPacket pkt(TOCLIENT_MOVEMENT, 12 * sizeof(float), peer_id);
 
 	pkt << g_settings->getFloat("movement_acceleration_default");

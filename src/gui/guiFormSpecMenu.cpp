@@ -694,7 +694,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	e->setMax(max);
 	e->setMin(min);
 
-	e->setPos(stoi(parts[4]));
+	e->setPos(stoi(value));
 
 	e->setSmallStep(data->scrollbar_options.small_step);
 	e->setLargeStep(data->scrollbar_options.large_step);
@@ -1180,7 +1180,6 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	std::string name = parts[2];
 	std::vector<std::string> items = split(parts[3],',');
 	std::string str_initial_selection;
-	std::string str_transparent = "false";
 
 	if (parts.size() >= 5)
 		str_initial_selection = parts[4];
@@ -2264,7 +2263,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 	}
 
 	// bgcolor
-	if (parameter_count >= 1 && parts[0] != "")
+	if (parameter_count >= 1 && !parts[0].empty())
 		parseColorString(parts[0], m_bgcolor, false);
 
 	// fullscreen
@@ -2275,14 +2274,14 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 		} else if (parts[1] == "neither") {
 			m_bgnonfullscreen = false;
 			m_bgfullscreen = false;
-		} else if (parts[1] != "" || m_formspec_version < 3) {
+		} else if (!parts[1].empty() || m_formspec_version < 3) {
 			m_bgfullscreen = is_yes(parts[1]);
 			m_bgnonfullscreen = !m_bgfullscreen;
 		}
 	}
 
 	// fbgcolor
-	if (parameter_count >= 3 && parts[2] != "")
+	if (parameter_count >= 3 && !parts[2].empty())
 		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 
@@ -3047,7 +3046,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element = "";
+		m_focused_element.clear();
 	}
 
 	// Remove children
@@ -3865,7 +3864,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 
 		if (!current_field_enter_pending.empty()) {
 			fields["key_enter_field"] = current_field_enter_pending;
-			current_field_enter_pending = "";
+			current_field_enter_pending.clear();
 		}
 
 		if (current_keys_pending.key_escape) {
@@ -4600,7 +4599,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
-					s.fdefault = L"";
+					s.fdefault.clear();
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
 						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));

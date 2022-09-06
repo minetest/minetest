@@ -840,8 +840,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
 
-	std::vector<v2s16> blocks_in_range;
-
 	for (auto &i : m_drawlist_shadow) {
 		MapBlock *block = i.second;
 		block->refDrop();

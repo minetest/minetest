@@ -112,7 +112,7 @@ struct TextDestPlayerInventory : public TextDest
 	TextDestPlayerInventory(Client *client)
 	{
 		m_client = client;
-		m_formname = "";
+		m_formname.clear();
 	}
 	TextDestPlayerInventory(Client *client, const std::string &formname)
 	{
@@ -2985,14 +2985,15 @@ void Game::updateCamera(f32 dtime)
 	camera->update(player, dtime, tool_reload_ratio);
 	camera->step(dtime);
 
-	v3f camera_position = camera->getPosition();
-	v3f camera_direction = camera->getDirection();
 	f32 camera_fov = camera->getFovMax();
 	v3s16 camera_offset = camera->getOffset();
 
 	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
 	if (!m_flags.disable_camera_update) {
+		v3f camera_position = camera->getPosition();
+		v3f camera_direction = camera->getDirection();
+
 		client->getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset);
 
@@ -3149,7 +3150,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound.name = "";
+	soundmaker->m_player_leftpunch_sound.name.clear();
 
 	// Prepare for repeating, unless we're not supposed to
 	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))
