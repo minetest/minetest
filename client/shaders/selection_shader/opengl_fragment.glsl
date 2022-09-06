@@ -8,5 +8,5 @@ void main(void)
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(baseTexture, uv);
 	color.rgb *= varColor.rgb;
-	gl_FragColor = color;
+	gl_FragData[0] = color;
 }

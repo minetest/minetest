@@ -19,17 +19,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "anaglyph.h"
+#include "client/camera.h"
 
-void RenderingCoreAnaglyph::drawAll()
-{
-	renderBothImages();
-	drawPostFx();
-	drawHUD();
-}
 
-void RenderingCoreAnaglyph::setupMaterial(int color_mask)
+/// SetColorMaskStep step
+
+SetColorMaskStep::SetColorMaskStep(int _color_mask)
+	: color_mask(_color_mask)
+{}
+
+void SetColorMaskStep::run(PipelineContext &context)
 {
-	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
+	video::SOverrideMaterial &mat = context.device->getVideoDriver()->getOverrideMaterial();
 	mat.reset();
 	mat.Material.ColorMask = color_mask;
 	mat.EnableFlags = video::EMF_COLOR_MASK;
@@ -38,15 +39,53 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 			   scene::ESNRP_SHADOW;
 }
 
-void RenderingCoreAnaglyph::useEye(bool right)
+/// ClearDepthBufferTarget
+
+ClearDepthBufferTarget::ClearDepthBufferTarget(RenderTarget *_target) :
+	target(_target)
+{}
+
+void ClearDepthBufferTarget::activate(PipelineContext &context)
 {
-	RenderingCoreStereo::useEye(right);
-	driver->clearBuffers(video::ECBF_DEPTH);
-	setupMaterial(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
+	target->activate(context);
+	context.device->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
 }
 
-void RenderingCoreAnaglyph::resetEye()
+ConfigureOverrideMaterialTarget::ConfigureOverrideMaterialTarget(RenderTarget *_upstream, bool _enable) :
+	upstream(_upstream), enable(_enable)
 {
-	setupMaterial(video::ECP_ALL);
-	RenderingCoreStereo::resetEye();
+}
+
+void ConfigureOverrideMaterialTarget::activate(PipelineContext &context)
+{
+	upstream->activate(context);
+	context.device->getVideoDriver()->getOverrideMaterial().Enabled = enable;
+}
+
+
+void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client)
+{
+	// clear depth buffer every time 3D is rendered
+	auto step3D = pipeline->own(create3DStage(client, v2f(1.0)));
+	auto screen = pipeline->createOwned<ScreenTarget>();
+	auto clear_depth = pipeline->createOwned<ClearDepthBufferTarget>(screen);
+	auto enable_override_material = pipeline->createOwned<ConfigureOverrideMaterialTarget>(clear_depth, true);
+	step3D->setRenderTarget(enable_override_material);
+
+	// left eye
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(false));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_RED));
+	pipeline->addStep(step3D);
+
+	// right eye
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(true));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_GREEN | video::ECP_BLUE));
+	pipeline->addStep(step3D);
+
+	// reset
+	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(0.0f));
+	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_ALL));
+	
+	pipeline->addStep(pipeline->createOwned<MapPostFxStep>());
+	pipeline->addStep(pipeline->createOwned<DrawHUD>());
 }

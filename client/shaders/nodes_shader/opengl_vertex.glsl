@@ -42,6 +42,7 @@ centroid varying vec2 varTexCoord;
 	varying float perspective_factor;
 #endif
 
+varying float area_enable_parallax;
 
 varying vec3 eyeVec;
 varying float nightRatio;
@@ -193,6 +194,9 @@ void main(void)
 
 	vPosition = gl_Position.xyz;
 	eyeVec = -(mWorldView * pos).xyz;
+#ifdef SECONDSTAGE
+	normalPass = normalize((inVertexNormal+1)/2);
+#endif
 	vNormal = inVertexNormal;
 
 	// Calculate color.

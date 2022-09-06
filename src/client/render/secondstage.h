@@ -20,24 +20,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include "stereo.h"
+#include "pipeline.h"
 
-// The support is absent in 1.9.0 (dropped in r5068)
-#if (IRRLICHT_VERSION_MAJOR == 1) && (IRRLICHT_VERSION_MINOR <= 8)
-#define STEREO_PAGEFLIP_SUPPORTED
-
-class RenderingCorePageflip : public RenderingCoreStereo
+class PostProcessingStep : public RenderStep
 {
-protected:
-	video::ITexture *hud = nullptr;
-
-	void initTextures() override;
-	void clearTextures() override;
-	void useEye(bool right) override;
-	void resetEye() override;
-
 public:
-	using RenderingCoreStereo::RenderingCoreStereo;
-	void drawAll() override;
+	PostProcessingStep(u32 shader_id, const std::vector<u8> &texture_map);
+
+	
+	void setRenderSource(RenderSource *source) override;
+	void setRenderTarget(RenderTarget *target) override;
+	void reset(PipelineContext &context) override;
+	void run(PipelineContext &context) override;
+
+private:
+	u32 shader_id;
+	std::vector<u8> texture_map;
+	RenderSource *source { nullptr };
+	RenderTarget *target { nullptr };
+	video::SMaterial material;
+
+	void configureMaterial();
 };
 
-#endif
+RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client);
