@@ -4710,13 +4710,13 @@ Privileges
 
 Privileges provide a means for server administrators to give certain players
 access to special abilities in the engine, games or mods.
-For example, game moderators may need to travel instantly to any place in the world, 
+For example, game moderators may need to travel instantly to any place in the world,
 this ability is implemented in `/teleport` command which requires `teleport` privilege.
 
 Registering privileges
 ----------------------
 
-A mod can register a custom privilege using `minetest.register_privilege` function 
+A mod can register a custom privilege using `minetest.register_privilege` function
 to give server administrators fine-grained access control over mod functionality.
 
 For consistency and practical reasons, privileges should strictly increase the abilities of the user.
@@ -4725,7 +4725,7 @@ Do not register custom privileges that e.g. restrict the player from certain in-
 Checking privileges
 -------------------
 
-A mod can call `minetest.check_player_privs` to test whether a player has privileges 
+A mod can call `minetest.check_player_privs` to test whether a player has privileges
 to perform an operation.
 Also, when registering a chat command with `minetest.register_chatcommand` a mod can
 declare privileges that the command requires using the `privs` field of the command
@@ -4789,7 +4789,7 @@ Minetest includes the following settings to control behavior of privileges:
 
    * `default_privs`: defines privileges granted to new players.
    * `basic_privs`: defines privileges that can be granted/revoked by players having
-    the `basic_privs` privilege. This can be used, for example, to give 
+    the `basic_privs` privilege. This can be used, for example, to give
     limited moderation powers to selected users.
 
 'minetest' namespace reference
@@ -7208,6 +7208,8 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the sun. Setting to `""`
             will re-enable the mesh sun. (default: "sun.png", if it exists)
+            The texture appears non-rotated at sunrise and rotated 180 degrees
+            (upside down) at sunset.
         * `tonemap`: A 512x1 texture containing the tonemap for the sun
             (default: `"sun_tonemap.png"`)
         * `sunrise`: A regular texture for the sunrise texture.
@@ -7215,6 +7217,8 @@ child will follow movement and rotation of that bone.
         * `sunrise_visible`: Boolean for whether the sunrise texture is visible.
             (default: `true`)
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
+            Note: For legacy reasons, the sun is bigger than the moon by a factor
+            of about `1.57` for equal `scale` values.
 * `get_sun()`: returns a table with the current sun parameters as in
     `set_sun`.
 * `set_moon(moon_parameters)`:
@@ -7224,11 +7228,15 @@ child will follow movement and rotation of that bone.
             (default: `true`)
         * `texture`: A regular texture for the moon. Setting to `""`
             will re-enable the mesh moon. (default: `"moon.png"`, if it exists)
-            Note: Relative to the sun, the moon texture is rotated by 180°.
+            The texture appears non-rotated at sunrise / moonset and rotated 180
+            degrees (upside down) at sunset / moonrise.
+            Note: Relative to the sun, the moon texture is hence rotated by 180°.
             You can use the `^[transformR180` texture modifier to achieve the same orientation.
         * `tonemap`: A 512x1 texture containing the tonemap for the moon
             (default: `"moon_tonemap.png"`)
         * `scale`: Float controlling the overall size of the moon (default: `1`)
+            Note: For legacy reasons, the sun is bigger than the moon by a factor
+            of about `1.57` for equal `scale` values.
 * `get_moon()`: returns a table with the current moon parameters as in
     `set_moon`.
 * `set_stars(star_parameters)`:
