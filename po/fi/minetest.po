@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-07 17:16+0000\n"
-"Last-Translator: Oftox <oftox@protonmail.com>\n"
+"PO-Revision-Date: 2022-09-07 21:01+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/minetest/"
 "minetest/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -120,12 +120,11 @@ msgstr "Palvelin pyysi yhteyden muodostamista uudelleen:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Uusi $1-versio on saatavilla"
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "Valitse modit"
+msgstr "Asiakasmodit"
 
 #: builtin/mainmenu/common.lua
 msgid ""
@@ -134,14 +133,18 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Asennettu versio: $1\n"
+"Uusi versio: $2\n"
+"Käy $3 saadaksesi lisätietoja, miten saat uusimman version ja pysy ajan "
+"tasalla uusista ominaisuuksista ja korjauksista."
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Myöhemmin"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Ei koskaan"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -157,7 +160,7 @@ msgstr "Palvelin tukee protokollia versioiden $1 ja $2 välillä. "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Käy verkkosivustolla"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -269,7 +272,7 @@ msgstr "Riippuvuudet $1 ja $2 asennetaan."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1, tehnyt $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -325,7 +328,7 @@ msgstr "Pelit"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr "Asentaa"
+msgstr "Asenna"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
@@ -469,13 +472,12 @@ msgid "Increases humidity around rivers"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Asenna $1"
+msgstr "Asenna peli"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Asenna toinen peli"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -612,11 +614,11 @@ msgstr "Vahvista salasana"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Liitytään $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Nimi puuttuu"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -629,14 +631,12 @@ msgid "Password"
 msgstr "Salasana"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Salasanat eivät täsmää!"
+msgstr "Salasanat eivät täsmää"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Rekisteröidy ja liity"
+msgstr "Rekisteröidy"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -669,14 +669,12 @@ msgid "Browse"
 msgstr "Selaa"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Sisältö"
+msgstr "Sisältö: pelit"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Sisältö"
+msgstr "Sisältö: modit"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -853,15 +851,15 @@ msgstr "Tietoja"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktiiviset avustajat"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr ""
+msgstr "Aktiivinen renderöijä:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Keskeisimmät kehittäjät"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -875,15 +873,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Aiemmat avustajat"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Aiemmat keskeisimmät kehittäjät"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "Jaa vianjäljitysloki"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1016,7 +1014,7 @@ msgstr "Liity peliin"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Kirjaudu"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1032,7 +1030,7 @@ msgstr "Päivitä"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
-msgstr ""
+msgstr "Poista suosikki"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1040,7 +1038,7 @@ msgstr "Palvelimen kuvaus"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(pelituki vaaditaan)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1087,9 +1085,8 @@ msgid "Dynamic shadows"
 msgstr "Dynaamiset varjot"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dynaamiset varjot: "
+msgstr "Dynaamiset varjot:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1315,7 +1312,7 @@ msgstr "Tapahtui virhe:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Pääsy estetty. Syy: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1403,6 +1400,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Ohjaus:\n"
+"- %s: liiku eteenpäin\n"
+"- %s: liiku taaksepäin\n"
+"- %s: liiku vasemmalle\n"
+"- %s: liiku oikealle\n"
+"- %s: hypi/kiipeä ylös\n"
+"- %s: kaiva/lyö\n"
+"- %s: aseta/käytä\n"
+"- %s: hiivi/kiipeä alas\n"
+"- %s: pudota esine\n"
+"- %s: inventaario\n"
+"- Hiiri: käänny/katso\n"
+"- Hiiren rulla: valitse esine \n"
+"- %s: keskustelu\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1744,7 +1755,7 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "Vasen"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1769,7 +1780,7 @@ msgstr ""
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Valikko"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1870,7 +1881,7 @@ msgstr ""
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "Oikea"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1939,7 +1950,7 @@ msgstr ""
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
-msgstr ""
+msgstr "Pienoiskartta piilotettu"
 
 #: src/client/minimap.cpp
 #, c-format
@@ -1953,7 +1964,7 @@ msgstr ""
 
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
-msgstr ""
+msgstr "Pienoiskartta tekstuuritilassa"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -1961,11 +1972,11 @@ msgstr "Verkkosivun avaaminen epäonnistui"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Avataan verkkosivu"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Jatka"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Aux1\" = climb down"
@@ -2013,7 +2024,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "Vähennä ääntä"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -2021,7 +2032,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Pudota"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
@@ -2033,7 +2044,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr ""
+msgstr "Lisää ääntä"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -2045,11 +2056,11 @@ msgstr "Hyppää"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "Näppäin on jo käytössä"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Näppäinasetukset."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2057,15 +2068,15 @@ msgstr "Paikallinen komento"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Mykistä"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr ""
+msgstr "Seuraava esine"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "Edellinen esine"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -2081,11 +2092,11 @@ msgstr "Hiivi"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle HUD"
-msgstr ""
+msgstr "HUD päällä/pois"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle chat log"
-msgstr ""
+msgstr "Keskusteluloki päällä/pois"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -2097,11 +2108,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr ""
+msgstr "Sumu päällä/pois"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr ""
+msgstr "Pienoiskartta päällä/pois"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
@@ -2113,7 +2124,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "paina näppäintä"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2155,11 +2166,12 @@ msgstr "fi"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Nimeä ei ole rekisteröity. Luo tili tälle palvelimelle napsauttamalla "
+"\"Rekisteröidy\""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Valitse nimi!"
+msgstr "Nimi on jo käytössä. Valitse toinen nimi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2459,7 +2471,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Ääni"
 
 #: src/settings_translation_file.cpp
 msgid "Automatic forward key"
@@ -2850,7 +2862,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Ohjaimet"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3076,9 +3088,8 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Koristeet"
+msgstr "Kehittäjävalinnat"
 
 #: src/settings_translation_file.cpp
 msgid "Dig key"
@@ -3094,7 +3105,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Älä salli tyhjiä salasanoja"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
@@ -3640,14 +3651,12 @@ msgid "Graphics"
 msgstr "Grafiikka"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics Effects"
-msgstr "Grafiikka"
+msgstr "Graafiset tehosteet"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics and Audio"
-msgstr "Grafiikka"
+msgstr "Grafiikka ja ääni"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -5257,11 +5266,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Pienoiskartta"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "Pienoiskartan näppäin"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
@@ -6195,9 +6204,8 @@ msgid "Temperature variation for biomes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Temporary Settings"
-msgstr "Asetukset"
+msgstr "Väliaikaiset asetukset"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
@@ -6530,7 +6538,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
-msgstr ""
+msgstr "Käyttöliittymät"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
