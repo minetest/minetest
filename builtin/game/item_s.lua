@@ -92,6 +92,26 @@ function core.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
+function core.dir_to_fourdir(dir)
+	if math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 1
+		end
+	else
+		if dir.z < 0 then
+			return 2
+		else
+			return 0
+		end
+	end
+end
+
+function core.fourdir_to_dir(fourdir)
+	return facedir_to_dir[facedir_to_dir_map[fourdir % 4]]
+end
+
 function core.dir_to_wallmounted(dir)
 	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
 		if dir.y < 0 then

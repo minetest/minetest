@@ -60,6 +60,31 @@ minetest.register_node("testnodes:mesh_colorfacedir", {
 	groups = {dig_immediate=3},
 })
 
+minetest.register_node("testnodes:mesh_4dir", {
+	description = S("4dir Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_ocorner.obj",
+	tiles = {"testnodes_mesh_stripes.png"},
+	paramtype = "light",
+	paramtype2 = "4dir",
+	collision_box = ocorner_cbox,
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:mesh_color4dir", {
+	description = S("Color 4dir Mesh Test Node"),
+	drawtype = "mesh",
+	mesh = "testnodes_ocorner.obj",
+	tiles = {"testnodes_mesh_stripes3.png"},
+	paramtype = "light",
+	paramtype2 = "color4dir",
+	palette = "testnodes_palette_4dir.png",
+	collision_box = ocorner_cbox,
+
+	groups = {dig_immediate=3},
+})
+
 -- Wallmounted mesh: pyramid
 minetest.register_node("testnodes:mesh_wallmounted", {
 	description = S("Wallmounted Mesh Test Node"),

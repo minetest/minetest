@@ -205,7 +205,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 		newnode.param2 = core.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif (def.paramtype2 == "facedir" or
-			def.paramtype2 == "colorfacedir") and not param2 then
+			def.paramtype2 == "colorfacedir" or
+			def.paramtype2 == "4dir" or
+			def.paramtype2 == "color4dir") and not param2 then
 		local placer_pos = placer and placer:get_pos()
 		if placer_pos then
 			local dir = vector.subtract(above, placer_pos)
@@ -225,6 +227,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 			color_divisor = 8
 		elseif def.paramtype2 == "colorfacedir" then
 			color_divisor = 32
+		elseif def.paramtype2 == "color4dir" then
+			color_divisor = 4
 		elseif def.paramtype2 == "colordegrotate" then
 			color_divisor = 32
 		end
