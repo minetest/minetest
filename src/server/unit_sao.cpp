@@ -79,7 +79,7 @@ void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *props)
 {
 	// store these so they can be updated to clients
 	auto prev_props = m_bone_override[bone];
-	if (prev_props)
+	if (prev_props != props)
 		delete prev_props;
 	m_bone_override[bone] = props;
 	m_bone_override_sent = false;
@@ -87,7 +87,8 @@ void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *props)
 
 BoneOverride *UnitSAO::getBoneOverride(const std::string &bone)
 {
-	return m_bone_override[bone];
+	auto it = m_bone_override.find(bone);
+	return it != m_bone_override.end() ? it->second : nullptr;
 }
 
 // clang-format off

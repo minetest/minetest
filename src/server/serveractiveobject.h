@@ -170,8 +170,8 @@ public:
 	{}
 	virtual void setAnimationSpeed(float frame_speed)
 	{}
-	virtual void setBoneOverride(const std::string &bone, BoneOverride *override)
-	{}
+	virtual void setBoneOverride(const std::string &bone, BoneOverride *props)
+	{ delete props; }
 	virtual BoneOverride *getBoneOverride(const std::string &bone)
 	{ return 0; }
 	virtual const BoneOverrideMap &getBoneOverrides() const

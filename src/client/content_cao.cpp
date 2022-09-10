@@ -1909,10 +1909,12 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 		if (previous)
 			delete previous;
-		if (is_identity)
+		if (is_identity) {
+			delete props;
 			m_bone_override.erase(bone);
-		else
+		} else {
 			m_bone_override[bone] = props;
+		}
 		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
