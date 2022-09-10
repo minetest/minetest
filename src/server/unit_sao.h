@@ -70,9 +70,10 @@ public:
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
-	void setBoneOverride(const std::string &bone, BoneOverride *override);
+	void setBoneOverride(const std::string &bone, BoneOverride *props);
 	BoneOverride *getBoneOverride(const std::string &bone);
-	const std::unordered_map<std::string, BoneOverride*> &getBoneOverrides() const;
+	const std::unordered_map<std::string, BoneOverride*>
+			&getBoneOverrides() const { return m_bone_override; };
 
 	// Attachments
 	ServerActiveObject *getParent() const;
@@ -102,7 +103,7 @@ public:
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(
-			const std::string &bone, const BoneOverride *override);
+			const std::string &bone, const BoneOverride *props);
 	void sendPunchCommand();
 
 protected:

@@ -1545,32 +1545,41 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		props->dtime_passed += dtime;
 
 		// Position
-		v3f position = props->position.vector;
-		f32 progress = props->dtime_passed / props->position.interpolation_duration;
-		if (progress > 1.0f || props->position.interpolation_duration == 0.0f) progress = 1.0f;
-		position = position.getInterpolated(props->position.previous, progress);
-		bone->setPosition(props->position.absolute
-				? position
-				: position + bone->getPosition());
-		// Rotation
-		core::quaternion rotation;
-		progress = props->dtime_passed / props->rotation.interpolation_duration;
-		if (progress > 1.0f || props->rotation.interpolation_duration == 0.0f) progress = 1.0f;
-		rotation.slerp(props->rotation.previous, props->rotation.next, progress);
-		if (!props->rotation.absolute) {
-			core::quaternion bone_rot(bone->getRotation() * core::DEGTORAD);
-			rotation = rotation * bone_rot; // first rotate around bone rot, then rot
+		{
+			v3f position = props->position.vector;
+			f32 progress = props->dtime_passed / props->position.interpolation_duration;
+			if (progress > 1.0f || props->position.interpolation_duration == 0.0f)
+				progress = 1.0f;
+			position = position.getInterpolated(props->position.previous, progress);
+			bone->setPosition(props->position.absolute
+					? position
+					: position + bone->getPosition());
 		}
-		v3f rot_euler;
-		rotation.toEuler(rot_euler);
-		bone->setRotation(rot_euler * core::RADTODEG);
-		//Scale
-		progress = props->dtime_passed / props->scale.interpolation_duration;
-		if (progress > 1.0f || props->scale.interpolation_duration == 0.0f) progress = 1.0f;
-		v3f scale = props->scale.vector.getInterpolated(props->scale.previous, progress);
-		bone->setScale(props->scale.absolute
-				? scale
-				: scale * bone->getScale());
+		// Rotation
+		{
+			core::quaternion rotation;
+			f32 progress = props->dtime_passed / props->rotation.interpolation_duration;
+			if (progress > 1.0f || props->rotation.interpolation_duration == 0.0f)
+				progress = 1.0f;
+			rotation.slerp(props->rotation.previous, props->rotation.next, progress);
+			if (!props->rotation.absolute) {
+				core::quaternion bone_rot(bone->getRotation() * core::DEGTORAD);
+				rotation = rotation * bone_rot; // first rotate around bone rot, then rot
+			}
+			v3f rot_euler;
+			rotation.toEuler(rot_euler);
+			bone->setRotation(rot_euler * core::RADTODEG);
+		}
+		// Scale
+		{
+			f32 progress = props->dtime_passed / props->scale.interpolation_duration;
+			if (progress > 1.0f || props->scale.interpolation_duration == 0.0f)
+				progress = 1.0f;
+			v3f scale = props->scale.vector.getInterpolated(props->scale.previous, progress);
+			bone->setScale(props->scale.absolute
+					? scale
+					: scale * bone->getScale());
+		}
 	}
 
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
@@ -1898,9 +1907,12 @@ void GenericCAO::processMessage(const std::string &data)
 				}
 			}
 		}
-		if (previous) delete previous;
-		if (is_identity) m_bone_override.erase(bone);
-		else m_bone_override[bone] = props;
+		if (previous)
+			delete previous;
+		if (is_identity)
+			m_bone_override.erase(bone);
+		else
+			m_bone_override[bone] = props;
 		// updateBonePosition(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);

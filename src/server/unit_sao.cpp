@@ -75,24 +75,19 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *override)
+void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *props)
 {
 	// store these so they can be updated to clients
-	auto prev_override = m_bone_override[bone];
-	if (prev_override) delete prev_override;
-	m_bone_override[bone] = override;
+	auto prev_props = m_bone_override[bone];
+	if (prev_props)
+		delete prev_props;
+	m_bone_override[bone] = props;
 	m_bone_override_sent = false;
 }
 
 BoneOverride *UnitSAO::getBoneOverride(const std::string &bone)
 {
 	return m_bone_override[bone];
-}
-
-const std::unordered_map<std::string, BoneOverride*> &
-UnitSAO::getBoneOverrides() const
-{
-	return m_bone_override;
 }
 
 // clang-format off
@@ -281,25 +276,25 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const BoneOverride *override)
+		const std::string &bone, const BoneOverride *props)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
 	os << serializeString16(bone);
-	writeV3F32(os, override->position.vector);
+	writeV3F32(os, props->position.vector);
 	v3f euler_rot;
-	override->rotation.next.toEuler(euler_rot);
+	props->rotation.next.toEuler(euler_rot);
 	writeV3F32(os, euler_rot * core::RADTODEG);
-	writeV3F32(os, override->scale.vector);
-	writeF32(os, override->position.interpolation_duration);
-	writeF32(os, override->rotation.interpolation_duration);
-	writeF32(os, override->scale.interpolation_duration);
+	writeV3F32(os, props->scale.vector);
+	writeF32(os, props->position.interpolation_duration);
+	writeF32(os, props->rotation.interpolation_duration);
+	writeF32(os, props->scale.interpolation_duration);
 	// clang-format off
-	writeU8(os, (override->position.absolute & 1) << 0
-	          | (override->rotation.absolute & 1) << 1
-	          | (override->scale.absolute & 1) << 2);
+	writeU8(os, (props->position.absolute & 1) << 0
+	          | (props->rotation.absolute & 1) << 1
+	          | (props->scale.absolute & 1) << 2);
 	// clang-format on
 	return os.str();
 }
