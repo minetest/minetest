@@ -521,14 +521,14 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	BoneOverride *props = new BoneOverride();
+	std::unique_ptr<BoneOverride> props(new BoneOverride());
 	if (!lua_isnil(L, 3))
 		props->position.vector = check_v3f(L, 3);
 	if (!lua_isnil(L, 4))
 		props->rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
 	props->position.absolute = true;
 	props->rotation.absolute = true;
-	sao->setBoneOverride(bone, props);
+	sao->setBoneOverride(bone, props.release());
 	return 0;
 }
 
@@ -562,9 +562,10 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	BoneOverride *props = new BoneOverride();
+
+	std::unique_ptr<BoneOverride> props(new BoneOverride());
 	if (lua_isnoneornil(L, 3)) {
-		sao->setBoneOverride(bone, props);
+		sao->setBoneOverride(bone, props.release());
 		return 0;
 	}
 
@@ -596,7 +597,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		read_prop_attrs(props->scale);
 		lua_pop(L, 1);
 	}
-	sao->setBoneOverride(bone, props);
+	sao->setBoneOverride(bone, props.release());
 	return 0;
 }
 
