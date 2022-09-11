@@ -194,17 +194,19 @@ void ClientEnvironment::step(float dtime)
 		lplayer->applyControl(dtime_part, this);
 
 		// Apply physics
-		f32 gravity = 0;
+		lplayer->gravity = 0;
 		if (!free_move) {
 			// Gravity
 			if (!is_climbing && !lplayer->in_liquid)
-				gravity = lplayer->movement_gravity * lplayer->physics_override.gravity;
+				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
+				lplayer->gravity = 2 * lplayer->movement_gravity * lplayer->physics_override.gravity;
 
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&
 					!lplayer->swimming_vertical &&
 					!lplayer->swimming_pitch)
-				gravity = lplayer->movement_liquid_sink;
+				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
+				lplayer->gravity = 2 * lplayer->movement_liquid_sink;
 
 			// Movement resistance
 			if (lplayer->move_resistance > 0) {
@@ -242,8 +244,7 @@ void ClientEnvironment::step(float dtime)
 			This also does collision detection.
 		*/
 
-		// HACK the factor 2 for gravity is arbitrary and should be removed eventually
-		lplayer->move(dtime_part, 2.0f * gravity, this, position_max_increment,
+		lplayer->move(dtime_part, this, position_max_increment,
 			&player_collisions);
 	}
 

@@ -165,7 +165,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	return true;
 }
 
-void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	// Node at feet position, update each ClientEnvironment::step()
@@ -174,7 +174,7 @@ void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 
 	// Temporary option for old move code
 	if (!physics_override.new_move) {
-		old_move(dtime, gravity, env, pos_max_d, collision_info);
+		old_move(dtime, env, pos_max_d, collision_info);
 		return;
 	}
 
@@ -452,12 +452,12 @@ void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
 	}
 
 	// Autojump
-	handleAutojump(dtime, gravity, env, result, initial_position, initial_speed, pos_max_d);
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
-void LocalPlayer::move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 {
-	move(dtime, gravity, env, pos_max_d, NULL);
+	move(dtime, env, pos_max_d, NULL);
 }
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
@@ -743,7 +743,7 @@ void LocalPlayer::accelerate(const v3f &target_speed, const f32 max_increase_H,
 }
 
 // Temporary option for old move code
-void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max_d,
+void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
@@ -1047,7 +1047,7 @@ void LocalPlayer::old_move(f32 dtime, f32 gravity, Environment *env, f32 pos_max
 	}
 
 	// Autojump
-	handleAutojump(dtime, gravity, env, result, initial_position, initial_speed, pos_max_d);
+	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
 
 float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
@@ -1069,7 +1069,7 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 	return 1.0f;
 }
 
-void LocalPlayer::handleAutojump(f32 dtime, f32 gravity, Environment *env,
+void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 	const collisionMoveResult &result, const v3f &initial_position,
 	const v3f &initial_speed, f32 pos_max_d)
 {
