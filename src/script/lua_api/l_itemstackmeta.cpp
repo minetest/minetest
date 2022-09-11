@@ -38,12 +38,12 @@ ItemStackMetaRef* ItemStackMetaRef::checkobject(lua_State *L, int narg)
 
 Metadata* ItemStackMetaRef::getmeta(bool auto_create)
 {
-	return &istack->metadata;
+	return &istack->getItem().metadata;
 }
 
 void ItemStackMetaRef::clearMeta()
 {
-	istack->metadata.clear();
+	istack->getItem().metadata.clear();
 }
 
 void ItemStackMetaRef::reportMetadataChange(const std::string *name)
@@ -67,6 +67,16 @@ int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 	return 0;
 }
 
+ItemStackMetaRef::ItemStackMetaRef(LuaItemStack *istack): istack(istack)
+{
+	istack->grab();
+}
+
+ItemStackMetaRef::~ItemStackMetaRef()
+{
+	istack->drop();
+}
+
 // garbage collector
 int ItemStackMetaRef::gc_object(lua_State *L) {
 	ItemStackMetaRef *o = *(ItemStackMetaRef **)(lua_touserdata(L, 1));
@@ -76,7 +86,7 @@ int ItemStackMetaRef::gc_object(lua_State *L) {
 
 // Creates an NodeMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
-void ItemStackMetaRef::create(lua_State *L, ItemStack *istack)
+void ItemStackMetaRef::create(lua_State *L, LuaItemStack *istack)
 {
 	ItemStackMetaRef *o = new ItemStackMetaRef(istack);
 	//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;

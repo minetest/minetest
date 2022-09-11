@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int LuaItemStack::gc_object(lua_State *L)
 {
 	LuaItemStack *o = *(LuaItemStack **)(lua_touserdata(L, 1));
-	delete o;
+	o->drop();
 	return 0;
 }
 
@@ -152,7 +152,7 @@ int LuaItemStack::l_get_meta(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	ItemStackMetaRef::create(L, &o->m_stack);
+	ItemStackMetaRef::create(L, o);
 	return 1;
 }
 
@@ -436,15 +436,6 @@ int LuaItemStack::l_peek_item(lua_State *L)
 LuaItemStack::LuaItemStack(const ItemStack &item):
 	m_stack(item)
 {
-}
-
-const ItemStack& LuaItemStack::getItem() const
-{
-	return m_stack;
-}
-ItemStack& LuaItemStack::getItem()
-{
-	return m_stack;
 }
 
 // LuaItemStack(itemstack or itemstring or table or nil)
