@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
+#include "filesys.h"
 #include "log.h"
 #include <algorithm>
 
@@ -479,11 +480,12 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		throw LuaError("Dynamic media cannot be added before server has started up");
 	Server *server = getServer(L);
 
-	bool fromdisk = false;
+	bool fromdata = false;
+	bool ephemeral = false;
 
 	std::string filepath;
 	std::string to_player;
-	bool ephemeral = false;
+
 	std::string filename;
 	std::string filedata;
 
@@ -492,29 +494,29 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		getstringfield(L, 1, "to_player", to_player);
 		getboolfield(L, 1, "ephemeral", ephemeral);
 		getstringfield(L, 1, "filename", filename);
-		fromdisk = !getstringfield(L, 1, "data", filedata);
+		fromdata = getstringfield(L, 1, "data", filedata);
 	} else {
 		filepath = readParam<std::string>(L, 1);
 	}
 
-	if (fromdisk) {
-		if (filepath.empty())
-			luaL_typerror(L, 1, "non-empty string");
-		CHECK_SECURE_PATH(L, filepath.c_str(), false);
-	} else {
+	ephemeral = ephemeral || fromdata;
+
+	if (fromdata) {
 		if (filedata.empty() || filename.empty())
 			luaL_typerror(L, 1, "non-empty string");
+	} else {
+		if (filepath.empty())
+			luaL_typerror(L, 1, "non-empty string");
+		else if (filename.empty())
+			filename = fs::GetFilenameFromPath(filepath.c_str());
+		CHECK_SECURE_PATH(L, filepath.c_str(), false);
 	}
 
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
 
-	bool ok;
-	if (fromdisk) 
-		ok = server->dynamicAddMediaFile(filepath, token, to_player, ephemeral);
-	else // always ephemeral
-		ok = server->dynamicAddMediaData(filename, filedata, token, to_player);
+	bool ok = server->dynamicAddMedia(filename, filepath, token, to_player, ephemeral, filedata);
 
 	if (!ok)
 		server->getScriptIface()->freeDynamicMediaCallback(token);

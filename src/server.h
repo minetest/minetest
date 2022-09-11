@@ -254,12 +254,8 @@ public:
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
-	bool dynamicAddMediaFile(std::string filepath,
-		u32 token, const std::string &to_player, bool ephemeral);
-	bool dynamicAddMediaData(std::string filename, std::string filedata,
-		u32 token, const std::string &to_player);
-	bool dynamicSendMedia(std::string filename, std::string filedata,
-		u32 token, const std::string &to_player, bool ephemeral, std::string raw_hash);
+	bool dynamicAddMedia(std::string filename, std::string filepath, u32 token,
+		const std::string &to_player, bool ephemeral, std::string filedata);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);
@@ -500,8 +496,6 @@ private:
 
 	bool addMediaFile(const std::string &filename, const std::string &filepath,
 			std::string *filedata = nullptr, std::string *digest = nullptr);
-	bool addMediaData(const std::string &filename,
-			std::string filedata, std::string *digest = nullptr);
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,

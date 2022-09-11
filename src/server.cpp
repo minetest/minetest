@@ -2516,10 +2516,14 @@ bool Server::addMediaFile(const std::string &filename,
 
 	// Read data
 	std::string filedata;
-	if (!fs::ReadFile(filepath, filedata)) {
-		errorstream << "Server::addMediaFile(): Failed to open \""
-					<< filename << "\" for reading" << std::endl;
-		return false;
+	if (filedata_to && !(*filedata_to).empty()) {
+		filedata = *filedata_to;
+	} else {
+		if (!fs::ReadFile(filepath, filedata)) {
+			errorstream << "Server::addMediaFile(): Failed to open \""
+						<< filename << "\" for reading" << std::endl;
+			return false;
+		}
 	}
 
 	if (filedata.empty()) {
@@ -2543,57 +2547,8 @@ bool Server::addMediaFile(const std::string &filename,
 	verbosestream << "Server: " << sha1_hex << " is " << filename
 			<< std::endl;
 
-	if (filedata_to)
+	if (filedata_to && (*filedata_to).empty())
 		*filedata_to = std::move(filedata);
-	return true;
-}
-
-bool Server::addMediaData(const std::string &filename,
-	 std::string filedata, std::string *digest_to)
-{
-	// If name contains illegal characters, ignore the file
-	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-		infostream << "Server: ignoring illegal file name: \""
-				<< filename << "\"" << std::endl;
-		return false;
-	}
-	// If name is not in a supported format, ignore it
-	const char *supported_ext[] = {
-		".png", ".jpg", ".bmp", ".tga",
-		".ogg",
-		".x", ".b3d", ".obj",
-		// Custom translation file format
-		".tr",
-		NULL
-	};
-	if (removeStringEnd(filename, supported_ext).empty()) {
-		infostream << "Server: ignoring unsupported file extension: \""
-				<< filename << "\"" << std::endl;
-		return false;
-	}
-	// Ok, attempt to load the file and add to cache
-
-	if (filedata.empty()) {
-		errorstream << "Server::addMediaFile(): Empty file \""
-				<< filename << "\"" << std::endl;
-		return false;
-	}
-
-	SHA1 sha1;
-	sha1.addBytes(filedata.c_str(), filedata.length());
-
-	unsigned char *digest = sha1.getDigest();
-	std::string sha1_base64 = base64_encode(digest, 20);
-	std::string sha1_hex = hex_encode((char*) digest, 20);
-	if (digest_to)
-		*digest_to = std::string((char*) digest, 20);
-	free(digest);
-
-	// Put in list
-	m_media[filename] = MediaInfo(filename, sha1_base64);
-	verbosestream << "Server: " << sha1_hex << " is " << filename
-			<< std::endl;
-
 	return true;
 }
 
@@ -3564,22 +3519,21 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMediaFile(std::string filepath,
-	const u32 token, const std::string &to_player, bool ephemeral)
+bool Server::dynamicAddMedia(std::string filename, std::string filepath,
+	const u32 token, const std::string &to_player, bool ephemeral, std::string filedata)
 {
-	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	auto it = m_media.find(filename);
 	if (it != m_media.end()) {
 		// Allow the same path to be "added" again in certain conditions
 		if (ephemeral || it->second.path != filepath) {
-			errorstream << "Server::dynamicAddMediaFile(): file \"" << filename
+			errorstream << "Server::dynamicAddMedia(): file \"" << filename
 				<< "\" already exists in media cache" << std::endl;
 			return false;
 		}
 	}
 
 	// Load the file and add it to our media cache
-	std::string filedata, raw_hash;
+	std::string raw_hash;
 	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
 	if (!ok)
 		return false;
@@ -3614,56 +3568,6 @@ bool Server::dynamicAddMediaFile(std::string filepath,
 		m_media[filename].no_announce = true;
 	}
 
-	return dynamicSendMedia(filename, filedata, token, to_player, ephemeral, raw_hash);
-}
-
-bool Server::dynamicAddMediaData(std::string filename, std::string filedata,
-	const u32 token, const std::string &to_player)
-{
-	auto it = m_media.find(filename);
-	if (it != m_media.end()) {
-		errorstream << "Server::dynamicAddMediaFile(): file \"" << filename
-			<< "\" already exists in media cache" << std::endl;
-		return false;
-	}
-
-	// Load the file and add it to our media cache
-	std::string raw_hash;
-	bool ok = addMediaData(filename, filedata, &raw_hash);
-	if (!ok)
-		return false;
-
-	// Create a copy of the file and set the path.
-	std::string filepath = fs::CreateTempFile();
-	ok = ([&] () -> bool {
-		if (filepath.empty())
-			return false;
-		std::ofstream os(filepath.c_str(), std::ios::binary);
-		if (!os.good())
-			return false;
-		os << filedata;
-		os.close();
-		return !os.fail();
-	})();
-	if (!ok) {
-		errorstream << "Server: failed to create a copy of media file "
-			<< "\"" << filename << "\"" << std::endl;
-		m_media.erase(filename);
-		return false;
-	}
-	verbosestream << "Server: \"" << filename << "\" temporarily copied to "
-		<< filepath << std::endl;
-
-	m_media[filename].path = filepath;
-	m_media[filename].no_announce = true;
-	// stepPendingDynMediaCallbacks will clean this up later.
-
-	return dynamicSendMedia(filename, filedata, token, to_player, true, raw_hash);
-}
-
-bool Server::dynamicSendMedia(std::string filename, std::string filedata,
-	const u32 token, const std::string &to_player, bool ephemeral, std::string raw_hash)
-{
 	// Push file to existing clients
 	NetworkPacket pkt(TOCLIENT_MEDIA_PUSH, 0);
 	pkt << raw_hash << filename << (bool)ephemeral;
