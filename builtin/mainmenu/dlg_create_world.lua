@@ -355,7 +355,7 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+		local game, _ = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 
 		local message
 		if game == nil then

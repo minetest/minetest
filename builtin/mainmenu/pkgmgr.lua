@@ -713,35 +713,6 @@ function pkgmgr.comparemod(elem1,elem2)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.mod_exists(basename)
-
-	if pkgmgr.global_mods == nil then
-		pkgmgr.refresh_globals()
-	end
-
-	if pkgmgr.global_mods:raw_index_by_uid(basename) > 0 then
-		return true
-	end
-
-	return false
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_global_mod(idx)
-
-	if pkgmgr.global_mods == nil then
-		return nil
-	end
-
-	if idx == nil or idx < 1 or
-		idx > pkgmgr.global_mods:size() then
-		return nil
-	end
-
-	return pkgmgr.global_mods:get_list()[idx]
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.refresh_globals()
 	local function is_equal(element,uid) --uid match
 		if element.name == uid then
