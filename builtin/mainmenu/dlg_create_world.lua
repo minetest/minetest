@@ -104,14 +104,12 @@ local function create_world_formspec(dialogdata)
 	local current_mg = dialogdata.mg
 	local mapgens = core.get_mapgen_names()
 
-	local gameid = core.settings:get("menu_last_game")
-
 	local flags = dialogdata.flags
 
-	local game = pkgmgr.find_by_gameid(gameid)
+	local game = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 	if game == nil then
 		-- should never happen but just pick the first game
-		game = core.get_games()[1]
+		game = pkgmgr.games[1]
 		core.settings:set("menu_last_game", game.id)
 	end
 

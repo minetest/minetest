@@ -540,8 +540,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			+ sanitizeDirName(name, "world_");
 
 	std::vector<SubgameSpec> games = getAvailableGames();
-	auto game_it = std::find_if(games.begin(), games.end(), [gameid] (const SubgameSpec &spec)
-	{
+	auto game_it = std::find_if(games.begin(), games.end(), [gameid] (const SubgameSpec &spec) {
 		return spec.id == gameid;
 	});
 	if (game_it == games.end()) {
