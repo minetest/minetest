@@ -247,9 +247,9 @@ Package - content which is downloadable from the content db, may or may not be i
     * returns path to global gamepath
 * core.get_texturepath() (possible in async calls)
     * returns path to default textures
-* core.get_game(index)
+* core.get_games() -> table of all games (possible in async calls)
     * `name` in return value is deprecated, use `title` instead.
-    * returns:
+    * returns a table (ipairs) with values:
 
         {
             id               = <id>,
@@ -261,8 +261,6 @@ Package - content which is downloadable from the content db, may or may not be i
             DEPRECATED:
             addon_mods_paths = {[1] = <path>,},
         }
-
-* core.get_games() -> table of all games in upper format (possible in async calls)
 * core.get_content_info(path)
     * returns
 
@@ -323,7 +321,7 @@ core.get_worlds() -> list of worlds (possible in async calls)
     gameid = <gameid of world>,
     },
 }
-core.create_world(worldname, gameid)
+core.create_world(worldname, gameid, init_settings)
 core.delete_world(index)
 
 

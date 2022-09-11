@@ -111,7 +111,7 @@ local function create_world_formspec(dialogdata)
 	local game = pkgmgr.find_by_gameid(gameid)
 	if game == nil then
 		-- should never happen but just pick the first game
-		game = pkgmgr.get_game(1)
+		game = core.get_games()[1]
 		core.settings:set("menu_last_game", game.id)
 	end
 
@@ -399,7 +399,7 @@ local function create_world_buttonhandler(this, fields)
 				mgvalleys_spflags = table_to_flags(this.data.flags.valleys),
 				mgflat_spflags = table_to_flags(this.data.flags.flat),
 			}
-			message = core.create_world(worldname, gameindex, settings)
+			message = core.create_world(worldname, game.id, settings)
 		end
 
 		if message == nil then
