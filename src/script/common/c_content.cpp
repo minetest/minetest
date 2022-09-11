@@ -112,6 +112,19 @@ void read_item_definition(lua_State* L, int index,
 	}
 	lua_pop(L, 1);
 
+	// No, this is not a mistake. Item sounds are in "sound", node sounds in "sounds".
+	lua_getfield(L, index, "sound");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "punch_use");
+		read_soundspec(L, -1, def.sound_use);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "punch_use_air");
+		read_soundspec(L, -1, def.sound_use_air);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
 	def.range = getfloatfield_default(L, index, "range", def.range);
 
 	// Client shall immediately place this node when player places the item.

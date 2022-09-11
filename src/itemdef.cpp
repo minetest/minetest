@@ -78,6 +78,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	place_param2 = def.place_param2;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
+	sound_use = def.sound_use;
+	sound_use_air = def.sound_use_air;
 	range = def.range;
 	palette_image = def.palette_image;
 	color = def.color;
@@ -117,6 +119,8 @@ void ItemDefinition::reset()
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
+	sound_use = SimpleSoundSpec();
+	sound_use_air = SimpleSoundSpec();
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2 = 0;
@@ -166,6 +170,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString16(short_description);
 
 	os << place_param2;
+
+	sound_use.serialize(os, protocol_version);
+	sound_use_air.serialize(os, protocol_version);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -214,12 +221,15 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 	inventory_overlay = deSerializeString16(is);
 	wield_overlay = deSerializeString16(is);
 
-	// If you add anything here, insert it primarily inside the try-catch
+	// If you add anything here, insert it inside the try-catch
 	// block to not need to increase the version.
 	try {
 		short_description = deSerializeString16(is);
 
 		place_param2 = readU8(is); // 0 if missing
+
+		sound_use.deSerialize(is, protocol_version);
+		sound_use_air.deSerialize(is, protocol_version);
 	} catch(SerializationError &e) {};
 }
 
