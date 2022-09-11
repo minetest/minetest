@@ -21,10 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "inventory.h"  // ItemStack
+#include "util/pointer.h"
 
-class LuaItemStack : public ModApiBase {
+class LuaItemStack : public ModApiBase, public IntrusiveReferenceCounted {
 private:
 	ItemStack m_stack;
+
+	LuaItemStack(const ItemStack &item);
+	~LuaItemStack() = default;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -138,11 +142,10 @@ private:
 	static int l_peek_item(lua_State *L);
 
 public:
-	LuaItemStack(const ItemStack &item);
-	~LuaItemStack() = default;
+	DISABLE_CLASS_COPY(LuaItemStack)
 
-	const ItemStack& getItem() const;
-	ItemStack& getItem();
+	inline const ItemStack& getItem() const { return m_stack; }
+	inline ItemStack& getItem() { return m_stack; }
 
 	// LuaItemStack(itemstack or itemstring or table or nil)
 	// Creates an LuaItemStack and leaves it on top of stack
