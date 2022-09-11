@@ -264,6 +264,8 @@ public:
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
+	// Second sound made on left punch, currently used for item 'use' sound
+	SimpleSoundSpec m_player_leftpunch_sound2;
 	SimpleSoundSpec m_player_rightpunch_sound;
 
 	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef):
@@ -314,6 +316,7 @@ public:
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound2);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
@@ -3236,7 +3239,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound.name.clear();
+	soundmaker->m_player_leftpunch_sound = SimpleSoundSpec();
+	soundmaker->m_player_leftpunch_sound2 = pointed.type != POINTEDTHING_NOTHING ?
+		selected_def.sound_use : selected_def.sound_use_air;
 
 	// Prepare for repeating, unless we're not supposed to
 	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))

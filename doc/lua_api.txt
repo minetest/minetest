@@ -8027,6 +8027,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
             eat = <SimpleSoundSpec>,
             -- When item is eaten with `minetest.do_item_eat`
+
+            punch_use = <SimpleSoundSpec>,
+            -- When item is used with the 'punch/mine' key pointing at a node or entity
+
+            punch_use_air = <SimpleSoundSpec>,
+            -- When item is used with the 'punch/mine' key pointing at nothing (air)
         },
 
         on_place = function(itemstack, placer, pointed_thing),
