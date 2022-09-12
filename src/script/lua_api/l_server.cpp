@@ -480,39 +480,49 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		throw LuaError("Dynamic media cannot be added before server has started up");
 	Server *server = getServer(L);
 
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+
+	bool fromfile = true;
 	bool fromdata = false;
-	bool ephemeral = false;
 
 	std::string filepath;
-	std::string to_player;
-
-	std::string filename;
 	std::string filedata;
+	std::string filename;
+	std::string to_player;
+	bool ephemeral = false;
 
 	if (lua_istable(L, 1)) {
-		getstringfield(L, 1, "filepath", filepath);
-		getstringfield(L, 1, "to_player", to_player);
-		getboolfield(L, 1, "ephemeral", ephemeral);
-		getstringfield(L, 1, "filename", filename);
+		fromfile = getstringfield(L, 1, "filepath", filepath);
 		fromdata = getstringfield(L, 1, "data", filedata);
-	} else {
+		getstringfield(L, 1, "filename", filename);
+		getstringfield(L, 1, "to_player", to_player);
+		// When using passed data, ephemeral has to be true.
+		// Using a default rather than forcing true allows us to sanity check below.
+		ephemeral = getboolfield_default(L, 1, "ephemeral", fromdata);
+	} else if (lua_isstring(L, 1)) {
 		filepath = readParam<std::string>(L, 1);
-	}
-
-	ephemeral = ephemeral || fromdata;
-
-	if (fromdata) {
-		if (filedata.empty() || filename.empty())
-			luaL_typerror(L, 1, "non-empty string");
-	} else {
 		if (filepath.empty())
-			luaL_typerror(L, 1, "non-empty string");
-		else if (filename.empty())
-			filename = fs::GetFilenameFromPath(filepath.c_str());
-		CHECK_SECURE_PATH(L, filepath.c_str(), false);
+			luaL_typerror(L, 1, "non-empty string or table");
+	} else {
+		luaL_typerror(L, 1, "non-empty string or table");
 	}
 
-	luaL_checktype(L, 2, LUA_TFUNCTION);
+	if (fromfile && fromdata)
+		return luaL_argerror(L, 1, "cannot have both filepath and data");
+
+	if (fromfile) {
+		CHECK_SECURE_PATH(L, filepath.c_str(), false);
+		if (filename.empty())
+			filename = fs::GetFilenameFromPath(filepath.c_str());
+	} else if (fromdata) {
+		if (!ephemeral)
+			return luaL_error(L, "Cannot load non-emphemeral media from a string of data. "
+				"Either supply a filepath or change to ephemeral.");
+		if (filename.empty())
+			return luaL_argerror(L, 1, "missing filename");
+	} else {
+		return luaL_argerror(L, 1, "missing filepath or data");
+	}
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
 
