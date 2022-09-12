@@ -100,7 +100,15 @@ local function load_texture_packs(txtpath, retval)
 	end
 end
 
-function get_mods(path, virtual_path, retval, modpack)
+--modmanager implementation
+pkgmgr = {}
+
+--- Scans a directory recursively for mods and adds them to `listing`
+-- @param path         Absolute directory path to scan recursively
+-- @param virtual_path Prettified unique path (e.g. "mods", "mods/mt_modpack")
+-- @param listing      Input. Flat array to insert located mods and modpacks
+-- @param modpack      Currently processing modpack or nil/"" if none (recursion)
+function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 	local mods = core.get_dir_list(path, true)
 
 	for _, name in ipairs(mods) do
@@ -111,7 +119,7 @@ function get_mods(path, virtual_path, retval, modpack)
 				dir_name = name,
 				parent_dir = path,
 			}
-			retval[#retval + 1] = toadd
+			listing[#listing + 1] = toadd
 
 			-- Get config file
 			local mod_conf
@@ -156,14 +164,18 @@ function get_mods(path, virtual_path, retval, modpack)
 			elseif toadd.is_modpack then
 				toadd.type = "modpack"
 				toadd.is_modpack = true
-				get_mods(mod_path, mod_virtual_path, retval, name)
+				pkgmgr.get_mods(mod_path, mod_virtual_path, listing, name)
 			end
 		end
 	end
-end
 
---modmanager implementation
-pkgmgr = {}
+	if not modpack then
+		-- Sort all when the recursion is done
+		table.sort(listing, function(a, b)
+			return a.virtual_path:lower() < b.virtual_path:lower()
+		end)
+	end
+end
 
 function pkgmgr.get_texture_packs()
 	local txtpath = core.get_texturepath()
@@ -593,7 +605,7 @@ function pkgmgr.preparemodlist(data)
 	--read global mods
 	local modpaths = core.get_modpaths()
 	for key, modpath in pairs(modpaths) do
-		get_mods(modpath, key, global_mods)
+		pkgmgr.get_mods(modpath, key, global_mods)
 	end
 
 	for i=1,#global_mods,1 do
@@ -701,35 +713,6 @@ function pkgmgr.comparemod(elem1,elem2)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.mod_exists(basename)
-
-	if pkgmgr.global_mods == nil then
-		pkgmgr.refresh_globals()
-	end
-
-	if pkgmgr.global_mods:raw_index_by_uid(basename) > 0 then
-		return true
-	end
-
-	return false
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_global_mod(idx)
-
-	if pkgmgr.global_mods == nil then
-		return nil
-	end
-
-	if idx == nil or idx < 1 or
-		idx > pkgmgr.global_mods:size() then
-		return nil
-	end
-
-	return pkgmgr.global_mods:get_list()[idx]
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.refresh_globals()
 	local function is_equal(element,uid) --uid match
 		if element.name == uid then
@@ -744,9 +727,9 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.find_by_gameid(gameid)
-	for i=1,#pkgmgr.games,1 do
-		if pkgmgr.games[i].id == gameid then
-			return pkgmgr.games[i], i
+	for i, game in ipairs(pkgmgr.games) do
+		if game.id == gameid then
+			return game, i
 		end
 	end
 	return nil, nil
@@ -757,31 +740,8 @@ function pkgmgr.get_game_mods(gamespec, retval)
 	if gamespec ~= nil and
 		gamespec.gamemods_path ~= nil and
 		gamespec.gamemods_path ~= "" then
-		get_mods(gamespec.gamemods_path, ("games/%s/mods"):format(gamespec.id), retval)
+		pkgmgr.get_mods(gamespec.gamemods_path, ("games/%s/mods"):format(gamespec.id), retval)
 	end
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_game_modlist(gamespec)
-	local retval = ""
-	local game_mods = {}
-	pkgmgr.get_game_mods(gamespec, game_mods)
-	for i=1,#game_mods,1 do
-		if retval ~= "" then
-			retval = retval..","
-		end
-		retval = retval .. game_mods[i].name
-	end
-	return retval
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_game(index)
-	if index > 0 and index <= #pkgmgr.games then
-		return pkgmgr.games[index]
-	end
-
-	return nil
 end
 
 --------------------------------------------------------------------------------
@@ -790,19 +750,6 @@ function pkgmgr.update_gamelist()
 	table.sort(pkgmgr.games, function(a, b)
 		return a.title:lower() < b.title:lower()
 	end)
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.gamelist()
-	local retval = ""
-	if #pkgmgr.games > 0 then
-		retval = retval .. core.formspec_escape(pkgmgr.games[1].title)
-
-		for i=2,#pkgmgr.games,1 do
-			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].title)
-		end
-	end
-	return retval
 end
 
 --------------------------------------------------------------------------------

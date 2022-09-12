@@ -519,18 +519,6 @@ end
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
-if INIT == "mainmenu" then
-	function core.get_game(index)
-		local games = core.get_games()
-
-		if index > 0 and index <= #games then
-			return games[index]
-		end
-
-		return nil
-	end
-end
-
 if core.gettext then -- for client and mainmenu
 	function fgettext_ne(text, ...)
 		text = core.gettext(text)
