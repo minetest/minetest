@@ -1783,8 +1783,8 @@ For entities, groups are, as of now, used only for calculating damage.
 The rating is the percentage of damage caused by items with this damage group.
 See [Entity damage mechanism].
 
-    object.get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
-    object.set_armor_groups({fleshy=30, cracky=80})
+    object:get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
+    object:set_armor_groups({fleshy=30, cracky=80})
 
 Groups of tool capabilities
 ---------------------------
