@@ -255,7 +255,7 @@ public:
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
 	bool dynamicAddMedia(std::string filename, std::string filepath, u32 token,
-		const std::string &to_player, bool ephemeral, std::string filedata);
+		const std::string &to_player, bool ephemeral, std::string *filedata);
 
 	ServerInventoryManager *getInventoryMgr() const { return m_inventory_mgr.get(); }
 	void sendDetachedInventory(Inventory *inventory, const std::string &name, session_t peer_id);

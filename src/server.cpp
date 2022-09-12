@@ -3520,7 +3520,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 }
 
 bool Server::dynamicAddMedia(std::string filename, std::string filepath,
-	const u32 token, const std::string &to_player, bool ephemeral, std::string filedata)
+	const u32 token, const std::string &to_player, bool ephemeral, std::string *filedata)
 {
 	auto it = m_media.find(filename);
 	if (it != m_media.end()) {
@@ -3534,7 +3534,7 @@ bool Server::dynamicAddMedia(std::string filename, std::string filepath,
 
 	// Load the file and add it to our media cache
 	std::string raw_hash;
-	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
+	bool ok = addMediaFile(filename, filepath, filedata, &raw_hash);
 	if (!ok)
 		return false;
 
@@ -3548,7 +3548,7 @@ bool Server::dynamicAddMedia(std::string filename, std::string filepath,
 			std::ofstream os(filepath.c_str(), std::ios::binary);
 			if (!os.good())
 				return false;
-			os << filedata;
+			os << *filedata;
 			os.close();
 			return !os.fail();
 		})();
@@ -3577,7 +3577,7 @@ bool Server::dynamicAddMedia(std::string filename, std::string filepath,
 	// Newer clients get asked to fetch the file (asynchronous)
 	pkt << token;
 	// Older clients have an awful hack that just throws the data at them
-	legacy_pkt.putLongString(filedata);
+	legacy_pkt.putLongString(*filedata);
 
 	std::unordered_set<session_t> delivered, waiting;
 	{
