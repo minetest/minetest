@@ -6038,11 +6038,15 @@ Server
     * Returns boolean indicating success (false if player nonexistant)
 * `minetest.dynamic_add_media(options, callback)`
     * `options`: table containing the following parameters
-        * `filepath`: path to a media file on the filesystem
+        * `filepath`: path to a media file on the filesystem, or
+        * `data`: string containing file data.
+        * `filename`: filename to call the media (required with `data`)
+                      (optional with `filepath`, defaults to name from it)
         * `to_player`: name of the player the media should be sent to instead of
                        all players (optional)
         * `ephemeral`: boolean that marks the media as ephemeral,
-                       it will not be cached on the client (optional, default false)
+                       it will not be cached on the client
+                       (optional, default true with `data`, else false)
     * `callback`: function with arguments `name`, which is a player name
     * Pushes the specified media file to client(s). (details below)
       The file must be a supported image, sound or model format.
@@ -6051,15 +6055,21 @@ Server
     * The given callback will be called for every player as soon as the
       media is available on the client.
     * Details/Notes:
-      * If `ephemeral`=false and `to_player` is unset the file is added to the media
-        sent to clients on startup, this means the media will appear even on
-        old clients if they rejoin the server.
-      * If `ephemeral`=false the file must not be modified, deleted, moved or
-        renamed after calling this function.
-      * Regardless of any use of `ephemeral`, adding media files with the same
-        name twice is not possible/guaranteed to work. An exception to this is the
-        use of `to_player` to send the same, already existent file to multiple
-        chosen players.
+        * Only one of `filepath` or `data` may be used.
+        * If using `data`, ephemeral defaults to true.
+          Setting it to false results in an error.
+        * `filename` maybe be used alongside `filepath`.
+          This results in the file being read from `filepath`, but being used as
+          if it were `filename`.
+        * If not ephemeral and `to_player` is unset the file is added to the
+          media sent to clients on startup, this means the media will appear even
+          on old clients if they rejoin the server.
+        * If not ephemeral the file must not be modified, deleted, moved or
+          renamed after calling this function.
+        * Regardless of any use of `ephemeral` or `data`, adding media files with
+          the same filename twice is not possible/guaranteed to work. An exception
+          to this is the use of `to_player` to send the same, already existent
+          file to multiple chosen players.
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
