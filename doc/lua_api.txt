@@ -6048,12 +6048,11 @@ Server
                        it will not be cached on the client
                        (optional, default true with `data`, else false)
     * `callback`: function with arguments `name`, which is a player name
-    * Pushes the specified media file to client(s). (details below)
+        * Called for every player as soon as the media is available on the client.
+    * Pushes the specified media file to client(s).
       The file must be a supported image, sound or model format.
       Dynamically added media is not persisted between server restarts.
-    * Returns false on error, true if the request was accepted
-    * The given callback will be called for every player as soon as the
-      media is available on the client.
+    * Returns false on error, true if the request was accepted.
     * Details/Notes:
         * Only one of `filepath` or `data` may be used.
         * If using `data`, ephemeral defaults to true.
