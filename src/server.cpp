@@ -2514,16 +2514,22 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 	// Ok, attempt to load the file and add to cache
 
-	// Read data
-	std::string filedata;
-	if (filedata_to && !(*filedata_to).empty()) {
-		filedata = *filedata_to;
-	} else {
-		if (!fs::ReadFile(filepath, filedata)) {
-			errorstream << "Server::addMediaFile(): Failed to open \""
-						<< filename << "\" for reading" << std::endl;
-			return false;
+	// Read data if not given
+	bool ok = true;
+	std::string filedata_file;
+	std::string &filedata = [&]() -> std::string & {
+		if (filedata_to && !filedata_to->empty()) {
+			return *filedata_to;
+		} else {
+			ok = fs::ReadFile(filepath, filedata_file);
+			return filedata_file;
 		}
+	}();
+
+	if (!ok) {
+		errorstream << "Server::addMediaFile(): Failed to open \""
+			<< filename << "\" for reading" << std::endl;
+		return false;
 	}
 
 	if (filedata.empty()) {
