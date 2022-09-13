@@ -4868,6 +4868,8 @@ Utilities
           get_sky_as_table = true,
           -- VoxelManip:get_light_data accepts an optional buffer argument (5.7.0)
           get_light_data_buffer = true,
+          -- dynamic_add_media supports the `data` and `filename` properties (5.7.0)
+          dynamic_add_media_from_string = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`

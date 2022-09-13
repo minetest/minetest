@@ -25,6 +25,7 @@ core.features = {
 	dynamic_add_media_table = true,
 	get_sky_as_table = true,
 	get_light_data_buffer = true,
+	dynamic_add_media_from_string = true,
 }
 
 function core.has_feature(arg)
