@@ -825,9 +825,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	core::rect<s32> middle;
 	if (parts.size() >= 4)
 		parseMiddleRect(parts[3], &middle);
-	
+
 	// Temporary fix for issue #12581 in 5.6.0.
-	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage 
+	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage
 	// uses NNAA filter which causes visual artifacts when image uses alpha blending.
 
 	gui::IGUIElement *e;
@@ -3642,13 +3642,21 @@ void GUIFormSpecMenu::drawMenu()
 #endif
 	bool hovered_element_found = false;
 
-	if (hovered != NULL) {
+	if (hovered) {
 		if (m_show_debug) {
 			core::rect<s32> rect = hovered->getAbsoluteClippingRect();
 			driver->draw2DRectangle(0x22FFFF00, rect, &rect);
 		}
 
-		s32 id = hovered->getID();
+		// find the formspec-element of the hovered IGUIElement (a parent)
+		s32 id;
+		for (gui::IGUIElement *hovered_fselem = hovered; hovered_fselem;
+				hovered_fselem = hovered_fselem->getParent()) {
+			id = hovered_fselem->getID();
+			if (id != -1)
+				break;
+		}
+
 		u64 delta = 0;
 		if (id == -1) {
 			m_old_tooltip_id = id;
