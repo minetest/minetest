@@ -1038,12 +1038,12 @@ public:
 
 		if (!defs_to_remove.empty()) {
 			for (auto def : defs_to_remove)
-				delete(def);
+				delete def;
 
 			defs.swap(new_defs);
 
-			for (auto &it : m_output_craft_definitions) {
-				std::vector<CraftDefinition *> &outdefs = it.second;
+			for (auto &output : m_output_craft_definitions) {
+				std::vector<CraftDefinition *> &outdefs = output.second;
 				outdefs.erase(std::remove_if(outdefs.begin(), outdefs.end(), [&](const CraftDefinition* def) {
 					return defs_to_remove.find(def) != defs_to_remove.end();
 				}), outdefs.end());
