@@ -391,7 +391,7 @@ minetest.register_node(":barrier", {
 	pointable = false,
 	diggable = false
 	buildable_to = true,
-        floodable: false,
+    floodable: false,
 	drop = "",
 	groups = {not_in_creative_inventory = 1},
 })
