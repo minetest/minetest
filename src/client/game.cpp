@@ -723,7 +723,7 @@ protected:
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
-	void step(f32 *dtime);
+	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
 	void updateSound(f32 dtime);
@@ -909,6 +909,10 @@ private:
 	bool m_camera_offset_changed = false;
 
 	bool m_does_lost_focus_pause_game = false;
+
+	// if true, (almost) the whole game is paused
+	// this happens in pause menu in singleplayer
+	bool m_is_paused = false;
 
 #if IRRLICHT_VERSION_MT_REVISION < 5
 	int m_reset_HW_buffer_counter = 0;
@@ -1135,7 +1139,21 @@ void Game::run()
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
-		step(&dtime);
+
+		bool was_paused = m_is_paused;
+		m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
+
+		if (m_is_paused)
+			dtime = 0.0f;
+
+		if (!was_paused && m_is_paused) {
+			pauseAnimation();
+		} else if (was_paused && !m_is_paused) {
+			resumeAnimation();
+		}
+
+		if (!m_is_paused)
+			step(dtime);
 		processClientEvents(&cam_view_target);
 		updateDebugState();
 		updateCamera(dtime);
@@ -2535,22 +2553,12 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 }
 
 
-inline void Game::step(f32 *dtime)
+inline void Game::step(f32 dtime)
 {
-	bool can_be_and_is_paused =
-			(simple_singleplayer_mode && g_menumgr.pausesGame());
+	if (server)
+		server->step(dtime);
 
-	if (can_be_and_is_paused) { // This is for a singleplayer server
-		*dtime = 0;             // No time passes
-	} else {
-		if (simple_singleplayer_mode && !paused_animated_nodes.empty())
-			resumeAnimation();
-
-		if (server)
-			server->step(*dtime);
-
-		client->step(*dtime);
-	}
+	client->step(dtime);
 }
 
 static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node) {
@@ -3752,7 +3760,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Frame time
 	*/
 
-	client->getEnv().updateFrameTime();
+	client->getEnv().updateFrameTime(m_is_paused);
 
 	/*
 		Fog range
@@ -4328,10 +4336,8 @@ void Game::showPauseMenu()
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
 			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
 	formspec->setFocus("btn_continue");
+	// game will be paused in next step, if in singleplayer (see m_is_paused)
 	formspec->doPause = true;
-
-	if (simple_singleplayer_mode)
-		pauseAnimation();
 }
 
 /****************************************************************************/
