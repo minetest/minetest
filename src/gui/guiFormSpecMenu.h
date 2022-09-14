@@ -202,18 +202,16 @@ public:
 		m_formspec_prepend = formspecPrepend;
 	}
 
-	// form_src is deleted by this GUIFormSpecMenu
-	void setFormSource(IFormSource *form_src)
+	void setFormSource(std::unique_ptr<IFormSource> form_src)
 	{
 		delete m_form_src;
-		m_form_src = form_src;
+		m_form_src = form_src.release();
 	}
 
-	// text_dst is deleted by this GUIFormSpecMenu
-	void setTextDest(TextDest *text_dst)
+	void setTextDest(std::unique_ptr<TextDest> text_dst)
 	{
 		delete m_text_dst;
-		m_text_dst = text_dst;
+		m_text_dst = text_dst.release();
 	}
 
 	void allowClose(bool value)

@@ -83,6 +83,8 @@ SmallJoker:
 DS:
   games/devtest/mods/soundstuff/textures/soundstuff_bigfoot.png
   games/devtest/mods/soundstuff/textures/soundstuff_jukebox.png
+  games/devtest/mods/soundstuff/textures/soundstuff_racecar.png
+  games/devtest/mods/soundstuff/sounds/soundstuff_sinus.ogg
   games/devtest/mods/testtools/textures/testtools_branding_iron.png
 
 License of Minetest source code

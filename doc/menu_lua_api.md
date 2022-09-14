@@ -81,7 +81,7 @@ Filesystem
 * `core.sound_play(spec, looped)` -> handle
   * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
   * `looped` = bool
-* `core.sound_stop(handle)`
+* `handle:stop()` or `core.sound_stop(handle)`
 * `core.get_video_drivers()`
   * get list of video drivers supported by engine (not all modes are guaranteed to work)
   * returns list of available video drivers' settings name and 'friendly' display name
