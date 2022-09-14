@@ -382,7 +382,7 @@ core.register_node(":ignore", {
 --Stvk pr here
 minetest.register_node(":barrier", {
 	description = S("Barrier"),
-	inventory_image =ignore.png^air.png",
+	inventory_image = "ignore.png^air.png",
 	wield_image = "ignore.png^air.png",
 	drawtype = "airlike",
 	paramtype = "light",
