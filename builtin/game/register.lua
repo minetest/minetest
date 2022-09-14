@@ -387,7 +387,7 @@ minetest.register_node(":barrier", {
 	drawtype = "airlike",
 	paramtype = "light",
 	sunlight_propagates = true,
-        walkable = true,
+	walkable = true,
 	pointable = false,
 	diggable = false
 	buildable_to = true,
