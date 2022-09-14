@@ -206,7 +206,6 @@ void TestModMetadataDatabase::testRecallFail()
 void TestModMetadataDatabase::testCreate()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
-	StringMap recalled;
 	UASSERT(mod_meta_db->setModEntry("mod1", "key1", "value1"));
 }
 
@@ -222,7 +221,6 @@ void TestModMetadataDatabase::testRecall()
 void TestModMetadataDatabase::testChange()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
-	StringMap recalled;
 	UASSERT(mod_meta_db->setModEntry("mod1", "key1", "value2"));
 }
 

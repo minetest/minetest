@@ -329,10 +329,9 @@ void GUIButton::draw()
 
 	if (SpriteBank)
 	{
-		core::position2di pos(buttonCenter);
-
 		if (isEnabled())
 		{
+			core::position2di pos(buttonCenter);
 			// pressed / unpressed animation
 			EGUI_BUTTON_STATE state = Pressed ? EGBS_BUTTON_DOWN : EGBS_BUTTON_UP;
 			drawSprite(state, ClickTime, pos);

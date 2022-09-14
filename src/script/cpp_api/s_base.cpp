@@ -171,7 +171,7 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 #endif
 	};
 
-	for (const std::pair<std::string, lua_CFunction> &lib : m_libs) {
+	for (const auto &lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);
 	    lua_pushstring(L, lib.first.c_str());
 	    lua_call(L, 1, 0);

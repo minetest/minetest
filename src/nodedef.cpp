@@ -279,7 +279,7 @@ void TextureSettings::readSettings()
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
-	node_texture_size              = std::min<u16>(g_settings->getU16("texture_min_size"), 1);
+	node_texture_size              = std::max<u16>(g_settings->getU16("texture_min_size"), 1);
 	std::string leaves_style_str   = g_settings->get("leaves_style");
 	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
 	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
@@ -354,12 +354,12 @@ void ContentFeatures::reset()
 		NOTE: Most of this is always overridden by the default values given
 		      in builtin.lua
 	*/
-	name = "";
+	name.clear();
 	groups.clear();
 	// Unknown nodes can be dug
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
-	mesh = "";
+	mesh.clear();
 #ifndef SERVER
 	for (auto &i : mesh_ptr)
 		i = NULL;
@@ -387,9 +387,9 @@ void ContentFeatures::reset()
 	leveled = 0;
 	leveled_max = LEVELED_MAX;
 	liquid_type = LIQUID_NONE;
-	liquid_alternative_flowing = "";
+	liquid_alternative_flowing.clear();
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
-	liquid_alternative_source = "";
+	liquid_alternative_source.clear();
 	liquid_alternative_source_id = CONTENT_IGNORE;
 	liquid_viscosity = 0;
 	liquid_renewable = true;
@@ -410,7 +410,7 @@ void ContentFeatures::reset()
 	connects_to_ids.clear();
 	connect_sides = 0;
 	color = video::SColor(0xFFFFFFFF);
-	palette_name = "";
+	palette_name.clear();
 	palette = NULL;
 	node_dig_prediction = "air";
 	move_resistance = 0;
@@ -1355,7 +1355,7 @@ void NodeDefManager::eraseIdFromGroups(content_t id)
 content_t NodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
 	// Pre-conditions
-	assert(name != "");
+	assert(!name.empty());
 	assert(name != "ignore");
 	assert(name == def.name);
 
@@ -1395,7 +1395,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 
 content_t NodeDefManager::allocateDummy(const std::string &name)
 {
-	assert(name != "");	// Pre-condition
+	assert(!name.empty());	// Pre-condition
 	ContentFeatures f;
 	f.name = name;
 	return set(name, f);
@@ -1405,7 +1405,7 @@ content_t NodeDefManager::allocateDummy(const std::string &name)
 void NodeDefManager::removeNode(const std::string &name)
 {
 	// Pre-condition
-	assert(name != "");
+	assert(!name.empty());
 
 	// Erase name from name ID mapping
 	content_t id = CONTENT_IGNORE;

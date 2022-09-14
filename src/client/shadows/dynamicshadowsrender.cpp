@@ -707,3 +707,22 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 
 	return prefix + content;
 }
+
+ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
+{
+	// disable if unsupported
+	if (g_settings->getBool("enable_dynamic_shadows") && (
+		g_settings->get("video_driver") != "opengl" ||
+		!g_settings->getBool("enable_shaders"))) {
+		g_settings->setBool("enable_dynamic_shadows", false);
+	}
+
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		ShadowRenderer *shadow_renderer = new ShadowRenderer(device, client);
+		shadow_renderer->initialize();
+		return shadow_renderer;
+	}
+
+	return nullptr;
+}

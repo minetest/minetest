@@ -51,7 +51,7 @@ public:
 	 */
 	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
 
-	void printUnsatisfiedModsError() const;
+	std::string getUnsatisfiedModsError() const;
 
 	/**
 	 * Adds all mods in the given path. used for games, modpacks

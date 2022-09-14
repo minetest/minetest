@@ -449,13 +449,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	for (auto &descriptor : draw_order) {
 		scene::IMeshBuffer *buf = descriptor.getBuffer();
 
-		// Check and abort if the machine is swapping a lot
-		if (draw.getTimerTime() > 2000) {
-			infostream << "ClientMap::renderMap(): Rendering took >2s, " <<
-					"returning." << std::endl;
-			return;
-		}
-
 		if (!descriptor.m_reuse_material) {
 			auto &material = buf->getMaterial();
 
@@ -803,13 +796,6 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	for (auto &descriptor : draw_order) {
 		scene::IMeshBuffer *buf = descriptor.getBuffer();
 
-		// Check and abort if the machine is swapping a lot
-		if (draw.getTimerTime() > 1000) {
-			infostream << "ClientMap::renderMapShadows(): Rendering "
-					"took >1s, returning." << std::endl;
-			break;
-		}
-
 		if (!descriptor.m_reuse_material) {
 			// override some material properties
 			video::SMaterial local_material = buf->getMaterial();
@@ -853,8 +839,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
-
-	std::vector<v2s16> blocks_in_range;
 
 	for (auto &i : m_drawlist_shadow) {
 		MapBlock *block = i.second;

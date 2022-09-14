@@ -332,7 +332,7 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 		else
 			m_name = lookup_keychar(Char).Name;
 	} catch (UnknownKeycode &e) {
-		m_name = "";
+		m_name.clear();
 	};
 }
 

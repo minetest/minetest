@@ -533,7 +533,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
 	// list of nodes that due to viscosity have not reached their max level height
-	std::deque<v3s16> must_reflow;
+	std::vector<v3s16> must_reflow;
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
 
@@ -835,7 +835,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 
-	for (auto &iter : must_reflow)
+	for (const auto &iter : must_reflow)
 		m_transforming_liquid.push_back(iter);
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);

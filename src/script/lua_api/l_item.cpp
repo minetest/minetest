@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 int LuaItemStack::gc_object(lua_State *L)
 {
 	LuaItemStack *o = *(LuaItemStack **)(lua_touserdata(L, 1));
-	delete o;
+	o->drop();
 	return 0;
 }
 
@@ -152,7 +152,7 @@ int LuaItemStack::l_get_meta(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	ItemStackMetaRef::create(L, &o->m_stack);
+	ItemStackMetaRef::create(L, o);
 	return 1;
 }
 
@@ -438,15 +438,6 @@ LuaItemStack::LuaItemStack(const ItemStack &item):
 {
 }
 
-const ItemStack& LuaItemStack::getItem() const
-{
-	return m_stack;
-}
-ItemStack& LuaItemStack::getItem()
-{
-	return m_stack;
-}
-
 // LuaItemStack(itemstack or itemstring or table or nil)
 // Creates an LuaItemStack and leaves it on top of stack
 int LuaItemStack::create_object(lua_State *L)
@@ -600,7 +591,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 		if(def.type == ITEM_NODE)
 			def.node_placement_prediction = name;
 		else
-			def.node_placement_prediction = "";
+			def.node_placement_prediction.clear();
 	}
 
 	// Register item definition

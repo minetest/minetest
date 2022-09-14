@@ -141,6 +141,10 @@ public:
 	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
+
+	void updateFrameTime();
+	u64 getFrameTime() const { return m_frame_time; }
+
 private:
 	ClientMap *m_map;
 	LocalPlayer *m_local_player = nullptr;
@@ -153,4 +157,5 @@ private:
 	IntervalLimiter m_active_object_light_update_interval;
 	std::list<std::string> m_player_names;
 	v3s16 m_camera_offset;
+	u64 m_frame_time;
 };

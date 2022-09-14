@@ -113,6 +113,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 				q->ack_block_to_server = true;
 			q->crack_level = m_client->getCrackLevel();
 			q->crack_pos = m_client->getCrackPos();
+			q->urgent |= urgent;
 			return true;
 		}
 	}
@@ -125,6 +126,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	q->ack_block_to_server = ack_block_to_server;
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
+	q->urgent = urgent;
 	m_queue.push_back(q);
 
 	// This queue entry is a new reference to the cached blocks
@@ -310,6 +312,7 @@ void MeshUpdateThread::doUpdate()
 		r.p = q->p;
 		r.mesh = mesh_new;
 		r.ack_block_to_server = q->ack_block_to_server;
+		r.urgent = q->urgent;
 
 		m_queue_out.push_back(r);
 

@@ -184,7 +184,7 @@ public:
 	ShaderCallback(const Factories &factories)
 	{
 		for (auto &&factory : factories)
-			m_setters.push_back(std::unique_ptr<IShaderConstantSetter>(factory->create()));
+			m_setters.emplace_back(factory->create());
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
@@ -214,13 +214,13 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 16, false> m_shadow_view_proj;
 	CachedPixelShaderSetting<f32, 3> m_light_direction;
 	CachedPixelShaderSetting<f32> m_texture_res;
 	CachedPixelShaderSetting<f32> m_shadow_strength;
 	CachedPixelShaderSetting<f32> m_time_of_day;
 	CachedPixelShaderSetting<f32> m_shadowfar;
-	CachedPixelShaderSetting<f32, 4> m_camera_pos;
+	CachedPixelShaderSetting<f32, 4, false> m_camera_pos;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
 	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
@@ -402,7 +402,7 @@ public:
 
 	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
-		m_setter_factories.push_back(std::unique_ptr<IShaderConstantSetterFactory>(setter));
+		m_setter_factories.emplace_back(setter);
 	}
 
 private:

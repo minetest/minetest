@@ -497,5 +497,5 @@ Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modnam
 		}
 	}
 
-	return &(m_mod_meta[modname] = meta);
+	return &(m_mod_meta[modname] = std::move(meta));
 }

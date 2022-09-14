@@ -522,8 +522,8 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_create_world(lua_State *L)
 {
-	const char *name	= luaL_checkstring(L, 1);
-	int gameidx			= luaL_checkinteger(L,2) -1;
+	const char *name   = luaL_checkstring(L, 1);
+	const char *gameid = luaL_checkstring(L, 2);
 
 	StringMap use_settings;
 	luaL_checktype(L, 3, LUA_TTABLE);
@@ -540,8 +540,11 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			+ sanitizeDirName(name, "world_");
 
 	std::vector<SubgameSpec> games = getAvailableGames();
-	if (gameidx < 0 || gameidx >= (int) games.size()) {
-		lua_pushstring(L, "Invalid game index");
+	auto game_it = std::find_if(games.begin(), games.end(), [gameid] (const SubgameSpec &spec) {
+		return spec.id == gameid;
+	});
+	if (game_it == games.end()) {
+		lua_pushstring(L, "Game ID not found");
 		return 1;
 	}
 
@@ -556,7 +559,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 
 	// Create world if it doesn't exist
 	try {
-		loadGameConfAndInitWorld(path, name, games[gameidx], true);
+		loadGameConfAndInitWorld(path, name, *game_it, true);
 		lua_pushnil(L);
 	} catch (const BaseException &e) {
 		auto err = std::string("Failed to initialize world: ") + e.what();
