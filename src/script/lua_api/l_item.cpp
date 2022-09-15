@@ -433,6 +433,18 @@ int LuaItemStack::l_peek_item(lua_State *L)
 	return 1;
 }
 
+// equals(self, other) -> bool
+int LuaItemStack::l_equals(lua_State *L)
+{
+	LuaItemStack *o1 = checkobject(L, 1);
+	ItemStack &item1 = o1->m_stack;
+	LuaItemStack *o2 = checkobject(L, 2);
+	ItemStack &item2 = o2->m_stack;
+
+	lua_pushboolean(L, item1 == item2);
+	return 1;
+}
+
 LuaItemStack::LuaItemStack(const ItemStack &item):
 	m_stack(item)
 {
@@ -507,6 +519,10 @@ void LuaItemStack::Register(lua_State *L)
 	lua_pushcfunction(L, mt_tostring);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__eq");
+	lua_pushcfunction(L, l_equals);
+	lua_settable(L, metatable);
+
 	lua_pop(L, 1);  // drop metatable
 
 	luaL_register(L, nullptr, methods);  // fill methodtable
@@ -547,6 +563,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, item_fits),
 	luamethod(LuaItemStack, take_item),
 	luamethod(LuaItemStack, peek_item),
+	luamethod(LuaItemStack, equals),
 	{0,0}
 };
 

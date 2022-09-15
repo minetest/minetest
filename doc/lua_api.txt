@@ -6710,6 +6710,8 @@ an itemstring, a table or `nil`.
 * `peek_item(n)`: returns taken `ItemStack`
     * Copy (don't remove) up to `n` items from this stack
     * `n`: number, default: `1`
+* `equals(other)`:
+    * returns `true` if this stack is identical to `other`.
 
 `ItemStackMetaRef`
 ------------------

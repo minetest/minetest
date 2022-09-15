@@ -141,6 +141,9 @@ private:
 	// peek_item(self, peekcount=1) -> itemstack
 	static int l_peek_item(lua_State *L);
 
+	// equals(self, other) -> bool
+	static int l_equals(lua_State *L);
+
 public:
 	DISABLE_CLASS_COPY(LuaItemStack)
 
