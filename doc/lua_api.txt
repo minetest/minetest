@@ -7548,14 +7548,14 @@ Player properties need to be saved manually.
         collide_with_objects = true,
         -- Collide with other objects if physical = true
 
-		-- For both boxes: {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from
-		-- object position.
-        collisionbox = {-0.5, 0.0, -0.5, 0.5, 0.5, 0.5},  -- Default
-        selectionbox = {rotate = false; -0.5, 0.0, -0.5, 0.5, 0.5, 0.5},
-        -- Selection box uses collision box *dimensions* when not set.
-        -- Setting `rotate = true` in the `collisionbox` has no effect.
-        -- If `rotate = true`, the box will be rotated by the object's rotation
-        -- (plus the attachment rotation on clients)
+        collisionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },  -- default
+        selectionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, rotate = false },
+		-- { xmin, ymin, zmin, xmax, ymax, zmax } in nodes from object position.
+        -- Collision boxes cannot rotate, setting `rotate = true` on it has no effect.
+        -- If not set, the selection box copies the collision box, and will also not rotate.
+        -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
+        -- If `rotate = true`, it will match the object's rotation and any attachment rotations.
+        -- Raycasts use the selection box and object's rotation, but do *not* obey attachment rotations.
         
 
         pointable = true,
