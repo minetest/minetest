@@ -1,7 +1,39 @@
-local function test_itemstack_equals()
-	local i1 = ItemStack("default:stone")
-	local i2 = ItemStack("default:stone")
-	local i3 = ItemStack("default:stone")
+local function test_itemstack_equals_name()
+	local i1 = ItemStack("basenodes:stone")
+	local i2 = ItemStack("basenodes:desert_stone")
+
+	assert(not i1:equals(i2))
+	assert(i1 ~= i2)
+end
+
+unittests.register("test_itemstack_equals_name", test_itemstack_equals_name)
+
+local function test_itemstack_equals_count()
+	local i1 = ItemStack("basenodes:stone")
+	local i2 = ItemStack("basenodes:stone 2")
+
+	assert(not i1:equals(i2))
+	assert(i1 ~= i2)
+end
+
+unittests.register("test_itemstack_equals_count", test_itemstack_equals_count)
+
+local function test_itemstack_equals_wear()
+	local i1 = ItemStack("basetools:axe_stone")
+	local i2 = ItemStack("basetools:axe_stone")
+
+	i2:add_wear(1)
+
+	assert(not i1:equals(i2))
+	assert(i1 ~= i2)
+end
+
+unittests.register("test_itemstack_equals_wear", test_itemstack_equals_wear)
+
+local function test_itemstack_equals_metadata()
+	local i1 = ItemStack("basenodes:stone")
+	local i2 = ItemStack("basenodes:stone")
+	local i3 = ItemStack("basenodes:stone")
 
 	local m1 = i1:get_meta()
 	local m2 = i2:get_meta()
@@ -28,4 +60,4 @@ local function test_itemstack_equals()
 	assert(i1 ~= i3)
 end
 
-unittests.register("test_itemstack_equals", test_itemstack_equals)
+unittests.register("test_itemstack_equals_metadata", test_itemstack_equals_metadata)
