@@ -6,12 +6,16 @@ local function random_rotation()
 	return 2 * math.pi * vector.new(math.random(), math.random(), math.random())
 end
 
+local active_selectionbox_entities = 0 -- count active entities
+
 minetest.register_entity("testentities:selectionbox", {
 	initial_properties = {
 		visual = "cube",
 		infotext = "Punch to randomize rotation, rightclick to toggle rotation"
 	},
 	on_activate = function(self)
+		active_selectionbox_entities = active_selectionbox_entities + 1
+
 		local w, h, l = math.random(), math.random(), math.random()
 		self.object:set_properties({
 			textures = {random_color(), random_color(), random_color(), random_color(), random_color(), random_color()},
@@ -22,6 +26,9 @@ minetest.register_entity("testentities:selectionbox", {
 		assert(self.object:get_properties().selectionbox.rotate)
 		self.object:set_armor_groups({punch_operable = 1})
 		self.object:set_rotation(random_rotation())
+	end,
+	on_deactivate = function()
+		active_selectionbox_entities = active_selectionbox_entities - 1
 	end,
 	on_punch = function(self)
 		self.object:set_rotation(random_rotation())
@@ -35,6 +42,10 @@ minetest.register_entity("testentities:selectionbox", {
 
 local hud_ids = {}
 minetest.register_globalstep(function()
+	if active_selectionbox_entities == 0 then
+		return
+	end
+
 	for _, player in pairs(minetest.get_connected_players()) do
 		local offset = player:get_eye_offset()
 		offset.y = offset.y + player:get_properties().eye_height
