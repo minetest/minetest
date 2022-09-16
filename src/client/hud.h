@@ -75,7 +75,7 @@ public:
 
 	v3f getSelectionPos() const { return m_selection_pos; }
 
-	void setSelectionRotation(const v3f &rotation) { m_selection_rotation = rotation; }
+	void setSelectionRotation(v3f rotation) { m_selection_rotation = rotation; }
 
 	v3f getSelectionRotation() const { return m_selection_rotation; }
 

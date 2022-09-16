@@ -827,9 +827,9 @@ void Hud::drawSelectionMesh()
 {
 	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh))
 		return;
-	video::SMaterial oldmaterial = driver->getMaterial2D();
+	const video::SMaterial oldmaterial = driver->getMaterial2D();
 	driver->setMaterial(m_selection_material);
-	core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
+	const core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
 
 	core::matrix4 translate;
 	translate.setTranslation(m_selection_pos_with_offset);
