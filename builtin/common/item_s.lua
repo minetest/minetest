@@ -74,12 +74,12 @@ end
 
 -- Table of possible dirs
 local facedir_to_dir = {
-	vector.new( 0,  0,  1),
-	vector.new( 1,  0,  0),
-	vector.new( 0,  0, -1),
-	vector.new(-1,  0,  0),
-	vector.new( 0, -1,  0),
-	vector.new( 0,  1,  0),
+	vector( 0,  0,  1),
+	vector( 1,  0,  0),
+	vector( 0,  0, -1),
+	vector(-1,  0,  0),
+	vector( 0, -1,  0),
+	vector( 0,  1,  0),
 }
 -- Mapping from facedir value to index in facedir_to_dir.
 local facedir_to_dir_map = {
@@ -138,12 +138,12 @@ end
 
 -- table of dirs in wallmounted order
 local wallmounted_to_dir = {
-	[0] = vector.new( 0,  1,  0),
-	vector.new( 0, -1,  0),
-	vector.new( 1,  0,  0),
-	vector.new(-1,  0,  0),
-	vector.new( 0,  0,  1),
-	vector.new( 0,  0, -1),
+	[0] = vector( 0,  1,  0),
+	vector( 0, -1,  0),
+	vector( 1,  0,  0),
+	vector(-1,  0,  0),
+	vector( 0,  0,  1),
+	vector( 0,  0, -1),
 }
 function core.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted % 8]
@@ -154,7 +154,7 @@ function core.dir_to_yaw(dir)
 end
 
 function core.yaw_to_dir(yaw)
-	return vector.new(-math.sin(yaw), 0, math.cos(yaw))
+	return vector(-math.sin(yaw), 0, math.cos(yaw))
 end
 
 function core.is_colored_paramtype(ptype)

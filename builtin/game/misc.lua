@@ -177,7 +177,7 @@ function core.is_area_protected(minp, maxp, player_name, interval)
 			local y = math.floor(yf + 0.5)
 			for xf = minp.x, maxp.x, d.x do
 				local x = math.floor(xf + 0.5)
-				local pos = vector.new(x, y, z)
+				local pos = vector(x, y, z)
 				if core.is_protected(pos, player_name) then
 					return pos
 				end

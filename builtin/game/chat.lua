@@ -510,10 +510,10 @@ core.register_chatcommand("remove_player", {
 -- pos may be a non-integer position
 local function find_free_position_near(pos)
 	local tries = {
-		vector.new( 1, 0,  0),
-		vector.new(-1, 0,  0),
-		vector.new( 0, 0,  1),
-		vector.new( 0, 0, -1),
+		vector( 1, 0,  0),
+		vector(-1, 0,  0),
+		vector( 0, 0,  1),
+		vector( 0, 0, -1),
 	}
 	for _, d in ipairs(tries) do
 		local p = vector.add(pos, d)

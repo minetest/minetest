@@ -435,7 +435,7 @@ function core.string_to_pos(value)
 		x = tonumber(x)
 		y = tonumber(y)
 		z = tonumber(z)
-		return vector.new(x, y, z)
+		return vector(x, y, z)
 	end
 
 	return nil

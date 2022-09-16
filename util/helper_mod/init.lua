@@ -24,9 +24,9 @@ elseif mode == "mapgen" then
 
 	-- Stress-test mapgen by constantly generating new area
 	local csize = tonumber(core.settings:get("chunksize")) * core.MAP_BLOCKSIZE
-	local MINP, MAXP = vector.new(0, -csize, 0), vector.new(csize*3, csize*2, csize)
+	local MINP, MAXP = vector(0, -csize, 0), vector(csize*3, csize*2, csize)
 	local DIR = "x"
-	local pstart = vector.new(0, 0, 0)
+	local pstart = vector(0, 0, 0)
 	local next_, callback
 	next_ = function(arg)
 		print("emerging " .. core.pos_to_string(pstart))

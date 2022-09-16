@@ -305,7 +305,7 @@ function vector.rotate_around_axis(v, axis, angle)
 	-- https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 	local dot_axis = vector.multiply(axis, vector.dot(axis, v))
 	local cross = vector.cross(v, axis)
-	return vector.new(
+	return fast_new(
 		cross.x * sinangle + (v.x - dot_axis.x) * cosangle + dot_axis.x,
 		cross.y * sinangle + (v.y - dot_axis.y) * cosangle + dot_axis.y,
 		cross.z * sinangle + (v.z - dot_axis.z) * cosangle + dot_axis.z
@@ -338,7 +338,7 @@ function vector.rotate(v, rot)
 		},
 	}
 	-- Compute matrix multiplication: `matrix` * `v`
-	return vector.new(
+	return fast_new(
 		matrix[1][1] * v.x + matrix[1][2] * v.y + matrix[1][3] * v.z,
 		matrix[2][1] * v.x + matrix[2][2] * v.y + matrix[2][3] * v.z,
 		matrix[3][1] * v.x + matrix[3][2] * v.y + matrix[3][3] * v.z
@@ -347,7 +347,7 @@ end
 
 function vector.dir_to_rotation(forward, up)
 	forward = vector.normalize(forward)
-	local rot = vector.new(math.asin(forward.y), -math.atan2(forward.x, forward.z), 0)
+	local rot = fast_new(math.asin(forward.y), -math.atan2(forward.x, forward.z), 0)
 	if not up then
 		return rot
 	end
@@ -355,7 +355,7 @@ function vector.dir_to_rotation(forward, up)
 			"Invalid vectors passed to vector.dir_to_rotation().")
 	up = vector.normalize(up)
 	-- Calculate vector pointing up with roll = 0, just based on forward vector.
-	local forwup = vector.rotate(vector.new(0, 1, 0), rot)
+	local forwup = vector.rotate(fast_new(0, 1, 0), rot)
 	-- 'forwup' and 'up' are now in a plane with 'forward' as normal.
 	-- The angle between them is the absolute of the roll value we're looking for.
 	rot.z = vector.angle(forwup, up)

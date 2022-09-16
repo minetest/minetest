@@ -39,7 +39,7 @@ local gravity = tonumber(core.settings:get("movement_gravity")) or 9.81
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "item",
-		visual_size = vector.new(SCALE, SCALE, SCALE),
+		visual_size = vector(SCALE, SCALE, SCALE),
 		textures = {},
 		physical = true,
 		is_visible = false,
@@ -96,7 +96,7 @@ core.register_entity(":__builtin:falling_node", {
 			local vsize
 			if def.visual_scale then
 				local s = def.visual_scale
-				vsize = vector.new(s, s, s)
+				vsize = vector(s, s, s)
 			end
 			self.object:set_properties({
 				is_visible = true,
@@ -241,7 +241,7 @@ core.register_entity(":__builtin:falling_node", {
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
-		self.object:set_acceleration(vector.new(0, -gravity, 0))
+		self.object:set_acceleration(vector(0, -gravity, 0))
 
 		local ds = core.deserialize(staticdata)
 		if ds and ds.node then
@@ -358,7 +358,7 @@ core.register_entity(":__builtin:falling_node", {
 				-- TODO: this hack could be avoided in the future if objects
 				--       could choose who to collide with
 				local vel = self.object:get_velocity()
-				self.object:set_velocity(vector.new(
+				self.object:set_velocity(vector(
 					vel.x,
 					player_collision.old_velocity.y,
 					vel.z
@@ -475,7 +475,7 @@ function builtin_shared.check_attached_node(p, n)
 		-- to voxelmanip placing a wallmounted node without resetting a
 		-- pre-existing param2 value that is out-of-range for wallmounted.
 		-- The fallback vector corresponds to param2 = 0.
-		d = core.wallmounted_to_dir(n.param2) or vector.new(0, 1, 0)
+		d = core.wallmounted_to_dir(n.param2) or vector(0, 1, 0)
 	else
 		d.y = -1
 	end
@@ -534,17 +534,17 @@ end
 -- Down first as likely case, but always before self. The same with sides.
 -- Up must come last, so that things above self will also fall all at once.
 local check_for_falling_neighbors = {
-	vector.new(-1, -1,  0),
-	vector.new( 1, -1,  0),
-	vector.new( 0, -1, -1),
-	vector.new( 0, -1,  1),
-	vector.new( 0, -1,  0),
-	vector.new(-1,  0,  0),
-	vector.new( 1,  0,  0),
-	vector.new( 0,  0,  1),
-	vector.new( 0,  0, -1),
-	vector.new( 0,  0,  0),
-	vector.new( 0,  1,  0),
+	vector(-1, -1,  0),
+	vector( 1, -1,  0),
+	vector( 0, -1, -1),
+	vector( 0, -1,  1),
+	vector( 0, -1,  0),
+	vector(-1,  0,  0),
+	vector( 1,  0,  0),
+	vector( 0,  0,  1),
+	vector( 0,  0, -1),
+	vector( 0,  0,  0),
+	vector( 0,  1,  0),
 }
 
 function core.check_for_falling(p)

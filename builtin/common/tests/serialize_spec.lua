@@ -112,12 +112,12 @@ describe("serialize", function()
 	end)
 
 	it("vectors work", function()
-		local v = vector.new(1, 2, 3)
+		local v = vector(1, 2, 3)
 		assert_preserves({v})
 		assert_preserves(v)
 
 		-- abuse
-		v = vector.new(1, 2, 3)
+		v = vector(1, 2, 3)
 		v.a = "bla"
 		assert_preserves(v)
 	end)

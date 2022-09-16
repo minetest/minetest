@@ -21,7 +21,7 @@ function core.get_position_from_hash(hash)
 	local y = (hash % 65536) - 32768
 	hash  = math.floor(hash / 65536)
 	local z = (hash % 65536) - 32768
-	return vector.new(x, y, z)
+	return vector(x, y, z)
 end
 
 
