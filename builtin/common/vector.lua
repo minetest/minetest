@@ -31,8 +31,10 @@ local function fast_new(x, y, z)
 end
 
 function namespace_metatable.__call(_, x, y, z)
-	assert(x and y and z, "Invalid arguments passed to vector()")
-	return fast_new(x, y, z)
+	if x and y and z then
+		return fast_new(x, y, z)
+	end
+	error("Invalid arguments passed to vector()")
 end
 
 function vector.new(a, b, c)
