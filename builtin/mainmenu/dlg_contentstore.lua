@@ -354,7 +354,7 @@ function install_dialog.get_formspec()
 
 	local game_list = {}
 	for i, game in ipairs(pkgmgr.games) do
-		game_list[i] = core.formspec_escape(game[i].title)
+		game_list[i] = core.formspec_escape(game.title)
 	end
 
 	local package = install_dialog.package
