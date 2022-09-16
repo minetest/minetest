@@ -21,10 +21,17 @@ function metatable.__newindex(v, key, value)
 	rawset(v, xyz[key] or key, value)
 end
 
+local namespace_metatable = {}
+setmetatable(vector, namespace_metatable)
+
 -- constructors
 
 local function fast_new(x, y, z)
 	return setmetatable({x = x, y = y, z = z}, metatable)
+end
+
+function namespace_metatable.__call(_, x, y, z)
+	return fast_new(x, y, z)
 end
 
 function vector.new(a, b, c)

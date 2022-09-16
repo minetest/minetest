@@ -1580,7 +1580,7 @@ Representations of simple things
 Vector (ie. a position)
 -----------------------
 
-    vector.new(x, y, z)
+    vector(x, y, z)
 
 See [Spatial Vectors] for details.
 
@@ -3378,12 +3378,12 @@ Note that they are *not* used for:
 * n-dimensional vectors where n is not 3 (ie. n=2)
 * arrays of the form `{num, num, num}`
 
-The API documentation may refer to spatial vectors, as produced by `vector.new`,
+The API documentation may refer to spatial vectors, as produced by `vector()`,
 by any of the following notations:
 
 * `(x, y, z)` (Used rarely, and only if it's clear that it's a vector.)
-* `vector.new(x, y, z)`
-* `{x=num, y=num, z=num}` (Even here you are still supposed to use `vector.new`.)
+* `vector(x, y, z)`
+* `{x=num, y=num, z=num}` (Even here you are still supposed to use `vector()`.)
 
 Compatibility notes
 -------------------
@@ -3434,6 +3434,8 @@ For the following functions (and subchapters),
 `s` is a scalar (a number),
 vectors are written like this: `(x, y, z)`:
 
+* `vector(a, b, c)`:
+    * Returns a new vector `(a, b, c)`.
 * `vector.new([a[, b, c]])`:
     * Returns a new vector `(a, b, c)`.
     * Deprecated: `vector.new()` does the same as `vector.zero()` and
@@ -3536,9 +3538,8 @@ angles in radians.
 
 * `vector.rotate(v, r)`:
     * Applies the rotation `r` to `v` and returns the result.
-    * `vector.rotate(vector.new(0, 0, 1), r)` and
-      `vector.rotate(vector.new(0, 1, 0), r)` return vectors pointing
-      forward and up relative to an entity's rotation `r`.
+    * `vector(0, 0, 1):rotate(r)` and `vector(0, 1, 0):rotate(r)` return vectors
+      pointing forward and up relative to an entity's rotation `r`.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
       the right hand rule.
@@ -9223,7 +9224,7 @@ degradation in older clients).
       -- value
 
       -- vec3
-      pos = vector.new(0,0,0),
+      pos = vector(0,0,0),
       -- all particles will appear at this exact position throughout the lifetime
       -- of the particlespawner
 
@@ -9232,11 +9233,11 @@ degradation in older clients).
             -- the particle will appear at a position that is picked at random from
             -- within a cubic range
 
-            min = vector.new(0,0,0),
+            min = vector(0,0,0),
             -- `min` is the minimum value this property will be set to in particles
             -- spawned by the generator
 
-            max = vector.new(0,0,0),
+            max = vector(0,0,0),
             -- `max` is the minimum value this property will be set to in particles
             -- spawned by the generator
 
@@ -9286,15 +9287,15 @@ degradation in older clients).
                 0, 0,
 
                 -- vec3s
-                vector.new(0,0,0),
-                vector.new(0,0,0),
+                vector(0,0,0),
+                vector(0,0,0),
 
                 -- vec3 ranges
-                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
-                { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                { min = vector(0,0,0), max = vector(0,0,0), bias = 0 },
+                { min = vector(0,0,0), max = vector(0,0,0), bias = 0 },
 
                 -- mixed
-                0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+                0, { min = vector(0,0,0), max = vector(0,0,0), bias = 0 },
         },
     }
 
@@ -9317,7 +9318,7 @@ Types used are defined in the previous section.
   each axis is decreased per second.  a value of 1.0 means that the particle
   will be slowed to a stop over the space of a second; a value of -1.0 means
   that the particle speed will be doubled every second. to avoid interfering
-  with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can
+  with gravity provided by `acc`, a drag vector like `vector(1,0,1)` can
   be used instead of a uniform value.
 * float range `bounce`: how bouncy the particles are when `collisiondetection`
   is turned on. values less than or equal to `0` turn off particle bounce;
