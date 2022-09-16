@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "log.h"
 #include <sstream>
-#include <set>
+#include <unordered_set>
 #include <algorithm>
 #include "gamedef.h"
 #include "inventory.h"
@@ -1026,26 +1026,31 @@ public:
 
 		// Recipes are not yet hashed at this point
 		std::vector<CraftDefinition *> &defs = m_craft_defs[(int)CRAFT_HASH_TYPE_UNHASHED][0];
+		std::unordered_set<const CraftDefinition *> defs_to_remove;
 		std::vector<CraftDefinition *> new_defs;
-		bool got_hit = false;
+
 		for (auto def : defs) {
-			if (!def->check(input, gamedef)) {
+			if (def->check(input, gamedef))
+				defs_to_remove.insert(def);
+			else
 				new_defs.push_back(def);
-				continue;
-			}
-			got_hit = true;
-			std::string output = def->getOutput(input, gamedef).item;
-			delete def;
-			auto it = m_output_craft_definitions.find(craftGetItemName(output, gamedef));
-			if (it == m_output_craft_definitions.end())
-				continue;
-			std::vector<CraftDefinition *> &outdefs = it->second;
-			outdefs.erase(std::remove(outdefs.begin(), outdefs.end(), def), outdefs.end());
 		}
-		if (got_hit)
+
+		if (!defs_to_remove.empty()) {
+			for (auto def : defs_to_remove)
+				delete def;
+
 			defs.swap(new_defs);
 
-		return got_hit;
+			for (auto &output : m_output_craft_definitions) {
+				std::vector<CraftDefinition *> &outdefs = output.second;
+				outdefs.erase(std::remove_if(outdefs.begin(), outdefs.end(), [&](const CraftDefinition* def) {
+					return defs_to_remove.find(def) != defs_to_remove.end();
+				}), outdefs.end());
+			}
+		}
+
+		return !defs_to_remove.empty();
 	}
 
 	virtual std::string dump() const
