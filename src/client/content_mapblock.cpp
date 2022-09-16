@@ -1510,7 +1510,9 @@ void MapblockMeshGenerator::drawMeshNode()
 	int degrotate = 0;
 
 	if (f->param_type_2 == CPT2_FACEDIR ||
-			f->param_type_2 == CPT2_COLORED_FACEDIR) {
+			f->param_type_2 == CPT2_COLORED_FACEDIR ||
+			f->param_type_2 == CPT2_4DIR ||
+			f->param_type_2 == CPT2_COLORED_4DIR) {
 		facedir = n.getFaceDir(nodedef);
 	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
 			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {

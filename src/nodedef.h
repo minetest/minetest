@@ -58,7 +58,7 @@ enum ContentParamType2
 	CPT2_FULL,
 	// Flowing liquid properties
 	CPT2_FLOWINGLIQUID,
-	// Direction for chests and furnaces and such
+	// Direction for chests and furnaces and such (with axis rotation)
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
@@ -78,6 +78,10 @@ enum ContentParamType2
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
 	// 3 bits of palette index, then degrotate
 	CPT2_COLORED_DEGROTATE,
+	// Simplified direction for chests and furnaces and such (4 directions)
+	CPT2_4DIR,
+	// 6 bits of palette index, then 4dir
+	CPT2_COLORED_4DIR,
 };
 
 enum LiquidType

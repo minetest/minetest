@@ -17,6 +17,21 @@ minetest.register_node("testnodes:facedir", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:4dir", {
+	description = S("4dir Test Node"),
+	paramtype2 = "4dir",
+	tiles = {
+		"testnodes_1.png^[colorize:#FFFF00:127",
+		"testnodes_2.png^[colorize:#FFFF00:127",
+		"testnodes_3.png^[colorize:#FFFF00:127",
+		"testnodes_4.png^[colorize:#FFFF00:127",
+		"testnodes_5.png^[colorize:#FFFF00:127",
+		"testnodes_6.png^[colorize:#FFFF00:127",
+	},
+
+	groups = { dig_immediate = 3 },
+})
+
 minetest.register_node("testnodes:facedir_nodebox", {
 	description = S("Facedir Nodebox Test Node"),
 	tiles = {
@@ -30,6 +45,27 @@ minetest.register_node("testnodes:facedir_nodebox", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},
+	},
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:4dir_nodebox", {
+	description = S("4dir Nodebox Test Node"),
+	tiles = {
+		"testnodes_1.png^[colorize:#ffff00:127",
+		"testnodes_2.png^[colorize:#ffff00:127",
+		"testnodes_3.png^[colorize:#ffff00:127",
+		"testnodes_4.png^[colorize:#ffff00:127",
+		"testnodes_5.png^[colorize:#ffff00:127",
+		"testnodes_6.png^[colorize:#ffff00:127",
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "4dir",
 	node_box = {
 		type = "fixed",
 		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},
@@ -117,6 +153,44 @@ minetest.register_node("testnodes:colorfacedir_nodebox", {
 	paramtype = "light",
 	paramtype2 = "colorfacedir",
 	palette = "testnodes_palette_facedir.png",
+	node_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},
+	},
+
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:color4dir", {
+	description = S("Color 4dir Test Node"),
+	paramtype2 = "color4dir",
+	palette = "testnodes_palette_4dir.png",
+	tiles = {
+		"testnodes_1g.png",
+		"testnodes_2g.png",
+		"testnodes_3g.png",
+		"testnodes_4g.png",
+		"testnodes_5g.png",
+		"testnodes_6g.png",
+	},
+
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:color4dir_nodebox", {
+	description = S("Color 4dir Nodebox Test Node"),
+	tiles = {
+		"testnodes_1g.png",
+		"testnodes_2g.png",
+		"testnodes_3g.png",
+		"testnodes_4g.png",
+		"testnodes_5g.png",
+		"testnodes_6g.png",
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "color4dir",
+	palette = "testnodes_palette_4dir.png",
 	node_box = {
 		type = "fixed",
 		fixed = {-0.5, -0.5, -0.5, 0.2, 0.2, 0.2},

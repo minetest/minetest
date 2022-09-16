@@ -758,6 +758,17 @@ appropriate `paramtype2`:
       first (= 0 + 1) pixel will be picked from the palette.
     * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
       second (= 1 + 1) pixel will be picked from the palette.
+* `paramtype2 = "color4dir"` for nodes which use the first
+  six bits of `param2` for palette indexing. The remaining
+  two bits are describing rotation, as in `4dir` paramtype2.
+  Division by 4 yields the palette index (without stretching the
+  palette). These nodes can have 64 different colors, and the
+  palette should contain 64 pixels.
+  Examples:
+    * `param2 = 17` is 4 * 4 + 1, so the rotation is 1 and the
+      fifth (= 4 + 1) pixel will be picked from the palette.
+    * `param2 = 35` is 8 * 4 + 3, so the rotation is 3 and the
+      ninth (= 8 + 1) pixel will be picked from the palette.
 
 To colorize a node on the map, set its `param2` value (according
 to the node's paramtype2).
@@ -1058,18 +1069,36 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Supported drawtypes: "torchlike", "signlike", "plantlike",
       "plantlike_rooted", "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`
+    * Node is 'mounted'/facing towards one of 6 directions
     * You can make this value by using `minetest.dir_to_wallmounted()`
     * Values range 0 - 5
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+    * By default, on placement the param2 is automatically set to the
+      appropriate rotation, depending on which side was pointed at
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
-    * The rotation of the node is stored in `param2`. Furnaces and chests are
-      rotated this way. Can be made by using `minetest.dir_to_facedir()`.
+    * The rotation of the node is stored in `param2`.
+    * Node is rotated around face and axis; 24 rotations in total.
+    * Can be made by using `minetest.dir_to_facedir()`.
+    * Chests and furnaces can be rotated that way, and also 'flipped'
     * Values range 0 - 23
     * facedir / 4 = axis direction:
       0 = y+,   1 = z+,   2 = z-,   3 = x+,   4 = x-,   5 = y-
     * facedir modulo 4 = rotation around that axis
+    * By default, on placement the param2 is automatically set to the
+      horizondal direction the player was looking at (values 0-3)
+    * Special case: If the node is a connected nodebox, the nodebox
+      will NOT rotate, only the textures will.
+* `paramtype2 = "4dir"`
+    * Supported drawtypes: "normal", "nodebox", "mesh"
+    * The rotation of the node is stored in `param2`.
+    * Allows node to be rotated horizontally, 4 rotations in total
+    * Can be made by using `minetest.dir_to_fourdir()`.
+    * Chests and furnaces can be rotated that way, but not flipped
+    * Values range 0 - 3
+    * 4dir modulo 4 = rotation
+    * Otherwise, behavior is identical to facedir
 * `paramtype2 = "leveled"`
     * Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
         * Leveled nodebox:
@@ -1112,6 +1141,10 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * Same as `facedir`, but with colors.
     * The first three bits of `param2` tells which color is picked from the
       palette. The palette should have 8 pixels.
+* `paramtype2 = "color4dir"`
+    * Same as `facedir`, but with colors.
+    * The first six bits of `param2` tells which color is picked from the
+      palette. The palette should have 64 pixels.
 * `paramtype2 = "colorwallmounted"`
     * Same as `wallmounted`, but with colors.
     * The first five bits of `param2` tells which color is picked from the
@@ -5776,6 +5809,12 @@ Item handling
 * `minetest.facedir_to_dir(facedir)`
     * Convert a facedir back into a vector aimed directly out the "back" of a
       node.
+* `minetest.dir_to_fourdir(dir)`
+    * Convert a vector to a 4dir value, used in `param2` for
+      `paramtype2="4dir"`.
+* `minetest.fourdir_to_dir(fourdir)`
+    * Convert a 4dir back into a vector aimed directly out the "back" of a
+      node.
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for
       `paramtype2="wallmounted"`.
@@ -5788,7 +5827,7 @@ Item handling
     * Convert yaw (angle) to a vector
 * `minetest.is_colored_paramtype(ptype)`
     * Returns a boolean. Returns `true` if the given `paramtype2` contains
-      color information (`color`, `colorwallmounted` or `colorfacedir`).
+      color information (`color`, `colorwallmounted`, `colorfacedir`, etc.).
 * `minetest.strip_param2_color(param2, paramtype2)`
     * Removes everything but the color information from the
       given `param2` value.
@@ -7893,7 +7932,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- You can set the currently used color as the "palette_index" field of
         -- the item stack metadata.
         -- The palette is always stretched to fit indices between 0 and 255, to
-        -- ensure compatibility with "colorfacedir" and "colorwallmounted" nodes.
+        -- ensure compatibility with "colorfacedir" (and similar) nodes.
 
         color = "#ffffffff",
         -- Color the item is colorized with. The palette overrides this.

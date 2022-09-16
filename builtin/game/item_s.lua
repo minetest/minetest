@@ -92,6 +92,26 @@ function core.facedir_to_dir(facedir)
 	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
+function core.dir_to_fourdir(dir)
+	if math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 1
+		end
+	else
+		if dir.z < 0 then
+			return 2
+		else
+			return 0
+		end
+	end
+end
+
+function core.fourdir_to_dir(fourdir)
+	return facedir_to_dir[facedir_to_dir_map[fourdir % 4]]
+end
+
 function core.dir_to_wallmounted(dir)
 	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
 		if dir.y < 0 then
@@ -137,7 +157,8 @@ end
 
 function core.is_colored_paramtype(ptype)
 	return (ptype == "color") or (ptype == "colorfacedir") or
-		(ptype == "colorwallmounted") or (ptype == "colordegrotate")
+		(ptype == "color4dir") or (ptype == "colorwallmounted") or
+		(ptype == "colordegrotate")
 end
 
 function core.strip_param2_color(param2, paramtype2)
@@ -146,6 +167,8 @@ function core.strip_param2_color(param2, paramtype2)
 	end
 	if paramtype2 == "colorfacedir" then
 		param2 = math.floor(param2 / 32) * 32
+	elseif paramtype2 == "color4dir" then
+		param2 = math.floor(param2 / 4) * 4
 	elseif paramtype2 == "colorwallmounted" then
 		param2 = math.floor(param2 / 8) * 8
 	elseif paramtype2 == "colordegrotate" then

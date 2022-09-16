@@ -992,6 +992,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
+			param_type_2 == CPT2_COLORED_4DIR ||
 			param_type_2 == CPT2_COLORED_WALLMOUNTED ||
 			param_type_2 == CPT2_COLORED_DEGROTATE)
 		palette = tsrc->getPalette(palette_name);
@@ -1013,6 +1014,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			(param_type_2 == CPT2_FACEDIR
 			|| param_type_2 == CPT2_COLORED_FACEDIR)) {
 		for (u16 j = 1; j < 24; j++) {
+			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
+			rotateMeshBy6dFacedir(mesh_ptr[j], j);
+			recalculateBoundingBox(mesh_ptr[j]);
+			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
+		}
+	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
+			(param_type_2 == CPT2_4DIR
+			|| param_type_2 == CPT2_COLORED_4DIR)) {
+		for (u16 j = 1; j < 4; j++) {
 			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
 			rotateMeshBy6dFacedir(mesh_ptr[j], j);
 			recalculateBoundingBox(mesh_ptr[j]);
@@ -1241,7 +1251,9 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||
-					features.param_type_2 == CPT2_COLORED_FACEDIR) {
+					features.param_type_2 == CPT2_COLORED_FACEDIR ||
+					features.param_type_2 == CPT2_4DIR ||
+					features.param_type_2 == CPT2_COLORED_4DIR) {
 				// Get maximal coordinate
 				f32 coords[] = {
 					fabsf(half_processed.MinEdge.X),
@@ -1705,7 +1717,9 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
 		if ((f2.param_type_2 == CPT2_FACEDIR ||
-				f2.param_type_2 == CPT2_COLORED_FACEDIR)
+				f2.param_type_2 == CPT2_COLORED_FACEDIR ||
+				f2.param_type_2 == CPT2_4DIR ||
+				f2.param_type_2 == CPT2_COLORED_4DIR)
 				&& (connect_face >= 4)) {
 			static const u8 rot[33 * 4] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1719,8 +1733,15 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 32, 16, 8, 4 // 32 - left
 				};
-			return (f2.connect_sides
-				& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
+			if (f2.param_type_2 == CPT2_FACEDIR ||
+					f2.param_type_2 == CPT2_COLORED_FACEDIR) {
+				return (f2.connect_sides
+					& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
+			} else if (f2.param_type_2 == CPT2_4DIR ||
+					f2.param_type_2 == CPT2_COLORED_4DIR) {
+				return (f2.connect_sides
+					& rot[(connect_face * 4) + (to.param2 & 0x03)]);
+			}
 		}
 		return (f2.connect_sides & connect_face);
 	}
