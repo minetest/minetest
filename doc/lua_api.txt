@@ -1571,7 +1571,8 @@ Exact pointing location (currently only `Raycast` supports these fields):
 * `pointed_thing.intersection_normal`: Unit vector, points outwards of the
   selected selection box. This specifies which face is pointed at.
   Is a null vector `vector.zero()` when the pointer is inside the selection box.
-  Will already be rotated properly if the entity uses a rotated selection box.
+  For entities with rotated selection boxes, this will be rotated properly
+  by the entity's rotation - it will always be in absolute world space.
 
 
 
