@@ -7194,14 +7194,14 @@ child will follow movement and rotation of that bone.
 	* Shorthand for `set_bone_override(bone, {position = ..., rotation = ...})` using absolute values.
 	* Supports older servers & clients (< 5.6)
 	* **Deprecated**; use `set_bone_override` instead
-* `get_bone_position(bone)`: returns position and rotation of the bone
+* `get_bone_position(bone)`: returns the previously set position and rotation of the bone
 	* Shorthand for `get_bone_override(bone).position.vector, get_bone_override(bone).rotation.vector`
 	* **Deprecated**, use `get_bone_override` instead
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
         * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
-            * `vec` is in blocksize for position and scale (times ten), and in degrees for rotation
+            * `vec` is in the same coordinate system as the model, and in degrees for rotation
         * `property = nil` is equivalent to no override on that property
         * `absolute`: If set to `false`, the override will be relative to the animated property:
             * Transposition in the case of `position`;
@@ -7212,7 +7212,7 @@ child will follow movement and rotation of that bone.
     * Compatibility note: Clients prior to 5.7.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
-* `get_bone_overrides()`: returns bone overrides as table `{[bonename] = override, ...}`
+* `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
 * `is_player()`: returns true for players, false otherwise
