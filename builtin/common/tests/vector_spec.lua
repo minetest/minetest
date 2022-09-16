@@ -31,6 +31,13 @@ describe("vector", function()
 		end)
 	end)
 
+	it("__call", function()
+		assert.same({x = 1, y = 2, z = 3}, vector(1, 2, 3))
+		assert.same(vector.new(1, 2, 3), vector(1, 2, 3))
+		assert.equal(vector.new(1, 2, 3), vector(1, 2, 3))
+		assert.is_true(vector.check(vector(1, 2, 3)))
+	end)
+
 	it("zero()", function()
 		assert.same({x = 0, y = 0, z = 0}, vector.zero())
 		assert.same(vector.new(), vector.zero())
