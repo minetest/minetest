@@ -6712,6 +6712,16 @@ an itemstring, a table or `nil`.
     * `n`: number, default: `1`
 * `equals(other)`:
     * returns `true` if this stack is identical to `other`.
+    * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
+      as stack metadata can be serialized in arbitrary order.
+
+Operators
+---------
+
+* `stack1 == stack2`:
+    * Returns whether `stack1` and `stack2` are identical.
+    * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
+      as stack metadata can be serialized in arbitrary order.
 
 `ItemStackMetaRef`
 ------------------
