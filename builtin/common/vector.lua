@@ -34,7 +34,7 @@ function namespace_metatable.__call(_, x, y, z)
 	if x and y and z then
 		return fast_new(x, y, z)
 	end
-	error("Invalid arguments passed to vector()")
+	error("Invalid arguments passed to vector()", 2)
 end
 
 function vector.new(a, b, c)
@@ -45,10 +45,10 @@ function vector.new(a, b, c)
 	-- deprecated, use vector.copy and vector.zero directly
 	if type(a) == "table" then
 		return vector.copy(a)
-	else
-		assert(not a, "Invalid arguments for vector.new()")
+	elseif not a then
 		return vector.zero()
 	end
+	error("Invalid arguments passed to vector.new()", 2)
 end
 
 function vector.zero()
@@ -56,8 +56,10 @@ function vector.zero()
 end
 
 function vector.copy(v)
-	assert(v.x and v.y and v.z, "Invalid vector passed to vector.copy()")
-	return fast_new(v.x, v.y, v.z)
+	if v.x and v.y and v.z then
+		return fast_new(v.x, v.y, v.z)
+	end
+	error("Invalid vector passed to vector.copy()", 2)
 end
 
 function vector.from_string(s, init)
@@ -353,8 +355,9 @@ function vector.dir_to_rotation(forward, up)
 	if not up then
 		return rot
 	end
-	assert(vector.dot(forward, up) < 0.000001,
-			"Invalid vectors passed to vector.dir_to_rotation().")
+	if not (vector.dot(forward, up) < 0.000001) then
+		error("Invalid vectors passed to vector.dir_to_rotation()", 2)
+	end
 	up = vector.normalize(up)
 	-- Calculate vector pointing up with roll = 0, just based on forward vector.
 	local forwup = vector.rotate(fast_new(0, 1, 0), rot)
