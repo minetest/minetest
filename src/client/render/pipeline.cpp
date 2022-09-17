@@ -27,9 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 TextureBuffer::~TextureBuffer()
 {
-	if (m_render_target)
-		m_driver->removeRenderTarget(m_render_target);
-	m_render_target = nullptr;
 	for (u32 index = 0; index < m_textures.size(); index++)
 		m_driver->removeTexture(m_textures[index]);
 	m_textures.clear();
@@ -37,8 +34,6 @@ TextureBuffer::~TextureBuffer()
 
 video::ITexture *TextureBuffer::getTexture(u8 index)
 {
-	if (index == m_depth_texture_index)
-		return m_depth_texture;
 	if (index >= m_textures.size())
 		return nullptr;
 	return m_textures[index];
@@ -52,9 +47,6 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 	if (m_definitions.size() <= index)
 		m_definitions.resize(index + 1);
 
-	if (m_depth_texture_index == index)
-		m_depth_texture_index = NO_DEPTH_TEXTURE;
-	
 	auto &definition = m_definitions[index];
 	definition.valid = true;
 	definition.dirty = true;
@@ -71,9 +63,6 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 	if (m_definitions.size() <= index)
 		m_definitions.resize(index + 1);
 	
-	if (m_depth_texture_index == index)
-		m_depth_texture_index = NO_DEPTH_TEXTURE;
-
 	auto &definition = m_definitions[index];
 	definition.valid = true;
 	definition.dirty = true;
@@ -81,20 +70,6 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 	definition.scale_factor = scale_factor;
 	definition.name = name;
 	definition.format = format;
-}
-
-void TextureBuffer::setDepthTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
-{
-	assert(index != NO_DEPTH_TEXTURE);
-	setTexture(index, size, name, format);
-	m_depth_texture_index = index;
-}
-
-void TextureBuffer::setDepthTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
-{
-	assert(index != NO_DEPTH_TEXTURE);
-	setTexture(index, scale_factor, name, format);
-	m_depth_texture_index = index;
 }
 
 void TextureBuffer::reset(PipelineContext &context)
@@ -116,41 +91,14 @@ void TextureBuffer::reset(PipelineContext &context)
 		m_textures.push_back(nullptr);
 
 	// change textures to match definitions
-	bool modified = false;
 	for (u32 i = 0; i < m_definitions.size(); i++) {
 		video::ITexture **ptr = &m_textures[i];
-		if (i == m_depth_texture_index) {
-			if (*ptr) {
-				m_driver->removeTexture(*ptr);
-				*ptr = nullptr;
-			}
-			ptr = &m_depth_texture;
-		}
 
-		if (ensureTexture(ptr, m_definitions[i], context))
-			modified = true;
+		ensureTexture(ptr, m_definitions[i], context);
 		m_definitions[i].dirty = false;
 	}
 	
-	// make sude depth texture is removed and reset
-	if (m_depth_texture_index == NO_DEPTH_TEXTURE && m_depth_texture) {
-		m_driver->removeTexture(m_depth_texture);
-		m_depth_texture = nullptr;
-	}
-
-	if (!m_render_target)
-		m_render_target = m_driver->addRenderTarget();
-
-	if (modified)
-		m_render_target->setTexture(m_textures, m_depth_texture);
-
-	RenderTarget::reset(context);
-}
-
-void TextureBuffer::activate(PipelineContext &context)
-{
-	m_driver->setRenderTargetEx(m_render_target, m_clear ? video::ECBF_DEPTH | video::ECBF_COLOR : 0, context.clear_color);
-	RenderTarget::activate(context);
+	RenderSource::reset(context);
 }
 
 bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
