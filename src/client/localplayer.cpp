@@ -435,14 +435,18 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// We can jump from a bouncy node we collided with this clientstep,
 	// even if we are not "touching" it at the end of clientstep.
 	bool bouncy_can_jump = false;
+	int actual_bouncy = 0;
 	if (result.collides && m_speed.Y > 0.0f) {
 		// must use result.collisions here because sometimes collision_info
 		// is passed in prepopulated with a problematic floor.
 		for (const auto &colinfo : result.collisions) {
-			if (colinfo.node_p == m_standing_node
-					&& itemgroup_get(f.groups, "bouncy") != 0) {
-				bouncy_can_jump = true;
-				break;
+			if (colinfo.axis == COLLISION_AXIS_Y) {
+				// we cannot rely on m_standing_node because "sneak stuff"
+				actual_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
+				if (actual_bouncy != 0) {
+					bouncy_can_jump = true;
+					break;
+				}
 			}
 		}
 	}
@@ -456,7 +460,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
 	if (bouncy_can_jump && m_can_jump && (control.jump || control.sneak)
-			&& itemgroup_get(f.groups, "bouncy") > 0) {
+			&& actual_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump
@@ -470,7 +474,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
 		m_can_jump = false;
-	} else if(m_speed.Y > jumpspeed && itemgroup_get(f.groups, "bouncy") < 0) {
+	} else if(m_speed.Y > jumpspeed && actual_bouncy < 0) {
 		// uncontrollable bouncy is limited to normal jump height.
 		m_can_jump = false;
 	}
@@ -918,8 +922,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_standing_node = floatToInt(m_position, BS);
 
 	/*
-		If the player's feet touch the topside of any node, this is
-		set to true.
+		If the player's feet touch the topside of any node
+		at the END of clientstep, then this is set to true.
 
 		Player is allowed to jump when this is true.
 	*/
@@ -1052,15 +1056,18 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	// We can jump from a bouncy node we collided with this clientstep,
 	// even if we are not "touching" it at the end of clientstep.
 	bool bouncy_can_jump = false;
+	int actual_bouncy = 0;
 	if (result.collides && m_speed.Y > 0.0f) {
 		// must use result.collisions here because sometimes collision_info
 		// is passed in prepopulated with a problematic floor.
 		for (const auto &colinfo : result.collisions) {
-			// COLLISION_AXIS_Y here is a hack for old_move
-			if (colinfo.axis == COLLISION_AXIS_Y
-					&& itemgroup_get(f.groups, "bouncy") != 0) {
-				bouncy_can_jump = true;
-				break;
+			if (colinfo.axis == COLLISION_AXIS_Y) {
+				// we cannot rely on m_standing_node because "sneak stuff"
+				actual_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
+				if (actual_bouncy != 0) {
+					bouncy_can_jump = true;
+					break;
+				}
 			}
 		}
 	}
@@ -1072,7 +1079,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
 	if (bouncy_can_jump && m_can_jump && (control.jump || control.sneak)
-			&& itemgroup_get(f.groups, "bouncy") > 0) {
+			&& actual_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump
@@ -1086,7 +1093,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
 		m_can_jump = false;
-	} else if(m_speed.Y > jumpspeed && itemgroup_get(f.groups, "bouncy") < 0) {
+	} else if(m_speed.Y > jumpspeed && actual_bouncy < 0) {
 		// uncontrollable bouncy is limited to normal jump height.
 		m_can_jump = false;
 	}
