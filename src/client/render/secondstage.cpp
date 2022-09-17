@@ -88,6 +88,12 @@ void PostProcessingStep::run(PipelineContext &context)
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }
 
+void PostProcessingStep::setBilinearFilter(u8 index, bool value)
+{
+	assert(index < video::MATERIAL_MAX_TEXTURES);
+	material.TextureLayer[index].BilinearFilter = value;
+}
+
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
 	auto buffer = pipeline->createOwned<TextureBuffer>();
@@ -120,8 +126,8 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// post-processing stage
 	// set up bloom
 	{
-		buffer->setTexture(TEXTURE_BLUR, scale, "blur", color_format);
-		buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+		buffer->setTexture(TEXTURE_BLUR, scale * 0.5, "blur", color_format);
+		buffer->setTexture(TEXTURE_BLOOM, scale * 0.5, "bloom", color_format);
 
 		// get bright spots
 		u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
@@ -142,7 +148,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// final post-processing
 	u32 shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
-	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM });
+	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM });
+	pipeline->addStep(effect);
+	effect->setBilinearFilter(1, true); // apply filter to the bloom
 	effect->setRenderSource(buffer);
 	return effect;
 }
