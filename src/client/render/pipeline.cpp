@@ -186,15 +186,48 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 }
 
 TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, u8 _texture_index)
-	: buffer(_buffer), texture_index(_texture_index)
+	: buffer(_buffer), texture_map({_texture_index})
 {}
+
+TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, const std::vector<u8> &_texture_map)
+	: buffer(_buffer), texture_map(_texture_map)
+{}
+
+TextureBufferOutput::TextureBufferOutput(TextureBuffer *_buffer, const std::vector<u8> &_texture_map, u8 _depth_stencil)
+	: buffer(_buffer), texture_map(_texture_map), depth_stencil(_depth_stencil)
+{}
+
+TextureBufferOutput::~TextureBufferOutput()
+{
+	if (render_target && driver)
+		driver->removeRenderTarget(render_target);
+}
 
 void TextureBufferOutput::activate(PipelineContext &context)
 {
-	auto texture = buffer->getTexture(texture_index);
-	auto driver = context.device->getVideoDriver();
-	driver->setRenderTarget(texture, m_clear, m_clear, context.clear_color);
-	driver->OnResize(texture->getSize());
+	if (!driver)
+		driver = context.device->getVideoDriver();
+
+	if (!render_target)
+		render_target = driver->addRenderTarget();
+
+	core::array<video::ITexture *> textures;
+	core::dimension2du size(0, 0);
+	for (size_t i = 0; i < texture_map.size(); i++) {
+		video::ITexture *texture = buffer->getTexture(texture_map[i]);
+		textures.push_back(texture);
+		if (texture && size.Width == 0)
+			size = texture->getSize();
+	}
+
+	video::ITexture *depth_texture = nullptr;
+	if (depth_stencil != NO_DEPTH_TEXTURE)
+		depth_texture = buffer->getTexture(depth_stencil);
+
+	render_target->setTexture(textures, depth_texture);
+
+	driver->setRenderTargetEx(render_target, m_clear ? video::ECBF_ALL : video::ECBF_NONE, context.clear_color);
+	driver->OnResize(size);
 
 	RenderTarget::activate(context);
 }
