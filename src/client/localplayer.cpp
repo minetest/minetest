@@ -186,7 +186,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Copy parent position if local player is attached
 	if (getParent()) {
 		setPosition(m_cao->getPosition());
-		added_velocity = v3f(0.0f); // ignored
+		m_added_velocity = v3f(0.0f); // ignored
 		return;
 	}
 
@@ -202,12 +202,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		setPosition(position);
 
 		touching_ground = false;
-		added_velocity = v3f(0.0f); // ignored
+		m_added_velocity = v3f(0.0f); // ignored
 		return;
 	}
 
-	m_speed += added_velocity;
-	added_velocity = v3f(0.0f);
+	m_speed += m_added_velocity;
+	m_added_velocity = v3f(0.0f);
 
 	/*
 		Collision detection
@@ -755,7 +755,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (getParent()) {
 		setPosition(m_cao->getPosition());
 		m_sneak_node_exists = false;
-		added_velocity = v3f(0.0f);
+		m_added_velocity = v3f(0.0f);
 		return;
 	}
 
@@ -771,12 +771,12 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 		touching_ground = false;
 		m_sneak_node_exists = false;
-		added_velocity = v3f(0.0f);
+		m_added_velocity = v3f(0.0f);
 		return;
 	}
 
-	m_speed += added_velocity;
-	added_velocity = v3f(0.0f);
+	m_speed += m_added_velocity;
+	m_added_velocity = v3f(0.0f);
 
 	/*
 		Collision detection

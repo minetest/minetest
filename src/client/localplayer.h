@@ -148,7 +148,7 @@ public:
 
 	inline void addVelocity(const v3f &vel)
 	{
-		added_velocity += vel;
+		m_added_velocity += vel;
 	}
 
 	inline Lighting& getLighting() { return m_lighting; }
@@ -198,8 +198,7 @@ private:
 	bool m_autojump = false;
 	float m_autojump_time = 0.0f;
 
-	v3f added_velocity = v3f(0.0f); // cleared on each move()
-	// TODO: Rename to adhere to convention: added_velocity --> m_added_velocity
+	v3f m_added_velocity = v3f(0.0f); // in BS-space; cleared on each move()
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
