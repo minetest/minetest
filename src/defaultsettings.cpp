@@ -263,6 +263,7 @@ void set_default_settings()
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
+	settings->setDefault("exposure_factor", "1.0");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");

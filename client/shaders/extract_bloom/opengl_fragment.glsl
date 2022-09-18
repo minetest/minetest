@@ -1,6 +1,7 @@
 #define rendered texture0
 
 uniform sampler2D rendered;
+uniform mediump float exposureFactor = 2.5;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -8,7 +9,6 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
-const float exposureFactor = 2.5;
 const float bloomLuminanceThreshold = 0.7;
 
 void main(void)

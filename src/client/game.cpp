@@ -426,12 +426,16 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
 	CachedPixelShaderSetting<float, 2> m_texel_size0;
 	std::array<float, 2> m_texel_size0_values;
+	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
+	float m_user_exposure_factor;
 
 public:
 	void onSettingsChange(const std::string &name)
 	{
 		if (name == "enable_fog")
 			m_fog_enabled = g_settings->getBool("enable_fog");
+		if (name == "exposure_factor")
+			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -462,10 +466,13 @@ public:
 		m_texture1("texture1"),
 		m_texture2("texture2"),
 		m_texture3("texture3"),
-		m_texel_size0("texelSize0")
+		m_texel_size0("texelSize0"),
+		m_exposure_factor_pixel("exposureFactor")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
+		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
+		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -542,6 +549,11 @@ public:
 		m_texture3.set(&tex_id, services);
 
 		m_texel_size0.set(m_texel_size0_values.data(), services);
+
+		float exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR * m_user_exposure_factor;
+		if (std::isnan(exposure_factor))
+			exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+		m_exposure_factor_pixel.set(&exposure_factor, services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material)
