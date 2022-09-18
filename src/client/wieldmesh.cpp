@@ -313,7 +313,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client, false);
-	MeshCollector collector;
+	MeshCollector collector(v3f(0.0f * BS));
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector,
 		client->getSceneManager()->getMeshManipulator());

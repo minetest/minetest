@@ -196,21 +196,11 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
-	const v3f camera_position = m_camera_position;
-	const v3f camera_direction = m_camera_direction;
-
-	// Use a higher fov to accomodate faster camera movements.
-	// Blocks are cropped better when they are drawn.
-	const f32 camera_fov = m_camera_fov * 1.1f;
-
-	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
-
-	// Read the vision range, unless unlimited range is enabled.
-	float range = m_control.range_all ? 1e7 : m_control.wanted_range;
 
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
@@ -229,6 +219,8 @@ void ClientMap::updateDrawList()
 
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -271,7 +263,7 @@ void ClientMap::updateDrawList()
 
 			// First, perform a simple distance check, with a padding of one extra block.
 			if (!m_control.range_all &&
-					block_position.getDistanceFrom(cam_pos_nodes) > range + MAP_BLOCKSIZE)
+					block_position.getDistanceFrom(cam_pos_nodes) > m_control.wanted_range)
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
@@ -279,14 +271,18 @@ void ClientMap::updateDrawList()
 			blocks_in_range_with_mesh++;
 
 			// Frustum culling
-			float d = 0.0;
-			if (!isBlockInSight(block_coord, camera_position,
-					camera_direction, camera_fov, range * BS, &d))
+			// Only do coarse culling here, to account for fast camera movement.
+			// This is needed because this function is not called every frame.
+			constexpr float frustum_cull_extra_radius = 300.0f;
+			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+					+ block->mesh->getBoundingSphereCenter();
+			f32 mesh_sphere_radius = block->mesh->getBoundingRadius();
+			if (is_frustum_culled(mesh_sphere_center,
+					mesh_sphere_radius + frustum_cull_extra_radius))
 				continue;
 
 			// Occlusion culling
-			if ((!m_control.range_all && d > m_control.wanted_range * BS) ||
-					(occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes))) {
+			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
@@ -358,33 +354,43 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
+
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
+		MapBlockMesh *block_mesh = block->mesh;
 
 		// If the mesh of the block happened to get deleted, ignore it
-		if (!block->mesh)
+		if (!block_mesh)
+			continue;
+
+		// Do exact frustum culling
+		// (The one in updateDrawList is only coarse.)
+		v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+				+ block_mesh->getBoundingSphereCenter();
+		f32 mesh_sphere_radius = block_mesh->getBoundingRadius();
+		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
 			continue;
 
 		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
+
 		float d = camera_position.getDistanceFrom(block_pos_r);
 		d = MYMAX(0,d - BLOCK_MAX_RADIUS);
 
 		// Mesh animation
 		if (pass == scene::ESNRP_SOLID) {
-			MapBlockMesh *mapBlockMesh = block->mesh;
-			assert(mapBlockMesh);
 			// Pretty random but this should work somewhat nicely
 			bool faraway = d >= BS * 50;
-			if (mapBlockMesh->isAnimationForced() || !faraway ||
+			if (block_mesh->isAnimationForced() || !faraway ||
 					mesh_animate_count < (m_control.range_all ? 200 : 50)) {
 
-				bool animated = mapBlockMesh->animate(faraway, animation_time,
+				bool animated = block_mesh->animate(faraway, animation_time,
 					crack, daynight_ratio);
 				if (animated)
 					mesh_animate_count++;
 			} else {
-				mapBlockMesh->decreaseAnimationForceTimer();
+				block_mesh->decreaseAnimationForceTimer();
 			}
 		}
 
@@ -394,17 +400,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		if (is_transparent_pass) {
 			// In transparent pass, the mesh will give us
 			// the partial buffers in the correct order
-			for (auto &buffer : block->mesh->getTransparentBuffers())
+			for (auto &buffer : block_mesh->getTransparentBuffers())
 				draw_order.emplace_back(block_pos, &buffer);
 		}
 		else {
 			// otherwise, group buffers across meshes
 			// using MeshBufListList
-			MapBlockMesh *mapBlockMesh = block->mesh;
-			assert(mapBlockMesh);
-
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
 
 				u32 c = mesh->getMeshBufferCount();
@@ -772,9 +775,9 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	for (auto &lists : grouped_buffers.lists)
 		for (MeshBufList &list : lists)
 			buffer_count += list.bufs.size();
-	
+
 	draw_order.reserve(draw_order.size() + buffer_count);
-	
+
 	// Capture draw order for all solid meshes
 	for (auto &lists : grouped_buffers.lists) {
 		for (MeshBufList &list : lists) {
@@ -908,8 +911,8 @@ void ClientMap::updateTransparentMeshBuffers()
 		MapBlock* block = it->second;
 		if (!block->mesh)
 			continue;
-		
-		if (m_needs_update_transparent_meshes || 
+
+		if (m_needs_update_transparent_meshes ||
 				block->mesh->getTransparentBuffers().size() == 0) {
 
 			v3s16 block_pos = block->getPos();
