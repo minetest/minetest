@@ -119,7 +119,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	objectrefGetOrCreate(L, puncher);
 	pushPointedThing(pointed);
 	PCALL_RES(lua_pcall(L, 4, 0, error_handler));
@@ -142,7 +142,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	objectrefGetOrCreate(L, digger);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 
@@ -204,8 +204,8 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
-	pushnode(L, newnode, ndef);
+	pushnode(L, node);
+	pushnode(L, newnode);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	lua_remove(L, error_handler);
 	return readParam<bool>(L, -1, false);
@@ -225,7 +225,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 
 	// Call function
 	push_v3s16(L, p);
-	pushnode(L, node, ndef);
+	pushnode(L, node);
 	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }

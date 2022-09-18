@@ -223,3 +223,17 @@ function builtin_shared.cache_content_ids()
 		end
 	end
 end
+
+if core.set_read_node and core.set_push_node then
+	local function read_node(node)
+		return name2content[node.name], node.param1, node.param2
+	end
+	core.set_read_node(read_node)
+	core.set_read_node = nil
+
+	local function push_node(content, param1, param2)
+		return {name = content2name[content], param1 = param1, param2 = param2}
+	end
+	core.set_push_node(push_node)
+	core.set_push_node = nil
+end

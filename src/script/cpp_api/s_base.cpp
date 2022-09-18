@@ -120,16 +120,32 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 #endif
 
 	// Add basic globals
-	lua_newtable(m_luastack);
-	lua_setglobal(m_luastack, "core");
 
-	// vector.metatable is stored in the registry for quick access from C++.
+	// "core" table:
 	lua_newtable(m_luastack);
-	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
-	lua_newtable(m_luastack);
-	lua_rawgeti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
-	lua_setfield(m_luastack, -2, "metatable");
-	lua_setglobal(m_luastack, "vector");
+	// Populate with some internal functions which will be removed in Lua:
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_VECTOR);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_read_vector");
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_VECTOR);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_push_vector");
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_read_node");
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
+		return 0;
+	});
+	lua_setfield(m_luastack, -2, "set_push_node");
+	// Finally, put the table into the global environment:
+	lua_setglobal(m_luastack, "core");
 
 	if (m_type == ScriptingType::Client)
 		lua_pushstring(m_luastack, "/");

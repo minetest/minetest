@@ -10,3 +10,9 @@ dofile(commonpath .. "chatcommands.lua")
 dofile(clientpath .. "chatcommands.lua")
 dofile(clientpath .. "death_formspec.lua")
 dofile(clientpath .. "misc.lua")
+assert(loadfile(commonpath .. "item_s.lua"))({}) -- Just for push/read node callbacks
+
+if core.get_csm_restrictions().read_nodedefs then
+	core.get_content_id = nil
+	core.get_name_from_content_id = nil
+end

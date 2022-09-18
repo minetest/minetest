@@ -220,7 +220,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	MapNode n = getClient(L)->CSMGetNode(pos, &pos_ok);
 	if (pos_ok) {
 		// Return node
-		pushnode(L, n, getClient(L)->ndef());
+		pushnode(L, n);
 	} else {
 		lua_pushnil(L);
 	}

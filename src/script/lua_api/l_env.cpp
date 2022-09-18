@@ -98,7 +98,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_remove(L, -2); // Remove registered_abms[m_id]
 	push_v3s16(L, p);
-	pushnode(L, n, env->getGameDef()->ndef());
+	pushnode(L, n);
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
 
@@ -140,7 +140,7 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_remove(L, -2); // Remove registered_lbms[m_id]
 	push_v3s16(L, p);
-	pushnode(L, n, env->getGameDef()->ndef());
+	pushnode(L, n);
 
 	int result = lua_pcall(L, 2, 0, error_handler);
 	if (result)
@@ -247,10 +247,9 @@ int ModApiEnvMod::l_set_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = readnode(L, 2, ndef);
+	MapNode n = readnode(L, 2);
 	// Do it
 	bool succeeded = env->setNode(pos, n);
 	lua_pushboolean(L, succeeded);
@@ -263,7 +262,6 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	if (!lua_istable(L, 1)) {
 		return 0;
@@ -275,7 +273,7 @@ int ModApiEnvMod::l_bulk_set_node(lua_State *L)
 		return 1;
 	}
 
-	MapNode n = readnode(L, 2, ndef);
+	MapNode n = readnode(L, 2);
 
 	// Do it
 	bool succeeded = true;
@@ -315,10 +313,9 @@ int ModApiEnvMod::l_swap_node(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
 	// parameters
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = readnode(L, 2, ndef);
+	MapNode n = readnode(L, 2);
 	// Do it
 	bool succeeded = env->swapNode(pos, n);
 	lua_pushboolean(L, succeeded);
@@ -336,7 +333,7 @@ int ModApiEnvMod::l_get_node(lua_State *L)
 	// Do it
 	MapNode n = env->getMap().getNode(pos);
 	// Return node
-	pushnode(L, n, env->getGameDef()->ndef());
+	pushnode(L, n);
 	return 1;
 }
 
@@ -353,7 +350,7 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 	MapNode n = env->getMap().getNode(pos, &pos_ok);
 	if (pos_ok) {
 		// Return node
-		pushnode(L, n, env->getGameDef()->ndef());
+		pushnode(L, n);
 	} else {
 		lua_pushnil(L);
 	}
@@ -438,7 +435,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	IItemDefManager *idef = server->idef();
 
 	v3s16 pos = read_v3s16(L, 1);
-	MapNode n = readnode(L, 2, ndef);
+	MapNode n = readnode(L, 2);
 
 	// Don't attempt to load non-loaded area as of now
 	MapNode n_old = env->getMap().getNode(pos);

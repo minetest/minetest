@@ -139,12 +139,10 @@ int LuaVoxelManip::l_get_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
 
-	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), ndef);
+	pushnode(L, o->vm->getNodeNoExNoEmerge(pos));
 	return 1;
 }
 
@@ -152,11 +150,9 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
-
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
-	MapNode n        = readnode(L, 3, ndef);
+	MapNode n        = readnode(L, 3);
 
 	o->vm->setNodeNoEmerge(pos, n);
 

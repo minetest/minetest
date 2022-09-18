@@ -98,7 +98,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"type",
 		"unpack",
 		"_VERSION",
-		"vector",
 		"xpcall",
 	};
 	static const char *whitelist_tables[] = {
@@ -253,10 +252,6 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_pushnil(L);
 	lua_setfield(L, old_globals, "core");
 
-	// 'vector' as well.
-	lua_pushnil(L);
-	lua_setfield(L, old_globals, "vector");
-
 	lua_pop(L, 1); // Pop globals_backup
 
 
@@ -299,7 +294,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"type",
 		"unpack",
 		"_VERSION",
-		"vector",
 		"xpcall",
 		// Completely safe libraries
 		"coroutine",

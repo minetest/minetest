@@ -274,7 +274,6 @@ void ScriptApiEnv::on_liquid_transformed(
 
 	// Convert the list to a pos array and a node array for lua
 	int index = 1;
-	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
 	lua_createtable(L, list.size(), 0);
 	lua_createtable(L, list.size(), 0);
 	for(std::pair<v3s16, MapNode> p : list) {
@@ -282,7 +281,7 @@ void ScriptApiEnv::on_liquid_transformed(
 		push_v3s16(L, p.first);
 		lua_rawset(L, -4);
 		lua_pushnumber(L, index++);
-		pushnode(L, p.second, ndef);
+		pushnode(L, p.second);
 		lua_rawset(L, -3);
 	}
 
