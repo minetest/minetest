@@ -498,43 +498,6 @@ int ModApiServer::l_get_worldpath(lua_State *L)
 	return 1;
 }
 
-// sound_play(spec, parameters, [ephemeral])
-int ModApiServer::l_sound_play(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ServerPlayingSound params;
-	read_simplesoundspec(L, 1, params.spec);
-	read_server_sound_params(L, 2, params);
-	bool ephemeral = lua_gettop(L) > 2 && readParam<bool>(L, 3);
-	if (ephemeral) {
-		getServer(L)->playSound(params, true);
-		lua_pushnil(L);
-	} else {
-		s32 handle = getServer(L)->playSound(params);
-		lua_pushinteger(L, handle);
-	}
-	return 1;
-}
-
-// sound_stop(handle)
-int ModApiServer::l_sound_stop(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	s32 handle = luaL_checkinteger(L, 1);
-	getServer(L)->stopSound(handle);
-	return 0;
-}
-
-int ModApiServer::l_sound_fade(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	s32 handle = luaL_checkinteger(L, 1);
-	float step = readParam<float>(L, 2);
-	float gain = readParam<float>(L, 3);
-	getServer(L)->fadeSound(handle, step, gain);
-	return 0;
-}
-
 // dynamic_add_media(filepath)
 int ModApiServer::l_dynamic_add_media(lua_State *L)
 {
@@ -680,9 +643,6 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(chat_send_all);
 	API_FCT(chat_send_player);
 	API_FCT(show_formspec);
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
-	API_FCT(sound_fade);
 	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);

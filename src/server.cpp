@@ -147,7 +147,7 @@ v3f ServerPlayingSound::getPos(ServerEnvironment *env, bool *pos_exists) const
 	if (pos_exists)
 		*pos_exists = false;
 
-	switch (type ){
+	switch (type) {
 	case SoundLocation::Local:
 		return v3f(0,0,0);
 	case SoundLocation::Position:
@@ -2161,35 +2161,35 @@ void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 
 inline s32 Server::nextSoundId()
 {
-	s32 ret = m_next_sound_id;
-	if (m_next_sound_id == INT32_MAX)
-		m_next_sound_id = 0; // signed overflow is undefined
-	else
-		m_next_sound_id++;
-	return ret;
+	while (m_playing_sounds.find(m_next_sound_id) != m_playing_sounds.end()
+			|| m_next_sound_id == INT32_MAX) {
+		m_next_sound_id = static_cast<s32>(myrand() % static_cast<u32>(INT32_MAX));
+	}
+
+	return m_next_sound_id++;
 }
 
-s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
+s32 Server::playSound(ServerPlayingSound &&params, bool ephemeral)
 {
 	// Find out initial position of sound
 	bool pos_exists = false;
 	const v3f pos = params.getPos(m_env, &pos_exists);
 	// If position is not found while it should be, cancel sound
-	if(pos_exists != (params.type != SoundLocation::Local))
+	if (pos_exists != (params.type != SoundLocation::Local))
 		return -1;
 
 	// Filter destination clients
 	std::vector<session_t> dst_clients;
 	if (!params.to_player.empty()) {
 		RemotePlayer *player = m_env->getPlayer(params.to_player.c_str());
-		if(!player){
-			infostream<<"Server::playSound: Player \""<<params.to_player
-					<<"\" not found"<<std::endl;
+		if (!player) {
+			infostream << "Server::playSound: Player \"" << params.to_player
+					<< "\" not found" << std::endl;
 			return -1;
 		}
 		if (player->getPeerId() == PEER_ID_INEXISTENT) {
-			infostream<<"Server::playSound: Player \""<<params.to_player
-					<<"\" not connected"<<std::endl;
+			infostream << "Server::playSound: Player \"" << params.to_player
+					<< "\" not connected" << std::endl;
 			return -1;
 		}
 		dst_clients.push_back(player->getPeerId());
@@ -2209,7 +2209,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 				continue;
 
 			if (pos_exists) {
-				if(sao->getBasePosition().getDistanceFrom(pos) >
+				if (sao->getBasePosition().getDistanceFrom(pos) >
 						params.max_hear_distance)
 					continue;
 			}
@@ -2217,7 +2217,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 		}
 	}
 
-	if(dst_clients.empty())
+	if (dst_clients.empty())
 		return -1;
 
 	// old clients will still use this, so pick a reserved ID (-1)
@@ -2240,8 +2240,10 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	if (!ephemeral)
 		m_playing_sounds[id] = std::move(params);
+
 	return id;
 }
+
 void Server::stopSound(s32 handle)
 {
 	auto it = m_playing_sounds.find(handle);
@@ -2258,8 +2260,18 @@ void Server::stopSound(s32 handle)
 		m_clients.send(peer_id, 0, &pkt, true);
 	}
 
-	// Remove sound reference
-	m_playing_sounds.erase(it);
+	psound.clients.clear();
+
+	if (!psound.grabbed)
+		m_playing_sounds.erase(it);
+
+	// Note:
+	// Race conditions where the server reuses an id that the client hasn't removed
+	// yet are possible, but extremely unlikely, because:
+	// 1) There are about 0x1p31 (many) possible ids. And recent ones are not more
+	//    likely to be reused.
+	// 2) Under normal circumstances, the script still has the handle grabbed,
+	//    and will not drop it till the next gc step. So the client has some time.
 }
 
 void Server::fadeSound(s32 handle, float step, float gain)
@@ -2279,8 +2291,27 @@ void Server::fadeSound(s32 handle, float step, float gain)
 		m_clients.send(peer_id, 0, &pkt, true);
 	}
 
-	// Remove sound reference
-	if (gain <= 0 || psound.clients.empty())
+	if (gain <= 0)
+		psound.clients.clear();
+
+	if (!psound.grabbed && psound.clients.empty())
+		m_playing_sounds.erase(it);
+
+	// Note:
+	// Point 1) of the note from stopSound also applies here. But it can take
+	// years until the sound is removed by the client (if the user is very patient).
+}
+
+void Server::dropSound(s32 handle)
+{
+	auto it = m_playing_sounds.find(handle);
+	if (it == m_playing_sounds.end())
+		return;
+
+	ServerPlayingSound &psound = it->second;
+	psound.grabbed = false;
+
+	if (psound.clients.empty())
 		m_playing_sounds.erase(it);
 }
 
@@ -2905,14 +2936,13 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for (std::unordered_map<s32, ServerPlayingSound>::iterator
-				 i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
-			ServerPlayingSound &psound = i->second;
+		for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end();) {
+			ServerPlayingSound &psound = it->second;
 			psound.clients.erase(peer_id);
-			if (psound.clients.empty())
-				m_playing_sounds.erase(i++);
+			if (!psound.grabbed && psound.clients.empty())
+				it = m_playing_sounds.erase(it);
 			else
-				++i;
+				++it;
 		}
 
 		// clear formspec info so the next client can't abuse the current state

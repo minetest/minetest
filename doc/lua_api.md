@@ -6399,9 +6399,9 @@ Sounds
       Ephemeral sounds will not return a handle and can't be stopped or faded.
       It is recommend to use this for short sounds that happen in response to
       player actions (e.g. door closing).
-* `minetest.sound_stop(handle)`
+* `handle:stop()` or `minetest.sound_stop(handle)`
     * `handle` is a handle returned by `minetest.sound_play`
-* `minetest.sound_fade(handle, step, gain)`
+* `handle:fade(step, gain)` or `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
       The gain will change by this much per second,

@@ -7,6 +7,7 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 -- not exposed to outer context
 local builtin_shared = {}
 
+dofile(gamepath .. "finish_core_api.lua")
 dofile(gamepath .. "constants.lua")
 assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)

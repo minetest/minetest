@@ -67,15 +67,6 @@ private:
 	// show_formspec(playername,formname,formspec)
 	static int l_show_formspec(lua_State *L);
 
-	// sound_play(spec, parameters)
-	static int l_sound_play(lua_State *L);
-
-	// sound_stop(handle)
-	static int l_sound_stop(lua_State *L);
-
-	// sound_fade(handle, step, gain)
-	static int l_sound_fade(lua_State *L);
-
 	// dynamic_add_media(filepath)
 	static int l_dynamic_add_media(lua_State *L);
 

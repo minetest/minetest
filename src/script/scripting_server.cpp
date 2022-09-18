@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_settings.h"
 #include "lua_api/l_http.h"
 #include "lua_api/l_storage.h"
+#include "lua_api/l_server_sound.h"
 
 extern "C" {
 #include <lualib.h>
@@ -154,6 +155,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 	StorageRef::Register(L);
 	ModChannelRef::Register(L);
+	ServerSoundHandle::Register(L);
 
 	// Initialize mod api modules
 	ModApiAuth::Initialize(L, top);
@@ -169,6 +171,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiChannels::Initialize(L, top);
+	ModApiServerSound::Initialize(L, top);
 }
 
 void ServerScripting::InitializeAsync(lua_State *L, int top)
