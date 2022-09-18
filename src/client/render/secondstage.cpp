@@ -125,6 +125,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 	// post-processing stage
 	// set up bloom
+	if (g_settings->getBool("enable_bloom"))
 	{
 		buffer->setTexture(TEXTURE_BLUR, scale * 0.5, "blur", color_format);
 		buffer->setTexture(TEXTURE_BLOOM, scale * 0.5, "bloom", color_format);

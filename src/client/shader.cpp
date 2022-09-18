@@ -778,6 +778,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
 	}
 
+	if (g_settings->getBool("enable_bloom"))
+		shaders_header << "#define ENABLE_BLOOM 1\n";
+
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();
