@@ -22,18 +22,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <matrix4.h>
 #include "util/basic_macros.h"
+#include "constants.h"
 
 class Camera;
 class Client;
 
 struct shadowFrustum
 {
-	float zNear{0.0f};
-	float zFar{0.0f};
-	float length{0.0f};
+	f32 zNear{0.0f};
+	f32 zFar{0.0f};
+	f32 length{0.0f};
+	f32 radius{0.0f};
 	core::matrix4 ProjOrthMat;
 	core::matrix4 ViewMat;
 	v3f position;
+	v3f player;
 	v3s16 camera_offset;
 };
 
@@ -56,6 +59,8 @@ public:
 		return direction;
 	};
 	v3f getPosition() const;
+	v3f getPlayerPos() const;
+	v3f getFuturePlayerPos() const;
 
 	/// Gets the light's matrices.
 	const core::matrix4 &getViewMatrix() const;
@@ -64,10 +69,16 @@ public:
 	const core::matrix4 &getFutureProjectionMatrix() const;
 	core::matrix4 getViewProjMatrix();
 
-	/// Gets the light's far value.
+	/// Gets the light's maximum far value, i.e. the shadow boundary
 	f32 getMaxFarValue() const
 	{
-		return farPlane;
+		return farPlane * BS;
+	}
+
+	/// Gets the current far value of the light
+	f32 getFarValue() const
+	{
+		return shadow_frustum.zFar;
 	}
 
 

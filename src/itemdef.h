@@ -97,7 +97,7 @@ struct ItemDefinition
 	~ItemDefinition();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 private:
 	void resetInitial();
 };
@@ -177,7 +177,7 @@ public:
 			const std::string &convert_to)=0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
-	virtual void deSerialize(std::istream &is)=0;
+	virtual void deSerialize(std::istream &is, u16 protocol_version)=0;
 
 	// Do stuff asked by threads that can only be done in the main thread
 	virtual void processQueue(IGameDef *gamedef)=0;

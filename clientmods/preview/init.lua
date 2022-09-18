@@ -165,6 +165,9 @@ core.after(5, function()
 
 	print("[PREVIEW] Find node near: " .. dump(core.find_node_near({x=0, y=20, z=0}, 10,
 		{"group:tree", "default:dirt", "default:stone"})))
+
+	print("[PREVIEW] Settings: preview_csm_test_setting = " ..
+		tostring(core.settings:get_bool("preview_csm_test_setting", false)))
 end)
 
 core.register_on_dignode(function(pos, node)

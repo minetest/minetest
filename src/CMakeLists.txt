@@ -98,8 +98,8 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-
-option(ENABLE_GLES "Use OpenGL ES instead of OpenGL" FALSE)
+# TODO: this should be removed one day, we can enable it unconditionally
+option(ENABLE_GLES "Enable extra support code for OpenGL ES" FALSE)
 mark_as_advanced(ENABLE_GLES)
 
 option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
@@ -108,30 +108,7 @@ if(ENABLE_TOUCH)
 endif()
 
 if(BUILD_CLIENT)
-	# transitive dependency from Irrlicht (see longer explanation below)
-	if(NOT WIN32)
-		if(ENABLE_GLES)
-			find_package(OpenGLES2 REQUIRED)
-		else()
-			set(OPENGL_GL_PREFERENCE "LEGACY" CACHE STRING
-				"See CMake Policy CMP0072 for reference. GLVND is broken on some nvidia setups")
-			set(OpenGL_GL_PREFERENCE ${OPENGL_GL_PREFERENCE})
-
-			find_package(OpenGL REQUIRED)
-		endif()
-	endif()
-endif()
-
-
-option(ENABLE_FREETYPE "Enable FreeType2 (TrueType fonts and basic unicode support)" TRUE)
-set(USE_FREETYPE FALSE)
-
-if(BUILD_CLIENT AND ENABLE_FREETYPE)
-	find_package(Freetype)
-	if(FREETYPE_FOUND)
-		message(STATUS "Freetype enabled.")
-		set(USE_FREETYPE TRUE)
-	endif()
+	find_package(Freetype REQUIRED)
 endif()
 
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
@@ -159,6 +136,7 @@ if(ENABLE_POSTGRESQL)
 		if(PostgreSQL_INCLUDE_DIR AND PostgreSQL_LIBRARY)
 			set(PostgreSQL_FOUND TRUE)
 			set(PostgreSQL_INCLUDE_DIRS ${PostgreSQL_INCLUDE_DIR})
+			set(PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARY})
 		endif()
 	else()
 		find_package(PostgreSQL)
@@ -276,7 +254,7 @@ if(WIN32)
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()
-	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib ${PLATFORM_LIBS})
+	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
 	set(EXTRA_DLL "" CACHE FILEPATH "Optional paths to additional DLLs that should be packaged")
 
@@ -353,6 +331,7 @@ add_subdirectory(mapgen)
 add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
+add_subdirectory(benchmark)
 add_subdirectory(util)
 add_subdirectory(irrlicht_changes)
 add_subdirectory(server)
@@ -435,6 +414,9 @@ if(BUILD_UNITTESTS)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(common_SRCS ${common_SRCS} ${BENCHMARK_SRCS})
+endif()
 
 # This gives us the icon and file version information
 if(WIN32)
@@ -475,6 +457,10 @@ if(BUILD_UNITTESTS)
 	set(client_SRCS ${client_SRCS} ${UNITTEST_CLIENT_SRCS})
 endif()
 
+if(BUILD_BENCHMARKS)
+	set(client_SRCS ${client_SRCS} ${BENCHMARK_CLIENT_SRCS})
+endif()
+
 list(SORT client_SRCS)
 
 # Server sources
@@ -493,24 +479,28 @@ endif()
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
+	${PROJECT_SOURCE_DIR}/script
+)
+include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
-	${SOUND_INCLUDE_DIRS}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
 	${LUA_BIT_INCLUDE_DIR}
-	${X11_INCLUDE_DIR}
-	${PROJECT_SOURCE_DIR}/script
 )
 
 if(USE_GETTEXT)
 	include_directories(${GETTEXT_INCLUDE_DIR})
 endif()
 
-if(USE_FREETYPE)
-	include_directories(${FREETYPE_INCLUDE_DIRS})
+if(BUILD_CLIENT)
+	include_directories(SYSTEM
+		${FREETYPE_INCLUDE_DIRS}
+		${SOUND_INCLUDE_DIRS}
+		${X11_INCLUDE_DIR}
+	)
 endif()
 
 if(USE_CURL)
@@ -539,6 +529,7 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 	)
 	if(NOT USE_LUAJIT)
@@ -549,18 +540,6 @@ if(BUILD_CLIENT)
 		)
 	endif()
 
-	if(ENABLE_GLES)
-		target_link_libraries(
-			${PROJECT_NAME}
-			${OPENGLES2_LIBRARIES}
-			${EGL_LIBRARIES}
-		)
-	else()
-		target_link_libraries(
-			${PROJECT_NAME}
-			${OPENGL_LIBRARIES}
-		)
-	endif()
 	if(USE_GETTEXT)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -573,17 +552,11 @@ if(BUILD_CLIENT)
 			${CURL_LIBRARY}
 		)
 	endif()
-	if(USE_FREETYPE)
-		if(FREETYPE_PKGCONFIG_FOUND)
-			set_target_properties(${PROJECT_NAME}
-				PROPERTIES
-				COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
-			)
-		endif()
-		target_link_libraries(
-			${PROJECT_NAME}
-			${FREETYPE_LIBRARY}
-		)
+	if(FREETYPE_PKGCONFIG_FOUND)
+		set_target_properties(${PROJECT_NAME}
+			PROPERTIES
+			COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
+	)
 	endif()
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
@@ -602,6 +575,9 @@ if(BUILD_CLIENT)
 	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
+	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME} catch2)
 	endif()
 endif(BUILD_CLIENT)
 
@@ -661,6 +637,9 @@ if(BUILD_SERVER)
 			${PROJECT_NAME}server
 			${CURL_LIBRARY}
 		)
+	endif()
+	if(BUILD_BENCHMARKS)
+		target_link_libraries(${PROJECT_NAME}server catch2)
 	endif()
 endif(BUILD_SERVER)
 
@@ -729,14 +708,12 @@ if(MSVC)
 	endif()
 else()
 	# GCC or compatible compilers such as Clang
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	set(WARNING_FLAGS "-Wall -Wextra")
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter -Wno-implicit-fallthrough")
 	if(WARN_ALL)
-		set(RELEASE_WARNING_FLAGS "-Wall")
+		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
-	endif()
-	if(CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
-		set(WARNING_FLAGS "${WARNING_FLAGS} -Wsign-compare")
 	endif()
 
 	if(APPLE AND USE_LUAJIT)
@@ -748,7 +725,7 @@ else()
 			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
 			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
-				# --image-base instead. Not sure if it's equivalent change for the purpose 
+				# --image-base instead. Not sure if it's equivalent change for the purpose
 				# but at least if fixes build on FreeBSD/aarch64
 				# XXX: the condition should also be changed to check for lld regardless of
 				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
@@ -779,7 +756,7 @@ else()
 		endif()
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -pipe -funroll-loops")
 	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|BSD|DragonFly)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
@@ -792,9 +769,14 @@ else()
 			set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${MATH_FLAGS}")
 		endif()
 	endif()
-	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g")
+	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 ${WARNING_FLAGS} ${OTHER_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
+	if(UNIX)
+		# enable assertions for libstdc++ or libc++
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wp,-D_GLIBCXX_ASSERTIONS -Wp,-D_LIBCPP_ENABLE_ASSERTIONS=1")
+	endif()
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
 	endif()
@@ -863,12 +845,13 @@ if(WIN32)
 		if(LUA_DLL)
 			install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(BUILD_CLIENT AND IRRLICHT_DLL)
-			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
-		endif()
 		if(BUILD_CLIENT AND USE_GETTEXT AND GETTEXT_DLL)
 			install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 		endif()
+	endif()
+
+	if(BUILD_CLIENT AND IRRLICHT_DLL)
+		install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 
@@ -896,14 +879,8 @@ if(BUILD_CLIENT)
 		endforeach()
 	endif()
 
-	# Install necessary fonts depending on configuration
-	if(USE_FREETYPE)
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
-				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
-	else()
-		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
-				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
-	endif()
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
+			FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)

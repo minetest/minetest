@@ -344,16 +344,14 @@ local function parse_config_file(read_all, parse_mods)
 	if parse_mods then
 		-- Parse games
 		local games_category_initialized = false
-		local index = 1
-		local game = pkgmgr.get_game(index)
-		while game do
+		for _, game in ipairs(pkgmgr.games) do
 			local path = game.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
-					fgettext_ne("Games") -- not used, but needed for xgettext
+					fgettext_ne("Content: Games") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Games",
+						name = "Content: Games",
 						level = 0,
 						type = "category",
 					})
@@ -370,27 +368,55 @@ local function parse_config_file(read_all, parse_mods)
 
 				file:close()
 			end
-
-			index = index + 1
-			game = pkgmgr.get_game(index)
 		end
 
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), mods)
+		pkgmgr.get_mods(core.get_modpath(), "mods", mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
-					fgettext_ne("Mods") -- not used, but needed for xgettext
+					fgettext_ne("Content: Mods") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Mods",
+						name = "Content: Mods",
 						level = 0,
 						type = "category",
 					})
 					mods_category_initialized = true
+				end
+
+				table.insert(settings, {
+					name = mod.name,
+					readable_name = mod.title,
+					level = 1,
+					type = "category",
+				})
+
+				parse_single_file(file, path, read_all, settings, 2, false)
+
+				file:close()
+			end
+		end
+
+		-- Parse client mods
+		local clientmods_category_initialized = false
+		local clientmods = {}
+		pkgmgr.get_mods(core.get_clientmodpath(), "clientmods", clientmods)
+		for _, mod in ipairs(clientmods) do
+			local path = mod.path .. DIR_DELIM .. FILENAME
+			local file = io.open(path, "r")
+			if file then
+				if not clientmods_category_initialized then
+					fgettext_ne("Client Mods") -- not used, but needed for xgettext
+					table.insert(settings, {
+						name = "Client Mods",
+						level = 0,
+						type = "category",
+					})
+					clientmods_category_initialized = true
 				end
 
 				table.insert(settings, {
@@ -497,44 +523,40 @@ end
 
 local function get_current_np_group(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t = {}
 	if value == nil then
-		t = setting.values
-	else
-		table.insert(t, value.offset)
-		table.insert(t, value.scale)
-		table.insert(t, value.spread.x)
-		table.insert(t, value.spread.y)
-		table.insert(t, value.spread.z)
-		table.insert(t, value.seed)
-		table.insert(t, value.octaves)
-		table.insert(t, value.persistence)
-		table.insert(t, value.lacunarity)
-		table.insert(t, value.flags)
+		return setting.values
 	end
-	return t
+	local p = "%g"
+	return {
+		p:format(value.offset),
+		p:format(value.scale),
+		p:format(value.spread.x),
+		p:format(value.spread.y),
+		p:format(value.spread.z),
+		p:format(value.seed),
+		p:format(value.octaves),
+		p:format(value.persistence),
+		p:format(value.lacunarity),
+		value.flags
+	}
 end
 
 local function get_current_np_group_as_string(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t
 	if value == nil then
-		t = setting.default
-	else
-		t = value.offset .. ", " ..
-			value.scale .. ", (" ..
-			value.spread.x .. ", " ..
-			value.spread.y .. ", " ..
-			value.spread.z .. "), " ..
-			value.seed .. ", " ..
-			value.octaves .. ", " ..
-			value.persistence .. ", " ..
-			value.lacunarity
-		if value.flags ~= "" then
-			t = t .. ", " .. value.flags
-		end
+		return setting.default
 	end
-	return t
+	return ("%g, %g, (%g, %g, %g), %g, %g, %g, %g"):format(
+		value.offset,
+		value.scale,
+		value.spread.x,
+		value.spread.y,
+		value.spread.z,
+		value.seed,
+		value.octaves,
+		value.persistence,
+		value.lacunarity
+	) .. (value.flags ~= "" and (", " .. value.flags) or "")
 end
 
 local checkboxes = {} -- handle checkboxes events
@@ -667,7 +689,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
 		local v3f = {}
-		for line in val:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+		for line in val:gmatch("[+-]?[%d.+-eE]+") do -- All numeric characters
 			table.insert(v3f, line)
 		end
 
@@ -960,7 +982,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 	local current_level = 0
 	for _, entry in ipairs(settings) do
 		local name
-		if not core.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
+		if not core.settings:get_bool("show_technical_names") and entry.readable_name then
 			name = fgettext_ne(entry.readable_name)
 		else
 			name = entry.name
@@ -1001,7 +1023,7 @@ local function create_settings_formspec(tabview, _, tabdata)
 			"button[10,4.9;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.9;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,4.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
+					.. dump(core.settings:get_bool("show_technical_names")) .. "]"
 
 	return formspec
 end
@@ -1084,7 +1106,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["cb_tech_settings"] then
-		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
+		core.settings:set("show_technical_names", fields["cb_tech_settings"])
 		core.settings:write()
 		core.update_formspec(this:get_formspec())
 		return true

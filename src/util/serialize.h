@@ -439,6 +439,16 @@ MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 //// More serialization stuff
 ////
 
+inline float clampToF1000(float v)
+{
+	return core::clamp(v, F1000_MIN, F1000_MAX);
+}
+
+inline v3f clampToF1000(v3f v)
+{
+	return {clampToF1000(v.X), clampToF1000(v.Y), clampToF1000(v.Z)};
+}
+
 // Creates a string with the length as the first two bytes
 std::string serializeString16(const std::string &plain);
 

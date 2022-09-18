@@ -234,7 +234,6 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
-	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;
 	std::map<v3s16, MapBlock *>::iterator it;
 

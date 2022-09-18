@@ -129,9 +129,34 @@ Example content (added indentation and - explanations):
   backend = sqlite3             - which DB backend to use for blocks (sqlite3, dummy, leveldb, redis, postgresql)
   player_backend = sqlite3      - which DB backend to use for player data
   readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
+  auth_backend = files          - which DB backend to use for authentication data
   server_announce = false       - whether the server is publicly announced or not
   load_mod_<mod> = false        - whether <mod> is to be loaded in this world
-  auth_backend = files          - which DB backend to use for authentication data
+
+For load_mod_<mod>, the possible values are:
+
+* `false` - Do not load the mod.
+* `true` - Load the mod from wherever it is found (may cause conflicts if the same mod appears also in some other place).
+* `mods/modpack/moddir` - Relative path to the mod
+    * Must be one of the following:
+        * `mods/`: mods in the user path's mods folder (ex `/home/user/.minetest/mods`)
+        * `share/`: mods in the share's mods folder (ex: `/usr/share/minetest/mods`)
+        * `/path/to/env`: you can use absolute paths to mods inside folders specified with the `MINETEST_MOD_PATH` env variable.
+    * Other locations and absolute paths are not supported
+    * Note that `moddir` is the directory name, not the mod name specified in mod.conf.
+
+PostgreSQL backend specific settings:
+  pgsql_connection = host=127.0.0.1 port=5432 user=mt_user password=mt_password dbname=minetest
+  pgsql_player_connection = (same parameters as above)
+  pgsql_readonly_connection = (same parameters as above)
+  pgsql_auth_connection = (same parameters as above)
+
+Redis backend specific settings:
+  redis_address = 127.0.0.1  - Redis server address
+  redis_hash = foo           - Database hash
+  redis_port = 6379          - (optional) connection port
+  redis_password = hunter2   - (optional) server password
+
 
 Player File Format
 ===================
@@ -333,6 +358,9 @@ if map format version >= 29:
   - 0xffffffff = invalid/unknown timestamp, nothing should be done with the time
                  difference when loaded
 
+  u8 name_id_mapping_version
+  - Should be zero for map format version 29.
+  
   u16 num_name_id_mappings
   foreach num_name_id_mappings
     u16 id
@@ -434,7 +462,7 @@ if map format version < 29:
     u8[name_len] name
 
 - Node timers
-if map format version == 25:
+if map format version >= 25:
   u8 length of the data of a single timer (always 2+4+4=10)
   u16 num_of_timers
   foreach num_of_timers:

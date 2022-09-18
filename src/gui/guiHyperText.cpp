@@ -17,31 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "IGUIEnvironment.h"
-#include "IGUIElement.h"
+#include "guiHyperText.h"
 #include "guiScrollBar.h"
-#include "IGUIFont.h"
-#include <vector>
-#include <list>
-#include <unordered_map>
-using namespace irr::gui;
 #include "client/fontengine.h"
-#include <SColor.h>
 #include "client/tile.h"
 #include "IVideoDriver.h"
 #include "client/client.h"
 #include "client/renderingengine.h"
 #include "hud.h"
-#include "guiHyperText.h"
 #include "util/string.h"
+#include "irrlicht_changes/CGUITTFont.h"
 
-bool check_color(const std::string &str)
+using namespace irr::gui;
+
+static bool check_color(const std::string &str)
 {
 	irr::video::SColor color;
 	return parseColorString(str, color, false);
 }
 
-bool check_integer(const std::string &str)
+static bool check_integer(const std::string &str)
 {
 	if (str.empty())
 		return false;
@@ -616,12 +611,10 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 				if (e.font) {
 					e.dim.Width = e.font->getDimension(e.text.c_str()).Width;
 					e.dim.Height = e.font->getDimension(L"Yy").Height;
-#if USE_FREETYPE
 					if (e.font->getType() == irr::gui::EGFT_CUSTOM) {
-						e.baseline = e.dim.Height - 1 -
-							((irr::gui::CGUITTFont *)e.font)->getAscender() / 64;
+						CGUITTFont *tmp = static_cast<CGUITTFont*>(e.font);
+						e.baseline = e.dim.Height - 1 - tmp->getAscender() / 64;
 					}
-#endif
 				} else {
 					e.dim = {0, 0};
 				}

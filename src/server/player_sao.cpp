@@ -305,21 +305,27 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 {
+	if (!m_player) {
+		// Will output a format warning client-side
+		return "";
+	}
+
+	const auto &phys = m_player->physics_override;
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_PHYSICS_OVERRIDE);
 	// parameters
-	writeF32(os, m_physics_override_speed);
-	writeF32(os, m_physics_override_jump);
-	writeF32(os, m_physics_override_gravity);
-	// these are sent inverted so we get true when the server sends nothing
-	writeU8(os, !m_physics_override_sneak);
-	writeU8(os, !m_physics_override_sneak_glitch);
-	writeU8(os, !m_physics_override_new_move);
+	writeF32(os, phys.speed);
+	writeF32(os, phys.jump);
+	writeF32(os, phys.gravity);
+	// MT 0.4.10 legacy: send inverted for detault `true` if the server sends nothing
+	writeU8(os, !phys.sneak);
+	writeU8(os, !phys.sneak_glitch);
+	writeU8(os, !phys.new_move);
 	return os.str();
 }
 
-void PlayerSAO::setBasePosition(const v3f &position)
+void PlayerSAO::setBasePosition(v3f position)
 {
 	if (m_player && position != m_base_position)
 		m_player->setDirty(true);
@@ -344,7 +350,7 @@ void PlayerSAO::setPos(const v3f &pos)
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
-	m_last_good_position = pos;
+	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
@@ -357,7 +363,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
-	m_last_good_position = pos;
+	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
@@ -463,36 +469,33 @@ void PlayerSAO::rightClick(ServerActiveObject *clicker)
 	m_env->getScriptIface()->on_rightclickplayer(this, clicker);
 }
 
-void PlayerSAO::setHP(s32 hp, const PlayerHPChangeReason &reason, bool send)
+void PlayerSAO::setHP(s32 target_hp, const PlayerHPChangeReason &reason, bool from_client)
 {
-	if (hp == (s32)m_hp)
+	target_hp = rangelim(target_hp, 0, U16_MAX);
+
+	if (target_hp == m_hp)
 		return; // Nothing to do
 
-	if (m_hp <= 0 && hp < (s32)m_hp)
-		return; // Cannot take more damage
+	s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, target_hp - (s32)m_hp, reason);
 
-	{
-		s32 hp_change = m_env->getScriptIface()->on_player_hpchange(this, hp - m_hp, reason);
-		if (hp_change == 0)
-			return;
+	s32 hp = (s32)m_hp + std::min(hp_change, U16_MAX); // Protection against s32 overflow
+	hp = rangelim(hp, 0, U16_MAX);
 
-		hp = m_hp + hp_change;
-	}
+	if (hp > m_prop.hp_max)
+		hp = m_prop.hp_max;
 
-	s32 oldhp = m_hp;
-	hp = rangelim(hp, 0, m_prop.hp_max);
-
-	if (hp < oldhp && isImmortal())
-		return; // Do not allow immortal players to be damaged
-
-	m_hp = hp;
+	if (hp < m_hp && isImmortal())
+		hp = m_hp; // Do not allow immortal players to be damaged
 
 	// Update properties on death
-	if ((hp == 0) != (oldhp == 0))
+	if ((hp == 0) != (m_hp == 0))
 		m_properties_sent = false;
 
-	if (send)
-		m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
+	if (hp != m_hp) {
+		m_hp = hp;
+		m_env->getGameDef()->HandlePlayerHPChange(this, reason);
+	} else if (from_client)
+		m_env->getGameDef()->SendPlayerHP(this, true);
 }
 
 void PlayerSAO::setBreath(const u16 breath, bool send)
@@ -607,10 +610,10 @@ bool PlayerSAO::checkMovementCheat()
 		player_max_walk = m_player->movement_speed_fast; // Fast speed
 	else
 		player_max_walk = m_player->movement_speed_walk; // Normal speed
-	player_max_walk *= m_physics_override_speed;
+	player_max_walk *= m_player->physics_override.speed;
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
 
-	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
+	player_max_jump = m_player->movement_speed_jump * m_player->physics_override.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;

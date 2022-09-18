@@ -35,7 +35,7 @@ void ToolGroupCap::toJson(Json::Value &object) const
 	Json::Value times_object;
 	for (auto time : times)
 		times_object[time.first] = time.second;
-	object["times"] = times_object;
+	object["times"] = std::move(times_object);
 }
 
 void ToolGroupCap::fromJson(const Json::Value &json)
@@ -134,14 +134,13 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	for (const auto &groupcap : groupcaps) {
 		groupcap.second.toJson(groupcaps_object[groupcap.first]);
 	}
-	root["groupcaps"] = groupcaps_object;
+	root["groupcaps"] = std::move(groupcaps_object);
 
 	Json::Value damage_groups_object;
-	DamageGroup::const_iterator dgiter;
-	for (dgiter = damageGroups.begin(); dgiter != damageGroups.end(); ++dgiter) {
-		damage_groups_object[dgiter->first] = dgiter->second;
+	for (const auto &damagegroup : damageGroups) {
+		damage_groups_object[damagegroup.first] = damagegroup.second;
 	}
-	root["damage_groups"] = damage_groups_object;
+	root["damage_groups"] = std::move(damage_groups_object);
 
 	fastWriteJson(root, os);
 }
@@ -183,7 +182,7 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 	}
 }
 
-static u32 calculateResultWear(const u32 uses, const u16 initial_wear)
+u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 {
 	if (uses == 0) {
 		// Trivial case: Infinite uses
@@ -306,7 +305,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch,
 		u16 initial_wear)
 {
-	s16 damage = 0;
+	s32 damage = 0;
 	float result_wear = 0.0f;
 	float punch_interval_multiplier =
 			rangelim(time_from_last_punch / tp->full_punch_interval, 0.0f, 1.0f);
@@ -320,6 +319,8 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		result_wear = calculateResultWear(tp->punch_attack_uses, initial_wear);
 		result_wear *= punch_interval_multiplier;
 	}
+	// Keep damage in sane bounds for simplicity
+	damage = rangelim(damage, -U16_MAX, U16_MAX);
 
 	u32 wear_i = (u32) result_wear;
 	return {damage, wear_i};

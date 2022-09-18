@@ -30,57 +30,57 @@ on:
       - '.dockerignore'
 
 jobs:
-  # This is our minor gcc compiler
-  gcc_6:
+  # Older gcc version (should be close to our minimum supported version)
+  gcc_5:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-6
+          install_linux_deps g++-5
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-6
-          CXX: g++-6
+          CC: gcc-5
+          CXX: g++-5
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-  # This is the current gcc compiler (available in bionic)
-  gcc_8:
-    runs-on: ubuntu-18.04
+  # Current gcc version
+  gcc_12:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-8
+          install_linux_deps g++-12 libluajit-5.1-dev
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-8
-          CXX: g++-8
+          CC: gcc-12
+          CXX: g++-12
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-  # This is our minor clang compiler
+  # Older clang version (should be close to our minimum supported version)
   clang_3_9:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-3.9 gdb
+          install_linux_deps clang-3.9 valgrind
 
       - name: Build
         run: |
@@ -93,46 +93,45 @@ jobs:
         run: |
           ./bin/minetest --run-unittests
 
-      - name: Integration test + devtest
+      - name: Valgrind
         run: |
-          ./util/test_multiplayer.sh
+          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
-  # This is the current clang version
-  clang_9:
-    runs-on: ubuntu-18.04
+  # Current clang version
+  clang_14:
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-9 valgrind libluajit-5.1-dev
+          install_linux_deps clang-14 gdb
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: clang-9
-          CXX: clang++-9
-          CMAKE_FLAGS: "-DREQUIRE_LUAJIT=1"
+          CC: clang-14
+          CXX: clang++-14
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-      - name: Valgrind
+      - name: Integration test + devtest
         run: |
-          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+          ./util/test_multiplayer.sh
 
   # Build with prometheus-cpp (server-only)
   clang_9_prometheus:
     name: "clang_9 (PROMETHEUS=1)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps --old-irr clang-9
+          install_linux_deps clang-9
 
       - name: Build prometheus-cpp
         run: |
@@ -150,34 +149,11 @@ jobs:
         run: |
           ./bin/minetestserver --run-unittests
 
-  # Build without freetype (client-only)
-  clang_9_no_freetype:
-    name: "clang_9 (FREETYPE=0)"
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install deps
-        run: |
-          source ./util/ci/common.sh
-          install_linux_deps clang-9
-
-      - name: Build
-        run: |
-          ./util/ci/build.sh
-        env:
-          CC: clang-9
-          CXX: clang++-9
-          CMAKE_FLAGS: "-DENABLE_FREETYPE=0 -DBUILD_SERVER=0"
-
-      - name: Test
-        run: |
-          ./bin/minetest --run-unittests
-
   docker:
     name: "Docker image"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build docker image
         run: |
           docker build . -t minetest:latest
@@ -185,13 +161,13 @@ jobs:
 
   win32:
     name: "MinGW cross-compiler (32-bit)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install compiler
         run: |
-          sudo apt-get update -q && sudo apt-get install gettext -qyy
-          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo apt-get update && sudo apt-get install -y gettext
+          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
       - name: Build
@@ -203,13 +179,13 @@ jobs:
 
   win64:
     name: "MinGW cross-compiler (64-bit)"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install compiler
         run: |
-          sudo apt-get update -q && sudo apt-get install gettext -qyy
-          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_9.2.0_ubuntu18.04.tar.xz -O mingw.tar.xz
+          sudo apt-get update && sudo apt-get install -y gettext
+          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
           sudo tar -xaf mingw.tar.xz -C /usr
 
       - name: Build
@@ -222,13 +198,10 @@ jobs:
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
-    #### Disabled due to Irrlicht switch
-    if: false
-    #### Disabled due to Irrlicht switch
     env:
-      VCPKG_VERSION: 0bf3923f9fab4001c00f0f429682a0853b5749e0
-#                    2020.11
-      vcpkg_packages: irrlicht zlib zstd curl[winssl] openal-soft libvorbis libogg sqlite3 freetype luajit
+      VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
+      # 2022.02
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
@@ -249,11 +222,15 @@ jobs:
 # Enable it, when working on the installer.
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Checkout IrrlichtMt
+        run: |
+          $ref = @(Get-Content misc\irrlichtmt_tag.txt)
+          git clone https://github.com/minetest/irrlicht lib\irrlichtmt --depth 1 -b $ref[0]
 
       - name: Restore from cache and run vcpkg
-        uses: lukka/run-vcpkg@v5
+        uses: lukka/run-vcpkg@v7
         with:
           vcpkgArguments: ${{env.vcpkg_packages}}
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
@@ -261,7 +238,7 @@ jobs:
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
           vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
 
-      - name: CMake
+      - name: Minetest CMake
         run: |
           cmake ${{matrix.config.generator}}  `
           -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
@@ -269,7 +246,7 @@ jobs:
           -DENABLE_POSTGRESQL=OFF  `
           -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
 
-      - name: Build
+      - name: Build Minetest
         run: cmake --build . --config Release
 
       - name: CPack
@@ -288,7 +265,7 @@ jobs:
       - name: Package Clean
         run: rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: msvc-${{ matrix.config.arch }}-${{ matrix.type }}
           path: .\Package\

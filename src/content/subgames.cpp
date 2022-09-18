@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <common/c_internal.h>
 #include "content/subgames.h"
 #include "porting.h"
 #include "filesys.h"
@@ -24,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
-#include "mapgen/mapgen.h"   // for MapgenParams
+#include "map_settings_manager.h"
 #include "util/string.h"
 
 #ifndef SERVER
@@ -44,6 +45,25 @@ bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 }
 
 }
+
+
+void SubgameSpec::checkAndLog() const
+{
+	// Log deprecation messages
+	auto handling_mode = get_deprecated_handling_mode();
+	if (!deprecation_msgs.empty() && handling_mode != DeprecatedHandlingMode::Ignore) {
+		std::ostringstream os;
+		os << "Game " << title << " at " << path << ":" << std::endl;
+		for (auto msg : deprecation_msgs)
+			os << "\t" << msg << std::endl;
+
+		if (handling_mode == DeprecatedHandlingMode::Error)
+			throw ModError(os.str());
+		else
+			warningstream << os.str();
+	}
+}
+
 
 struct GameFindPath
 {
@@ -107,14 +127,13 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string gamemod_path = game_path + DIR_DELIM + "mods";
 
 	// Find mod directories
-	std::set<std::string> mods_paths;
-	if (!user_game)
-		mods_paths.insert(share + DIR_DELIM + "mods");
-	if (user != share || user_game)
-		mods_paths.insert(user + DIR_DELIM + "mods");
+	std::unordered_map<std::string, std::string> mods_paths;
+	mods_paths["mods"] = user + DIR_DELIM + "mods";
+	if (!user_game && user != share)
+		mods_paths["share"] = share + DIR_DELIM + "mods";
 
 	for (const std::string &mod_path : getEnvModPaths()) {
-		mods_paths.insert(mod_path);
+		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
 	}
 
 	// Get meta
@@ -122,11 +141,13 @@ SubgameSpec findSubgame(const std::string &id)
 	Settings conf;
 	conf.readConfigFile(conf_path.c_str());
 
-	std::string game_name;
-	if (conf.exists("name"))
-		game_name = conf.get("name");
+	std::string game_title;
+	if (conf.exists("title"))
+		game_title = conf.get("title");
+	else if (conf.exists("name"))
+		game_title = conf.get("name");
 	else
-		game_name = id;
+		game_title = id;
 
 	std::string game_author;
 	if (conf.exists("author"))
@@ -141,8 +162,14 @@ SubgameSpec findSubgame(const std::string &id)
 	menuicon_path = getImagePath(
 			game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
+
+	SubgameSpec spec(id, game_path, gamemod_path, mods_paths, game_title,
 			menuicon_path, game_author, game_release);
+
+	if (conf.exists("name") && !conf.exists("title"))
+		spec.deprecation_msgs.push_back("\"name\" setting in game.conf is deprecated, please use \"title\" instead");
+
+	return spec;
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -160,10 +187,12 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 		std::string conf_path = world_gamepath + DIR_DELIM + "game.conf";
 		conf.readConfigFile(conf_path.c_str());
 
-		if (conf.exists("name"))
-			gamespec.name = conf.get("name");
+		if (conf.exists("title"))
+			gamespec.title = conf.get("title");
+		else if (conf.exists("name"))
+			gamespec.title = conf.get("name");
 		else
-			gamespec.name = world_gameid;
+			gamespec.title = world_gameid;
 
 		return gamespec;
 	}
@@ -358,6 +387,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		conf.set("backend", "sqlite3");
 		conf.set("player_backend", "sqlite3");
 		conf.set("auth_backend", "sqlite3");
+		conf.set("mod_storage_backend", "sqlite3");
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
 
@@ -369,19 +399,12 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// Create map_meta.txt if does not already exist
 	std::string map_meta_path = final_path + DIR_DELIM + "map_meta.txt";
 	if (!fs::PathExists(map_meta_path)) {
-		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")"
-			      << std::endl;
-		std::ostringstream oss(std::ios_base::binary);
+		MapSettingsManager mgr(map_meta_path);
 
-		Settings conf;
-		MapgenParams params;
+		mgr.setMapSetting("seed", g_settings->get("fixed_map_seed"));
 
-		params.readParams(g_settings);
-		params.writeParams(&conf);
-		conf.writeLines(oss);
-		oss << "[end_of_params]\n";
-
-		fs::safeWriteToFile(map_meta_path, oss.str());
+		mgr.makeMapgenParams();
+		mgr.saveMapMeta();
 	}
 
 	// The Settings object is no longer needed for created worlds

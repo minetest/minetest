@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "threading/mutex_auto_lock.h"
+#include "util/numeric.h" // rangelim
 #include "util/strfnd.h"
 #include <iostream>
 #include <fstream>
@@ -534,6 +535,13 @@ float Settings::getFloat(const std::string &name) const
 }
 
 
+float Settings::getFloat(const std::string &name, float min, float max) const
+{
+	float val = stof(get(name));
+	return rangelim(val, min, max);
+}
+
+
 u64 Settings::getU64(const std::string &name) const
 {
 	std::string s = get(name);
@@ -659,13 +667,19 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 
 bool Settings::exists(const std::string &name) const
 {
-	MutexAutoLock lock(m_mutex);
-
-	if (m_settings.find(name) != m_settings.end())
+	if (existsLocal(name))
 		return true;
 	if (auto parent = getParent())
 		return parent->exists(name);
 	return false;
+}
+
+
+bool Settings::existsLocal(const std::string &name) const
+{
+	MutexAutoLock lock(m_mutex);
+
+	return m_settings.find(name) != m_settings.end();
 }
 
 

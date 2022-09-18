@@ -27,6 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_server.h"
 #include "cpp_api/s_security.h"
+#include "cpp_api/s_async.h"
+
+struct PackedValue;
 
 /*****************************************************************************/
 /* Scripting <-> Server Game Interface                                       */
@@ -48,6 +51,20 @@ public:
 
 	// use ScriptApiBase::loadMod() to load mods
 
+	// Initialize async engine, call this AFTER loading all mods
+	void initAsync();
+
+	// Global step handler to collect async results
+	void stepAsync();
+
+	// Pass job to async threads
+	u32 queueAsync(std::string &&serialized_func,
+		PackedValue *param, const std::string &mod_origin);
+
 private:
 	void InitializeModApi(lua_State *L, int top);
+
+	static void InitializeAsync(lua_State *L, int top);
+
+	AsyncEngine asyncEngine;
 };

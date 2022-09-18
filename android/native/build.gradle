@@ -14,7 +14,8 @@ android {
 						"versionMajor=${versionMajor}",
 						"versionMinor=${versionMinor}",
 						"versionPatch=${versionPatch}",
-						"versionExtra=${versionExtra}"
+						"versionExtra=${versionExtra}",
+						"developmentBuild=${developmentBuild}"
 			}
 		}
 	}
@@ -30,7 +31,7 @@ android {
 		abi {
 			enable true
 			reset()
-			include 'armeabi-v7a', 'arm64-v8a'//, 'x86'
+			include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
 		}
 	}
 

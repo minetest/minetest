@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "content_cao.h"
+#include "porting.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -199,7 +200,7 @@ void ClientEnvironment::step(float dtime)
 			v3f speed = lplayer->getSpeed();
 			if (!is_climbing && !lplayer->in_liquid)
 				speed.Y -= lplayer->movement_gravity *
-					lplayer->physics_override_gravity * dtime_part * 2.0f;
+					lplayer->physics_override.gravity * dtime_part * 2.0f;
 
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&
@@ -305,6 +306,7 @@ void ClientEnvironment::step(float dtime)
 		node_at_lplayer = m_map->getNode(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
+		lplayer->light_color = encode_light(light, 0); // this transfers light.alpha
 		final_color_blend(&lplayer->light_color, light, day_night_ratio);
 	}
 
@@ -511,4 +513,9 @@ void ClientEnvironment::getSelectedActiveObjects(
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}
+}
+
+void ClientEnvironment::updateFrameTime()
+{
+	m_frame_time = porting::getTimeMs();
 }

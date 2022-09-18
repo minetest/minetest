@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "version.h"
+#include "database/database-files.h"
 #include "database/database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
@@ -57,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "content/mod_configuration.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -99,7 +101,8 @@ Client::Client(
 		MtEventManager *event,
 		RenderingEngine *rendering_engine,
 		bool ipv6,
-		GameUI *game_ui
+		GameUI *game_ui,
+		ELoginRegister allow_login_or_register
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -116,6 +119,7 @@ Client::Client(
 	m_particle_manager(&m_env),
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
+	m_allow_login_or_register(allow_login_or_register),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
 	m_password(password),
@@ -128,11 +132,43 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
+	// Make the mod storage database and begin the save for later
+	m_mod_storage_database =
+		new ModMetadataDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
+	m_mod_storage_database->beginSave();
+
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap = new Minimap(this);
 	}
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+}
+
+void Client::migrateModStorage()
+{
+	std::string mod_storage_dir = porting::path_user + DIR_DELIM + "client";
+	std::string old_mod_storage = mod_storage_dir + DIR_DELIM + "mod_storage";
+	if (fs::IsDir(old_mod_storage)) {
+		infostream << "Migrating client mod storage to SQLite3 database" << std::endl;
+		{
+			ModMetadataDatabaseFiles files_db(mod_storage_dir);
+			std::vector<std::string> mod_list;
+			files_db.listMods(&mod_list);
+			for (const std::string &modname : mod_list) {
+				infostream << "Migrating client mod storage for mod " << modname << std::endl;
+				StringMap meta;
+				files_db.getModEntries(modname, &meta);
+				for (const auto &pair : meta) {
+					m_mod_storage_database->setModEntry(modname, pair.first, pair.second);
+				}
+			}
+		}
+		if (!fs::Rename(old_mod_storage, old_mod_storage + ".bak")) {
+			// Execution cannot move forward if the migration does not complete.
+			throw BaseException("Could not finish migrating client mod storage");
+		}
+		infostream << "Finished migration of client mod storage" << std::endl;
+	}
 }
 
 void Client::loadMods()
@@ -161,11 +197,26 @@ void Client::loadMods()
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
 
-	ClientModConfiguration modconf(getClientModsLuaPath());
+	ModConfiguration modconf;
+	{
+		std::unordered_map<std::string, std::string> paths;
+		std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
+		const auto modsPath = getClientModsLuaPath();
+		if (modsPath != path_user) {
+			paths["share"] = modsPath;
+		}
+		paths["mods"] = path_user;
+
+		std::string settings_path = path_user + DIR_DELIM + "mods.conf";
+		modconf.addModsFromConfig(settings_path, paths);
+		modconf.checkConflictsAndDeps();
+	}
+
 	m_mods = modconf.getMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+		errorstream << modconf.getUnsatisfiedModsError() << std::endl;
 		return;
 	}
 
@@ -301,10 +352,17 @@ Client::~Client()
 	// cleanup 3d model meshes on client shutdown
 	m_rendering_engine->cleanupMeshCache();
 
+	guiScalingCacheClear();
+
 	delete m_minimap;
 	m_minimap = nullptr;
 
 	delete m_media_downloader;
+
+	// Write the changes and delete
+	if (m_mod_storage_database)
+		m_mod_storage_database->endSave();
+	delete m_mod_storage_database;
 }
 
 void Client::connect(Address address, bool is_local_server)
@@ -356,10 +414,6 @@ void Client::step(float dtime)
 		initial_step = false;
 	}
 	else if(m_state == LC_Created) {
-		if (m_is_registration_confirmation_state) {
-			// Waiting confirmation
-			return;
-		}
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
@@ -386,7 +440,7 @@ void Client::step(float dtime)
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("client_unload_unused_data_timeout"),
+			std::max(g_settings->getFloat("client_unload_unused_data_timeout"), 0.0f),
 			g_settings->getS32("client_mapblock_limit"),
 			&deleted_blocks);
 
@@ -455,6 +509,7 @@ void Client::step(float dtime)
 			ClientEvent *event = new ClientEvent();
 			event->type = CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
+			event->player_damage.effect = true;
 			m_client_event_queue.push(event);
 		}
 	}
@@ -490,6 +545,7 @@ void Client::step(float dtime)
 	{
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
+		bool force_update_shadows = false;
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
@@ -516,9 +572,12 @@ void Client::step(float dtime)
 
 					if (is_empty)
 						delete r.mesh;
-					else
+					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
+						if (r.urgent)
+							force_update_shadows = true;
+					}
 				}
 			} else {
 				delete r.mesh;
@@ -543,6 +602,10 @@ void Client::step(float dtime)
 
 		if (num_processed_meshes > 0)
 			g_profiler->graphAdd("num_processed_meshes", num_processed_meshes);
+
+		auto shadow_renderer = RenderingEngine::get_shadow_renderer();
+		if (shadow_renderer && force_update_shadows)
+			shadow_renderer->setForceUpdateShadowMap();
 	}
 
 	/*
@@ -641,19 +704,12 @@ void Client::step(float dtime)
 		}
 	}
 
+	// Write changes to the mod storage
 	m_mod_storage_save_timer -= dtime;
 	if (m_mod_storage_save_timer <= 0.0f) {
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-		int n = 0;
-		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
-				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
-			if (it->second->isModified()) {
-				it->second->save(getModStoragePath());
-				n++;
-			}
-		}
-		if (n > 0)
-			infostream << "Saved " << n << " modified mod storages." << std::endl;
+		m_mod_storage_database->endSave();
+		m_mod_storage_database->beginSave();
 	}
 
 	// Write server map
@@ -753,16 +809,18 @@ void Client::peerAdded(con::Peer *peer)
 	infostream << "Client::peerAdded(): peer->id="
 			<< peer->id << std::endl;
 }
+
 void Client::deletingPeer(con::Peer *peer, bool timeout)
 {
 	infostream << "Client::deletingPeer(): "
 			"Server Peer is getting deleted "
 			<< "(timeout=" << timeout << ")" << std::endl;
 
-	if (timeout) {
-		m_access_denied = true;
+	m_access_denied = true;
+	if (timeout)
 		m_access_denied_reason = gettext("Connection timed out.");
-	}
+	else if (m_access_denied_reason.empty())
+		m_access_denied_reason = gettext("Connection aborted (protocol error?).");
 }
 
 /*
@@ -928,7 +986,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	v3f sf           = myplayer->getSpeed() * 100;
 	s32 pitch        = myplayer->getPitch() * 100;
 	s32 yaw          = myplayer->getYaw() * 100;
-	u32 keyPressed   = myplayer->keyPressed;
+	u32 keyPressed   = myplayer->control.getKeysPressed();
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = clientMap->getCameraFov() * 80;
 	u8 wanted_range  = MYMIN(255,
@@ -1034,18 +1092,6 @@ void Client::sendInit(const std::string &playerName)
 	pkt << playerName;
 
 	Send(&pkt);
-}
-
-void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
-{
-	m_chosen_auth_mech = chosen_auth_mechanism;
-	m_is_registration_confirmation_state = true;
-}
-
-void Client::confirmRegistration()
-{
-	m_is_registration_confirmation_state = false;
-	startAuth(m_chosen_auth_mech);
 }
 
 void Client::startAuth(AuthMechanism chosen_auth_mechanism)
@@ -1225,7 +1271,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		pkt << message;
 
 		Send(&pkt);
-	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size == -1) {
+	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size < 0) {
 		m_out_chat_queue.push(message);
 	} else {
 		infostream << "Could not queue chat message because maximum out chat queue size ("
@@ -1284,22 +1330,24 @@ void Client::sendPlayerPos()
 	if (!player)
 		return;
 
-	ClientMap &map = m_env.getClientMap();
-	u8 camera_fov   = map.getCameraFov();
-	u8 wanted_range = map.getControl().wanted_range;
-
 	// Save bandwidth by only updating position when
 	// player is not dead and something changed
 
 	if (m_activeobjects_received && player->isDead())
 		return;
 
+	ClientMap &map = m_env.getClientMap();
+	u8 camera_fov   = map.getCameraFov();
+	u8 wanted_range = map.getControl().wanted_range;
+
+	u32 keyPressed = player->control.getKeysPressed();
+
 	if (
 			player->last_position     == player->getPosition() &&
 			player->last_speed        == player->getSpeed()    &&
 			player->last_pitch        == player->getPitch()    &&
 			player->last_yaw          == player->getYaw()      &&
-			player->last_keyPressed   == player->keyPressed    &&
+			player->last_keyPressed   == keyPressed            &&
 			player->last_camera_fov   == camera_fov            &&
 			player->last_wanted_range == wanted_range)
 		return;
@@ -1308,7 +1356,7 @@ void Client::sendPlayerPos()
 	player->last_speed        = player->getSpeed();
 	player->last_pitch        = player->getPitch();
 	player->last_yaw          = player->getYaw();
-	player->last_keyPressed   = player->keyPressed;
+	player->last_keyPressed   = keyPressed;
 	player->last_camera_fov   = camera_fov;
 	player->last_wanted_range = wanted_range;
 
@@ -1777,11 +1825,10 @@ void Client::makeScreenshot()
 	if (!raw_image)
 		return;
 
-	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
+	const struct tm tm = mt_localtime();
 
 	char timetstamp_c[64];
-	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+	strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", &tm);
 
 	std::string screenshot_dir;
 
@@ -1960,16 +2007,8 @@ void Client::unregisterModStorage(const std::string &name)
 {
 	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
 		m_mod_storages.find(name);
-	if (it != m_mod_storages.end()) {
-		// Save unconditionaly on unregistration
-		it->second->save(getModStoragePath());
+	if (it != m_mod_storages.end())
 		m_mod_storages.erase(name);
-	}
-}
-
-std::string Client::getModStoragePath() const
-{
-	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
 }
 
 /*

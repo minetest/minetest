@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 class Settings;
@@ -28,29 +29,36 @@ class Settings;
 struct SubgameSpec
 {
 	std::string id;
-	std::string name;
+	std::string title;
 	std::string author;
 	int release;
 	std::string path;
 	std::string gamemods_path;
-	std::set<std::string> addon_mods_paths;
+
+	/**
+	 * Map from virtual path to mods path
+	 */
+	std::unordered_map<std::string, std::string> addon_mods_paths;
 	std::string menuicon_path;
+
+	// For logging purposes
+	std::vector<const char *> deprecation_msgs;
 
 	SubgameSpec(const std::string &id = "", const std::string &path = "",
 			const std::string &gamemods_path = "",
-			const std::set<std::string> &addon_mods_paths =
-					std::set<std::string>(),
-			const std::string &name = "",
+			const std::unordered_map<std::string, std::string> &addon_mods_paths = {},
+			const std::string &title = "",
 			const std::string &menuicon_path = "",
 			const std::string &author = "", int release = 0) :
 			id(id),
-			name(name), author(author), release(release), path(path),
+			title(title), author(author), release(release), path(path),
 			gamemods_path(gamemods_path), addon_mods_paths(addon_mods_paths),
 			menuicon_path(menuicon_path)
 	{
 	}
 
 	bool isValid() const { return (!id.empty() && !path.empty()); }
+	void checkAndLog() const;
 };
 
 SubgameSpec findSubgame(const std::string &id);

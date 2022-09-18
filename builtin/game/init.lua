@@ -8,6 +8,7 @@ local gamepath   = scriptpath .. "game".. DIR_DELIM
 local builtin_shared = {}
 
 dofile(gamepath .. "constants.lua")
+assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
 dofile(gamepath .. "register.lua")
 
@@ -16,8 +17,10 @@ if core.settings:get_bool("profiler.load") then
 end
 
 dofile(commonpath .. "after.lua")
+dofile(commonpath .. "mod_storage.lua")
 dofile(gamepath .. "item_entity.lua")
 dofile(gamepath .. "deprecated.lua")
+dofile(gamepath .. "misc_s.lua")
 dofile(gamepath .. "misc.lua")
 dofile(gamepath .. "privileges.lua")
 dofile(gamepath .. "auth.lua")
@@ -32,5 +35,8 @@ dofile(gamepath .. "voxelarea.lua")
 dofile(gamepath .. "forceloading.lua")
 dofile(gamepath .. "statbars.lua")
 dofile(gamepath .. "knockback.lua")
+dofile(gamepath .. "async.lua")
+
+core.after(0, builtin_shared.cache_content_ids)
 
 profiler = nil

@@ -39,16 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <windows.h>
 #endif
 
-#ifdef __NetBSD__
-	#include <sys/param.h>
-	#if __NetBSD_Version__ <= 999001500
-		#define BSD_ICONV_USED
-	#endif
-#elif defined(_ICONV_H_) && (defined(__FreeBSD__) || defined(__OpenBSD__) || \
-	defined(__DragonFly__))
-	#define BSD_ICONV_USED
-#endif
-
 #ifndef _WIN32
 
 static bool convert(const char *to, const char *from, char *outbuf,
@@ -56,11 +46,7 @@ static bool convert(const char *to, const char *from, char *outbuf,
 {
 	iconv_t cd = iconv_open(to, from);
 
-#ifdef BSD_ICONV_USED
-	const char *inbuf_ptr = inbuf;
-#else
 	char *inbuf_ptr = inbuf;
-#endif
 	char *outbuf_ptr = outbuf;
 
 	size_t *inbuf_left_ptr = &inbuf_size;
@@ -84,7 +70,7 @@ static bool convert(const char *to, const char *from, char *outbuf,
 #ifdef __ANDROID__
 // On Android iconv disagrees how big a wchar_t is for whatever reason
 const char *DEFAULT_ENCODING = "UTF-32LE";
-#elif defined(__NetBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
 	// NetBSD does not allow "WCHAR_T" as a charset input to iconv.
 	#include <sys/endian.h>
 	#if BYTE_ORDER == BIG_ENDIAN
@@ -107,8 +93,8 @@ std::wstring utf8_to_wide(const std::string &input)
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
 
-#if defined(__ANDROID__) || defined(__NetBSD__)
-	SANITY_CHECK(sizeof(wchar_t) == 4);
+#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__)
+	static_assert(sizeof(wchar_t) == 4, "Unexpected wide char size");
 #endif
 
 	char *outbuf = reinterpret_cast<char*>(&out[0]);
@@ -494,6 +480,7 @@ const static std::unordered_map<std::string, u32> s_named_colors = {
 	{"plum",                 0xdda0dd},
 	{"powderblue",           0xb0e0e6},
 	{"purple",               0x800080},
+	{"rebeccapurple",        0x663399},
 	{"red",                  0xff0000},
 	{"rosybrown",            0xbc8f8f},
 	{"royalblue",            0x4169e1},
@@ -821,9 +808,11 @@ std::wstring translate_string(const std::wstring &s)
 #endif
 }
 
-static const std::array<std::wstring, 22> disallowed_dir_names = {
+static const std::array<std::wstring, 30> disallowed_dir_names = {
 	// Problematic filenames from here:
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#file-and-directory-names
+	// Plus undocumented values from here:
+	// https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html
 	L"CON",
 	L"PRN",
 	L"AUX",
@@ -837,6 +826,9 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
 	L"COM7",
 	L"COM8",
 	L"COM9",
+	L"COM\u00B2",
+	L"COM\u00B3",
+	L"COM\u00B9",
 	L"LPT1",
 	L"LPT2",
 	L"LPT3",
@@ -846,6 +838,11 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
 	L"LPT7",
 	L"LPT8",
 	L"LPT9",
+	L"LPT\u00B2",
+	L"LPT\u00B3",
+	L"LPT\u00B9",
+	L"CONIN$",
+	L"CONOUT$",
 };
 
 /**
@@ -853,12 +850,7 @@ static const std::array<std::wstring, 22> disallowed_dir_names = {
  */
 static const std::wstring disallowed_path_chars = L"<>:\"/\\|?*.";
 
-/**
- * Sanitize the name of a new directory. This consists of two stages:
- * 1. Check for 'reserved filenames' that can't be used on some filesystems
- *	and add a prefix to them
- * 2. Remove 'unsafe' characters from the name by replacing them with '_'
- */
+
 std::string sanitizeDirName(const std::string &str, const std::string &optional_prefix)
 {
 	std::wstring safe_name = utf8_to_wide(str);
@@ -870,7 +862,18 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 		}
 	}
 
-	for (unsigned long i = 0; i < safe_name.length(); i++) {
+	// Replace leading and trailing spaces with underscores.
+	size_t start = safe_name.find_first_not_of(L' ');
+	size_t end = safe_name.find_last_not_of(L' ');
+	if (start == std::wstring::npos || end == std::wstring::npos)
+		start = end = safe_name.size();
+	for (size_t i = 0; i < start; i++)
+		safe_name[i] = L'_';
+	for (size_t i = end + 1; i < safe_name.size(); i++)
+		safe_name[i] = L'_';
+
+	// Replace other disallowed characters with underscores
+	for (size_t i = 0; i < safe_name.length(); i++) {
 		bool is_valid = true;
 
 		// Unlikely, but control characters should always be blacklisted
@@ -882,7 +885,7 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 		}
 
 		if (!is_valid)
-			safe_name[i] = '_';
+			safe_name[i] = L'_';
 	}
 
 	return wide_to_utf8(safe_name);

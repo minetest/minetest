@@ -27,9 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 
-/* This protects:
- * 'secure.*' settings from being set
- * some mapgen settings from being set
+/* This protects the following from being set:
+ * 'secure.*' settings
+ * some security-relevant settings
+ *   (better solution pending)
+ * some mapgen settings
  *   (not security-criticial, just to avoid messing up user configs)
  */
 #define CHECK_SETTING_SECURITY(L, name) \
@@ -41,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 {
 	if (ScriptApiSecurity::isSecure(L) && name.compare(0, 7, "secure.") == 0)
-		throw LuaError("Attempt to set secure setting.");
+		throw LuaError("Attempted to set secure setting.");
 
 	bool is_mainmenu = false;
 #ifndef SERVER
@@ -52,6 +54,17 @@ static inline int checkSettingSecurity(lua_State* L, const std::string &name)
 			"minetest.set_mapgen_setting() should be used instead." << std::endl;
 		infostream << script_get_backtrace(L) << std::endl;
 		return -1;
+	}
+
+	const char *disallowed[] = {
+		"main_menu_script", "shader_path", "texture_path", "screenshot_path",
+		"serverlist_file", "serverlist_url", "map-dir", "contentdb_url",
+	};
+	if (!is_mainmenu) {
+		for (const char *name2 : disallowed) {
+			if (name == name2)
+				throw LuaError("Attempted to set disallowed setting.");
+		}
 	}
 
 	return 0;

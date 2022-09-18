@@ -221,33 +221,36 @@ void MapBlock::expireDayNightDiff()
 /*
 	Serialization
 */
+
 // List relevant id-name pairs for ids in the block using nodedef
-// Renumbers the content IDs (starting at 0 and incrementing
-// use static memory requires about 65535 * sizeof(int) ram in order to be
-// sure we can handle all content ids. But it's absolutely worth it as it's
-// a speedup of 4 for one of the major time consuming functions on storing
-// mapblocks.
-static content_t getBlockNodeIdMapping_mapping[USHRT_MAX + 1];
+// Renumbers the content IDs (starting at 0 and incrementing)
 static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 	const NodeDefManager *nodedef)
 {
-	memset(getBlockNodeIdMapping_mapping, 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
+	// The static memory requires about 65535 * sizeof(int) RAM in order to be
+	// sure we can handle all content ids. But it's absolutely worth it as it's
+	// a speedup of 4 for one of the major time consuming functions on storing
+	// mapblocks.
+	thread_local std::unique_ptr<content_t[]> mapping;
+	static_assert(sizeof(content_t) == 2, "content_t must be 16-bit");
+	if (!mapping)
+		mapping = std::make_unique<content_t[]>(USHRT_MAX + 1);
 
-	std::set<content_t> unknown_contents;
+	memset(mapping.get(), 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
+
+	std::unordered_set<content_t> unknown_contents;
 	content_t id_counter = 0;
 	for (u32 i = 0; i < MapBlock::nodecount; i++) {
 		content_t global_id = nodes[i].getContent();
 		content_t id = CONTENT_IGNORE;
 
 		// Try to find an existing mapping
-		if (getBlockNodeIdMapping_mapping[global_id] != 0xFFFF) {
-			id = getBlockNodeIdMapping_mapping[global_id];
-		}
-		else
-		{
+		if (mapping[global_id] != 0xFFFF) {
+			id = mapping[global_id];
+		} else {
 			// We have to assign a new mapping
 			id = id_counter++;
-			getBlockNodeIdMapping_mapping[global_id] = id;
+			mapping[global_id] = id;
 
 			const ContentFeatures &f = nodedef->get(global_id);
 			const std::string &name = f.name;
@@ -265,6 +268,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 				<< "Name for node id " << unknown_content << " not known" << std::endl;
 	}
 }
+
 // Correct ids in the block to match nodedef based on names.
 // Unknown ones are added to nodedef.
 // Will not update itself to match id-name pairs in nodedef.

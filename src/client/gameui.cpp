@@ -68,7 +68,7 @@ void GameUI::init()
 	u16 chat_font_size = g_settings->getU16("chat_font_size");
 	if (chat_font_size != 0) {
 		m_guitext_chat->setOverrideFont(g_fontengine->getFont(
-			chat_font_size, FM_Unspecified));
+			rangelim(chat_font_size, 5, 72), FM_Unspecified));
 	}
 
 
@@ -104,16 +104,16 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	// Minimal debug text must only contain info that can't give a gameplay advantage
 	if (m_flags.show_minimal_debug) {
-		static float drawtime_avg = 0;
-		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-		u16 fps = 1.0 / stats.dtime_jitter.avg;
+		const u16 fps = 1.0 / stats.dtime_jitter.avg;
+		m_drawtime_avg *= 0.95f;
+		m_drawtime_avg += 0.05f * (stats.drawtime / 1000);
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
 			<< " | FPS: " << fps
 			<< std::setprecision(0)
-			<< " | drawtime: " << drawtime_avg << "ms"
+			<< " | drawtime: " << m_drawtime_avg << "ms"
 			<< std::setprecision(1)
 			<< " | dtime jitter: "
 			<< (stats.dtime_jitter.max_fraction * 100.0) << "%"
@@ -151,9 +151,13 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			const NodeDefManager *nodedef = client->getNodeDefManager();
 			MapNode n = map.getNode(pointed_old.node_undersurface);
 
-			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-				os << ", pointed: " << nodedef->get(n).name
-					<< ", param2: " << (u64) n.getParam2();
+			if (n.getContent() != CONTENT_IGNORE) {
+				if (nodedef->get(n).name == "unknown") {
+					os << ", pointed: <unknown node>";
+				} else {
+					os << ", pointed: " << nodedef->get(n).name;
+				}
+				os << ", param2: " << (u64) n.getParam2();
 			}
 		}
 
@@ -210,7 +214,6 @@ void GameUI::initFlags()
 {
 	m_flags = GameUI::Flags();
 	m_flags.show_minimal_debug = g_settings->getBool("show_debug");
-	m_flags.show_basic_debug = false;
 }
 
 void GameUI::showMinimap(bool show)

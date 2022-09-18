@@ -43,6 +43,10 @@ void guiScalingCache(const io::path &key, video::IVideoDriver *driver, video::II
 {
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return;
+
+	if (g_imgCache.find(key) != g_imgCache.end())
+		return; // Already cached.
+
 	video::IImage *copied = driver->createImage(value->getColorFormat(),
 			value->getDimension());
 	value->copyTo(copied);
@@ -90,14 +94,16 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 	io::path scalename = origname + "@guiScalingFilter:" + rectstr;
 
 	// Search for existing scaled texture.
-	video::ITexture *scaled = g_txrCache[scalename];
+	auto it_txr = g_txrCache.find(scalename);
+	video::ITexture *scaled = (it_txr != g_txrCache.end()) ? it_txr->second : nullptr;
 	if (scaled)
 		return scaled;
 
 	// Try to find the texture converted to an image in the cache.
 	// If the image was not found, try to extract it from the texture.
-	video::IImage* srcimg = g_imgCache[origname];
-	if (srcimg == NULL) {
+	auto it_img = g_imgCache.find(origname);
+	video::IImage *srcimg = (it_img != g_imgCache.end()) ? it_img->second : nullptr;
+	if (!srcimg) {
 		if (!g_settings->getBool("gui_scaling_filter_txr2img"))
 			return src;
 		srcimg = driver->createImageFromData(src->getColorFormat(),
@@ -170,52 +176,61 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 }
 
 void draw2DImage9Slice(video::IVideoDriver *driver, video::ITexture *texture,
-		const core::rect<s32> &rect, const core::rect<s32> &middle,
-		const core::rect<s32> *cliprect, const video::SColor *const colors)
+		const core::rect<s32> &destrect, const core::rect<s32> &srcrect,
+		const core::rect<s32> &middlerect, const core::rect<s32> *cliprect,
+		const video::SColor *const colors)
 {
-	auto originalSize = texture->getOriginalSize();
-	core::vector2di lowerRightOffset = core::vector2di(originalSize.Width, originalSize.Height) - middle.LowerRightCorner;
+	// `-x` is interpreted as `w - x`
+	core::rect<s32> middle = middlerect;
+
+	if (middlerect.LowerRightCorner.X < 0)
+		middle.LowerRightCorner.X += srcrect.getWidth();
+	if (middlerect.LowerRightCorner.Y < 0)
+		middle.LowerRightCorner.Y += srcrect.getHeight();
+
+	core::vector2di lower_right_offset = core::vector2di(srcrect.getWidth(),
+			srcrect.getHeight()) - middle.LowerRightCorner;
 
 	for (int y = 0; y < 3; ++y) {
 		for (int x = 0; x < 3; ++x) {
-			core::rect<s32> src({0, 0}, originalSize);
-			core::rect<s32> dest = rect;
+			core::rect<s32> src = srcrect;
+			core::rect<s32> dest = destrect;
 
 			switch (x) {
 			case 0:
-				dest.LowerRightCorner.X = rect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
-				src.LowerRightCorner.X = middle.UpperLeftCorner.X;
+				dest.LowerRightCorner.X = destrect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
+				src.LowerRightCorner.X = srcrect.UpperLeftCorner.X + middle.UpperLeftCorner.X;
 				break;
 
 			case 1:
 				dest.UpperLeftCorner.X += middle.UpperLeftCorner.X;
-				dest.LowerRightCorner.X -= lowerRightOffset.X;
-				src.UpperLeftCorner.X = middle.UpperLeftCorner.X;
-				src.LowerRightCorner.X = middle.LowerRightCorner.X;
+				dest.LowerRightCorner.X -= lower_right_offset.X;
+				src.UpperLeftCorner.X += middle.UpperLeftCorner.X;
+				src.LowerRightCorner.X -= lower_right_offset.X;
 				break;
 
 			case 2:
-				dest.UpperLeftCorner.X = rect.LowerRightCorner.X - lowerRightOffset.X;
-				src.UpperLeftCorner.X = middle.LowerRightCorner.X;
+				dest.UpperLeftCorner.X = destrect.LowerRightCorner.X - lower_right_offset.X;
+				src.UpperLeftCorner.X = srcrect.LowerRightCorner.X - lower_right_offset.X;
 				break;
 			}
 
 			switch (y) {
 			case 0:
-				dest.LowerRightCorner.Y = rect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
-				src.LowerRightCorner.Y = middle.UpperLeftCorner.Y;
+				dest.LowerRightCorner.Y = destrect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
+				src.LowerRightCorner.Y = srcrect.UpperLeftCorner.Y + middle.UpperLeftCorner.Y;
 				break;
 
 			case 1:
 				dest.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
-				dest.LowerRightCorner.Y -= lowerRightOffset.Y;
-				src.UpperLeftCorner.Y = middle.UpperLeftCorner.Y;
-				src.LowerRightCorner.Y = middle.LowerRightCorner.Y;
+				dest.LowerRightCorner.Y -= lower_right_offset.Y;
+				src.UpperLeftCorner.Y += middle.UpperLeftCorner.Y;
+				src.LowerRightCorner.Y -= lower_right_offset.Y;
 				break;
 
 			case 2:
-				dest.UpperLeftCorner.Y = rect.LowerRightCorner.Y - lowerRightOffset.Y;
-				src.UpperLeftCorner.Y = middle.LowerRightCorner.Y;
+				dest.UpperLeftCorner.Y = destrect.LowerRightCorner.Y - lower_right_offset.Y;
+				src.UpperLeftCorner.Y = srcrect.LowerRightCorner.Y - lower_right_offset.Y;
 				break;
 			}
 

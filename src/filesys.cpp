@@ -639,7 +639,7 @@ std::string RemoveLastPathComponent(const std::string &path,
 		std::string *removed, int count)
 {
 	if(removed)
-		*removed = "";
+		removed->clear();
 
 	size_t remaining = path.size();
 
@@ -877,4 +877,3 @@ bool Rename(const std::string &from, const std::string &to)
 }
 
 } // namespace fs
-

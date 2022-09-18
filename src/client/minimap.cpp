@@ -304,7 +304,7 @@ void Minimap::setModeIndex(size_t index)
 		data->mode = m_modes[index];
 		m_current_mode_index = index;
 	} else {
-		data->mode = MinimapModeDef{MINIMAP_TYPE_OFF, gettext("Minimap hidden"), 0, 0, ""};
+		data->mode = {MINIMAP_TYPE_OFF, gettext("Minimap hidden"), 0, 0, "", 0};
 		m_current_mode_index = 0;
 	}
 
@@ -327,7 +327,7 @@ void Minimap::addMode(MinimapModeDef mode)
 	int zoom = -1;
 
 	// Build a default standard label
-	if (mode.label == "") {
+	if (mode.label.empty()) {
 		switch (mode.type) {
 			case MINIMAP_TYPE_OFF:
 				mode.label = gettext("Minimap hidden");
@@ -361,8 +361,8 @@ void Minimap::addMode(MinimapModeDef mode)
 	m_modes.push_back(mode);
 }
 
-void Minimap::addMode(MinimapType type, u16 size, std::string label,
-		std::string texture, u16 scale)
+void Minimap::addMode(MinimapType type, u16 size, const std::string &label,
+		const std::string &texture, u16 scale)
 {
 	MinimapModeDef mode;
 	mode.type = type;

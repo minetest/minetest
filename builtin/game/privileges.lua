@@ -97,10 +97,6 @@ core.register_privilege("rollback", {
 	description = S("Can use the rollback functionality"),
 	give_to_singleplayer = false,
 })
-core.register_privilege("basic_debug", {
-	description = S("Can view more debug info that might give a gameplay advantage"),
-	give_to_singleplayer = false,
-})
 core.register_privilege("debug", {
 	description = S("Can enable wireframe"),
 	give_to_singleplayer = false,

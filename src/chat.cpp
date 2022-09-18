@@ -364,7 +364,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 
 				// Chars to mark end of weblink
 				// TODO? replace this with a safer (slower) regex whitelist?
-				static const std::wstring delim_chars = L"\'\";,";
+				static const std::wstring delim_chars = L"\'\";";
 				wchar_t tempchar = linestring[in_pos+frag_length];
 				while (frag_length < remaining_in_input &&
 						!iswspace(tempchar) &&

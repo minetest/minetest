@@ -41,24 +41,13 @@ namespace con
 /* defines used for debugging and profiling                                   */
 /******************************************************************************/
 #ifdef NDEBUG
-	#define LOG(a) a
 	#define PROFILE(a)
 #else
-	#if 0
-	/* this mutex is used to achieve log message consistency */
-	std::mutex log_message_mutex;
-	#define LOG(a)                                                                 \
-		{                                                                          \
-		MutexAutoLock loglock(log_message_mutex);                                 \
-		a;                                                                         \
-		}
-	#else
-	// Prevent deadlocks until a solution is found after 5.2.0 (TODO)
-	#define LOG(a) a
-	#endif
-
 	#define PROFILE(a) a
 #endif
+
+// TODO: Clean this up.
+#define LOG(a) a
 
 #define PING_TIMEOUT 5.0
 
@@ -75,7 +64,7 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
 
-	BufferedPacketPtr p(new BufferedPacket(packet_size));
+	auto p = std::make_shared<BufferedPacket>(packet_size);
 	p->address = address;
 
 	writeU32(&p->data[0], protocol_id);
@@ -503,10 +492,10 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
-	std::deque<u16> remove_queue;
+	std::vector<u16> remove_queue;
 	{
 		MutexAutoLock listlock(m_map_mutex);
-		for (auto &i : m_buf) {
+		for (const auto &i : m_buf) {
 			IncomingSplitPacket *p = i.second;
 			// Reliable ones are not removed by timeout
 			if (p->reliable)

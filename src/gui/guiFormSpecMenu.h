@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_set>
 
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
@@ -211,7 +212,7 @@ public:
 		m_lockscreensize = basescreensize;
 	}
 
-	void removeChildren();
+	void removeTooltip();
 	void setInitialFocus();
 
 	void setFocus(const std::string &elementname)
@@ -313,7 +314,6 @@ protected:
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
-	std::vector<gui::IGUIElement *> m_backgrounds;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
@@ -375,6 +375,7 @@ private:
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 		gui::IGUIElement *current_parent = nullptr;
+		irr_ptr<gui::IGUIElement> background_parent;
 
 		GUIInventoryList::Options inventorylist_options;
 
@@ -456,6 +457,8 @@ private:
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);
 
+	bool parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect);
+
 	void tryClose();
 
 	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
@@ -466,7 +469,7 @@ private:
 	 * types were drawn before others.
 	 * This function sorts the elements in the old order for backwards compatibility.
 	 */
-	void legacySortElements(core::list<IGUIElement *>::Iterator from);
+	void legacySortElements(std::list<IGUIElement *>::iterator from);
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;

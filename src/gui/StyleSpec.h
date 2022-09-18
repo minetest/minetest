@@ -45,6 +45,7 @@ public:
 		BGIMG_PRESSED, // Note: Deprecated property
 		FGIMG,
 		FGIMG_HOVERED, // Note: Deprecated property
+		FGIMG_MIDDLE,
 		FGIMG_PRESSED, // Note: Deprecated property
 		ALPHA,
 		CONTENT_OFFSET,
@@ -101,6 +102,8 @@ public:
 			return FGIMG;
 		} else if (name == "fgimg_hovered") {
 			return FGIMG_HOVERED;
+		} else if (name == "fgimg_middle") {
+			return FGIMG_MIDDLE;
 		} else if (name == "fgimg_pressed") {
 			return FGIMG_PRESSED;
 		} else if (name == "alpha") {

@@ -195,7 +195,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	try {
 		m_script->setMainMenuData(&m_data->script_data);
-		m_data->script_data.errormessage = "";
+		m_data->script_data.errormessage.clear();
 
 		if (!loadMainMenuScript()) {
 			errorstream << "No future without main menu!" << std::endl;
@@ -622,9 +622,9 @@ void GUIEngine::updateTopLeftTextSize()
 }
 
 /******************************************************************************/
-s32 GUIEngine::playSound(const SimpleSoundSpec &spec, bool looped)
+s32 GUIEngine::playSound(const SimpleSoundSpec &spec)
 {
-	s32 handle = m_sound_manager->playSound(spec, looped);
+	s32 handle = m_sound_manager->playSound(spec);
 	return handle;
 }
 

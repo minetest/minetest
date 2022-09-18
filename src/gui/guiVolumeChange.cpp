@@ -45,32 +45,12 @@ GUIVolumeChange::GUIVolumeChange(gui::IGUIEnvironment* env,
 {
 }
 
-GUIVolumeChange::~GUIVolumeChange()
-{
-	removeChildren();
-}
-
-void GUIVolumeChange::removeChildren()
-{
-	if (gui::IGUIElement *e = getElementFromId(ID_soundText))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_soundExitButton))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_soundSlider))
-		e->remove();
-
-	if (gui::IGUIElement *e = getElementFromId(ID_soundMuteButton))
-		e->remove();
-}
-
 void GUIVolumeChange::regenerateGui(v2u32 screensize)
 {
 	/*
 		Remove stuff
 	*/
-	removeChildren();
+	removeAllChildren();
 	/*
 		Calculate new sizes and positions
 	*/

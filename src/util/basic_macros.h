@@ -29,12 +29,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTAINS(c, v) (std::find((c).begin(), (c).end(), (v)) != (c).end())
 
 // To disable copy constructors and assignment operations for some class
-// 'Foobar', add the macro DISABLE_CLASS_COPY(Foobar) as a private member.
+// 'Foobar', add the macro DISABLE_CLASS_COPY(Foobar) in the class definition.
 // Note this also disables copying for any classes derived from 'Foobar' as well
 // as classes having a 'Foobar' member.
 #define DISABLE_CLASS_COPY(C)        \
 	C(const C &) = delete;           \
 	C &operator=(const C &) = delete;
+
+// If you have used DISABLE_CLASS_COPY with a class but still want to permit moving
+// use this macro to add the default move constructors back.
+#define ALLOW_CLASS_MOVE(C)      \
+	C(C &&other) = default;      \
+	C &operator=(C &&) = default;
 
 #ifndef _MSC_VER
 	#define UNUSED_ATTRIBUTE __attribute__ ((unused))

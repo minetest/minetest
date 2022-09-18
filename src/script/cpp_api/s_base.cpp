@@ -121,6 +121,14 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_newtable(m_luastack);
 	lua_setglobal(m_luastack, "core");
 
+	// vector.metatable is stored in the registry for quick access from C++.
+	lua_newtable(m_luastack);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_newtable(m_luastack);
+	lua_rawgeti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_VECTOR_METATABLE);
+	lua_setfield(m_luastack, -2, "metatable");
+	lua_setglobal(m_luastack, "vector");
+
 	if (m_type == ScriptingType::Client)
 		lua_pushstring(m_luastack, "/");
 	else
@@ -163,7 +171,7 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 #endif
 	};
 
-	for (const std::pair<std::string, lua_CFunction> &lib : m_libs) {
+	for (const auto &lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);
 	    lua_pushstring(L, lib.first.c_str());
 	    lua_call(L, 1, 0);

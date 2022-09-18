@@ -33,7 +33,7 @@ public:
 	bool luaentity_Add(u16 id, const char *name);
 	void luaentity_Activate(u16 id,
 			const std::string &staticdata, u32 dtime_s);
-	void luaentity_Deactivate(u16 id);
+	void luaentity_Deactivate(u16 id, bool removal);
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
@@ -42,7 +42,7 @@ public:
 		const collisionMoveResult *moveresult);
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
-			const ToolCapabilities *toolcap, v3f dir, s16 damage);
+			const ToolCapabilities *toolcap, v3f dir, s32 damage);
 	bool luaentity_on_death(u16 id, ServerActiveObject *killer);
 	void luaentity_Rightclick(u16 id, ServerActiveObject *clicker);
 	void luaentity_on_attach_child(u16 id, ServerActiveObject *child);

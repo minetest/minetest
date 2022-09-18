@@ -92,8 +92,6 @@ Set password from contents of file
 .B \-\-random\-input
 Enable random user input, for testing (client only)
 .TP
-.B \-\-videomodes
-List available video modes (client only)
 .TP
 .B \-\-speedtests
 Run speed tests
@@ -112,6 +110,10 @@ leveldb, and files.
 Migrate from current players backend to another. Possible values are sqlite3,
 leveldb, postgresql, dummy, and files.
 .TP
+.B \-\-migrate-mod-storage <value>
+Migrate from current mod storage backend to another. Possible values are
+sqlite3, dummy, and files.
+.TP
 .B \-\-terminal
 Display an interactive terminal over ncurses during execution.
 
@@ -122,6 +124,9 @@ Colon delimited list of directories to search for games.
 .TP
 .B MINETEST_MOD_PATH
 Colon delimited list of directories to search for mods.
+.TP
+.B MINETEST_USER_PATH
+Path to Minetest user data directory.
 
 .SH BUGS
 Please report all bugs at https://github.com/minetest/minetest/issues.

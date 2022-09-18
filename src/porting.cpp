@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <algorithm>
 	#include <shlwapi.h>
 	#include <shellapi.h>
+	#include <mmsystem.h>
 #endif
 #if !defined(_WIN32)
 	#include <unistd.h>
@@ -68,6 +69,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <cstdarg>
 #include <cstdio>
+
+#if !defined(SERVER) && defined(_WIN32)
+// On Windows export some driver-specific variables to encourage Minetest to be
+// executed on the discrete GPU in case of systems with two. Portability is fun.
+extern "C" {
+	__declspec(dllexport) DWORD NvOptimusEnablement = 1;
+	__declspec(dllexport) DWORD AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
 
 namespace porting
 {
@@ -412,11 +422,18 @@ bool setSystemPaths()
 		path_share += DIR_DELIM "..";
 	}
 
-	// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
-	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
-	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
+	// Use %MINETEST_USER_PATH%
+	DWORD len = GetEnvironmentVariable("MINETEST_USER_PATH", buf, sizeof(buf));
+	FATAL_ERROR_IF(len > sizeof(buf), "Failed to get MINETEST_USER_PATH (too large for buffer)");
+	if (len == 0) {
+		// Use "C:\Users\<user>\AppData\Roaming\<PROJECT_NAME_C>"
+		len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
+		FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
+		path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
+	} else {
+		path_user = std::string(buf);
+	}
 
-	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME_C;
 	return true;
 }
 
@@ -476,8 +493,13 @@ bool setSystemPaths()
 	}
 
 #ifndef __ANDROID__
-	path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ PROJECT_NAME;
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ PROJECT_NAME;
+	}
 #endif
 
 	return true;
@@ -500,9 +522,14 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	path_user = std::string(getHomeOrFail())
-		+ "/Library/Application Support/"
-		+ PROJECT_NAME;
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user = std::string(getHomeOrFail())
+			+ "/Library/Application Support/"
+			+ PROJECT_NAME;
+	}
 	return true;
 }
 
@@ -512,8 +539,13 @@ bool setSystemPaths()
 bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
-	path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
-		+ lowercase(PROJECT_NAME);
+	const char *const minetest_user_path = getenv("MINETEST_USER_PATH");
+	if (minetest_user_path && minetest_user_path[0] != '\0') {
+		path_user = std::string(minetest_user_path);
+	} else {
+		path_user  = std::string(getHomeOrFail()) + DIR_DELIM "."
+			+ lowercase(PROJECT_NAME);
+	}
 	return true;
 }
 
@@ -598,7 +630,7 @@ void initializePaths()
 	// First try $XDG_CACHE_HOME/PROJECT_NAME
 	const char *cache_dir = getenv("XDG_CACHE_HOME");
 	const char *home_dir = getenv("HOME");
-	if (cache_dir) {
+	if (cache_dir && cache_dir[0] != '\0') {
 		path_cache = std::string(cache_dir) + DIR_DELIM + PROJECT_NAME;
 	} else if (home_dir) {
 		// Then try $HOME/.cache/PROJECT_NAME
@@ -766,6 +798,9 @@ bool open_directory(const std::string &path)
 
 inline double get_perf_freq()
 {
+	// Also use this opportunity to enable high-res timers
+	timeBeginPeriod(1);
+
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
 	return freq.QuadPart;

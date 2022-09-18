@@ -36,7 +36,7 @@ void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
 	s64 i = getBlockAsInteger(pos);
 	auto it = m_database.find(i);
 	if (it == m_database.end()) {
-		*block = "";
+		block->clear();
 		return;
 	}
 
@@ -78,5 +78,43 @@ void Database_Dummy::listPlayers(std::vector<std::string> &res)
 {
 	for (const auto &player : m_player_database) {
 		res.emplace_back(player);
+	}
+}
+
+bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
+{
+	const auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair != m_mod_meta_database.cend()) {
+		for (const auto &pair : mod_pair->second) {
+			(*storage)[pair.first] = pair.second;
+		}
+	}
+	return true;
+}
+
+bool Database_Dummy::setModEntry(const std::string &modname,
+	const std::string &key, const std::string &value)
+{
+	auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair == m_mod_meta_database.end()) {
+		m_mod_meta_database[modname] = StringMap({{key, value}});
+	} else {
+		mod_pair->second[key] = value;
+	}
+	return true;
+}
+
+bool Database_Dummy::removeModEntry(const std::string &modname, const std::string &key)
+{
+	auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair != m_mod_meta_database.end())
+		return mod_pair->second.erase(key) > 0;
+	return false;
+}
+
+void Database_Dummy::listMods(std::vector<std::string> *res)
+{
+	for (const auto &pair : m_mod_meta_database) {
+		res->push_back(pair.first);
 	}
 }

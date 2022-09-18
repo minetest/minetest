@@ -316,9 +316,10 @@ private:
 	// set_sky(self, sky_parameters)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self)
+	// get_sky(self, as_table)
 	static int l_get_sky(lua_State *L);
 
+	// DEPRECATED
 	// get_sky_color(self)
 	static int l_get_sky_color(lua_State* L);
 
@@ -375,4 +376,13 @@ private:
 
 	// set_minimap_modes(self, modes, wanted_mode)
 	static int l_set_minimap_modes(lua_State *L);
+
+	// set_lighting(self, lighting)
+	static int l_set_lighting(lua_State *L);
+	
+	// get_lighting(self)
+	static int l_get_lighting(lua_State *L);
+
+	// respawn(self)
+	static int l_respawn(lua_State *L);
 };

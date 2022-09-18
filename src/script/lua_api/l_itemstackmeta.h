@@ -23,13 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "lua_api/l_metadata.h"
+#include "lua_api/l_item.h"
 #include "irrlichttypes_bloated.h"
-#include "inventory.h"
 
 class ItemStackMetaRef : public MetaDataRef
 {
 private:
-	ItemStack *istack = nullptr;
+	LuaItemStack *istack;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -44,12 +44,12 @@ private:
 
 	void setToolCapabilities(const ToolCapabilities &caps)
 	{
-		istack->metadata.setToolCapabilities(caps);
+		istack->getItem().metadata.setToolCapabilities(caps);
 	}
 
 	void clearToolCapabilities()
 	{
-		istack->metadata.clearToolCapabilities();
+		istack->getItem().metadata.clearToolCapabilities();
 	}
 
 	// Exported functions
@@ -58,12 +58,15 @@ private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 public:
-	ItemStackMetaRef(ItemStack *istack): istack(istack) {}
-	~ItemStackMetaRef() = default;
+	// takes a reference
+	ItemStackMetaRef(LuaItemStack *istack);
+	~ItemStackMetaRef();
+
+	DISABLE_CLASS_COPY(ItemStackMetaRef)
 
 	// Creates an ItemStackMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, ItemStack *istack);
+	static void create(lua_State *L, LuaItemStack *istack);
 
 	static void Register(lua_State *L);
 };

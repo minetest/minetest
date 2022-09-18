@@ -313,7 +313,7 @@ static scene::SMesh *createSpecialNodeMesh(Client *client, MapNode n,
 	std::vector<ItemPartColor> *colors, const ContentFeatures &f)
 {
 	MeshMakeData mesh_make_data(client, false);
-	MeshCollector collector;
+	MeshCollector collector(v3f(0.0f * BS));
 	mesh_make_data.setSmoothLighting(false);
 	MapblockMeshGenerator gen(&mesh_make_data, &collector,
 		client->getSceneManager()->getMeshManipulator());
@@ -386,6 +386,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -457,6 +460,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 		}
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
 		if (!def.inventory_image.empty()) {
@@ -469,6 +476,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back();
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
+
+		// initialize the color
+		if (!m_lighting)
+			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -515,8 +526,9 @@ void WieldMeshSceneNode::setNodeLightColor(video::SColor color)
 			material.EmissiveColor = color;
 		}
 	}
-
-	setColor(color);
+	else {
+		setColor(color);
+	}
 }
 
 void WieldMeshSceneNode::render()
@@ -541,9 +553,10 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
 
-	// Add mesh to shadow caster
-	if (m_shadow)
+	if (m_shadow) {
+		// Add mesh to shadow caster
 		m_shadow->addNodeToShadowList(m_meshnode);
+	}
 }
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)

@@ -322,7 +322,7 @@ private:
 	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
-	int m_next_id;
+	u16 m_last_used_id = 0; // only access within getFreeId() !
 	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
 	std::unordered_map<int, PlayingSound*> m_sounds_playing;
 	struct FadeState {
@@ -342,8 +342,7 @@ public:
 	OpenALSoundManager(SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
 		m_device(smg->m_device.get()),
-		m_context(smg->m_context.get()),
-		m_next_id(1)
+		m_context(smg->m_context.get())
 	{
 		infostream << "Audio: Initialized: OpenAL " << std::endl;
 	}
@@ -379,6 +378,22 @@ public:
 		infostream << "Audio: Deinitialized." << std::endl;
 	}
 
+	u16 getFreeId()
+	{
+		u16 startid = m_last_used_id;
+		while (!isFreeId(++m_last_used_id)) {
+			if (m_last_used_id == startid)
+				return 0;
+		}
+
+		return m_last_used_id;
+	}
+
+	inline bool isFreeId(int id) const
+	{
+		return id > 0 && m_sounds_playing.find(id) == m_sounds_playing.end();
+	}
+
 	void step(float dtime)
 	{
 		doFades(dtime);
@@ -394,7 +409,7 @@ public:
 		}
 		std::vector<SoundBuffer*> bufs;
 		bufs.push_back(buf);
-		m_buffers[name] = bufs;
+		m_buffers[name] = std::move(bufs);
 	}
 
 	SoundBuffer* getBuffer(const std::string &name)
@@ -437,7 +452,7 @@ public:
 				<< std::endl;
 		assert(buf);
 		PlayingSound *sound = new PlayingSound;
-		assert(sound);
+
 		warn_if_error(alGetError(), "before createPlayingSoundAt");
 		alGenSources(1, &sound->source_id);
 		alSourcei(sound->source_id, AL_BUFFER, buf->buffer_id);
@@ -463,28 +478,17 @@ public:
 	{
 		assert(buf);
 		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
-		if(!sound)
+		if (!sound)
 			return -1;
-		int id = m_next_id++;
-		m_sounds_playing[id] = sound;
-		return id;
-	}
 
-	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, const v3f &pos,
-			float pitch)
-	{
-		assert(buf);
-		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
-		if(!sound)
-			return -1;
-		int id = m_next_id++;
-		m_sounds_playing[id] = sound;
-		return id;
+		int handle = getFreeId();
+		m_sounds_playing[handle] = sound;
+		return handle;
 	}
 
 	void deleteSound(int id)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		auto i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -580,39 +584,46 @@ public:
 		alListenerf(AL_GAIN, gain);
 	}
 
-	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
+	int playSound(const SimpleSoundSpec &spec)
 	{
 		maintain();
-		if (name.empty())
+		if (spec.name.empty())
 			return 0;
-		SoundBuffer *buf = getFetchBuffer(name);
+		SoundBuffer *buf = getFetchBuffer(spec.name);
 		if(!buf){
-			infostream << "OpenALSoundManager: \"" << name << "\" not found."
+			infostream << "OpenALSoundManager: \"" << spec.name << "\" not found."
 					<< std::endl;
 			return -1;
 		}
+
 		int handle = -1;
-		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0.0f, pitch);
-			fadeSound(handle, fade, volume);
+		if (spec.fade > 0) {
+			handle = playSoundRaw(buf, spec.loop, 0.0f, spec.pitch);
+			fadeSound(handle, spec.fade, spec.gain);
 		} else {
-			handle = playSoundRaw(buf, loop, volume, pitch);
+			handle = playSoundRaw(buf, spec.loop, spec.gain, spec.pitch);
 		}
 		return handle;
 	}
 
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
+	int playSoundAt(const SimpleSoundSpec &spec, const v3f &pos)
 	{
 		maintain();
-		if (name.empty())
+		if (spec.name.empty())
 			return 0;
-		SoundBuffer *buf = getFetchBuffer(name);
-		if(!buf){
-			infostream << "OpenALSoundManager: \"" << name << "\" not found."
+		SoundBuffer *buf = getFetchBuffer(spec.name);
+		if (!buf) {
+			infostream << "OpenALSoundManager: \"" << spec.name << "\" not found."
 					<< std::endl;
 			return -1;
 		}
-		return playSoundRawAt(buf, loop, volume, pos, pitch);
+
+		PlayingSound *sound = createPlayingSoundAt(buf, spec.loop, spec.gain, pos, spec.pitch);
+		if (!sound)
+			return -1;
+		int handle = getFreeId();
+		m_sounds_playing[handle] = sound;
+		return handle;
 	}
 
 	void stopSound(int sound)
@@ -624,8 +635,9 @@ public:
 	void fadeSound(int soundid, float step, float gain)
 	{
 		// Ignore the command if step isn't valid.
-		if (step == 0)
+		if (step == 0 || soundid < 0)
 			return;
+
 		float current_gain = getSoundGain(soundid);
 		step = gain - current_gain > 0 ? abs(step) : -abs(step);
 		if (m_sounds_fading.find(soundid) != m_sounds_fading.end()) {

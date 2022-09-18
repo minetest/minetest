@@ -106,11 +106,11 @@ DigParams getDigParams(const ItemGroupList &groups,
 
 struct HitParams
 {
-	s16 hp;
+	s32 hp;
 	// Caused wear
 	u32 wear; // u32 because wear could be 65536 (single-use weapon)
 
-	HitParams(s16 hp_ = 0, u32 wear_ = 0):
+	HitParams(s32 hp_ = 0, u32 wear_ = 0):
 		hp(hp_),
 		wear(wear_)
 	{}
@@ -142,4 +142,5 @@ PunchDamageResult getPunchDamage(
 		u16 initial_wear = 0
 );
 
+u32 calculateResultWear(const u32 uses, const u16 initial_wear);
 f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);

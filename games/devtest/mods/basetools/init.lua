@@ -279,50 +279,135 @@ minetest.register_tool("basetools:sword_wood", {
 })
 minetest.register_tool("basetools:sword_stone", {
 	description = "Stone Sword".."\n"..
-		"Damage: fleshy=4",
+		"Damage: fleshy=5",
 	inventory_image = "basetools_stonesword.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
 		max_drop_level=0,
-		damage_groups = {fleshy=4},
+		damage_groups = {fleshy=5},
 	}
 })
 minetest.register_tool("basetools:sword_steel", {
 	description = "Steel Sword".."\n"..
-		"Damage: fleshy=6",
+		"Damage: fleshy=10",
 	inventory_image = "basetools_steelsword.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
 		max_drop_level=1,
-		damage_groups = {fleshy=6},
+		damage_groups = {fleshy=10},
+	}
+})
+minetest.register_tool("basetools:sword_titanium", {
+	description = "Titanium Sword".."\n"..
+		"Damage: fleshy=100",
+	inventory_image = "basetools_titaniumsword.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		max_drop_level=1,
+		damage_groups = {fleshy=100},
+	}
+})
+minetest.register_tool("basetools:sword_blood", {
+	description = "Blood Sword".."\n"..
+		"Damage: fleshy=1000",
+	inventory_image = "basetools_bloodsword.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		max_drop_level=1,
+		damage_groups = {fleshy=1000},
+	}
+})
+
+-- Max. damage sword
+minetest.register_tool("basetools:sword_mese", {
+	description = "Mese Sword".."\n"..
+		"Damage: fleshy=32767, fiery=32767, icy=32767".."\n"..
+		"Full Punch Interval: 0.0s",
+	inventory_image = "basetools_mesesword.png",
+	tool_capabilities = {
+		full_punch_interval = 0.0,
+		max_drop_level=1,
+		damage_groups = {fleshy=32767, fiery=32767, icy=32767},
 	}
 })
 
 -- Fire/Ice sword: Deal damage to non-fleshy damage groups
 minetest.register_tool("basetools:sword_fire", {
 	description = "Fire Sword".."\n"..
-		"Damage: icy=6",
+		"Damage: icy=10",
 	inventory_image = "basetools_firesword.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
 		max_drop_level=0,
-		damage_groups = {icy=6},
+		damage_groups = {icy=10},
 	}
 })
 minetest.register_tool("basetools:sword_ice", {
 	description = "Ice Sword".."\n"..
-		"Damage: fiery=6",
+		"Damage: fiery=10",
 	inventory_image = "basetools_icesword.png",
 	tool_capabilities = {
 		full_punch_interval = 1.0,
 		max_drop_level=0,
-		damage_groups = {fiery=6},
+		damage_groups = {fiery=10},
 	}
 })
+minetest.register_tool("basetools:sword_elemental", {
+	description = "Elemental Sword".."\n"..
+		"Damage: fiery=10, icy=10",
+	inventory_image = "basetools_elementalsword.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		max_drop_level=0,
+		damage_groups = {fiery=10, icy=10},
+	}
+})
+
+-- Healing weapons: heal HP
+minetest.register_tool("basetools:dagger_heal", {
+	description = "Healing Dagger".."\n"..
+		"Heal: fleshy=1".."\n"..
+		"Full Punch Interval: 0.5s",
+	inventory_image = "basetools_healdagger.png",
+	tool_capabilities = {
+		full_punch_interval = 0.5,
+		damage_groups = {fleshy=-1},
+	}
+})
+minetest.register_tool("basetools:sword_heal", {
+	description = "Healing Sword".."\n"..
+		"Heal: fleshy=10",
+	inventory_image = "basetools_healsword.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		damage_groups = {fleshy=-10},
+	}
+})
+minetest.register_tool("basetools:sword_heal_super", {
+	description = "Super Healing Sword".."\n"..
+		"Heal: fleshy=32768, fiery=32768, icy=32768",
+	inventory_image = "basetools_superhealsword.png",
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		damage_groups = {fleshy=-32768, fiery=-32768, icy=-32768},
+	}
+})
+
 
 --
 -- Dagger: Low damage, fast punch interval
 --
+minetest.register_tool("basetools:dagger_wood", {
+	description = "Wooden Dagger".."\n"..
+		"Damage: fleshy=1".."\n"..
+		"Full Punch Interval: 0.5s",
+	inventory_image = "basetools_wooddagger.png",
+	tool_capabilities = {
+		full_punch_interval = 0.5,
+		max_drop_level=0,
+		damage_groups = {fleshy=1},
+	}
+})
 minetest.register_tool("basetools:dagger_steel", {
 	description = "Steel Dagger".."\n"..
 		"Damage: fleshy=2".."\n"..
@@ -343,7 +428,7 @@ for i=1, #uses do
 	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", u), {
 		description = u.."-Uses Pickaxe".."\n"..
 			"Digs cracky=3",
-		inventory_image = "basetools_steelpick.png^[colorize:"..color..":127",
+		inventory_image = "basetools_usespick.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			max_drop_level=0,
 			groupcaps={
@@ -355,7 +440,7 @@ for i=1, #uses do
 	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", u), {
 		description = u.."-Uses Sword".."\n"..
 			"Damage: fleshy=1",
-		inventory_image = "basetools_woodsword.png^[colorize:"..color..":127",
+		inventory_image = "basetools_usessword.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			damage_groups = {fleshy=1},
 			punch_attack_uses = u,

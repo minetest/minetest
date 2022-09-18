@@ -25,7 +25,7 @@ end
 
 -- Unordered preserves the original order of the ContentDB API,
 -- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {} }
+local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
 
 local http = core.get_http_api()
 
@@ -89,7 +89,7 @@ local function download_and_extract(param)
 	if filename == "" or not core.download_file(param.url, filename) then
 		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
-			msg = fgettext("Failed to download $1", package.name)
+			msg = fgettext("Failed to download \"$1\"", package.title)
 		}
 	end
 
@@ -105,7 +105,7 @@ local function download_and_extract(param)
 	os.remove(filename)
 	if not tempfolder then
 		return {
-			msg = fgettext("Install: Unsupported file type or broken archive"),
+			msg = fgettext("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
 		}
 	end
 
@@ -129,7 +129,7 @@ local function start_install(package, reason)
 			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
 			core.delete_dir(result.path)
 			if not path then
-				gamedata.errormessage = msg
+				gamedata.errormessage = fgettext("Error installing \"$1\": $2", package.title, msg)
 			else
 				core.log("action", "Installed package to " .. path)
 
@@ -151,11 +151,9 @@ local function start_install(package, reason)
 
 				if conf_path then
 					local conf = Settings(conf_path)
-					if name_is_title then
-						conf:set("name",   package.title)
-					else
-						conf:set("title",  package.title)
-						conf:set("name",   package.name)
+					conf:set("title", package.title)
+					if not name_is_title then
+						conf:set("name", package.name)
 					end
 					if not conf:get("description") then
 						conf:set("description", package.short_description)
@@ -193,7 +191,7 @@ end
 
 local function queue_download(package, reason)
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
-	if number_downloading < max_concurrent_downloads then
+	if number_downloading < math.max(max_concurrent_downloads, 1) then
 		start_install(package, reason)
 	else
 		table.insert(download_queue, { package = package, reason = reason })
@@ -348,22 +346,21 @@ end
 
 local install_dialog = {}
 function install_dialog.get_formspec()
+	local selected_game, selected_game_idx = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+	if not selected_game_idx then
+		selected_game_idx = 1
+		selected_game = pkgmgr.games[1]
+	end
+
+	local game_list = {}
+	for i, game in ipairs(pkgmgr.games) do
+		game_list[i] = core.formspec_escape(game.title)
+	end
+
 	local package = install_dialog.package
 	local raw_deps = install_dialog.raw_deps
 	local will_install_deps = install_dialog.will_install_deps
 
-	local selected_game_idx = 1
-	local selected_gameid = core.settings:get("menu_last_game")
-	local games = table.copy(pkgmgr.games)
-	for i=1, #games do
-		if selected_gameid and games[i].id == selected_gameid then
-			selected_game_idx = i
-		end
-
-		games[i] = core.formspec_escape(games[i].name)
-	end
-
-	local selected_game = pkgmgr.games[selected_game_idx]
 	local deps_to_install = 0
 	local deps_not_found = 0
 
@@ -410,7 +407,7 @@ function install_dialog.get_formspec()
 		"container[0.375,0.70]",
 
 		"label[0,0.25;", fgettext("Base Game:"), "]",
-		"dropdown[2,0;4.25,0.5;gameid;", table.concat(games, ","), ";", selected_game_idx, "]",
+		"dropdown[2,0;4.25,0.5;selected_game;", table.concat(game_list, ","), ";", selected_game_idx, "]",
 
 		"label[0,0.8;", fgettext("Dependencies:"), "]",
 
@@ -461,9 +458,9 @@ function install_dialog.handle_submit(this, fields)
 		return true
 	end
 
-	if fields.gameid then
+	if fields.selected_game then
 		for _, game in pairs(pkgmgr.games) do
-			if game.name == fields.gameid then
+			if game.title == fields.selected_game then
 				core.settings:set("menu_last_game", game.id)
 				break
 			end
@@ -490,12 +487,10 @@ local confirm_overwrite = {}
 function confirm_overwrite.get_formspec()
 	local package = confirm_overwrite.package
 
-	return "size[11.5,4.5,true]" ..
-			"label[2,2;" ..
-			fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name) .. "]"..
-			"style[install;bgcolor=red]" ..
-			"button[3.25,3.5;2.5,0.5;install;" .. fgettext("Overwrite") .. "]" ..
-			"button[5.75,3.5;2.5,0.5;cancel;" .. fgettext("Cancel") .. "]"
+	return confirmation_formspec(
+		fgettext("\"$1\" already exists. Would you like to overwrite it?", package.name),
+		'install', fgettext("Overwrite"),
+		'cancel', fgettext("Cancel"))
 end
 
 function confirm_overwrite.handle_submit(this, fields)
@@ -862,8 +857,7 @@ function store.get_formspec(dlgdata)
 			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
 			formspec[#formspec + 1] = left_base
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_queued.png;queued]"
+			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
 		elseif not package.path then
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"

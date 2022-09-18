@@ -8,7 +8,7 @@ GAME_GIT=https://github.com/minetest/minetest_game
 GAME_BRANCH=master
 GAME_NAME=minetest_game
 
-dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+topdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 <build directory>"
 	exit 1
@@ -28,7 +28,7 @@ if [ -z "$compiler" ]; then
 	echo "Unable to determine which MinGW compiler to use"
 	exit 1
 fi
-toolchain_file=$dir/toolchain_${compiler/-gcc/}.cmake
+toolchain_file=$topdir/toolchain_${compiler/-gcc/}.cmake
 echo "Using $toolchain_file"
 
 # Try to find runtime DLLs in various paths (varies by distribution, sigh)
@@ -45,17 +45,18 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=1.9.0mt3
-ogg_version=1.3.4
+irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
+ogg_version=1.3.5
+openal_version=1.21.1
 vorbis_version=1.3.7
-curl_version=7.76.1
+curl_version=7.81.0
 gettext_version=0.20.1
-freetype_version=2.10.4
-sqlite3_version=3.35.5
+freetype_version=2.11.1
+sqlite3_version=3.37.2
 luajit_version=2.1.0-beta3
 leveldb_version=1.23
 zlib_version=1.2.11
-zstd_version=1.4.9
+zstd_version=1.5.2
 
 mkdir -p $libdir
 
@@ -90,7 +91,7 @@ download "http://minetest.kitsunemimi.pw/freetype2-$freetype_version-win64.zip" 
 download "http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/luajit-$luajit_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip" leveldb-$leveldb_version.zip
-download "http://minetest.kitsunemimi.pw/openal_stripped64.zip" 'openal_stripped.zip' unzip_nofolder
+download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win64.zip"
 
 # Set source dir, downloading Minetest as needed
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
@@ -112,14 +113,12 @@ git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 # Build the thing
 cd $builddir
 [ -d build ] && rm -rf build
-mkdir build
-cd build
 
 irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
-cmake -S $sourcedir -B . \
+cmake -S $sourcedir -B build \
 	-DCMAKE_TOOLCHAIN_FILE=$toolchain_file \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
@@ -129,7 +128,6 @@ cmake -S $sourcedir -B . \
 	-DENABLE_SOUND=1 \
 	-DENABLE_CURL=1 \
 	-DENABLE_GETTEXT=1 \
-	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
 	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \
@@ -155,9 +153,9 @@ cmake -S $sourcedir -B . \
 	-DVORBIS_DLL="$vorbis_dlls" \
 	-DVORBISFILE_LIBRARY=$libdir/libvorbis/lib/libvorbisfile.dll.a \
 	\
-	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include/AL \
-	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/libOpenAL32.dll.a \
-	-DOPENAL_DLL=$libdir/openal_stripped/bin/OpenAL32.dll \
+	-DOPENAL_INCLUDE_DIR=$libdir/openal/include/AL \
+	-DOPENAL_LIBRARY=$libdir/openal/lib/libOpenAL32.dll.a \
+	-DOPENAL_DLL=$libdir/openal/bin/OpenAL32.dll \
 	\
 	-DCURL_DLL=$libdir/curl/bin/libcurl-4.dll \
 	-DCURL_INCLUDE_DIR=$libdir/curl/include \
@@ -181,9 +179,9 @@ cmake -S $sourcedir -B . \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
 	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 
-make -j$(nproc)
+cmake --build build -j$(nproc)
 
-[ -z "$NO_PACKAGE" ] && make package
+[ -z "$NO_PACKAGE" ] && cmake --build build --target package
 
 exit 0
 # EOF

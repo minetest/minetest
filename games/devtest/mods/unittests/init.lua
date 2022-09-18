@@ -36,6 +36,7 @@ local function await(invoke)
 			called_early = {...}
 		else
 			coroutine.resume(co, ...)
+			co = nil
 		end
 	end)
 	if called_early ~= true then
@@ -112,7 +113,7 @@ local function wait_for_map(player, callback)
 		if core.get_node_or_nil(player:get_pos()) ~= nil then
 			callback()
 		else
-			minetest.after(0, check)
+			core.after(0, check)
 		end
 	end
 	check()
@@ -170,11 +171,14 @@ end
 
 --------------
 
-local modpath = minetest.get_modpath("unittests")
+local modpath = core.get_modpath("unittests")
 dofile(modpath .. "/misc.lua")
 dofile(modpath .. "/player.lua")
 dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")
+dofile(modpath .. "/async_env.lua")
+dofile(modpath .. "/entity.lua")
+dofile(modpath .. "/content_ids.lua")
 
 --------------
 
@@ -183,7 +187,7 @@ if core.settings:get_bool("devtest_unittests_autostart", false) then
 		coroutine.wrap(unittests.run_all)()
 	end)
 else
-	minetest.register_chatcommand("unittests", {
+	core.register_chatcommand("unittests", {
 		privs = {basic_privs=true},
 		description = "Runs devtest unittests (may modify player or map state)",
 		func = function(name, param)
