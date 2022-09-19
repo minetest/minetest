@@ -33,15 +33,13 @@ vec3 uncharted2Tonemap(vec3 x)
 
 vec4 applyToneMapping(vec4 color)
 {
-	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
-	const float gamma = 1.6;
 	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
 	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
-	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
+	return color;
 }
 #endif
 
@@ -49,6 +47,8 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
+	// translate to linear colorspace (approximate)
+	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
 	float luminance = dot(color.rgb, vec3(0.213, 0.715, 0.072)) + 1e-4;
 	color.rgb *= min(1., bloomLuminanceThreshold / luminance);
 	color.rgb += texture2D(bloom, uv).rgb;
@@ -56,6 +56,9 @@ void main(void)
 #if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
 #endif
+
+	// return to sRGB colorspace (approximate)
+	color = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
 
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }

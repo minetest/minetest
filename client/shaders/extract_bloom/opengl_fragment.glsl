@@ -14,6 +14,8 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
+	// translate to linear colorspace (approximate)
+	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
 	float luminance = dot(color.rgb, vec3(0.213, 0.715, 0.072)) + 1e-4;
 	color.rgb *= max(0., 1. - bloomLuminanceThreshold / luminance);
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
