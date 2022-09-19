@@ -2,6 +2,7 @@
 
 uniform sampler2D rendered;
 uniform vec2 texelSize0;
+uniform lowp float bloomRadius = 3.0;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -12,15 +13,14 @@ centroid varying vec2 varTexCoord;
 void main(void)
 {
 	// kernel distance and linear size
-	const lowp float d = 3.;
-	const lowp float n = 2. * d + 1.;
+	lowp float n = 2. * bloomRadius + 1.;
 
-	vec2 uv = varTexCoord.st - vec2(0., d * texelSize0.y);
+	vec2 uv = varTexCoord.st - vec2(0., bloomRadius * texelSize0.y);
 	vec4 color = vec4(0.);
 	for (lowp float i = 0.; i < n; i++) {
-		color += texture2D(rendered, uv).rgba * ((d + 1.) - abs(i - d));
+		color += texture2D(rendered, uv).rgba * ((bloomRadius + 1.) - abs(i - bloomRadius));
 		uv += vec2(0., texelSize0.y);
 	}
-	color /= (d + 1.) * (d + 1.);
+	color /= (bloomRadius + 1.) * (bloomRadius + 1.);
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }

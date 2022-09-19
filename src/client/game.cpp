@@ -433,6 +433,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	float m_bloom_luminance_threshold;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
 	float m_bloom_intensity;
+	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
+	float m_bloom_radius;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -445,6 +447,8 @@ public:
 			m_bloom_luminance_threshold = g_settings->getFloat("bloom_luminance_threshold", 0.0f, 2.0f);
 		if (name == "bloom_intensity")
 			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.1f, 10.0f);
+		if (name == "bloom_radius")
+			m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -478,17 +482,20 @@ public:
 		m_texel_size0("texelSize0"),
 		m_exposure_factor_pixel("exposureFactor"),
 		m_bloom_luminance_threshold_pixel("bloomLuminanceThreshold"),
-		m_bloom_intensity_pixel("bloomIntensity")
+		m_bloom_intensity_pixel("bloomIntensity"),
+		m_bloom_radius_pixel("bloomRadius")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_luminance_threshold", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
 		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_bloom_luminance_threshold = g_settings->getFloat("bloom_luminance_threshold", 0.0f, 2.0f);
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.1f, 10.0f);
+		m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -574,6 +581,7 @@ public:
 		if (m_bloom_enabled) {
 			m_bloom_luminance_threshold_pixel.set(&m_bloom_luminance_threshold, services);
 			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);
+			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 		}
 	}
 
