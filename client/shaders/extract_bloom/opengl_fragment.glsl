@@ -3,7 +3,7 @@
 uniform sampler2D rendered;
 uniform mediump float exposureFactor = 2.5;
 uniform float bloomLuminanceThreshold = 1.0;
-uniform lowp float bloomBoost = 0.0;
+uniform lowp float bloomIntensity = 1.0;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -20,6 +20,6 @@ void main(void)
 	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
 	color.rgb = color.rgb * exposureFactor;
 	float luminance = dot(color.rgb, vec3(0.213, 0.715, 0.072)) + 1e-4;
-	color.rgb *= (1. + bloomBoost) * max(0., 1. - bloomLuminanceThreshold / luminance);
+	color.rgb *= bloomIntensity * max(0., 1. - bloomLuminanceThreshold / luminance);
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }

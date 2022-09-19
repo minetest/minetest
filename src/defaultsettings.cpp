@@ -266,7 +266,7 @@ void set_default_settings()
 	settings->setDefault("exposure_factor", "1.0");
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("bloom_luminance_threshold", "1.0");
-	settings->setDefault("bloom_boost", "0.0");
+	settings->setDefault("bloom_intensity", "1.0");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
