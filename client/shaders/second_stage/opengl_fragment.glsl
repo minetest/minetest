@@ -13,7 +13,7 @@ centroid varying vec2 varTexCoord;
 
 #if ENABLE_BLOOM
 
-const float bloomLuminanceThreshold = 0.7;
+uniform float bloomLuminanceThreshold = 1.0;
 
 vec4 applyBloom(vec4 color, vec2 uv)
 {

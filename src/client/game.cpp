@@ -428,6 +428,11 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	std::array<float, 2> m_texel_size0_values;
 	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
 	float m_user_exposure_factor;
+	bool m_bloom_enabled;
+	CachedPixelShaderSetting<float> m_bloom_luminance_threshold_pixel;
+	float m_bloom_luminance_threshold;
+	CachedPixelShaderSetting<float> m_bloom_boost_pixel;
+	float m_bloom_boost;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -436,6 +441,10 @@ public:
 			m_fog_enabled = g_settings->getBool("enable_fog");
 		if (name == "exposure_factor")
 			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		if (name == "bloom_luminance_threshold")
+			m_bloom_luminance_threshold = g_settings->getFloat("bloom_luminance_threshold", 0.0f, 2.0f);
+		if (name == "bloom_boost")
+			m_bloom_boost = g_settings->getFloat("bloom_boost", 0.0f, 2.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -467,12 +476,19 @@ public:
 		m_texture2("texture2"),
 		m_texture3("texture3"),
 		m_texel_size0("texelSize0"),
-		m_exposure_factor_pixel("exposureFactor")
+		m_exposure_factor_pixel("exposureFactor"),
+		m_bloom_luminance_threshold_pixel("bloomLuminanceThreshold"),
+		m_bloom_boost_pixel("bloomBoost")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_luminance_threshold", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_boost", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
 		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		m_bloom_enabled = g_settings->getBool("enable_bloom");
+		m_bloom_luminance_threshold = g_settings->getFloat("bloom_luminance_threshold", 0.0f, 2.0f);
+		m_bloom_boost = g_settings->getFloat("bloom_boost", 0.0f, 2.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -554,6 +570,11 @@ public:
 		if (std::isnan(exposure_factor))
 			exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
 		m_exposure_factor_pixel.set(&exposure_factor, services);
+
+		if (m_bloom_enabled) {
+			m_bloom_luminance_threshold_pixel.set(&m_bloom_luminance_threshold, services);
+			m_bloom_boost_pixel.set(&m_bloom_boost, services);
+		}
 	}
 
 	void onSetMaterial(const video::SMaterial &material)

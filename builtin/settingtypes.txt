@@ -460,6 +460,17 @@ exposure_factor	(Exposure Factor) float 1.0 0.1 10.0
 #    Bright colors will bleed over the neighboring objects.
 enable_bloom (Enable bloom) bool false
 
+#    Set the luminance threshold for bleeding colors.
+#    Lower values will cause more blurring of the scene.
+#    Range: from 0.0 to 2.0, Default: 1.0
+bloom_luminance_threshold (Bloom Luminance Threshold) float 1.0 0.0 2.0
+
+#    Set the boost of brightness when bleeding light.
+#    Causes bright colors to appear brighter.
+#    Value of 0.0 (default) does not add any boost.
+#    Range: from 0.0 to 2.0
+bloom_boost (Bloom Boost) float 0.0 0.0 2.0
+
 [*Audio]
 
 #    Volume of all sounds.
