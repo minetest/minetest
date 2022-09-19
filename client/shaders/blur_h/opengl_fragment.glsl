@@ -17,10 +17,14 @@ void main(void)
 
 	vec2 uv = varTexCoord.st - vec2(bloomRadius * texelSize0.x, 0.);
 	vec4 color = vec4(0.);
+	lowp float sum = 0.;
 	for (lowp float i = 0.; i < n; i++) {
-		color += texture2D(rendered, uv).rgba * ((bloomRadius + 1.) - abs(i - bloomRadius));
+		lowp float weight = 1. + 1. / bloomRadius - (abs(i / bloomRadius - 1.));
+		weight *= weight;
+		color += texture2D(rendered, uv).rgba * weight;
+		sum += weight;
 		uv += vec2(texelSize0.x, 0.);
 	}
-	color /= (bloomRadius + 1.) * (bloomRadius + 1.);
+	color /= sum;
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }
