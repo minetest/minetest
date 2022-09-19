@@ -3,17 +3,18 @@ msgstr ""
 "Project-Id-Version: Lithuanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2021-04-10 15:49+0000\n"
-"Last-Translator: Kornelijus Tvarijanavičius <kornelitvari@protonmail.com>\n"
+"PO-Revision-Date: 2022-09-21 14:22+0000\n"
+"Last-Translator: Bright Geyser <sirkfcpepsi@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"(n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 4.6-dev\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
+"19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
+"1 : 2);\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -36,17 +37,15 @@ msgstr "Komanda"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Duota komanda: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Žaisti vienam"
+msgstr "Rodyti prisijungusius žaidėjus"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Žaisti vienam"
+msgstr "Prisijungę žaidėjai: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -65,27 +64,28 @@ msgid "You died"
 msgstr "Jūs numirėte"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Komanda"
+msgstr "Galimos komandos:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Komanda"
+msgstr "Galimos komandos: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Komanda negalima: "
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid "Get help for commands"
-msgstr ""
+msgstr "Gauti komandų pagalbą"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Gauti daugiau informacijos naudokite '.help <cmd>', arba '.help all' "
+"parodyti visas komandas."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -138,11 +138,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Vėliau"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Niekada"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -157,8 +157,9 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Serveris palaiko protokolo versijas nuo $1 iki $2 "
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Visit website"
-msgstr ""
+msgstr "Svetainė"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -381,9 +382,8 @@ msgid "Texture packs"
 msgstr "Tekstūrų paketai"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Uninstall"
-msgstr "Įdiegti"
+msgstr "Išdiegti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
@@ -427,7 +427,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Urvai"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -448,44 +448,46 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Lygus reljefas"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Salos danguje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generuoti nefraktalinį reljefą: Vandenynuose ir po žeme"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Kalvos"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Humid rivers"
-msgstr ""
+msgstr "Tvankios upės"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Įdiegti"
+msgstr "Įdiegti žaidimą"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Įdiegti kitą žaidimą"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Ežerai"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
@@ -506,7 +508,7 @@ msgstr "Žemėlapių generavimas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Kalnai"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
@@ -517,9 +519,8 @@ msgid "Network of tunnels and caves"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No game selected"
-msgstr "Intervalo pasirinkimas"
+msgstr "Joks žaidimas nepasirinktas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -530,13 +531,12 @@ msgid "Reduces humidity with altitude"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Dešinieji langai"
+msgstr "Upės"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Upės jūros lygyje"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
