@@ -65,6 +65,8 @@ void main(void)
 
 #if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
+#else
+	color.rgb /= exposureFactor;
 #endif
 
 	// return to sRGB colorspace (approximate)
