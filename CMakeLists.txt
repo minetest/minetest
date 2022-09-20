@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(GCC_MINIMUM_VERSION "5.1")
 set(CLANG_MINIMUM_VERSION "3.5")
 
-# Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
+# You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 5)
 set(VERSION_MINOR 7)
 set(VERSION_PATCH 0)
