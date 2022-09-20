@@ -186,7 +186,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Copy parent position if local player is attached
 	if (getParent()) {
 		setPosition(m_cao->getPosition());
-		added_velocity = v3f(0.0f); // ignored
+		m_added_velocity = v3f(0.0f); // ignored
 		return;
 	}
 
@@ -202,12 +202,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		setPosition(position);
 
 		touching_ground = false;
-		added_velocity = v3f(0.0f); // ignored
+		m_added_velocity = v3f(0.0f); // ignored
 		return;
 	}
 
-	m_speed += added_velocity;
-	added_velocity = v3f(0.0f);
+	m_speed += m_added_velocity;
+	m_added_velocity = v3f(0.0f);
 
 	/*
 		Collision detection
@@ -292,7 +292,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = (m_cao == nullptr) ? 0.0f :
 		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
-	v3f accel_f;
+	v3f accel_f(0, -gravity, 0);
 	const v3f initial_position = position;
 	const v3f initial_speed = m_speed;
 
@@ -755,7 +755,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (getParent()) {
 		setPosition(m_cao->getPosition());
 		m_sneak_node_exists = false;
-		added_velocity = v3f(0.0f);
+		m_added_velocity = v3f(0.0f);
 		return;
 	}
 
@@ -771,12 +771,15 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 		touching_ground = false;
 		m_sneak_node_exists = false;
-		added_velocity = v3f(0.0f);
+		m_added_velocity = v3f(0.0f);
 		return;
 	}
 
-	m_speed += added_velocity;
-	added_velocity = v3f(0.0f);
+	m_speed += m_added_velocity;
+	m_added_velocity = v3f(0.0f);
+
+	// Apply gravity (note: this is broken, but kept since this is *old* move code)
+	m_speed.Y -= gravity * dtime;
 
 	/*
 		Collision detection
@@ -1117,8 +1120,10 @@ void LocalPlayer::handleAutojump(f32 dtime, Environment *env,
 		}
 	}
 
-	float jump_height = 1.1f; // TODO: better than a magic number
-	v3f jump_pos = initial_position + v3f(0.0f, jump_height * BS, 0.0f);
+	float jumpspeed = movement_speed_jump * physics_override.jump;
+	float peak_dtime = jumpspeed / gravity; // at the peak of the jump v = gt <=> t = v / g
+	float jump_height = (jumpspeed - 0.5f * gravity * peak_dtime) * peak_dtime; // s = vt - 1/2 gt^2
+	v3f jump_pos = initial_position + v3f(0.0f, jump_height, 0.0f);
 	v3f jump_speed = initial_speed;
 
 	// try at peak of jump, zero step height

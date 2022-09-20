@@ -60,6 +60,25 @@ minetest.register_node("testnodes:nodebox_leveled", {
 	groups = {dig_immediate=3},
 })
 
+
+local nodebox_wall = {
+	type = "connected",
+	fixed = {-0.125, -0.500, -0.125, 0.125, 0.500, 0.125},
+	connect_front = {-0.125, -0.500, -0.500, 0.125, 0.400, -0.125},
+	connect_back = {-0.125, -0.500, 0.125, 0.125, 0.400, 0.500},
+	connect_left = {-0.500, -0.500, -0.125, -0.125, 0.400, 0.125},
+	connect_right = {0.125, -0.500, -0.125, 0.500, 0.400, 0.125},
+}
+
+local nodebox_wall_thick = {
+	type = "connected",
+	fixed = {-0.25, -0.500, -0.25, 0.25, 0.500, 0.25},
+	connect_front = {-0.25, -0.500, -0.500, 0.25, 0.400, -0.25},
+	connect_back = {-0.25, -0.500, 0.25, 0.25, 0.400, 0.500},
+	connect_left = {-0.500, -0.500, -0.25, -0.25, 0.400, 0.25},
+	connect_right = {0.25, -0.500, -0.25, 0.500, 0.400, 0.25},
+}
+
 -- Wall-like nodebox that connects to neighbors
 minetest.register_node("testnodes:nodebox_connected", {
 	description = S("Connected Nodebox Test Node"),
@@ -69,13 +88,44 @@ minetest.register_node("testnodes:nodebox_connected", {
 	paramtype = "light",
 	connects_to = {"group:connected_nodebox"},
 	connect_sides = {"front", "back", "left", "right"},
-	node_box = {
-		type = "connected",
-		fixed = {-0.125, -0.500, -0.125, 0.125, 0.500, 0.125},
-		connect_front = {-0.125, -0.500, -0.500, 0.125, 0.400, -0.125},
-		connect_back = {-0.125, -0.500, 0.125, 0.125, 0.400, 0.500},
-		connect_left = {-0.500, -0.500, -0.125, -0.125, 0.400, 0.125},
-		connect_right = {0.125, -0.500, -0.125, 0.500, 0.400, 0.125},
+	node_box = nodebox_wall,
+})
+
+minetest.register_node("testnodes:nodebox_connected_facedir", {
+	description = S("Facedir Connected Nodebox Test Node"),
+	tiles = {
+		"testnodes_1.png",
+		"testnodes_2.png",
+		"testnodes_3.png",
+		"testnodes_4.png",
+		"testnodes_5.png",
+		"testnodes_6.png",
 	},
+	groups = {connected_nodebox=1, dig_immediate=3},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	connects_to = {"group:connected_nodebox"},
+	connect_sides = {"front", "back", "left", "right"},
+	node_box = nodebox_wall_thick,
+})
+
+minetest.register_node("testnodes:nodebox_connected_4dir", {
+	description = S("4Dir Connected Nodebox Test Node"),
+	tiles = {
+		"testnodes_1.png^[colorize:#FFFF00:127",
+		"testnodes_2.png^[colorize:#FFFF00:127",
+		"testnodes_3.png^[colorize:#FFFF00:127",
+		"testnodes_4.png^[colorize:#FFFF00:127",
+		"testnodes_5.png^[colorize:#FFFF00:127",
+		"testnodes_6.png^[colorize:#FFFF00:127",
+	},
+	groups = {connected_nodebox=1, dig_immediate=3},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "4dir",
+	connects_to = {"group:connected_nodebox"},
+	connect_sides = {"front", "back", "left", "right"},
+	node_box = nodebox_wall_thick,
 })
 

@@ -26,12 +26,16 @@
 ** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
 */
 
+extern "C" {
 #include "bit.h"
+}
 
 #define LUA_BITOP_VERSION	"1.0.2"
 
 #define LUA_LIB
+extern "C" {
 #include "lauxlib.h"
+}
 
 #ifdef _MSC_VER
 /* MSVC is stuck in the last century and doesn't have C99's stdint.h. */

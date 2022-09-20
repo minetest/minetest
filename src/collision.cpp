@@ -249,10 +249,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	} else {
 		time_notification_done = false;
 	}
+
+	v3f newpos_f = *pos_f + (*speed_f + accel_f * 0.5f * dtime) * dtime;
 	*speed_f += accel_f * dtime;
 
-	// If there is no speed, there are no collisions
-	if (speed_f->getLength() == 0)
+	// If the object is static, there are no collisions
+	if (newpos_f == *pos_f)
 		return result;
 
 	// Limit speed for avoiding hangs
@@ -270,7 +272,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
 	ScopeProfiler sp2(g_profiler, "collisionMoveSimple(): collect boxes", SPT_AVG);
 
-	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
 		MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5

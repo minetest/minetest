@@ -100,7 +100,7 @@ public:
 };
 
 /**
- * Implements a binary space partitioning tree 
+ * Implements a binary space partitioning tree
  * See also: https://en.wikipedia.org/wiki/Binary_space_partitioning
  */
 class MapBlockBspTree
@@ -221,6 +221,12 @@ public:
 			m_animation_force_timer--;
 	}
 
+	/// Radius of the bounding-sphere, in BS-space.
+	f32 getBoundingRadius() const { return m_bounding_radius; }
+
+	/// Center of the bounding-sphere, in BS-space, relative to block pos.
+	v3f getBoundingSphereCenter() const { return m_bounding_sphere_center; }
+
 	/// update transparent buffers to render towards the camera
 	void updateTransparentBuffers(v3f camera_pos, v3s16 block_pos);
 	void consolidateTransparentBuffers();
@@ -242,6 +248,10 @@ private:
 	MinimapMapblock *m_minimap_mapblock;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
+
+	f32 m_bounding_radius;
+	// MapblockMeshGenerator uses the same as mapblock center
+	v3f m_bounding_sphere_center = v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;

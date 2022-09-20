@@ -179,6 +179,7 @@ dofile(modpath .. "/itemdescription.lua")
 dofile(modpath .. "/async_env.lua")
 dofile(modpath .. "/entity.lua")
 dofile(modpath .. "/itemstack_equals.lua")
+dofile(modpath .. "/content_ids.lua")
 
 --------------
 
