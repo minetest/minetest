@@ -62,6 +62,8 @@ public:
 	bool swimming_vertical = false;
 	bool swimming_pitch = false;
 
+	f32 gravity = 0; // total downwards acceleration
+
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
