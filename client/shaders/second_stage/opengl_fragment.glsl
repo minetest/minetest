@@ -66,7 +66,7 @@ void main(void)
 #if ENABLE_TONE_MAPPING
 	color = applyToneMapping(color);
 #else
-	color.rgb /= exposureFactor;
+	color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
 #endif
 
 	// return to sRGB colorspace (approximate)
