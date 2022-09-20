@@ -45,6 +45,27 @@ local function configure_selected_world_params(idx)
 	end
 end
 
+-- retrieved from https://wondernetwork.com/pings with (hopefully) representative cities
+-- Amsterdam, Auckland, Brasilia, Denver, Lagos, Singapore
+local latency_matrix = {
+	["AF"] = { ["AS"]=258, ["EU"]=100, ["NA"]=218, ["OC"]=432, ["SA"]=308 },
+	["AS"] = { ["EU"]=168, ["NA"]=215, ["OC"]=125, ["SA"]=366 },
+	["EU"] = { ["NA"]=120, ["OC"]=298, ["SA"]=221 },
+	["NA"] = { ["OC"]=202, ["SA"]=168 },
+	["OC"] = { ["SA"]=411 },
+	["SA"] = {}
+}
+function estimate_continent_latency(own, spec)
+	local there = spec.geo_continent
+	if not own or not there then
+		return nil
+	end
+	if own == there then
+		return 0
+	end
+	return latency_matrix[there][own] or latency_matrix[own][there]
+end
+
 function render_serverlist_row(spec)
 	local text = ""
 	if spec.name then
