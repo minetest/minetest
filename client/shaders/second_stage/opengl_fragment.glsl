@@ -4,6 +4,7 @@
 uniform sampler2D rendered;
 uniform sampler2D bloom;
 uniform mediump float exposureFactor = 2.5;
+uniform lowp float bloomIntensity = 1.0;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -13,13 +14,9 @@ centroid varying vec2 varTexCoord;
 
 #if ENABLE_BLOOM
 
-uniform float bloomLuminanceThreshold = 1.0;
-
 vec4 applyBloom(vec4 color, vec2 uv)
 {
-	float luminance = dot(color.rgb, vec3(0.213, 0.715, 0.072)) + 1e-4;
-	color.rgb *= min(1., bloomLuminanceThreshold / luminance);
-	color.rgb += texture2D(bloom, uv).rgb;
+	color.rgb = mix(color.rgb, texture2D(bloom, uv).rgb, bloomIntensity);
 	return color;
 }
 
@@ -60,7 +57,7 @@ void main(void)
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
 	// translate to linear colorspace (approximate) and apply exposure
-	color = vec4(pow(color.rgb, vec3(2.2)) * exposureFactor, color.a);
+	color.rgb = pow(color.rgb, vec3(2.2)) * exposureFactor;
 
 #if ENABLE_BLOOM
 	color = applyBloom(color, uv);

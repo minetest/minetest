@@ -19,8 +19,7 @@ void main(void)
 	vec4 color = vec4(0.);
 	lowp float sum = 0.;
 	for (lowp float i = 0.; i < n; i++) {
-		lowp float weight = 1. + 1. / bloomRadius - (abs(i / bloomRadius - 1.));
-		weight *= weight;
+		lowp float weight = pow(1. - (abs(i / bloomRadius - 1.)), 1.3);
 		color += texture2D(rendered, uv).rgba * weight;
 		sum += weight;
 		uv += vec2(texelSize0.x, 0.);
