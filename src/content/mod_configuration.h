@@ -73,7 +73,7 @@ public:
 	void addGameMods(const SubgameSpec &gamespec);
 
 	/**
-	 * Adds mods specifed by a world.mt config
+	 * Adds mods specified by a world.mt config
 	 *
 	 * @param settings_path Path to world.mt
 	 * @param modPaths Map from virtual name to mod path
