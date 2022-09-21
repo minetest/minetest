@@ -9944,9 +9944,15 @@ Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshi
 
 See http://bitop.luajit.org/ for advanced information.
 
-Error Object Conversion
------------------------
+Error Handling
+--------------
 
-If an error object is not caught by a mod, it is converted to a string with
-`tostring` before being displayed. This means that you can use tables as error
-objects so long as you give them `__tostring` metamethods.
+When an error occurs that is not caught, Minetest calls the function
+`minetest.error_handler` with the error object as its argument. The return value
+is the error string that should be printed. By default this is a backtrace from
+`debug.traceback`. If the error object is not a string, it is first converted
+with `tostring` before being displayed. This means that you can use tables
+as error objects so long as you give them `__tostring` metamethods.
+
+You can override `minetest.error_handler`, but you _must_ end your function
+with a tail call to the previous error handler.

@@ -6,6 +6,9 @@
 --
 
 -- Initialize some very basic things
+function core.error_handler(err)
+	return debug.traceback(tostring(err), 2)
+end
 do
 	local function concat_args(...)
 		local n, t = select("#", ...), {...}
