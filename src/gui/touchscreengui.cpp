@@ -855,10 +855,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dy * d), -180), 180);
 
 					// update shootline
-					if (m_draw_crosshair) {
-						X = m_screensize.X / 2;
-						Y = m_screensize.Y / 2;
-					}
+					// no need to update (X, Y) when using crosshair since the shootline is not used
 					m_shootline = m_device
 							->getSceneManager()
 							->getSceneCollisionManager()
