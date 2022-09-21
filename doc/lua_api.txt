@@ -9948,11 +9948,12 @@ Error Handling
 --------------
 
 When an error occurs that is not caught, Minetest calls the function
-`minetest.error_handler` with the error object as its argument. The return value
-is the error string that should be printed. By default this is a backtrace from
+`minetest.error_handler` with the error object as its first argument. The second
+argument is the stack level where the error occurred. The return value is the
+error string that should be shown. By default this is a backtrace from
 `debug.traceback`. If the error object is not a string, it is first converted
-with `tostring` before being displayed. This means that you can use tables
-as error objects so long as you give them `__tostring` metamethods.
+with `tostring` before being displayed. This means that you can use tables as
+error objects so long as you give them `__tostring` metamethods.
 
-You can override `minetest.error_handler`, but you _must_ end your function
-with a tail call to the previous error handler.
+You can override `minetest.error_handler`. You should call the previous handler
+with the correct stack level in your implementation.

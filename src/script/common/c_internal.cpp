@@ -53,17 +53,16 @@ int script_error_handler(lua_State *L)
 	lua_getfield(L, -1, "error_handler");
 	if (!lua_isnil(L, -1)) {
 		lua_pushvalue(L, 1);
-		lua_call(L, 1, 1);
 	} else {
-		// No Lua error handler available. Call debug.traceback(tostring(#1), 2)
+		// No Lua error handler available. Call debug.traceback(tostring(#1), level).
 		lua_getglobal(L, "debug");
 		lua_getfield(L, -1, "traceback");
 		lua_getglobal(L, "tostring");
 		lua_pushvalue(L, 1);
 		lua_call(L, 1, 1);
-		lua_pushinteger(L, 2);
-		lua_call(L, 2, 1);
 	}
+	lua_pushinteger(L, 2); // Stack level
+	lua_call(L, 2, 1);
 	return 1;
 }
 
