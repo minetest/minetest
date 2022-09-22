@@ -465,7 +465,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		} else {
 			// jump pressed
 			// Reduce boost when speed already is high
-			jumpspeed = jumpspeed / (1.0f + (m_speed.Y / 24.0f));
+			jumpspeed = jumpspeed / (1.0f + (m_speed.Y * 2.8f / jumpspeed));
 		}
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
@@ -1080,7 +1080,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		} else {
 			// jump pressed
 			// Reduce boost when speed already is high
-			jumpspeed = jumpspeed / (1.0f + (m_speed.Y / 24.0f));
+			jumpspeed = jumpspeed / (1.0f + (m_speed.Y * 2.8f / jumpspeed));
 		}
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
