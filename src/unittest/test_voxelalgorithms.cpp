@@ -108,7 +108,8 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	v3s16 bpmin = getNodeBlockPos(pmin), bpmax = getNodeBlockPos(pmax);
 	DummyMap map(gamedef, bpmin, bpmax);
 
-	// Make a 21x21x21 hollow box centered at the origin with a hole at (19, 0, 0).
+	// Make a 21x21x21 hollow box centered at the origin with holes at
+	// (10, 0, 0) and (-9, 10, -9).
 	for (s16 z = pmin.Z; z <= pmax.Z; z++)
 	for (s16 y = pmin.Y; y <= pmax.Y; y++)
 	for (s16 x = pmin.X; x <= pmax.X; x++)
@@ -122,6 +123,7 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	for (s16 x = -9; x <= 9; x++)
 		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
 	map.setNode(v3s16(10, 0, 0), MapNode(CONTENT_AIR));
+	map.setNode(v3s16(-9, 10, -9), MapNode(t_CONTENT_WATER));
 
 	map.setNode(v3s16(0, 0, 0), MapNode(t_CONTENT_TORCH));
 
@@ -135,9 +137,9 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 
 	const NodeDefManager *ndef = gamedef->ndef();
 	{
-			MapNode n = map.getNode(v3s16(-9, -9, -9));
+			MapNode n = map.getNode(v3s16(-9, 9, -9));
 			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 0);
-			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 0);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 13);
 	}
 	{
 			MapNode n = map.getNode(v3s16(0, 1, 0));

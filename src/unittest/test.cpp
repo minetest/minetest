@@ -139,6 +139,8 @@ void TestGameDef::defineSomeNodes()
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	f.alpha = ALPHAMODE_BLEND;
+	f.light_propagates = true;
+	f.param_type = CPT_LIGHT;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 4;
 	f.is_ground_content = true;
