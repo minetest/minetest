@@ -434,19 +434,16 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// We can jump from a bouncy node we collided with this clientstep,
 	// even if we are not "touching" it at the end of clientstep.
-	bool bouncy_can_jump = false;
-	int actual_bouncy = 0;
+	int standing_node_bouncy = 0;
 	if (result.collides && m_speed.Y > 0.0f) {
 		// must use result.collisions here because sometimes collision_info
 		// is passed in prepopulated with a problematic floor.
 		for (const auto &colinfo : result.collisions) {
 			if (colinfo.axis == COLLISION_AXIS_Y) {
 				// we cannot rely on m_standing_node because "sneak stuff"
-				actual_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
-				if (actual_bouncy != 0) {
-					bouncy_can_jump = true;
+				standing_node_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
+				if (standing_node_bouncy != 0)
 					break;
-				}
 			}
 		}
 	}
@@ -454,13 +451,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Determine if jumping is possible
 	m_disable_jump = itemgroup_get(f.groups, "disable_jump") ||
 		itemgroup_get(f1.groups, "disable_jump");
-	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump || bouncy_can_jump)
+	m_can_jump = ((touching_ground && !is_climbing) || sneak_can_jump || standing_node_bouncy != 0)
 			&& !m_disable_jump;
 
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
-	if (bouncy_can_jump && m_can_jump && (control.jump || control.sneak)
-			&& actual_bouncy > 0) {
+	if (m_can_jump && (control.jump || control.sneak) && standing_node_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump
@@ -474,7 +470,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
 		m_can_jump = false;
-	} else if(m_speed.Y > jumpspeed && actual_bouncy < 0) {
+	} else if(m_speed.Y > jumpspeed && standing_node_bouncy < 0) {
 		// uncontrollable bouncy is limited to normal jump height.
 		m_can_jump = false;
 	}
@@ -1055,31 +1051,27 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// We can jump from a bouncy node we collided with this clientstep,
 	// even if we are not "touching" it at the end of clientstep.
-	bool bouncy_can_jump = false;
-	int actual_bouncy = 0;
+	int standing_node_bouncy = 0;
 	if (result.collides && m_speed.Y > 0.0f) {
 		// must use result.collisions here because sometimes collision_info
 		// is passed in prepopulated with a problematic floor.
 		for (const auto &colinfo : result.collisions) {
 			if (colinfo.axis == COLLISION_AXIS_Y) {
 				// we cannot rely on m_standing_node because "sneak stuff"
-				actual_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
-				if (actual_bouncy != 0) {
-					bouncy_can_jump = true;
+				standing_node_bouncy = itemgroup_get(nodemgr->get(map->getNode(colinfo.node_p)).groups, "bouncy");
+				if (standing_node_bouncy != 0)
 					break;
-				}
 			}
 		}
 	}
 
 	// Determine if jumping is possible
 	m_disable_jump = itemgroup_get(f.groups, "disable_jump");
-	m_can_jump = (touching_ground || bouncy_can_jump) && !m_disable_jump;
+	m_can_jump = (touching_ground || standing_node_bouncy != 0) && !m_disable_jump;
 
 	// Jump/Sneak key pressed while bouncing from a bouncy block
 	float jumpspeed = movement_speed_jump * physics_override.jump;
-	if (bouncy_can_jump && m_can_jump && (control.jump || control.sneak)
-			&& actual_bouncy > 0) {
+	if (m_can_jump && (control.jump || control.sneak) && standing_node_bouncy > 0) {
 		// controllable (>0) bouncy block
 		if (!control.jump) {
 			// sneak pressed, but not jump
@@ -1093,7 +1085,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_speed.Y += jumpspeed;
 		setSpeed(m_speed);
 		m_can_jump = false;
-	} else if(m_speed.Y > jumpspeed && actual_bouncy < 0) {
+	} else if(m_speed.Y > jumpspeed && standing_node_bouncy < 0) {
 		// uncontrollable bouncy is limited to normal jump height.
 		m_can_jump = false;
 	}
