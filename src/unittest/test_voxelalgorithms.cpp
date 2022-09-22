@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "voxelalgorithms.h"
 #include "util/numeric.h"
+#include "dummymap.h"
 
 class TestVoxelAlgorithms : public TestBase {
 public:
@@ -30,21 +31,21 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testVoxelLineIterator(const NodeDefManager *ndef);
+	void testVoxelLineIterator();
+	void testLighting(IGameDef *gamedef);
 };
 
 static TestVoxelAlgorithms g_test_instance;
 
 void TestVoxelAlgorithms::runTests(IGameDef *gamedef)
 {
-	const NodeDefManager *ndef = gamedef->getNodeDefManager();
-
-	TEST(testVoxelLineIterator, ndef);
+	TEST(testVoxelLineIterator);
+	TEST(testLighting, gamedef);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
+void TestVoxelAlgorithms::testVoxelLineIterator()
 {
 	// Test some lines
 	// Do not test lines that start or end on the border of
@@ -97,5 +98,65 @@ void TestVoxelAlgorithms::testVoxelLineIterator(const NodeDefManager *ndef)
 		UASSERT(iterator.m_current_node_pos == end_voxel);
 		// Test node count
 		UASSERTEQ(int, actual_nodecount, nodecount);
+	}
+}
+
+void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
+{
+	v3s16 pmin(-32, -32, -32);
+	v3s16 pmax(31, 31, 31);
+	v3s16 bpmin = getNodeBlockPos(pmin), bpmax = getNodeBlockPos(pmax);
+	DummyMap map(gamedef, bpmin, bpmax);
+
+	// Make a 21x21x21 hollow box centered at the origin with a hole at (19, 0, 0).
+	for (s16 z = pmin.Z; z <= pmax.Z; z++)
+	for (s16 y = pmin.Y; y <= pmax.Y; y++)
+	for (s16 x = pmin.X; x <= pmax.X; x++)
+		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
+	for (s16 z = -10; z <= 10; z++)
+	for (s16 y = -10; y <= 10; y++)
+	for (s16 x = -10; x <= 10; x++)
+		map.setNode(v3s16(x, y, z), MapNode(t_CONTENT_STONE));
+	for (s16 z = -9; z <= 9; z++)
+	for (s16 y = -9; y <= 9; y++)
+	for (s16 x = -9; x <= 9; x++)
+		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
+	map.setNode(v3s16(10, 0, 0), MapNode(CONTENT_AIR));
+
+	map.setNode(v3s16(0, 0, 0), MapNode(t_CONTENT_TORCH));
+
+	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
+	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
+	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+		std::map<v3s16, MapBlock*> modified_blocks;
+		voxalgo::repair_block_light(&map, map.getBlockNoCreate(v3s16(x, y, z)),
+				&modified_blocks);
+	}
+
+	const NodeDefManager *ndef = gamedef->ndef();
+	{
+			MapNode n = map.getNode(v3s16(-9, -9, -9));
+			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 0);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 0);
+	}
+	{
+			MapNode n = map.getNode(v3s16(0, 1, 0));
+			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 12);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
+	}
+	{
+			MapNode n = map.getNode(v3s16(9, 1, 0));
+			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
+	}
+	{
+			MapNode n = map.getNode(v3s16(10, 0, 0));
+			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 14);
+	}
+	{
+			MapNode n = map.getNode(v3s16(11, 0, 0));
+			UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 2);
+			UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 15);
 	}
 }

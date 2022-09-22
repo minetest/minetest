@@ -826,7 +826,7 @@ void fill_with_sunlight(MMVManip *vm, const NodeDefManager *ndef, v2s16 offset,
  * is sunlight above the block at the given z-x relative
  * node coordinates.
  */
-void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
+void is_sunlight_above_block(Map *map, mapblock_v3 pos,
 	const NodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
 	mapblock_v3 source_block_pos = pos + v3s16(0, 1, 0);
@@ -1044,7 +1044,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	}
 }
 
-void blit_back_with_light(ServerMap *map, MMVManip *vm,
+void blit_back_with_light(Map *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks)
 {
 	const NodeDefManager *ndef = map->getNodeDefManager();
@@ -1187,7 +1187,7 @@ void fill_with_sunlight(MapBlock *block, const NodeDefManager *ndef,
 	}
 }
 
-void repair_block_light(ServerMap *map, MapBlock *block,
+void repair_block_light(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> *modified_blocks)
 {
 	if (!block || block->isDummy())
