@@ -69,8 +69,10 @@ void main(void)
 	color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
 #endif
 
+	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
+
 	// return to sRGB colorspace (approximate)
-	color = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
+	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }
