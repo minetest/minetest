@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test_config.h"
 #include "util/string.h"
 
+#include <stdlib.h>
+
 class TestServerModManager : public TestBase
 {
 public:
@@ -61,8 +63,16 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 		_putenv(mod_path.c_str());
 	}
 #else
-	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
-	setenv("MINETEST_MOD_PATH", TEST_MOD_PATH, 1);
+	if(!getenv("TEST_SUBGAME_PATH")) {
+	    setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
+	} else {
+	    setenv("MINETEST_SUBGAME_PATH", getenv("TEST_SUBGAME_PATH"), 1);
+	}
+	if(!getenv("TEST_MOD_PATH")) {
+	    setenv("MINETEST_MOD_PATH", TEST_MOD_PATH, 1);
+	} else {
+	    setenv("MINETEST_MOD_PATH", getenv("TEST_MOD_PATH"), 1);
+	}
 #endif
 
 	TEST(testCreation);
@@ -103,6 +113,10 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 void TestServerModManager::testCreation()
 {
 	std::string path = std::string(TEST_WORLDDIR) + DIR_DELIM + "world.mt";
+	if (getenv("TEST_WORLDDIR")) {
+	    path = getenv("TEST_WORLDDIR");
+	    path = path + DIR_DELIM + "world.mt";
+	}
 	Settings world_config;
 	world_config.set("gameid", "devtest");
 	world_config.set("load_mod_test_mod", "true");
@@ -131,7 +145,12 @@ void TestServerModManager::testIsConsistent()
 
 void TestServerModManager::testGetMods()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	std::string path = std::string(TEST_WORLDDIR);
+	if (getenv("TEST_WORLDDIR")) {
+		path = getenv("TEST_WORLDDIR");
+	}
+
+	ServerModManager sm(path);
 	const auto &mods = sm.getMods();
 	UASSERTEQ(bool, mods.empty(), false);
 
@@ -155,7 +174,11 @@ void TestServerModManager::testGetMods()
 
 void TestServerModManager::testGetModspec()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	std::string path = std::string(TEST_WORLDDIR);
+	if (getenv("TEST_WORLDDIR")) {
+		path = getenv("TEST_WORLDDIR");
+	}
+	ServerModManager sm(path);
 	UASSERTEQ(const ModSpec *, sm.getModSpec("wrongmod"), NULL);
 	UASSERT(sm.getModSpec("basenodes") != NULL);
 }
@@ -170,7 +193,11 @@ void TestServerModManager::testGetModNamesWrongDir()
 
 void TestServerModManager::testGetModNames()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	std::string path = std::string(TEST_WORLDDIR);
+	if (getenv("TEST_WORLDDIR")) {
+		path = getenv("TEST_WORLDDIR");
+	}
+	ServerModManager sm(path);
 	std::vector<std::string> result;
 	sm.getModNames(result);
 	UASSERTEQ(bool, result.empty(), false);
@@ -187,7 +214,11 @@ void TestServerModManager::testGetModMediaPathsWrongDir()
 
 void TestServerModManager::testGetModMediaPaths()
 {
-	ServerModManager sm(std::string(TEST_WORLDDIR));
+	std::string path = std::string(TEST_WORLDDIR);
+	if (getenv("TEST_WORLDDIR")) {
+		path = getenv("TEST_WORLDDIR");
+	}
+	ServerModManager sm(path);
 	std::vector<std::string> result;
 	sm.getModsMediaPaths(result);
 	UASSERTEQ(bool, result.empty(), false);
