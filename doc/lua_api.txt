@@ -1828,7 +1828,24 @@ are effective towards.
 Groups in crafting recipes
 --------------------------
 
-An example: Make meat soup from any meat, any water and any bowl:
+In crafting recipes, you can specify a group as an input item.
+This means that any item in that group will be accepted as input.
+
+The basic syntax is:
+
+    "group:<group_name>"
+
+For example, `"group:meat"` will accept any item in the `meat` group.
+
+It is also possible to require an input item to be in
+multiple groups at once. The syntax for that is:
+
+    "group:<group_name_1>,<group_name_2>,(...),<group_name_n>"
+
+For example, `"group:leaves,birch,trimmed"` accepts any item which is member
+of *all* the groups `leaves` *and* `birch` *and* `trimmed`.
+
+An example recipe: Craft a raw meat soup from any meat, any water and any bowl:
 
     {
         output = "food:meat_soup_raw",
@@ -1839,7 +1856,9 @@ An example: Make meat soup from any meat, any water and any bowl:
         },
     }
 
-Another example: Make red wool from white wool and red dye:
+Another example: Craft red wool from white wool and red dye
+(here, "red dye" is defined as any item which is member of
+*both* the groups `dye` and `basecolor_red`).
 
     {
         type = "shapeless",
@@ -8474,36 +8493,135 @@ Used by `minetest.register_node`.
 Crafting recipes
 ----------------
 
-Used by `minetest.register_craft`.
+All crafting recipes take one or more items as input and have an
+optional output.
+Crafting needs inventory slots. From the crafting inputs, only one
+item per slot can be used per crafting, while the output is a single
+item stack of arbitrary size.
+
+Crafting recipe definitions are always a table with a number of
+parameters (listed below). They must be used as input parameter
+for `minetest.register_craft`.
+
+Input items can be specified via itemname, that is, without itemcount
+or wear. (The item count is always 1.)
+
+Input slots may alternatively accept an item from a group, with a syntax like
+`group:<group_name>`. See "Groups in crafting recipes" for details.
+
+The following sections describe the types and syntaxes of recipes.
 
 ### Shaped
 
+This is the default recipe type (when no `type` is specified).
+
+A shaped recipe takes one or multiple items as input and has
+a single item stack as output. The input items must be specified
+in a 2-dimensional matrix (see parameters below) to specify the
+exact arrangement (the "shape") in which the player must place them
+in the crafting grid.
+
+For example, for a 3x3 recipe, the `recipes` table must have
+3 rows and 3 columns.
+
+For the player to be able to craft a shaped recipe, they must
+have access to a crafting grid that has the same or larger
+width and height as the recipe. E.g. a crafting grid of
+size 2x2 can only craft recipes of size 2x2, 2x1, 1x2 and 1x1,
+but not recipes of size 3x3, 3x2, 2x3, etc.
+
+Parameters:
+
+* `type = "shaped"`: (optional) specifies recipe type as shaped
+* `output`: Itemstring of output itemstack (item counts >= 1 are allowed)
+* `recipe`: A 2-dimensional matrix of items, with a width *w* and height *h*.
+    * *w* and *h* are chosen by you, they don't have to be equal but must be at least 1
+    * The matrix is specified as a table containing tables containing itemnames
+    * The inner tables are the rows. There must be *h* tables, specified from the top to the bottom row
+    * Values inside of the inner table are the columns.
+      Each inner table must contain a list of *w* items, specified from left to right
+    * Empty slots *must* be filled with the empty string
+* `replacements`: Optional list of item pairs for replacing input items.
+    * When the output is crafted, Minetest goes through the list
+      of item pairs and replace each matching input item with
+      a replacement item (instead of consuming this input item)
+    * Each item pair must follow the syntax `{ old_item, new_item }`
+    * Warning: Replacements only work properly for input items
+      of a stack size of 1. You might want to set `stack_max` to
+      1 for these items.
+
+#### Examples
+
+Stone pickaxe:
+
     {
-        output = "default:pick_stone",
+        output = "example:stone_pickaxe",
+        -- This is a 3x3 recipe which needs 3 cobblestone in the 1st row,
+        -- and 1 stick in the horizontal middle in each of the 2nd and 3nd row.
+        -- The 4 remaining slots have to be empty.
         recipe = {
-            {"default:cobble", "default:cobble", "default:cobble"},
-            {"", "default:stick", ""},
-            {"", "default:stick", ""},  -- Also groups; e.g. "group:crumbly"
+            {"example:cobblestone", "example:cobblestone", "example:cobblestone"},
+            {"", "example:stick", ""},
+            {"", "example:stick", ""},
         },
-        replacements = <list of item pairs>,
-        -- replacements: replace one input item with another item on crafting
-        -- (optional).
+        -- There is no replacements table, so every input item
+        -- will be consumed.
+    }
+
+Wet sponge:
+
+    {
+        output = "example:wet_sponge",
+        -- This is a 2x1 recipe in which the player must place a
+        -- water bucket above a dry sponge
+        recipe = {
+            {"example:water_bucket"},
+            {"example:dry_sponge"},
+        },
+        -- When the wet sponge is crafted, the water bucket
+        -- in the input slot shall be replaced with an empty
+        -- bucket instead of consuming the water bucket completely.
+        replacements = {
+            {"example:water_bucket", "example:empty_bucket"},
+        },
     }
 
 ### Shapeless
 
+Same as shaped recipe, except the arrangement of items in the input
+crafting grid does not matter. Also, the recipe is a list of items instead
+of a 2D matrix.
+
+For the player to be able to craft a shapeless recipe, they must have
+access to a crafting grid that has at least as many slots
+as the number of required items. E.g. a crafting grid of size 3x3 can
+craft shapeless recipes with up to 9 input items. The width of height of
+the grid do *not* matter.
+
+Parameters:
+
+* `type = "shapeless"`: Mandatory
+* `output`: Same as for shaped recipe
+* `recipe`: List of item names
+* `replacements`: Same as for shaped recipe
+
+#### Example
+
     {
+        -- Craft a mushroom stew from a bowl, a brown mushroom and a red mushroom
+        -- (no matter where in the input grid the items are placed)
         type = "shapeless",
-        output = "mushrooms:mushroom_stew",
+        output = "example:mushroom_stew",
         recipe = {
-            "mushrooms:bowl",
-            "mushrooms:mushroom_brown",
-            "mushrooms:mushroom_red",
+            "example:bowl",
+            "example:mushroom_brown",
+            "example:mushroom_red",
         },
-        replacements = <list of item pairs>,
     }
 
 ### Tool repair
+
+Syntax:
 
     {
         type = "toolrepair",
@@ -8511,7 +8629,9 @@ Used by `minetest.register_craft`.
     }
 
 Adds a shapeless recipe for *every* tool that doesn't have the `disable_repair=1`
-group. Player can put 2 equal tools in the craft grid to get one "repaired" tool
+group. If this recipe is used, repairing is possible with any crafting grid
+with at least 2 slots.
+The player can put 2 equal tools in the craft grid to get one "repaired" tool
 back.
 The wear of the output is determined by the wear of both tools, plus a
 'repair bonus' given by `additional_wear`. To reduce the wear (i.e. 'repair'),
@@ -8526,25 +8646,79 @@ no crafting is possible.
 
 ### Cooking
 
+A cooking recipe has a single input item, a single output item stack
+and a cooking time. It represents cooking/baking/smelting/etc. items in
+an oven, furnace, or something similar; the exact meaning is up for games
+to decide, if they choose to use cooking at all.
+
+The engine does not implement anything specific to cooking recipes, but
+the recipes can be retrieved later using `minetest.get_craft_result` to
+have a consistent interface across different games/mods.
+
+Parameters:
+
+* `type = "cooking"`: Mandatory
+* `output`: Same as for shaped recipe
+* `recipe`: An itemname of the single input item
+* `cooktime`: (optional) Time it takes to cook this item, in seconds.
+              A floating-point number. (default: 3.0)
+* `replacements`: Same as for shaped recipes
+
+Note: Games and mods are free to re-interpret the cooktime in special
+cases, e.g. for a super furnace that cooks items twice as fast.
+
+#### Example
+
+Cooking sand to glass in 3 seconds:
+
     {
         type = "cooking",
-        output = "default:glass",
-        recipe = "default:sand",
-        cooktime = 3,
+        output = "example:glass",
+        recipe = "example:sand",
+        cooktime = 3.0,
     }
 
-### Furnace fuel
+### Fuel
+
+A fuel recipe is an item associated with a "burning time" and an optional
+item replacement. There is no output. This is usually used as fuel for
+furnaces, ovens, stoves, etc.
+
+Like with cooking recipes, the engine does not do anything specific with
+fuel recipes and it's up to games and mods to use them by retrieving
+them via `minetest.get_craft_result`.
+
+Parameters:
+
+* `type = "fuel"`: Mandatory
+* `recipe`: Itemname of the item to be used as fuel
+* `burntime`: (optional) Burning time this item provides, in seconds.
+              A floating-point number. (default: 1.0)
+* `replacements`: Same as for shaped recipes
+
+Note: Games and mods are free to re-interpret the burntime in special
+cases, e.g. for an efficient furnace in which fuels burn twice as
+long.
+
+#### Examples
+
+Coal lump with a burntime of 20 seconds. Will be consumed when used.
 
     {
         type = "fuel",
-        recipe = "bucket:bucket_lava",
-        burntime = 60,
-        replacements = {{"bucket:bucket_lava", "bucket:bucket_empty"}},
+        recipe = "example:coal_lump",
+        burntime = 20.0,
     }
 
-The engine does not implement anything specific to cooking or fuels, but the
-recpies can be retrieved later using `minetest.get_craft_result` to have a
-consistent interface across different games/mods.
+Lava bucket with a burn time of 60 seconds. Will become an empty bucket
+if used:
+
+    {
+        type = "fuel",
+        recipe = "example:lava_bucket",
+        burntime = 60.0,
+        replacements = {{"example:lava_bucket", "example:empty_bucket"}},
+    }
 
 Ore definition
 --------------
