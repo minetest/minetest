@@ -49,10 +49,6 @@ TEST_CASE("benchmark_lighting")
 	}
 
 	// Make a platform with a light below it.
-	for (s16 z = pmin.Z; z <= pmax.Z; z++)
-	for (s16 y = pmin.Y; y <= pmax.Y; y++)
-	for (s16 x = pmin.X; x <= pmax.X; x++)
-		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
 	for (s16 z = -10; z <= 10; z++)
 	for (s16 x = -10; x <= 10; x++)
 		map.setNode(v3s16(x, 1, z), MapNode(content_wall));

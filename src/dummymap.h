@@ -32,8 +32,11 @@ public:
 			v2s16 p2d(x, z);
 			MapSector *sector = new MapSector(this, p2d, gamedef);
 			m_sectors[p2d] = sector;
-			for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
-				sector->createBlankBlock(y);
+			for (s16 y = bpmin.Y; y <= bpmax.Y; y++) {
+				MapBlock *mapblock = sector->createBlankBlock(y);
+				for (u32 i = 0; i < MapBlock::nodecount; i++)
+					mapblock->getData()[i] = MapNode(CONTENT_AIR);
+			}
 		}
 	}
 

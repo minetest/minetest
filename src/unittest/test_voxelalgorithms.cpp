@@ -110,10 +110,6 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 
 	// Make a 21x21x21 hollow box centered at the origin with holes at
 	// (10, 0, 0) and (-9, 10, -9).
-	for (s16 z = pmin.Z; z <= pmax.Z; z++)
-	for (s16 y = pmin.Y; y <= pmax.Y; y++)
-	for (s16 x = pmin.X; x <= pmax.X; x++)
-		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
 	for (s16 z = -10; z <= 10; z++)
 	for (s16 y = -10; y <= 10; y++)
 	for (s16 x = -10; x <= 10; x++)
