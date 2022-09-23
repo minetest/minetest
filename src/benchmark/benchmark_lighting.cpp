@@ -44,6 +44,7 @@ TEST_CASE("benchmark_lighting")
 		ContentFeatures f;
 		f.name = "light";
 		f.param_type = CPT_LIGHT;
+		f.light_propagates = true;
 		f.light_source = 14;
 		content_light = ndef->set(f.name, f);
 	}
