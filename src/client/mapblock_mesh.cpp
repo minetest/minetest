@@ -651,7 +651,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	const ContentFeatures &f2 = ndef->get(m2);
 
 	// Contents don't differ for different forms of same liquid
-	if (f1.sameLiquid(f2))
+	if (f1.sameLiquidRender(f2))
 		return 0;
 
 	u8 c1 = f1.solidness;
@@ -668,9 +668,9 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	if (c1 == c2) {
 		*equivalent = true;
 		// If same solidness, liquid takes precense
-		if (f1.isLiquid())
+		if (f1.isLiquidRender())
 			return 1;
-		if (f2.isLiquid())
+		if (f2.isLiquidRender())
 			return 2;
 	}
 
