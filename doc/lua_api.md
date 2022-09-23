@@ -1276,8 +1276,9 @@ The function of `param2` is determined by `paramtype2` in node definition.
       6 = y+, but rotated by  90°
       7 = y-, but rotated by -90°
     * By default, on placement the param2 is automatically set to the
-      appropriate rotation (0 to 5), depending on which side
-      was pointed at
+      appropriate rotation (0 to 5), depending on which side was
+      pointed at. With the node field `wallmounted_rotate_vertical = true`,
+      the param2 values 6 and 7 might additionally be set
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
