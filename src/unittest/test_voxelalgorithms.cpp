@@ -108,8 +108,7 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	v3s16 bpmin = getNodeBlockPos(pmin), bpmax = getNodeBlockPos(pmax);
 	DummyMap map(gamedef, bpmin, bpmax);
 
-	// Make a 21x21x21 hollow box centered at the origin with holes at
-	// (10, 0, 0) and (-9, 10, -9).
+	// Make a 21x21x21 hollow box centered at the origin.
 	for (s16 z = -10; z <= 10; z++)
 	for (s16 y = -10; y <= 10; y++)
 	for (s16 x = -10; x <= 10; x++)
@@ -118,10 +117,6 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	for (s16 y = -9; y <= 9; y++)
 	for (s16 x = -9; x <= 9; x++)
 		map.setNode(v3s16(x, y, z), MapNode(CONTENT_AIR));
-	map.setNode(v3s16(10, 0, 0), MapNode(CONTENT_AIR));
-	map.setNode(v3s16(-9, 10, -9), MapNode(t_CONTENT_WATER));
-
-	map.setNode(v3s16(0, 0, 0), MapNode(t_CONTENT_TORCH));
 
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
@@ -129,6 +124,14 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		voxalgo::repair_block_light(&map, map.getBlockNoCreate(v3s16(x, y, z)),
 				&modified_blocks);
+	}
+
+	// Place two holes on the edges a torch in the center.
+	{
+		std::map<v3s16, MapBlock*> modified_blocks;
+		map.addNodeAndUpdate(v3s16(10, 0, 0), MapNode(CONTENT_AIR), modified_blocks);
+		map.addNodeAndUpdate(v3s16(-9, 10, -9), MapNode(t_CONTENT_WATER), modified_blocks);
+		map.addNodeAndUpdate(v3s16(0, 0, 0), MapNode(t_CONTENT_TORCH), modified_blocks);
 	}
 
 	const NodeDefManager *ndef = gamedef->ndef();
