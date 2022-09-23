@@ -55,17 +55,17 @@ TEST_CASE("benchmark_lighting")
 		map.setNode(v3s16(x, 1, z), MapNode(content_wall));
 	map.setNode(v3s16(0, -10, 0), MapNode(content_light));
 
-	std::map<v3s16, MapBlock*> modified_blocks;
-
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
-	for (s16 x = bpmin.X; x <= bpmax.X; x++)
+	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+		std::map<v3s16, MapBlock*> modified_blocks;
 		voxalgo::repair_block_light(&map, map.getBlockNoCreate(v3s16(x, y, z)),
 				&modified_blocks);
+	}
 
 	BENCHMARK_ADVANCED("lighting")(Catch::Benchmark::Chronometer meter) {
+		std::map<v3s16, MapBlock*> modified_blocks;
 		meter.measure([&] {
-			modified_blocks.clear();
 			map.addNodeAndUpdate(v3s16(0, 0, 0), MapNode(content_light), modified_blocks);
 			map.removeNodeAndUpdate(v3s16(0, 0, 0), modified_blocks);
 		});
