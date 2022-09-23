@@ -63,11 +63,23 @@ TEST_CASE("benchmark_lighting")
 				&modified_blocks);
 	}
 
-	BENCHMARK_ADVANCED("lighting")(Catch::Benchmark::Chronometer meter) {
+	BENCHMARK_ADVANCED("voxalgo::update_lighting_nodes")(Catch::Benchmark::Chronometer meter) {
 		std::map<v3s16, MapBlock*> modified_blocks;
 		meter.measure([&] {
 			map.addNodeAndUpdate(v3s16(0, 0, 0), MapNode(content_light), modified_blocks);
 			map.removeNodeAndUpdate(v3s16(0, 0, 0), modified_blocks);
+		});
+	};
+
+	BENCHMARK_ADVANCED("voxalgo::blit_back_with_light")(Catch::Benchmark::Chronometer meter) {
+		std::map<v3s16, MapBlock*> modified_blocks;
+		MMVManip vm(&map);
+		vm.initialEmerge(v3s16(0, 0, 0), v3s16(0, 0, 0), false);
+		meter.measure([&] {
+			vm.setNode(v3s16(0, 0, 0), MapNode(content_light));
+			voxalgo::blit_back_with_light(&map, &vm, &modified_blocks);
+			vm.setNode(v3s16(0, 0, 0), MapNode(CONTENT_AIR));
+			voxalgo::blit_back_with_light(&map, &vm, &modified_blocks);
 		});
 	};
 }
