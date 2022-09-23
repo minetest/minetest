@@ -209,9 +209,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 		Added new particlespawner parameters
 		[scheduled bump for 5.6.0]
+	PROTOCOL VERSION 41:
+		Added support raillike tiles for 0 and 1 connections
 */
 
-#define LATEST_PROTOCOL_VERSION 41
+#define LATEST_PROTOCOL_VERSION 42
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
