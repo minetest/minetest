@@ -458,7 +458,13 @@ exposure_factor	(Exposure Factor) float 1.0 0.1 10.0
 
 #    Set to true to enable bloom effect.
 #    Bright colors will bleed over the neighboring objects.
-enable_bloom (Enable bloom) bool false
+enable_bloom (Enable Bloom) bool false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants: 
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+enable_bloom_debug (Enable Bloom Debug) bool false
 
 #    Set the intensity of bloom
 #    Smaller values make bloom more subtle

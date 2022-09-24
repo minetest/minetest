@@ -16,7 +16,15 @@ centroid varying vec2 varTexCoord;
 
 vec4 applyBloom(vec4 color, vec2 uv)
 {
-	color.rgb = mix(color.rgb, texture2D(bloom, uv).rgb, bloomIntensity);
+	float bias = bloomIntensity;
+	vec4 bloom = texture2D(bloom, uv);
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 && uv.y < 0.5)
+		return vec4(bloom.rgb, color.a);
+	if (uv.x < 0.5)
+		return color;
+#endif
+	color.rgb = mix(color.rgb, bloom.rgb, bias);
 	return color;
 }
 
@@ -56,18 +64,32 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
-	// translate to linear colorspace (approximate) and apply exposure
-	color.rgb = pow(color.rgb, vec3(2.2)) * exposureFactor;
+
+	// translate to linear colorspace (approximate)
+	color.rgb = pow(color.rgb, vec3(2.2));
+
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 || uv.y > 0.5)
+#endif
+	{
+		color.rgb *= exposureFactor;
+	}
+
 
 #if ENABLE_BLOOM
 	color = applyBloom(color, uv);
 #endif
 
-#if ENABLE_TONE_MAPPING
-	color = applyToneMapping(color);
-#else
-	color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
+	{
+#if ENABLE_TONE_MAPPING
+		color = applyToneMapping(color);
+#else
+		color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+#endif
+	}
 
 	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
 

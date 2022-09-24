@@ -265,6 +265,7 @@ void set_default_settings()
 	settings->setDefault("enable_waving_plants", "false");
 	settings->setDefault("exposure_factor", "1.0");
 	settings->setDefault("enable_bloom", "false");
+	settings->setDefault("enable_bloom_debug", "false");
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "16");
 
