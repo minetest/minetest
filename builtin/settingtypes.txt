@@ -466,6 +466,11 @@ enable_bloom (Enable Bloom) bool false
 #    bottom-left - raw base image, bottom-right - bloom texture.
 enable_bloom_debug (Enable Bloom Debug) bool false
 
+#    Set to true to use dedicated texture at each step of bloom effect.
+#    This is a compatibility setting to avoid visual artifacts 
+#    on certain GPUs and video drivers.
+enable_bloom_dedicated_texture (Enable Bloom Dedicated Texture) bool false
+
 #    Set the intensity of bloom
 #    Smaller values make bloom more subtle
 #    Range: from 0.01 to 1.0, default: 1.0
@@ -476,6 +481,7 @@ bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
 #    at the cost of higher resource consumption.
 #    Range: from 1 to 64, default: 16
 bloom_radius (Bloom Radius) int 16 1 64
+
 
 [*Audio]
 
