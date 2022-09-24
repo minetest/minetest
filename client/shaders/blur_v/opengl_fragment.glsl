@@ -2,7 +2,7 @@
 
 uniform sampler2D rendered;
 uniform vec2 texelSize0;
-uniform lowp float bloomRadius = 3.0;
+uniform mediump float bloomRadius = 3.0;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -13,13 +13,13 @@ centroid varying vec2 varTexCoord;
 void main(void)
 {
 	// kernel distance and linear size
-	lowp float n = 2. * bloomRadius + 1.;
+	mediump float n = 2. * bloomRadius + 1.;
 
 	vec2 uv = varTexCoord.st - vec2(0., bloomRadius * texelSize0.y);
 	vec4 color = vec4(0.);
-	lowp float sum = 0.;
-	for (lowp float i = 0.; i < n; i++) {
-		lowp float weight = pow(1. - (abs(i / bloomRadius - 1.)), 1.3);
+	mediump float sum = 0.;
+	for (mediump float i = 0.; i < n; i++) {
+		mediump float weight = pow(1. - (abs(i / bloomRadius - 1.)), 1.3);
 		color += texture2D(rendered, uv).rgba * weight;
 		sum += weight;
 		uv += vec2(0., texelSize0.y);
