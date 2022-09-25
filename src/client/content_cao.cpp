@@ -840,7 +840,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			oss << "GenericCAO::addToScene(): Model "
 				<< m_prop.mesh << " loaded with " << mat_count
 				<< " mesh buffers but only " << m_prop.textures.size()
-				<< " texture(s) specifed, this is deprecated.";
+				<< " texture(s) specified, this is deprecated.";
 			logOnce(oss, warningstream);
 
 			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
