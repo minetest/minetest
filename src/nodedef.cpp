@@ -590,7 +590,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	post_effect_color = readARGB8(is);
 	leveled = readU8(is);
 
-	// raillike drawtype: For old clients, fall back to
+	// raillike drawtype: For old servers, fall back to
 	// the straight tile in case of dead-end or non-connected
 	// tile
 	if (protocol_version < 42 && drawtype == NDT_RAILLIKE) {

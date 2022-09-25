@@ -208,8 +208,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 40:
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
 		Added new particlespawner parameters
-		[scheduled bump for 5.6.0]
 	PROTOCOL VERSION 41:
+		[scheduled bump for 5.6.0]
+	PROTOCOL VERSION 42:
 		Added support raillike tiles for 0 and 1 connections
 */
 
