@@ -41,8 +41,6 @@ function core.run_callbacks(callbacks, mode, ...)
 			end
 		elseif mode == 5 and cb_ret then
 			return cb_ret
-		elseif mode == 6 and cb_ret ~= nil then
-			return cb_ret
 		end
 	end
 	return ret
