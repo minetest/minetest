@@ -130,14 +130,14 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	// Place two holes on the edges a torch in the center.
 	{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		map.addNodeAndUpdate(v3s16(10, 0, 0), MapNode(CONTENT_AIR), modified_blocks);
-		map.addNodeAndUpdate(v3s16(-9, 10, -9), MapNode(t_CONTENT_WATER), modified_blocks);
+		map.addNodeAndUpdate(v3s16(-10, 0, 0), MapNode(CONTENT_AIR), modified_blocks);
+		map.addNodeAndUpdate(v3s16(9, 10, -9), MapNode(t_CONTENT_WATER), modified_blocks);
 		map.addNodeAndUpdate(v3s16(0, 0, 0), MapNode(t_CONTENT_TORCH), modified_blocks);
 	}
 
 	const NodeDefManager *ndef = gamedef->ndef();
 	{
-		MapNode n = map.getNode(v3s16(-9, 9, -9));
+		MapNode n = map.getNode(v3s16(9, 9, -9));
 		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 0);
 		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 13);
 	}
@@ -147,17 +147,17 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
 	}
 	{
-		MapNode n = map.getNode(v3s16(9, 1, 0));
+		MapNode n = map.getNode(v3s16(-9, -1, 0));
 		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
 		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
 	}
 	{
-		MapNode n = map.getNode(v3s16(10, 0, 0));
+		MapNode n = map.getNode(v3s16(-10, 0, 0));
 		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
 		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 14);
 	}
 	{
-		MapNode n = map.getNode(v3s16(11, 0, 0));
+		MapNode n = map.getNode(v3s16(-11, 0, 0));
 		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 2);
 		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 15);
 	}
