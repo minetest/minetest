@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stereo.h"
 #include "pipeline.h"
 
-/// Step to apply post-processing filter to the rendered image
+/**
+ *  Step to apply post-processing filter to the rendered image
+ */
 class PostProcessingStep : public RenderStep
 {
 public:
