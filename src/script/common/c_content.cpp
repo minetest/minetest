@@ -586,10 +586,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		if (f.drawtype == NDT_RAILLIKE) {
 			if (f.tiledef[4].name.empty())
 				f.tiledef[4] = f.tiledef[0];
-			if (f.tiledef[5].name.empty()) {
+			if (f.tiledef[5].name.empty())
 				f.tiledef[5] = f.tiledef[0];
-				f.tiledef[5].name += "^[transform2";
-			}
 		}
 	}
 	lua_pop(L, 1);
