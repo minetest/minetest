@@ -112,7 +112,7 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	{
 		std::map<v3s16, MapBlock*> modified_blocks;
 		MMVManip vm(&map);
-		vm.initialEmerge(bpmin, bpmax);
+		vm.initialEmerge(bpmin, bpmax, false);
 		s32 volume = vm.m_area.getVolume();
 		for (s32 i = 0; i < volume; i++)
 			vm.m_data[i] = MapNode(CONTENT_AIR);

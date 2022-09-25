@@ -53,7 +53,7 @@ TEST_CASE("benchmark_lighting")
 	{
 		std::map<v3s16, MapBlock*> modified_blocks;
 		MMVManip vm(&map);
-		vm.initialEmerge(bpmin, bpmax);
+		vm.initialEmerge(bpmin, bpmax, false);
 		s32 volume = vm.m_area.getVolume();
 		for (s32 i = 0; i < volume; i++)
 			vm.m_data[i] = MapNode(CONTENT_AIR);
@@ -77,9 +77,9 @@ TEST_CASE("benchmark_lighting")
 		MMVManip vm(&map);
 		vm.initialEmerge(v3s16(0, 0, 0), v3s16(0, 0, 0), false);
 		meter.measure([&] {
-			vm.setNode(v3s16(0, 0, 0), MapNode(content_light));
+			vm.setNodeNoEmerge(v3s16(0, 0, 0), MapNode(content_light));
 			voxalgo::blit_back_with_light(&map, &vm, &modified_blocks);
-			vm.setNode(v3s16(0, 0, 0), MapNode(CONTENT_AIR));
+			vm.setNodeNoEmerge(v3s16(0, 0, 0), MapNode(CONTENT_AIR));
 			voxalgo::blit_back_with_light(&map, &vm, &modified_blocks);
 		});
 	};
