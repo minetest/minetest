@@ -473,7 +473,7 @@ enable_bloom_dedicated_texture (Enable Bloom Dedicated Texture) bool false
 
 #    Set the intensity of bloom
 #    Smaller values make bloom more subtle
-#    Range: from 0.01 to 1.0, default: 1.0
+#    Range: from 0.01 to 1.0, default: 0.05
 bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
 
 #    Set the radius of the bloom filter in pixels.
