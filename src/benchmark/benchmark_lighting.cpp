@@ -50,17 +50,18 @@ TEST_CASE("benchmark_lighting")
 	}
 
 	// Make a platform with a light below it.
-	for (s16 z = -10; z <= 10; z++)
-	for (s16 x = -10; x <= 10; x++)
-		map.setNode(v3s16(x, 1, z), MapNode(content_wall));
-	map.setNode(v3s16(0, -10, 0), MapNode(content_light));
-
-	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
-	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
-	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+	{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		voxalgo::repair_block_light(&map, map.getBlockNoCreate(v3s16(x, y, z)),
-				&modified_blocks);
+		MMVManip vm(&map);
+		vm.initialEmerge(bpmin, bpmax);
+		s32 volume = vm.m_area.getVolume();
+		for (s32 i = 0; i < volume; i++)
+			vm.m_data[i] = MapNode(CONTENT_AIR);
+		for (s16 z = -10; z <= 10; z++)
+		for (s16 x = -10; x <= 10; x++)
+			vm.setNodeNoEmerge(v3s16(x, 1, z), MapNode(content_wall));
+		vm.setNodeNoEmerge(v3s16(0, -10, 0), MapNode(content_light));
+		voxalgo::blit_back_with_light(&map, &vm, &modified_blocks);
 	}
 
 	BENCHMARK_ADVANCED("voxalgo::update_lighting_nodes")(Catch::Benchmark::Chronometer meter) {
