@@ -7683,7 +7683,7 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default walking/climb speed value (default: `1`)
+        * `speed`: multiplier to default movement speed value (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `speed_climb`: multiplier to default climb speed value (default: `1`)

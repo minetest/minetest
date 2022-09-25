@@ -234,8 +234,8 @@ void ClientEnvironment::step(float dtime)
 				else
 					d_wanted = -speed / BS;
 				f32 dl = d_wanted.getLength();
-				if (in_liquid_stable && dl > fluidity_smooth)
-					dl = fluidity_smooth;
+				if (in_liquid_stable)
+					dl = MYMIN(dl, fluidity_smooth);
 				dl *= (lplayer->move_resistance * resistance_factor) +
 					(1 - resistance_factor);
 				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
