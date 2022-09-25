@@ -500,9 +500,7 @@ struct ContentFeatures
 	bool sameLiquidRender(const ContentFeatures &f) const{
 		if (!isLiquidRender() || !f.isLiquidRender())
 			return false;
-		if (name == f.name)
-		       return true;
-		return (liquid_alternative_flowing_id != CONTENT_IGNORE) && (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id) && (liquid_alternative_source_id == f.liquid_alternative_source_id);
 	}
 
 	bool lightingEquivalent(const ContentFeatures &other) const {
