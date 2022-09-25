@@ -1140,16 +1140,16 @@ void Game::run()
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 
-		bool was_paused = m_is_paused;
-		m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
+		{
+			bool was_paused = m_is_paused;
+			m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
+			if (m_is_paused)
+				dtime = 0.0f;
 
-		if (m_is_paused)
-			dtime = 0.0f;
-
-		if (!was_paused && m_is_paused) {
-			pauseAnimation();
-		} else if (was_paused && !m_is_paused) {
-			resumeAnimation();
+			if (!was_paused && m_is_paused)
+				pauseAnimation();
+			else if (was_paused && !m_is_paused)
+				resumeAnimation();
 		}
 
 		if (!m_is_paused)
