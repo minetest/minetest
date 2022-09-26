@@ -527,8 +527,8 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 	{
 		v3s16 p = floatToInt(p0 /*+ dir * 3*BS*/, BS);
 		MapNode n = map->getNode(p);
-		if(ndef->get(n).param_type == CPT_LIGHT &&
-				!ndef->get(n).sunlight_propagates)
+		if(ndef->getLightingFlags(n).has_light &&
+				!ndef->getLightingFlags(n).sunlight_propagates)
 			allow_allowing_non_sunlight_propagates = true;
 	}
 	// If would start at CONTENT_IGNORE, start closer
@@ -549,15 +549,13 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 
 		v3s16 p = floatToInt(pf, BS);
 		MapNode n = map->getNode(p);
+		ContentLightingFlags f = ndef->getLightingFlags(n);
 		if (allow_allowing_non_sunlight_propagates && i == 0 &&
-				ndef->get(n).param_type == CPT_LIGHT &&
-				!ndef->get(n).sunlight_propagates) {
+				f.has_light && !f.sunlight_propagates) {
 			allow_non_sunlight_propagates = true;
 		}
 
-		if (ndef->get(n).param_type != CPT_LIGHT ||
-				(!ndef->get(n).sunlight_propagates &&
-					!allow_non_sunlight_propagates)){
+		if (!f.has_light || (!f.sunlight_propagates && !allow_non_sunlight_propagates)){
 			nonlight_seen = true;
 			noncount++;
 			if(noncount >= 4)
@@ -566,10 +564,10 @@ static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		}
 
 		if (distance >= sunlight_min_d && !*sunlight_seen && !nonlight_seen)
-			if (n.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
+			if (n.getLight(LIGHTBANK_DAY, f) == LIGHT_SUN)
 				*sunlight_seen = true;
 		noncount = 0;
-		brightness_sum += decode_light(n.getLightBlend(daylight_factor, ndef));
+		brightness_sum += decode_light(n.getLightBlend(daylight_factor, f));
 		brightness_count++;
 	}
 	*result = 0;
@@ -653,8 +651,9 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	int ret = 0;
 	if(brightness_count == 0){
 		MapNode n = getNode(floatToInt(m_camera_position, BS));
-		if(m_nodedef->get(n).param_type == CPT_LIGHT){
-			ret = decode_light(n.getLightBlend(daylight_factor, m_nodedef));
+		ContentLightingFlags f = m_nodedef->getLightingFlags(n);
+		if(f.has_light){
+			ret = decode_light(n.getLightBlend(daylight_factor, f));
 		} else {
 			ret = oldvalue;
 		}

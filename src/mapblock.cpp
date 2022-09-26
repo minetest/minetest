@@ -180,7 +180,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 		if (n == previous_n)
 			continue;
 
-		differs = !n.isLightDayNightEq(nodemgr);
+		differs = !n.isLightDayNightEq(nodemgr->getLightingFlags(n));
 		if (differs)
 			break;
 		previous_n = n;

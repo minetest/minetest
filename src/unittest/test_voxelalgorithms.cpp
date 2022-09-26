@@ -138,27 +138,27 @@ void TestVoxelAlgorithms::testLighting(IGameDef *gamedef)
 	const NodeDefManager *ndef = gamedef->ndef();
 	{
 		MapNode n = map.getNode(v3s16(9, 9, -9));
-		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 0);
-		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 13);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef->getLightingFlags(n)), 0);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef->getLightingFlags(n)), 13);
 	}
 	{
 		MapNode n = map.getNode(v3s16(0, 1, 0));
-		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 12);
-		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef->getLightingFlags(n)), 12);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef->getLightingFlags(n)), 12);
 	}
 	{
 		MapNode n = map.getNode(v3s16(-9, -1, 0));
-		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
-		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 12);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef->getLightingFlags(n)), 3);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef->getLightingFlags(n)), 12);
 	}
 	{
 		MapNode n = map.getNode(v3s16(-10, 0, 0));
-		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 3);
-		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 14);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef->getLightingFlags(n)), 3);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef->getLightingFlags(n)), 14);
 	}
 	{
 		MapNode n = map.getNode(v3s16(-11, 0, 0));
-		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef), 2);
-		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef), 15);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_NIGHT, ndef->getLightingFlags(n)), 2);
+		UASSERTEQ(int, n.getLight(LIGHTBANK_DAY, ndef->getLightingFlags(n)), 15);
 	}
 }

@@ -450,7 +450,7 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 	// we hit a solid block that light cannot pass through.
 	if ((light_day  <= (n.param1 & 0x0F) &&
 			light_night <= (n.param1 & 0xF0)) ||
-			!ndef->get(n).light_propagates)
+			!ndef->getLightingFlags(n).light_propagates)
 		return;
 
 	// MYMAX still needed here because we only exit early if both banks have
@@ -500,7 +500,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 
 			for (int y = a.MaxEdge.Y; y >= a.MinEdge.Y; y--) {
 				MapNode &n = vm->m_data[i];
-				if (!ndef->get(n).sunlight_propagates)
+				if (!ndef->getLightingFlags(n).sunlight_propagates)
 					break;
 				n.param1 = LIGHT_SUN;
 				VoxelArea::add_y(em, i, -1);
@@ -525,7 +525,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 				if (n.getContent() == CONTENT_IGNORE)
 					continue;
 
-				const ContentFeatures &cf = ndef->get(n);
+				ContentLightingFlags cf = ndef->getLightingFlags(n);
 				if (!cf.light_propagates)
 					continue;
 

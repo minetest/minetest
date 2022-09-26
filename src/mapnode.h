@@ -35,6 +35,7 @@ class Map;
 	- Tile = TileSpec at some side of a node of some content type
 */
 typedef u16 content_t;
+#define CONTENT_MAX UINT16_MAX
 
 /*
 	The maximum node ID that can be registered by mods. This must
@@ -70,6 +71,25 @@ typedef u16 content_t;
 	out-of-map in the game map.
 */
 #define CONTENT_IGNORE 127
+
+/*
+	Content lighting information that fits into a single byte.
+*/
+struct ContentLightingFlags {
+	u8 light_source : 4;
+	bool has_light : 1;
+	bool light_propagates : 1;
+	bool sunlight_propagates : 1;
+
+	bool operator==(const ContentLightingFlags &other) const
+	{
+		return has_light == other.has_light && light_propagates == other.light_propagates &&
+				sunlight_propagates == other.sunlight_propagates &&
+				light_source == other.light_source;
+	}
+	bool operator!=(const ContentLightingFlags &other) const { return !(*this == other); }
+};
+static_assert(sizeof(ContentLightingFlags) == 1, "Unexpected ContentLightingFlags size");
 
 enum LightBank
 {
@@ -187,53 +207,55 @@ struct MapNode
 	 */
 	void getColor(const ContentFeatures &f, video::SColor *color) const;
 
-	void setLight(LightBank bank, u8 a_light, const ContentFeatures &f) noexcept;
-
-	void setLight(LightBank bank, u8 a_light, const NodeDefManager *nodemgr);
+	inline void setLight(LightBank bank, u8 a_light, ContentLightingFlags f) noexcept
+	{
+		// If node doesn't contain light data, ignore this
+		if (!f.has_light)
+			return;
+		if (bank == LIGHTBANK_DAY) {
+			param1 &= 0xf0;
+			param1 |= a_light & 0x0f;
+		} else {
+			assert(bank == LIGHTBANK_NIGHT);
+			param1 &= 0x0f;
+			param1 |= (a_light & 0x0f)<<4;
+		}
+	}
 
 	/**
 	 * Check if the light value for night differs from the light value for day.
 	 *
 	 * @return If the light values are equal, returns true; otherwise false
 	 */
-	bool isLightDayNightEq(const NodeDefManager *nodemgr) const;
+	inline bool isLightDayNightEq(ContentLightingFlags f) const noexcept
+	{
+		return !f.has_light || getLight(LIGHTBANK_DAY, f) == getLight(LIGHTBANK_NIGHT, f);
+	}
 
-	u8 getLight(LightBank bank, const NodeDefManager *nodemgr) const;
+	inline u8 getLight(LightBank bank, ContentLightingFlags f) const noexcept
+	{
+		u8 raw_light = getLightRaw(bank, f);
+		return MYMAX(f.light_source, raw_light);
+	}
 
 	/*!
 	 * Returns the node's light level from param1.
 	 * If the node emits light, it is ignored.
-	 * \param f the ContentFeatures of this node.
+	 * \param f the ContentLightingFlags of this node.
 	 */
-	u8 getLightRaw(LightBank bank, const ContentFeatures &f) const noexcept;
-
-	/**
-	 * This function differs from getLight(LightBank bank, NodeDefManager *nodemgr)
-	 * in that the ContentFeatures of the node in question are not retrieved by
-	 * the function itself.  Thus, if you have already called nodemgr->get() to
-	 * get the ContentFeatures you pass it to this function instead of the
-	 * function getting ContentFeatures itself.  Since NodeDefManager::get()
-	 * is relatively expensive this can lead to significant performance
-	 * improvements in some situations.  Call this function if (and only if)
-	 * you have already retrieved the ContentFeatures by calling
-	 * NodeDefManager::get() for the node you're working with and the
-	 * pre-conditions listed are true.
-	 *
-	 * @pre f != NULL
-	 * @pre f->param_type == CPT_LIGHT
-	 */
-	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept;
-
-	bool getLightBanks(u8 &lightday, u8 &lightnight,
-		const NodeDefManager *nodemgr) const;
+	inline u8 getLightRaw(LightBank bank, ContentLightingFlags f) const noexcept
+	{
+		if(f.has_light)
+			return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+		return 0;
+	}
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
-	u8 getLightBlend(u32 daylight_factor, const NodeDefManager *nodemgr) const
+	u8 getLightBlend(u32 daylight_factor, ContentLightingFlags f) const
 	{
-		u8 lightday = 0;
-		u8 lightnight = 0;
-		getLightBanks(lightday, lightnight, nodemgr);
+		u8 lightday = getLight(LIGHTBANK_DAY, f);
+		u8 lightnight = getLight(LIGHTBANK_NIGHT, f);
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
