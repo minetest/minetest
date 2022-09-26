@@ -1,17 +1,17 @@
 -- Tests of generic and specific metadata functionality
 
-local function test_metadata(meta)
-	local compare_meta = ItemStack("unittests:iron_lump"):get_meta()
-	compare_meta:from_table({
-		fields = {
-			a = "1",
-			b = "2",
-			c = "3",
-			d = "4",
-			e = "e",
-		},
-	})
+local compare_meta = ItemStack("unittests:iron_lump"):get_meta()
+compare_meta:from_table({
+	fields = {
+		a = "1",
+		b = "2",
+		c = "3",
+		d = "4",
+		e = "e",
+	},
+})
 
+local function test_metadata(meta)
 	meta:from_table({fields = {a = 1, b = "2"}})
 	meta:set_string("c", "3")
 	meta:set_int("d", 4)
