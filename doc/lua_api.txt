@@ -5297,7 +5297,8 @@ Call these functions only at load time!
       * `picker`: `ObjectRef` or `nil`
       * `obj`: The dropped item (a `"__builtin:item"` luaentity ObjectRef).
       * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
-    * Return `true` to cancle the pick-up. Remaining functions are then not called.
+    * Return `false` or `nil` to cancle the pick-up. Remaining functions are then
+      not called.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,

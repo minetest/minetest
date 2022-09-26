@@ -336,7 +336,7 @@ core.register_entity(":__builtin:item", {
 			end
 
 			-- Invoke global on_item_pickup callbacks.
-			if core.run_callbacks(core.registered_on_item_pickups, 5,
+			if not core.run_callbacks(core.registered_on_item_pickups, 3,
 					ItemStack(itemstack), hitter, self.object, ...) then
 				return
 			end

@@ -137,28 +137,31 @@ minetest.register_craftitem("testitems:callback_2", {
 minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return
+		return true
 	end
 	minetest.chat_send_all("["..item_name.." register_on_item_pickup (1)]")
+	return true
 end)
 
 minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return
+		return true
 	end
 	minetest.chat_send_all("["..item_name.." register_on_item_pickup (2)]")
 	assert(obj:get_luaentity().name == "__builtin:item")
 	local ctrl = picker and picker:get_player_control() or {}
 	if ctrl.down then
-		return true
+		return false
 	end
+	return true
 end)
 
 minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return
+		return true
 	end
 	minetest.chat_send_all("["..item_name.." register_on_item_pickup (3)]")
+	return true
 end)
