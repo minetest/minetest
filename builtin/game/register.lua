@@ -414,17 +414,27 @@ do
 	})
 end
 
+--- Runs given callbacks.
+--
+-- Note: this function is also called from C++
+-- Note: Almost the same function is implemented again in client/register.lua.
+-- @tparam table  callbacks a table with registered callbacks, like `core.registered_on_*`
+-- @tparam number mode      a RunCallbacksMode, as defined in src/script/common/c_internal.h
+-- @param         ...       arguments for the callback
+-- @return depends on mode
 function core.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
 	local cb_len = #callbacks
 	if cb_len == 0 then
-		if mode == 2 or mode == 3 then
+		if mode == 0 or mode == 1 then
+			return nil
+		elseif mode == 2 or mode == 3 then
 			return true
 		elseif mode == 4 or mode == 5 then
 			return false
 		end
 	end
-	local ret = nil
+	local ret
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
 		core.set_last_run_mod(origin.mod)
@@ -435,20 +445,25 @@ function core.run_callbacks(callbacks, mode, ...)
 		elseif mode == 1 and i == cb_len then
 			ret = cb_ret
 		elseif mode == 2 then
-			if not cb_ret or i == 1 then
+			if (not cb_ret and ret) or i == 1 then
 				ret = cb_ret
 			end
 		elseif mode == 3 then
-			if cb_ret then
+			if not cb_ret then
 				return cb_ret
+			elseif i == 1 then
+				ret = cb_ret
 			end
-			ret = cb_ret
 		elseif mode == 4 then
 			if (cb_ret and not ret) or i == 1 then
 				ret = cb_ret
 			end
-		elseif mode == 5 and cb_ret then
-			return cb_ret
+		elseif mode == 5 then
+			if cb_ret then
+				return cb_ret
+			elseif i == 1 then
+				ret = cb_ret
+			end
 		end
 	end
 	return ret
