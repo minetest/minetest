@@ -325,18 +325,19 @@ core.register_entity(":__builtin:item", {
 			local itemstack_modified = false
 			local item_def = itemstack:get_definition()
 			if item_def and item_def.on_pickup then
-				local ret = item_def.on_pickup(itemstack, hitter, self.object, ...)
+				local ret = item_def.on_pickup(ItemStack(itemstack), hitter,
+						self.object, ...)
 				if not ret then
 					return
 				elseif ret ~= true then
 					itemstack_modified = true
-					itemstack = ret
+					itemstack = ItemStack(ret)
 				end
 			end
 
 			-- Invoke global on_item_pickup callbacks.
-			if core.run_callbacks(core.registered_on_item_pickups, 5, itemstack,
-					hitter, self.object, ...) then
+			if core.run_callbacks(core.registered_on_item_pickups, 5,
+					ItemStack(itemstack), hitter, self.object, ...) then
 				return
 			end
 

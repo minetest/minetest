@@ -5293,11 +5293,11 @@ Call these functions only at load time!
     * Function is added to `minetest.registered_on_item_pickups`.
     * Oldest functions are called first.
     * Parameters:
-      * `itemstack`: The item to be picked up. Do not modify!
-      * `picker`: ObjectRef or `nil`
+      * `itemstack`: The `ItemStack` to be picked up.
+      * `picker`: `ObjectRef` or `nil`
       * `obj`: The dropped item (a `"__builtin:item"` luaentity ObjectRef).
       * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
-    * Return `true` to cancle pick-up. Remaining functions are then not called.
+    * Return `true` to cancle the pick-up. Remaining functions are then not called.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
@@ -8049,18 +8049,17 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- If this callback is defined, it will be executed before all the
         -- `registered_on_item_pickup` callbacks (see `minetest.register_on_item_pickup`).
         -- Parameters:
-        -- * `itemstack`: The itemstack to be picked up. Do not modify if you
-        --   return `true`!
-        -- * `picker`: ObjectRef or nil
+        -- * `itemstack`: The `ItemStack` to be picked up.
+        -- * `picker`: `ObjectRef` or `nil`
         -- * `obj`: The dropped item (a `"__builtin:item"` luaentity ObjectRef).
         -- * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
         -- Possible return values:
-        -- * `false` or `nil`: Cancel the pick up. `registered_on_item_pickup`
+        -- * `false` or `nil`: Cancel the pick-up. `registered_on_item_pickup`
         --   callbacks will not be called.
         -- * `true`: Pick up the given itemstack. (Or only the part of it which
         --   fits into the `"main"` inventory.)
-        -- * An `ItemStack`: itemstack to pick up this itemstack instead. Partial
-        --   pick-ups are not possible in this case.
+        -- * An itemstack: Pick up this itemstack instead. Partial pick-ups are
+        --   not possible in this case.
 
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
