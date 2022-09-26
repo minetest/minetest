@@ -672,9 +672,27 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
+include(CheckSymbolExists)
 
-if(NOT USE_LUAJIT)
-	set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
+set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
+if(USE_LUAJIT)
+	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
+	# LuaJIT provides exactly zero ways to determine how recent it is (the version
+	# is unchanged since 2017), however it happens that string buffers were added
+	# after the changes which we care about so that works as an indicator.
+	# (https://github.com/LuaJIT/LuaJIT/commit/4c6b669 March 2021)
+	unset(HAVE_RECENT_LJ CACHE)
+	check_symbol_exists(luaopen_string_buffer "lualib.h" HAVE_RECENT_LJ)
+	if(NOT HAVE_RECENT_LJ)
+		string(CONCAT explanation_msg
+			"You are using a relatively old version of LuaJIT. We recommend "
+			"running a recent version (from git) as older ones are known not "
+			"to build/work correctly in all cases.\n"
+			"THIS APPLIES ESPECIALLY ON macOS OR Linux/aarch64!")
+		message(WARNING ${explanation_msg})
+	endif()
+else()
+	set(CMAKE_REQUIRED_LIBRARIES "")
 	unset(HAVE_ATCCALL CACHE)
 	# Note: we need to check the function without having the library
 	#       available for linking, so check_symbol_exists won't work.
@@ -730,26 +748,6 @@ else()
 		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()
 		set(RELEASE_WARNING_FLAGS "")
-	endif()
-
-	if(APPLE AND USE_LUAJIT)
-		# required per http://luajit.org/install.html
-		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
-	elseif(UNIX AND USE_LUAJIT)
-		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
-		if(IS_AARCH64)
-			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
-			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
-				# --image-base instead. Not sure if it's equivalent change for the purpose
-				# but at least if fixes build on FreeBSD/aarch64
-				# XXX: the condition should also be changed to check for lld regardless of
-				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--image-base=0x200000000")
-			else()
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
-			endif()
-		endif()
 	endif()
 
 	if(MINGW)
