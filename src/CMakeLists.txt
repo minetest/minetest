@@ -241,6 +241,10 @@ endif()
 # Use cmake_config.h
 add_definitions(-DUSE_CMAKE_CONFIG_H)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+set(PLATFORM_LIBS Threads::Threads)
+
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
@@ -251,8 +255,6 @@ if(WIN32)
 		add_definitions(/D "_USE_MATH_DEFINES")
 		# Dont define min/max macros in minwindef.h
 		add_definitions(/D "NOMINMAX")
-	else() # Probably MinGW = GCC
-		set(PLATFORM_LIBS "")
 	endif()
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
@@ -282,7 +284,7 @@ else()
 		endif(NOT HAIKU AND NOT APPLE)
 	endif()
 
-	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
+	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_DL_LIBS})
 	if(APPLE)
 		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
 	else()
