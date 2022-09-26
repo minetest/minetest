@@ -292,16 +292,15 @@ else()
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
-	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
 	mark_as_advanced(ICONV_LIBRARY)
 	if (ICONV_LIBRARY)
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
 	endif()
-	if (HAIKU)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} intl network)
-	endif()
 
+	if (HAIKU)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} network)
+	endif()
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)

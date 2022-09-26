@@ -279,9 +279,10 @@ Library specific options:
     FREETYPE_LIBRARY                - Path to libfreetype.a/libfreetype.so/freetype.lib
     FREETYPE_DLL                    - Only on Windows; path to libfreetype-6.dll
     GETTEXT_DLL                     - Only when building with gettext on Windows; paths to libintl + libiconv DLLs
-    GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains iconv.h
-    GETTEXT_LIBRARY                 - Only when building with gettext on Windows; path to libintl.dll.a
+    GETTEXT_INCLUDE_DIR             - Only when building with gettext; directory that contains libintl.h
+    GETTEXT_LIBRARY                 - Optional/platform-dependent with gettext; path to libintl.so/libintl.dll.a
     GETTEXT_MSGFMT                  - Only when building with gettext; path to msgfmt/msgfmt.exe
+    ICONV_LIBRARY                   - Optional/platform-dependent; path to libiconv.so/libiconv.dylib
     IRRLICHT_DLL                    - Only on Windows; path to IrrlichtMt.dll
     IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h (usable for server build only)
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
