@@ -92,6 +92,32 @@ bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storag
 	return true;
 }
 
+bool Database_Dummy::getModEntry(const std::string &modname,
+	const std::string &key, std::string *value)
+{
+	auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair == m_mod_meta_database.end())
+		return false;
+	const StringMap &meta = mod_pair->second;
+
+	auto pair = meta.find(key);
+	if (pair != meta.end()) {
+		*value = pair->second;
+		return true;
+	}
+	return false;
+}
+
+bool Database_Dummy::hasModEntry(const std::string &modname, const std::string &key)
+{
+	auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair == m_mod_meta_database.end())
+		return false;
+	const StringMap &meta = mod_pair->second;
+
+	return meta.find(key) != meta.cend();
+}
+
 bool Database_Dummy::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
@@ -109,6 +135,16 @@ bool Database_Dummy::removeModEntry(const std::string &modname, const std::strin
 	auto mod_pair = m_mod_meta_database.find(modname);
 	if (mod_pair != m_mod_meta_database.end())
 		return mod_pair->second.erase(key) > 0;
+	return false;
+}
+
+bool Database_Dummy::removeModEntries(const std::string &modname)
+{
+	auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair != m_mod_meta_database.end() && !mod_pair->second.empty()) {
+		mod_pair->second.clear();
+		return true;
+	}
 	return false;
 }
 

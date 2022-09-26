@@ -61,8 +61,6 @@ public:
 		return emptymodspec;
 	}
 	const ModSpec* getModSpec(const std::string &modname) const override { return nullptr; }
-	bool registerModStorage(ModMetadata *meta) override { return true; }
-	void unregisterModStorage(const std::string &name) override {}
 	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
 	bool joinModChannel(const std::string &channel) override { return false; }

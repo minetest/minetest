@@ -36,7 +36,7 @@ private:
 
 	static ItemStackMetaRef *checkobject(lua_State *L, int narg);
 
-	virtual Metadata* getmeta(bool auto_create);
+	virtual IMetadata* getmeta(bool auto_create);
 
 	virtual void clearMeta();
 

@@ -770,9 +770,12 @@ ModMetadataDatabaseSQLite3::ModMetadataDatabaseSQLite3(const std::string &savedi
 
 ModMetadataDatabaseSQLite3::~ModMetadataDatabaseSQLite3()
 {
+	FINALIZE_STATEMENT(m_stmt_remove_all)
 	FINALIZE_STATEMENT(m_stmt_remove)
 	FINALIZE_STATEMENT(m_stmt_set)
+	FINALIZE_STATEMENT(m_stmt_has)
 	FINALIZE_STATEMENT(m_stmt_get)
+	FINALIZE_STATEMENT(m_stmt_get_all)
 }
 
 void ModMetadataDatabaseSQLite3::createDatabase()
@@ -792,29 +795,72 @@ void ModMetadataDatabaseSQLite3::createDatabase()
 
 void ModMetadataDatabaseSQLite3::initStatements()
 {
-	PREPARE_STATEMENT(get, "SELECT `key`, `value` FROM `entries` WHERE `modname` = ?");
+	PREPARE_STATEMENT(get_all, "SELECT `key`, `value` FROM `entries` WHERE `modname` = ?");
+	PREPARE_STATEMENT(get,
+		"SELECT `value` FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
+	PREPARE_STATEMENT(has,
+		"SELECT 1 FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
 	PREPARE_STATEMENT(set,
 		"REPLACE INTO `entries` (`modname`, `key`, `value`) VALUES (?, ?, ?)");
 	PREPARE_STATEMENT(remove, "DELETE FROM `entries` WHERE `modname` = ? AND `key` = ?");
+	PREPARE_STATEMENT(remove_all, "DELETE FROM `entries` WHERE `modname` = ?");
 }
 
 bool ModMetadataDatabaseSQLite3::getModEntries(const std::string &modname, StringMap *storage)
 {
 	verifyDatabase();
 
-	str_to_sqlite(m_stmt_get, 1, modname);
-	while (sqlite3_step(m_stmt_get) == SQLITE_ROW) {
-		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get, 0);
-		size_t key_len = sqlite3_column_bytes(m_stmt_get, 0);
-		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get, 1);
-		size_t value_len = sqlite3_column_bytes(m_stmt_get, 1);
+	str_to_sqlite(m_stmt_get_all, 1, modname);
+	while (sqlite3_step(m_stmt_get_all) == SQLITE_ROW) {
+		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get_all, 0);
+		size_t key_len = sqlite3_column_bytes(m_stmt_get_all, 0);
+		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get_all, 1);
+		size_t value_len = sqlite3_column_bytes(m_stmt_get_all, 1);
 		(*storage)[std::string(key_data, key_len)] = std::string(value_data, value_len);
 	}
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
-	sqlite3_reset(m_stmt_get);
+	sqlite3_reset(m_stmt_get_all);
 
 	return true;
+}
+
+bool ModMetadataDatabaseSQLite3::getModEntry(const std::string &modname,
+	const std::string &key, std::string *value)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_get, 1, modname);
+	SQLOK(sqlite3_bind_blob(m_stmt_get, 2, key.data(), key.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
+	bool found = sqlite3_step(m_stmt_get) == SQLITE_ROW;
+	if (found) {
+		const char *value_data = (const char *) sqlite3_column_blob(m_stmt_get, 0);
+		size_t value_len = sqlite3_column_bytes(m_stmt_get, 0);
+		value->assign(value_data, value_len);
+		sqlite3_step(m_stmt_get);
+	}
+
+	sqlite3_reset(m_stmt_get);
+
+	return found;
+}
+
+bool ModMetadataDatabaseSQLite3::hasModEntry(const std::string &modname,
+		const std::string &key)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_has, 1, modname);
+	SQLOK(sqlite3_bind_blob(m_stmt_has, 2, key.data(), key.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
+	bool found = sqlite3_step(m_stmt_has) == SQLITE_ROW;
+	if (found)
+		sqlite3_step(m_stmt_has);
+
+	sqlite3_reset(m_stmt_has);
+
+	return found;
 }
 
 bool ModMetadataDatabaseSQLite3::setModEntry(const std::string &modname,
@@ -846,6 +892,19 @@ bool ModMetadataDatabaseSQLite3::removeModEntry(const std::string &modname,
 	int changes = sqlite3_changes(m_database);
 
 	sqlite3_reset(m_stmt_remove);
+
+	return changes > 0;
+}
+
+bool ModMetadataDatabaseSQLite3::removeModEntries(const std::string &modname)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_remove_all, 1, modname);
+	sqlite3_vrfy(sqlite3_step(m_stmt_remove_all), SQLITE_DONE);
+	int changes = sqlite3_changes(m_database);
+
+	sqlite3_reset(m_stmt_remove_all);
 
 	return changes > 0;
 }

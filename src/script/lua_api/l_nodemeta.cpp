@@ -37,7 +37,7 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 	return *(NodeMetaRef**)ud;  // unbox pointer
 }
 
-Metadata* NodeMetaRef::getmeta(bool auto_create)
+IMetadata* NodeMetaRef::getmeta(bool auto_create)
 {
 	if (m_is_local)
 		return m_local_meta;
@@ -127,12 +127,13 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 	return 0;
 }
 
-void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
+void NodeMetaRef::handleToTable(lua_State *L, IMetadata *_meta)
 {
 	// fields
 	MetaDataRef::handleToTable(L, _meta);
 
-	NodeMetadata *meta = (NodeMetadata *) _meta;
+	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(_meta);
+	assert(meta);
 
 	// inventory
 	Inventory *inv = meta->getInventory();
@@ -145,13 +146,14 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 }
 
 // from_table(self, table)
-bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
+bool NodeMetaRef::handleFromTable(lua_State *L, int table, IMetadata *_meta)
 {
 	// fields
 	if (!MetaDataRef::handleFromTable(L, table, _meta))
 		return false;
 
-	NodeMetadata *meta = (NodeMetadata*) _meta;
+	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(_meta);
+	assert(meta);
 
 	// inventory
 	Inventory *inv = meta->getInventory();
@@ -178,7 +180,7 @@ NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 {
 }
 
-NodeMetaRef::NodeMetaRef(Metadata *meta):
+NodeMetaRef::NodeMetaRef(IMetadata *meta):
 	m_is_local(true),
 	m_local_meta(meta)
 {
@@ -196,7 +198,7 @@ void NodeMetaRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
 }
 
 // Client-sided version of the above
-void NodeMetaRef::createClient(lua_State *L, Metadata *meta)
+void NodeMetaRef::createClient(lua_State *L, IMetadata *meta)
 {
 	NodeMetaRef *o = new NodeMetaRef(meta);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

@@ -59,7 +59,7 @@ int MetaDataRef::l_contains(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	Metadata *meta = ref->getmeta(false);
+	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL)
 		return 0;
 
@@ -75,7 +75,7 @@ int MetaDataRef::l_get(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	Metadata *meta = ref->getmeta(false);
+	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL)
 		return 0;
 
@@ -96,13 +96,14 @@ int MetaDataRef::l_get_string(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	Metadata *meta = ref->getmeta(false);
+	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
 
-	const std::string &str = meta->getString(name);
+	std::string str_;
+	const std::string &str = meta->getString(name, &str_);
 	lua_pushlstring(L, str.c_str(), str.size());
 	return 1;
 }
@@ -118,12 +119,9 @@ int MetaDataRef::l_set_string(lua_State *L)
 	const char *s = lua_tolstring(L, 3, &len);
 	std::string str(s, len);
 
-	Metadata *meta = ref->getmeta(!str.empty());
-	if (meta == NULL || str == meta->getString(name))
-		return 0;
-
-	meta->setString(name, str);
-	ref->reportMetadataChange(&name);
+	IMetadata *meta = ref->getmeta(!str.empty());
+	if (meta != NULL && meta->setString(name, str))
+		ref->reportMetadataChange(&name);
 	return 0;
 }
 
@@ -135,13 +133,14 @@ int MetaDataRef::l_get_int(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	Metadata *meta = ref->getmeta(false);
+	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
 		lua_pushnumber(L, 0);
 		return 1;
 	}
 
-	const std::string &str = meta->getString(name);
+	std::string str_;
+	const std::string &str = meta->getString(name, &str_);
 	lua_pushnumber(L, stoi(str));
 	return 1;
 }
@@ -156,12 +155,9 @@ int MetaDataRef::l_set_int(lua_State *L)
 	int a = luaL_checkint(L, 3);
 	std::string str = itos(a);
 
-	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL || str == meta->getString(name))
-		return 0;
-
-	meta->setString(name, str);
-	ref->reportMetadataChange(&name);
+	IMetadata *meta = ref->getmeta(true);
+	if (meta != NULL && meta->setString(name, str))
+		ref->reportMetadataChange(&name);
 	return 0;
 }
 
@@ -173,13 +169,14 @@ int MetaDataRef::l_get_float(lua_State *L)
 	MetaDataRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	Metadata *meta = ref->getmeta(false);
+	IMetadata *meta = ref->getmeta(false);
 	if (meta == NULL) {
 		lua_pushnumber(L, 0);
 		return 1;
 	}
 
-	const std::string &str = meta->getString(name);
+	std::string str_;
+	const std::string &str = meta->getString(name, &str_);
 	lua_pushnumber(L, stof(str));
 	return 1;
 }
@@ -194,12 +191,9 @@ int MetaDataRef::l_set_float(lua_State *L)
 	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
 
-	Metadata *meta = ref->getmeta(true);
-	if (meta == NULL || str == meta->getString(name))
-		return 0;
-
-	meta->setString(name, str);
-	ref->reportMetadataChange(&name);
+	IMetadata *meta = ref->getmeta(true);
+	if (meta != NULL && meta->setString(name, str))
+		ref->reportMetadataChange(&name);
 	return 0;
 }
 
@@ -210,7 +204,7 @@ int MetaDataRef::l_to_table(lua_State *L)
 
 	MetaDataRef *ref = checkobject(L, 1);
 
-	Metadata *meta = ref->getmeta(true);
+	IMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
 		lua_pushnil(L);
 		return 1;
@@ -239,7 +233,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 	}
 
 	// Create new metadata
-	Metadata *meta = ref->getmeta(true);
+	IMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -251,11 +245,12 @@ int MetaDataRef::l_from_table(lua_State *L)
 	return 1;
 }
 
-void MetaDataRef::handleToTable(lua_State *L, Metadata *meta)
+void MetaDataRef::handleToTable(lua_State *L, IMetadata *meta)
 {
 	lua_newtable(L);
 	{
-		const StringMap &fields = meta->getStrings();
+		StringMap fields_;
+		const StringMap &fields = meta->getStrings(&fields_);
 		for (const auto &field : fields) {
 			const std::string &name = field.first;
 			const std::string &value = field.second;
@@ -267,7 +262,7 @@ void MetaDataRef::handleToTable(lua_State *L, Metadata *meta)
 	lua_setfield(L, -2, "fields");
 }
 
-bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
+bool MetaDataRef::handleFromTable(lua_State *L, int table, IMetadata *meta)
 {
 	// Set fields
 	lua_getfield(L, table, "fields");
@@ -292,9 +287,9 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
 int MetaDataRef::l_equals(lua_State *L)
 {
 	MetaDataRef *ref1 = checkobject(L, 1);
-	Metadata *data1 = ref1->getmeta(false);
+	IMetadata *data1 = ref1->getmeta(false);
 	MetaDataRef *ref2 = checkobject(L, 2);
-	Metadata *data2 = ref2->getmeta(false);
+	IMetadata *data2 = ref2->getmeta(false);
 	if (data1 == NULL || data2 == NULL)
 		lua_pushboolean(L, data1 == data2);
 	else

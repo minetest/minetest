@@ -29,14 +29,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class PlayerMetaRef : public MetaDataRef
 {
 private:
-	Metadata *metadata = nullptr;
+	IMetadata *metadata = nullptr;
 
 	static const char className[];
 	static const luaL_Reg methods[];
 
 	static PlayerMetaRef *checkobject(lua_State *L, int narg);
 
-	virtual Metadata *getmeta(bool auto_create);
+	virtual IMetadata *getmeta(bool auto_create);
 
 	virtual void clearMeta();
 
@@ -46,12 +46,12 @@ private:
 	static int gc_object(lua_State *L);
 
 public:
-	PlayerMetaRef(Metadata *metadata) : metadata(metadata) {}
+	PlayerMetaRef(IMetadata *metadata) : metadata(metadata) {}
 	~PlayerMetaRef() = default;
 
 	// Creates an ItemStackMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, Metadata *metadata);
+	static void create(lua_State *L, IMetadata *metadata);
 
 	static void Register(lua_State *L);
 };

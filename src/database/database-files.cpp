@@ -396,6 +396,26 @@ bool ModMetadataDatabaseFiles::getModEntries(const std::string &modname, StringM
 	return true;
 }
 
+bool ModMetadataDatabaseFiles::getModEntry(const std::string &modname,
+	const std::string &key, std::string *value)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	if (meta->isMember(key)) {
+		*value = (*meta)[key].asString();
+		return true;
+	}
+	return false;
+}
+
+bool ModMetadataDatabaseFiles::hasModEntry(const std::string &modname, const std::string &key)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	return meta && meta->isMember(key);
+}
+
 bool ModMetadataDatabaseFiles::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
@@ -422,6 +442,17 @@ bool ModMetadataDatabaseFiles::removeModEntry(const std::string &modname,
 		return true;
 	}
 	return false;
+}
+
+bool ModMetadataDatabaseFiles::removeModEntries(const std::string &modname)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta || meta->empty())
+		return false;
+
+	meta->clear();
+	m_modified.insert(modname);
+	return true;
 }
 
 void ModMetadataDatabaseFiles::beginSave()

@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_storage.h"
 #include "l_internal.h"
-#include "content/mods.h"
 #include "server.h"
 
 int ModApiStorage::l_get_mod_storage(lua_State *L)
@@ -28,23 +27,12 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 	// Note that this is wrapped in Lua, see builtin/common/mod_storage.lua
 	std::string mod_name = readParam<std::string>(L, 1);
 
-	ModMetadata *store = nullptr;
-
 	if (IGameDef *gamedef = getGameDef(L)) {
-		store = new ModMetadata(mod_name, gamedef->getModStorageDatabase());
-		if (gamedef->registerModStorage(store)) {
-			StorageRef::create(L, store);
-			int object = lua_gettop(L);
-			lua_pushvalue(L, object);
-			return 1;
-		}
+		StorageRef::create(L, mod_name, gamedef->getModStorageDatabase());
 	} else {
 		assert(false); // this should not happen
+		lua_pushnil(L);
 	}
-
-	delete store;
-
-	lua_pushnil(L);
 	return 1;
 }
 
@@ -53,19 +41,9 @@ void ModApiStorage::Initialize(lua_State *L, int top)
 	API_FCT(get_mod_storage);
 }
 
-StorageRef::StorageRef(ModMetadata *object):
-	m_object(object)
+void StorageRef::create(lua_State *L, const std::string &mod_name, ModMetadataDatabase *db)
 {
-}
-
-StorageRef::~StorageRef()
-{
-	delete m_object;
-}
-
-void StorageRef::create(lua_State *L, ModMetadata *object)
-{
-	StorageRef *o = new StorageRef(object);
+	StorageRef *o = new StorageRef(mod_name, db);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
@@ -74,9 +52,6 @@ void StorageRef::create(lua_State *L, ModMetadata *object)
 int StorageRef::gc_object(lua_State *L)
 {
 	StorageRef *o = *(StorageRef **)(lua_touserdata(L, 1));
-	// Server side
-	if (IGameDef *gamedef = getGameDef(L))
-		gamedef->unregisterModStorage(getobject(o)->getModName());
 	delete o;
 	return 0;
 }
@@ -122,20 +97,14 @@ StorageRef* StorageRef::checkobject(lua_State *L, int narg)
 	return *(StorageRef**)ud;  // unbox pointer
 }
 
-ModMetadata* StorageRef::getobject(StorageRef *ref)
+IMetadata* StorageRef::getmeta(bool auto_create)
 {
-	ModMetadata *co = ref->m_object;
-	return co;
-}
-
-Metadata* StorageRef::getmeta(bool auto_create)
-{
-	return m_object;
+	return &m_object;
 }
 
 void StorageRef::clearMeta()
 {
-	m_object->clear();
+	m_object.clear();
 }
 
 const char StorageRef::className[] = "StorageRef";
