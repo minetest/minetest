@@ -1868,7 +1868,9 @@ to games.
 * `attached_node`: if the node under it is not a walkable block the node will be
   dropped as an item. If the node is wallmounted the wallmounted direction is
   checked.
-* `bouncy`: value is bounce speed in percent
+* `bouncy`: value is bounce speed in percent.
+  If positive, jump/sneak on floor impact will increase/decrease bounce height.
+  Negative value is the same bounciness, but non-controllable.
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
 * `dig_immediate`: Player can always pick up node without reducing tool wear
