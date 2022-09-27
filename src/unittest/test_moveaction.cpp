@@ -52,8 +52,7 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 
 	ServerScripting server_scripting(&server);
 	server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
-	server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "tests" +
-		DIR_DELIM "helper_moveaction.lua", BUILTIN_MOD_NAME);
+	server_scripting.loadMod(std::string(HELPERS_PATH) + DIR_DELIM "helper_moveaction.lua",	BUILTIN_MOD_NAME);
 
 	MetricsBackend mb;
 	ServerEnvironment server_env(nullptr, &server_scripting, &server, "", &mb);
