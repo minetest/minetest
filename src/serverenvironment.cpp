@@ -389,17 +389,29 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *scriptIface, Server *server,
+	ServerScripting *script_iface, Server *server,
 	const std::string &path_world, MetricsBackend *mb):
 	Environment(server),
 	m_map(map),
-	m_script(scriptIface),
+	m_script(script_iface),
 	m_server(server),
 	m_path_world(path_world),
 	m_rgen(seed())
 {
+	m_step_time_counter = mb->addCounter(
+		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
+
+	m_active_block_gauge = mb->addGauge(
+		"minetest_env_active_blocks", "Number of active blocks");
+
+	m_active_object_gauge = mb->addGauge(
+		"minetest_env_active_objects", "Number of active objects");
+}
+
+void ServerEnvironment::init()
+{
 	// Determine which database backend to use
-	std::string conf_path = path_world + DIR_DELIM + "world.mt";
+	std::string conf_path = m_path_world + DIR_DELIM + "world.mt";
 	Settings conf;
 
 	std::string player_backend_name = "sqlite3";
@@ -455,17 +467,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
-	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
-	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
-
-	m_step_time_counter = mb->addCounter(
-		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
-
-	m_active_block_gauge = mb->addGauge(
-		"minetest_env_active_blocks", "Number of active blocks");
-
-	m_active_object_gauge = mb->addGauge(
-		"minetest_env_active_objects", "Number of active objects");
+	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -478,7 +481,8 @@ ServerEnvironment::~ServerEnvironment()
 	deactivateFarObjects(true);
 
 	// Drop/delete map
-	m_map->drop();
+	if (m_map)
+		m_map->drop();
 
 	// Delete ActiveBlockModifiers
 	for (ABMWithState &m_abm : m_abms) {

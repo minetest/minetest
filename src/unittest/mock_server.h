@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2018 nerzhul, Loic BLOT <loic.blot@unix-experience.fr>
+Copyright (C) 2022 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,33 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "test.h"
+#include <server.h>
 
-#include "mock_activeobject.h"
-
-class TestActiveObject : public TestBase
+class MockServer : public Server
 {
 public:
-	TestActiveObject() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestActiveObject"; }
+	MockServer() : Server(TEST_WORLDDIR, SubgameSpec("fakespec", "fakespec"), true,
+		Address(), true, nullptr)
+	{}
 
-	void runTests(IGameDef *gamedef);
-
-	void testAOAttributes();
+private:
+	void SendChatMessage(session_t peer_id, const ChatMessage &message) {}
 };
-
-static TestActiveObject g_test_instance;
-
-void TestActiveObject::runTests(IGameDef *gamedef)
-{
-	TEST(testAOAttributes);
-}
-
-void TestActiveObject::testAOAttributes()
-{
-	MockActiveObject ao(44);
-	UASSERT(ao.getId() == 44);
-
-	ao.setId(558);
-	UASSERT(ao.getId() == 558);
-}
