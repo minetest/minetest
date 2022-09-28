@@ -1,5 +1,9 @@
+local function color(hex)
+	return ("blank.png^[noalpha^[colorize:#%06X:255"):format(hex)
+end
+
 local function random_color()
-	return ("blank.png^[noalpha^[colorize:#%06X:255"):format(math.random(0, 0xFFFFFF))
+	return color(math.random(0, 0xFFFFFF))
 end
 
 local function random_rotation()
@@ -68,13 +72,16 @@ minetest.register_globalstep(function()
 					number = 0xFF0000,
 					alignment = {x=0, y=0},
 				})
+				local shade = math.random(0, 0xFF)
 				minetest.add_particle({
-					texture = random_color(),
+					-- Random shade of red for the intersection point
+					texture = color(0x10000 * shade),
 					pos = pointed_thing.intersection_point,
 					size = 0.1
 				})
 				minetest.add_particle({
-					texture = random_color(),
+					-- Same shade of green for the corresponding intersection normal
+					texture = color(0x100 * shade),
 					pos = vector.add(pointed_thing.intersection_point, pointed_thing.intersection_normal * 0.1),
 					size = 0.1
 				})
