@@ -4910,6 +4910,8 @@ Utilities
           -- the amount of data in mod storage is not constrained by
           -- the amount of RAM available. (5.7.0)
           mod_storage_on_disk = true,
+          -- "zstd" method for compress/decompress (5.7.0)
+          compress_zstd = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -6370,11 +6372,15 @@ Misc.
     * `method` is a string identifying the compression method to be used.
     * Supported compression methods:
         * Deflate (zlib): `"deflate"`
+        * Zstandard: `"zstd"`
     * `...` indicates method-specific arguments. Currently defined arguments
       are:
         * Deflate: `level` - Compression level, `0`-`9` or `nil`.
+        * Zstandard: `level` - Compression level. Integer or `nil`. Default `3`.
+        Note any supported Zstandard compression level could be used here,
+        but these are subject to change between Zstandard versions.
 * `minetest.decompress(compressed_data, method, ...)`: returns data
-    * Decompress a string of data (using ZLib).
+    * Decompress a string of data using the algorithm specified by `method`.
     * See documentation on `minetest.compress()` for supported compression
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
