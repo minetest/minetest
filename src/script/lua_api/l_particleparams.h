@@ -270,7 +270,7 @@ namespace LuaParticleParams
 		u16 id = 0;
 		lua_getfield(L, -1, name);
 		if (!lua_isnil(L, -1)) {
-			ObjectRef *ref = (ObjectRef *)ModApiBase::checkObject(L, -1, ObjectRef::className);
+			ObjectRef *ref = ModApiBase::checkObject<ObjectRef>(L, -1);
 			if (auto obj = ObjectRef::getobject(ref))
 				id = obj->getId();
 		}

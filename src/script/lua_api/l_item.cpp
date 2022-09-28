@@ -466,7 +466,7 @@ int LuaItemStack::create(lua_State *L, const ItemStack &item)
 
 void *LuaItemStack::packIn(lua_State *L, int idx)
 {
-	LuaItemStack *o = (LuaItemStack *)checkObject(L, idx, className);
+	LuaItemStack *o = checkObject<LuaItemStack>(L, idx);
 	return new ItemStack(o->getItem());
 }
 

@@ -93,7 +93,7 @@ int LuaPerlinNoise::gc_object(lua_State *L)
 
 void *LuaPerlinNoise::packIn(lua_State *L, int idx)
 {
-	LuaPerlinNoise *o = (LuaPerlinNoise *)checkObject(L, idx, className);
+	LuaPerlinNoise *o = checkObject<LuaPerlinNoise>(L, idx);
 	return new NoiseParams(o->np);
 }
 
@@ -348,7 +348,7 @@ struct NoiseMapParams {
 
 void *LuaPerlinNoiseMap::packIn(lua_State *L, int idx)
 {
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)checkObject(L, idx, className);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, idx);
 	NoiseMapParams *ret = new NoiseMapParams();
 	ret->np = o->noise->np;
 	ret->seed = o->noise->seed;

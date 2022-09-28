@@ -2353,7 +2353,7 @@ void ObjectRef::create(lua_State *L, ServerActiveObject *object)
 
 void ObjectRef::set_null(lua_State *L)
 {
-	ObjectRef *obj = (ObjectRef *)checkObject(L, -1, className);
+	ObjectRef *obj = checkObject<ObjectRef>(L, -1);
 	obj->m_object = nullptr;
 }
 

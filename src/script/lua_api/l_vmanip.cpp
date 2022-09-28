@@ -427,7 +427,7 @@ int LuaVoxelManip::create_object(lua_State *L)
 
 void *LuaVoxelManip::packIn(lua_State *L, int idx)
 {
-	LuaVoxelManip *o = (LuaVoxelManip *)checkObject(L, idx, className);
+	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, idx);
 
 	if (o->is_mapgen_vm)
 		throw LuaError("nope");
