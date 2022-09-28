@@ -939,7 +939,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 		do {
 			PLAYER_TO_SA(player)->item_OnDrop(output_replacement, player,
 				player->getBasePosition());
-			if (count >= output_replacement.count) {
+			if (count <= output_replacement.count) {
 				errorstream << "Couldn't drop replacement stack " <<
 					output_replacement.getItemString() << " because drop loop didn't "
 					"decrease count." << std::endl;
