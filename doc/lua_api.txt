@@ -8541,19 +8541,26 @@ Parameters:
     * Values inside of the inner table are the columns.
       Each inner table must contain a list of *w* items, specified from left to right
     * Empty slots *must* be filled with the empty string
-* `replacements`: Optional list of item pairs for replacing input items.
-    * When the output is crafted, Minetest goes through the list
-      of item pairs and replace each matching input item with
-      a replacement item (instead of consuming this input item)
-    * Each item pair must follow the syntax `{ old_item, new_item }`
-    * Warning: Replacements only work properly for input items
-      of a stack size of 1. You might want to set `stack_max` to
-      1 for these items.
+* `replacements`: Optionally allows you to replace input items with some other items
+      when something is crafted
+    * Provided as a list of item pairs of the form `{ old_item, new_item }` where
+      `old_item` is the input item to replace (same syntax as for a regular input
+      slot; groups are allowed) and `new_item` is an itemstring for the item stack
+      it will become
+    * When the output is crafted, Minetest iterates through the list
+      of input items if the crafting grid. For each input item stack, it checks if
+      it matches with an `old_item` in the item pair list.
+        * If it matches, the item will be replaced. Also, this item pair
+          will *not* be applied again for the remaining items
+        * If it does not match, the item is consumed (reduced by 1) normally
+    * Item replacements will appear either in the crafting grid, the
+      player inventory or will be dropped as item, depending on inventory space
 
 #### Examples
 
-Stone pickaxe:
+A typical shaped recipe:
 
+    -- Stone pickaxe
     {
         output = "example:stone_pickaxe",
         -- This is a 3x3 recipe which needs 3 cobblestone in the 1st row,
@@ -8568,21 +8575,67 @@ Stone pickaxe:
         -- will be consumed.
     }
 
-Wet sponge:
+Simple replacement example:
 
+    -- Wet sponge
     {
         output = "example:wet_sponge",
-        -- This is a 2x1 recipe in which the player must place a
-        -- water bucket above a dry sponge
+        -- 1x2 recipe with a water bucket above a dry sponge
         recipe = {
             {"example:water_bucket"},
             {"example:dry_sponge"},
         },
         -- When the wet sponge is crafted, the water bucket
-        -- in the input slot shall be replaced with an empty
-        -- bucket instead of consuming the water bucket completely.
+        -- in the input slot is replaced with an empty
+        -- bucket
         replacements = {
             {"example:water_bucket", "example:empty_bucket"},
+        },
+    }
+
+Complex replacement example 1:
+
+    -- Very wet sponge
+    {
+        output = "example:very_wet_sponge",
+        -- 3x3 recipe with a wet sponge in the center
+        -- and 4 water buckets around it
+        recipe = {
+            {"","example:water_bucket",""},
+            {"example:water_bucket","example:wet_sponge","example:water_bucket"},
+            {"","example:water_bucket",""},
+        },
+        -- When the wet sponge is crafted, all water buckets
+        -- in the input slot become empty
+        replacements = {
+            -- Without these repetitions, only the first
+            -- water bucket would be replaced.
+            {"example:water_bucket", "example:empty_bucket"},
+            {"example:water_bucket", "example:empty_bucket"},
+            {"example:water_bucket", "example:empty_bucket"},
+            {"example:water_bucket", "example:empty_bucket"},
+        },
+    }
+
+Complex replacement example 2:
+
+    -- Magic book:
+    -- 3 magic orbs + 1 book crafts a magic book,
+    -- and the orbs will be replaced with 3 different runes.
+    {
+        output = "example:magic_book",
+        -- 3x2 recipe
+        recipe = {
+            -- 3 items in the group `magic_orb` on top of a book in the middle
+            {"group:magic_orb", "group:magic_orb", "group:magic_orb"},
+            {"", "example:book", ""},
+        },
+        -- When the book is crafted, the 3 magic orbs will be turned into
+        -- 3 runes: ice rune, earth rune and fire rune (from left to right)
+        replacements = {
+            {"group:magic_orb", "example:ice_rune"},
+            {"group:magic_orb", "example:earth_rune"},
+            {"group:magic_orb", "example:fire_rune"},
         },
     }
 
@@ -8662,7 +8715,9 @@ Parameters:
 * `recipe`: An itemname of the single input item
 * `cooktime`: (optional) Time it takes to cook this item, in seconds.
               A floating-point number. (default: 3.0)
-* `replacements`: Same as for shaped recipes
+* `replacements`: Same meaning as for shaped recipes, but the mods
+                  that utilize cooking recipes (e.g. for adding a furnace
+                  node) need to implement replacements on their own
 
 Note: Games and mods are free to re-interpret the cooktime in special
 cases, e.g. for a super furnace that cooks items twice as fast.
@@ -8694,7 +8749,9 @@ Parameters:
 * `recipe`: Itemname of the item to be used as fuel
 * `burntime`: (optional) Burning time this item provides, in seconds.
               A floating-point number. (default: 1.0)
-* `replacements`: Same as for shaped recipes
+* `replacements`: Same meaning as for shaped recipes, but the mods
+                  that utilize fuels need to implement replacements
+                  on their own
 
 Note: Games and mods are free to re-interpret the burntime in special
 cases, e.g. for an efficient furnace in which fuels burn twice as
