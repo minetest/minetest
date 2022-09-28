@@ -1065,7 +1065,7 @@ void read_server_sound_params(lua_State *L, int index,
 		lua_pop(L, 1);
 		lua_getfield(L, index, "object");
 		if(!lua_isnil(L, -1)){
-			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			ObjectRef *ref = (ObjectRef *)ModApiBase::checkObject(L, -1, ObjectRef::className);
 			ServerActiveObject *sao = ObjectRef::getobject(ref);
 			if(sao){
 				params.object = sao->getId();
@@ -1251,7 +1251,7 @@ ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 
 	if (lua_isuserdata(L, index)) {
 		// Convert from LuaItemStack
-		LuaItemStack *o = LuaItemStack::checkobject(L, index);
+		LuaItemStack *o = (LuaItemStack *)ModApiBase::checkObject(L, index, LuaItemStack::className);
 		return o->getItem();
 	}
 

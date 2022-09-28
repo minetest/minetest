@@ -74,6 +74,18 @@ public:
 			lua_CFunction func,
 			int top);
 
+	static void registerClass(lua_State *L, const char *name,
+			const luaL_Reg *methods,
+			const luaL_Reg *metamethods);
+
+	// Only use this in methods (functions with the right metatable as their first upvalue).
+	static void *methodCheckObject(lua_State *L, int narg);
+
+	static inline void *checkObject(lua_State *L, int narg, const char *className)
+	{
+		return *(void **)luaL_checkudata(L, narg, className);
+	}
+
 	/**
 	 * A wrapper for deprecated functions.
 	 *

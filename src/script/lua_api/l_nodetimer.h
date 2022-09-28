@@ -30,12 +30,9 @@ private:
 	v3s16 m_p;
 	ServerMap *m_map;
 
-	static const char className[];
 	static const luaL_Reg methods[];
 
 	static int gc_object(lua_State *L);
-
-	static NodeTimerRef *checkobject(lua_State *L, int narg);
 
 	static int l_set(lua_State *L);
 
@@ -58,4 +55,6 @@ public:
 	static void create(lua_State *L, v3s16 p, ServerMap *map);
 
 	static void Register(lua_State *L);
+
+	static const char className[];
 };

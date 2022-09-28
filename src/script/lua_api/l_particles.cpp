@@ -259,7 +259,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 		lua_getfield(L, 1, "attached");
 		if (!lua_isnil(L, -1)) {
-			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			ObjectRef *ref = (ObjectRef *)checkObject(L, -1, ObjectRef::className);
 			lua_pop(L, 1);
 			attached = ObjectRef::getobject(ref);
 		}
