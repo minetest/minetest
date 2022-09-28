@@ -2991,8 +2991,7 @@ void Game::updateCamera(f32 dtime)
 
 #ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
-			g_touchscreengui->setUseCrosshair(m_touch_use_crosshair ||
-					camera->getCameraMode() == CAMERA_MODE_THIRD);
+			g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
 #endif
 
 		// Make the player visible depending on camera mode.
