@@ -240,8 +240,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	end
 
 	-- Check if the node is attached and if it can be placed there
-	if core.get_item_group(def.name, "attached_node") ~= 0 and
-		not builtin_shared.check_attached_node(place_to, newnode) then
+	local an = core.get_item_group(def.name, "attached_node")
+	if an ~= 0 and
+		not builtin_shared.check_attached_node(place_to, newnode, an) then
 		log("action", "attached node " .. def.name ..
 			" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, nil
