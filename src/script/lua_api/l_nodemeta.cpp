@@ -78,7 +78,7 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	NodeMetaRef *ref = (NodeMetaRef *)methodCheckObject(L, 1);
+	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
 	ref->getmeta(true);  // try to ensure the metadata exists
 
 	InventoryLocation loc;
@@ -92,7 +92,7 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	NodeMetaRef *ref = (NodeMetaRef *)methodCheckObject(L, 1);
+	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
 	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
 	assert(meta);
 

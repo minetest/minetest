@@ -32,7 +32,7 @@ int NodeTimerRef::gc_object(lua_State *L) {
 int NodeTimerRef::l_set(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	f32 t = readParam<float>(L,2);
 	f32 e = readParam<float>(L,3);
 	o->m_map->setNodeTimer(NodeTimer(t, e, o->m_p));
@@ -42,7 +42,7 @@ int NodeTimerRef::l_set(lua_State *L)
 int NodeTimerRef::l_start(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	f32 t = readParam<float>(L,2);
 	o->m_map->setNodeTimer(NodeTimer(t, 0, o->m_p));
 	return 0;
@@ -51,7 +51,7 @@ int NodeTimerRef::l_start(lua_State *L)
 int NodeTimerRef::l_stop(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	o->m_map->removeNodeTimer(o->m_p);
 	return 0;
 }
@@ -59,7 +59,7 @@ int NodeTimerRef::l_stop(lua_State *L)
 int NodeTimerRef::l_is_started(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushboolean(L,(t.timeout != 0));
 	return 1;
@@ -68,7 +68,7 @@ int NodeTimerRef::l_is_started(lua_State *L)
 int NodeTimerRef::l_get_timeout(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.timeout);
 	return 1;
@@ -77,7 +77,7 @@ int NodeTimerRef::l_get_timeout(lua_State *L)
 int NodeTimerRef::l_get_elapsed(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
-	NodeTimerRef *o = (NodeTimerRef *)methodCheckObject(L, 1);
+	NodeTimerRef *o = checkObject<NodeTimerRef>(L, 1);
 	NodeTimer t = o->m_map->getNodeTimer(o->m_p);
 	lua_pushnumber(L,t.elapsed);
 	return 1;

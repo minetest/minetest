@@ -99,7 +99,7 @@ int LuaAreaStore::l_get_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	u32 id = luaL_checknumber(L, 2);
@@ -124,7 +124,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	v3s16 pos = check_v3s16(L, 2);
@@ -146,7 +146,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	v3s16 minp = check_v3s16(L, 2);
@@ -173,7 +173,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
@@ -199,7 +199,7 @@ int LuaAreaStore::l_reserve(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	size_t count = luaL_checknumber(L, 2);
@@ -212,7 +212,7 @@ int LuaAreaStore::l_remove_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	u32 id = luaL_checknumber(L, 2);
@@ -227,7 +227,7 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	luaL_checktype(L, 2, LUA_TTABLE);
@@ -246,7 +246,7 @@ int LuaAreaStore::l_to_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	std::ostringstream os(std::ios_base::binary);
 	o->as->serialize(os);
@@ -261,7 +261,7 @@ int LuaAreaStore::l_to_file(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	const char *filename = luaL_checkstring(L, 2);
@@ -279,7 +279,7 @@ int LuaAreaStore::l_from_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	size_t len;
 	const char *str = luaL_checklstring(L, 2, &len);
@@ -293,7 +293,7 @@ int LuaAreaStore::l_from_file(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (LuaAreaStore *)methodCheckObject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH(L, filename, false);

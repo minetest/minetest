@@ -45,7 +45,7 @@ void ItemStackMetaRef::reportMetadataChange(const std::string *name)
 // Exported functions
 int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 {
-	ItemStackMetaRef *metaref = (ItemStackMetaRef *)methodCheckObject(L, 1);
+	ItemStackMetaRef *metaref = checkObject<ItemStackMetaRef>(L, 1);
 	if (lua_isnoneornil(L, 2)) {
 		metaref->clearToolCapabilities();
 	} else if (lua_istable(L, 2)) {

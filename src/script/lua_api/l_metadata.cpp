@@ -55,7 +55,7 @@ int MetaDataRef::l_contains(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -71,7 +71,7 @@ int MetaDataRef::l_get(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -92,7 +92,7 @@ int MetaDataRef::l_get_string(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -112,7 +112,7 @@ int MetaDataRef::l_set_string(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	size_t len = 0;
 	const char *s = lua_tolstring(L, 3, &len);
@@ -129,7 +129,7 @@ int MetaDataRef::l_get_int(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -149,7 +149,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	int a = luaL_checkint(L, 3);
 	std::string str = itos(a);
@@ -165,7 +165,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -185,7 +185,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
@@ -201,7 +201,7 @@ int MetaDataRef::l_to_table(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 
 	IMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
@@ -220,7 +220,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	int base = 2;
 
 	ref->clearMeta();
@@ -285,7 +285,7 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, IMetadata *meta)
 // equals(self, other)
 int MetaDataRef::l_equals(lua_State *L)
 {
-	MetaDataRef *ref1 = (MetaDataRef *)methodCheckObject(L, 1);
+	MetaDataRef *ref1 = checkAnyMetadata(L, 1);
 	IMetadata *data1 = ref1->getmeta(false);
 	MetaDataRef *ref2 = checkAnyMetadata(L, 2);
 	IMetadata *data2 = ref2->getmeta(false);

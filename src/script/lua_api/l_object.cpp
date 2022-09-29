@@ -90,7 +90,7 @@ int ObjectRef::l_remove(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -109,7 +109,7 @@ int ObjectRef::l_remove(lua_State *L)
 int ObjectRef::l_get_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -122,7 +122,7 @@ int ObjectRef::l_get_pos(lua_State *L)
 int ObjectRef::l_set_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -137,7 +137,7 @@ int ObjectRef::l_set_pos(lua_State *L)
 int ObjectRef::l_move_to(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -153,8 +153,8 @@ int ObjectRef::l_move_to(lua_State *L)
 int ObjectRef::l_punch(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
-	ObjectRef *puncher_ref = (ObjectRef *)methodCheckObject(L, 2);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ObjectRef *puncher_ref = checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
 	ServerActiveObject *puncher = getobject(puncher_ref);
 	if (sao == nullptr || puncher == nullptr)
@@ -175,8 +175,8 @@ int ObjectRef::l_punch(lua_State *L)
 int ObjectRef::l_right_click(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
-	ObjectRef *ref2 = (ObjectRef *)methodCheckObject(L, 2);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ObjectRef *ref2 = checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
 	ServerActiveObject *sao2 = getobject(ref2);
 	if (sao == nullptr || sao2 == nullptr)
@@ -190,7 +190,7 @@ int ObjectRef::l_right_click(lua_State *L)
 int ObjectRef::l_set_hp(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -222,7 +222,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 int ObjectRef::l_get_hp(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr) {
 		// Default hp is 1
@@ -240,7 +240,7 @@ int ObjectRef::l_get_hp(lua_State *L)
 int ObjectRef::l_get_inventory(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -257,7 +257,7 @@ int ObjectRef::l_get_inventory(lua_State *L)
 int ObjectRef::l_get_wield_list(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -270,7 +270,7 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 int ObjectRef::l_get_wield_index(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -283,7 +283,7 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 int ObjectRef::l_get_wielded_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr) {
 		// Empty ItemStack
@@ -301,7 +301,7 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 int ObjectRef::l_set_wielded_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -320,7 +320,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 int ObjectRef::l_set_armor_groups(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -345,7 +345,7 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 int ObjectRef::l_get_armor_groups(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -358,7 +358,7 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 int ObjectRef::l_set_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -376,7 +376,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 int ObjectRef::l_get_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -398,7 +398,7 @@ int ObjectRef::l_get_animation(lua_State *L)
 int ObjectRef::l_set_local_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -418,7 +418,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 int ObjectRef::l_get_local_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -439,7 +439,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 int ObjectRef::l_set_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -461,7 +461,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 int ObjectRef::l_get_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -475,7 +475,7 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 int ObjectRef::l_send_mapblock(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -493,7 +493,7 @@ int ObjectRef::l_send_mapblock(lua_State *L)
 int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -512,7 +512,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -529,7 +529,7 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 int ObjectRef::l_get_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -549,8 +549,8 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 int ObjectRef::l_set_attach(lua_State *L)
 {
 	GET_ENV_PTR;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
-	ObjectRef *parent_ref = (ObjectRef *)methodCheckObject(L, 2);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ObjectRef *parent_ref = checkObject<ObjectRef>(L, 2);
 	ServerActiveObject *sao = getobject(ref);
 	ServerActiveObject *parent = getobject(parent_ref);
 	if (sao == nullptr || parent == nullptr)
@@ -584,7 +584,7 @@ int ObjectRef::l_set_attach(lua_State *L)
 int ObjectRef::l_get_attach(lua_State *L)
 {
 	GET_ENV_PTR;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -612,7 +612,7 @@ int ObjectRef::l_get_attach(lua_State *L)
 int ObjectRef::l_get_children(lua_State *L)
 {
 	GET_ENV_PTR;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -633,7 +633,7 @@ int ObjectRef::l_get_children(lua_State *L)
 int ObjectRef::l_set_detach(lua_State *L)
 {
 	GET_ENV_PTR;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -646,7 +646,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 int ObjectRef::l_set_properties(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -665,7 +665,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 int ObjectRef::l_get_properties(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -682,7 +682,7 @@ int ObjectRef::l_get_properties(lua_State *L)
 int ObjectRef::l_is_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	lua_pushboolean(L, (player != nullptr));
 	return 1;
@@ -692,7 +692,7 @@ int ObjectRef::l_is_player(lua_State *L)
 int ObjectRef::l_set_nametag_attributes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -733,7 +733,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 int ObjectRef::l_get_nametag_attributes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -769,7 +769,7 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 int ObjectRef::l_set_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *sao = getluaobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -784,7 +784,7 @@ int ObjectRef::l_set_velocity(lua_State *L)
 int ObjectRef::l_add_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -807,7 +807,7 @@ int ObjectRef::l_add_velocity(lua_State *L)
 int ObjectRef::l_get_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
@@ -831,7 +831,7 @@ int ObjectRef::l_get_velocity(lua_State *L)
 int ObjectRef::l_set_acceleration(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -846,7 +846,7 @@ int ObjectRef::l_set_acceleration(lua_State *L)
 int ObjectRef::l_get_acceleration(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -860,7 +860,7 @@ int ObjectRef::l_get_acceleration(lua_State *L)
 int ObjectRef::l_set_rotation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -875,7 +875,7 @@ int ObjectRef::l_set_rotation(lua_State *L)
 int ObjectRef::l_get_rotation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -891,7 +891,7 @@ int ObjectRef::l_get_rotation(lua_State *L)
 int ObjectRef::l_set_yaw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -906,7 +906,7 @@ int ObjectRef::l_set_yaw(lua_State *L)
 int ObjectRef::l_get_yaw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -921,7 +921,7 @@ int ObjectRef::l_get_yaw(lua_State *L)
 int ObjectRef::l_set_texture_mod(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -936,7 +936,7 @@ int ObjectRef::l_set_texture_mod(lua_State *L)
 int ObjectRef::l_get_texture_mod(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -951,7 +951,7 @@ int ObjectRef::l_get_texture_mod(lua_State *L)
 int ObjectRef::l_set_sprite(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -970,7 +970,7 @@ int ObjectRef::l_set_sprite(lua_State *L)
 int ObjectRef::l_get_entity_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	log_deprecated(L,"Deprecated call to \"get_entity_name");
 	if (entitysao == nullptr)
@@ -986,7 +986,7 @@ int ObjectRef::l_get_entity_name(lua_State *L)
 int ObjectRef::l_get_luaentity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	LuaEntitySAO *entitysao = getluaobject(ref);
 	if (entitysao == nullptr)
 		return 0;
@@ -1001,7 +1001,7 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 int ObjectRef::l_get_player_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr) {
 		lua_pushlstring(L, "", 0);
@@ -1016,7 +1016,7 @@ int ObjectRef::l_get_player_name(lua_State *L)
 int ObjectRef::l_get_look_dir(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1039,7 +1039,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to get_look_pitch, use get_look_vertical instead");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1057,7 +1057,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to get_look_yaw, use get_look_horizontal instead");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1070,7 +1070,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 int ObjectRef::l_get_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1083,7 +1083,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 int ObjectRef::l_get_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1096,7 +1096,7 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 int ObjectRef::l_set_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1111,7 +1111,7 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 int ObjectRef::l_set_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1131,7 +1131,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to set_look_pitch, use set_look_vertical instead.");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1151,7 +1151,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to set_look_yaw, use set_look_horizontal instead.");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1166,7 +1166,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 int ObjectRef::l_set_fov(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1185,7 +1185,7 @@ int ObjectRef::l_set_fov(lua_State *L)
 int ObjectRef::l_get_fov(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1202,7 +1202,7 @@ int ObjectRef::l_get_fov(lua_State *L)
 int ObjectRef::l_set_breath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1217,7 +1217,7 @@ int ObjectRef::l_set_breath(lua_State *L)
 int ObjectRef::l_get_breath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1234,7 +1234,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to set_attribute, use MetaDataRef methods instead.");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1255,7 +1255,7 @@ int ObjectRef::l_get_attribute(lua_State *L)
 	log_deprecated(L,
 		"Deprecated call to get_attribute, use MetaDataRef methods instead.");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO* playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1275,7 +1275,7 @@ int ObjectRef::l_get_attribute(lua_State *L)
 // get_meta(self, attribute)
 int ObjectRef::l_get_meta(lua_State *L)
 {
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1289,7 +1289,7 @@ int ObjectRef::l_get_meta(lua_State *L)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1305,7 +1305,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 int ObjectRef::l_get_inventory_formspec(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1320,7 +1320,7 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 int ObjectRef::l_set_formspec_prepend(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1336,7 +1336,7 @@ int ObjectRef::l_set_formspec_prepend(lua_State *L)
 int ObjectRef::l_get_formspec_prepend(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		 return 0;
@@ -1351,7 +1351,7 @@ int ObjectRef::l_get_formspec_prepend(lua_State *L)
 int ObjectRef::l_get_player_control(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 
 	lua_newtable(L);
@@ -1391,7 +1391,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 int ObjectRef::l_get_player_control_bits(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr) {
 		lua_pushinteger(L, 0);
@@ -1420,7 +1420,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == nullptr)
 		return 0;
@@ -1463,7 +1463,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 int ObjectRef::l_get_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1489,7 +1489,7 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 int ObjectRef::l_hud_add(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1511,7 +1511,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 int ObjectRef::l_hud_remove(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1529,7 +1529,7 @@ int ObjectRef::l_hud_remove(lua_State *L)
 int ObjectRef::l_hud_change(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1555,7 +1555,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 int ObjectRef::l_hud_get(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1574,7 +1574,7 @@ int ObjectRef::l_hud_get(lua_State *L)
 int ObjectRef::l_hud_set_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1600,7 +1600,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 int ObjectRef::l_hud_get_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1618,7 +1618,7 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1636,7 +1636,7 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1649,7 +1649,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1664,7 +1664,7 @@ int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1679,7 +1679,7 @@ int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
 int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1694,7 +1694,7 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1709,7 +1709,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1884,7 +1884,7 @@ static void push_sky_color(lua_State *L, const SkyboxParams &params)
 int ObjectRef::l_get_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1937,7 +1937,7 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 
 	log_deprecated(L, "Deprecated call to get_sky_color, use get_sky instead");
 
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1951,7 +1951,7 @@ int ObjectRef::l_get_sky_color(lua_State *L)
 int ObjectRef::l_set_sun(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -1979,7 +1979,7 @@ int ObjectRef::l_set_sun(lua_State *L)
 int ObjectRef::l_get_sun(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2006,7 +2006,7 @@ int ObjectRef::l_get_sun(lua_State *L)
 int ObjectRef::l_set_moon(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2032,7 +2032,7 @@ int ObjectRef::l_set_moon(lua_State *L)
 int ObjectRef::l_get_moon(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2055,7 +2055,7 @@ int ObjectRef::l_get_moon(lua_State *L)
 int ObjectRef::l_set_stars(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2089,7 +2089,7 @@ int ObjectRef::l_set_stars(lua_State *L)
 int ObjectRef::l_get_stars(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2114,7 +2114,7 @@ int ObjectRef::l_get_stars(lua_State *L)
 int ObjectRef::l_set_clouds(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2157,7 +2157,7 @@ int ObjectRef::l_set_clouds(lua_State *L)
 int ObjectRef::l_get_clouds(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2189,7 +2189,7 @@ int ObjectRef::l_get_clouds(lua_State *L)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2212,7 +2212,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 int ObjectRef::l_get_day_night_ratio(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2233,7 +2233,7 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 int ObjectRef::l_set_minimap_modes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2286,7 +2286,7 @@ int ObjectRef::l_set_minimap_modes(lua_State *L)
 int ObjectRef::l_set_lighting(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2307,7 +2307,7 @@ int ObjectRef::l_set_lighting(lua_State *L)
 int ObjectRef::l_get_lighting(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2326,7 +2326,7 @@ int ObjectRef::l_get_lighting(lua_State *L)
 int ObjectRef::l_respawn(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = (ObjectRef *)methodCheckObject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;

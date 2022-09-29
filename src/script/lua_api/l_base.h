@@ -78,9 +78,6 @@ public:
 			const luaL_Reg *methods,
 			const luaL_Reg *metamethods);
 
-	// Only use this in methods (functions with the right metatable as their first upvalue).
-	static void *methodCheckObject(lua_State *L, int narg);
-
 	template<typename T>
 	static inline T *checkObject(lua_State *L, int narg)
 	{

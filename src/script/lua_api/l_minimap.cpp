@@ -50,7 +50,7 @@ void LuaMinimap::create(lua_State *L, Minimap *m)
 
 int LuaMinimap::l_get_pos(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	push_v3s16(L, m->getPos());
@@ -59,7 +59,7 @@ int LuaMinimap::l_get_pos(lua_State *L)
 
 int LuaMinimap::l_set_pos(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	m->setPos(read_v3s16(L, 2));
@@ -68,7 +68,7 @@ int LuaMinimap::l_set_pos(lua_State *L)
 
 int LuaMinimap::l_get_angle(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	lua_pushinteger(L, m->getAngle());
@@ -77,7 +77,7 @@ int LuaMinimap::l_get_angle(lua_State *L)
 
 int LuaMinimap::l_set_angle(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	m->setAngle(lua_tointeger(L, 2));
@@ -86,7 +86,7 @@ int LuaMinimap::l_set_angle(lua_State *L)
 
 int LuaMinimap::l_get_mode(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	lua_pushinteger(L, m->getModeIndex());
@@ -95,7 +95,7 @@ int LuaMinimap::l_get_mode(lua_State *L)
 
 int LuaMinimap::l_set_mode(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	u32 mode = lua_tointeger(L, 2);
@@ -108,7 +108,7 @@ int LuaMinimap::l_set_mode(lua_State *L)
 
 int LuaMinimap::l_set_shape(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 	if (!lua_isnumber(L, 2))
 		return 0;
@@ -119,7 +119,7 @@ int LuaMinimap::l_set_shape(lua_State *L)
 
 int LuaMinimap::l_get_shape(lua_State *L)
 {
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	lua_pushnumber(L, (int)m->getMinimapShape());
@@ -135,7 +135,7 @@ int LuaMinimap::l_show(lua_State *L)
 	Client *client = getClient(L);
 	assert(client);
 
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	// This is not very adapted to new minimap mode management. Btw, tried
@@ -153,7 +153,7 @@ int LuaMinimap::l_hide(lua_State *L)
 	Client *client = getClient(L);
 	assert(client);
 
-	LuaMinimap *ref = (LuaMinimap *)methodCheckObject(L, 1);
+	LuaMinimap *ref = checkObject<LuaMinimap>(L, 1);
 	Minimap *m = getobject(ref);
 
 	// This is not very adapted to new minimap mode management. Btw, tried

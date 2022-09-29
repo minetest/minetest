@@ -40,7 +40,7 @@ LuaPerlinNoise::LuaPerlinNoise(const NoiseParams *params) :
 int LuaPerlinNoise::l_get_2d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaPerlinNoise *o = (LuaPerlinNoise *)methodCheckObject(L, 1);
+	LuaPerlinNoise *o = checkObject<LuaPerlinNoise>(L, 1);
 	v2f p = readParam<v2f>(L, 2);
 	lua_Number val = NoisePerlin2D(&o->np, p.X, p.Y, 0);
 	lua_pushnumber(L, val);
@@ -51,7 +51,7 @@ int LuaPerlinNoise::l_get_2d(lua_State *L)
 int LuaPerlinNoise::l_get_3d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaPerlinNoise *o = (LuaPerlinNoise *)methodCheckObject(L, 1);
+	LuaPerlinNoise *o = checkObject<LuaPerlinNoise>(L, 1);
 	v3f p = check_v3f(L, 2);
 	lua_Number val = NoisePerlin3D(&o->np, p.X, p.Y, p.Z, 0);
 	lua_pushnumber(L, val);
@@ -157,7 +157,7 @@ int LuaPerlinNoiseMap::l_get_2d_map(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	size_t i = 0;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v2f p = readParam<v2f>(L, 2);
 
 	Noise *n = o->noise;
@@ -180,7 +180,7 @@ int LuaPerlinNoiseMap::l_get_2d_map_flat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v2f p = readParam<v2f>(L, 2);
 	bool use_buffer = lua_istable(L, 3);
 
@@ -207,7 +207,7 @@ int LuaPerlinNoiseMap::l_get_3d_map(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	size_t i = 0;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v3f p = check_v3f(L, 2);
 
 	if (!o->is3D())
@@ -237,7 +237,7 @@ int LuaPerlinNoiseMap::l_get_3d_map_flat(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v3f p                = check_v3f(L, 2);
 	bool use_buffer      = lua_istable(L, 3);
 
@@ -266,7 +266,7 @@ int LuaPerlinNoiseMap::l_calc_2d_map(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v2f p = readParam<v2f>(L, 2);
 
 	Noise *n = o->noise;
@@ -279,7 +279,7 @@ int LuaPerlinNoiseMap::l_calc_3d_map(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v3f p                = check_v3f(L, 2);
 
 	if (!o->is3D())
@@ -296,7 +296,7 @@ int LuaPerlinNoiseMap::l_get_map_slice(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPerlinNoiseMap *o = (LuaPerlinNoiseMap *)methodCheckObject(L, 1);
+	LuaPerlinNoiseMap *o = checkObject<LuaPerlinNoiseMap>(L, 1);
 	v3s16 slice_offset   = read_v3s16(L, 2);
 	v3s16 slice_size     = read_v3s16(L, 3);
 	bool use_buffer      = lua_istable(L, 4);
@@ -404,7 +404,7 @@ int LuaPseudoRandom::l_next(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPseudoRandom *o = (LuaPseudoRandom *)methodCheckObject(L, 1);
+	LuaPseudoRandom *o = checkObject<LuaPseudoRandom>(L, 1);
 	int min = 0;
 	int max = 32767;
 	lua_settop(L, 3);
@@ -477,7 +477,7 @@ int LuaPcgRandom::l_next(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPcgRandom *o = (LuaPcgRandom *)methodCheckObject(L, 1);
+	LuaPcgRandom *o = checkObject<LuaPcgRandom>(L, 1);
 	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.RANDOM_MIN;
 	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.RANDOM_MAX;
 
@@ -490,7 +490,7 @@ int LuaPcgRandom::l_rand_normal_dist(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaPcgRandom *o = (LuaPcgRandom *)methodCheckObject(L, 1);
+	LuaPcgRandom *o = checkObject<LuaPcgRandom>(L, 1);
 	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.RANDOM_MIN;
 	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.RANDOM_MAX;
 	int num_trials = lua_isnumber(L, 4) ? lua_tointeger(L, 4) : 6;
@@ -556,7 +556,7 @@ int LuaSecureRandom::l_next_bytes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaSecureRandom *o = (LuaSecureRandom *)methodCheckObject(L, 1);
+	LuaSecureRandom *o = checkObject<LuaSecureRandom>(L, 1);
 	u32 count = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : 1;
 
 	// Limit count

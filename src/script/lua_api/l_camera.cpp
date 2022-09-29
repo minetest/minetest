@@ -172,7 +172,7 @@ Camera *LuaCamera::getobject(LuaCamera *ref)
 
 Camera *LuaCamera::getobject(lua_State *L, int narg)
 {
-	LuaCamera *ref = (LuaCamera *)methodCheckObject(L, narg);
+	LuaCamera *ref = checkObject<LuaCamera>(L, narg);
 	assert(ref);
 	return getobject(ref);
 }

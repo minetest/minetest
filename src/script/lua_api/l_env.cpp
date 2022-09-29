@@ -158,7 +158,7 @@ int LuaRaycast::l_next(lua_State *L)
 	csm = getClient(L) != nullptr;
 #endif
 
-	LuaRaycast *o = (LuaRaycast *)methodCheckObject(L, 1);
+	LuaRaycast *o = checkObject<LuaRaycast>(L, 1);
 	PointedThing pointed;
 	env->continueRaycast(&o->state, &pointed);
 	if (pointed.type == POINTEDTHING_NOTHING)

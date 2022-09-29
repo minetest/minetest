@@ -57,14 +57,14 @@ ModChannelRef::ModChannelRef(const std::string &modchannel) :
 
 int ModChannelRef::l_leave(lua_State *L)
 {
-	ModChannelRef *ref = (ModChannelRef *)methodCheckObject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	getGameDef(L)->leaveModChannel(ref->m_modchannel_name);
 	return 0;
 }
 
 int ModChannelRef::l_send_all(lua_State *L)
 {
-	ModChannelRef *ref = (ModChannelRef *)methodCheckObject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel || !channel->canWrite())
 		return 0;
@@ -78,7 +78,7 @@ int ModChannelRef::l_send_all(lua_State *L)
 
 int ModChannelRef::l_is_writeable(lua_State *L)
 {
-	ModChannelRef *ref = (ModChannelRef *)methodCheckObject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel)
 		return 0;

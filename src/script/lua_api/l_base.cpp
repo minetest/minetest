@@ -100,29 +100,17 @@ bool ModApiBase::registerFunction(lua_State *L, const char *name,
 	return true;
 }
 
-static void set_methods(lua_State *L, int metatable, int into, const luaL_Reg *methods)
-{
-	if (!methods)
-		return;
-	for (int i = 0; methods[i].name != NULL; i++) {
-		// Remember the metatable as an upvalue for argument checking purposes.
-		lua_pushvalue(L, metatable);
-		lua_pushcclosure(L, methods[i].func, 1);
-		lua_setfield(L, into, methods[i].name);
-	}
-}
-
 void ModApiBase::registerClass(lua_State *L, const char *name,
 		const luaL_Reg *methods,
 		const luaL_Reg *metamethods)
 {
 	luaL_newmetatable(L, name);
+	luaL_register(L, NULL, metamethods);
 	int metatable = lua_gettop(L);
 
 	lua_newtable(L);
+	luaL_register(L, NULL, methods);
 	int methodtable = lua_gettop(L);
-
-	set_methods(L, metatable, methodtable, methods);
 
 	lua_pushvalue(L, methodtable);
 	lua_setfield(L, metatable, "__index");
@@ -135,30 +123,8 @@ void ModApiBase::registerClass(lua_State *L, const char *name,
 	lua_pushstring(L, name);
 	lua_setfield(L, metatable, "class_name");
 
-	set_methods(L, metatable, metatable, metamethods);
-
 	// Pop methodtable and metatable.
 	lua_pop(L, 2);
-}
-
-void *ModApiBase::methodCheckObject(lua_State *L, int narg)
-{
-	void *ud = lua_touserdata(L, narg);
-
-	bool ok = ud && lua_getmetatable(L, narg);
-	if (ok) {
-		ok = lua_rawequal(L, -1, lua_upvalueindex(1));
-		lua_pop(L, 1);
-	}
-
-	if (!ok) {
-		lua_getfield(L, lua_upvalueindex(1), "class_name");
-		std::string className = luaL_optstring(L, -1, "<unknown class>");
-		lua_pop(L, 1);
-		luaL_typerror(L, narg, className.c_str());
-	}
-
-	return *(void **)ud; // unbox pointer
 }
 
 int ModApiBase::l_deprecated_function(lua_State *L, const char *good, const char *bad, lua_CFunction func)

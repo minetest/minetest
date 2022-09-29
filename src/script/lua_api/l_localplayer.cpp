@@ -408,7 +408,7 @@ LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
 
 LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)
 {
-	LuaLocalPlayer *ref = (LuaLocalPlayer *)methodCheckObject(L, narg);
+	LuaLocalPlayer *ref = checkObject<LuaLocalPlayer>(L, narg);
 	assert(ref);
 	LocalPlayer *player = getobject(ref);
 	assert(player);
