@@ -433,7 +433,10 @@ public:
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	// unittest classes
 	friend class TestServerShutdownState;
+	friend class TestMoveAction;
 
 	struct ShutdownState {
 		friend class TestServerShutdownState;
