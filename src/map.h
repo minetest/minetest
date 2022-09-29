@@ -26,12 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 
 #include "irrlichttypes_bloated.h"
+#include "mapblock.h"
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "util/metricsbackend.h"
+#include "util/numeric.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
 #include "debug.h"
@@ -257,8 +259,42 @@ public:
 	void removeNodeTimer(v3s16 p);
 
 	/*
-		Variables
+		Utilities
 	*/
+
+	// Iterates through all nodes in the area in an unspecified order.
+	// The given callback takes the position as its first argument and the node
+	// as its second. If it returns false, forEachNodeInArea returns early.
+	template<typename F>
+	void forEachNodeInArea(v3s16 minp, v3s16 maxp, F func)
+	{
+		v3s16 bpmin = getNodeBlockPos(minp);
+		v3s16 bpmax = getNodeBlockPos(maxp);
+		for (s16 bz = bpmin.Z; bz <= bpmax.Z; bz++)
+		for (s16 bx = bpmin.X; bx <= bpmax.X; bx++)
+		for (s16 by = bpmin.Y; by <= bpmax.Y; by++) {
+			// y is iterated innermost to make use of the sector cache.
+			v3s16 bp(bx, by, bz);
+			MapBlock *block = getBlockNoCreateNoEx(bp);
+			v3s16 basep = bp * MAP_BLOCKSIZE;
+			s16 minx_block = rangelim(minp.X - basep.X, 0, MAP_BLOCKSIZE - 1);
+			s16 miny_block = rangelim(minp.Y - basep.Y, 0, MAP_BLOCKSIZE - 1);
+			s16 minz_block = rangelim(minp.Z - basep.Z, 0, MAP_BLOCKSIZE - 1);
+			s16 maxx_block = rangelim(maxp.X - basep.X, 0, MAP_BLOCKSIZE - 1);
+			s16 maxy_block = rangelim(maxp.Y - basep.Y, 0, MAP_BLOCKSIZE - 1);
+			s16 maxz_block = rangelim(maxp.Z - basep.Z, 0, MAP_BLOCKSIZE - 1);
+			for (s16 z_block = minz_block; z_block <= maxz_block; z_block++)
+			for (s16 y_block = miny_block; y_block <= maxy_block; y_block++)
+			for (s16 x_block = minx_block; x_block <= maxx_block; x_block++) {
+				v3s16 p = basep + v3s16(x_block, y_block, z_block);
+				MapNode n = block ?
+						block->getNodeNoCheck(x_block, y_block, z_block) :
+						MapNode(CONTENT_IGNORE);
+				if (!func(p, n))
+					return;
+			}
+		}
+	}
 
 	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
 protected:

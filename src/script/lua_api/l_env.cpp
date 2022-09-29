@@ -902,11 +902,8 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		for (u32 i = 0; i < filter.size(); i++)
 			lua_newtable(L);
 
-		v3s16 p;
-		for (p.X = minp.X; p.X <= maxp.X; p.X++)
-		for (p.Y = minp.Y; p.Y <= maxp.Y; p.Y++)
-		for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
-			content_t c = map.getNode(p).getContent();
+		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
 			if (it != filter.end()) {
@@ -915,7 +912,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 				push_v3s16(L, p);
 				lua_rawseti(L, base + 1 + filt_index, ++idx[filt_index]);
 			}
-		}
+
+			return true;
+		});
 
 		// last filter table is at top of stack
 		u32 i = filter.size() - 1;
@@ -937,11 +936,8 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 
 		lua_newtable(L);
 		u32 i = 0;
-		v3s16 p;
-		for (p.X = minp.X; p.X <= maxp.X; p.X++)
-		for (p.Y = minp.Y; p.Y <= maxp.Y; p.Y++)
-		for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
-			content_t c = env->getMap().getNode(p).getContent();
+		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
 			if (it != filter.end()) {
@@ -951,7 +947,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 				u32 filt_index = it - filter.begin();
 				individual_count[filt_index]++;
 			}
-		}
+
+			return true;
+		});
 
 		lua_createtable(L, 0, filter.size());
 		for (u32 i = 0; i < filter.size(); i++) {
