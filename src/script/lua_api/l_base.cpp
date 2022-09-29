@@ -119,10 +119,6 @@ void ModApiBase::registerClass(lua_State *L, const char *name,
 	lua_pushvalue(L, methodtable);
 	lua_setfield(L, metatable, "__metatable");
 
-	// Remember the class name for error messages.
-	lua_pushstring(L, name);
-	lua_setfield(L, metatable, "class_name");
-
 	// Pop methodtable and metatable.
 	lua_pop(L, 2);
 }
