@@ -405,6 +405,7 @@ typedef s32 SamplerLayer_t;
 class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
 	Sky *m_sky;
+	Client *m_client;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
@@ -419,16 +420,31 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
-	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
-	Client *m_client;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture0;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
+	CachedPixelShaderSetting<float, 2> m_texel_size0;
+	std::array<float, 2> m_texel_size0_values;
+	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
+	float m_user_exposure_factor;
+	bool m_bloom_enabled;
+	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
+	float m_bloom_intensity;
+	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
+	float m_bloom_radius;
 
 public:
 	void onSettingsChange(const std::string &name)
 	{
 		if (name == "enable_fog")
 			m_fog_enabled = g_settings->getBool("enable_fog");
+		if (name == "exposure_factor")
+			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		if (name == "bloom_intensity")
+			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
+		if (name == "bloom_radius")
+			m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -441,6 +457,7 @@ public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
 			f32 *fog_range, Client *client) :
 		m_sky(sky),
+		m_client(client),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
 		m_sky_bg_color("skyBgColor"),
@@ -454,13 +471,24 @@ public:
 		m_minimap_yaw("yawVec"),
 		m_camera_offset_pixel("cameraOffset"),
 		m_camera_offset_vertex("cameraOffset"),
-		m_base_texture("baseTexture"),
-		m_normal_texture("normalTexture"),
-		m_texture_flags("textureFlags"),
-		m_client(client)
+		m_texture0("texture0"),
+		m_texture1("texture1"),
+		m_texture2("texture2"),
+		m_texture3("texture3"),
+		m_texel_size0("texelSize0"),
+		m_exposure_factor_pixel("exposureFactor"),
+		m_bloom_intensity_pixel("bloomIntensity"),
+		m_bloom_radius_pixel("bloomRadius")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
+		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
+		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		m_bloom_enabled = g_settings->getBool("enable_bloom");
+		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
+		m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -526,12 +554,41 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0,
-				normal_tex = 1,
-				flags_tex = 2;
-		m_base_texture.set(&base_tex, services);
-		m_normal_texture.set(&normal_tex, services);
-		m_texture_flags.set(&flags_tex, services);
+		SamplerLayer_t tex_id;
+		tex_id = 0;
+		m_texture0.set(&tex_id, services);
+		tex_id = 1;
+		m_texture1.set(&tex_id, services);
+		tex_id = 2;
+		m_texture2.set(&tex_id, services);
+		tex_id = 3;
+		m_texture3.set(&tex_id, services);
+
+		m_texel_size0.set(m_texel_size0_values.data(), services);
+
+		float exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR * m_user_exposure_factor;
+		if (std::isnan(exposure_factor))
+			exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+		m_exposure_factor_pixel.set(&exposure_factor, services);
+
+		if (m_bloom_enabled) {
+			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);
+			m_bloom_radius_pixel.set(&m_bloom_radius, services);
+		}
+	}
+
+	void onSetMaterial(const video::SMaterial &material)
+	{
+		video::ITexture *texture = material.getTexture(0);
+		if (texture) {
+			core::dimension2du size = texture->getSize();
+			m_texel_size0_values[0] = 1.f / size.Width;
+			m_texel_size0_values[1] = 1.f / size.Height;
+		}
+		else {
+			m_texel_size0_values[0] = 0.f;
+			m_texel_size0_values[1] = 0.f;
+		}
 	}
 };
 

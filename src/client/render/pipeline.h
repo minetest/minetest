@@ -112,7 +112,7 @@ protected:
  *
  * @note Use of TextureBuffer requires use of gl_FragData[] in the shader
  */
-class TextureBuffer : public RenderSource, public RenderTarget
+class TextureBuffer : public RenderSource
 {
 public:
 	virtual ~TextureBuffer() override;
@@ -138,29 +138,8 @@ public:
 	 */
 	void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
 
-	/**
-	 * @Configure depth texture and assign index
-	 * 
-	 * @param index index to use for the depth texture
-	 * @param size width and height of the texture in pixels
-	 * @param name unique name for the texture
-	 * @param format color format
-	 */
-	void setDepthTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
-
-	/**
-	 * @Configure depth texture and assign index
-	 * 
-	 * @param index index to use for the depth texture
-	 * @param scale_factor relation of the texture dimensions to the screen dimensions
-	 * @param name unique name for the texture
-	 * @param format color format
-	 */
-	void setDepthTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
-
 	virtual u8 getTextureCount() override { return m_textures.size(); }
 	virtual video::ITexture *getTexture(u8 index) override;
-	virtual void activate(PipelineContext &context) override;
 	virtual void reset(PipelineContext &context) override;
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
@@ -189,9 +168,6 @@ private:
 	video::IVideoDriver *m_driver { nullptr };
 	std::vector<TextureDefinition> m_definitions;
 	core::array<video::ITexture *> m_textures;
-	video::ITexture *m_depth_texture { nullptr };
-	u8 m_depth_texture_index { NO_DEPTH_TEXTURE };
-	video::IRenderTarget *m_render_target { nullptr };
 };
 
 /**
@@ -201,10 +177,18 @@ class TextureBufferOutput : public RenderTarget
 {
 public:
 	TextureBufferOutput(TextureBuffer *buffer, u8 texture_index);
+	TextureBufferOutput(TextureBuffer *buffer, const std::vector<u8> &texture_map);
+	TextureBufferOutput(TextureBuffer *buffer, const std::vector<u8> &texture_map, u8 depth_stencil);
+	virtual ~TextureBufferOutput() override;
 	void activate(PipelineContext &context) override;
 private:
+	static const u8 NO_DEPTH_TEXTURE = 255;
+
 	TextureBuffer *buffer;
-	u8 texture_index;
+	std::vector<u8> texture_map;
+	u8 depth_stencil { NO_DEPTH_TEXTURE };
+	video::IRenderTarget* render_target { nullptr };
+	video::IVideoDriver* driver { nullptr };
 };
 
 /**

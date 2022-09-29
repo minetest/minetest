@@ -1,11 +1,33 @@
-uniform sampler2D baseTexture;
+#define rendered texture0
+#define bloom texture1
 
-#define rendered baseTexture
+uniform sampler2D rendered;
+uniform sampler2D bloom;
+uniform mediump float exposureFactor = 2.5;
+uniform lowp float bloomIntensity = 1.0;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
+#endif
+
+#if ENABLE_BLOOM
+
+vec4 applyBloom(vec4 color, vec2 uv)
+{
+	float bias = bloomIntensity;
+	vec4 bloom = texture2D(bloom, uv);
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 && uv.y < 0.5)
+		return vec4(bloom.rgb, color.a);
+	if (uv.x < 0.5)
+		return color;
+#endif
+	color.rgb = mix(color.rgb, bloom.rgb, bias);
+	return color;
+}
+
 #endif
 
 #if ENABLE_TONE_MAPPING
@@ -28,15 +50,13 @@ vec3 uncharted2Tonemap(vec3 x)
 
 vec4 applyToneMapping(vec4 color)
 {
-	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
-	const float gamma = 1.6;
-	const float exposureBias = 5.5;
+	const float exposureBias = 2.0;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
 	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
-	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
+	return color;
 }
 #endif
 
@@ -45,9 +65,36 @@ void main(void)
 	vec2 uv = varTexCoord.st;
 	vec4 color = texture2D(rendered, uv).rgba;
 
-#if ENABLE_TONE_MAPPING
-	color = applyToneMapping(color);
+	// translate to linear colorspace (approximate)
+	color.rgb = pow(color.rgb, vec3(2.2));
+
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
+	{
+		color.rgb *= exposureFactor;
+	}
+
+
+#if ENABLE_BLOOM
+	color = applyBloom(color, uv);
+#endif
+
+#if ENABLE_BLOOM_DEBUG
+	if (uv.x > 0.5 || uv.y > 0.5)
+#endif
+	{
+#if ENABLE_TONE_MAPPING
+		color = applyToneMapping(color);
+#else
+		color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+#endif
+	}
+
+	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
+
+	// return to sRGB colorspace (approximate)
+	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }
