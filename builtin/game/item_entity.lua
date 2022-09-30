@@ -322,22 +322,22 @@ core.register_entity(":__builtin:item", {
 		if self.itemstring == "" then
 			self.object:remove()
 			return
-        end
+		end
 
 		-- Call on_pickup callback in item definition.
 		local itemstack = ItemStack(self.itemstring)
-		local item_def = itemstack:get_definition()
-		local callback = item_def and item_def.on_pickup or core.item_pickup
+		local callback = itemstack:get_definition().on_pickup
 
 		local ret = callback(ItemStack(itemstack), hitter,
 				{type = "object", ref = self.object}, ...)
-		itemstack = ret and ItemStack(ret) or itemstack	
+		itemstack = ret and ItemStack(ret) or itemstack
 
 		-- Handle the leftover itemstack
 		if itemstack:is_empty() then
+			self.itemstring = ""
 			self.object:remove()
-        else
+		else
 			self:set_item(itemstack)
-        end
+		end
 	end,
 })
