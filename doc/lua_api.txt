@@ -8493,21 +8493,15 @@ Used by `minetest.register_node`.
 Crafting recipes
 ----------------
 
-All crafting recipes take one or more items as input and have an
-optional output.
-Crafting needs inventory slots. From the crafting inputs, only one
-item per slot can be used per crafting, while the output is a single
-item stack of arbitrary size.
+Crafting converts one or more inputs to one output itemstack of arbitrary
+count (except for fuels, which don't have an output). The conversion reduces
+each input ItemStack by 1.
 
-Crafting recipe definitions are always a table with a number of
-parameters (listed below). They must be used as input parameter
-for `minetest.register_craft`.
+Craft recipes are registered by `minetest.register_craft` and use a
+table format. The accepted parameters are listed below.
 
-Input items can be specified via itemname, that is, without itemcount
-or wear. (The item count is always 1.)
-
-Input slots may alternatively accept an item from a group, with a syntax like
-`group:<group_name>`. See "Groups in crafting recipes" for details.
+Recipe input items can either be specified by item name (item count = 1)
+or by group (see "Groups in crafting recipes" for details).
 
 The following sections describe the types and syntaxes of recipes.
 
@@ -8524,11 +8518,8 @@ in the crafting grid.
 For example, for a 3x3 recipe, the `recipes` table must have
 3 rows and 3 columns.
 
-For the player to be able to craft a shaped recipe, they must
-have access to a crafting grid that has the same or larger
-width and height as the recipe. E.g. a crafting grid of
-size 2x2 can only craft recipes of size 2x2, 2x1, 1x2 and 1x1,
-but not recipes of size 3x3, 3x2, 2x3, etc.
+In order to craft the recipe, the players' crafting grid must
+have equal or larger dimensions (both width and height).
 
 Parameters:
 
@@ -8541,7 +8532,7 @@ Parameters:
     * Values inside of the inner table are the columns.
       Each inner table must contain a list of *w* items, specified from left to right
     * Empty slots *must* be filled with the empty string
-* `replacements`: Optionally allows you to replace input items with some other items
+* `replacements`: (optional) Allows you to replace input items with some other items
       when something is crafted
     * Provided as a list of item pairs of the form `{ old_item, new_item }` where
       `old_item` is the input item to replace (same syntax as for a regular input
@@ -8553,8 +8544,10 @@ Parameters:
         * If it matches, the item will be replaced. Also, this item pair
           will *not* be applied again for the remaining items
         * If it does not match, the item is consumed (reduced by 1) normally
-    * Item replacements will appear either in the crafting grid, the
-      player inventory or will be dropped as item, depending on inventory space
+    * The `new_item` will appear in one of 3 places:
+        * Crafting grid, if the input stack size was exactly 1
+        * Player inventory, if input stack size was larger
+        * Drops as item entity, if it fits neither in craft grid or inventory
 
 #### Examples
 
@@ -8563,13 +8556,14 @@ A typical shaped recipe:
     -- Stone pickaxe
     {
         output = "example:stone_pickaxe",
-        -- This is a 3x3 recipe which needs 3 cobblestone in the 1st row,
+        -- A 3x3 recipe which needs 3 stone in the 1st row,
         -- and 1 stick in the horizontal middle in each of the 2nd and 3nd row.
         -- The 4 remaining slots have to be empty.
         recipe = {
-            {"example:cobblestone", "example:cobblestone", "example:cobblestone"},
-            {"", "example:stick", ""},
-            {"", "example:stick", ""},
+            {"example:stone", "example:stone", "example:stone"}, -- row 1
+            {"",              "example:stick", ""             }, -- row 2
+            {"",              "example:stick", ""             }, -- row 3
+        --   ^ column 1       ^ column 2       ^ column 3
         },
         -- There is no replacements table, so every input item
         -- will be consumed.
@@ -8641,15 +8635,11 @@ Complex replacement example 2:
 
 ### Shapeless
 
-Same as shaped recipe, except the arrangement of items in the input
-crafting grid does not matter. Also, the recipe is a list of items instead
-of a 2D matrix.
+Takes a list of input items (at least 1). The order or arrangement
+of input items does not matter.
 
-For the player to be able to craft a shapeless recipe, they must have
-access to a crafting grid that has at least as many slots
-as the number of required items. E.g. a crafting grid of size 3x3 can
-craft shapeless recipes with up to 9 input items. The width of height of
-the grid do *not* matter.
+In order to craft the recipe, the players' crafting grid must have matching or
+larger *count* of slots. The grid dimensions do not matter.
 
 Parameters:
 
