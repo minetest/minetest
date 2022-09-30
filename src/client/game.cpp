@@ -676,7 +676,10 @@ struct GameRunData {
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
 
-	float jump_timer;
+	float jump_timer_up;          // from key up until key down
+	float jump_timer_down;        // since last key down
+	float jump_timer_down_before; // from key down until key down again
+
 	float damage_flash;
 	float update_draw_list_timer;
 
@@ -1958,8 +1961,10 @@ void Game::processUserInput(f32 dtime)
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
-	if (m_cache_doubletap_jump && runData.jump_timer <= 0.2f)
-		runData.jump_timer += dtime;
+	if (m_cache_doubletap_jump && runData.jump_timer_up <= 0.2f)
+		runData.jump_timer_up += dtime;
+	if (m_cache_doubletap_jump && runData.jump_timer_down <= 0.4f)
+		runData.jump_timer_down += dtime;
 
 	processKeyInput();
 	processItemSelection(&runData.new_playeritem);
@@ -2080,7 +2085,7 @@ void Game::processKeyInput()
 
 	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {
 		runData.reset_jump_timer = false;
-		runData.jump_timer = 0.0f;
+		runData.jump_timer_up = 0.0f;
 	}
 
 	if (quicktune->hasMessage()) {
@@ -2221,7 +2226,14 @@ void Game::toggleFreeMove()
 
 void Game::toggleFreeMoveAlt()
 {
-	if (m_cache_doubletap_jump && runData.jump_timer < 0.2f)
+	if (!runData.reset_jump_timer) {
+		runData.jump_timer_down_before = runData.jump_timer_down;
+		runData.jump_timer_down = 0.0f;
+	}
+
+	// key down (0.2 s max.), then key up (0.2 s max.), then key down
+	if (m_cache_doubletap_jump && runData.jump_timer_up < 0.2f &&
+			runData.jump_timer_down_before < 0.4f) // 0.2 + 0.2
 		toggleFreeMove();
 
 	runData.reset_jump_timer = true;
