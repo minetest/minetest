@@ -354,7 +354,7 @@ function core.item_pickup(itemstack, picker, pointed_thing, ...)
 	for _, callback in ipairs(core.registered_on_item_pickups) do
 		local result = callback(itemstack, picker, pointed_thing, ...)
 		if result then
-			return result
+			return ItemStack(result)
 		end
 	end
 

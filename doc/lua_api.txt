@@ -5289,7 +5289,7 @@ Call these functions only at load time!
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `itemstack` to cancel the default item eat response (i.e.: hp increase).
 * `minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...))`
-    * Called when an item is picked up, after `itemdef.on_pickup`.
+    * Called by `minetest.item_pickup` before an item is picked up.
     * Function is added to `minetest.registered_on_item_pickups`.
     * Oldest functions are called first.
     * Parameters:
@@ -5298,8 +5298,8 @@ Call these functions only at load time!
       * `pointed_thing`: The dropped item (a `"__builtin:item"` luaentity) as
         `type="object"` `pointed_thing`.
       * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
-    * Return `false` or `nil` to cancle the pick-up. Remaining functions are then
-      not called.
+    * Return and itemstack to cancel the default item pick-up response (i.e.: adding
+      the item into inventory).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player,
@@ -5946,6 +5946,12 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * `param2` overrides facedir and wallmounted `param2`
     * returns `itemstack, position`
       * `position`: the location the node was placed to. `nil` if nothing was placed.
+* `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
+    * Calls `registered_on_item_pickups` functions and adds the item to the picker's
+      inventory.
+    * See also: `minetest.register_on_item_pickup`
+    * Parameters are the same as in `on_pickup`.
+    * Returns the leftover itemstack.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
     * returns the leftover itemstack
@@ -8048,21 +8054,15 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 
         on_pickup = function(itemstack, picker, pointed_thing, time_from_last_punch, ...),
         -- Called when a dropped item is punched by a player.
-        -- If this callback is defined, it will be executed before all the
-        -- `registered_on_item_pickup` callbacks (see `minetest.register_on_item_pickup`).
+        -- Shall pick-up the item and return the leftover itemstack or nil to not
+        -- modify the dropped item.
         -- Parameters:
-        -- * `itemstack`: The `ItemStack` to be picked up.
+        -- * `itemstack`: The `ItemStack` in the dropped item.
         -- * `picker`: `ObjectRef` or `nil`
         -- * `pointed_thing`: The dropped item (a `"__builtin:item"` luaentity)
         --   as `type="object"` `pointed_thing`.
         -- * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
-        -- Possible return values:
-        -- * `false` or `nil`: Cancel the pick-up. `registered_on_item_pickup`
-        --   callbacks will not be called.
-        -- * `true`: Pick up the given itemstack. (Or only the part of it which
-        --   fits into the `"main"` inventory.)
-        -- * An itemstack: Pick up this itemstack instead. Partial pick-ups are
-        --   not possible in this case.
+        -- default: `minetest.item_pickup`
 
         on_use = function(itemstack, user, pointed_thing),
         -- default: nil
