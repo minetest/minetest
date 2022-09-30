@@ -82,9 +82,9 @@ minetest.register_craftitem("testitems:callback_1", {
 		return minetest.item_drop(itemstack, dropper, pos)
 	end,
 
-	on_pickup = function(itemstack, picker, obj, ...)
+	on_pickup = function(itemstack, picker, pointed_thing, ...)
 		minetest.chat_send_all("[testitems:callback_1 on_pickup]")
-		assert(obj:get_luaentity().name == "__builtin:item")
+		assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
 		local ctrl = picker and picker:get_player_control() or {}
 		if ctrl.left then
 			minetest.chat_send_all(dump({...}))
@@ -134,7 +134,7 @@ minetest.register_craftitem("testitems:callback_2", {
 	end,
 })
 
-minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
+minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
 		return true
@@ -143,13 +143,13 @@ minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last
 	return true
 end)
 
-minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
+minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
 		return true
 	end
 	minetest.chat_send_all("["..item_name.." register_on_item_pickup (2)]")
-	assert(obj:get_luaentity().name == "__builtin:item")
+	assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
 	local ctrl = picker and picker:get_player_control() or {}
 	if ctrl.down then
 		return false
@@ -157,7 +157,7 @@ minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last
 	return true
 end)
 
-minetest.register_on_item_pickup(function(itemstack, picker, obj, time_from_last_punch,  ...)
+minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
 		return true
