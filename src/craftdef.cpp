@@ -229,6 +229,7 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 				rep.deSerialize(j->second, gamedef->idef());
 				item.remove(1);
 				found_replacement = true;
+				pairs.erase(j);
 				output_replacements.push_back(rep);
 				break;
 
