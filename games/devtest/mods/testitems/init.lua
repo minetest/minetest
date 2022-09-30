@@ -58,27 +58,29 @@ minetest.register_craftitem("testitems:overlay_global", {
 --
 
 minetest.register_craftitem("testitems:callback_1", {
-	description = S("Callback test item 1"),
+	description = "Callback test item 1 (Use/Drop + Sneak to switch to item 2)",
 	inventory_image = "testitems_callback_1.png",
 	wield_image = "testitems_callback_1.png",
 
 	on_secondary_use = function(itemstack, user, pointed_thing)
-		minetest.chat_send_all("[testitems:callback_1 on_secondary_use]")
 		local ctrl = user and user:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
 			itemstack:set_name("testitems:callback_2")
-			return itemstack
 		end
+
+		minetest.chat_send_all("[testitems:callback_1 on_secondary_use] " .. itemstack:get_name())
+		return itemstack
 	end,
 
 	on_drop = function(itemstack, dropper, pos)
-		minetest.chat_send_all("[testitems:callback_1 on_drop]")
 		local ctrl = dropper and dropper:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
 			itemstack:set_name("testitems:callback_2")
 		end
+
+		minetest.chat_send_all("[testitems:callback_1 on_drop] " .. itemstack:get_name())
 		return minetest.item_drop(itemstack, dropper, pos)
 	end,
 
@@ -86,28 +88,34 @@ minetest.register_craftitem("testitems:callback_1", {
 		minetest.chat_send_all("[testitems:callback_1 on_pickup]")
 		assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
 		local ctrl = picker and picker:get_player_control() or {}
-		if ctrl.left then
+		if ctrl.aux1 then
+			-- Debug message
 			minetest.chat_send_all(dump({...}))
 		end
-		if ctrl.up then
-			return false
-		elseif ctrl.sneak then
-			itemstack = ItemStack(itemstack)
-			itemstack:set_name("testitems:callback_2")
+		if ctrl.sneak then
+			-- Pick up one item of the other kind at once
+			local taken = itemstack:take_item():set_name("testitems:callback_2")
+			picker:get_inventory():add_item("main", taken)
 			return itemstack
-		else
-			return true
 		end
+		if ctrl.up then
+			-- Eat it
+			return minetest.do_item_eat(2, nil, itemstack, picker, pointed_thing)
+		end
+
+		-- Normal: pick up everything
+		return minetest.item_pickup(itemstack, picker, pointed_thing, ...)
 	end,
 
 	on_use = function(itemstack, user, pointed_thing)
-		minetest.chat_send_all("[testitems:callback_1 on_use]")
 		local ctrl = user and user:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
 			itemstack:set_name("testitems:callback_2")
-			return itemstack
 		end
+
+		minetest.chat_send_all("[testitems:callback_1 on_use] " .. itemstack:get_name())
+		return itemstack
 	end,
 
 	after_use = function(itemstack, user, node, digparams) -- never called
@@ -122,7 +130,7 @@ minetest.register_craftitem("testitems:callback_1", {
 })
 
 minetest.register_craftitem("testitems:callback_2", {
-	description = S("Callback test item 2"),
+	description = "Callback test item 2 (Use to switch to item 1)",
 	inventory_image = "testitems_callback_2.png",
 	wield_image = "testitems_callback_2.png",
 
@@ -134,34 +142,15 @@ minetest.register_craftitem("testitems:callback_2", {
 	end,
 })
 
-minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
-	local item_name = itemstack:get_name()
-	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return true
-	end
-	minetest.chat_send_all("["..item_name.." register_on_item_pickup (1)]")
-	return true
-end)
-
-minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
-	local item_name = itemstack:get_name()
-	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return true
-	end
-	minetest.chat_send_all("["..item_name.." register_on_item_pickup (2)]")
+minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch, ...)
 	assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
-	local ctrl = picker and picker:get_player_control() or {}
-	if ctrl.down then
-		return false
-	end
-	return true
-end)
 
-minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch,  ...)
 	local item_name = itemstack:get_name()
-	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
-		return true
+	minetest.chat_send_all("["..item_name.." register_on_item_pickup (1)]")
+
+	if item_name == "testitems:callback_2" then
+		-- Same here. Pick up the other item type.
+		itemstack:set_name("testitems:callback_1")
+		return picker:get_inventory():add_item("main", itemstack)
 	end
-	minetest.chat_send_all("["..item_name.." register_on_item_pickup (3)]")
-	return true
 end)

@@ -319,51 +319,25 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	on_punch = function(self, hitter, ...)
-		if self.itemstring ~= "" then
-			-- Call on_pickup callback in item definition.
-			local itemstack = ItemStack(self.itemstring)
-			local itemstack_modified = false
-			local item_def = itemstack:get_definition()
-			if item_def and item_def.on_pickup then
-				local ret = item_def.on_pickup(ItemStack(itemstack), hitter,
-						{type = "object", ref = self.object}, ...)
-				if not ret then
-					return
-				elseif ret ~= true then
-					itemstack_modified = true
-					itemstack = ItemStack(ret)
-				end
-			end
+		if self.itemstring == "" then
+			self.object:remove()
+			return
+        end
 
-			-- Invoke global on_item_pickup callbacks.
-			if not core.run_callbacks(core.registered_on_item_pickups, 3,
-					ItemStack(itemstack), hitter, {type = "object", ref = self.object},
-					...) then
-				return
-			end
+		-- Call on_pickup callback in item definition.
+		local itemstack = ItemStack(self.itemstring)
+		local item_def = itemstack:get_definition()
+		local callback = item_def and item_def.on_pickup or core.item_pickup
 
-			-- Pickup item.
-			local inv = hitter and hitter:get_inventory()
-			if not inv then
-				return
-			end
+		local ret = callback(ItemStack(itemstack), hitter,
+				{type = "object", ref = self.object}, ...)
+		itemstack = ret and ItemStack(ret) or itemstack	
 
-			if itemstack_modified then
-				-- No partial pick-ups.
-				if not inv:room_for_item("main", itemstack) then
-					return
-				end
-				inv:add_item("main", itemstack)
-			else
-				local left = inv:add_item("main", itemstack)
-				if left and not left:is_empty() then
-					self:set_item(left)
-					return
-				end
-			end
-		end
-
-		self.itemstring = ""
-		self.object:remove()
+		-- Handle the leftover itemstack
+		if itemstack:is_empty() then
+			self.object:remove()
+        else
+			self:set_item(itemstack)
+        end
 	end,
 })

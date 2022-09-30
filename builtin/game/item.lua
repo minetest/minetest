@@ -349,6 +349,22 @@ function core.item_drop(itemstack, dropper, pos)
 	-- environment failed
 end
 
+function core.item_pickup(itemstack, picker, pointed_thing, ...)
+	-- Invoke global on_item_pickup callbacks.
+	for _, callback in pairs(core.registered_on_item_pickups) do
+		local result = callback(itemstack, picker, pointed_thing, ...)
+		if result then
+			return result
+		end
+	end
+
+	-- Pickup item.
+	local inv = picker and picker:get_inventory()
+	if inv then
+		return inv:add_item("main", itemstack)
+	end
+end
+
 function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
 	for _, callback in pairs(core.registered_on_item_eats) do
 		local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
@@ -589,6 +605,7 @@ core.nodedef_default = {
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_pickup = nil,
 	on_use = nil,
 	can_dig = nil,
 
@@ -641,6 +658,7 @@ core.craftitemdef_default = {
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_pickup = nil,
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
 	on_use = nil,
 }
@@ -661,6 +679,7 @@ core.tooldef_default = {
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_secondary_use = redef_wrapper(core, 'item_secondary_use'),
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
+	on_pickup = nil,
 	on_use = nil,
 }
 
