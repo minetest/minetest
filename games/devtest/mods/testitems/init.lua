@@ -93,9 +93,11 @@ minetest.register_craftitem("testitems:callback_1", {
 		end
 		if ctrl.sneak then
 			-- Pick up one item of the other kind at once
-			local taken = itemstack:take_item():set_name("testitems:callback_2")
+			local taken = itemstack:take_item()
+			taken:set_name("testitems:callback_2")
 			local leftover = minetest.item_pickup(taken, picker, pointed_thing, ...)
-			itemstack:add_item(leftover:set_name("testitems:callback_1"))
+			leftover:set_name("testitems:callback_1")
+			itemstack:add_item(leftover)
 			return itemstack
 		elseif ctrl.up then
 			-- Don't pick up
@@ -152,7 +154,8 @@ minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time
 	end
 	minetest.log("["..item_name.." register_on_item_pickup]")
 
-	if item_name == "testitems:callback_2" then
+	local ctrl = picker and picker:get_player_control() or {}
+	if item_name == "testitems:callback_2" and not ctrl.sneak then
 		-- Same here. Pick up the other item type.
 		itemstack:set_name("testitems:callback_1")
 		return picker:get_inventory():add_item("main", itemstack)

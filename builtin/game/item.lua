@@ -350,6 +350,7 @@ function core.item_drop(itemstack, dropper, pos)
 end
 
 function core.item_pickup(itemstack, picker, pointed_thing, ...)
+	itemstack = ItemStack(itemstack)
 	-- Invoke global on_item_pickup callbacks.
 	for _, callback in ipairs(core.registered_on_item_pickups) do
 		local result = callback(itemstack, picker, pointed_thing, ...)

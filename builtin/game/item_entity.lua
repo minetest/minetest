@@ -330,7 +330,11 @@ core.register_entity(":__builtin:item", {
 
 		local ret = callback(ItemStack(itemstack), hitter,
 				{type = "object", ref = self.object}, ...)
-		itemstack = ret and ItemStack(ret) or itemstack
+		if not ret then
+			-- Don't modify (and don't reset rotation)
+			return
+		end
+		itemstack = ItemStack(ret)
 
 		-- Handle the leftover itemstack
 		if itemstack:is_empty() then
