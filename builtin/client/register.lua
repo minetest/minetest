@@ -31,10 +31,11 @@ function core.run_callbacks(callbacks, mode, ...)
 				ret = cb_ret
 			end
 		elseif mode == 3 then
-			if cb_ret then
+			if not cb_ret then
 				return cb_ret
+			elseif i == 1 then
+				ret = cb_ret
 			end
-			ret = cb_ret
 		elseif mode == 4 then
 			if (cb_ret and not ret) or i == 1 then
 				ret = cb_ret
