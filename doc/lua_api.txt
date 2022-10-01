@@ -5947,9 +5947,8 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * returns `itemstack, position`
       * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
-    * Calls `registered_on_item_pickups` functions and adds the item to the picker's
-      inventory.
-    * See also: `minetest.register_on_item_pickup`
+    * Runs callbacks registered by `minetest.register_on_item_pickup` and adds
+      the item to the picker's `"main"` inventory list. 
     * Parameters are the same as in `on_pickup`.
     * Returns the leftover itemstack.
 * `minetest.item_drop(itemstack, dropper, pos)`
