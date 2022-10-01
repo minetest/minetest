@@ -328,7 +328,7 @@ core.register_entity(":__builtin:item", {
 		local itemstack = ItemStack(self.itemstring)
 		local callback = itemstack:get_definition().on_pickup
 
-		local ret = callback(ItemStack(itemstack), hitter,
+		local ret = callback(itemstack, hitter,
 				{type = "object", ref = self.object}, ...)
 		if not ret then
 			-- Don't modify (and don't reset rotation)
