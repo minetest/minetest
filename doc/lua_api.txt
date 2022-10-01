@@ -5292,12 +5292,7 @@ Call these functions only at load time!
     * Called by `minetest.item_pickup` before an item is picked up.
     * Function is added to `minetest.registered_on_item_pickups`.
     * Oldest functions are called first.
-    * Parameters:
-      * `itemstack`: The `ItemStack` to be picked up.
-      * `picker`: `ObjectRef` or `nil`
-      * `pointed_thing`: The dropped item (a `"__builtin:item"` luaentity) as
-        `type="object"` `pointed_thing`.
-      * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
+    * Parameters are the same as in the `on_pickup` callback.
     * Return an itemstack to cancel the default item pick-up response (i.e.: adding
       the item into inventory).
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
@@ -5948,7 +5943,7 @@ Defaults for the `on_place` and `on_drop` item definition functions
       * `position`: the location the node was placed to. `nil` if nothing was placed.
 * `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
     * Runs callbacks registered by `minetest.register_on_item_pickup` and adds
-      the item to the picker's `"main"` inventory list. 
+      the item to the picker's `"main"` inventory list.
     * Parameters are the same as in `on_pickup`.
     * Returns the leftover itemstack.
 * `minetest.item_drop(itemstack, dropper, pos)`
@@ -8056,11 +8051,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- Shall pick-up the item and return the leftover itemstack or nil to not
         -- modify the dropped item.
         -- Parameters:
-        -- * `itemstack`: The `ItemStack` in the dropped item.
-        -- * `picker`: `ObjectRef` or `nil`
-        -- * `pointed_thing`: The dropped item (a `"__builtin:item"` luaentity)
-        --   as `type="object"` `pointed_thing`.
-        -- * `time_from_last_punch, ...`: Other parameters from `luaentity:on_punch`.
+        -- * `itemstack`: The `ItemStack` to be picked up.
+        -- * `picker`: Any `ObjectRef` or `nil`.
+        -- * `pointed_thing` (optional): The dropped item (a `"__builtin:item"`
+        --   luaentity) as `type="object"` `pointed_thing`.
+        -- * `time_from_last_punch, ...` (optional): Other parameters from
+        --   `luaentity:on_punch`.
         -- default: `minetest.item_pickup`
 
         on_use = function(itemstack, user, pointed_thing),
