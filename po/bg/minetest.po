@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-04-11 15:08+0000\n"
+"PO-Revision-Date: 2022-10-04 06:22+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -120,7 +120,7 @@ msgstr "Сървърът поиска повторно свързване:"
 
 #: builtin/mainmenu/common.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Налично е издание $1"
 
 #: builtin/mainmenu/common.lua
 #, fuzzy
@@ -137,11 +137,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "По-късно"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Никога"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -157,7 +157,7 @@ msgstr "Сървърът поддържа изданията на протоко
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Към страницата"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -5431,7 +5431,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Networking"
-msgstr ""
+msgstr "Мрежа"
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
@@ -5934,7 +5934,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist and MOTD"
-msgstr ""
+msgstr "Списък на сървъри и съобщения на деня"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
@@ -5949,7 +5949,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set the maximum length of a chat message (in characters) sent by clients."
-msgstr ""
+msgstr "Задава максималния брой знаци в съобщенията в чата."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6039,7 +6039,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shadow strength gamma"
-msgstr ""
+msgstr "Гама на силата на сенките"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -6449,6 +6449,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory, in seconds."
 msgstr ""
+"Времето, след което клиентът премахва неизползваната карта от паметта, в "
+"секунди."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6472,7 +6474,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen"
-msgstr ""
+msgstr "Сензорен екран"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
@@ -6480,7 +6482,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
-msgstr ""
+msgstr "Сортиране на прозрачността по отдалеченост"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6574,7 +6576,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
-msgstr ""
+msgstr "Потребителски интерфейси"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -6909,7 +6911,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
