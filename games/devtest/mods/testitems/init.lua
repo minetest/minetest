@@ -146,7 +146,7 @@ minetest.register_craftitem("testitems:callback_2", {
 })
 
 minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time_from_last_punch, ...)
-	assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
+	assert(not pointed_thing or pointed_thing.ref:get_luaentity().name == "__builtin:item")
 
 	local item_name = itemstack:get_name()
 	if item_name ~= "testitems:callback_1" and item_name ~= "testitems:callback_2" then
