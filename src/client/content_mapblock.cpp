@@ -1149,7 +1149,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
 	float offset_h, float offset_v)
 {
-	f32 vert_horiz_shift = rotation % 90.0f == 0 ? scale.Z : scale.X;
+	f32 vert_horiz_shift = s32(rotation) % 90 == 0 ? scale.Z : scale.X;
 	v3f vertices[4] = {
 		v3f(-vert_horiz_shift, -BS / 2 + scale.Y * 2, 0),
 		v3f( vert_horiz_shift, -BS / 2 + scale.Y * 2, 0),
