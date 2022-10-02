@@ -299,7 +299,7 @@ struct TileDef
 
 struct ContentFeatures
 {
-	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore, 
+	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore,
 	// write checks that depend directly on the protocol version instead.
 	static const u8 CONTENTFEATURES_VERSION = 13;
 
@@ -346,7 +346,7 @@ struct ContentFeatures
 	scene::IMesh *mesh_ptr[24];
 	video::SColor minimap_color;
 #endif
-	float visual_scale; // Misc. scale parameter
+	v3f visual_scale; // Misc. scale parameter
 	TileDef tiledef[6];
 	// These will be drawn over the base tiles.
 	TileDef tiledef_overlay[6];

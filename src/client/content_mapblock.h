@@ -80,7 +80,7 @@ public:
 	LightFrame frame;
 	video::SColor color;
 	TileSpec tile;
-	float scale;
+	v3f scale;
 
 // lighting
 	void getSmoothLightFrame();

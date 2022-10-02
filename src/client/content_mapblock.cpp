@@ -369,7 +369,8 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	TileSpec *tiles, int tile_count, u8 mask)
 {
-	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
+	bool scale = std::fabs(f->visual_scale.X - 1.0f) > 1e-3f && std::fabs(f->visual_scale.Y - 1.0f) > 1e-3f &&
+		std::fabs(f->visual_scale.Z - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -908,37 +909,40 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	}
 	useTile(tileindex, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 
-	float size = BS / 2 * f->visual_scale;
+	core::dimension2df size(
+		BS / 2 * f->visual_scale.X,
+		BS / 2 * f->visual_scale.Y
+	);
 	v3f vertices[4] = {
-		v3f(-size,  size, 0),
-		v3f( size,  size, 0),
-		v3f( size, -size, 0),
-		v3f(-size, -size, 0),
+		v3f(-size.Width,  size.Height, 0),
+		v3f( size.Width,  size.Height, 0),
+		v3f( size.Width, -size.Height, 0),
+		v3f(-size.Width, -size.Height, 0),
 	};
 
 	for (v3f &vertex : vertices) {
 		switch (wall) {
 			case DWM_YP:
-				vertex.Y += -size + BS/2;
+				vertex.Y += -size.Height + BS/2;
 				vertex.rotateXZBy(-45);
 				break;
 			case DWM_YN:
-				vertex.Y += size - BS/2;
+				vertex.Y += size.Height - BS/2;
 				vertex.rotateXZBy(45);
 				break;
 			case DWM_XP:
-				vertex.X += -size + BS/2;
+				vertex.X += -size.Width + BS/2;
 				break;
 			case DWM_XN:
-				vertex.X += -size + BS/2;
+				vertex.X += -size.Width + BS/2;
 				vertex.rotateXZBy(180);
 				break;
 			case DWM_ZP:
-				vertex.X += -size + BS/2;
+				vertex.X += -size.Width + BS/2;
 				vertex.rotateXZBy(90);
 				break;
 			case DWM_ZN:
-				vertex.X += -size + BS/2;
+				vertex.X += -size.Width + BS/2;
 				vertex.rotateXZBy(-90);
 		}
 	}
@@ -950,13 +954,16 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 	static const float offset = BS / 16;
-	float size = BS / 2 * f->visual_scale;
+	core::dimension2df size(
+		BS / 2 * f->visual_scale.Y,
+		BS / 2 * f->visual_scale.Z
+	);
 	// Wall at X+ of node
 	v3f vertices[4] = {
-		v3f(BS / 2 - offset,  size,  size),
-		v3f(BS / 2 - offset,  size, -size),
-		v3f(BS / 2 - offset, -size, -size),
-		v3f(BS / 2 - offset, -size,  size),
+		v3f(BS / 2 - offset,  size.Width,  size.Height),
+		v3f(BS / 2 - offset,  size.Width, -size.Height),
+		v3f(BS / 2 - offset, -size.Width, -size.Height),
+		v3f(BS / 2 - offset, -size.Width,  size.Height),
 	};
 
 	for (v3f &vertex : vertices) {
@@ -982,10 +989,10 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2 + 2.0 * scale * plant_height, 0),
-		v3f( scale, -BS / 2 + 2.0 * scale * plant_height, 0),
-		v3f( scale, -BS / 2, 0),
-		v3f(-scale, -BS / 2, 0),
+		v3f(-scale.X, -BS / 2 + 2.0 * scale.Y * plant_height, 0),
+		v3f( scale.X, -BS / 2 + 2.0 * scale.Y * plant_height, 0),
+		v3f( scale.X, -BS / 2, 0),
+		v3f(-scale.X, -BS / 2, 0),
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
@@ -1033,7 +1040,9 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
 {
 	draw_style = PLANT_STYLE_CROSS;
-	scale = BS / 2 * f->visual_scale;
+	scale.X = BS / 2 * f->visual_scale.X;
+	scale.Y = BS / 2 * f->visual_scale.Y;
+	scale.Z = BS / 2 * f->visual_scale.Z;
 	offset = v3f(0, 0, 0);
 	rotate_degree = 0.0f;
 	random_offset_Y = false;
@@ -1140,11 +1149,12 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
 	float offset_h, float offset_v)
 {
+	f32 vert_horiz_shift = rotation % 90.0f == 0 ? scale.Z : scale.X;
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2 + scale * 2, 0),
-		v3f( scale, -BS / 2 + scale * 2, 0),
-		v3f( scale, -BS / 2, 0),
-		v3f(-scale, -BS / 2, 0),
+		v3f(-vert_horiz_shift, -BS / 2 + scale.Y * 2, 0),
+		v3f( vert_horiz_shift, -BS / 2 + scale.Y * 2, 0),
+		v3f( vert_horiz_shift, -BS / 2, 0),
+		v3f(-vert_horiz_shift, -BS / 2, 0),
 	};
 
 	for (v3f &vertex : vertices) {
@@ -1159,7 +1169,9 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 void MapblockMeshGenerator::drawFirelikeNode()
 {
 	useTile();
-	scale = BS / 2 * f->visual_scale;
+	scale.X = BS / 2 * f->visual_scale.X;
+	scale.Y = BS / 2 * f->visual_scale.Y;
+	scale.Z = BS / 2 * f->visual_scale.Z;
 
 	// Check for adjacent nodes
 	bool neighbors = false;

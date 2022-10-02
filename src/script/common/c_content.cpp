@@ -566,7 +566,20 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype",
 			ScriptApiNode::es_DrawType,NDT_NORMAL);
-	getfloatfield(L, index, "visual_scale", f.visual_scale);
+
+	lua_getfield(L, index, "visual_scale");
+
+	if(lua_isnumber(L, -1))
+	{
+		f32 visual_scale_f;
+		getfloatfield(L, index, "visual_scale", visual_scale_f);
+
+		f.visual_scale *= visual_scale_f;
+	}
+	else if(lua_istable(L, -1))
+		f.visual_scale = read_v3f(L, -1);
+
+	lua_pop(L, 1);
 
 	/* Meshnode model filename */
 	getstringfield(L, index, "mesh", f.mesh);
@@ -886,7 +899,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	push_ARGB8(L, c.minimap_color);       // I know this is not set-able w/ register_node,
 	lua_setfield(L, -2, "minimap_color"); // but the people need to know!
 #endif
-	lua_pushnumber(L, c.visual_scale);
+	push_v3f(L, c.visual_scale);
 	lua_setfield(L, -2, "visual_scale");
 	lua_pushnumber(L, c.alpha);
 	lua_setfield(L, -2, "alpha");

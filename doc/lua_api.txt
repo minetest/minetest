@@ -8293,6 +8293,14 @@ Used by `minetest.register_node`.
         -- node "attaches". For the other drawtypes the image will be centered
         -- on the node.
 
+        visual_scale = {x = 1, y = 1, z = 1},
+        -- Supported for drawtypes "plantlike", "signlike", "torchlike",
+        -- "firelike", "mesh", "nodebox", "allfaces".
+        -- For plantlike and firelike, the image will start at the bottom of the
+        -- node. For torchlike, the image will start at the surface to which the
+        -- node "attaches". For the other drawtypes the image will be centered
+        -- on the node.
+
         tiles = {tile definition 1, def2, def3, def4, def5, def6},
         -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
         -- List can be shortened to needed length.

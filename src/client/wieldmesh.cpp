@@ -609,7 +609,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			postProcessNodeMesh(mesh, f, false, false, nullptr,
 				&result->buffer_colors, true);
 			if (f.drawtype == NDT_ALLFACES)
-				scaleMesh(mesh, v3f(f.visual_scale));
+				scaleMesh(mesh, f.visual_scale);
 			break;
 		}
 		case NDT_PLANTLIKE: {

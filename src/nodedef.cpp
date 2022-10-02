@@ -365,7 +365,7 @@ void ContentFeatures::reset()
 		i = NULL;
 	minimap_color = video::SColor(0, 0, 0, 0);
 #endif
-	visual_scale = 1.0;
+	visual_scale = v3f(1.0);
 	for (auto &i : tiledef)
 		i = TileDef();
 	for (auto &j : tiledef_special)
@@ -464,7 +464,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// visual
 	writeU8(os, drawtype);
 	os << serializeString16(mesh);
-	writeF32(os, visual_scale);
+	writeV3F32(os, visual_scale);
 	writeU8(os, 6);
 	for (const TileDef &td : tiledef)
 		td.serialize(os, protocol_version);
@@ -565,7 +565,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	// visual
 	drawtype = (enum NodeDrawType) readU8(is);
 	mesh = deSerializeString16(is);
-	visual_scale = readF32(is);
+	visual_scale = readV3F32(is);
 	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
 	for (TileDef &td : tiledef)
@@ -1002,7 +1002,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		// Read the mesh and apply scale
 		mesh_ptr[0] = client->getMesh(mesh);
 		if (mesh_ptr[0]){
-			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
+			v3f scale = visual_scale * BS;
+			//v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
 			scaleMesh(mesh_ptr[0], scale);
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
