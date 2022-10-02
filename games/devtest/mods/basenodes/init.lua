@@ -358,7 +358,7 @@ minetest.register_node("basenodes:alarm_clock", {
 	visual_scale = {x=0.2, y=0.8, z=0.2},
 	description = "Alarm Clock",
 	paramtype = "light",
-	paramtype = "facedir",
+	paramtype2 = "facedir",
 	drawtype = "mesh",
 	mesh = "basenodes_alarm_clock.b3d",
 	tiles = {
@@ -421,7 +421,7 @@ minetest.register_node("basenodes:torch", {
 	visual_scale = {x=1.5, y=0.5, z=1.5},
 	tiles = {"default_torch_on_floor.png"},
 	paramtype = "light",
-	paramtype = "facedir",
+	paramtype2 = "facedir",
 	selection_box = {
 		type = "fixed",
 		fixed = {-1, 0, -1, 1, 0.5, 1}
@@ -434,7 +434,7 @@ minetest.register_node("basenodes:fire", {
 	visual_scale = {x=3, y=3, z=3},
 	tiles = {"fire_basic_flame.png"},
 	paramtype = "light",
-	paramtype = "facedir",
+	paramtype2 = "facedir",
 	selection_box = {
 		type = "fixed",
 		fixed = {-2, 0, -2, 2, 3, 2}
