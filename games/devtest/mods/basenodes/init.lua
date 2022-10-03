@@ -408,10 +408,7 @@ minetest.register_node("basenodes:ladder_wood", {
 	climbable = true,
 	is_ground_content = false,
 	selection_box = {
-		type = "wallmounted",
-		--wall_top = = <default>
-		--wall_bottom = = <default>
-		--wall_side = = <default>
+		type = "wallmounted"
 	}
 })
 

@@ -348,6 +348,8 @@ void ContentFeatures::reset()
 	has_on_construct = false;
 	has_on_destruct = false;
 	has_after_destruct = false;
+
+	is_vscale_num = false;
 	/*
 		Actual data
 
@@ -1003,7 +1005,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		mesh_ptr[0] = client->getMesh(mesh);
 		if (mesh_ptr[0]){
 			v3f scale = visual_scale * BS;
-			//v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
 			scaleMesh(mesh_ptr[0], scale);
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);

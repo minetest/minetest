@@ -574,7 +574,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		f32 visual_scale_f;
 		getfloatfield(L, index, "visual_scale", visual_scale_f);
 
-		f.visual_scale *= visual_scale_f;
+		f.visual_scale = v3f(visual_scale_f);
+		f.is_vscale_num = true;
 	}
 	else if(lua_istable(L, -1))
 		f.visual_scale = read_v3f(L, -1);
@@ -899,7 +900,10 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	push_ARGB8(L, c.minimap_color);       // I know this is not set-able w/ register_node,
 	lua_setfield(L, -2, "minimap_color"); // but the people need to know!
 #endif
-	push_v3f(L, c.visual_scale);
+	if (c.is_vscale_num)
+		lua_pushnumber(L, c.visual_scale.X);
+	else
+		push_v3f(L, c.visual_scale);
 	lua_setfield(L, -2, "visual_scale");
 	lua_pushnumber(L, c.alpha);
 	lua_setfield(L, -2, "alpha");

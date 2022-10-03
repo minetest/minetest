@@ -325,6 +325,9 @@ struct ContentFeatures
 	// "float" group
 	bool floats;
 
+	// Flag determining whether 'visual_scale' was originally initialized as float or table
+	bool is_vscale_num;
+
 	/*
 		Actual data
 	 */
