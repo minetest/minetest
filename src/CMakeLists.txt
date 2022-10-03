@@ -743,8 +743,8 @@ else()
 
 	# Use a safe subset of flags to speed up math calculations:
 	# - we don't need errno or math exceptions
-	# - we don't deal with Inf/NaN or signed zero
-	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -ffinite-math-only -fno-signed-zeros")
+	# - we don't deal with signed zero
+	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -fno-signed-zeros")
 
 	# Enable SSE for floating point math on 32-bit x86 by default
 	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath
