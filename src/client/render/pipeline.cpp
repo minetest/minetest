@@ -168,6 +168,13 @@ void TextureBufferOutput::activate(PipelineContext &context)
 			size = texture->getSize();
 	}
 
+	// Use legacy call when there's single texture without depth texture
+	// This binds default depth buffer to the FBO
+	if (textures.size() == 1 && depth_stencil == NO_DEPTH_TEXTURE) {
+		driver->setRenderTarget(textures[0], m_clear, m_clear, context.clear_color);
+		return;
+	}
+
 	video::ITexture *depth_texture = nullptr;
 	if (depth_stencil != NO_DEPTH_TEXTURE)
 		depth_texture = buffer->getTexture(depth_stencil);
