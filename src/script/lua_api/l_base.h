@@ -81,7 +81,7 @@ public:
 	template<typename T>
 	static inline T *checkObject(lua_State *L, int narg)
 	{
-		return *(T **)luaL_checkudata(L, narg, T::className);
+		return *reinterpret_cast<T**>(luaL_checkudata(L, narg, T::className));
 	}
 
 	/**
