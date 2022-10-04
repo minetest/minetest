@@ -306,6 +306,7 @@ void MetaDataRef::registerMetadataClass(lua_State *L, const char *name,
 	};
 	registerClass(L, name, methods, metamethods);
 
+	// Set metadata_class in the metatable for MetaDataRef::checkAnyMetadata.
 	luaL_getmetatable(L, name);
 	lua_pushstring(L, name);
 	lua_setfield(L, -2, "metadata_class");
