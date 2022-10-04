@@ -34,9 +34,9 @@ class MetaDataRef : public ModApiBase
 public:
 	virtual ~MetaDataRef() = default;
 
-protected:
-	static MetaDataRef *checkobject(lua_State *L, int narg);
+	static MetaDataRef *checkAnyMetadata(lua_State *L, int narg);
 
+protected:
 	virtual void reportMetadataChange(const std::string *name = nullptr) {}
 	virtual IMetadata *getmeta(bool auto_create) = 0;
 	virtual void clearMeta() = 0;
@@ -44,7 +44,11 @@ protected:
 	virtual void handleToTable(lua_State *L, IMetadata *meta);
 	virtual bool handleFromTable(lua_State *L, int table, IMetadata *meta);
 
+	static void registerMetadataClass(lua_State *L, const char *name, const luaL_Reg *methods);
+
 	// Exported functions
+
+	static int gc_object(lua_State *L);
 
 	// contains(self, name)
 	static int l_contains(lua_State *L);

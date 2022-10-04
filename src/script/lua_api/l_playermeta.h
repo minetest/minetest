@@ -31,19 +31,13 @@ class PlayerMetaRef : public MetaDataRef
 private:
 	IMetadata *metadata = nullptr;
 
-	static const char className[];
 	static const luaL_Reg methods[];
-
-	static PlayerMetaRef *checkobject(lua_State *L, int narg);
 
 	virtual IMetadata *getmeta(bool auto_create);
 
 	virtual void clearMeta();
 
 	virtual void reportMetadataChange(const std::string *name = nullptr);
-
-	// garbage collector
-	static int gc_object(lua_State *L);
 
 public:
 	PlayerMetaRef(IMetadata *metadata) : metadata(metadata) {}
@@ -54,4 +48,6 @@ public:
 	static void create(lua_State *L, IMetadata *metadata);
 
 	static void Register(lua_State *L);
+
+	static const char className[];
 };

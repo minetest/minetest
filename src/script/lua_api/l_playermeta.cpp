@@ -25,15 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	PlayerMetaRef
 */
-PlayerMetaRef *PlayerMetaRef::checkobject(lua_State *L, int narg)
-{
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(PlayerMetaRef **)ud; // unbox pointer
-}
 
 IMetadata *PlayerMetaRef::getmeta(bool auto_create)
 {
@@ -50,14 +41,6 @@ void PlayerMetaRef::reportMetadataChange(const std::string *name)
 	// TODO
 }
 
-// garbage collector
-int PlayerMetaRef::gc_object(lua_State *L)
-{
-	PlayerMetaRef *o = *(PlayerMetaRef **)(lua_touserdata(L, 1));
-	delete o;
-	return 0;
-}
-
 // Creates an PlayerMetaRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
 void PlayerMetaRef::create(lua_State *L, IMetadata *metadata)
@@ -70,35 +53,7 @@ void PlayerMetaRef::create(lua_State *L, IMetadata *metadata)
 
 void PlayerMetaRef::Register(lua_State *L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable); // hide metatable from Lua getmetatable()
-
-	lua_pushliteral(L, "metadata_class");
-	lua_pushlstring(L, className, strlen(className));
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__eq");
-	lua_pushcfunction(L, l_equals);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1); // drop metatable
-
-	luaL_register(L, nullptr, methods);
-	lua_pop(L, 1);
+	registerMetadataClass(L, className, methods);
 
 	// Cannot be created from Lua
 	// lua_register(L, className, create_object);

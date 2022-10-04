@@ -40,11 +40,8 @@ private:
 	// Set for client metadata
 	IMetadata *m_local_meta = nullptr;
 
-	static const char className[];
 	static const luaL_Reg methodsServer[];
 	static const luaL_Reg methodsClient[];
-
-	static NodeMetaRef *checkobject(lua_State *L, int narg);
 
 	/**
 	 * Retrieve metadata for a node.
@@ -69,9 +66,6 @@ private:
 
 	// Exported functions
 
-	// garbage collector
-	static int gc_object(lua_State *L);
-
 	// get_inventory(self)
 	static int l_get_inventory(lua_State *L);
 
@@ -91,7 +85,8 @@ public:
 	// Client-sided version of the above
 	static void createClient(lua_State *L, IMetadata *meta);
 
-	static void RegisterCommon(lua_State *L);
 	static void Register(lua_State *L);
 	static void RegisterClient(lua_State *L);
+
+	static const char className[];
 };

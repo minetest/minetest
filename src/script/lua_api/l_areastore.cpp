@@ -99,7 +99,7 @@ int LuaAreaStore::l_get_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	u32 id = luaL_checknumber(L, 2);
@@ -124,7 +124,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	v3s16 pos = check_v3s16(L, 2);
@@ -146,7 +146,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	v3s16 minp = check_v3s16(L, 2);
@@ -173,7 +173,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
@@ -199,7 +199,7 @@ int LuaAreaStore::l_reserve(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	size_t count = luaL_checknumber(L, 2);
@@ -212,7 +212,7 @@ int LuaAreaStore::l_remove_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	u32 id = luaL_checknumber(L, 2);
@@ -227,7 +227,7 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	luaL_checktype(L, 2, LUA_TTABLE);
@@ -246,7 +246,7 @@ int LuaAreaStore::l_to_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	std::ostringstream os(std::ios_base::binary);
 	o->as->serialize(os);
@@ -261,7 +261,7 @@ int LuaAreaStore::l_to_file(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 	AreaStore *ast = o->as;
 
 	const char *filename = luaL_checkstring(L, 2);
@@ -279,7 +279,7 @@ int LuaAreaStore::l_from_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	size_t len;
 	const char *str = luaL_checklstring(L, 2, &len);
@@ -293,7 +293,7 @@ int LuaAreaStore::l_from_file(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = checkobject(L, 1);
+	LuaAreaStore *o = checkObject<LuaAreaStore>(L, 1);
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH(L, filename, false);
@@ -339,42 +339,13 @@ int LuaAreaStore::create_object(lua_State *L)
 	return 1;
 }
 
-LuaAreaStore *LuaAreaStore::checkobject(lua_State *L, int narg)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(LuaAreaStore **)ud;  // unbox pointer
-}
-
 void LuaAreaStore::Register(lua_State *L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);  // drop metatable
-
-	luaL_register(L, nullptr, methods);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object},
+		{0, 0}
+	};
+	registerClass(L, className, methods, metamethods);
 
 	// Can be created from Lua (AreaStore())
 	lua_register(L, className, create_object);

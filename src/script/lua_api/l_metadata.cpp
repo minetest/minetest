@@ -25,28 +25,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "server.h"
 
-// LUALIB_API
-void *luaL_checkudata_is_metadataref(lua_State *L, int ud) {
-	void *p = lua_touserdata(L, ud);
-	if (p != NULL &&  // value is a userdata?
-			lua_getmetatable(L, ud)) {  // does it have a metatable?
-		lua_getfield(L, -1, "metadata_class");
-		if (lua_type(L, -1) == LUA_TSTRING) { // does it have a metadata_class field?
-			return p;
-		}
-	}
-	luaL_typerror(L, ud, "MetaDataRef");
-	return NULL;
-}
-
-MetaDataRef* MetaDataRef::checkobject(lua_State *L, int narg)
+MetaDataRef *MetaDataRef::checkAnyMetadata(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata_is_metadataref(L, narg);
-	if (!ud)
+	void *ud = lua_touserdata(L, narg);
+
+	bool ok = ud && luaL_getmetafield(L, narg, "metadata_class");
+	if (ok) {
+		ok = lua_isstring(L, -1);
+		lua_pop(L, 1);
+	}
+
+	if (!ok)
 		luaL_typerror(L, narg, "MetaDataRef");
 
-	return *(MetaDataRef**)ud;  // unbox pointer
+	return *(MetaDataRef **)ud; // unbox pointer
+}
+
+int MetaDataRef::gc_object(lua_State *L)
+{
+	MetaDataRef *o = *(MetaDataRef **)lua_touserdata(L, 1);
+	delete o;
+	return 0;
 }
 
 // Exported functions
@@ -56,7 +55,7 @@ int MetaDataRef::l_contains(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -72,7 +71,7 @@ int MetaDataRef::l_get(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -93,7 +92,7 @@ int MetaDataRef::l_get_string(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -113,7 +112,7 @@ int MetaDataRef::l_set_string(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	size_t len = 0;
 	const char *s = lua_tolstring(L, 3, &len);
@@ -130,7 +129,7 @@ int MetaDataRef::l_get_int(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -150,7 +149,7 @@ int MetaDataRef::l_set_int(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	int a = luaL_checkint(L, 3);
 	std::string str = itos(a);
@@ -166,7 +165,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
 	IMetadata *meta = ref->getmeta(false);
@@ -186,7 +185,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	float a = readParam<float>(L, 3);
 	std::string str = ftos(a);
@@ -202,7 +201,7 @@ int MetaDataRef::l_to_table(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 
 	IMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
@@ -221,7 +220,7 @@ int MetaDataRef::l_from_table(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	MetaDataRef *ref = checkobject(L, 1);
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	int base = 2;
 
 	ref->clearMeta();
@@ -286,13 +285,30 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, IMetadata *meta)
 // equals(self, other)
 int MetaDataRef::l_equals(lua_State *L)
 {
-	MetaDataRef *ref1 = checkobject(L, 1);
+	MetaDataRef *ref1 = checkAnyMetadata(L, 1);
 	IMetadata *data1 = ref1->getmeta(false);
-	MetaDataRef *ref2 = checkobject(L, 2);
+	MetaDataRef *ref2 = checkAnyMetadata(L, 2);
 	IMetadata *data2 = ref2->getmeta(false);
 	if (data1 == NULL || data2 == NULL)
 		lua_pushboolean(L, data1 == data2);
 	else
 		lua_pushboolean(L, *data1 == *data2);
 	return 1;
+}
+
+void MetaDataRef::registerMetadataClass(lua_State *L, const char *name,
+		const luaL_Reg *methods)
+{
+	const luaL_Reg metamethods[] = {
+		{"__eq", l_equals},
+		{"__gc", gc_object},
+		{0, 0}
+	};
+	registerClass(L, name, methods, metamethods);
+
+	// Set metadata_class in the metatable for MetaDataRef::checkAnyMetadata.
+	luaL_getmetatable(L, name);
+	lua_pushstring(L, name);
+	lua_setfield(L, -2, "metadata_class");
+	lua_pop(L, 1);
 }

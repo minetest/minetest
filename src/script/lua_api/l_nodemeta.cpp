@@ -29,13 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	NodeMetaRef
 */
-NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
-{
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(NodeMetaRef**)ud;  // unbox pointer
-}
 
 IMetadata* NodeMetaRef::getmeta(bool auto_create)
 {
@@ -80,19 +73,12 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 // Exported functions
 
-// garbage collector
-int NodeMetaRef::gc_object(lua_State *L) {
-	NodeMetaRef *o = *(NodeMetaRef **)(lua_touserdata(L, 1));
-	delete o;
-	return 0;
-}
-
 // get_inventory(self)
 int NodeMetaRef::l_get_inventory(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	NodeMetaRef *ref = checkobject(L, 1);
+	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
 	ref->getmeta(true);  // try to ensure the metadata exists
 
 	InventoryLocation loc;
@@ -106,7 +92,7 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	NodeMetaRef *ref = checkobject(L, 1);
+	NodeMetaRef *ref = checkObject<NodeMetaRef>(L, 1);
 	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
 	assert(meta);
 
@@ -207,41 +193,10 @@ void NodeMetaRef::createClient(lua_State *L, IMetadata *meta)
 }
 
 const char NodeMetaRef::className[] = "NodeMetaRef";
-void NodeMetaRef::RegisterCommon(lua_State *L)
-{
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
-
-	lua_pushliteral(L, "metadata_class");
-	lua_pushlstring(L, className, strlen(className));
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__eq");
-	lua_pushcfunction(L, l_equals);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1);  // drop metatable
-}
 
 void NodeMetaRef::Register(lua_State *L)
 {
-	RegisterCommon(L);
-	luaL_register(L, nullptr, methodsServer);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	registerMetadataClass(L, className, methodsServer);
 }
 
 
@@ -265,9 +220,7 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 
 void NodeMetaRef::RegisterClient(lua_State *L)
 {
-	RegisterCommon(L);
-	luaL_register(L, nullptr, methodsClient);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
+	registerMetadataClass(L, className, methodsClient);
 }
 
 
