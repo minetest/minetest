@@ -1,3 +1,14 @@
+local function test_itemstack_equals_non_stack()
+	local i1 = ItemStack("basenodes:stone")
+	local i2 = { foo = "bar" }
+
+	assert(not i1:equals(i2))
+	assert(i1 ~= i2)
+	assert(i2 ~= i1)
+end
+
+unittests.register("test_itemstack_equals_non_stack", test_itemstack_equals_non_stack)
+
 local function test_itemstack_equals_name()
 	local i1 = ItemStack("basenodes:stone")
 	local i2 = ItemStack("basenodes:desert_stone")
