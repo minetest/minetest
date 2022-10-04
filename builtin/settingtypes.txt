@@ -117,6 +117,10 @@ mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 #    The length in pixels it takes for touch screen interaction to start.
 touchscreen_threshold (Touch screen threshold) int 20 0 100
 
+#    Use crosshair to select object instead of whole screen.
+#    If enabled, a crosshair will be shown and will be used for selecting object.
+touch_use_crosshair (Use crosshair for touch screen) bool false
+
 #    (Android) Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
@@ -444,6 +448,44 @@ shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 #    Value of 0 means no tilt / vertical orbit.
 #    Minimum value: 0.0; maximum value: 60.0
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
+
+[**Post processing]
+
+#    Set the exposure compensation factor.
+#    This factor is applied to linear color value 
+#    before all other post-processing effects.
+#    Value of 1.0 (default) means no exposure compensation.
+#    Range: from 0.1 to 10.0
+exposure_factor	(Exposure Factor) float 1.0 0.1 10.0
+
+[**Bloom]
+
+#    Set to true to enable bloom effect.
+#    Bright colors will bleed over the neighboring objects.
+enable_bloom (Enable Bloom) bool false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants: 
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+enable_bloom_debug (Enable Bloom Debug) bool false
+
+#    Set to true to use dedicated texture at each step of bloom effect.
+#    This is a compatibility setting to avoid visual artifacts 
+#    on certain GPUs and video drivers.
+enable_bloom_dedicated_texture (Enable Bloom Dedicated Texture) bool false
+
+#    Set the intensity of bloom
+#    Smaller values make bloom more subtle
+#    Range: from 0.01 to 1.0, default: 0.05
+bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
+
+#    Set the radius of the bloom filter in pixels.
+#    Larger values render more glow around bright objects
+#    at the cost of higher resource consumption.
+#    Range: from 1 to 64, default: 16
+bloom_radius (Bloom Radius) int 16 1 64
+
 
 [*Audio]
 

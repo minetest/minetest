@@ -24,17 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "util/string.h"
 
-class Metadata
+// Basic metadata interface
+class IMetadata
 {
-	bool m_modified = false;
 public:
-	virtual ~Metadata() = default;
+	virtual ~IMetadata() = default;
 
-	virtual void clear();
-	virtual bool empty() const;
+	virtual void clear() = 0;
 
-	bool operator==(const Metadata &other) const;
-	inline bool operator!=(const Metadata &other) const
+	bool operator==(const IMetadata &other) const;
+	inline bool operator!=(const IMetadata &other) const
 	{
 		return !(*this == other);
 	}
@@ -43,21 +42,76 @@ public:
 	// Key-value related
 	//
 
-	size_t size() const;
-	bool contains(const std::string &name) const;
-	const std::string &getString(const std::string &name, u16 recursion = 0) const;
+	virtual bool contains(const std::string &name) const = 0;
+
+	// May (not must!) put a string in `place` and return a reference to that string.
+	const std::string &getString(const std::string &name, std::string *place,
+			u16 recursion = 0) const;
+
+	// If the entry is present, puts the value in str and returns true;
+	// otherwise just returns false.
 	bool getStringToRef(const std::string &name, std::string &str, u16 recursion = 0) const;
-	virtual bool setString(const std::string &name, const std::string &var);
+
+	// Returns whether the metadata was (potentially) changed.
+	virtual bool setString(const std::string &name, const std::string &var) = 0;
+
 	inline bool removeString(const std::string &name) { return setString(name, ""); }
-	const StringMap &getStrings() const
+
+	// May (not must!) put strings in `place` and return a reference to these strings.
+	virtual const StringMap &getStrings(StringMap *place) const = 0;
+
+	// Add support for variable names in values. Uses place like getString.
+	const std::string &resolveString(const std::string &str, std::string *place,
+			u16 recursion = 0) const;
+
+protected:
+	// Returns nullptr to indicate absence of value. Uses place like getString.
+	virtual const std::string *getStringRaw(const std::string &name,
+			std::string *place) const = 0;
+};
+
+// Simple metadata parent class (in-memory storage)
+class SimpleMetadata: public virtual IMetadata
+{
+	bool m_modified = false;
+public:
+	virtual ~SimpleMetadata() = default;
+
+	virtual void clear() override;
+	virtual bool empty() const;
+
+	//
+	// Key-value related
+	//
+
+	size_t size() const;
+	bool contains(const std::string &name) const override;
+	virtual bool setString(const std::string &name, const std::string &var) override;
+	const StringMap &getStrings(StringMap *) const override final;
+
+	// Simple version of getters, possible due to in-memory storage:
+
+	inline const std::string &getString(const std::string &name, u16 recursion = 0) const
 	{
-		return m_stringvars;
+		return IMetadata::getString(name, nullptr, recursion);
 	}
-	// Add support for variable names in values
-	const std::string &resolveString(const std::string &str, u16 recursion = 0) const;
+
+	inline const std::string &resolveString(const std::string &str, u16 recursion = 0) const
+	{
+		return IMetadata::resolveString(str, nullptr, recursion);
+	}
+
+	inline const StringMap &getStrings() const
+	{
+		return SimpleMetadata::getStrings(nullptr);
+	}
 
 	inline bool isModified() const  { return m_modified; }
 	inline void setModified(bool v) { m_modified = v; }
+
 protected:
 	StringMap m_stringvars;
+
+	const std::string *getStringRaw(const std::string &name,
+			std::string *) const override final;
 };

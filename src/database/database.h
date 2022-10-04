@@ -92,8 +92,12 @@ public:
 	virtual ~ModMetadataDatabase() = default;
 
 	virtual bool getModEntries(const std::string &modname, StringMap *storage) = 0;
+	virtual bool hasModEntry(const std::string &modname, const std::string &key) = 0;
+	virtual bool getModEntry(const std::string &modname,
+		const std::string &key, std::string *value) = 0;
 	virtual bool setModEntry(const std::string &modname,
 		const std::string &key, const std::string &value) = 0;
 	virtual bool removeModEntry(const std::string &modname, const std::string &key) = 0;
+	virtual bool removeModEntries(const std::string &modname) = 0;
 	virtual void listMods(std::vector<std::string> *res) = 0;
 };

@@ -14,6 +14,9 @@ https://www.apache.org/licenses/LICENSE-2.0.html
 Textures by Zughy are under CC BY-SA 4.0
 https://creativecommons.org/licenses/by-sa/4.0/
 
+Media files by DS are under CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
+
 textures/base/pack/server_public.png is under CC-BY 4.0, taken from Twitter's Twemoji set
 https://creativecommons.org/licenses/by/4.0/
 
@@ -62,7 +65,7 @@ Zughy:
 
 appgurueu:
   textures/base/pack/server_incompatible.png
-  
+
 erlehmann, Warr1024, rollerozxa:
   textures/base/pack/no_screenshot.png
 
@@ -72,6 +75,10 @@ kilbith:
 SmallJoker:
   textures/base/pack/cdb_clear.png
   textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
+
+DS:
+  games/devtest/mods/testitems/textures/testitems_callback_1.png
+  games/devtest/mods/testitems/textures/testitems_callback_2.png
 
 License of Minetest source code
 -------------------------------

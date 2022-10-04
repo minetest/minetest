@@ -88,31 +88,77 @@ void PostProcessingStep::run(PipelineContext &context)
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }
 
+void PostProcessingStep::setBilinearFilter(u8 index, bool value)
+{
+	assert(index < video::MATERIAL_MAX_TEXTURES);
+	material.TextureLayer[index].BilinearFilter = value;
+}
+
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
 {
 	auto buffer = pipeline->createOwned<TextureBuffer>();
-	static const u8 TEXTURE_COLOR = 0;
-	static const u8 TEXTURE_DEPTH = 3;
+	auto driver = client->getSceneManager()->getVideoDriver();
 
-	// init post-processing buffer
-	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", video::ECF_A8R8G8B8);
+	// configure texture formats
+	video::ECOLOR_FORMAT color_format = video::ECF_A8R8G8B8;
+	if (driver->queryTextureFormat(video::ECF_A16B16G16R16F))
+		color_format = video::ECF_A16B16G16R16F;
 
 	video::ECOLOR_FORMAT depth_format = video::ECF_D16; // fallback depth format
-	auto driver = client->getSceneManager()->getVideoDriver();
 	if (driver->queryTextureFormat(video::ECF_D32))
 		depth_format = video::ECF_D32;
 	else if (driver->queryTextureFormat(video::ECF_D24S8))
 		depth_format = video::ECF_D24S8;
-	buffer->setDepthTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
+
+
+	// init post-processing buffer
+	static const u8 TEXTURE_COLOR = 0;
+	static const u8 TEXTURE_DEPTH = 1;
+	static const u8 TEXTURE_BLOOM = 2;
+	static const u8 TEXTURE_BLUR = 3;
+	static const u8 TEXTURE_BLUR_SECONDARY = 4;
+
+	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
+	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
-	previousStep->setRenderTarget(buffer);
+	previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
 
 	// post-processing stage
-	// set up shader
-	u32 shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
+	// set up bloom
+	if (g_settings->getBool("enable_bloom")) {
 
-	RenderStep *effect = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
+		buffer->setTexture(TEXTURE_BLUR, scale * 0.5, "blur", color_format);
+		buffer->setTexture(TEXTURE_BLOOM, scale * 0.5, "bloom", color_format);
+		u8 bloom_input_texture = TEXTURE_BLOOM;
+		
+		if (g_settings->getBool("enable_bloom_dedicated_texture")) {
+			buffer->setTexture(TEXTURE_BLUR_SECONDARY, scale * 0.5, "blur2", color_format);
+			bloom_input_texture = TEXTURE_BLUR_SECONDARY;
+		}
+
+		// get bright spots
+		u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
+		RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
+		extract_bloom->setRenderSource(buffer);
+		extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, bloom_input_texture));
+		// horizontal blur
+		shader_id = client->getShaderSource()->getShader("blur_h", TILE_MATERIAL_PLAIN, NDT_MESH);
+		RenderStep *blur_h = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { bloom_input_texture });
+		blur_h->setRenderSource(buffer);
+		blur_h->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLUR));
+		// vertical blur
+		shader_id = client->getShaderSource()->getShader("blur_v", TILE_MATERIAL_PLAIN, NDT_MESH);
+		RenderStep *blur_v = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_BLUR });
+		blur_v->setRenderSource(buffer);
+		blur_v->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
+	}
+
+	// final post-processing
+	u32 shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
+	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM });
+	pipeline->addStep(effect);
+	effect->setBilinearFilter(1, true); // apply filter to the bloom
 	effect->setRenderSource(buffer);
 	return effect;
 }

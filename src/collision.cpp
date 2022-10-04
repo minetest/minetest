@@ -250,11 +250,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		time_notification_done = false;
 	}
 
-	v3f newpos_f = *pos_f + (*speed_f + accel_f * 0.5f * dtime) * dtime;
+	v3f dpos_f = (*speed_f + accel_f * 0.5f * dtime) * dtime;
+	v3f newpos_f = *pos_f + dpos_f;
 	*speed_f += accel_f * dtime;
 
 	// If the object is static, there are no collisions
-	if (newpos_f == *pos_f)
+	if (dpos_f == v3f())
 		return result;
 
 	// Limit speed for avoiding hangs

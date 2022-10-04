@@ -263,6 +263,12 @@ void set_default_settings()
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
+	settings->setDefault("exposure_factor", "1.0");
+	settings->setDefault("enable_bloom", "false");
+	settings->setDefault("enable_bloom_debug", "false");
+	settings->setDefault("enable_bloom_dedicated_texture", "false");
+	settings->setDefault("bloom_intensity", "0.05");
+	settings->setDefault("bloom_radius", "16");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
@@ -465,8 +471,8 @@ void set_default_settings()
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	settings->setDefault("touchtarget", "true");
 	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("clickable_chat_weblinks", "false");

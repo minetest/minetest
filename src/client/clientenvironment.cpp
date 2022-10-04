@@ -519,7 +519,12 @@ void ClientEnvironment::getSelectedActiveObjects(
 	}
 }
 
-void ClientEnvironment::updateFrameTime()
+void ClientEnvironment::updateFrameTime(bool is_paused)
 {
-	m_frame_time = porting::getTimeMs();
+	// if paused, m_frame_time_pause_accumulator increases by dtime,
+	// otherwise, m_frame_time increases by dtime
+	if (is_paused)
+		m_frame_time_pause_accumulator = porting::getTimeMs() - m_frame_time;
+	else
+		m_frame_time = porting::getTimeMs() - m_frame_time_pause_accumulator;
 }

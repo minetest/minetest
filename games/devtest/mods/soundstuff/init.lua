@@ -136,6 +136,35 @@ minetest.register_tool("soundstuff:breaks", {
 	},
 })
 
+
+minetest.register_tool("soundstuff:punch_use", {
+	description = "Punch Use Sound Tool\n"..
+		"Digs cracky=3 and more\n"..
+		"Makes a sound when used on node or entity",
+	inventory_image = "soundstuff_node_dig.png",
+	sound = {
+		punch_use = { name = "soundstuff_mono", gain = 1.0 },
+	},
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			cracky={times={[2]=2.00, [3]=1.20}, uses=0, maxlevel=0},
+			choppy={times={[2]=2.00, [3]=1.20}, uses=0, maxlevel=0},
+			snappy={times={[2]=2.00, [3]=1.20}, uses=0, maxlevel=0},
+			crumbly={times={[2]=2.00, [3]=1.20}, uses=0, maxlevel=0},
+		},
+	},
+})
+
+minetest.register_tool("soundstuff:punch_use_air", {
+	description = "Punch Use (Air) Sound Tool\n"..
+		"Makes a sound when used pointing at nothing",
+	inventory_image = "soundstuff_node_dig.png",
+	sound = {
+		punch_use_air = { name = "soundstuff_mono", gain = 1.0 },
+	},
+})
+
 -- Plays sound repeatedly
 minetest.register_node("soundstuff:positional", {
 	description = "Positional Sound Node",

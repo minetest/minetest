@@ -30,7 +30,6 @@ private:
 	LuaItemStack(const ItemStack &item);
 	~LuaItemStack() = default;
 
-	static const char className[];
 	static const luaL_Reg methods[];
 
 	// Exported functions
@@ -155,12 +154,13 @@ public:
 	static int create_object(lua_State *L);
 	// Not callable from Lua
 	static int create(lua_State *L, const ItemStack &item);
-	static LuaItemStack* checkobject(lua_State *L, int narg);
 
 	static void *packIn(lua_State *L, int idx);
 	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
+
+	static const char className[];
 };
 
 class ModApiItemMod : public ModApiBase {
