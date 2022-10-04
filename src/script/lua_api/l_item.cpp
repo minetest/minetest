@@ -436,7 +436,8 @@ int LuaItemStack::l_peek_item(lua_State *L)
 // equals(self, other) -> bool
 int LuaItemStack::l_equals(lua_State *L)
 {
-	LuaItemStack *o1 = checkobject(L, 1);
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o1 = checkObject<LuaItemStack>(L, 1);
 
 	void *p = lua_touserdata(L, 2);
 	if (p == NULL) {
@@ -455,7 +456,7 @@ int LuaItemStack::l_equals(lua_State *L)
 		return 1;
 	}
 
-	LuaItemStack *o2 = checkobject(L, 2);
+	LuaItemStack *o2 = checkObject<LuaItemStack>(L, 2);
 
 	if (o1 == NULL || o2 == NULL) {
 		lua_pushboolean(L, o1 == o2);
