@@ -439,17 +439,19 @@ int LuaItemStack::l_equals(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o1 = checkObject<LuaItemStack>(L, 1);
 
-	void *p = lua_touserdata(L, 2);
-	if (p == NULL) {
+ 	// checks for non-userdata argument
+	if (lua_type(L, 2) != LUA_TUSERDATA) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
 
+ 	// checks for non-ItemStack argument
 	if (!lua_getmetatable(L, 2)) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
 
+ 	// checks for non-ItemStack argument
 	lua_getfield(L, LUA_REGISTRYINDEX, className);
 	if (!lua_rawequal(L, -1, -2)) {
 		lua_pushboolean(L, false);
@@ -457,11 +459,6 @@ int LuaItemStack::l_equals(lua_State *L)
 	}
 
 	LuaItemStack *o2 = checkObject<LuaItemStack>(L, 2);
-
-	if (o1 == NULL || o2 == NULL) {
-		lua_pushboolean(L, o1 == o2);
-		return 1;
-	}
 
 	ItemStack &item1 = o1->m_stack;
 	ItemStack &item2 = o2->m_stack;
