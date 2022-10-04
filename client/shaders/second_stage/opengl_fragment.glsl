@@ -3,8 +3,8 @@
 
 uniform sampler2D rendered;
 uniform sampler2D bloom;
-uniform mediump float exposureFactor = 2.5;
-uniform lowp float bloomIntensity = 1.0;
+uniform mediump float exposureFactor;
+uniform lowp float bloomIntensity;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -12,13 +12,13 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
-#if ENABLE_BLOOM
+#ifdef ENABLE_BLOOM
 
 vec4 applyBloom(vec4 color, vec2 uv)
 {
 	float bias = bloomIntensity;
 	vec4 bloom = texture2D(bloom, uv);
-#if ENABLE_BLOOM_DEBUG
+#ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 && uv.y < 0.5)
 		return vec4(bloom.rgb, color.a);
 	if (uv.x < 0.5)
@@ -30,7 +30,7 @@ vec4 applyBloom(vec4 color, vec2 uv)
 
 #endif
 
-#if ENABLE_TONE_MAPPING
+#ifdef ENABLE_TONE_MAPPING
 
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
@@ -68,7 +68,7 @@ void main(void)
 	// translate to linear colorspace (approximate)
 	color.rgb = pow(color.rgb, vec3(2.2));
 
-#if ENABLE_BLOOM_DEBUG
+#ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
@@ -76,15 +76,15 @@ void main(void)
 	}
 
 
-#if ENABLE_BLOOM
+#ifdef ENABLE_BLOOM
 	color = applyBloom(color, uv);
 #endif
 
-#if ENABLE_BLOOM_DEBUG
+#ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-#if ENABLE_TONE_MAPPING
+#ifdef ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);
 #else
 		color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;

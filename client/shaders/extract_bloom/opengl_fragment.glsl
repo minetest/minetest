@@ -1,8 +1,8 @@
 #define rendered texture0
 
 uniform sampler2D rendered;
-uniform mediump float exposureFactor = 2.5;
-uniform float bloomLuminanceThreshold = 1.0;
+uniform mediump float exposureFactor;
+uniform float bloomLuminanceThreshold;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
