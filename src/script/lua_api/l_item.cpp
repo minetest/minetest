@@ -440,7 +440,7 @@ int LuaItemStack::l_equals(lua_State *L)
 	LuaItemStack *o1 = checkObject<LuaItemStack>(L, 1);
 
  	// checks for non-userdata argument
-	if (lua_type(L, 2) != LUA_TUSERDATA) {
+	if (!lua_isuserdata(L, 2)) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
