@@ -6813,6 +6813,9 @@ an itemstring, a table or `nil`.
     * returns `true` if this stack is identical to `other`.
     * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
       as stack metadata can be serialized in arbitrary order.
+    * Note: if `other` is an itemstring or table representation of an
+      ItemStack, this will always return false, even if it is
+      "equivalent".
 
 ### Operators
 
@@ -6820,6 +6823,9 @@ an itemstring, a table or `nil`.
     * Returns whether `stack1` and `stack2` are identical.
     * Note: `stack1:to_string() == stack2:to_string()` is not reliable,
       as stack metadata can be serialized in arbitrary order.
+    * Note: if `stack2` is an itemstring or table representation of an
+      ItemStack, this will always return false, even if it is
+      "equivalent".
 
 `ItemStackMetaRef`
 ------------------
