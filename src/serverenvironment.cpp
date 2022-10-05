@@ -258,7 +258,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
-	bool pos_valid; // dummy, we know it's valid
 	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
@@ -269,7 +268,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoCheck(pos, &pos_valid);
+					n = block->getNodeNoCheck(pos);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
@@ -850,7 +849,7 @@ public:
 	}
 	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
-		if(m_aabms.empty() || block->isDummy())
+		if(m_aabms.empty())
 			return;
 
 		// Check the content type cache first
@@ -884,7 +883,7 @@ public:
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
 		{
-			const MapNode &n = block->getNodeUnsafe(p0);
+			const MapNode &n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
 			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
@@ -920,7 +919,7 @@ public:
 						if (block->isValidPosition(p1)) {
 							// if the neighbor is found on the same map block
 							// get it straight from there
-							const MapNode &n = block->getNodeUnsafe(p1);
+							const MapNode &n = block->getNodeNoCheck(p1);
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
@@ -1589,7 +1588,7 @@ ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
 		return BS_ACTIVE;
 
 	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if (block && !block->isDummy())
+	if (block)
 		return BS_LOADED;
 
 	if (m_map->isBlockInQueue(blockpos))
