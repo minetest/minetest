@@ -158,10 +158,9 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	}
 
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	bool is_valid_p;
-	MapNode node = block->getNodeNoCheck(relpos, &is_valid_p);
+	MapNode node = block->getNodeNoCheck(relpos);
 	if (is_valid_position != NULL)
-		*is_valid_position = is_valid_p;
+		*is_valid_position = true;
 	return node;
 }
 
@@ -172,10 +171,9 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 		const NodeDefManager *nodedef = block->getParent()->getNodeDefManager();
 		v3s16 blockpos = block->getPos();
 		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
-		bool temp_bool;
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
-				<<nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
+				<<nodedef->get(block->getNodeNoCheck(relpos)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
 		return;
 	}
@@ -200,12 +198,10 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
-	if (block->isDummy())
-		throw InvalidPositionException();
 	v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
 
 	// This is needed for updating the lighting
-	MapNode oldnode = block->getNodeUnsafe(relpos);
+	MapNode oldnode = block->getNodeNoCheck(relpos);
 
 	// Remove node metadata
 	if (remove_metadata) {
@@ -1515,8 +1511,6 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 
 	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
 	if (block) {
-		if(block->isDummy())
-			block->unDummify();
 		return block;
 	}
 	// Create blank
@@ -1529,7 +1523,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		if (block && !block->isDummy())
+		if (block)
 			return block;
 	}
 
@@ -1756,13 +1750,6 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 {
 	v3s16 p3d = block->getPos();
 
-	// Dummy blocks are not written
-	if (block->isDummy()) {
-		warningstream << "saveBlock: Not writing dummy block "
-			<< PP(p3d) << std::endl;
-		return true;
-	}
-
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 
@@ -1962,7 +1949,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 			TimeTaker timer2("emerge load", &emerge_load_time);
 
 			block = m_map->getBlockNoCreateNoEx(p);
-			if (!block || block->isDummy())
+			if (!block)
 				block_data_inexistent = true;
 			else
 				block->copyTo(*this);

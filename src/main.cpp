@@ -1131,14 +1131,16 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		iss.str(data);
 		iss.clear();
 
-		MapBlock mb(nullptr, v3s16(0,0,0), &server);
-		u8 ver = readU8(iss);
-		mb.deSerialize(iss, ver, true);
+		{
+			MapBlock mb(nullptr, v3s16(0,0,0), &server);
+			u8 ver = readU8(iss);
+			mb.deSerialize(iss, ver, true);
 
-		oss.str("");
-		oss.clear();
-		writeU8(oss, serialize_as_ver);
-		mb.serialize(oss, serialize_as_ver, true, -1);
+			oss.str("");
+			oss.clear();
+			writeU8(oss, serialize_as_ver);
+			mb.serialize(oss, serialize_as_ver, true, -1);
+		}
 
 		db->saveBlock(*it, oss.str());
 
