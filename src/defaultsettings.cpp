@@ -146,11 +146,18 @@ void set_default_settings()
 	settings->setDefault("keymap_slot31", "");
 	settings->setDefault("keymap_slot32", "");
 
-	// Some (temporary) keys for debugging
+#ifndef NDEBUG
+	// Default keybinds for quicktune in debug builds
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
 	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
+#else
+	settings->setDefault("keymap_quicktune_prev", "");
+	settings->setDefault("keymap_quicktune_next", "");
+	settings->setDefault("keymap_quicktune_dec", "");
+	settings->setDefault("keymap_quicktune_inc", "");
+#endif
 
 	// Visuals
 #ifdef NDEBUG
