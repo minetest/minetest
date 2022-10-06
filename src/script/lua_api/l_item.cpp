@@ -445,13 +445,11 @@ int LuaItemStack::l_equals(lua_State *L)
 		return 1;
 	}
 
- 	// checks for non-ItemStack argument
+ 	// check that the argument is an ItemStack
 	if (!lua_getmetatable(L, 2)) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
-
- 	// checks for non-ItemStack argument
 	lua_getfield(L, LUA_REGISTRYINDEX, className);
 	if (!lua_rawequal(L, -1, -2)) {
 		lua_pushboolean(L, false);
