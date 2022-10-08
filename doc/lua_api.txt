@@ -8187,15 +8187,13 @@ Used by `minetest.register_node`.
         -- * `drawtype == "liquid" or
         -- * `drawtype == "flowingliquid"
         --
-        -- Liquids can have up two nodes: source and flowing.
+        -- Liquids consist of up two nodes: source and flowing.
         --
         -- There are two ways to define a liquid:
-        -- 1) with a source node and a flowing node
-        -- 2) with only a source node (when it never flows)
-        --
-        -- With option 1, you have to set both fields for both nodes.
-        -- With option 2, you have to set `liquid_alternative_source` and
-        -- `liquid_range` must be set to 0.
+        -- 1) Source node and flowing node. This requires both fields to be
+        --    specified for both nodes.
+        -- 2) Standalone source node (cannot flow). `liquid_alternative_source`
+        --    must be specified and `liquid_range` must be set to 0.
         --
         -- Example:
         --     liquid_alternative_flowing = "example:water_flowing",
