@@ -169,6 +169,9 @@ protected:
 private:
 	static int luaPanic(lua_State *L);
 
+	// Check things that should be set by the builtin mod.
+	void checkSetByBuiltin();
+
 	lua_State      *m_luastack = nullptr;
 
 	IGameDef       *m_gamedef = nullptr;

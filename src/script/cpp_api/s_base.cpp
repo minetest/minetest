@@ -196,12 +196,38 @@ void ScriptApiBase::clientOpenLibs(lua_State *L)
 	}
 }
 
+void ScriptApiBase::checkSetByBuiltin()
+{
+	lua_State *L = getStack();
+
+	if (m_gamedef) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_VECTOR);
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pop(L, 1);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_VECTOR);
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pop(L, 1);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pop(L, 1);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pop(L, 1);
+	}
+}
+
 void ScriptApiBase::loadMod(const std::string &script_path,
 		const std::string &mod_name)
 {
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
 	loadScript(script_path);
+
+	if (mod_name == BUILTIN_MOD_NAME)
+		checkSetByBuiltin();
 }
 
 void ScriptApiBase::loadScript(const std::string &script_path)
@@ -262,6 +288,9 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 				mod_name + "\":\n" + error_msg);
 	}
 	lua_pop(L, 1); // Pop error handler
+
+	if (mod_name == BUILTIN_MOD_NAME)
+		checkSetByBuiltin();
 }
 #endif
 
