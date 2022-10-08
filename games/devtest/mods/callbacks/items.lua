@@ -6,6 +6,7 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	description = "Callback test item 1\n(Use/Drop + Sneak to switch to item 2)",
 	inventory_image = "callbacks_callback_item_1.png",
 	wield_image = "callbacks_callback_item_1.png",
+	groups = { callback_test = 1 },
 
 	on_secondary_use = function(itemstack, user, pointed_thing)
 		minetest.log("[callbacks:callback_item_1 on_secondary_use] " .. itemstack:get_name())
@@ -81,6 +82,7 @@ minetest.register_craftitem("callbacks:callback_item_2", {
 	description = "Callback test item 2\n(Use to switch to item 1)",
 	inventory_image = "callbacks_callback_item_2.png",
 	wield_image = "callbacks_callback_item_2.png",
+	groups = { callback_test = 1 },
 
 	on_use = function(itemstack, user, pointed_thing)
 		minetest.log("[callbacks:callback_item_2 on_use]")
