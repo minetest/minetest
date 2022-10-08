@@ -6,7 +6,7 @@ minetest.register_tool("testtools:privatizer", {
 	on_use = function(itemstack, user, pointed_thing)
 		if pointed_thing.type == "node" then
 			local node = minetest.get_node(pointed_thing.under)
-			if node.name == "chest:chest" then
+			if minetest.get_item_group(node.name, "meta_is_privatizable") == 1 then
 				local p = pointed_thing.under
 				minetest.log("action", "[testtools] Privatizer used at "..minetest.pos_to_string(p))
 				minetest.get_meta(p):mark_as_private({"infotext", "formspec"})
