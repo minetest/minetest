@@ -91,7 +91,7 @@ end
 
 minetest.register_chatcommand("test_place_nodes", {
 	params = "[ no_param2 ]",
-	description = "Test: Place all nodes and optionally their permissible param2 variants",
+	description = "Test: Place all nodes (except dummy and callback nodes) and optionally their permissible param2 variants",
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		if not player then
@@ -113,7 +113,11 @@ minetest.register_chatcommand("test_place_nodes", {
 		local nodes = {}
 		local emerge_estimate = 0
 		for itemstring, def in pairs(minetest.registered_nodes) do
-			if itemstring ~= "ignore" then
+			if itemstring ~= "ignore" and
+					-- Skip callback test and dummy nodes
+					-- to avoid clutter and chat spam
+					minetest.get_item_group(itemstring, "callback_test") == 0 and
+					minetest.get_item_group(itemstring, "dummy") == 0 then
 				table.insert(nodes, itemstring)
 				if def.paramtype2 == 0 then
 					emerge_estimate = emerge_estimate + 1

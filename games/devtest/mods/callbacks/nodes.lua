@@ -7,7 +7,7 @@ minetest.register_node("callbacks:callback_node", {
 	description = "Callback Test Node (construct/destruct/timer)".."\n"..
 		"Tests callbacks: on_construct, after_place_node, on_destruct, after_destruct, after_dig_node, on_timer",
 	tiles = {"callbacks_callback_node.png"},
-	groups = {dig_immediate=3},
+	groups = {callback_test=1, dig_immediate=3},
 	-- This was known to cause a bug in minetest.item_place_node() when used
 	-- via minetest.place_node(), causing a placer with no position
 	paramtype2 = "facedir",
