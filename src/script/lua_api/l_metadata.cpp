@@ -213,10 +213,10 @@ int MetaDataRef::l_get_keys(lua_State *L)
 	std::vector<std::string> keys_;
 	const std::vector<std::string> &keys = meta->getKeys(&keys_);
 
-	lua_Integer i = 0;
+	lua_Number i = 0;
 	lua_createtable(L, (int)MYMIN(keys.size(), INT_MAX), 0);
 	for (const std::string &key : keys) {
-		lua_pushinteger(L, ++i);
+		lua_pushnumber(L, ++i);
 		lua_pushlstring(L, key.c_str(), key.size());
 		lua_rawset(L, -3);
 	}
