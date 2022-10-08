@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "server.h"
+#include "util/basic_macros.h"
 
 MetaDataRef *MetaDataRef::checkAnyMetadata(lua_State *L, int narg)
 {
@@ -212,11 +213,12 @@ int MetaDataRef::l_get_keys(lua_State *L)
 	std::vector<std::string> keys_;
 	const std::vector<std::string> &keys = meta->getKeys(&keys_);
 
-	int i = 0;
-	lua_createtable(L, (int)keys.size(), 0);
+	lua_Integer i = 0;
+	lua_createtable(L, (int)MYMIN(keys.size(), INT_MAX), 0);
 	for (const std::string &key : keys) {
+		lua_pushinteger(L, ++i);
 		lua_pushlstring(L, key.c_str(), key.size());
-		lua_rawseti(L, -2, ++i);
+		lua_rawset(L, -3);
 	}
 	return 1;
 }
