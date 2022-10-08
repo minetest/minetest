@@ -196,6 +196,31 @@ int MetaDataRef::l_set_float(lua_State *L)
 	return 0;
 }
 
+// get_keys(self)
+int MetaDataRef::l_get_keys(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	MetaDataRef *ref = checkAnyMetadata(L, 1);
+
+	IMetadata *meta = ref->getmeta(false);
+	if (meta == NULL) {
+		lua_newtable(L);
+		return 1;
+	}
+
+	std::vector<std::string> keys_;
+	const std::vector<std::string> &keys = meta->getKeys(&keys_);
+
+	int i = 0;
+	lua_createtable(L, (int)keys.size(), 0);
+	for (const std::string &key : keys) {
+		lua_pushlstring(L, key.c_str(), key.size());
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
+}
+
 // to_table(self)
 int MetaDataRef::l_to_table(lua_State *L)
 {

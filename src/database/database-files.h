@@ -79,6 +79,7 @@ public:
 	virtual ~ModMetadataDatabaseFiles() = default;
 
 	virtual bool getModEntries(const std::string &modname, StringMap *storage);
+	virtual bool getModKeys(const std::string &modname, std::vector<std::string> *storage);
 	virtual bool getModEntry(const std::string &modname,
 		const std::string &key, std::string *value);
 	virtual bool hasModEntry(const std::string &modname, const std::string &key);

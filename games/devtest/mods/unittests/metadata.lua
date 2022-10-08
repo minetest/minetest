@@ -30,6 +30,14 @@ local function test_metadata(meta)
 	assert(tab.fields.d == "4")
 	assert(tab.fields.e == "e")
 
+	local keys = meta:get_keys()
+	assert(table.indexof(keys, "a") > 0)
+	assert(table.indexof(keys, "b") > 0)
+	assert(table.indexof(keys, "c") > 0)
+	assert(table.indexof(keys, "d") > 0)
+	assert(table.indexof(keys, "e") > 0)
+	assert(#keys == 5)
+
 	assert(not meta:contains(""))
 	assert(meta:contains("a"))
 	assert(meta:contains("b"))
@@ -57,6 +65,7 @@ local function test_metadata(meta)
 
 	meta:from_table()
 	assert(next(meta:to_table().fields) == nil)
+	assert(#meta:get_keys() == 0)
 
 	assert(not meta:equals(compare_meta))
 end

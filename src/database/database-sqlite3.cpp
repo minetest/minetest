@@ -775,6 +775,7 @@ ModMetadataDatabaseSQLite3::~ModMetadataDatabaseSQLite3()
 	FINALIZE_STATEMENT(m_stmt_set)
 	FINALIZE_STATEMENT(m_stmt_has)
 	FINALIZE_STATEMENT(m_stmt_get)
+	FINALIZE_STATEMENT(m_stmt_get_keys)
 	FINALIZE_STATEMENT(m_stmt_get_all)
 }
 
@@ -796,6 +797,7 @@ void ModMetadataDatabaseSQLite3::createDatabase()
 void ModMetadataDatabaseSQLite3::initStatements()
 {
 	PREPARE_STATEMENT(get_all, "SELECT `key`, `value` FROM `entries` WHERE `modname` = ?");
+	PREPARE_STATEMENT(get_keys, "SELECT `key` FROM `entries` WHERE `modname` = ?");
 	PREPARE_STATEMENT(get,
 		"SELECT `value` FROM `entries` WHERE `modname` = ? AND `key` = ? LIMIT 1");
 	PREPARE_STATEMENT(has,
@@ -821,6 +823,24 @@ bool ModMetadataDatabaseSQLite3::getModEntries(const std::string &modname, Strin
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
 	sqlite3_reset(m_stmt_get_all);
+
+	return true;
+}
+
+bool ModMetadataDatabaseSQLite3::getModKeys(const std::string &modname,
+		std::vector<std::string> *storage)
+{
+	verifyDatabase();
+
+	str_to_sqlite(m_stmt_get_keys, 1, modname);
+	while (sqlite3_step(m_stmt_get_keys) == SQLITE_ROW) {
+		const char *key_data = (const char *) sqlite3_column_blob(m_stmt_get_keys, 0);
+		size_t key_len = sqlite3_column_bytes(m_stmt_get_keys, 0);
+		storage->emplace_back(key_data, key_len);
+	}
+	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
+
+	sqlite3_reset(m_stmt_get_keys);
 
 	return true;
 }

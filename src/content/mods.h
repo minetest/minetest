@@ -127,6 +127,8 @@ public:
 
 	const StringMap &getStrings(StringMap *place) const override;
 
+	const std::vector<std::string> &getKeys(std::vector<std::string> *place) const override;
+
 protected:
 	const std::string *getStringRaw(const std::string &name,
 			std::string *place) const override;

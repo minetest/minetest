@@ -240,6 +240,7 @@ public:
 	virtual ~ModMetadataDatabaseSQLite3();
 
 	virtual bool getModEntries(const std::string &modname, StringMap *storage);
+	virtual bool getModKeys(const std::string &modname, std::vector<std::string> *storage);
 	virtual bool getModEntry(const std::string &modname,
 		const std::string &key, std::string *value);
 	virtual bool hasModEntry(const std::string &modname, const std::string &key);
@@ -258,6 +259,7 @@ protected:
 
 private:
 	sqlite3_stmt *m_stmt_get_all = nullptr;
+	sqlite3_stmt *m_stmt_get_keys = nullptr;
 	sqlite3_stmt *m_stmt_get = nullptr;
 	sqlite3_stmt *m_stmt_has = nullptr;
 	sqlite3_stmt *m_stmt_set = nullptr;

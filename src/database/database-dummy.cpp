@@ -92,6 +92,17 @@ bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storag
 	return true;
 }
 
+bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::string> *storage)
+{
+	const auto mod_pair = m_mod_meta_database.find(modname);
+	if (mod_pair != m_mod_meta_database.cend()) {
+		for (const auto &pair : mod_pair->second) {
+			storage->push_back(pair.first);
+		}
+	}
+	return true;
+}
+
 bool Database_Dummy::getModEntry(const std::string &modname,
 	const std::string &key, std::string *value)
 {
