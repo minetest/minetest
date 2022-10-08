@@ -1,6 +1,6 @@
-local player_huds = {}
+local player_font_huds = {}
 
-local states = {
+local font_states = {
 	{0, "Normal font"},
 	{1, "Bold font"},
 	{2, "Italic font"},
@@ -11,79 +11,75 @@ local states = {
 }
 
 
-local default_def = {
+local font_default_def = {
 	hud_elem_type = "text",
 	position = {x = 0.5, y = 0.5},
 	scale = {x = 2, y = 2},
 	alignment = { x = 0, y = 0 },
+	number = 0xFFFFFF,
 }
 
-local function add_hud(player, state)
-	local def = table.copy(default_def)
-	local statetbl = states[state]
+local function add_font_hud(player, state)
+	local def = table.copy(font_default_def)
+	local statetbl = font_states[state]
 	def.offset = {x = 0, y = 32 * state}
 	def.style = statetbl[1]
 	def.text = statetbl[2]
 	return player:hud_add(def)
 end
 
-minetest.register_on_leaveplayer(function(player)
-	player_huds[player:get_player_name()] = nil
-	player_waypoints[player:get_player_name()] = nil
-end)
-
-local etime = 0
-local state = 0
+local font_etime = 0
+local font_state = 0
 
 minetest.register_globalstep(function(dtime)
-	etime = etime + dtime
-	if etime < 1 then
+	font_etime = font_etime + dtime
+	if font_etime < 1 then
 		return
 	end
-	etime = 0
+	font_etime = 0
 	for _, player in ipairs(minetest.get_connected_players()) do
-		local huds = player_huds[player:get_player_name()]
+		local huds = player_font_huds[player:get_player_name()]
 		if huds then
 			for i, hud_id in ipairs(huds) do
-				local statetbl = states[(state + i) % #states + 1]
+				local statetbl = font_states[(font_state + i) % #font_states + 1]
 				player:hud_change(hud_id, "style", statetbl[1])
 				player:hud_change(hud_id, "text", statetbl[2])
 			end
 		end
 	end
-	state = state + 1
+	font_state = font_state + 1
 end)
 
 minetest.register_chatcommand("hudfonts", {
-	params = "",
+	params = "[<HUD elements>]",
 	description = "Show/Hide some text on the HUD with various font options",
 	func = function(name, param)
 		local player = minetest.get_player_by_name(name)
 		local param = tonumber(param) or 0
-		param = math.min(math.max(param, 1), #states)
-		if player_huds[name] == nil then
-			player_huds[name] = {}
+		param = math.min(math.max(param, 1), #font_states)
+		if player_font_huds[name] == nil then
+			player_font_huds[name] = {}
 			for i = 1, param do
-				table.insert(player_huds[name], add_hud(player, i))
+				table.insert(player_font_huds[name], add_font_hud(player, i))
 			end
-			minetest.chat_send_player(name, ("%d HUD element(s) added."):format(param))
+			minetest.chat_send_player(name, ("%d text HUD element(s) added."):format(param))
 		else
-			local huds = player_huds[name]
+			local huds = player_font_huds[name]
 			if huds then
 				for _, hud_id in ipairs(huds) do
 					player:hud_remove(hud_id)
 				end
-				minetest.chat_send_player(name, "All HUD elements removed.")
+				minetest.chat_send_player(name, "All text HUD elements removed.")
 			end
-			player_huds[name] = nil
+			player_font_huds[name] = nil
 		end
 		return true
 	end,
 })
 
-local player_waypoints = {}
+-- Testing waypoint capabilities
 
--- Use this to test waypoint capabilities
+local player_waypoints = {}
 minetest.register_chatcommand("hudwaypoints", {
 	params = "[ add | add_change | remove ]",
 	description = "Create HUD waypoints at your position for testing (add: Add waypoints and change them after 0.5s (default). add_change: Add waypoints and change immediately. remove: Remove all waypoints)",
@@ -99,7 +95,7 @@ minetest.register_chatcommand("hudwaypoints", {
 				end
 				player_waypoints[name] = {}
 			end
-			return true, "Waypoints removed."
+			return true, "All waypoint HUD elements removed."
 		end
 		if not (params == "add_change" or params == "add" or params == "") then
 			-- Incorrect syntax
@@ -183,9 +179,6 @@ minetest.register_chatcommand("hudwaypoints", {
 	end
 })
 
-minetest.register_on_leaveplayer(function(player)
-end)
-
 minetest.register_on_joinplayer(function(player)
 	player:set_properties({zoom_fov = 15})
 end)
@@ -211,3 +204,8 @@ minetest.register_chatcommand("zoomfov", {
 		return true, "zoom_fov = "..tostring(fov)
 	end,
 })
+
+minetest.register_on_leaveplayer(function(player)
+	player_font_huds[player:get_player_name()] = nil
+	player_waypoints[player:get_player_name()] = nil
+end)
