@@ -95,7 +95,7 @@ void ServerInventoryManager::setInventoryModified(const InventoryLocation &loc)
 	case InventoryLocation::NODEMETA: {
 		MapEditEvent event;
 		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-		event.p = loc.p;
+		event.setPositionModified(loc.p);
 		m_env->getMap().dispatchEvent(event);
 	} break;
 	case InventoryLocation::DETACHED: {
