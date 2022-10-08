@@ -11,7 +11,12 @@ minetest.register_tool("testtools:privatizer", {
 				minetest.log("action", "[testtools] Privatizer used at "..minetest.pos_to_string(p))
 				minetest.get_meta(p):mark_as_private({"infotext", "formspec"})
 				if user and user:is_player() then
-					minetest.chat_send_player(user:get_player_name(), "Chest metadata (infotext, formspec) set private!")
+					minetest.chat_send_player(user:get_player_name(), "Node metadata (infotext, formspec) set private!")
+				end
+				return
+			elseif node.name == "chest_of_everything:chest" then
+				if user and user:is_player() then
+					minetest.chat_send_player(user:get_player_name(), "Privatizer can't be used on the Chest of Everything. Use it on a normal chest.")
 				end
 				return
 			end
