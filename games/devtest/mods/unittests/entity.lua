@@ -15,7 +15,7 @@ core.register_entity("unittests:callbacks", {
 	initial_properties = {
 		hp_max = 5,
 		visual = "upright_sprite",
-		textures = { "unittests_stick.png" },
+		textures = { "unittests_callback.png" },
 		static_save = false,
 	},
 
