@@ -288,7 +288,3 @@ minetest.register_chatcommand("test_place_nodes", {
 		return true, "Emerging area …"
 	end,
 })
-
-core.register_on_chatcommand(function(name, command, params)
-	minetest.log("action", "caught command '"..command.."', issued by '"..name.."'. Parameters: '"..params.."'")
-end)
