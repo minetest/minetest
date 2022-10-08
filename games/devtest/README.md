@@ -34,7 +34,6 @@ Confused by a certain node or item? Check out for inline code comments. The usag
 
 ## Random notes
 
-* Experimental/strange/unstructured tests can be found in the `experimental` mod
 * Textures of drawtype test nodes have a red dot at the top left corner. This is to see whether the textures are oriented properly
 
 ## Design philosophy
