@@ -66,7 +66,7 @@ void NodeMetaRef::reportMetadataChange(const std::string *name)
 
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-	event.p = m_p;
+	event.setPositionModified(m_p);
 	event.is_private_change = name && meta && meta->isPrivate(*name);
 	m_env->getMap().dispatchEvent(event);
 }

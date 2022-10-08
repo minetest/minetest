@@ -79,21 +79,21 @@ struct MapEditEvent
 
 	MapEditEvent() = default;
 
+	// Sets the event's position and marks the block as modified.
+	void setPositionModified(v3s16 pos)
+	{
+		p = pos;
+		modified_blocks.insert(getNodeBlockPos(pos));
+	}
+
 	VoxelArea getArea() const
 	{
 		switch(type){
 		case MEET_ADDNODE:
-			return VoxelArea(p);
 		case MEET_REMOVENODE:
-			return VoxelArea(p);
 		case MEET_SWAPNODE:
-			return VoxelArea(p);
 		case MEET_BLOCK_NODE_METADATA_CHANGED:
-		{
-			v3s16 np1 = p*MAP_BLOCKSIZE;
-			v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
-			return VoxelArea(np1, np2);
-		}
+			return VoxelArea(p);
 		case MEET_OTHER:
 		{
 			VoxelArea a;
