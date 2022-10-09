@@ -70,8 +70,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
-		m_gamedef(gamedef),
-		data(new MapNode[nodecount])
+		m_gamedef(gamedef)
 {
 	reallocate();
 }
@@ -84,8 +83,6 @@ MapBlock::~MapBlock()
 		mesh = nullptr;
 	}
 #endif
-
-	delete[] data;
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)

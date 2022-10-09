@@ -481,8 +481,6 @@ private:
 
 	IGameDef *m_gamedef;
 
-	MapNode *const data;
-
 	/*
 		- On the server, this is used for telling whether the
 		  block has been modified from the one on disk.
@@ -536,6 +534,8 @@ private:
 		the list of blocks to be drawn.
 	*/
 	int m_refcount = 0;
+
+	MapNode data[nodecount];
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;
