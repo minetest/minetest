@@ -48,7 +48,7 @@ minetest.register_node("chest_of_everything:chest", {
 	tiles ={"chest_of_everything_chest.png^[sheet:2x2:0,0", "chest_of_everything_chest.png^[sheet:2x2:0,0",
 		"chest_of_everything_chest.png^[sheet:2x2:1,0", "chest_of_everything_chest.png^[sheet:2x2:1,0",
 		"chest_of_everything_chest.png^[sheet:2x2:1,0", "chest_of_everything_chest.png^[sheet:2x2:0,1"},
-	paramtype2 = "facedir",
+	paramtype2 = "4dir",
 	groups = {dig_immediate=2,choppy=3},
 	is_ground_content = false,
 	on_construct = function(pos)
