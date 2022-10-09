@@ -641,8 +641,8 @@ end
 
 
 
--- Add visual_scale variants of previous nodes for half and double size
-local scale = function(subname, append)
+-- Add visual_scale variants of previous nodes scaled by vector and number values
+local scale = function(subname, append, scale_vector, scale_number)
 	local original = "testnodes:"..subname
 	local def = table.copy(minetest.registered_items[original])
 	local orig_desc
@@ -654,13 +654,13 @@ local scale = function(subname, append)
 	else
 		orig_desc = ItemStack(original):get_short_description()
 	end
-	def.visual_scale = 2.0
-	def.description = S("Double-sized @1", orig_desc)
-	minetest.register_node("testnodes:"..subname.."_double", def)
+	def.visual_scale = scale_vector
+	def.description = S("Vector-scaled @1", orig_desc)
+	minetest.register_node("testnodes:"..subname.."_vector_scaled", def)
 	def = table.copy(minetest.registered_items[original])
-	def.visual_scale = 0.5
-	def.description = S("Half-sized @1", orig_desc)
-	minetest.register_node("testnodes:"..subname.."_half", def)
+	def.visual_scale = scale_number
+	def.description = S("Number-scaled @1", orig_desc)
+	minetest.register_node("testnodes:"..subname.."_number_scaled", def)
 end
 
 local allfaces_newsize_tt = ""..
@@ -668,11 +668,11 @@ local allfaces_newsize_tt = ""..
 	S("* 'fancy'/'simple': transparent").."\n"..
 	S("* 'opaque': opaque")
 
-scale("allfaces", S("Transparent node"))
-scale("allfaces_optional", allfaces_newsize_tt)
-scale("allfaces_optional_waving", allfaces_newsize_tt .. "\n" .. S("Waving if waving leaves are enabled by client"))
-scale("plantlike")
-scale("plantlike_wallmounted")
-scale("torchlike_wallmounted")
-scale("signlike_wallmounted")
-scale("firelike")
+scale("allfaces", S("Transparent node"), {x=0.2, y=-0.8, z=0.2}, 2)
+scale("allfaces_optional", allfaces_newsize_tt, {x=0.3, y=1.4, z=0}, 1.5)
+scale("allfaces_optional_waving", allfaces_newsize_tt .. "\n" .. S("Waving if waving leaves are enabled by client"), {x=0.3, y=1.4, z=0}, 1.5)
+scale("plantlike", nil, {x=0.8, y=1.3, z=0.8}, 0.5)
+scale("plantlike_wallmounted", nil, {x=-1, y=1, z=1}, 3)
+scale("torchlike_wallmounted", nil, {x=0.4, y=1.5, z=0.7}, 2)
+scale("signlike_wallmounted", nil, {x=0.5, y=0.5, z=-1}, 1.25)
+scale("firelike", nil, {x=3, y=3, z=3}, 3)
