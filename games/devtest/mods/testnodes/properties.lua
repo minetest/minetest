@@ -19,12 +19,12 @@ minetest.register_node("testnodes:falling_facedir", {
 		S("Falls down if no node below").."\n"..
 		S("param2 = facedir rotation"),
 	tiles = {
-		"testnodes_1.png^[brighten",
-		"testnodes_2.png^[brighten",
-		"testnodes_3.png^[brighten",
-		"testnodes_4.png^[brighten",
-		"testnodes_5.png^[brighten",
-		"testnodes_6.png^[brighten",
+		"testnodes_node_falling_1.png",
+		"testnodes_node_falling_2.png",
+		"testnodes_node_falling_3.png",
+		"testnodes_node_falling_4.png",
+		"testnodes_node_falling_5.png",
+		"testnodes_node_falling_6.png",
 	},
 	paramtype2 = "facedir",
 	groups = { falling_node = 1, dig_immediate = 3 },

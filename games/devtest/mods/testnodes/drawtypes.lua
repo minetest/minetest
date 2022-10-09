@@ -296,7 +296,7 @@ minetest.register_node("testnodes:mesh_degrotate", {
 	paramtype = "light",
 	paramtype2 = "degrotate",
 	mesh = "testnodes_ocorner.obj",
-	tiles = { "testnodes_mesh_stripes2.png" },
+	tiles = { "testnodes_mesh_stripes7.png" },
 
 	on_rightclick = rotate_on_rightclick,
 	place_param2 = 10, -- 15°
@@ -312,7 +312,7 @@ minetest.register_node("testnodes:mesh_colordegrotate", {
 	paramtype2 = "colordegrotate",
 	palette = "testnodes_palette_facedir.png",
 	mesh = "testnodes_ocorner.obj",
-	tiles = { "testnodes_mesh_stripes3.png" },
+	tiles = { "testnodes_mesh_stripes8.png" },
 
 	on_rightclick = rotate_on_rightclick,
 	-- color index 1, 1 step (=15°) rotated
