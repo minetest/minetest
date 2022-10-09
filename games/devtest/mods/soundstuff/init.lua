@@ -1,14 +1,14 @@
 local simple_nodes = {
-	footstep = { "Footstep Sound Node", "soundstuff_node_footstep.png" },
-	dig = { "Dig Sound Node", "soundstuff_node_dig.png" },
-	dug = { "Dug Sound Node", "soundstuff_node_dug.png" },
-	place = { "Place Sound Node", "soundstuff_node_place.png" },
-	place_failed = { "Place Failed Sound Node", "soundstuff_node_place_failed.png" },
+	footstep = { "Footstep Sound Node", "soundstuff_node_footstep.png", "Plays sound when you step on it" },
+	dig = { "Dig Sound Node", "soundstuff_node_dig.png", "Plays sound when you dig it" },
+	dug = { "Dug Sound Node", "soundstuff_node_dug.png", "Plays sound when you've dug it" },
+	place = { "Place Sound Node", "soundstuff_node_place.png", "Plays sound when you place it" },
+	place_failed = { "Place Failed Sound Node", "soundstuff_node_place_failed.png", "Plays sound when you try to place it but failed" },
 }
 
 for k,v in pairs(simple_nodes) do
 	minetest.register_node("soundstuff:"..k, {
-		description = v[1],
+		description = v[1].."\n"..v[3],
 		tiles = {"soundstuff_node_sound.png","soundstuff_node_sound.png",v[2]},
 		groups = {dig_immediate=2},
 		sounds = {
@@ -18,7 +18,8 @@ for k,v in pairs(simple_nodes) do
 end
 
 minetest.register_node("soundstuff:place_failed_attached", {
-	description = "Attached Place Failed Sound Node",
+	description = "Attached Place Failed Sound Node".."\n"..
+		"Attached to the floor; plays a sound when you try to place it but failed",
 	tiles = {"soundstuff_node_sound.png", "soundstuff_node_sound.png", "soundstuff_node_place_failed.png"},
 	groups = {dig_immediate=2, attached_node=1},
 	drawtype = "nodebox",
@@ -33,7 +34,8 @@ minetest.register_node("soundstuff:place_failed_attached", {
 })
 
 minetest.register_node("soundstuff:fall", {
-	description = "Fall Sound Node",
+	description = "Fall Sound Node".."\n"..
+		"Falls and plays sound if node below is gone",
 	tiles = {"soundstuff_node_sound.png", "soundstuff_node_sound.png", "soundstuff_node_fall.png"},
 	groups = {dig_immediate=2, falling_node=1},
 	sounds = {
@@ -42,7 +44,8 @@ minetest.register_node("soundstuff:fall", {
 })
 
 minetest.register_node("soundstuff:fall_attached", {
-	description = "Attached Fall Sound Node",
+	description = "Attached Fall Sound Node".."\n"..
+		"Drops as item and plays sound if node below is gone",
 	tiles = {"soundstuff_node_sound.png", "soundstuff_node_sound.png", "soundstuff_node_fall.png"},
 	groups = {dig_immediate=2, attached_node=1},
 	drawtype = "nodebox",
@@ -57,7 +60,8 @@ minetest.register_node("soundstuff:fall_attached", {
 })
 
 minetest.register_node("soundstuff:footstep_liquid", {
-	description = "Liquid Footstep Sound Node",
+	description = "Liquid Footstep Sound Node".."\n"..
+		"Plays sound when moving inside it; swimmable",
 	drawtype = "liquid",
 	tiles = {
 		"soundstuff_node_sound.png^[colorize:#0000FF:127^[opacity:190",
@@ -89,7 +93,8 @@ minetest.register_node("soundstuff:footstep_liquid", {
 })
 
 minetest.register_node("soundstuff:footstep_climbable", {
-	description = "Climbable Footstep Sound Node",
+	description = "Climbable Footstep Sound Node".."\n"..
+		"Plays sound when moving inside it; can climb up and down here",
 	drawtype = "allfaces",
 	tiles = {
 		"soundstuff_node_climbable.png",
@@ -167,7 +172,8 @@ minetest.register_tool("soundstuff:punch_use_air", {
 
 -- Plays sound repeatedly
 minetest.register_node("soundstuff:positional", {
-	description = "Positional Sound Node",
+	description = "Positional Sound Node".."\n"..
+		"Repeatedly plays a sound at the node location",
 	on_construct = function(pos)
 		local timer = minetest.get_node_timer(pos)
 		timer:start(0)

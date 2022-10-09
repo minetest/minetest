@@ -91,6 +91,7 @@ minetest.register_on_mods_loaded(function()
 	* Other tools
 	* Craftitems
 	* Other items
+	* Items from the 'broken' mod
 	* Dummy items ]]
 	local function compare(item1, item2)
 		local def1 = minetest.registered_items[item1]
@@ -101,6 +102,8 @@ minetest.register_on_mods_loaded(function()
 		local testtool2 = minetest.get_item_group(item2, "testtool") == 1
 		local dummy1 = minetest.get_item_group(item1, "dummy") == 1
 		local dummy2 = minetest.get_item_group(item2, "dummy") == 1
+		local broken1 = def1.mod_origin == "broken"
+		local broken2 = def2.mod_origin == "broken"
 		local craftitem1 = def1.type == "craft"
 		local craftitem2 = def2.type == "craft"
 		if item1 == "chest_of_everything:chest" then
@@ -110,6 +113,10 @@ minetest.register_on_mods_loaded(function()
 		elseif dummy1 and not dummy2 then
 			return false
 		elseif not dummy1 and dummy2 then
+			return true
+		elseif broken1 and not broken2 then
+			return false
+		elseif not broken1 and broken2 then
 			return true
 		elseif testtool1 and not testtool2 then
 			return true

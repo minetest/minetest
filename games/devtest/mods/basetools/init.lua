@@ -424,9 +424,15 @@ minetest.register_tool("basetools:dagger_steel", {
 local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
 for i=1, #uses do
 	local u = uses[i]
+	local ustring
+	if i == 1 then
+		ustring = u.."-Use"
+	else
+		ustring = u.."-Uses"
+	end
 	local color = string.format("#FF00%02X", math.floor(((i-1)/#uses) * 255))
 	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", u), {
-		description = u.."-Uses Pickaxe".."\n"..
+		description = ustring.." Pickaxe".."\n"..
 			"Digs cracky=3",
 		inventory_image = "basetools_usespick.png^[colorize:"..color..":127",
 		tool_capabilities = {
@@ -438,7 +444,7 @@ for i=1, #uses do
 	})
 
 	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", u), {
-		description = u.."-Uses Sword".."\n"..
+		description = ustring.." Sword".."\n"..
 			"Damage: fleshy=1",
 		inventory_image = "basetools_usessword.png^[colorize:"..color..":127",
 		tool_capabilities = {
