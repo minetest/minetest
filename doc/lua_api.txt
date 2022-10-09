@@ -8187,7 +8187,7 @@ Used by `minetest.register_node`.
         -- * `drawtype == "liquid" or
         -- * `drawtype == "flowingliquid"
         --
-        -- Liquids consist of up two nodes: source and flowing.
+        -- Liquids consist of up to two nodes: source and flowing.
         --
         -- There are two ways to define a liquid:
         -- 1) Source node and flowing node. This requires both fields to be
