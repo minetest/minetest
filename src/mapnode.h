@@ -135,7 +135,7 @@ struct ContentFeatures;
 */
 
 
-struct MapNode
+struct alignas(u32) MapNode
 {
 	/*
 		Main content
