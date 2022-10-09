@@ -30,7 +30,7 @@ vec4 applyBloom(vec4 color, vec2 uv)
 
 #endif
 
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING
 
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
@@ -84,7 +84,7 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);
 #else
 		color.rgb /= 2.5; // default exposure factor, see also RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
