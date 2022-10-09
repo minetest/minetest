@@ -120,12 +120,12 @@ minetest.register_node("testnodes:nodebox_connected_4dir", {
 		S("Connects to neighbors").."\n"..
 		S("param2 = 4dir rotation of textures (not of the nodebox!)"),
 	tiles = {
-		"testnodes_1.png^[colorize:#FFFF00:127",
-		"testnodes_2.png^[colorize:#FFFF00:127",
-		"testnodes_3.png^[colorize:#FFFF00:127",
-		"testnodes_4.png^[colorize:#FFFF00:127",
-		"testnodes_5.png^[colorize:#FFFF00:127",
-		"testnodes_6.png^[colorize:#FFFF00:127",
+		"testnodes_1f.png",
+		"testnodes_2f.png",
+		"testnodes_3f.png",
+		"testnodes_4f.png",
+		"testnodes_5f.png",
+		"testnodes_6f.png",
 	},
 	groups = {connected_nodebox=1, dig_immediate=3},
 	drawtype = "nodebox",
