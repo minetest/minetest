@@ -433,6 +433,38 @@ int LuaItemStack::l_peek_item(lua_State *L)
 	return 1;
 }
 
+// equals(self, other) -> bool
+int LuaItemStack::l_equals(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o1 = checkObject<LuaItemStack>(L, 1);
+
+ 	// checks for non-userdata argument
+	if (!lua_isuserdata(L, 2)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+ 	// check that the argument is an ItemStack
+	if (!lua_getmetatable(L, 2)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	lua_getfield(L, LUA_REGISTRYINDEX, className);
+	if (!lua_rawequal(L, -1, -2)) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	LuaItemStack *o2 = checkObject<LuaItemStack>(L, 2);
+
+	ItemStack &item1 = o1->m_stack;
+	ItemStack &item2 = o2->m_stack;
+
+	lua_pushboolean(L, item1 == item2);
+	return 1;
+}
+
 LuaItemStack::LuaItemStack(const ItemStack &item):
 	m_stack(item)
 {
@@ -483,6 +515,7 @@ void LuaItemStack::Register(lua_State *L)
 	static const luaL_Reg metamethods[] = {
 		{"__tostring", mt_tostring},
 		{"__gc", gc_object},
+		{"__eq", l_equals},
 		{0, 0}
 	};
 	registerClass(L, className, methods, metamethods);
@@ -522,6 +555,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, item_fits),
 	luamethod(LuaItemStack, take_item),
 	luamethod(LuaItemStack, peek_item),
+	luamethod(LuaItemStack, equals),
 	{0,0}
 };
 
