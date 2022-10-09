@@ -763,15 +763,22 @@ core.register_chatcommand("fixlight", {
 })
 
 core.register_chatcommand("mods", {
-	params = "",
-	description = S("List mods installed on the server"),
+	params = S("[-t]"),
+	description = S("List mods installed on the server (-t: output in chat)"),
 	privs = {},
 	func = function(name, param)
-		local mods = core.get_modnames()
-		if #mods == 0 then
-			return true, S("No mods installed.")
+		local player = core.get_player_by_name(name)
+
+		if param == "" and player then
+			core.show_formspec(name, "__builtin:mods", build_mods_formspec())
+			return true
 		else
-			return true, table.concat(core.get_modnames(), ", ")
+			local mods = core.get_modnames()
+			if #mods == 0 then
+				return true, S("No mods installed.")
+			else
+				return true, table.concat(mods, ", ")
+			end
 		end
 	end,
 })

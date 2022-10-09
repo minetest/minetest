@@ -1,6 +1,7 @@
 local COLOR_BLUE = "#7AF"
 local COLOR_GREEN = "#7F7"
 local COLOR_GRAY = "#BBB"
+local COLOR_DARK_GREEN = "#25C191"
 
 local LIST_FORMSPEC = [[
 		size[13,6.5]
@@ -18,6 +19,14 @@ local LIST_FORMSPEC_DESCRIPTION = [[
 		box[0,5.5;12.8,1.5;#000]
 		textarea[0.3,5.5;13.05,1.9;;;%s]
 		button_exit[5,7;3,1;quit;%s]
+	]]
+
+local LIST_FORMSPEC_MODSLIST = [[
+		size[6,8]
+		label[0,-0.1;%s]
+		tablecolumns[color;tree;text]
+		table[0,0.5;6,7;modslist;%s;0]
+		button_exit[1.5,7.5;3,1;quit;%s]
 	]]
 
 local F = core.formspec_escape
@@ -109,6 +118,78 @@ local function build_privs_formspec(name)
 		)
 end
 
+
+-- If 'modname' contains inside some modpack, returns name of that modpack, otherwise nil.
+local function get_modpack_name(modname)
+	local path = core.get_modpath(modname)
+	local dirs = path:split(DIR_DELIM)
+
+	if dirs[#dirs-2] == "mods" then
+		return dirs[#dirs-1]
+	else
+		return
+	end
+end
+
+
+-- MODS FORMSPEC
+
+local modslist_cache = ""
+
+function build_mods_formspec()
+	if modslist_cache ~= "" then
+		return modslist_cache
+	end
+
+	local modnames = core.get_modnames()
+	local mps_and_mods = {}
+	local found_mps = {}
+	local mps_mods = {}
+
+	local rows = {}
+	rows[1] = "#FFF,0," .. F(S("Modpack or mod name"))
+
+	for _, mname in ipairs(modnames) do
+		local mp_name = get_modpack_name(mname)
+
+		if mp_name then
+			if table.indexof(found_mps, mp_name) == -1 then
+				table.insert(mps_and_mods, {mp_name, "modpack"})
+				table.insert(found_mps, mp_name)
+			end
+
+			mps_mods[mp_name] = mps_mods[mp_name] or {}
+			table.insert(mps_mods[mp_name], mname)
+		else
+			table.insert(mps_and_mods, {mname, "mod"})
+		end
+	end
+
+	table.sort(mps_and_mods, function(a, b) return a[1] < b[1] end)
+
+	for _, v in ipairs(mps_and_mods) do
+		if v[2] == "mod" then
+			table.insert(rows, ("%s, 0, %s"):format(COLOR_GREEN, v[1]))
+		else
+			table.insert(rows, ("%s, 0, %s"):format(COLOR_DARK_GREEN, v[1]))
+			table.sort(mps_mods[v[1]], function(a, b) return a < b end)
+
+			for _, modname in ipairs(mps_mods[v[1]]) do
+				table.insert(rows, ("%s, 1, %s"):format(COLOR_GREEN, modname))
+			end
+		end
+	end
+
+	local mods_formspec_s = LIST_FORMSPEC_MODSLIST:format(
+		F(S("List of installed mods:")),
+		table.concat(rows, ","),
+		F(S("Close"))
+	)
+
+	modslist_cache = mods_formspec_s
+
+	return mods_formspec_s
+end
 
 -- DETAILED CHAT COMMAND INFORMATION
 
