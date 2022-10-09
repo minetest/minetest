@@ -3,7 +3,10 @@
 --
 
 minetest.register_craftitem("callbacks:callback_item_1", {
-	description = "Callback test item 1\n(Use/Drop + Sneak to switch to item 2)",
+	description = "Callback Test Item 1".."\n"..
+		"Tests callbacks: on_secondary_use, on_drop, on_pickup, on_use, after_use".."\n"..
+		"Punch/Drop + Sneak: Switch to Callback Test Item 2".."\n"..
+		"Aux1 + pickup item: Print additional on_pickup arguments",
 	inventory_image = "callbacks_callback_item_1.png",
 	wield_image = "callbacks_callback_item_1.png",
 	groups = { callback_test = 1 },
@@ -79,7 +82,8 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 })
 
 minetest.register_craftitem("callbacks:callback_item_2", {
-	description = "Callback test item 2\n(Use to switch to item 1)",
+	description = "Callback Test Item 2".."\n"..
+		"Punch to switch to Callback Test Item 1",
 	inventory_image = "callbacks_callback_item_2.png",
 	wield_image = "callbacks_callback_item_2.png",
 	groups = { callback_test = 1 },
