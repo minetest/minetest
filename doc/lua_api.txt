@@ -1189,12 +1189,14 @@ Look for examples in `games/devtest` or `games/minetest_game`.
     * The cubic source node for a liquid.
     * Faces bordering to the same node are never rendered.
     * Connects to node specified in `liquid_alternative_flowing`.
+    * You *must* set `liquid_alternative_source` to the node's own name.
     * Use `backface_culling = false` for the tiles you want to make
       visible when inside the node.
 * `flowingliquid`
     * The flowing version of a liquid, appears with various heights and slopes.
     * Faces bordering to the same node are never rendered.
     * Connects to node specified in `liquid_alternative_source`.
+    * You *must* set `liquid_alternative_flowing` to the node's own name.
     * Node textures are defined with `special_tiles` where the first tile
       is for the top and bottom faces and the second tile is for the side
       faces.
@@ -8233,14 +8235,31 @@ Used by `minetest.register_node`.
         --              around it until `liquid_range` is reached;
         --              will drain out without a source;
         --              recommended drawtype: "flowingliquid".
-        -- If it's "source" or "flowing" and `liquid_range > 0`, then
-        -- both `liquid_alternative_*` fields must be specified
+        -- If it's "source" or "flowing", then the
+        -- `liquid_alternative_*` fields _must_ be specified
 
         liquid_alternative_flowing = "",
-        -- Node that represents the flowing version of the liquid
-
         liquid_alternative_source = "",
-        -- Node that represents the source version of the liquid
+        -- These fields may contain node names that represent the
+        -- flowing version (`liquid_alternative_flowing`) and
+        -- source version (`liquid_alternative_source`) of a liquid.
+        --
+        -- Specifically, these fields are required if any of these is true:
+        -- * `liquidtype ~= "none" or
+        -- * `drawtype == "liquid" or
+        -- * `drawtype == "flowingliquid"
+        --
+        -- Liquids consist of up to two nodes: source and flowing.
+        --
+        -- There are two ways to define a liquid:
+        -- 1) Source node and flowing node. This requires both fields to be
+        --    specified for both nodes.
+        -- 2) Standalone source node (cannot flow). `liquid_alternative_source`
+        --    must be specified and `liquid_range` must be set to 0.
+        --
+        -- Example:
+        --     liquid_alternative_flowing = "example:water_flowing",
+        --     liquid_alternative_source = "example:water_source",
 
         liquid_viscosity = 0,
         -- Controls speed at which the liquid spreads/flows (max. 7).
