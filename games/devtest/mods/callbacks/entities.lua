@@ -1,7 +1,7 @@
 -- Entities that test their callbacks
 
 local message = function(msg)
-	minetest.log("action", msg)
+	minetest.log("action", "[callbacks] "..msg)
 	minetest.chat_send_all(msg)
 end
 
