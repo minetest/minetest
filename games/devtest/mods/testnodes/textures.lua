@@ -161,12 +161,18 @@ minetest.register_node("testnodes:generated_png_emb", {
 	description = S("Generated In-Band Mandelbrot PNG Test Node"),
 	tiles = { png_emb },
 
+	drawtype = "allfaces", -- required because of transparent pixels
+	use_texture_alpha = "clip",
+	paramtype = "light",
 	groups = { dig_immediate = 2 },
 })
 minetest.register_node("testnodes:generated_png_src_emb", {
 	description = S("Generated In-Band Source Blit Mandelbrot PNG Test Node"),
 	tiles = { png_emb .. "^testnodes_damage_neg.png" },
 
+	drawtype = "allfaces", -- required because of transparent pixels
+	use_texture_alpha = "clip",
+	paramtype = "light",
 	groups = { dig_immediate = 2 },
 })
 minetest.register_node("testnodes:generated_png_dst_emb", {
