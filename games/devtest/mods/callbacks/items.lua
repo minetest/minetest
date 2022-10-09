@@ -2,6 +2,11 @@
 -- Item callbacks
 --
 
+local function print_to_everything(msg)
+	minetest.log("action", "[callbacks] " .. msg)
+	minetest.chat_send_all(msg)
+end
+
 minetest.register_craftitem("callbacks:callback_item_1", {
 	description = "Callback Test Item 1".."\n"..
 		"Tests callbacks: on_secondary_use, on_drop, on_pickup, on_use, after_use".."\n"..
@@ -12,7 +17,7 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	groups = { callback_test = 1 },
 
 	on_secondary_use = function(itemstack, user, pointed_thing)
-		minetest.log("[callbacks:callback_item_1 on_secondary_use] " .. itemstack:get_name())
+		print_to_everything("[callbacks:callback_item_1 on_secondary_use] " .. itemstack:get_name())
 		local ctrl = user and user:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
@@ -22,7 +27,7 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	end,
 
 	on_drop = function(itemstack, dropper, pos)
-		minetest.log("[callbacks:callback_item_1 on_drop] " .. itemstack:get_name())
+		print_to_everything("[callbacks:callback_item_1 on_drop] " .. itemstack:get_name())
 		local ctrl = dropper and dropper:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
@@ -33,12 +38,13 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	end,
 
 	on_pickup = function(itemstack, picker, pointed_thing, ...)
-		minetest.log("[callbacks:callback_item_1 on_pickup]")
+		print_to_everything("[callbacks:callback_item_1 on_pickup]")
 		assert(pointed_thing.ref:get_luaentity().name == "__builtin:item")
 		local ctrl = picker and picker:get_player_control() or {}
 		if ctrl.aux1 then
 			-- Debug message
-			minetest.log(dump({...}))
+			print_to_everything("on_pickup dump:")
+			print_to_everything(dump({...}))
 		end
 		if ctrl.sneak then
 			-- Pick up one item of the other kind at once
@@ -61,7 +67,7 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	end,
 
 	on_use = function(itemstack, user, pointed_thing)
-		minetest.log("[callbacks:callback_item_1 on_use] " .. itemstack:get_name())
+		print_to_everything("[callbacks:callback_item_1 on_use] " .. itemstack:get_name())
 		local ctrl = user and user:get_player_control() or {}
 		if ctrl.sneak then
 			itemstack = ItemStack(itemstack)
@@ -71,7 +77,7 @@ minetest.register_craftitem("callbacks:callback_item_1", {
 	end,
 
 	after_use = function(itemstack, user, node, digparams) -- never called
-		minetest.log("[callbacks:callback_item_1 after_use]")
+		print_to_everything("[callbacks:callback_item_1 after_use]")
 		local ctrl = user and user:get_player_control() or {}
 		if ctrl.up then
 			itemstack = ItemStack(itemstack)
@@ -89,7 +95,7 @@ minetest.register_craftitem("callbacks:callback_item_2", {
 	groups = { callback_test = 1 },
 
 	on_use = function(itemstack, user, pointed_thing)
-		minetest.log("[callbacks:callback_item_2 on_use]")
+		print_to_everything("[callbacks:callback_item_2 on_use]")
 		itemstack = ItemStack(itemstack)
 		itemstack:set_name("callbacks:callback_item_1")
 		return itemstack
@@ -103,7 +109,7 @@ minetest.register_on_item_pickup(function(itemstack, picker, pointed_thing, time
 	if item_name ~= "callbacks:callback_item_1" and item_name ~= "callbacks:callback_item_2" then
 		return
 	end
-	minetest.log("["..item_name.." register_on_item_pickup]")
+	print_to_everything("["..item_name.." register_on_item_pickup]")
 
 	local ctrl = picker and picker:get_player_control() or {}
 	if item_name == "callbacks:callback_item_2" and not ctrl.sneak then
