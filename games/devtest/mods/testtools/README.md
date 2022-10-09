@@ -120,9 +120,24 @@ Usage:
 * Punch entity to increase visual size
 * Sneak+punch entity to decrease visual size
 
+## Note Meta Privatizer
+Sets the 'formspec' and 'infotext' metadata fields of a node
+to private. This means that clients can no longer access these
+fields.
+This only works for chests [`chest:chest`] at the moment.
+
+Usage:
+* Punch: Set metadata of pointed node to private
+
 ## Light Tool
 Show light level of node.
 
 Usage:
 * Punch: Show light info of node in front of the punched node's side
 * Place: Show light info of the node that you touched
+
+## Particle Spawner
+Spawn a random animated particle.
+
+Usage:
+* Punch: Spawn particle
