@@ -1098,6 +1098,8 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
+		for (u32 ci = 0; ci <= CONTENT_MAX; ci++)
+			m_content_lighting_flag_cache[ci] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1118,6 +1120,7 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_AIR;
 		m_content_features[c] = f;
+		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1137,6 +1140,7 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_IGNORE;
 		m_content_features[c] = f;
+		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 }
@@ -1389,6 +1393,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		eraseIdFromGroups(id);
 
 	m_content_features[id] = def;
+	m_content_lighting_flag_cache[id] = def.getLightingFlags();
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
@@ -1601,6 +1606,7 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 		if (i >= m_content_features.size())
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
+		m_content_lighting_flag_cache[i] = f.getLightingFlags();
 		addNameIdMapping(i, f.name);
 		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 

@@ -102,7 +102,7 @@ void MeshMakeData::setSmoothLighting(bool smooth_lighting)
 static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 	const NodeDefManager *ndef)
 {
-	u8 light = n.getLight(bank, ndef);
+	u8 light = n.getLight(bank, ndef->getLightingFlags(n));
 	if (light > 0)
 		light = rangelim(light + increment, 0, LIGHT_SUN);
 	return decode_light(light);
@@ -126,17 +126,19 @@ u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	v3s16 face_dir, const NodeDefManager *ndef)
 {
+	ContentLightingFlags f1 = ndef->getLightingFlags(n);
+	ContentLightingFlags f2 = ndef->getLightingFlags(n2);
+
 	u8 light;
-	u8 l1 = n.getLight(bank, ndef);
-	u8 l2 = n2.getLight(bank, ndef);
+	u8 l1 = n.getLight(bank, f1);
+	u8 l2 = n2.getLight(bank, f2);
 	if(l1 > l2)
 		light = l1;
 	else
 		light = l2;
 
 	// Boost light level for light sources
-	u8 light_source = MYMAX(ndef->get(n).light_source,
-			ndef->get(n2).light_source);
+	u8 light_source = MYMAX(f1.light_source, f2.light_source);
 	if(light_source > light)
 		light = light_source;
 
@@ -184,8 +186,8 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			u8 light_level_day = n.getLightNoChecks(LIGHTBANK_DAY, &f);
-			u8 light_level_night = n.getLightNoChecks(LIGHTBANK_NIGHT, &f);
+			u8 light_level_day = n.getLight(LIGHTBANK_DAY, f.getLightingFlags());
+			u8 light_level_night = n.getLight(LIGHTBANK_NIGHT, f.getLightingFlags());
 			if (light_level_day == LIGHT_SUN)
 				direct_sunlight = true;
 			light_day += decode_light(light_level_day);

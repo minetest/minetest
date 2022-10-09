@@ -379,7 +379,7 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 	MapNode n = env->getMap().getNode(pos, &is_position_ok);
 	if (is_position_ok) {
 		const NodeDefManager *ndef = env->getGameDef()->ndef();
-		lua_pushinteger(L, n.getLightBlend(dnr, ndef));
+		lua_pushinteger(L, n.getLightBlend(dnr, ndef->getLightingFlags(n)));
 	} else {
 		lua_pushnil(L);
 	}

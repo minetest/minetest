@@ -472,7 +472,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 		// it at what it emits, for an increased effect
 		u8 e = decode_light(f->light_source);
 		light = LightPair(std::max(e, light.lightDay), std::max(e, light.lightNight));
-	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
+	} else if (nodedef->getLightingFlags(ntop).has_light) {
 		// Otherwise, use the light of the node on top if possible
 		light = LightPair(getInteriorLight(ntop, 0, nodedef));
 	}

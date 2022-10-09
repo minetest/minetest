@@ -213,19 +213,19 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	// Set the node on the map
-	const ContentFeatures &cf = m_nodedef->get(n);
-	const ContentFeatures &oldcf = m_nodedef->get(oldnode);
-	if (cf.lightingEquivalent(oldcf)) {
+	ContentLightingFlags f = m_nodedef->getLightingFlags(n);
+	ContentLightingFlags oldf = m_nodedef->getLightingFlags(oldnode);
+	if (f == oldf) {
 		// No light update needed, just copy over the old light.
-		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldcf), cf);
-		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldcf), cf);
+		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldf), f);
+		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldf), f);
 		set_node_in_block(block, relpos, n);
 
 		modified_blocks[blockpos] = block;
 	} else {
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n.setLight(LIGHTBANK_DAY, 0, cf);
-		n.setLight(LIGHTBANK_NIGHT, 0, cf);
+		n.setLight(LIGHTBANK_DAY, 0, f);
+		n.setLight(LIGHTBANK_NIGHT, 0, f);
 		set_node_in_block(block, relpos, n);
 
 		// Update lighting
@@ -780,8 +780,9 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-		n0.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
+		ContentLightingFlags f0 = m_nodedef->getLightingFlags(n0);
+		n0.setLight(LIGHTBANK_DAY, 0, f0);
+		n0.setLight(LIGHTBANK_NIGHT, 0, f0);
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
@@ -1122,7 +1123,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		MapNode node = getNode(pos_node, &is_valid_position);
 
 		if (is_valid_position &&
-				!m_nodedef->get(node).light_propagates) {
+				!m_nodedef->getLightingFlags(node).light_propagates) {
 			// Cannot see through light-blocking nodes --> occluded
 			count++;
 			if (count >= needed_count)
