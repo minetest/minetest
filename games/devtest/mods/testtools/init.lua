@@ -2,6 +2,8 @@ local S = minetest.get_translator("testtools")
 local F = minetest.formspec_escape
 
 dofile(minetest.get_modpath("testtools") .. "/light.lua")
+dofile(minetest.get_modpath("testtools") .. "/privatizer.lua")
+dofile(minetest.get_modpath("testtools") .. "/particles.lua")
 
 minetest.register_tool("testtools:param2tool", {
 	description = S("Param2 Tool") .."\n"..
