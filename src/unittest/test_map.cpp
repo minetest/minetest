@@ -35,6 +35,7 @@ public:
 	void testMaxMapgenLimit();
 	void testForEachNodeInArea(IGameDef *gamedef);
 	void testForEachNodeInAreaBlank(IGameDef *gamedef);
+	void testForEachNodeInAreaEmpty(IGameDef *gamedef);
 };
 
 static TestMap g_test_instance;
@@ -44,6 +45,7 @@ void TestMap::runTests(IGameDef *gamedef)
 	TEST(testMaxMapgenLimit);
 	TEST(testForEachNodeInArea, gamedef);
 	TEST(testForEachNodeInAreaBlank, gamedef);
+	TEST(testForEachNodeInAreaEmpty, gamedef);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,10 +149,23 @@ void TestMap::testForEachNodeInAreaBlank(IGameDef *gamedef)
 	DummyMap map(gamedef, v3s16(0, 0, 0), v3s16(-1, -1, -1));
 
 	v3s16 invalid_p(0, 0, 0);
+	bool visited = false;
 	map.forEachNodeInArea(invalid_p, invalid_p, [&](v3s16 p, MapNode n) -> bool {
 		bool is_valid_position = true;
 		UASSERT(n == map.getNode(p, &is_valid_position));
 		UASSERT(!is_valid_position);
+		UASSERT(!visited);
+		visited = true;
+		return true;
+	});
+	UASSERT(visited);
+}
+
+void TestMap::testForEachNodeInAreaEmpty(IGameDef *gamedef)
+{
+	DummyMap map(gamedef, v3s16(), v3s16());
+	map.forEachNodeInArea(v3s16(0, 0, 0), v3s16(-1, -1, -1), [&](v3s16 p, MapNode n) -> bool {
+		UASSERT(false); // Should be unreachable
 		return true;
 	});
 }
