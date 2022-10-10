@@ -1040,9 +1040,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 void MapblockMeshGenerator::drawPlantlike(bool is_rooted)
 {
 	draw_style = PLANT_STYLE_CROSS;
-	scale.X = BS / 2 * f->visual_scale.X;
-	scale.Y = BS / 2 * f->visual_scale.Y;
-	scale.Z = BS / 2 * f->visual_scale.Z;
+	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
 	rotate_degree = 0.0f;
 	random_offset_Y = false;
@@ -1169,9 +1167,7 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 void MapblockMeshGenerator::drawFirelikeNode()
 {
 	useTile();
-	scale.X = BS / 2 * f->visual_scale.X;
-	scale.Y = BS / 2 * f->visual_scale.Y;
-	scale.Z = BS / 2 * f->visual_scale.Z;
+	scale = BS / 2 * f->visual_scale;
 
 	// Check for adjacent nodes
 	bool neighbors = false;
