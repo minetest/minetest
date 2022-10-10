@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-05-19 18:13+0000\n"
-"Last-Translator: Niskala Airaha <niskala5570@gmail.com>\n"
+"PO-Revision-Date: 2022-10-10 20:51+0000\n"
+"Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
 "minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -3787,7 +3788,7 @@ msgstr "ڤناڤيس سکال GUI جنيس txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "GUI"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3857,7 +3858,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7528,7 +7529,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
