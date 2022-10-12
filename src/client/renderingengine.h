@@ -46,10 +46,6 @@ class RenderingCore;
 class RenderingEngine
 {
 public:
-	/// Default color factor before applying effects like bloom or tomemapping
-	/// this is derived from tonemapping code and tuned empirically
-	static constexpr float DEFAULT_EXPOSURE_FACTOR = 2.5f;
-
 	RenderingEngine(IEventReceiver *eventReceiver);
 	~RenderingEngine();
 

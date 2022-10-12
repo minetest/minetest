@@ -567,9 +567,9 @@ public:
 
 		m_texel_size0.set(m_texel_size0_values.data(), services);
 
-		float exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR * m_user_exposure_factor;
+		float exposure_factor = m_user_exposure_factor;
 		if (std::isnan(exposure_factor))
-			exposure_factor = RenderingEngine::DEFAULT_EXPOSURE_FACTOR;
+			exposure_factor = 1.0f;
 		m_exposure_factor_pixel.set(&exposure_factor, services);
 
 		if (m_bloom_enabled) {
