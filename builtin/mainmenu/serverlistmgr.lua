@@ -17,7 +17,7 @@
 
 serverlistmgr = {
 	-- continent code we detected for ourselves
-	my_continent = nil,
+	my_continent = core.get_once("continent"),
 
 	-- list of locally favorites servers
 	favorites = nil,
@@ -129,7 +129,7 @@ function serverlistmgr.sync()
 		return
 	end
 
-	-- only fetched once per session
+	-- only fetched once per MT instance
 	if not serverlistmgr.my_continent and not geoip_downloading then
 		geoip_downloading = true
 		core.handle_async(
@@ -149,6 +149,7 @@ function serverlistmgr.sync()
 			function(result)
 				geoip_downloading = false
 				serverlistmgr.my_continent = result
+				core.set_once("continent", result)
 				-- reorder list if we already have it
 				if serverlistmgr.servers then
 					serverlistmgr.servers = order_server_list(serverlistmgr.servers)
