@@ -59,7 +59,7 @@ enum {
 	CUSTOM_RIDX_METATABLE_MAP,
 
 	// The following four functions are implemented in Lua because LuaJIT can
-	// trace them and make them faster than using the Lua C API to do the same.
+	// trace them and optimize tables/string better than from the C API.
 	CUSTOM_RIDX_READ_VECTOR,
 	CUSTOM_RIDX_PUSH_VECTOR,
 	CUSTOM_RIDX_READ_NODE,
