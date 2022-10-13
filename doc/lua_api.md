@@ -7200,14 +7200,14 @@ child will follow movement and rotation of that bone.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
-        * `property`: `{ x = ..., y = ..., z = ..., interpolation_duration = 0, absolute = false}` or `nil`;
-            * `x`, `y` and `z` are in blocksize for position and scale (times ten), and in degrees for rotation
+        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
+            * `vec` is in blocksize for position and scale (times ten), and in degrees for rotation
         * `property = nil` is equivalent to no override on that property
         * `absolute`: If set to `false`, the override will be relative to the animated property:
             * Transposition in the case of `position`;
             * Composition in the case of `rotation`;
             * Multiplication in the case of `scale`
-        * `interpolation_duration`: Time it takes (on the client, in seconds) to interpolate between the old & new value
+        * `interpolation`: Time it takes (on the client, in seconds) to interpolate between the old & new value
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
     * Compatibility note: Clients prior to 5.7.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).

@@ -521,14 +521,14 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	std::string bone;
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
-	std::unique_ptr<BoneOverride> props(new BoneOverride());
+	BoneOverride props;
 	if (!lua_isnil(L, 3))
-		props->position.vector = check_v3f(L, 3);
+		props.position.vector = check_v3f(L, 3);
 	if (!lua_isnil(L, 4))
-		props->rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
-	props->position.absolute = true;
-	props->rotation.absolute = true;
-	sao->setBoneOverride(bone, props.release());
+		props.rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
+	props.position.absolute = true;
+	props.rotation.absolute = true;
+	sao->setBoneOverride(bone, props);
 	return 0;
 }
 
@@ -542,10 +542,10 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 		return 0;
 
 	std::string bone = readParam<std::string>(L, 2, "");
-	const BoneOverride *props = sao->getBoneOverride(bone);
-	push_v3f(L, props->position.vector);
+	BoneOverride props = sao->getBoneOverride(bone);
+	push_v3f(L, props.position.vector);
 	v3f euler_rot;
-	props->rotation.next.toEuler(euler_rot);
+	props.rotation.next.toEuler(euler_rot);
 	push_v3f(L, euler_rot * core::RADTODEG);
 	return 2;
 }
@@ -563,9 +563,9 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	if (!lua_isnil(L, 2))
 		bone = readParam<std::string>(L, 2);
 
-	std::unique_ptr<BoneOverride> props(new BoneOverride());
+	BoneOverride props;
 	if (lua_isnoneornil(L, 3)) {
-		sao->setBoneOverride(bone, props.release());
+		sao->setBoneOverride(bone, props);
 		return 0;
 	}
 
@@ -573,35 +573,50 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		lua_getfield(L, -1, "absolute");
 		prop.absolute = lua_toboolean(L, -1);
 		lua_pop(L, 1);
-		lua_getfield(L, -1, "interpolation_duration");
+
+		lua_getfield(L, -1, "interpolate");
 		if (lua_isnumber(L, -1))
-			prop.interpolation_duration = lua_tonumber(L, -1);
+			prop.interp_timer = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 	};
 
 	lua_getfield(L, 3, "position");
 	if (!lua_isnil(L, -1)) {
-		props->position.vector = check_v3f(L, -1);
-		read_prop_attrs(props->position);
+		lua_getfield(L, -1, "vec");
+		props.position.vector = lua_isnil(L, -1) ? v3f() : check_v3f(L, -1);
 		lua_pop(L, 1);
+
+		read_prop_attrs(props.position);
 	}
+	lua_pop(L, 1);
+
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
-		props->rotation.next = core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
-		read_prop_attrs(props->rotation);
+		lua_getfield(L, -1, "vec");
+		props.rotation.next = lua_isnil(L, -1)
+				? core::quaternion()
+				: core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
 		lua_pop(L, 1);
+
+		read_prop_attrs(props.rotation);
 	}
+	lua_pop(L, 1);
+
 	lua_getfield(L, 3, "scale");
 	if (!lua_isnil(L, -1)) {
-		props->scale.vector = check_v3f(L, -1);
-		read_prop_attrs(props->scale);
+		lua_getfield(L, -1, "vec");
+		props.scale.vector = lua_isnil(L, -1) ? v3f(1) : check_v3f(L, -1);
 		lua_pop(L, 1);
+
+		read_prop_attrs(props.scale);
 	}
-	sao->setBoneOverride(bone, props.release());
+	lua_pop(L, 1);
+
+	sao->setBoneOverride(bone, props);
 	return 0;
 }
 
-void push_bone_override(lua_State *L, BoneOverride *props)
+static void push_bone_override(lua_State *L, BoneOverride props)
 {
 	lua_newtable(L);
 
@@ -609,21 +624,21 @@ void push_bone_override(lua_State *L, BoneOverride *props)
 		lua_newtable(L);
 		push_v3f(L, vec);
 		lua_setfield(L, -2, "vector");
-		lua_pushnumber(L, prop.interpolation_duration);
-		lua_setfield(L, -2, "interpolation_duration");
+		lua_pushnumber(L, prop.interp_timer);
+		lua_setfield(L, -2, "interpolate");
 		lua_pushboolean(L, prop.absolute);
 		lua_setfield(L, -2, "absolute");
 		lua_setfield(L, -2, name);
 		lua_pop(L, 1);
 	};
 
-	push_prop("position", props->position, props->position.vector);
+	push_prop("position", props.position, props.position.vector);
 
 	v3f euler_rot;
-	props->rotation.next.toEuler(euler_rot);
-	push_prop("rotation", props->rotation, euler_rot * core::RADTODEG);
+	props.rotation.next.toEuler(euler_rot);
+	push_prop("rotation", props.rotation, euler_rot * core::RADTODEG);
 
-	push_prop("scale", props->scale, props->scale.vector);
+	push_prop("scale", props.scale, props.scale.vector);
 
 	// leave only override table on top of the stack
 }

@@ -70,9 +70,9 @@ public:
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
-	void setBoneOverride(const std::string &bone, BoneOverride *props);
-	BoneOverride *getBoneOverride(const std::string &bone);
-	const std::unordered_map<std::string, BoneOverride*>
+	void setBoneOverride(const std::string &bone, BoneOverride props);
+	BoneOverride getBoneOverride(const std::string &bone);
+	const std::unordered_map<std::string, BoneOverride>
 			&getBoneOverrides() const { return m_bone_override; };
 
 	// Attachments
@@ -103,7 +103,7 @@ public:
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(
-			const std::string &bone, const BoneOverride *props);
+			const std::string &bone, const BoneOverride props);
 	void sendPunchCommand();
 
 protected:
@@ -119,7 +119,7 @@ protected:
 	ObjectProperties m_prop;
 
 	// Stores position and rotation for each bone name
-	std::unordered_map<std::string, BoneOverride*> m_bone_override;
+	std::unordered_map<std::string, BoneOverride> m_bone_override;
 
 	int m_attachment_parent_id = 0;
 

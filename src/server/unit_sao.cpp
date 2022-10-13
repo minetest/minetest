@@ -75,20 +75,20 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride *props)
+void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride props)
 {
 	// store these so they can be updated to clients
-	auto prev_props = m_bone_override[bone];
-	if (prev_props != props)
-		delete prev_props;
 	m_bone_override[bone] = props;
 	m_bone_override_sent = false;
 }
 
-BoneOverride *UnitSAO::getBoneOverride(const std::string &bone)
+BoneOverride UnitSAO::getBoneOverride(const std::string &bone)
 {
 	auto it = m_bone_override.find(bone);
-	return it != m_bone_override.end() ? it->second : nullptr;
+	BoneOverride props;
+	if (it != m_bone_override.end())
+		props = it->second;
+	return props;
 }
 
 // clang-format off
@@ -277,26 +277,24 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const BoneOverride *props)
+		const std::string &bone, const BoneOverride props)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
 	os << serializeString16(bone);
-	writeV3F32(os, props->position.vector);
+	writeV3F32(os, props.position.vector);
 	v3f euler_rot;
-	props->rotation.next.toEuler(euler_rot);
+	props.rotation.next.toEuler(euler_rot);
 	writeV3F32(os, euler_rot * core::RADTODEG);
-	writeV3F32(os, props->scale.vector);
-	writeF32(os, props->position.interpolation_duration);
-	writeF32(os, props->rotation.interpolation_duration);
-	writeF32(os, props->scale.interpolation_duration);
-	// clang-format off
-	writeU8(os, (props->position.absolute & 1) << 0
-	          | (props->rotation.absolute & 1) << 1
-	          | (props->scale.absolute & 1) << 2);
-	// clang-format on
+	writeV3F32(os, props.scale.vector);
+	writeF32(os, props.position.interp_timer);
+	writeF32(os, props.rotation.interp_timer);
+	writeF32(os, props.scale.interp_timer);
+	writeU8(os, (props.position.absolute & 1) << 0
+	          | (props.rotation.absolute & 1) << 1
+	          | (props.scale.absolute & 1) << 2);
 	return os.str();
 }
 

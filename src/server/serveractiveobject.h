@@ -170,10 +170,10 @@ public:
 	{}
 	virtual void setAnimationSpeed(float frame_speed)
 	{}
-	virtual void setBoneOverride(const std::string &bone, BoneOverride *props)
-	{ delete props; }
-	virtual BoneOverride *getBoneOverride(const std::string &bone)
-	{ return 0; }
+	virtual void setBoneOverride(const std::string &bone, BoneOverride props)
+	{}
+	virtual BoneOverride getBoneOverride(const std::string &bone)
+	{ BoneOverride props; return props; }
 	virtual const BoneOverrideMap &getBoneOverrides() const
 	{ static BoneOverrideMap rv; return rv; }
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
