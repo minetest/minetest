@@ -115,6 +115,9 @@ public:
 
 	void clientOpenLibs(lua_State *L);
 
+	// Check things that should be set by the builtin mod.
+	void checkSetByBuiltin();
+
 protected:
 	friend class LuaABM;
 	friend class LuaLBM;
@@ -168,9 +171,6 @@ protected:
 
 private:
 	static int luaPanic(lua_State *L);
-
-	// Check things that should be set by the builtin mod.
-	void checkSetByBuiltin();
 
 	lua_State      *m_luastack = nullptr;
 
