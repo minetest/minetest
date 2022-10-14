@@ -66,14 +66,13 @@ static const char *modified_reason_strings[] = {
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
+MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
 		m_gamedef(gamedef)
 {
-	if (!dummy)
-		reallocate();
+	reallocate();
 }
 
 MapBlock::~MapBlock()
@@ -84,8 +83,6 @@ MapBlock::~MapBlock()
 		mesh = nullptr;
 	}
 #endif
-
-	delete[] data;
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)
@@ -102,11 +99,6 @@ MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 	if (!isValidPosition(p))
 		return m_parent->getNode(getPosRelative() + p, is_valid_position);
 
-	if (!data) {
-		if (is_valid_position)
-			*is_valid_position = false;
-		return {CONTENT_IGNORE};
-	}
 	if (is_valid_position)
 		*is_valid_position = true;
 	return data[p.Z * zstride + p.Y * ystride + p.X];
@@ -161,11 +153,6 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	// Running this function un-expires m_day_night_differs
 	m_day_night_differs_expired = false;
 
-	if (!data) {
-		m_day_night_differs = false;
-		return;
-	}
-
 	bool differs = false;
 
 	/*
@@ -180,7 +167,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 		if (n == previous_n)
 			continue;
 
-		differs = !n.isLightDayNightEq(nodemgr);
+		differs = !n.isLightDayNightEq(nodemgr->getLightingFlags(n));
 		if (differs)
 			break;
 		previous_n = n;
@@ -209,12 +196,6 @@ void MapBlock::actuallyUpdateDayNightDiff()
 
 void MapBlock::expireDayNightDiff()
 {
-	if (!data) {
-		m_day_night_differs = false;
-		m_day_night_differs_expired = false;
-		return;
-	}
-
 	m_day_night_differs_expired = true;
 }
 
@@ -339,9 +320,6 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
-	if (!data)
-		throw SerializationError("ERROR: Not writing dummy block.");
-
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
 
 	std::ostringstream os_raw(std::ios_base::binary);
@@ -446,10 +424,6 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 
 void MapBlock::serializeNetworkSpecific(std::ostream &os)
 {
-	if (!data) {
-		throw SerializationError("ERROR: Not writing dummy block.");
-	}
-
 	writeU8(os, 2); // version
 }
 
@@ -861,52 +835,45 @@ std::string analyze_block(MapBlock *block)
 
 	desc<<"lighting_complete: "<<block->getLightingComplete()<<", ";
 
-	if(block->isDummy())
+	bool full_ignore = true;
+	bool some_ignore = false;
+	bool full_air = true;
+	bool some_air = false;
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
-		desc<<"Dummy, ";
+		v3s16 p(x0,y0,z0);
+		MapNode n = block->getNodeNoEx(p);
+		content_t c = n.getContent();
+		if(c == CONTENT_IGNORE)
+			some_ignore = true;
+		else
+			full_ignore = false;
+		if(c == CONTENT_AIR)
+			some_air = true;
+		else
+			full_air = false;
 	}
-	else
-	{
-		bool full_ignore = true;
-		bool some_ignore = false;
-		bool full_air = true;
-		bool some_air = false;
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-		{
-			v3s16 p(x0,y0,z0);
-			MapNode n = block->getNodeNoEx(p);
-			content_t c = n.getContent();
-			if(c == CONTENT_IGNORE)
-				some_ignore = true;
-			else
-				full_ignore = false;
-			if(c == CONTENT_AIR)
-				some_air = true;
-			else
-				full_air = false;
-		}
 
-		desc<<"content {";
+	desc<<"content {";
 
-		std::ostringstream ss;
+	std::ostringstream ss;
 
-		if(full_ignore)
-			ss<<"IGNORE (full), ";
-		else if(some_ignore)
-			ss<<"IGNORE, ";
+	if(full_ignore)
+		ss<<"IGNORE (full), ";
+	else if(some_ignore)
+		ss<<"IGNORE, ";
 
-		if(full_air)
-			ss<<"AIR (full), ";
-		else if(some_air)
-			ss<<"AIR, ";
+	if(full_air)
+		ss<<"AIR (full), ";
+	else if(some_air)
+		ss<<"AIR, ";
 
-		if(ss.str().size()>=2)
-			desc<<ss.str().substr(0, ss.str().size()-2);
+	if(ss.str().size()>=2)
+		desc<<ss.str().substr(0, ss.str().size()-2);
 
-		desc<<"}, ";
-	}
+	desc<<"}, ";
 
 	return desc.str().substr(0, desc.str().size()-2);
 }

@@ -43,6 +43,79 @@ minetest.register_chatcommand("test_bulk_set_node", {
 	end,
 })
 
+-- Safeguard against too much optimization. This way the results cannot be optimized
+-- away, but they can be garbage collected (due to __mode = "k").
+_G._bench_content_ids_data = setmetatable({}, {__mode = "k"})
+
+local function bench_name2content()
+	local t = {}
+	_G._bench_content_ids_data[t] = true
+
+	local get_content_id = minetest.get_content_id
+
+	local start = minetest.get_us_time()
+
+	for i = 1, 200 do
+		for name in pairs(minetest.registered_nodes) do
+			t[#t + 1] = get_content_id(name)
+		end
+	end
+
+	local finish = minetest.get_us_time()
+
+	return (finish - start) / 1000
+end
+
+local function bench_content2name()
+	local t = {}
+	_G._bench_content_ids_data[t] = true
+
+	-- Try to estimate the highest content ID that's used
+	-- (not accurate but good enough for this test)
+	local n = 0
+	for _ in pairs(minetest.registered_nodes) do
+		n = n + 1
+	end
+
+	local get_name_from_content_id = minetest.get_name_from_content_id
+
+	local start = minetest.get_us_time()
+
+	for i = 1, 200 do
+		for j = 0, n do
+			t[#t + 1] = get_name_from_content_id(j)
+		end
+	end
+
+	local finish = minetest.get_us_time()
+
+	return (finish - start) / 1000
+end
+
+minetest.register_chatcommand("bench_name2content", {
+	params = "",
+	description = "Benchmark: Conversion from node names to content IDs",
+	func = function(name, param)
+		minetest.chat_send_player(name, "Benchmarking minetest.get_content_id. Warming up ...")
+		bench_name2content()
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+		local time = bench_name2content()
+		return true, ("Time: %.2f ms"):format(time)
+	end,
+})
+
+minetest.register_chatcommand("bench_content2name", {
+	params = "",
+	description = "Benchmark: Conversion from content IDs to node names",
+	func = function(name, param)
+		minetest.chat_send_player(name, "Benchmarking minetest.get_name_from_content_id. Warming up ...")
+		bench_content2name()
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+		local time = bench_content2name()
+		return true, ("Time: %.2f ms"):format(time)
+	end,
+})
+
 minetest.register_chatcommand("bench_bulk_set_node", {
 	params = "",
 	description = "Benchmark: Bulk-set 99×99×99 stone nodes",

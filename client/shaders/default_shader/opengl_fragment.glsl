@@ -2,5 +2,5 @@ varying lowp vec4 varColor;
 
 void main(void)
 {
-	gl_FragColor = varColor;
+	gl_FragData[0] = varColor;
 }

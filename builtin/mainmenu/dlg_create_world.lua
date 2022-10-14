@@ -104,14 +104,12 @@ local function create_world_formspec(dialogdata)
 	local current_mg = dialogdata.mg
 	local mapgens = core.get_mapgen_names()
 
-	local gameid = core.settings:get("menu_last_game")
-
 	local flags = dialogdata.flags
 
-	local game = pkgmgr.find_by_gameid(gameid)
+	local game = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 	if game == nil then
 		-- should never happen but just pick the first game
-		game = pkgmgr.get_game(1)
+		game = pkgmgr.games[1]
 		core.settings:set("menu_last_game", game.id)
 	end
 
@@ -355,7 +353,7 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+		local game, _ = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 
 		local message
 		if game == nil then
@@ -399,7 +397,7 @@ local function create_world_buttonhandler(this, fields)
 				mgvalleys_spflags = table_to_flags(this.data.flags.valleys),
 				mgflat_spflags = table_to_flags(this.data.flags.flat),
 			}
-			message = core.create_world(worldname, gameindex, settings)
+			message = core.create_world(worldname, game.id, settings)
 		end
 
 		if message == nil then

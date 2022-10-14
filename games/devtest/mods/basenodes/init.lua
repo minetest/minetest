@@ -125,6 +125,7 @@ minetest.register_node("basenodes:pine_needles", {
 
 minetest.register_node("basenodes:water_source", {
 	description = "Water Source".."\n"..
+		"Swimmable, spreading, renewable liquid".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
 	waving = 3,
@@ -151,6 +152,7 @@ minetest.register_node("basenodes:water_source", {
 
 minetest.register_node("basenodes:water_flowing", {
 	description = "Flowing Water".."\n"..
+		"Swimmable, spreading, renewable liquid".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	waving = 3,
@@ -180,6 +182,7 @@ minetest.register_node("basenodes:water_flowing", {
 
 minetest.register_node("basenodes:river_water_source", {
 	description = "River Water Source".."\n"..
+		"Swimmable, spreading, non-renewable liquid".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
 	waving = 3,
@@ -208,6 +211,7 @@ minetest.register_node("basenodes:river_water_source", {
 
 minetest.register_node("basenodes:river_water_flowing", {
 	description = "Flowing River Water".."\n"..
+		"Swimmable, spreading, non-renewable liquid".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
 	waving = 3,
@@ -239,6 +243,7 @@ minetest.register_node("basenodes:river_water_flowing", {
 
 minetest.register_node("basenodes:lava_flowing", {
 	description = "Flowing Lava".."\n"..
+		"Swimmable, spreading, renewable liquid".."\n"..
 		"4 damage per second".."\n"..
 		"Drowning damage: 1",
 	drawtype = "flowingliquid",
@@ -266,6 +271,7 @@ minetest.register_node("basenodes:lava_flowing", {
 
 minetest.register_node("basenodes:lava_source", {
 	description = "Lava Source".."\n"..
+		"Swimmable, spreading, renewable liquid".."\n"..
 		"4 damage per second".."\n"..
 		"Drowning damage: 1",
 	drawtype = "liquid",
@@ -307,7 +313,7 @@ minetest.register_node("basenodes:mossycobble", {
 
 minetest.register_node("basenodes:apple", {
 	description = "Apple".."\n"..
-		"Food (+2)",
+		"Punch: Eat (+2)",
 	drawtype = "plantlike",
 	tiles ={"default_apple.png"},
 	inventory_image = "default_apple.png",

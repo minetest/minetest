@@ -639,7 +639,7 @@ std::string RemoveLastPathComponent(const std::string &path,
 		std::string *removed, int count)
 {
 	if(removed)
-		*removed = "";
+		removed->clear();
 
 	size_t remaining = path.size();
 

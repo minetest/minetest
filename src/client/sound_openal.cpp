@@ -409,7 +409,7 @@ public:
 		}
 		std::vector<SoundBuffer*> bufs;
 		bufs.push_back(buf);
-		m_buffers[name] = bufs;
+		m_buffers[name] = std::move(bufs);
 	}
 
 	SoundBuffer* getBuffer(const std::string &name)

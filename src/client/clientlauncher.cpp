@@ -417,7 +417,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		menudata.name                            = start_data.name;
 		menudata.password                        = start_data.password;
 		menudata.port                            = itos(start_data.socket_port);
-		menudata.script_data.errormessage        = error_message_lua;
+		menudata.script_data.errormessage        = std::move(error_message_lua);
 		menudata.script_data.reconnect_requested = reconnect_requested;
 
 		main_menu(&menudata);
@@ -582,8 +582,8 @@ void ClientLauncher::speed_tests()
 		TimeTaker timer("Testing std::string speed");
 		const u32 jj = 10000;
 		for (u32 j = 0; j < jj; j++) {
-			tempstring = "";
-			tempstring2 = "";
+			tempstring.clear();
+			tempstring2.clear();
 			const u32 ii = 10;
 			for (u32 i = 0; i < ii; i++) {
 				tempstring2 += "asd";

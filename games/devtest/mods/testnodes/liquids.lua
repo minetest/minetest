@@ -1,8 +1,15 @@
 -- Add liquids for ranges and viscosity levels 0-8
 
 for d=0, 8 do
+	local tt_normal
+	if d == 0 then
+		tt_normal = "\n".."Swimmable, renewable liquid"
+	else
+		tt_normal = "\n".."Swimmable, spreading, renewable liquid"
+	end
 	minetest.register_node("testnodes:rliquid_"..d, {
-		description = "Test Liquid Source, Range "..d,
+		description = "Test Liquid Source, Range "..d..
+			tt_normal,
 		drawtype = "liquid",
 		tiles = {"testnodes_liquidsource_r"..d..".png"},
 		special_tiles = {
@@ -21,7 +28,8 @@ for d=0, 8 do
 	})
 
 	minetest.register_node("testnodes:rliquid_flowing_"..d, {
-		description = "Flowing Test Liquid, Range "..d,
+		description = "Flowing Test Liquid, Range "..d..
+			tt_normal,
 		drawtype = "flowingliquid",
 		tiles = {"testnodes_liquidflowing_r"..d..".png"},
 		special_tiles = {
@@ -42,9 +50,16 @@ for d=0, 8 do
 
 	if d <= 7 then
 
+	local tt_reduced = ""
+	if d > 0 then
+		tt_reduced = "\n".."Reduced swimming/spreading speed"
+	end
+
 	local mod = "^[colorize:#000000:127"
 	minetest.register_node("testnodes:vliquid_"..d, {
-		description = "Test Liquid Source, Viscosity/Resistance "..d,
+		description = "Test Liquid Source, Viscosity/Resistance "..d.."\n"..
+			"Swimmable, spreading, renewable liquid"..
+			tt_reduced,
 		drawtype = "liquid",
 		tiles = {"testnodes_liquidsource_r"..d..".png"..mod},
 		special_tiles = {
@@ -63,7 +78,9 @@ for d=0, 8 do
 	})
 
 	minetest.register_node("testnodes:vliquid_flowing_"..d, {
-		description = "Flowing Test Liquid, Viscosity/Resistance "..d,
+		description = "Flowing Test Liquid, Viscosity/Resistance "..d.."\n"..
+			"Swimmable, spreading, renewable liquid"..
+			tt_reduced,
 		drawtype = "flowingliquid",
 		tiles = {"testnodes_liquidflowing_r"..d..".png"..mod},
 		special_tiles = {
@@ -85,7 +102,9 @@ for d=0, 8 do
 	mod = "^[colorize:#000000:192"
 	local v = 4
 	minetest.register_node("testnodes:vrliquid_"..d, {
-		description = "Test Liquid Source, Viscosity "..v..", Resistance "..d,
+		description = "Test Liquid Source, Viscosity "..v..", Resistance "..d.."\n"..
+			"Swimmable, spreading, renewable liquid"..
+			tt_reduced,
 		drawtype = "liquid",
 		tiles = {"testnodes_liquidsource_r"..d..".png"..mod},
 		special_tiles = {
@@ -107,7 +126,9 @@ for d=0, 8 do
 	})
 
 	minetest.register_node("testnodes:vrliquid_flowing_"..d, {
-		description = "Flowing Test Liquid, Viscosity "..v..", Resistance "..d,
+		description = "Flowing Test Liquid, Viscosity "..v..", Resistance "..d.."\n"..
+			"Swimmable, spreading, renewable liquid"..
+			tt_reduced,
 		drawtype = "flowingliquid",
 		tiles = {"testnodes_liquidflowing_r"..d..".png"..mod},
 		special_tiles = {

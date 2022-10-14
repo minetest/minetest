@@ -3,7 +3,8 @@ stairs = {}
 -- Node will be called stairs:stair_<subname>
 function stairs.register_stair(subname, recipeitem, groups, images, description)
 	minetest.register_node(":stairs:stair_" .. subname, {
-		description = description,
+		description = description.."\n"..
+			"param2 = facedir rotation (0..23)",
 		drawtype = "nodebox",
 		tiles = images,
 		paramtype = "light",

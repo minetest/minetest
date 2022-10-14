@@ -217,9 +217,10 @@ void Particle::step(float dtime)
 		}
 		m_pos = p_pos / BS;
 	} else {
-		// apply acceleration
+		// apply velocity and acceleration to position
+		m_pos += (m_velocity + m_acceleration * 0.5f * dtime) * dtime;
+		// apply acceleration to velocity
 		m_velocity += m_acceleration * dtime;
-		m_pos += m_velocity * dtime;
 	}
 
 	if (m_animation.type != TAT_NONE) {
@@ -264,7 +265,8 @@ void Particle::updateLight()
 	);
 	MapNode n = m_env->getClientMap().getNode(p, &pos_ok);
 	if (pos_ok)
-		light = n.getLightBlend(m_env->getDayNightRatio(), m_gamedef->ndef());
+		light = n.getLightBlend(m_env->getDayNightRatio(),
+				m_gamedef->ndef()->getLightingFlags(n));
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
@@ -555,6 +557,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	// synchronize animation length with particle life if desired
 	if (pp.animation.type != TAT_NONE) {
+		// FIXME: this should be moved into a TileAnimationParams class method
 		if (pp.animation.type == TAT_VERTICAL_FRAMES &&
 			pp.animation.vertical_frames.length < 0) {
 			auto& a = pp.animation.vertical_frames;

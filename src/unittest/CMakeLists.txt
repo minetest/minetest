@@ -17,6 +17,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modchannels.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_modmetadatadatabase.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_moveaction.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noderesolver.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_noise.cpp
@@ -48,6 +49,7 @@ set (UNITTEST_CLIENT_SRCS
 set (TEST_WORLDDIR ${CMAKE_CURRENT_SOURCE_DIR}/test_world)
 set (TEST_SUBGAME_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../games/devtest)
 set (TEST_MOD_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test_mod)
+set (HELPERS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/helpers)
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/test_config.h.in"

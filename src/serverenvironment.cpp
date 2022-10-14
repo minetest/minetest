@@ -258,7 +258,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
-	bool pos_valid; // dummy, we know it's valid
 	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
@@ -269,7 +268,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoCheck(pos, &pos_valid);
+					n = block->getNodeNoCheck(pos);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
@@ -389,17 +388,29 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *scriptIface, Server *server,
+	ServerScripting *script_iface, Server *server,
 	const std::string &path_world, MetricsBackend *mb):
 	Environment(server),
 	m_map(map),
-	m_script(scriptIface),
+	m_script(script_iface),
 	m_server(server),
 	m_path_world(path_world),
 	m_rgen(seed())
 {
+	m_step_time_counter = mb->addCounter(
+		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
+
+	m_active_block_gauge = mb->addGauge(
+		"minetest_env_active_blocks", "Number of active blocks");
+
+	m_active_object_gauge = mb->addGauge(
+		"minetest_env_active_objects", "Number of active objects");
+}
+
+void ServerEnvironment::init()
+{
 	// Determine which database backend to use
-	std::string conf_path = path_world + DIR_DELIM + "world.mt";
+	std::string conf_path = m_path_world + DIR_DELIM + "world.mt";
 	Settings conf;
 
 	std::string player_backend_name = "sqlite3";
@@ -455,17 +466,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
-	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
-	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
-
-	m_step_time_counter = mb->addCounter(
-		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
-
-	m_active_block_gauge = mb->addGauge(
-		"minetest_env_active_blocks", "Number of active blocks");
-
-	m_active_object_gauge = mb->addGauge(
-		"minetest_env_active_objects", "Number of active objects");
+	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -478,7 +480,8 @@ ServerEnvironment::~ServerEnvironment()
 	deactivateFarObjects(true);
 
 	// Drop/delete map
-	m_map->drop();
+	if (m_map)
+		m_map->drop();
 
 	// Delete ActiveBlockModifiers
 	for (ABMWithState &m_abm : m_abms) {
@@ -846,7 +849,7 @@ public:
 	}
 	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
-		if(m_aabms.empty() || block->isDummy())
+		if(m_aabms.empty())
 			return;
 
 		// Check the content type cache first
@@ -880,7 +883,7 @@ public:
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
 		{
-			const MapNode &n = block->getNodeUnsafe(p0);
+			const MapNode &n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
 			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
@@ -916,7 +919,7 @@ public:
 						if (block->isValidPosition(p1)) {
 							// if the neighbor is found on the same map block
 							// get it straight from there
-							const MapNode &n = block->getNodeUnsafe(p1);
+							const MapNode &n = block->getNodeNoCheck(p1);
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
@@ -1585,7 +1588,7 @@ ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
 		return BS_ACTIVE;
 
 	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if (block && !block->isDummy())
+	if (block)
 		return BS_LOADED;
 
 	if (m_map->isBlockInQueue(blockpos))

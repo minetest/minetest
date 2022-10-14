@@ -39,7 +39,7 @@ MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge)
 		c_node = CONTENT_AIR;
 
 	MapNode n_node(c_node);
-	set_light = (ndef->get(n_node).sunlight_propagates) ? LIGHT_SUN : 0x00;
+	set_light = (ndef->getLightingFlags(n_node).sunlight_propagates) ? LIGHT_SUN : 0x00;
 }
 
 

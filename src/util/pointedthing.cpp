@@ -36,8 +36,8 @@ PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	distanceSq(distSq)
 {}
 
-PointedThing::PointedThing(s16 id, const v3f &point, const v3f &normal, const v3f &raw_normal,
-	f32 distSq) :
+PointedThing::PointedThing(s16 id, const v3f &point,
+  const v3f &normal, const v3f &raw_normal, f32 distSq) :
 	type(POINTEDTHING_OBJECT),
 	object_id(id),
 	intersection_point(point),
@@ -82,7 +82,7 @@ void PointedThing::serialize(std::ostream &os) const
 		writeV3S16(os, node_abovesurface);
 		break;
 	case POINTEDTHING_OBJECT:
-		writeS16(os, object_id);
+		writeU16(os, object_id);
 		break;
 	}
 }
@@ -101,7 +101,7 @@ void PointedThing::deSerialize(std::istream &is)
 		node_abovesurface = readV3S16(is);
 		break;
 	case POINTEDTHING_OBJECT:
-		object_id = readS16(is);
+		object_id = readU16(is);
 		break;
 	default:
 		throw SerializationError("unsupported PointedThingType");
