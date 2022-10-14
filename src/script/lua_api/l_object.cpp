@@ -554,7 +554,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 int ObjectRef::l_set_bone_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == NULL)
 		return 0;
@@ -647,7 +647,7 @@ static void push_bone_override(lua_State *L, BoneOverride props)
 int ObjectRef::l_get_bone_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == NULL)
 		return 0;
@@ -664,7 +664,7 @@ int ObjectRef::l_get_bone_override(lua_State *L)
 int ObjectRef::l_get_bone_overrides(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL)
 		return 0;
