@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-08-04 10:15+0000\n"
-"Last-Translator: Conight <xfddwhh@gmail.com>\n"
+"PO-Revision-Date: 2022-10-17 00:54+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -28,15 +28,15 @@ msgstr "退出至主菜单"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "无效命令 "
+msgstr "无效命令： "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "发送的命令 "
+msgstr "发送的命令： "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "列出联机玩家"
+msgstr "列出在线玩家"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
@@ -330,9 +330,8 @@ msgid "Install missing dependencies"
 msgstr "安装缺失的依赖项"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install: Unsupported file type or broken archive"
-msgstr "安装：文件类型不支持或档案已损坏"
+msgstr "安装：文件类型不支持或压缩包已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -463,9 +462,8 @@ msgid "Increases humidity around rivers"
 msgstr "增加河流周边湿度"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "安装$1"
+msgstr "安装子游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
