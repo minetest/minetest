@@ -533,6 +533,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
 
+	std::vector<v3s16> floating_node_updates;
+
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
 
@@ -610,7 +612,9 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			v3s16 npos = p0 + liquid_6dirs[i];
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
-			switch (m_nodedef->get(nb.n.getContent()).liquid_type) {
+			if (nt == NEIGHBOR_UPPER && cfnb.floats)
+				floating_node_updates.push_back(npos);
+			switch (cfnb.liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
 						airs[num_airs++] = nb;
@@ -836,6 +840,11 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		m_transforming_liquid.push_back(iter);
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
+
+	for (const v3s16 &p : floating_node_updates) {
+		env->getScriptIface()->check_for_falling(p);
+	}
+
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
 
 	/* ----------------------------------------------------------------------

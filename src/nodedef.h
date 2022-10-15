@@ -322,6 +322,9 @@ struct ContentFeatures
 	bool has_on_destruct;
 	bool has_after_destruct;
 
+	// "float" group
+	bool floats;
+
 	/*
 		Actual data
 	 */

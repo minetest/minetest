@@ -1393,6 +1393,7 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		eraseIdFromGroups(id);
 
 	m_content_features[id] = def;
+	m_content_features[id].floats = itemgroup_get(def.groups, "float") != 0;
 	m_content_lighting_flag_cache[id] = def.getLightingFlags();
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
@@ -1606,6 +1607,7 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 		if (i >= m_content_features.size())
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
+		m_content_features[i].floats = itemgroup_get(f.groups, "float") != 0;
 		m_content_lighting_flag_cache[i] = f.getLightingFlags();
 		addNameIdMapping(i, f.name);
 		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
