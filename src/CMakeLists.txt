@@ -692,11 +692,12 @@ if(USE_LUAJIT)
 			"THIS APPLIES ESPECIALLY ON macOS OR Linux/aarch64!")
 		message(WARNING ${explanation_msg})
 	endif()
-else()
+elseif(NOT MSVC)
 	set(CMAKE_REQUIRED_LIBRARIES "")
 	unset(HAVE_ATCCALL CACHE)
 	# Note: we need to check the function without having the library
 	#       available for linking, so check_symbol_exists won't work.
+	# Incidentally this doesn't seem to work on MSVC...
 	check_c_source_compiles("#include <lua.h>\nint main(){return sizeof(lua_atccall);}" HAVE_ATCCALL)
 	if(NOT HAVE_ATCCALL)
 		string(CONCAT explanation_msg
