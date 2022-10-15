@@ -136,6 +136,10 @@ public:
 	}
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
+	static void autosaveScreensizeAndCo(
+			const irr::core::dimension2d<u32> initial_screen_size,
+			const bool initial_window_maximized);
+
 private:
 	v2u32 _getWindowSize() const;
 
