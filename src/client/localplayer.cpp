@@ -100,7 +100,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 
 	// Get new sneak node
 	m_sneak_ladder_detected = false;
-	f32 min_distance_sq = 100000.0f * BS;
+	f32 min_distance_sq = HUGE_VALF;
 
 	for (const auto &d : dir9_center) {
 		const v3s16 p = current_node + d;
@@ -121,8 +121,8 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 		const f32 distance_sq = diff.getLengthSQ();
 
 		if (distance_sq > min_distance_sq ||
-				fabs(diff.X) > allowed_range + sneak_max.X ||
-				fabs(diff.Y) > allowed_range + sneak_max.Z)
+				std::fabs(diff.X) > allowed_range + sneak_max.X ||
+				std::fabs(diff.Y) > allowed_range + sneak_max.Z)
 			continue;
 
 		// And the node(s) above have to be nonwalkable
