@@ -396,7 +396,7 @@ Deprecated, define dungeon nodes in biome definitions instead.
 
 * `mapgen_stair_cobble` (falls back to cobble)
 * `mapgen_mossycobble` (falls back to cobble)
-* `mapgen_stair_desert_stone` (falls backto desert_stone)
+* `mapgen_stair_desert_stone` (falls back to desert_stone)
 
 ### Setting the node used in Mapgen Singlenode
 
@@ -919,13 +919,13 @@ Examples of sound parameter tables:
     {
         pos = {x = 1, y = 2, z = 3},
         gain = 1.0,  -- default
-        max_hear_distance = 32,  -- default, uses an euclidean metric
+        max_hear_distance = 32,  -- default, uses a Euclidean metric
     }
     -- Play connected to an object, looped
     {
         object = <an ObjectRef>,
         gain = 1.0,  -- default
-        max_hear_distance = 32,  -- default, uses an euclidean metric
+        max_hear_distance = 32,  -- default, uses a Euclidean metric
         loop = true,
     }
     -- Play at a location, heard by anyone *but* the given player
@@ -994,7 +994,7 @@ existence before trying to access the fields.
 
 Example:
 
-All nodes register with `minetest.register_node` get added to the table
+All nodes registered with `minetest.register_node` get added to the table
 `minetest.registered_nodes`.
 
 If you want to check the drawtype of a node, you could do it like this:
@@ -1090,7 +1090,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
       degrees around the Z axis.
     * facedir modulo 4 = left-handed rotation around the specified axis, in 90° steps.
     * By default, on placement the param2 is automatically set to the
-      horizondal direction the player was looking at (values 0-3)
+      horizontal direction the player was looking at (values 0-3)
     * Special case: If the node is a connected nodebox, the nodebox
       will NOT rotate, only the textures will.
 * `paramtype2 = "4dir"`
@@ -1123,7 +1123,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
       optional modifiers of the "plant". `param2` is a bitfield.
     * Bits 0 to 2 select the shape.
       Use only one of the values below:
-        * 0 = a "x" shaped plant (ordinary plant)
+        * 0 = an "x" shaped plant (ordinary plant)
         * 1 = a "+" shaped plant (just rotated 45 degrees)
         * 2 = a "*" shaped plant with 3 faces instead of 2
         * 3 = a "#" shaped plant with 4 faces instead of 2
@@ -1664,7 +1664,7 @@ Item types
 There are three kinds of items: nodes, tools and craftitems.
 
 * Node: Placeable item form of a node in the world's voxel grid
-* Tool: Has a changable wear property but cannot be stacked
+* Tool: Has a changeable wear property but cannot be stacked
 * Craftitem: Has no special properties
 
 Every registered node (the voxel in the world) has a corresponding
@@ -1732,7 +1732,7 @@ Examples:
   * amount must be 1 (pickaxe is a tool), ca. 1/3 worn out (it's a tool),
   * with the `description` field set to `"My worn out pick"` in its metadata
 * `[[default:dirt 5 0 "\u0001description\u0002Special dirt\u0003"]]`:
-  * analogeous to the above example
+  * analogous to the above example
   * note how the wear is set to `0` as dirt is not a tool
 
 You should ideally use the `ItemStack` format to build complex item strings
@@ -2319,7 +2319,7 @@ For colored text you can use `minetest.colorize`.
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
 
-**WARNING**: do _not_ use a element name starting with `key_`; those names are
+**WARNING**: do _not_ use an element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
 **WARNING**: Minetest allows you to add elements to every single formspec instance
@@ -3938,7 +3938,7 @@ previous octave multiplied by 1 / lacunarity, to create finer detail.
 
 A positive number no smaller than 1.0.
 Values below 2.0 create higher quality noise at the expense of requiring more
-octaves to cover a paticular range of 'wavelengths'.
+octaves to cover a particular range of 'wavelengths'.
 
 ### `flags`
 
@@ -3955,7 +3955,7 @@ specifying some other flags.
 Maps noise gradient values onto a quintic S-curve before performing
 interpolation. This results in smooth, rolling noise.
 Disable this (`noeased`) for sharp-looking noise with a slightly gridded
-appearence.
+appearance.
 If no flags are specified (or defaults is), 2D noise is eased and 3D noise is
 not eased.
 Easing a 3D noise significantly increases the noise calculation load, so use
@@ -4648,7 +4648,7 @@ Callbacks:
     * `killer`: an `ObjectRef` (can be `nil`)
 * `on_rightclick(self, clicker)`
     * Called when `clicker` pressed the 'place/use' key while pointing
-      to the object (not neccessarily an actual rightclick)
+      to the object (not necessarily an actual rightclick)
     * `clicker`: an `ObjectRef` (may or may not be a player)
 * `on_attach_child(self, child)`
     * `child`: an `ObjectRef` of the child that attaches
@@ -4706,7 +4706,7 @@ Tree definition
         leaves2_chance,--num     chance (0-100) to replace leaves with leaves2
         angle,         --num     angle in deg
         iterations,    --num     max # of iterations, usually 2 -5
-        random_level,  --num     factor to lower nr of iterations, usually 0 - 3
+        random_level,  --num     factor to lower number of iterations, usually 0 - 3
         trunk_type,    --string  single/double/crossed) type of trunk: 1 node,
                        --        2x2 nodes or 3x3 in cross shape
         thin_branches, --boolean true -> use thin (1 node) branches
@@ -5177,7 +5177,7 @@ Call these functions only at load time!
     * should return `true` to prevent the default damage mechanism
 * `minetest.register_on_rightclickplayer(function(player, clicker))`
     * Called when the 'place/use' key was used while pointing a player
-      (not neccessarily an actual rightclick)
+      (not necessarily an actual rightclick)
     * `player`: ObjectRef - Player that is acted upon
     * `clicker`: ObjectRef - Object that acted upon `player`, may or may not be a player
 * `minetest.register_on_player_hpchange(function(player, hp_change, reason), modifier)`
@@ -5502,7 +5502,7 @@ Environment access
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`: returns a list of
   ObjectRefs.
-    * `radius`: using an euclidean metric
+    * `radius`: using a Euclidean metric
 * `minetest.get_objects_in_area(pos1, pos2)`: returns a list of
   ObjectRefs.
      * `pos1` and `pos2` are the min and max positions of the area to search.
@@ -5643,7 +5643,7 @@ Environment access
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
     * Takes an optional table as an argument with the field `mode`.
-        * mode = `"full"` : Load and go through every mapblock, clearing
+        * mode = `"full"`: Load and go through every mapblock, clearing
                             objects (default).
         * mode = `"quick"`: Clear objects immediately in loaded mapblocks,
                             clear objects in unloaded mapblocks only when the
@@ -6022,7 +6022,7 @@ Sounds
 Timing
 ------
 
-* `minetest.after(time, func, ...)` : returns job table to use as below.
+* `minetest.after(time, func, ...)`: returns job table to use as below.
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
 
@@ -6118,7 +6118,7 @@ Server
       data too.
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 * `minetest.remove_player_auth(name)`: remove player authentication data
-    * Returns boolean indicating success (false if player nonexistant)
+    * Returns boolean indicating success (false if player nonexistent)
 * `minetest.dynamic_add_media(options, callback)`
     * `options`: table containing the following parameters
         * `filepath`: path to a media file on the filesystem
@@ -6159,11 +6159,11 @@ Bans
   IP address or name
 * `minetest.kick_player(name, [reason])`: disconnect a player with an optional
   reason.
-    * Returns boolean indicating success (false if player nonexistant)
+    * Returns boolean indicating success (false if player nonexistent)
 * `minetest.disconnect_player(name, [reason])`: disconnect a player with an
   optional reason, this will not prefix with 'Kicked: ' like kick_player.
   If no reason is given, it will default to 'Disconnected.'
-    * Returns boolean indicating success (false if player nonexistant)
+    * Returns boolean indicating success (false if player nonexistent)
 
 Particles
 ---------
@@ -6344,7 +6344,7 @@ Misc.
     * This function can be overridden by mods to change the join message.
 * `minetest.send_leave_message(player_name, timed_out)`
     * This function can be overridden by mods to change the leave message.
-* `minetest.hash_node_position(pos)`: returns an 48-bit integer
+* `minetest.hash_node_position(pos)`: returns a 48-bit integer
     * `pos`: table {x=number, y=number, z=number},
     * Gives a unique hash number for a node position (16+16+16=48bit)
 * `minetest.get_position_from_hash(hash)`: returns a position
@@ -6418,7 +6418,7 @@ Misc.
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
 * `minetest.rgba(red, green, blue[, alpha])`: returns a string
-    * Each argument is a 8 Bit unsigned integer
+    * Each argument is an 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
@@ -6478,7 +6478,7 @@ Misc.
     * `orient_flags`: Optional table containing extra tweaks to the placement code:
         * `invert_wall`:   if `true`, place wall-orientation on the ground and
           ground-orientation on the wall.
-        * `force_wall` :   if `true`, always place the node in wall orientation.
+        * `force_wall`:    if `true`, always place the node in wall orientation.
         * `force_ceiling`: if `true`, always place on the ceiling.
         * `force_floor`:   if `true`, always place the node on the floor.
         * `force_facedir`: if `true`, forcefully reset the facedir to north
@@ -6497,7 +6497,7 @@ Misc.
     * Returns the amount of knockback applied on the punched player.
     * Arguments are equivalent to `register_on_punchplayer`, except the following:
         * `distance`: distance between puncher and punched player
-    * This function can be overriden by mods that wish to modify this behaviour.
+    * This function can be overridden by mods that wish to modify this behaviour.
     * You may want to cache and call the old function to allow multiple mods to
       change knockback behaviour.
 
@@ -6514,7 +6514,7 @@ Misc.
       If `true`, frees a transient forceload.
 
 * `minetest.compare_block_status(pos, condition)`
-    * Checks whether the mapblock at positition `pos` is in the wanted condition.
+    * Checks whether the mapblock at position `pos` is in the wanted condition.
     * `condition` may be one of the following values:
         * `"unknown"`: not in memory
         * `"emerging"`: in the queue for loading from disk or generating
@@ -6653,7 +6653,7 @@ use the provided load and write functions for this.
     * Returns the new area's ID, or nil if the insertion failed.
     * The (inclusive) positions `corner1` and `corner2` describe the area.
     * `data` is a string stored with the area.
-    * `id` (optional): will be used as the internal area ID if it is an unique
+    * `id` (optional): will be used as the internal area ID if it is a unique
       number between 0 and 2^32-2.
 * `reserve(count)`
     * Requires SpatialIndex, no-op function otherwise.
@@ -7878,7 +7878,7 @@ Used by `minetest.register_abm`.
         -- mapblock.
         -- `active_object_count_wider` is number of active objects in the node's
         -- mapblock plus all 26 neighboring mapblocks. If any neighboring
-        -- mapblocks are unloaded an estmate is calculated for them based on
+        -- mapblocks are unloaded an estimate is calculated for them based on
         -- loaded mapblocks.
     }
 
@@ -8049,7 +8049,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
             -- Amount of uses this tool has for attacking players and entities
             -- by punching them (0 = infinite uses).
             -- For compatibility, this is automatically set from the first
-            -- suitable groupcap using the forumla "uses * 3^(maxlevel - 1)".
+            -- suitable groupcap using the formula "uses * 3^(maxlevel - 1)".
             -- It is recommend to set this explicitly instead of relying on the
             -- fallback behavior.
         },
@@ -8294,7 +8294,7 @@ Used by `minetest.register_node`.
         --   ability to "swim" up/down, sinking slowly if not moving,
         --   smoother speed change when falling into, etc. The `movement_liquid_*`
         --   settings apply.
-        -- * nil: Will be treated as true if `liquidype ~= "none"`
+        -- * nil: Will be treated as true if `liquidtype ~= "none"`
         --   and as false otherwise.
 
         leveled = 0,
@@ -8511,7 +8511,7 @@ Used by `minetest.register_node`.
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing),
         -- default: nil
         -- Called when clicker (an ObjectRef) used the 'place/build' key
-        -- (not neccessarily an actual rightclick)
+        -- (not necessarily an actual rightclick)
         -- while pointing at the node at pos with 'node' being the node table.
         -- itemstack will hold clicker's wielded item.
         -- Shall return the leftover itemstack.
@@ -8569,7 +8569,7 @@ Used by `minetest.register_node`.
         -- If the source could not be determined it contains "??"
         -- Useful for getting which mod truly registered something
         -- example: if a node is registered as ":othermodname:nodename",
-        -- nodename will show "othermodname", but mod_orgin will say "modname"
+        -- nodename will show "othermodname", but mod_origin will say "modname"
     }
 
 Crafting recipes
@@ -8764,7 +8764,7 @@ you want `additional_wear` to be negative.
 
 The formula used to calculate the resulting wear is:
 
-    65536 * (1 - ( (1 - tool_1_wear) + (1 - tool_2_wear) + additional_wear ))
+    65536 * (1 - ( (1 - tool_1_wear) + (1 - tool_2_wear) + additional_wear))
 
 The result is rounded and can't be lower than 0. If the result is 65536 or higher,
 no crafting is possible.
@@ -9461,7 +9461,7 @@ will be ignored.
 
         animation = {Tile Animation definition},
         -- Optional, specifies how to animate the particles' texture
-        -- v5.6.0 and later: set length to -1 to sychronize the length
+        -- v5.6.0 and later: set length to -1 to synchronize the length
         -- of the animation with the expiration time of individual particles.
         -- (-2 causes the animation to be played twice, and so on)
 
@@ -9511,7 +9511,7 @@ a tween table.
 
 The following definitions are all equivalent, listed in order of precedence from
 lowest (the legacy syntax) to highest (tween tables). If multiple forms of a
-property definition are present, the highest-precidence form will be selected
+property definition are present, the highest-precedence form will be selected
 and all lower-precedence fields will be ignored, allowing for graceful
 degradation in older clients).
 
@@ -9718,7 +9718,7 @@ table contains options that allow simple animations to be applied to the texture
         -- adds the value of pixels to those underneath them, modulo the sources
         -- alpha channel. useful for e.g. bright light effects like sparks or fire
         blend = "screen",
-        -- like "add" but less bright. useful for subtler light effecs. note that
+        -- like "add" but less bright. useful for subtler light effects. note that
         -- this is NOT formally equivalent to the "screen" effect used in image
         -- editors and compositors, as it does not respect the alpha channel of
         -- of the image being blended
