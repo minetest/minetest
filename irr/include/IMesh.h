@@ -52,6 +52,9 @@ enum E_ANIMATED_MESH_TYPE
 	//! Halflife MDL model file
 	EAMT_MDL_HALFLIFE,
 
+	//! Graphics Language Transmission Format 2.0 (.gltf) mesh
+	EAMT_GLTF2,
+
 	//! generic skinned mesh
 	EAMT_SKINNED,
 
