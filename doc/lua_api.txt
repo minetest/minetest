@@ -1323,7 +1323,7 @@ A nodebox is defined as any of:
         wall_side = box
     }
     {
-        -- A node that has optional boxes depending on neighbouring nodes'
+        -- A node that has optional boxes depending on neighboring nodes'
         -- presence and type. See also `connects_to`.
         type = "connected",
         fixed = box OR {box1, box2, ...}
@@ -1334,7 +1334,7 @@ A nodebox is defined as any of:
         connect_back = box OR {box1, box2, ...}
         connect_right = box OR {box1, box2, ...}
         -- The following `disconnected_*` boxes are the opposites of the
-        -- `connect_*` ones above, i.e. when a node has no suitable neighbour
+        -- `connect_*` ones above, i.e. when a node has no suitable neighbor
         -- on the respective side, the corresponding disconnected box is drawn.
         disconnected_top = box OR {box1, box2, ...}
         disconnected_bottom = box OR {box1, box2, ...}
@@ -1342,9 +1342,9 @@ A nodebox is defined as any of:
         disconnected_left = box OR {box1, box2, ...}
         disconnected_back = box OR {box1, box2, ...}
         disconnected_right = box OR {box1, box2, ...}
-        disconnected = box OR {box1, box2, ...} -- when there is *no* neighbour
+        disconnected = box OR {box1, box2, ...} -- when there is *no* neighbor
         disconnected_sides = box OR {box1, box2, ...} -- when there are *no*
-                                                      -- neighbours to the sides
+                                                      -- neighbors to the sides
     }
 
 A `box` is defined as:
@@ -1379,7 +1379,7 @@ clients and handled by many parts of the engine.
 A 'mapchunk' (sometimes abbreviated to 'chunk') is usually 5x5x5 mapblocks
 (80x80x80 nodes) and is the volume of world generated in one operation by
 the map generator.
-The size in mapblocks has been chosen to optimise map generation.
+The size in mapblocks has been chosen to optimize map generation.
 
 Coordinates
 -----------
@@ -2096,7 +2096,7 @@ Example definition of the capabilities of an item
         },
     }
 
-This makes the item capable of digging nodes that fulfil both of these:
+This makes the item capable of digging nodes that fulfill both of these:
 
 * Have the `crumbly` group
 * Have a `level` group less or equal to `2`
@@ -2621,7 +2621,7 @@ Elements
 * When enter is pressed in field, fields.key_enter_field will be sent with the
   name of this field.
 * With the old coordinate system, fields are a set height, but will be vertically
-  centred on `H`. With the new coordinate system, `H` will modify the height.
+  centered on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * See `field_close_on_enter` to stop enter closing the formspec
@@ -2632,7 +2632,7 @@ Elements
 * When enter is pressed in field, `fields.key_enter_field` will be sent with
   the name of this field.
 * With the old coordinate system, fields are a set height, but will be vertically
-  centred on `H`. With the new coordinate system, `H` will modify the height.
+  centered on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
 * `default` is the default value of the field
@@ -2695,7 +2695,7 @@ Elements
 
 * Clickable button. When clicked, fields will be sent.
 * With the old coordinate system, buttons are a set height, but will be vertically
-  centred on `H`. With the new coordinate system, `H` will modify the height.
+  centered on `H`. With the new coordinate system, `H` will modify the height.
 * `label` is the text on the button
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
@@ -5190,7 +5190,7 @@ Call these functions only at load time!
                         giving a type - use this for custom damage types.
             * `punch`: Was punched. `reason.object` will hold the puncher, or nil if none.
             * `fall`
-            * `node_damage`: `damage_per_second` from a neighbouring node.
+            * `node_damage`: `damage_per_second` from a neighboring node.
                              `reason.node` will hold the node name or nil.
             * `drown`
             * `respawn`
@@ -5741,11 +5741,11 @@ Environment access
 * `minetest.check_single_for_falling(pos)`
     * causes an unsupported `group:falling_node` node to fall and causes an
       unattached `group:attached_node` node to fall.
-    * does not spread these updates to neighbours.
+    * does not spread these updates to neighbors.
 * `minetest.check_for_falling(pos)`
     * causes an unsupported `group:falling_node` node to fall and causes an
       unattached `group:attached_node` node to fall.
-    * spread these updates to neighbours and can cause a cascade
+    * spread these updates to neighbors and can cause a cascade
       of nodes to fall.
 * `minetest.get_spawn_level(x, z)`
     * Returns a player spawn y co-ordinate for the provided (x, z)
@@ -6463,7 +6463,7 @@ Misc.
       similar to, but no larger than, `interval`.
     * All corners and edges of the defined volume are checked.
     * `interval` defaults to 4.
-    * `interval` should be carefully chosen and maximised to avoid an excessive
+    * `interval` should be carefully chosen and maximized to avoid an excessive
       number of points being checked.
     * Like `minetest.is_protected`, this function may be extended or
       overwritten by mods to provide a faster implementation to check the
@@ -6497,9 +6497,9 @@ Misc.
     * Returns the amount of knockback applied on the punched player.
     * Arguments are equivalent to `register_on_punchplayer`, except the following:
         * `distance`: distance between puncher and punched player
-    * This function can be overridden by mods that wish to modify this behaviour.
+    * This function can be overridden by mods that wish to modify this behavior.
     * You may want to cache and call the old function to allow multiple mods to
-      change knockback behaviour.
+      change knockback behavior.
 
 * `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
@@ -6522,7 +6522,7 @@ Misc.
         * `"active"`: in memory and active
         * Other values are reserved for future functionality extensions
     * Return value, the comparison status:
-        * `false`: Mapblock does not fulfil the wanted condition
+        * `false`: Mapblock does not fulfill the wanted condition
         * `true`: Mapblock meets the requirement
         * `nil`: Unsupported `condition` value
 
@@ -7164,7 +7164,7 @@ child will follow movement and rotation of that bone.
     * the formspec string will be added to every formspec shown to the user,
       except for those with a no_prepend[] tag.
     * This should be used to set style elements such as background[] and
-      bgcolor[], any non-style elements (eg: label) may result in weird behaviour.
+      bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
 * `get_formspec_prepend(formspec)`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
@@ -7198,7 +7198,7 @@ child will follow movement and rotation of that bone.
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
-          is used for the specific old sneak behaviour (default: `true`)
+          is used for the specific old sneak behavior (default: `true`)
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
@@ -7867,7 +7867,7 @@ Used by `minetest.register_abm`.
         -- can be used to reduce CPU usage
 
         catch_up = true,
-        -- If true, catch-up behaviour is enabled: The `chance` value is
+        -- If true, catch-up behavior is enabled: The `chance` value is
         -- temporarily reduced when returning to an area to simulate time lost
         -- by the area being unattended. Note that the `chance` value can often
         -- be reduced to 1.
@@ -9001,7 +9001,7 @@ performance and computing power the practical limit is much lower.
         -- Multiple nodes can be specified, each cave will use a randomly
         -- chosen node from the list.
         -- If this field is left out or 'nil', cave liquids fall back to
-        -- classic behaviour of lava and water distributed using 3D noise.
+        -- classic behavior of lava and water distributed using 3D noise.
         -- For no cave liquid, specify "air".
 
         node_dungeon = "default:cobble",
@@ -9100,7 +9100,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
         spawn_by = "default:water",
         -- Node (or list of nodes) that the decoration only spawns next to.
-        -- Checks the 8 neighbouring nodes on the same Y, and also the ones
+        -- Checks the 8 neighboring nodes on the same Y, and also the ones
         -- at Y+1, excluding both center nodes.
 
         num_spawn_by = 1,
@@ -9122,7 +9122,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
         --   Ceiling decorations act as an inversion of floor decorations so the
         --   effect of 'place_offset_y' is inverted.
         --   Y-slice probabilities do not function correctly for ceiling
-        --   schematic decorations as the behaviour is unchanged.
+        --   schematic decorations as the behavior is unchanged.
         --   If a single decoration registration has both flags the floor and
         --   ceiling decorations will be aligned vertically.
 
