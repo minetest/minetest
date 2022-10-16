@@ -613,7 +613,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
 			if (nt == NEIGHBOR_UPPER && cfnb.floats)
-				floating_node_updates.push_back(npos);
+				floating_node_updates.push_back(p0);
 			switch (cfnb.liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
@@ -842,7 +842,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
 
 	for (const v3s16 &p : floating_node_updates) {
-		env->getScriptIface()->check_for_falling(p);
+		if (getNode(p).getContent() == CONTENT_AIR)
+			env->getScriptIface()->check_for_falling(p);
 	}
 
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
