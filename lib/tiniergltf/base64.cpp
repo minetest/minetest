@@ -1,0 +1,112 @@
+/*
+base64.cpp and base64.h
+
+Copyright (C) 2004-2008 René Nyffenegger
+Modified by the Minetest Contributors.
+
+This source code is provided 'as-is', without any express or implied
+warranty. In no event will the author be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this source code must not be misrepresented; you must not
+   claim that you wrote the original source code. If you use this source code
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original source code.
+
+3. This notice may not be removed or altered from any source distribution.
+
+René Nyffenegger rene.nyffenegger@adp-gmbh.ch
+
+*/
+
+#include "base64.h"
+#include <string>
+#include <string_view>
+
+static const std::string base64_chars =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+/";
+
+static const std::string base64_chars_padding_1 = "AEIMQUYcgkosw048";
+static const std::string base64_chars_padding_2 = "AQgw";
+
+static inline bool is_base64(unsigned char c)
+{
+	return (c >= '0' && c <= '9')
+			|| (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| c == '+' || c == '/';
+}
+
+bool base64_is_valid(const std::string_view &s)
+{
+	size_t i = 0;
+	for (; i < s.size(); ++i)
+		if (!is_base64(s[i]))
+			break;
+	unsigned char padding = 3 - ((i + 3) % 4);
+	if ((padding == 1 && base64_chars_padding_1.find(s[i - 1]) == std::string::npos)
+			|| (padding == 2 && base64_chars_padding_2.find(s[i - 1]) == std::string::npos)
+			|| padding == 3)
+		return false;
+	int actual_padding = s.size() - i;
+	// omission of padding characters is allowed
+	if (actual_padding == 0)
+		return true;
+
+	// remaining characters (max. 2) may only be padding
+	for (; i < s.size(); ++i)
+		if (s[i] != '=')
+			return false;
+	// number of padding characters needs to match
+	return padding == actual_padding;
+}
+
+std::vector<unsigned char> base64_decode(const std::string_view &encoded_string) {
+	std::size_t in_len = encoded_string.size();
+	std::size_t i = 0, j = 0, in_ = 0;
+	unsigned char char_array_4[4], char_array_3[3];
+	std::vector<unsigned char> ret;
+	ret.reserve(3 * in_len / 4 + 1);
+
+	while (in_len-- && ( encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
+		char_array_4[i++] = encoded_string[in_]; in_++;
+		if (i ==4) {
+			for (i = 0; i <4; i++)
+				char_array_4[i] = base64_chars.find(char_array_4[i]);
+
+			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+			char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+			for (i = 0; (i < 3); i++)
+				ret.push_back(char_array_3[i]);
+			i = 0;
+		}
+	}
+
+	if (i) {
+		for (j = i; j <4; j++)
+			char_array_4[j] = 0;
+
+		for (j = 0; j <4; j++)
+			char_array_4[j] = base64_chars.find(char_array_4[j]);
+
+		char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+		char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+		char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+		for (j = 0; (j < i - 1); j++)
+			ret.push_back(char_array_3[j]);
+	}
+
+	return ret;
+}
