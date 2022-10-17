@@ -98,6 +98,7 @@ public:
 
 private:
 	bool m_primed = false;
+	double m_expected_time_per_node_ms = 0.0;
 	std::vector<v3s16> m_pos_list;
 };
 
@@ -409,6 +410,7 @@ public:
 	static bool migrateAuthDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 private:
+	friend class BulkActiveBlockModifier;
 
 	/**
 	 * called if env_meta.txt doesn't exist (e.g. new world)
@@ -504,6 +506,8 @@ private:
 	std::vector<ABMWithState> m_abms;
 	// These point to ABMs kept in m_abms
 	std::vector<BulkActiveBlockModifier *> m_bulk_abms;
+	// This counter is reset each ABM step
+	double m_bulk_abms_expected_time_ms = 0.0;
 	LBMManager m_lbm_mgr;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval = 0.1f;

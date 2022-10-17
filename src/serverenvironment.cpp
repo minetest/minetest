@@ -67,16 +67,26 @@ void BulkActiveBlockModifier::prime()
 
 void BulkActiveBlockModifier::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 {
-	if (m_primed)
+	if (m_primed) {
+		env->m_bulk_abms_expected_time_ms += m_expected_time_per_node_ms;
 		m_pos_list.emplace_back(p);
+	}
 }
 
 void BulkActiveBlockModifier::apply(ServerEnvironment *env)
 {
 	bool primed = m_primed;
 	m_primed = false;
-	if (!m_pos_list.empty() && primed)
+	if (!m_pos_list.empty() && primed) {
+		u64 before_ns = porting::getTimeNs();
 		trigger(env, m_pos_list);
+		u64 after_ns = porting::getTimeNs();
+		double expected_time_per_node_ms =
+				(after_ns - before_ns) / 1000000.0 / m_pos_list.size();
+		// Take an average:
+		m_expected_time_per_node_ms =
+				(m_expected_time_per_node_ms + expected_time_per_node_ms) / 2;
+	}
 	m_pos_list.clear();
 }
 
@@ -1476,6 +1486,8 @@ void ServerEnvironment::step(float dtime)
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 		TimeTaker timer("modify in active blocks per interval");
 
+		m_bulk_abms_expected_time_ms = 0.0;
+
 		for (BulkActiveBlockModifier *abm : m_bulk_abms) {
 			abm->prime();
 		}
@@ -1500,6 +1512,7 @@ void ServerEnvironment::step(float dtime)
 		int i = 0;
 		// determine the time budget for ABMs
 		u32 max_time_ms = m_cache_abm_interval * 1000 * m_cache_abm_time_budget;
+		int cut_short_at = -1;
 		for (const v3s16 &p : output) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if (!block)
@@ -1515,16 +1528,21 @@ void ServerEnvironment::step(float dtime)
 
 			u32 time_ms = timer.getTimerTime();
 
-			if (time_ms > max_time_ms) {
-				warningstream << "active block modifiers took "
-					  << time_ms << "ms (processed " << i << " of "
-					  << output.size() << " active blocks)" << std::endl;
+			if (time_ms + m_bulk_abms_expected_time_ms > max_time_ms) {
+				cut_short_at = i;
 				break;
 			}
 		}
 
 		for (BulkActiveBlockModifier *abm : m_bulk_abms) {
 			abm->apply(this);
+		}
+
+		if (cut_short_at >= 0) {
+			u32 time_ms = timer.getTimerTime();
+			warningstream << "active block modifiers took "
+				  << time_ms << "ms (processed " << cut_short_at << " of "
+				  << output.size() << " active blocks)" << std::endl;
 		}
 
 		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
