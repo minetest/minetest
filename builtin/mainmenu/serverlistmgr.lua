@@ -81,9 +81,9 @@ local function order_server_list(list)
 		-- second: estimated latency
 		local ping = (fav.ping or 0) * 1000
 		if ping < 400 then
-			-- If ping is over 400ms, assume the server has latency issues
-			-- anyway and don't estimate
-			ping = estimate_continent_latency(serverlistmgr.my_continent, fav) or ping
+			-- If ping is under 400ms replace it with our own estimate,
+			-- we assume the server has latency issues anyway otherwise
+			ping = estimate_continent_latency(serverlistmgr.my_continent, fav) or 0
 		end
 		s2:push(fav, -ping)
 	end
@@ -148,6 +148,9 @@ function serverlistmgr.sync()
 			nil,
 			function(result)
 				geoip_downloading = false
+				if not result then
+					return
+				end
 				serverlistmgr.my_continent = result
 				core.set_once("continent", result)
 				-- reorder list if we already have it
