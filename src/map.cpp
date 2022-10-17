@@ -533,7 +533,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
 
-	std::vector<v3s16> floating_node_updates;
+	std::vector<v3s16> check_for_falling;
 
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
@@ -597,6 +597,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		int num_neutrals = 0;
 		bool flowing_down = false;
 		bool ignored_sources = false;
+		bool floating_node_above = false;
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
@@ -613,7 +614,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			NodeNeighbor nb(getNode(npos), nt, npos);
 			const ContentFeatures &cfnb = m_nodedef->get(nb.n);
 			if (nt == NEIGHBOR_UPPER && cfnb.floats)
-				floating_node_updates.push_back(p0);
+				floating_node_above = true;
 			switch (cfnb.liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
@@ -756,6 +757,11 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				== flowing_down)))
 			continue;
 
+		/*
+			check if there is a floating node above that needs to be updated.
+		 */
+		if (floating_node_above && new_node_content == CONTENT_AIR)
+			check_for_falling.push_back(p0);
 
 		/*
 			update the current node
@@ -841,9 +847,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
 
-	for (const v3s16 &p : floating_node_updates) {
-		if (getNode(p).getContent() == CONTENT_AIR)
-			env->getScriptIface()->check_for_falling(p);
+	for (const v3s16 &p : check_for_falling) {
+		env->getScriptIface()->check_for_falling(p);
 	}
 
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
