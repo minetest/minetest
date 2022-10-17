@@ -7934,6 +7934,11 @@ Used by `minetest.register_abm`.
         -- mapblock plus all 26 neighboring mapblocks. If any neighboring
         -- mapblocks are unloaded an estimate is calculated for them based on
         -- loaded mapblocks.
+
+        bulk_action = function(pos_list),
+	-- Alternative function triggered for all node positions at once.
+	-- The callee should check that each position still holds an applicable node,
+	-- as this may change between recording positions and passing them.
     }
 
 LBM (LoadingBlockModifier) definition
