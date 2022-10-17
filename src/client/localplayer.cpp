@@ -55,9 +55,12 @@ static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 	return b_max;
 }
 
+
 bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	const v3f &sneak_max)
 {
+	// Acceptable distance to node center
+	constexpr f32 allowed_range = (0.5f + 0.1f) * BS;
 	static const v3s16 dir9_center[9] = {
 		v3s16( 0, 0,  0),
 		v3s16( 1, 0,  0),
@@ -76,7 +79,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	bool new_sneak_node_exists = m_sneak_node_exists;
 
 	// We want the top of the sneak node to be below the players feet
-	f32 position_y_mod = 0.05f * BS;
+	f32 position_y_mod = 0.02f * BS;
 	if (m_sneak_node_exists)
 		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - position_y_mod;
 
@@ -97,24 +100,31 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 
 	// Get new sneak node
 	m_sneak_ladder_detected = false;
-	f32 min_distance_f = 100000.0f * BS;
+	f32 min_distance_sq = HUGE_VALF;
 
 	for (const auto &d : dir9_center) {
 		const v3s16 p = current_node + d;
-		const v3f pf = intToFloat(p, BS);
-		const v2f diff(position.X - pf.X, position.Z - pf.Z);
-		f32 distance_f = diff.getLength();
 
-		if (distance_f > min_distance_f ||
-				fabs(diff.X) > (0.5f + 0.1f) * BS + sneak_max.X ||
-				fabs(diff.Y) > (0.5f + 0.1f) * BS + sneak_max.Z)
-			continue;
-
-
-		// The node to be sneaked on has to be walkable
 		node = map->getNode(p, &is_valid_position);
+		// The node to be sneaked on has to be walkable
 		if (!is_valid_position || !nodemgr->get(node).walkable)
 			continue;
+
+		v3f pf = intToFloat(p, BS);
+		{
+			std::vector<aabb3f> nodeboxes;
+			node.getCollisionBoxes(nodemgr, &nodeboxes);
+			pf += getNodeBoundingBox(nodeboxes).getCenter();
+		}
+
+		const v2f diff(position.X - pf.X, position.Z - pf.Z);
+		const f32 distance_sq = diff.getLengthSQ();
+
+		if (distance_sq > min_distance_sq ||
+				std::fabs(diff.X) > allowed_range + sneak_max.X ||
+				std::fabs(diff.Y) > allowed_range + sneak_max.Z)
+			continue;
+
 		// And the node(s) above have to be nonwalkable
 		bool ok = true;
 		if (!physics_override.sneak_glitch) {
@@ -135,7 +145,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 		if (!ok)
 			continue;
 
-		min_distance_f = distance_f;
+		min_distance_sq = distance_sq;
 		m_sneak_node = p;
 		new_sneak_node_exists = true;
 	}
@@ -306,7 +316,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Add new collisions to the vector
 	if (collision_info && !free_move) {
 		v3f diff = intToFloat(m_standing_node, BS) - position;
-		f32 distance = diff.getLength();
+		f32 distance_sq = diff.getLengthSQ();
 		// Force update each ClientEnvironment::step()
 		bool is_first = collision_info->empty();
 
@@ -321,10 +331,10 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			diff = intToFloat(colinfo.node_p, BS) - position;
 
 			// Find nearest colliding node
-			f32 len = diff.getLength();
-			if (is_first || len < distance) {
+			f32 len_sq = diff.getLengthSQ();
+			if (is_first || len_sq < distance_sq) {
 				m_standing_node = colinfo.node_p;
-				distance = len;
+				distance_sq = len_sq;
 				is_first = false;
 			}
 		}
@@ -342,7 +352,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Max. distance (X, Z) over border for sneaking determined by collision box
 	// * 0.49 to keep the center just barely on the node
-	v3f sneak_max = m_collisionbox.getExtent() * 0.49;
+	v3f sneak_max = m_collisionbox.getExtent() * 0.49f;
 
 	if (m_sneak_ladder_detected) {
 		// restore legacy behaviour (this makes the m_speed.Y hack necessary)
