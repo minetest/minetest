@@ -4957,6 +4957,8 @@ Utilities
           mod_storage_on_disk = true,
           -- "zstd" method for compress/decompress (5.7.0)
           compress_zstd = true,
+          -- Bulk ABM support (5.7.0)
+          bulk_abms = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
