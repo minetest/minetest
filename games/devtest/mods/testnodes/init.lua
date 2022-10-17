@@ -1,5 +1,6 @@
 local path = minetest.get_modpath(minetest.get_current_modname())
 
+dofile(path.."/abms.lua")
 dofile(path.."/drawtypes.lua")
 dofile(path.."/meshes.lua")
 dofile(path.."/nodeboxes.lua")
