@@ -56,8 +56,14 @@ enum {
 	CUSTOM_RIDX_CURRENT_MOD_NAME,
 	CUSTOM_RIDX_BACKTRACE,
 	CUSTOM_RIDX_HTTP_API_LUA,
-	CUSTOM_RIDX_VECTOR_METATABLE,
 	CUSTOM_RIDX_METATABLE_MAP,
+
+	// The following four functions are implemented in Lua because LuaJIT can
+	// trace them and optimize tables/string better than from the C API.
+	CUSTOM_RIDX_READ_VECTOR,
+	CUSTOM_RIDX_PUSH_VECTOR,
+	CUSTOM_RIDX_READ_NODE,
+	CUSTOM_RIDX_PUSH_NODE,
 };
 
 

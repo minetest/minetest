@@ -1,5 +1,4 @@
 _G.core = {}
-_G.vector = {metatable = {}}
 dofile("builtin/common/vector.lua")
 dofile("builtin/common/misc_helpers.lua")
 

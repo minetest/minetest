@@ -1175,43 +1175,27 @@ NodeBox read_nodebox(lua_State *L, int index)
 }
 
 /******************************************************************************/
-MapNode readnode(lua_State *L, int index, const NodeDefManager *ndef)
+MapNode readnode(lua_State *L, int index)
 {
-	lua_getfield(L, index, "name");
-	if (!lua_isstring(L, -1))
-		throw LuaError("Node name is not set or is not a string!");
-	std::string name = lua_tostring(L, -1);
-	lua_pop(L, 1);
-
-	u8 param1 = 0;
-	lua_getfield(L, index, "param1");
-	if (!lua_isnil(L, -1))
-		param1 = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	u8 param2 = 0;
-	lua_getfield(L, index, "param2");
-	if (!lua_isnil(L, -1))
-		param2 = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	content_t id = CONTENT_IGNORE;
-	if (!ndef->getId(name, id))
-		throw LuaError("\"" + name + "\" is not a registered node!");
-
-	return {id, param1, param2};
+	lua_pushvalue(L, index);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
+	lua_insert(L, -2);
+	lua_call(L, 1, 3);
+	content_t content = lua_tointeger(L, -3);
+	u8 param1 = lua_tointeger(L, -2);
+	u8 param2 = lua_tointeger(L, -1);
+	lua_pop(L, 3);
+	return MapNode(content, param1, param2);
 }
 
 /******************************************************************************/
-void pushnode(lua_State *L, const MapNode &n, const NodeDefManager *ndef)
+void pushnode(lua_State *L, const MapNode &n)
 {
-	lua_createtable(L, 0, 3);
-	lua_pushstring(L, ndef->get(n).name.c_str());
-	lua_setfield(L, -2, "name");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
+	lua_pushinteger(L, n.getContent());
 	lua_pushinteger(L, n.getParam1());
-	lua_setfield(L, -2, "param1");
 	lua_pushinteger(L, n.getParam2());
-	lua_setfield(L, -2, "param2");
+	lua_call(L, 3, 1);
 }
 
 /******************************************************************************/
