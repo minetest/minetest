@@ -382,16 +382,13 @@ void GUIChatConsole::drawPrompt()
 			false,
 			&AbsoluteClippingRect);
 	} else {
-		// TODO: static for the irr::core::string<T> has sizeof<T> byte(s) memory leak
-		static irr::core::stringw strw = prompt_text.c_str();
 		m_font->draw(
-			strw,
+			prompt_text.c_str(),
 			destrect,
 			video::SColor(255, 255, 255, 255),
 			false,
 			false,
 			&AbsoluteClippingRect);
-		strw.clear();
 	}
 
 	// Draw the cursor during on periods
