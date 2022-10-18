@@ -356,28 +356,26 @@ void GUIChatConsole::drawPrompt()
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	gui::CGUITTFont *ttFont = nullptr;
-	u32 fontWidth = m_fontsize.X;
-	u32 fontHeight= m_fontsize.Y;
-	u32 textWidth ;
+	gui::CGUITTFont *tt_font = nullptr;
+	u32 font_width = m_fontsize.X;
+	u32 font_height= m_fontsize.Y;
 
 	if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
-		ttFont = static_cast<gui::CGUITTFont*>(m_font);
-		core::dimension2d<u32> size = ttFont->getDimension(prompt_text);
-		textWidth = size.Width;
-		if (size.Height > fontHeight) fontHeight = size.Height;
-	} else {
-		textWidth = fontWidth * prompt_text.size();
+		tt_font = static_cast<gui::CGUITTFont*>(m_font);
 	}
 
+	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
+	u32 text_width = size.Width;
+	if (size.Height > font_height) font_height = size.Height;
+
 	u32 row = m_chat_backend->getConsoleBuffer().getRows();
-	s32 y = row * fontHeight + m_height - m_desired_height;
+	s32 y = row * font_height + m_height - m_desired_height;
 
 
 	core::rect<s32> destrect(
-		fontWidth, y, fontWidth + textWidth, y + fontHeight);
-	if (ttFont) {
-		ttFont->draw(
+		font_width, y, font_width + text_width, y + font_height);
+	if (tt_font) {
+		tt_font->draw(
 			prompt_text,
 			destrect,
 			false,
@@ -385,15 +383,15 @@ void GUIChatConsole::drawPrompt()
 			&AbsoluteClippingRect);
 	} else {
 		// TODO: static for the irr::core::string<T> has sizeof<T> byte(s) memory leak
-		static irr::core::stringw strW = prompt_text.c_str();
+		static irr::core::stringw strw = prompt_text.c_str();
 		m_font->draw(
-			strW,
+			strw,
 			destrect,
 			video::SColor(255, 255, 255, 255),
 			false,
 			false,
 			&AbsoluteClippingRect);
-		strW.clear();
+		strw.clear();
 	}
 
 	// Draw the cursor during on periods
@@ -403,20 +401,17 @@ void GUIChatConsole::drawPrompt()
 
 		if (cursor_pos >= 0)
 		{
-			u32 textToCursorPosWidth = 0;
-			if (ttFont) {
-				textToCursorPosWidth = ttFont->getDimension(prompt_text.substr(0, cursor_pos)).Width;
-			} else {
-				textToCursorPosWidth = cursor_pos * fontWidth;
-			}
+
+			u32 textToCursorPosWidth = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
+
 			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
-			s32 x = fontWidth + textToCursorPosWidth;
+			s32 x = font_width + textToCursorPosWidth;
 			core::rect<s32> destrect(
 				x,
-				y + fontHeight * (1.0 - m_cursor_height),
-				x + fontWidth * MYMAX(cursor_len, 1),
-				y + fontHeight * (cursor_len ? m_cursor_height+1 : 1)
+				y + font_height * (1.0 - m_cursor_height),
+				x + font_width * MYMAX(cursor_len, 1),
+				y + font_height * (cursor_len ? m_cursor_height+1 : 1)
 			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(
