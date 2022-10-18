@@ -202,19 +202,19 @@ void ScriptApiBase::checkSetByBuiltin()
 
 	if (m_gamedef) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_VECTOR);
-		luaL_checktype(L, -1, LUA_TFUNCTION);
+		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_vector");
 		lua_pop(L, 1);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_VECTOR);
-		luaL_checktype(L, -1, LUA_TFUNCTION);
+		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_vector");
 		lua_pop(L, 1);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
-		luaL_checktype(L, -1, LUA_TFUNCTION);
+		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing read_node");
 		lua_pop(L, 1);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
-		luaL_checktype(L, -1, LUA_TFUNCTION);
+		FATAL_ERROR_IF(lua_type(L, -1) != LUA_TFUNCTION, "missing push_node");
 		lua_pop(L, 1);
 	}
 }
