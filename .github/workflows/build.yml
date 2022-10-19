@@ -29,6 +29,9 @@ on:
       - 'Dockerfile'
       - '.dockerignore'
 
+env:
+  MINETEST_POSTGRESQL_CONNECT_STRING: 'host=localhost user=minetest password=minetest dbname=minetest'
+
 jobs:
   # Older gcc version (should be close to our minimum supported version)
   gcc_5:
