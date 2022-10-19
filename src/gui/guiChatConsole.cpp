@@ -356,16 +356,16 @@ void GUIChatConsole::drawPrompt()
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	u32 font_width = m_fontsize.X;
-	u32 font_height= m_fontsize.Y;
+	u32 font_width  = m_fontsize.X;
+	u32 font_height = m_fontsize.Y;
 
 	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
 	u32 text_width = size.Width;
-	if (size.Height > font_height) font_height = size.Height;
+	if (size.Height > font_height)
+		font_height = size.Height;
 
 	u32 row = m_chat_backend->getConsoleBuffer().getRows();
 	s32 y = row * font_height + m_height - m_desired_height;
-
 
 	core::rect<s32> destrect(
 		font_width, y, font_width + text_width, y + font_height);
