@@ -356,13 +356,8 @@ void GUIChatConsole::drawPrompt()
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	gui::CGUITTFont *tt_font = nullptr;
 	u32 font_width = m_fontsize.X;
 	u32 font_height= m_fontsize.Y;
-
-	if (m_font->getType() == irr::gui::EGFT_CUSTOM) {
-		tt_font = static_cast<gui::CGUITTFont*>(m_font);
-	}
 
 	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
 	u32 text_width = size.Width;
@@ -374,22 +369,13 @@ void GUIChatConsole::drawPrompt()
 
 	core::rect<s32> destrect(
 		font_width, y, font_width + text_width, y + font_height);
-	if (tt_font) {
-		tt_font->draw(
-			prompt_text,
-			destrect,
-			false,
-			false,
-			&AbsoluteClippingRect);
-	} else {
-		m_font->draw(
-			prompt_text.c_str(),
-			destrect,
-			video::SColor(255, 255, 255, 255),
-			false,
-			false,
-			&AbsoluteClippingRect);
-	}
+	m_font->draw(
+		prompt_text.c_str(),
+		destrect,
+		video::SColor(255, 255, 255, 255),
+		false,
+		false,
+		&AbsoluteClippingRect);
 
 	// Draw the cursor during on periods
 	if ((m_cursor_blink & 0x8000) != 0)
