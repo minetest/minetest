@@ -385,11 +385,11 @@ void GUIChatConsole::drawPrompt()
 		if (cursor_pos >= 0)
 		{
 
-			u32 textToCursorPosWidth = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
+			u32 text_to_cursor_pos_width = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
 
 			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
-			s32 x = font_width + textToCursorPosWidth;
+			s32 x = font_width + text_to_cursor_pos_width;
 			core::rect<s32> destrect(
 				x,
 				y + font_height * (1.0 - m_cursor_height),
