@@ -169,3 +169,27 @@ protected:
 private:
 	virtual void writePrivileges(const AuthEntry &authEntry);
 };
+
+class ModMetadataDatabasePostgreSQL : private Database_PostgreSQL, public ModMetadataDatabase
+{
+public:
+	ModMetadataDatabasePostgreSQL(const std::string &connect_string);
+	~ModMetadataDatabasePostgreSQL() = default;
+
+	bool getModEntries(const std::string &modname, StringMap *storage);
+	bool getModKeys(const std::string &modname, std::vector<std::string> *storage);
+	bool getModEntry(const std::string &modname, const std::string &key, std::string *value);
+	bool hasModEntry(const std::string &modname, const std::string &key);
+	bool setModEntry(const std::string &modname,
+			const std::string &key, const std::string &value);
+	bool removeModEntry(const std::string &modname, const std::string &key);
+	bool removeModEntries(const std::string &modname);
+	void listMods(std::vector<std::string> *res);
+
+	void beginSave() { Database_PostgreSQL::beginSave(); }
+	void endSave() { Database_PostgreSQL::endSave(); }
+
+protected:
+	virtual void createDatabase();
+	virtual void initStatements();
+};
