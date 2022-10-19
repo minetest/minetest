@@ -12,7 +12,8 @@ compare_meta:from_table({
 })
 
 local function test_metadata(meta)
-	meta:from_table({fields = {a = 1, b = "2"}})
+	meta:from_table({fields = {a = 2, b = "2"}})
+	meta:set_string("a", 1)
 	meta:set_string("c", "3")
 	meta:set_int("d", 4)
 	meta:set_string("e", "e")
