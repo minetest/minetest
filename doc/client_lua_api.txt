@@ -364,7 +364,7 @@ examples.
   of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centered on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
@@ -376,7 +376,7 @@ examples.
   of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centered on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
@@ -418,7 +418,7 @@ examples.
 * Clickable button. When clicked, fields will be sent.
 * `x`, `y` and `name` work as per field
 * `w` and `h` are the size of the button
-* Fixed button height. It will be vertically centred on `h`
+* Fixed button height. It will be vertically centered on `h`
 * `label` is the text on the button
 * Position and size units are inventory slots
 
