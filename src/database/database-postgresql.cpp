@@ -276,7 +276,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 		argLen, argFmt, false);
 
 	if (PQntuples(results))
-		block->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		*block = pg_to_string(results, 0, 0);
 	else
 		block->clear();
 
@@ -697,8 +697,8 @@ bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 	}
 
 	res.id = pg_to_uint(result, 0, 0);
-	res.name = std::string(PQgetvalue(result, 0, 1), PQgetlength(result, 0, 1));
-	res.password = std::string(PQgetvalue(result, 0, 2), PQgetlength(result, 0, 2));
+	res.name = pg_to_string(result, 0, 1);
+	res.password = pg_to_string(result, 0, 2);
 	res.last_login = pg_to_int(result, 0, 3);
 
 	PQclear(result);
@@ -878,11 +878,8 @@ bool ModMetadataDatabasePostgreSQL::getModEntries(const std::string &modname, St
 
 	int numrows = PQntuples(results);
 
-	for (int row = 0; row < numrows; ++row) {
-		std::string key(PQgetvalue(results, row, 0), PQgetlength(results, row, 0));
-		std::string value(PQgetvalue(results, row, 1), PQgetlength(results, row, 1));
-		storage->emplace(std::move(key), std::move(value));
-	}
+	for (int row = 0; row < numrows; ++row)
+		(*storage)[pg_to_string(results, row, 0)] = pg_to_string(results, row, 1);
 
 	PQclear(results);
 
@@ -904,7 +901,7 @@ bool ModMetadataDatabasePostgreSQL::getModKeys(const std::string &modname,
 
 	storage->reserve(storage->size() + numrows);
 	for (int row = 0; row < numrows; ++row)
-		storage->emplace_back(PQgetvalue(results, row, 0), PQgetlength(results, row, 0));
+		storage->push_back(pg_to_string(results, row, 0));
 
 	PQclear(results);
 
@@ -925,7 +922,7 @@ bool ModMetadataDatabasePostgreSQL::getModEntry(const std::string &modname,
 	bool found = numrows > 0;
 
 	if (found)
-		value->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		*value = pg_to_string(results, 0, 0);
 
 	PQclear(results);
 
@@ -1014,7 +1011,7 @@ void ModMetadataDatabasePostgreSQL::listMods(std::vector<std::string> *res)
 	int numrows = PQntuples(results);
 
 	for (int row = 0; row < numrows; ++row)
-		res->emplace_back(PQgetvalue(results, row, 0), PQgetlength(results, row, 0));
+		res->push_back(pg_to_string(results, row, 0));
 
 	PQclear(results);
 }
