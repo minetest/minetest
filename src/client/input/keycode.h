@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "irrlichttypes.h"
 #include "Keycodes.h"
-#include <IEventReceiver.h>
+#include "IEventReceiver.h"
 #include <string>
 
 class UnknownKeycode : public BaseException
