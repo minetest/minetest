@@ -59,7 +59,7 @@ methods:
 			x, -- x width
 			y  -- y height
 		},                                                            -- special size for this tab (only relevant if no parent for tabview set)
-	on_change          = function(type,old_tab,new_tab)               -- called on tab chang, type is "ENTER" or "LEAVE"
+	on_change          = function(type,old_tab,new_tab)               -- called on tab change, type is "ENTER" or "LEAVE"
   }
 - set_autosave_tab(value)
   ^ tell tabview to automatically save current tabname as "tabview_name"_LAST
