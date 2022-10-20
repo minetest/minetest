@@ -262,6 +262,7 @@ void TestModMetadataDatabase::testListMods()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	UASSERT(mod_meta_db->setModEntry("mod2", "key1", "value1"));
+	UASSERT(mod_meta_db->setModEntry("mod2", "key2", "value1"));
 	std::vector<std::string> mod_list;
 	mod_meta_db->listMods(&mod_list);
 	UASSERTCMP(size_t, ==, mod_list.size(), 2);
