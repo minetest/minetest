@@ -65,6 +65,11 @@ protected:
 		);
 	}
 
+	inline std::string pg_to_string(PGresult *res, int row, int col)
+	{
+		return std::string(PQgetvalue(res, row, col), PQgetlength(res, row, col));
+	}
+
 	inline PGresult *execPrepared(const char *stmtName, const int paramsNumber,
 		const void **params,
 		const int *paramsLengths = NULL, const int *paramsFormats = NULL,
