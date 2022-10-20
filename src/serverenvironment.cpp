@@ -837,8 +837,7 @@ public:
 						wider_unknown_count++;
 						continue;
 					}
-					wider += block2->m_static_objects.getActiveSize() +
-							 block2->m_static_objects.getStoredSize();
+					wider += block2->m_static_objects.size();
 				}
 		// Extrapolate
 		u32 active_object_count = block->m_static_objects.getActiveSize();
@@ -1250,13 +1249,10 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 				<< "Failed to emerge block " << PP(p) << std::endl;
 			continue;
 		}
-		u32 num_stored = block->m_static_objects.getStoredSize();
-		u32 num_active = block->m_static_objects.getActiveSize();
-		if (num_stored != 0 || num_active != 0) {
-			block->m_static_objects.clearStored();
-			block->m_static_objects.clearActives();
-			block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_CLEAR_ALL_OBJECTS);
-			num_objs_cleared += num_stored + num_active;
+
+		u32 num_cleared = block->clearObjects();
+		if (num_cleared > 0) {
+			num_objs_cleared += num_cleared;
 			num_blocks_cleared++;
 		}
 		num_blocks_checked++;
@@ -1946,9 +1942,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	verbosestream << "ServerEnvironment::activateObjects(): "
 			<< "activating objects of block " << PP(block->getPos()) << " ("
 			<< block->m_static_objects.getStoredSize() << " objects)" << std::endl;
-	bool large_amount = (block->m_static_objects.getStoredSize() >
-						 g_settings->getU16("max_objects_per_block"));
-	if (large_amount) {
+	if (block->m_static_objects.getStoredSize() > g_settings->getU16("max_objects_per_block")) {
 		errorstream << "suspiciously large amount of objects detected: "
 			<< block->m_static_objects.getStoredSize() << " in "
 			<< PP(block->getPos()) << "; removing all of them." << std::endl;

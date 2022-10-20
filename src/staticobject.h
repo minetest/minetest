@@ -82,21 +82,28 @@ public:
 
 	inline void setActive(u16 id, const StaticObject &obj) { m_active[id] = obj; }
 	inline size_t getActiveSize() const { return m_active.size(); }
-	inline void clearActives() { m_active.clear(); }
 	inline size_t getStoredSize() const { return m_stored.size(); }
 	inline void clearStored() { m_stored.clear(); }
 	inline bool isStoredEmpty() const { return m_stored.empty(); }
 	void pushStored(const StaticObject &obj) { m_stored.push_back(obj); }
-	// Return null if object is not found
-	StaticObject *getActive(u16 id);
 
 	bool moveActiveToStored(u16 id);
+
+	inline void clear()
+	{
+		m_active.clear();
+		m_stored.clear();
+	}
+
+	inline size_t size()
+	{
+		return m_active.size() + m_stored.size();
+	}
 
 private:
 	/*
 		NOTE: When an object is transformed to active, it is removed
 		from m_stored and inserted to m_active.
-		The caller directly manipulates these containers.
 	*/
 	std::vector<StaticObject> m_stored;
 	std::map<u16, StaticObject> m_active;

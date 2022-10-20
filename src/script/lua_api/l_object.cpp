@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "server.h"
 #include "hud.h"
+#include "lighting.h"
 #include "scripting_server.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"

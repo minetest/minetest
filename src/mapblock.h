@@ -430,6 +430,8 @@ public:
 	void deSerializeNetworkSpecific(std::istream &is);
 
 	bool moveActiveObjectToStored(u16 id);
+	// clearObject and return removed objects count
+	u32 clearObjects();
 private:
 	/*
 		Private methods
