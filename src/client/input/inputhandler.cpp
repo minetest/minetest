@@ -222,6 +222,10 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
  */
 float RealInputHandler::getMovementSpeed()
 {
+	if (isInMenu) {
+		return 0.f;
+	}
+
 	bool f = m_receiver->IsKeyDown(keycache.key[KeyType::FORWARD]),
 		b = m_receiver->IsKeyDown(keycache.key[KeyType::BACKWARD]),
 		l = m_receiver->IsKeyDown(keycache.key[KeyType::LEFT]),

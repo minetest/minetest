@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
-#include "joystick_controller.h"
+#include "gamepad_controller.h"
 #include <list>
 #include "keycode.h"
-#include "renderingengine.h"
+#include "client/renderingengine.h"
 
 class InputHandler;
 
@@ -197,7 +197,7 @@ public:
 		keyWasReleased.clear();
 	}
 
-	JoystickController *joystick = nullptr;
+	GamepadController *joystick = nullptr;
 
 private:
 	s32 mouse_wheel = 0;
@@ -266,8 +266,9 @@ public:
 	virtual void clear() {}
 	virtual void releaseAllKeys() {}
 
-	JoystickController joystick;
+	GamepadController joystick;
 	KeyCache keycache;
+	bool isInMenu = false;
 };
 /*
 	Separated input handler

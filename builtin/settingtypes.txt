@@ -150,6 +150,25 @@ enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
 #    Requires: keyboard_mouse
 invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
+[*Gamepads]
+
+#    Enable joysticks. Requires a restart to take effect
+enable_joysticks (Enable joysticks) bool true
+
+#    The identifier of the joystick to use
+joystick_id (Joystick ID) int 0 0 255
+
+#    The time in seconds it takes between repeated events
+#    when holding down a joystick button combination.
+repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
+
+#    The dead zone of the joystick
+joystick_deadzone (Joystick dead zone) int 8000 0 65535
+
+#    The sensitivity of the joystick axes for moving the
+#    in-game view frustum around.
+joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
+
 [*Touchscreen]
 
 #    Enables touchscreen mode, allowing you to play the game with a touchscreen.
@@ -2226,29 +2245,6 @@ enable_remote_media_server (Connect to external media server) bool true
 #    File in client/serverlist/ that contains your favorite servers displayed in the
 #    Multiplayer Tab.
 serverlist_file (Serverlist file) string favoriteservers.json
-
-
-[*Gamepads]
-
-#    Enable joysticks. Requires a restart to take effect
-enable_joysticks (Enable joysticks) bool false
-
-#    The identifier of the joystick to use
-joystick_id (Joystick ID) int 0 0 255
-
-#    The type of joystick
-joystick_type (Joystick type) enum auto auto,generic,xbox,dragonrise_gamecube
-
-#    The time in seconds it takes between repeated events
-#    when holding down a joystick button combination.
-repeat_joystick_button_time (Joystick button repetition interval) float 0.17 0.001
-
-#    The dead zone of the joystick
-joystick_deadzone (Joystick dead zone) int 2048 0 65535
-
-#    The sensitivity of the joystick axes for moving the
-#    in-game view frustum around.
-joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
 [*Hide: Temporary Settings]

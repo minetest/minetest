@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2016 est31, <MTest31@outlook.com>
+Copyright (C) 2022 rubenwardy
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,8 +24,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keys.h"
 #include <bitset>
 #include <vector>
+#include <memory>
 
-enum JoystickAxis {
+#include <SDL2/SDL_gamecontroller.h>
+
+
+enum GamepadAxis
+{
 	JA_SIDEWARD_MOVE,
 	JA_FORWARD_MOVE,
 
@@ -35,77 +41,29 @@ enum JoystickAxis {
 	JA_COUNT,
 };
 
-struct JoystickAxisLayout {
-	u16 axis_id;
-	// -1 if to invert, 1 if to keep it.
-	int invert;
-};
 
-
-struct JoystickCombination {
-
-	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const=0;
-
-	GameKeyType key;
-};
-
-struct JoystickButtonCmb : public JoystickCombination {
-
-	JoystickButtonCmb() = default;
-
-	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask) :
-		filter_mask(filter_mask),
-		compare_mask(compare_mask)
-	{
-		this->key = key;
-	}
-
-	virtual ~JoystickButtonCmb() = default;
-
-	virtual bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const;
-
-	u32 filter_mask;
-	u32 compare_mask;
-};
-
-struct JoystickAxisCmb : public JoystickCombination {
-
-	JoystickAxisCmb() = default;
-
-	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh) :
-		axis_to_compare(axis_to_compare),
-		direction(direction),
-		thresh(thresh)
-	{
-		this->key = key;
-	}
-
-	virtual ~JoystickAxisCmb() = default;
-
-	bool isTriggered(const irr::SEvent::SJoystickEvent &ev) const override;
-
-	u16 axis_to_compare;
-
-	// if -1, thresh must be smaller than the axis value in order to trigger
-	// if  1, thresh must be bigger  than the axis value in order to trigger
-	int direction;
-	s16 thresh;
-};
-
-struct JoystickLayout {
-	std::vector<JoystickButtonCmb> button_keys;
-	std::vector<JoystickAxisCmb> axis_keys;
-	JoystickAxisLayout axes[JA_COUNT];
+struct GamepadLayout
+{
 	s16 axes_deadzone;
 };
 
-class JoystickController {
 
+class GamepadInput
+{
 public:
-	JoystickController();
+	virtual ~GamepadInput() = default;
+	virtual bool operator()(SDL_GameController *gameController) const = 0;
+};
 
-	void onJoystickConnect(const std::vector<irr::SJoystickInfo> &joystick_infos);
 
+class GamepadController
+{
+public:
+	GamepadController();
+
+	void connectToJoystick();
+
+	void update(float dtime, bool is_in_gui);
 	bool handleEvent(const irr::SEvent::SJoystickEvent &ev);
 	void clear();
 
@@ -126,6 +84,7 @@ public:
 	{
 		return m_keys_released[b];
 	}
+
 	void clearWasKeyReleased(GameKeyType b)
 	{
 		m_keys_released[b] = false;
@@ -135,6 +94,7 @@ public:
 	{
 		return m_keys_pressed[b];
 	}
+
 	void clearWasKeyPressed(GameKeyType b)
 	{
 		m_keys_pressed[b] = false;
@@ -145,22 +105,19 @@ public:
 		return m_keys_down[b];
 	}
 
-	s16 getAxis(JoystickAxis axis)
-	{
-		return m_axes_vals[axis];
-	}
-
-	float getAxisWithoutDead(JoystickAxis axis);
-
 	float getMovementDirection();
 	float getMovementSpeed();
-
-	f32 doubling_dtime;
+	v2f32 getLookRotation();
 
 private:
-	void setLayoutFromControllerName(const std::string &name);
 
-	JoystickLayout m_layout;
+	float getAxisWithoutDead(GamepadAxis axis);
+
+	f32 doubling_dtime;
+	SDL_GameController *gameController = nullptr;
+
+	GamepadLayout m_layout;
+	std::vector<std::pair<std::unique_ptr<GamepadInput>, KeyType::T>> m_button_bindings;
 
 	s16 m_axes_vals[JA_COUNT];
 
