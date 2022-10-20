@@ -106,6 +106,42 @@ JoystickLayout create_default_layout()
 	return jlo;
 }
 
+JoystickLayout create_logitech_f310_layout()
+{
+	JoystickLayout jlo;
+
+	jlo.axes_deadzone = g_settings->getU16("joystick_deadzone");
+
+	const JoystickAxisLayout axes[JA_COUNT] = {
+		{0, 1}, // JA_SIDEWARD_MOVE
+		{1, 1}, // JA_FORWARD_MOVE
+		{4, 1}, // JA_FRUSTUM_HORIZONTAL
+		{3, 1}, // JA_FRUSTUM_VERTICAL
+	};
+	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+
+	JLO_B_PB(KeyType::ESC,        1 << 6,      1 << 6); // BACK
+
+	//JLO_B_PB(KeyType::USE,        1 << 7,      1 << 7));
+
+	JLO_B_PB(KeyType::SNEAK,      1 << 2, 1 << 2); // X
+	JLO_A_PB(KeyType::DIG,        2, 1, jlo.axes_deadzone); // RT
+	JLO_A_PB(KeyType::PLACE,      2, -1, jlo.axes_deadzone); // LT
+	JLO_B_PB(KeyType::JUMP,       1 << 0, 1 << 0); // A
+	JLO_B_PB(KeyType::AUX1,       1 << 1, 1 << 1); // B
+	JLO_B_PB(KeyType::DROP,        1 << 3, 1 << 3); // Y
+	JLO_B_PB(KeyType::HOTBAR_PREV, 1 << 4, 1 << 4); // LB
+	JLO_B_PB(KeyType::HOTBAR_NEXT, 1 << 5, 1 << 5); // RB
+
+	// Movement buttons, important for vessels
+	JLO_A_PB(KeyType::FORWARD,  1,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::LEFT,     0,  1, jlo.axes_deadzone);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, jlo.axes_deadzone);
+
+	return jlo;
+}
+
 JoystickLayout create_xbox_layout()
 {
 	JoystickLayout jlo;
@@ -240,6 +276,8 @@ void JoystickController::setLayoutFromControllerName(const std::string &name)
 		m_layout = create_xbox_layout();
 	} else if (lowercase(name).find("dragonrise_gamecube") != std::string::npos) {
 		m_layout = create_dragonrise_gamecube_layout();
+	} else if (lowercase(name).find("logitech_f310") != std::string::npos) {
+		m_layout = create_logitech_f310_layout();
 	} else {
 		m_layout = create_default_layout();
 	}
