@@ -4485,7 +4485,8 @@ Methods
 -----------
 
 A helper class for voxel areas.
-It can be created via `VoxelArea:new({MinEdge = pmin, MaxEdge = pmax})`.
+It can be created via `VoxelArea(pmin, pmax)` or
+`VoxelArea:new({MinEdge = pmin, MaxEdge = pmax})`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 ### Methods
@@ -4533,7 +4534,7 @@ the axes in a voxel area:
 
 If, for example:
 
-    local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+    local area = VoxelArea(emin, emax)
 
 The values of `ystride` and `zstride` can be obtained using `area.ystride` and
 `area.zstride`.
