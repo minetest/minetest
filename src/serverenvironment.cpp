@@ -370,7 +370,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	// Go through new list
 	for (v3s16 p : newlist) {
 		// If not on old list, it's been added
-		if(m_list.find(p) == m_list.end())
+		if (m_list.find(p) == m_list.end())
 			blocks_added.insert(p);
 	}
 
@@ -771,16 +771,16 @@ public:
 				actual_interval = trigger_interval;
 			}
 			float chance = abm->getTriggerChance();
-			if(chance == 0)
+			if (chance == 0)
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
 			if (abm->getSimpleCatchUp()) {
 				float intervals = actual_interval / trigger_interval;
-				if(intervals == 0)
+				if (intervals == 0)
 					continue;
 				aabm.chance = chance / intervals;
-				if(aabm.chance == 0)
+				if (aabm.chance == 0)
 					aabm.chance = 1;
 			} else {
 				aabm.chance = chance;
@@ -837,19 +837,18 @@ public:
 						wider_unknown_count++;
 						continue;
 					}
-					wider += block2->m_static_objects.m_active.size()
-						+ block2->m_static_objects.m_stored.size();
+					wider += block2->m_static_objects.getActiveSize() +
+							 block2->m_static_objects.getStoredSize();
 				}
 		// Extrapolate
-		u32 active_object_count = block->m_static_objects.m_active.size();
-		u32 wider_known_count = 3*3*3 - wider_unknown_count;
+		u32 active_object_count = block->m_static_objects.getActiveSize();
+		u32 wider_known_count = 3 * 3 * 3 - wider_unknown_count;
 		wider += wider_unknown_count * wider / wider_known_count;
 		return active_object_count;
-
 	}
 	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
-		if(m_aabms.empty())
+		if (m_aabms.empty())
 			return;
 
 		// Check the content type cache first
@@ -973,7 +972,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 	// Remove stored static objects if clearObjects was called since block's timestamp
 	if (stamp == BLOCK_TIMESTAMP_UNDEFINED || stamp < m_last_clear_objects_time) {
-		block->m_static_objects.m_stored.clear();
+		block->m_static_objects.clearStored();
 		// do not set changed flag to avoid unnecessary mapblock writes
 	}
 
@@ -1131,7 +1130,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 				m_map->emergeBlock(neighborPos, false);
 				node = m_map->getNode(neighborPos, &is_position_ok);
 				if (!is_position_ok)
-					continue;  // not generated
+					continue; // not generated
 			}
 
 			const ContentFeatures &def = ndef->get(node);
@@ -1251,13 +1250,12 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 				<< "Failed to emerge block " << PP(p) << std::endl;
 			continue;
 		}
-		u32 num_stored = block->m_static_objects.m_stored.size();
-		u32 num_active = block->m_static_objects.m_active.size();
+		u32 num_stored = block->m_static_objects.getStoredSize();
+		u32 num_active = block->m_static_objects.getActiveSize();
 		if (num_stored != 0 || num_active != 0) {
-			block->m_static_objects.m_stored.clear();
-			block->m_static_objects.m_active.clear();
-			block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				MOD_REASON_CLEAR_ALL_OBJECTS);
+			block->m_static_objects.clearStored();
+			block->m_static_objects.clearActives();
+			block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_CLEAR_ALL_OBJECTS);
 			num_objs_cleared += num_stored + num_active;
 			num_blocks_cleared++;
 		}
@@ -1523,7 +1521,7 @@ void ServerEnvironment::step(float dtime)
 
 		u32 object_count = 0;
 
-		auto cb_state = [&] (ServerActiveObject *obj) {
+		auto cb_state = [&](ServerActiveObject *obj) {
 			if (obj->isGone())
 				return;
 			object_count++;
@@ -1721,7 +1719,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 	if (!block)
 		return;
 
-	for (auto &so_it : block->m_static_objects.m_active) {
+	for (auto &so_it : block->m_static_objects.getAllActives()) {
 		// Get the ServerActiveObject counterpart to this StaticObject
 		ServerActiveObject *sao = m_ao_manager.getActiveObject(so_it.first);
 		if (!sao) {
@@ -1739,7 +1737,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 
 bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 {
-	if(m_active_object_messages.empty())
+	if (m_active_object_messages.empty())
 		return false;
 
 	*dest = std::move(m_active_object_messages.front());
@@ -1803,8 +1801,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 		MapBlock *block = m_map->emergeBlock(blockpos);
-		if(block){
-			block->m_static_objects.m_active[object->getId()] = s_obj;
+		if (block) {
+			block->m_static_objects.setActive(object->getId(), s_obj);
 			object->m_static_exists = true;
 			object->m_static_block = blockpos;
 
@@ -1829,7 +1827,7 @@ void ServerEnvironment::removeRemovedObjects()
 {
 	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
 
-	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
+	auto clear_cb = [this](ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {
 			errorstream << "ServerEnvironment::removeRemovedObjects(): "
@@ -1851,7 +1849,7 @@ void ServerEnvironment::removeRemovedObjects()
 
 		// If still known by clients, don't actually remove. On some future
 		// invocation this will be 0, which is when removal will continue.
-		if(obj->m_known_by_count > 0)
+		if (obj->m_known_by_count > 0)
 			return false;
 
 		/*
@@ -1860,13 +1858,7 @@ void ServerEnvironment::removeRemovedObjects()
 		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if (block) {
-				const auto i = block->m_static_objects.m_active.find(id);
-				if (i != block->m_static_objects.m_active.end()) {
-					block->m_static_objects.m_stored.push_back(i->second);
-					block->m_static_objects.m_active.erase(id);
-					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						MOD_REASON_REMOVE_OBJECTS_DEACTIVATE);
-				} else {
+				if (!block->moveActiveObjectToStored(id)) {
 					warningstream << "ServerEnvironment::removeRemovedObjects(): "
 							<< "id=" << id << " m_static_exists=true but "
 							<< "static data doesn't actually exist in "
@@ -1896,33 +1888,33 @@ void ServerEnvironment::removeRemovedObjects()
 static void print_hexdump(std::ostream &o, const std::string &data)
 {
 	const int linelength = 16;
-	for(int l=0; ; l++){
+	for (int l = 0;; l++) {
 		int i0 = linelength * l;
 		bool at_end = false;
 		int thislinelength = linelength;
-		if(i0 + thislinelength > (int)data.size()){
+		if (i0 + thislinelength > (int)data.size()) {
 			thislinelength = data.size() - i0;
 			at_end = true;
 		}
-		for(int di=0; di<linelength; di++){
+		for (int di = 0; di < linelength; di++) {
 			int i = i0 + di;
 			char buf[4];
-			if(di<thislinelength)
+			if (di < thislinelength)
 				porting::mt_snprintf(buf, sizeof(buf), "%.2x ", data[i]);
 			else
 				porting::mt_snprintf(buf, sizeof(buf), "   ");
-			o<<buf;
+			o << buf;
 		}
-		o<<" ";
-		for(int di=0; di<thislinelength; di++){
+		o << " ";
+		for (int di = 0; di < thislinelength; di++) {
 			int i = i0 + di;
-			if(data[i] >= 32)
-				o<<data[i];
+			if (data[i] >= 32)
+				o << data[i];
 			else
-				o<<".";
+				o << ".";
 		}
-		o<<std::endl;
-		if(at_end)
+		o << std::endl;
+		if (at_end)
 			break;
 	}
 }
@@ -1944,59 +1936,57 @@ ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 */
 void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 {
-	if(block == NULL)
+	if (block == NULL)
 		return;
 
 	// Ignore if no stored objects (to not set changed flag)
-	if(block->m_static_objects.m_stored.empty())
+	if (block->m_static_objects.isStoredEmpty())
 		return;
 
-	verbosestream<<"ServerEnvironment::activateObjects(): "
-		<<"activating objects of block "<<PP(block->getPos())
-		<<" ("<<block->m_static_objects.m_stored.size()
-		<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
+	verbosestream << "ServerEnvironment::activateObjects(): "
+			<< "activating objects of block " << PP(block->getPos()) << " ("
+			<< block->m_static_objects.getStoredSize() << " objects)" << std::endl;
+	bool large_amount = (block->m_static_objects.getStoredSize() >
+						 g_settings->getU16("max_objects_per_block"));
 	if (large_amount) {
-		errorstream<<"suspiciously large amount of objects detected: "
-			<<block->m_static_objects.m_stored.size()<<" in "
-			<<PP(block->getPos())
-			<<"; removing all of them."<<std::endl;
+		errorstream << "suspiciously large amount of objects detected: "
+			<< block->m_static_objects.getStoredSize() << " in "
+			<< PP(block->getPos()) << "; removing all of them." << std::endl;
 		// Clear stored list
-		block->m_static_objects.m_stored.clear();
-		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-			MOD_REASON_TOO_MANY_OBJECTS);
+		block->m_static_objects.clearStored();
+		block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_TOO_MANY_OBJECTS);
 		return;
 	}
 
 	// Activate stored objects
 	std::vector<StaticObject> new_stored;
-	for (const StaticObject &s_obj : block->m_static_objects.m_stored) {
+	for (const StaticObject &s_obj : block->m_static_objects.getAllStored()) {
 		// Create an active object from the data
-		ServerActiveObject *obj = createSAO((ActiveObjectType) s_obj.type, s_obj.pos,
-			s_obj.data);
+		ServerActiveObject *obj =
+				createSAO((ActiveObjectType)s_obj.type, s_obj.pos, s_obj.data);
 		// If couldn't create object, store static data back.
 		if (!obj) {
-			errorstream<<"ServerEnvironment::activateObjects(): "
-				<<"failed to create active object from static object "
-				<<"in block "<<PP(s_obj.pos/BS)
-				<<" type="<<(int)s_obj.type<<" data:"<<std::endl;
+			errorstream << "ServerEnvironment::activateObjects(): "
+				<< "failed to create active object from static object "
+				<< "in block " << PP(s_obj.pos / BS)
+				<< " type=" << (int)s_obj.type << " data:" << std::endl;
 			print_hexdump(verbosestream, s_obj.data);
 
 			new_stored.push_back(s_obj);
 			continue;
 		}
-		verbosestream<<"ServerEnvironment::activateObjects(): "
-			<<"activated static object pos="<<PP(s_obj.pos/BS)
-			<<" type="<<(int)s_obj.type<<std::endl;
+		verbosestream << "ServerEnvironment::activateObjects(): "
+			<< "activated static object pos=" << PP(s_obj.pos / BS)
+			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false, dtime_s);
 	}
 
 	// Clear stored list
-	block->m_static_objects.m_stored.clear();
+	block->m_static_objects.clearStored();
 	// Add leftover failed stuff to stored list
 	for (const StaticObject &s_obj : new_stored) {
-		block->m_static_objects.m_stored.push_back(s_obj);
+		block->m_static_objects.pushStored(s_obj);
 	}
 
 	/*
@@ -2022,7 +2012,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 */
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
-	auto cb_deactivate = [this, _force_delete] (ServerActiveObject *obj, u16 id) {
+	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
@@ -2088,8 +2078,8 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 
 				if (block) {
-					const auto n = block->m_static_objects.m_active.find(id);
-					if (n != block->m_static_objects.m_active.end()) {
+					const auto n = block->m_static_objects.getAllActives().find(id);
+					if (n != block->m_static_objects.getAllActives().end()) {
 						StaticObject static_old = n->second;
 
 						float save_movem = obj->getMinimumSavedMovement();
@@ -2202,12 +2192,12 @@ bool ServerEnvironment::saveStaticToBlock(
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}
-	if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
+	if (block->m_static_objects.getStoredSize() >=
+			g_settings->getU16("max_objects_per_block")) {
 		warningstream << "ServerEnv: Trying to store id = " << store_id
-				<< " statically but block " << PP(blockpos)
-				<< " already contains "
-				<< block->m_static_objects.m_stored.size()
-				<< " objects." << std::endl;
+				<< " statically but block " << PP(blockpos) << " already contains "
+				<< block->m_static_objects.getStoredSize() << " objects."
+				<< std::endl;
 		return false;
 	}
 

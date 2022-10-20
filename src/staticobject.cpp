@@ -99,6 +99,7 @@ void StaticObjectList::serialize(std::ostream &os)
 		s_obj.serialize(os);
 	}
 }
+
 void StaticObjectList::deSerialize(std::istream &is)
 {
 	if (m_active.size()) {
@@ -119,5 +120,26 @@ void StaticObjectList::deSerialize(std::istream &is)
 		s_obj.deSerialize(is, version);
 		m_stored.push_back(s_obj);
 	}
+}
+
+bool StaticObjectList::moveActiveToStored(u16 id)
+{
+	const auto i = m_active.find(id);
+	if (i == m_active.end())
+		return false;
+
+	m_stored.push_back(i->second);
+	m_active.erase(id);
+	return true;
+}
+
+StaticObject* StaticObjectList::getActive(u16 id)
+{
+	const auto n = m_active.find(id);
+	if (n != m_active.end()) {
+		return &n->second;
+	}
+
+	return nullptr;
 }
 

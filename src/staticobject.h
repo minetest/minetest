@@ -50,29 +50,24 @@ public:
 	*/
 	void insert(u16 id, const StaticObject &obj)
 	{
-		if(id == 0)
-		{
+		if (id == 0) {
 			m_stored.push_back(obj);
-		}
-		else
-		{
-			if(m_active.find(id) != m_active.end())
-			{
-				dstream<<"ERROR: StaticObjectList::insert(): "
-						<<"id already exists"<<std::endl;
+		} else {
+			if (m_active.find(id) != m_active.end()) {
+				dstream << "ERROR: StaticObjectList::insert(): "
+						<< "id already exists" << std::endl;
 				FATAL_ERROR("StaticObjectList::insert()");
 			}
-			m_active[id] = obj;
+			setActive(id, obj);
 		}
 	}
 
 	void remove(u16 id)
 	{
 		assert(id != 0); // Pre-condition
-		if(m_active.find(id) == m_active.end())
-		{
-			warningstream<<"StaticObjectList::remove(): id="<<id
-					<<" not found"<<std::endl;
+		if (m_active.find(id) == m_active.end()) {
+			warningstream << "StaticObjectList::remove(): id=" << id << " not found"
+						  << std::endl;
 			return;
 		}
 		m_active.erase(id);
@@ -81,6 +76,23 @@ public:
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is);
 
+	// Never permit to modify outside of here. Only this object is responsible of m_stored and m_active modifications
+	const std::vector<StaticObject>& getAllStored() const { return m_stored; }
+	const std::map<u16, StaticObject> &getAllActives() const { return m_active; }
+
+	inline void setActive(u16 id, const StaticObject &obj) { m_active[id] = obj; }
+	inline size_t getActiveSize() const { return m_active.size(); }
+	inline void clearActives() { m_active.clear(); }
+	inline size_t getStoredSize() const { return m_stored.size(); }
+	inline void clearStored() { m_stored.clear(); }
+	inline bool isStoredEmpty() const { return m_stored.empty(); }
+	void pushStored(const StaticObject &obj) { m_stored.push_back(obj); }
+	// Return null if object is not found
+	StaticObject *getActive(u16 id);
+
+	bool moveActiveToStored(u16 id);
+
+private:
 	/*
 		NOTE: When an object is transformed to active, it is removed
 		from m_stored and inserted to m_active.
@@ -88,6 +100,4 @@ public:
 	*/
 	std::vector<StaticObject> m_stored;
 	std::map<u16, StaticObject> m_active;
-
-private:
 };

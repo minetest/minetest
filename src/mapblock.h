@@ -428,6 +428,8 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
+
+	bool moveActiveObjectToStored(u16 id);
 private:
 	/*
 		Private methods

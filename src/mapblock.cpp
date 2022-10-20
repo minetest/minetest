@@ -581,6 +581,17 @@ void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 	}
 }
 
+bool MapBlock::moveActiveObjectToStored(u16 id)
+{
+	if (m_static_objects.moveActiveToStored(id)) {
+		raiseModified(MOD_STATE_WRITE_NEEDED,
+			MOD_REASON_REMOVE_OBJECTS_DEACTIVATE);
+		return true;
+	}
+
+	return false;
+}
+
 /*
 	Legacy serialization
 */
