@@ -84,9 +84,9 @@ for (std::vector<std::string>::iterator it = strings.begin();
 Align backslashes for multi-line macros with spaces:
 
 ```cpp
-#define FOOBAR(x) do {    \
-	int __temp = (x); \
-	foo(__temp);      \
+#define FOOBAR(x) do { \
+	int __temp = (x);  \
+	foo(__temp);       \
 } while (0)
 ```
 
@@ -175,12 +175,12 @@ Add comments to explain a non-trivial but important detail about the code, or ex
 For comments with text, be sure to add a space between the text and the comment tokens:
 
 ```cpp
-DoThingHere();  // This does thing    <--- yes!
-DoThingHere();  /* This does thing */ <--- yes!
+DoThingHere();  // This does thing      /* <--- yes! */
+DoThingHere();  /* This does thing */   /* <--- yes! */
 
-DoThingHere();  //This does thing      <--- no!
-DoThingHere();  /*This does thing*/    <--- no!
-DoThingHere();//This does thing        <--- no!
+DoThingHere();  //This does thing       /* <--- no! */
+DoThingHere();  /*This does thing*/     /* <--- no! */
+DoThingHere();//This does thing         /* <--- no! */
 ```
 
 

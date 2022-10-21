@@ -320,6 +320,6 @@ if (not x) then foo() end -- Bad
 
 Write function definitions of the form `function foo()` instead of the lambda form `foo = function()`, except when inserting functions in tables inline, where only the second form will work.
 
-**Avoid globals like the plague.**  The only globals that you should create are namespace tables&mdash;and even those might eventually be phased out.
+**Avoid globals like the plague.** The only globals that you should create are namespace tables&mdash;and even those might eventually be phased out.
 
-Don't let functions get too large.  Maximum length depends on complexity; simple functions can be longer than complex functions.
+Don't let functions get too large. Maximum length depends on complexity; simple functions can be longer than complex functions.
