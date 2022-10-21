@@ -3046,7 +3046,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element.clear();
+		m_focused_element = nullopt;
 	}
 
 	// Remove children

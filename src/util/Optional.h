@@ -103,3 +103,57 @@ public:
 
 	explicit operator bool() const { return m_has_value; }
 };
+
+template <typename T>
+constexpr bool operator==(const Optional<T> &opt, nullopt_t)
+{
+	return !opt.has_value();
+}
+template <typename T>
+constexpr bool operator==(nullopt_t, const Optional<T> &opt)
+{
+	return !opt.has_value();
+}
+template <typename T>
+constexpr bool operator!=(const Optional<T> &opt, nullopt_t)
+{
+	return opt.has_value();
+}
+template <typename T>
+constexpr bool operator!=(nullopt_t, const Optional<T> &opt)
+{
+	return opt.has_value();
+}
+
+template <typename T, typename U>
+constexpr bool operator==(const Optional<T> &opt, const U &value)
+{
+	return opt.has_value() && *opt == value;
+}
+template <typename T, typename U>
+constexpr bool operator==(const T &value, const Optional<U> &opt)
+{
+	return opt.has_value() && value == *opt;
+}
+template <typename T, typename U>
+constexpr bool operator!=(const Optional<T> &opt, const U &value)
+{
+	return !opt.has_value() || *opt != value;
+}
+template <typename T, typename U>
+constexpr bool operator!=(const T &value, const Optional<U> &opt)
+{
+	return !opt.has_value() || value != *opt;
+}
+
+
+template <typename T, typename U>
+constexpr bool operator==(const Optional<T> &lhs, const Optional<U> &rhs)
+{
+	return lhs.has_value() ? *lhs == rhs : nullopt == rhs;
+}
+template <typename T, typename U>
+constexpr bool operator!=(const Optional<T> &lhs, const Optional<U> &rhs)
+{
+	return lhs.has_value() ? *lhs != rhs : nullopt != rhs;
+}
