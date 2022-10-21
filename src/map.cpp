@@ -1010,7 +1010,7 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 				<<std::endl;
 		return NodeTimer();
 	}
-	NodeTimer t = block->m_node_timers.get(p_rel);
+	NodeTimer t = block->getNodeTimer(p_rel);
 	NodeTimer nt(t.timeout, t.elapsed, p);
 	return nt;
 }
@@ -1032,7 +1032,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 		return;
 	}
 	NodeTimer nt(t.timeout, t.elapsed, p_rel);
-	block->m_node_timers.set(nt);
+	block->setNodeTimer(nt);
 }
 
 void Map::removeNodeTimer(v3s16 p)
@@ -1046,7 +1046,7 @@ void Map::removeNodeTimer(v3s16 p)
 				<<std::endl;
 		return;
 	}
-	block->m_node_timers.remove(p_rel);
+	block->removeNodeTimer(p_rel);
 }
 
 bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,

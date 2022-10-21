@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "log.h"
 #include "nameidmapping.h"
-#include "content_mapnode.h" // For legacy name-id mapping
+#include "content_mapnode.h"  // For legacy name-id mapping
 #include "content_nodemeta.h" // For legacy deserialization
 #include "serialization.h"
 #ifndef SERVER
@@ -61,7 +61,6 @@ static const char *modified_reason_strings[] = {
 	"unknown",
 };
 
-
 /*
 	MapBlock
 */
@@ -83,6 +82,23 @@ MapBlock::~MapBlock()
 		mesh = nullptr;
 	}
 #endif
+}
+
+// This method is only for Server, don't call it on client
+void MapBlock::step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb)
+{
+	// Run script callbacks for elapsed node_timers
+	std::vector<NodeTimer> elapsed_timers = m_node_timers.step(dtime);
+	if (!elapsed_timers.empty()) {
+		MapNode n;
+		v3s16 p;
+		for (const NodeTimer &elapsed_timer : elapsed_timers) {
+			n = getNodeNoEx(elapsed_timer.position);
+			p = elapsed_timer.position + getPosRelative();
+			if (on_timer_cb(p, n, elapsed_timer.elapsed))
+				setNodeTimer(NodeTimer(elapsed_timer.timeout, 0, elapsed_timer.position));
+		}
+	}
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)
@@ -392,9 +408,8 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	/*
 		Data that goes to disk, but not the network
 	*/
-	if(disk)
-	{
-		if(version <= 24){
+	if (disk) {
+		if (version <= 24) {
 			// Node timers
 			m_node_timers.serialize(os, version);
 		}
@@ -402,7 +417,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		// Static objects
 		m_static_objects.serialize(os);
 
-		if(version < 29){
+		if (version < 29) {
 			// Timestamp
 			writeU32(os, getTimestamp());
 
@@ -410,7 +425,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 			nimap.serialize(os);
 		}
 
-		if(version >= 25){
+		if (version >= 25) {
 			// Node timers
 			m_node_timers.serialize(os, version);
 		}
@@ -522,16 +537,15 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 	/*
 		Data that is only on disk
 	*/
-	if(disk)
-	{
+	if (disk) {
 		// Node timers
-		if(version == 23){
+		if (version == 23) {
 			// Read unused zero
 			readU8(is);
 		}
-		if(version == 24){
-			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
-					<<": Node timers (ver==24)"<<std::endl);
+		if (version == 24) {
+			TRACESTREAM(<< "MapBlock::deSerialize " << PP(getPos())
+						<< ": Node timers (ver==24)" << std::endl);
 			m_node_timers.deSerialize(is, version);
 		}
 
@@ -540,7 +554,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 				<<": Static objects"<<std::endl);
 		m_static_objects.deSerialize(is);
 
-		if(version < 29) {
+		if (version < 29) {
 			// Timestamp
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 				    <<": Timestamp"<<std::endl);
@@ -678,7 +692,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 0x01) != 0;
 		m_day_night_differs = (flags & 0x02) != 0;
-		if(version >= 18)
+		if (version >= 18)
 			m_generated = (flags & 0x08) == 0;
 
 		// Uncompress data
@@ -769,12 +783,10 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		correctBlockNodeIds(&nimap, data, m_gamedef);
 	}
 
-
 	// Legacy data changes
 	// This code has to convert from pre-22 to post-22 format.
 	const NodeDefManager *nodedef = m_gamedef->ndef();
-	for(u32 i=0; i<nodecount; i++)
-	{
+	for (u32 i = 0; i < nodecount; i++) {
 		const ContentFeatures &f = nodedef->get(data[i].getContent());
 		// Mineral
 		if(nodedef->getId("default:stone") == data[i].getContent()
@@ -790,21 +802,17 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			data[i].setParam1(0);
 		}
 		// facedir_simple
-		if(f.legacy_facedir_simple)
-		{
+		if (f.legacy_facedir_simple) {
 			data[i].setParam2(data[i].getParam1());
 			data[i].setParam1(0);
 		}
 		// wall_mounted
-		if(f.legacy_wallmounted)
-		{
+		if (f.legacy_wallmounted) {
 			u8 wallmounted_new_to_old[8] = {0x04, 0x08, 0x01, 0x02, 0x10, 0x20, 0, 0};
 			u8 dir_old_format = data[i].getParam2();
 			u8 dir_new_format = 0;
-			for(u8 j=0; j<8; j++)
-			{
-				if((dir_old_format & wallmounted_new_to_old[j]) != 0)
-				{
+			for (u8 j = 0; j < 8; j++) {
+				if ((dir_old_format & wallmounted_new_to_old[j]) != 0) {
 					dir_new_format = j;
 					break;
 				}
@@ -812,7 +820,6 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			data[i].setParam2(dir_new_format);
 		}
 	}
-
 }
 
 /*
@@ -820,7 +827,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 */
 std::string analyze_block(MapBlock *block)
 {
-	if(block == NULL)
+	if (block == NULL)
 		return "NULL";
 
 	std::ostringstream desc;
