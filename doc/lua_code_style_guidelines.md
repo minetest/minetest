@@ -1,14 +1,11 @@
-
-Lua code style guidelines
-=========================
+# Lua code style guidelines
 
 This is largely based on [the Python style guide](https://www.python.org/dev/peps/pep-0008) except for some indentation and language syntax differences.  When in doubt, consult that guide.
 
 Note that these are only *guidelines* for more readable code.  In some (rare) cases they may result in *less* readable code.  Use your best judgement.
 
 
-Comments
---------
+## Comments
 
 * Incorrect or outdated comments are worse than no comments.
 
@@ -57,15 +54,14 @@ multi-line comment.
 ```
 
 
-Lines, spaces, and indentation
-------------------------------
+## Lines, spaces, and indentation
 
 * Indentation is done with one tab per indentation level.
 
 * **Lines are wrapped at 80 characters** where possible, with a hard limit of 90.  If you need more you're probably doing something wrong.
 
 
-# Continuation lines
+### Continuation lines
 
 * Conditional expressions have continuation lines indented by two tabs.
 ```lua
@@ -122,7 +118,7 @@ end
 ```
 
 
-# Empty lines
+### Empty lines
 
 * Use a single empty line to separate sections of long functions.
 
@@ -152,7 +148,7 @@ end
 
 * Don't leave white-space at the end of lines.
 
-# Spaces
+### Spaces
 
 * Spaces are not used around parenthesis, brackets, or curly braces.
 
@@ -228,7 +224,7 @@ local foobar    = true
 local unrelated = {}
 ```
 
-# Tables
+### Tables
 
 * **Small tables may be placed on one line.**  Large tables have one entry per line, with the opening and closing braces on lines without items; and with a comma after the last item.
 
@@ -262,8 +258,7 @@ local first_eight_letters = {
 ```
 
 
-Naming
-------
+## Naming
 
 * **Functions and variables should be named in `lowercase_underscore_style`**, with the exception of constructor-like functions such as `PseudoRandom()`, which should use UpperCamelCase.
 
@@ -272,8 +267,7 @@ Naming
 * Avoid leading and/or trailing underscores.  They're ugly and can be hard to see.
 
 
-Misc
-----
+## Misc
 
 * Don't put multiple statements on the same line.
 

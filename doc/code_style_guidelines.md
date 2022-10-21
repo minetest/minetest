@@ -1,6 +1,4 @@
-
-Code style guidelines
-=====================
+# Code style guidelines
 
 This is the coding style used for C/C++ code. Also see the Lua code style guidelines.
 
@@ -9,12 +7,12 @@ The coding style is based on the <https://www.kernel.org/doc/html/latest/process
 Currently, the code uses C++14. Do not use features that depend on more recent versions.
 
 
-# Spelling
+## Spelling
 
 Use American English, but avoid idioms that may be difficult to understand by non-native speakers.
 
 
-# Function declarations
+## Function declarations
 
 In case your function parameters don't fit within the defined line length, use the following style.
 Indention for continuation lines is **exactly** two tabs.
@@ -46,7 +44,7 @@ void some_function_name(
 No more than 7 parameters allowed (except for constructors).
 
 
-# Spaces
+## Spaces
 
 * <span style="color: red">Do **not** use spaces to indent.</span>
 * Try to stay under 6 levels of indentation.
@@ -88,9 +86,9 @@ for (std::vector<std::string>::iterator it = strings.begin();
 ```
 
 
-# Bracing and indentation
+## Bracing and indentation
 
-## `if` statements
+### `if` statements
 
 This rule has already been explicitly stated in the [Linux kernel code style](https://www.kernel.org/doc/html/latest/process/coding-style.html) from which this code style inherits, but it will be repeated here:
 
@@ -115,7 +113,7 @@ if (foobar < 6) {
 }
 ```
 
-## Nested for loop exception
+### Nested for loop exception
 
 Special exception to the standard bracing/indent rules for nested loops:
 If a nested loop iterates over a set of coordinates, it is permitted to omit the braces for all but the innermost loop and keep the outer loops at the same indentation level, like so:
@@ -128,7 +126,7 @@ for (s16 x = pmin.X; x <= pmax.X; x++) {
 ```
 
 
-# Do not be too C++y
+## Do not be too C++y
 
 * Avoid passing non-`const` references to functions.
 * Don't use initializer lists unless absolutely necessary (initializing an object inside a class, or initializing a reference).
@@ -138,7 +136,7 @@ for (s16 x = pmin.X; x <= pmax.X; x++) {
 * Usage of macros is not discouraged, just don't overdo it [like X.org](http://cgit.freedesktop.org/xorg/xserver/tree/randr/rrscreen.c?id=01e18af17f8dc91451fbd0902049045afd1cea7e#n325). It's better to use inline functions or lambdas instead.
 
 
-# Classes
+## Classes
 
 * **Class names are *PascalCase*, method names are *camelCase*.**
 * Don't put actual code in header files, unless it's a 4-liner, an inline function, or part of a template.
@@ -147,7 +145,7 @@ for (s16 x = pmin.X; x <= pmax.X; x++) {
 * Functions not part of any class should use `lowercase_underscore_style()`.
 
 
-# Comments
+## Comments
 
 * Doxygen comments are acceptable, but **please** put them in the header file.
 * Don't make uninformative comments like this:
@@ -170,20 +168,20 @@ DoThingHere();//This does thing        <--- no!
 ```
 
 
-# Use STL, avoid Irrlicht containers, and no, Boost will not even be considered, so forget it
+## Use STL, avoid Irrlicht containers, and no, Boost will not even be considered, so forget it
 
 * In general, adding new dependencies is considered serious business.
 * We are using C++14; Boost will never be an option.
 
 
-# Don't let things get too large
+## Don't let things get too large
 
 * **Try to keep lines under 95 characters.** It's okay if it goes over by a few, but do not exaggerate. (Note that this column count assumes 4-space indents.)
 * Functions should not have over 200 lines of code – if you are concerned with having to pass too many parameters to child functions, make whatever it is into a class.
 * Don't let files get too large (over 1500 lines of code). Currently, existing huge files (`game.cpp`, `server.cpp`, …) are in the slow process of being cleaned up.
 
 
-# Files
+## Files
 
 * Files should be named using *snake_case* style.
 * Files should have includes for everything that they depend on. Don't depend on, eg, `"util/numeric.h"` including `<string>`!
@@ -202,7 +200,7 @@ class Foo {
 * All files should include the appropriate license header.
 
 
-# Miscellaneous
+## Miscellaneous
 
 * <span style="color: red">Do **not** use `or`, use `||`.</span>
 * Set pointer values to `nullptr` (C++11), not 0.
@@ -215,4 +213,3 @@ class Foo {
 * In `switch-case` statements, add `break` to the last case and to the `default` case.
 * In `if-else` statements, put the code which is more likely to be executed first.
 * For consistency, use American English where spellings differ (e.g. use "color", not "colour").
-
