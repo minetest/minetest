@@ -325,14 +325,10 @@ public:
 		return m_day_night_differs;
 	}
 
-<<<<<<< Updated upstream
-	void step(float dtime, ServerScripting *script);
-=======
 	bool onObjectsActivation();
 	bool saveStaticObject(u16 id, const StaticObject &obj, u32 reason);
 
 	void step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb);
->>>>>>> Stashed changes
 
 	////
 	//// Timestamp (see m_timestamp)

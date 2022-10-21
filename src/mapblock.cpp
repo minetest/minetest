@@ -84,6 +84,46 @@ MapBlock::~MapBlock()
 #endif
 }
 
+bool MapBlock::onObjectsActivation()
+{
+	// Ignore if no stored objects (to not set changed flag)
+	if (m_static_objects.getAllStored().empty())
+		return false;
+
+	verbosestream << "ServerEnvironment::activateObjects(): "
+			<< "activating objects of block " << PP(getPos()) << " ("
+			<< m_static_objects.getStoredSize() << " objects)" << std::endl;
+
+	if (m_static_objects.getStoredSize() > g_settings->getU16("max_objects_per_block")) {
+		errorstream << "suspiciously large amount of objects detected: "
+			<< m_static_objects.getStoredSize() << " in "
+			<< PP(getPos()) << "; removing all of them." << std::endl;
+		// Clear stored list
+		m_static_objects.clearStored();
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_TOO_MANY_OBJECTS);
+		return false;
+	}
+
+	return true;
+}
+
+bool MapBlock::saveStaticObject(u16 id, const StaticObject &obj, u32 reason)
+{
+	if (m_static_objects.getStoredSize() >= g_settings->getU16("max_objects_per_block")) {
+		warningstream << "ServerEnv: Trying to store id = " << id
+				<< " statically but block " << PP(getPos()) << " already contains "
+				<< m_static_objects.getStoredSize() << " objects."
+				<< std::endl;
+		return false;
+	}
+
+	m_static_objects.insert(id, obj);
+	if (reason != MOD_REASON_UNKNOWN) // Do not mark as modified if requested
+		raiseModified(MOD_STATE_WRITE_NEEDED, reason);
+
+	return true;
+}
+
 // This method is only for Server, don't call it on client
 void MapBlock::step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb)
 {

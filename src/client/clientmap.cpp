@@ -718,7 +718,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		return;
 	}
 
-	for (auto &i : m_drawlist_shadow) {
+	for (const auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
 		++count;
 		if (count <= low_bound)

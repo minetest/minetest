@@ -1833,8 +1833,7 @@ void ServerEnvironment::removeRemovedObjects()
 			Move static data from active to stored if deactivated
 		*/
 		if (!obj->isPendingRemoval() && obj->m_static_exists) {
-			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
-			if (block) {
+			if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
 				if (!block->moveActiveObjectToStored(id)) {
 					warningstream << "ServerEnvironment::removeRemovedObjects(): "
 							<< "id=" << id << " m_static_exists=true but "
@@ -1916,22 +1915,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	if (block == NULL)
 		return;
 
-	// Ignore if no stored objects (to not set changed flag)
-	if (block->m_static_objects.isStoredEmpty())
+	if (!block->onObjectsActivation())
 		return;
-
-	verbosestream << "ServerEnvironment::activateObjects(): "
-			<< "activating objects of block " << PP(block->getPos()) << " ("
-			<< block->m_static_objects.getStoredSize() << " objects)" << std::endl;
-	if (block->m_static_objects.getStoredSize() > g_settings->getU16("max_objects_per_block")) {
-		errorstream << "suspiciously large amount of objects detected: "
-			<< block->m_static_objects.getStoredSize() << " in "
-			<< PP(block->getPos()) << "; removing all of them." << std::endl;
-		// Clear stored list
-		block->m_static_objects.clearStored();
-		block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_TOO_MANY_OBJECTS);
-		return;
-	}
 
 	// Activate stored objects
 	std::vector<StaticObject> new_stored;
@@ -2050,9 +2035,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				if (obj->m_static_block == blockpos_o)
 					stays_in_same_block = true;
 
-				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
-
-				if (block) {
+				if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
 					const auto n = block->m_static_objects.getAllActives().find(id);
 					if (n != block->m_static_objects.getAllActives().end()) {
 						StaticObject static_old = n->second;
@@ -2167,18 +2150,8 @@ bool ServerEnvironment::saveStaticToBlock(
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}
-	if (block->m_static_objects.getStoredSize() >=
-			g_settings->getU16("max_objects_per_block")) {
-		warningstream << "ServerEnv: Trying to store id = " << store_id
-				<< " statically but block " << PP(blockpos) << " already contains "
-				<< block->m_static_objects.getStoredSize() << " objects."
-				<< std::endl;
-		return false;
-	}
 
-	block->m_static_objects.insert(store_id, s_obj);
-	if (mod_reason != MOD_REASON_UNKNOWN) // Do not mark as modified if requested
-		block->raiseModified(MOD_STATE_WRITE_NEEDED, mod_reason);
+	block->saveStaticObject(store_id, s_obj, mod_reason);
 
 	obj->m_static_exists = true;
 	obj->m_static_block = blockpos;
