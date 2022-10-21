@@ -2,7 +2,7 @@
 
 This is the coding style used for C/C++ code. Also see the Lua code style guidelines.
 
-The coding style is based on the <https://www.kernel.org/doc/html/latest/process/coding-style.html Linux kernel code style>. Much of the existing code doesn't follow the current code style guidelines, do not try to replicate that. Use your best judgment for C++-specific syntax.
+The coding style is based on the [Linux kernel code style](https://www.kernel.org/doc/html/latest/process/coding-style.html). Much of the existing code doesn't follow the current code style guidelines, do not try to replicate that. Use your best judgment for C++-specific syntax.
 
 Currently, the code uses C++14. Do not use features that depend on more recent versions.
 
