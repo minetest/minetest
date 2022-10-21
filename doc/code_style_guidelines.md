@@ -15,7 +15,7 @@ Use American English, but avoid idioms that may be difficult to understand by no
 ## Function declarations
 
 In case your function parameters don't fit within the defined line length, use the following style.
-Indention for continuation lines is **exactly** two tabs.
+Indention for continuation lines is **exactly** two tabs:
 
 ```cpp
 void some_function_name(type1 param1, type2 param2, type3 param3,
@@ -46,9 +46,11 @@ No more than 7 parameters allowed (except for constructors).
 
 ## Spaces
 
-* <span style="color: red">Do **not** use spaces to indent.</span>
-* Try to stay under 6 levels of indentation.
-* Add spaces between operators so they line up when appropriate (don't go overboard). For example:
+<span style="color: red">Do **not** use spaces to indent.</span>
+
+Try to stay under 6 levels of indentation.
+
+Add spaces between operators so they line up when appropriate (don't go overboard). For example:
 
 ```cpp
 np_terrain_base   = settings->getNoiseParams("mgv6_np_terrain_base");
@@ -61,12 +63,15 @@ bool success =
 		np_height_select && np_trees          && np_mud       &&
 		np_beach         && np_biome          && np_cave;
 ```
-  The above code looks really nice.
+The above code looks really nice.
 
-* Separate different parts of functions with newlines for readability.
-* Separate functions by two newlines (not necessary, but encouraged).
-* Use a space after `if`, `else`, `for`, `do`, `while`, `switch`, `case`, `try`, `catch`, etc.
-* When breaking conditionals, indent following lines of the conditional with two tabs and the statement body with one tab. For example:
+Separate different parts of functions with newlines for readability.
+
+Separate functions by two newlines (not necessary, but encouraged).
+
+Use a space after `if`, `else`, `for`, `do`, `while`, `switch`, `case`, `try`, `catch`, etc.
+
+When breaking conditionals, indent following lines of the conditional with two tabs and the statement body with one tab. For example:
 
 ```cpp
 for (std::vector<std::string>::iterator it = strings.begin();
@@ -76,7 +81,7 @@ for (std::vector<std::string>::iterator it = strings.begin();
 }
 ```
 
-* Align backslashes for multi-line macros with spaces:
+Align backslashes for multi-line macros with spaces:
 
 ```cpp
 #define FOOBAR(x) do {    \
@@ -128,35 +133,46 @@ for (s16 x = pmin.X; x <= pmax.X; x++) {
 
 ## Do not be too C++y
 
-* Avoid passing non-`const` references to functions.
-* Don't use initializer lists unless absolutely necessary (initializing an object inside a class, or initializing a reference).
-* Try to minimize the use of exceptions.
-* Avoid operator overloading like the plague.
-* Avoid templates unless they are very convenient.
-* Usage of macros is not discouraged, just don't overdo it [like X.org](http://cgit.freedesktop.org/xorg/xserver/tree/randr/rrscreen.c?id=01e18af17f8dc91451fbd0902049045afd1cea7e#n325). It's better to use inline functions or lambdas instead.
+Avoid passing non-`const` references to functions.
+
+Don't use initializer lists unless absolutely necessary (initializing an object inside a class, or initializing a reference).
+
+Try to minimize the use of exceptions.
+
+Avoid operator overloading like the plague.
+
+Avoid templates unless they are very convenient.
+
+Usage of macros is not discouraged, just don't overdo it [like X.org](http://cgit.freedesktop.org/xorg/xserver/tree/randr/rrscreen.c?id=01e18af17f8dc91451fbd0902049045afd1cea7e#n325). It's better to use inline functions or lambdas instead.
 
 
 ## Classes
 
-* **Class names are *PascalCase*, method names are *camelCase*.**
-* Don't put actual code in header files, unless it's a 4-liner, an inline function, or part of a template.
-* Class definitions should go in header files.
-* Substantial methods (over 4 lines) should be defined outside of the class definition.
-* Functions not part of any class should use `lowercase_underscore_style()`.
+**Class names are *PascalCase*, method names are *camelCase*.**
+
+Don't put actual code in header files, unless it's a 4-liner, an inline function, or part of a template.
+
+Class definitions should go in header files.
+
+Substantial methods (over 4 lines) should be defined outside of the class definition.
+
+Functions not part of any class should use `lowercase_underscore_style()`.
 
 
 ## Comments
 
-* Doxygen comments are acceptable, but **please** put them in the header file.
-* Don't make uninformative comments like this:
+Doxygen comments are acceptable, but **please** put them in the header file.
+
+Don't make uninformative comments like this:
 
 ```cpp
 // Draw "Loading" screen
 draw_load_screen(L"Loading...", driver, font);
 ```
 
-* Add comments to explain a non-trivial but important detail about the code, or explain behavior that is not obvious.
-* For comments with text, be sure to add a space between the text and the comment tokens:
+Add comments to explain a non-trivial but important detail about the code, or explain behavior that is not obvious.
+
+For comments with text, be sure to add a space between the text and the comment tokens:
 
 ```cpp
 DoThingHere();  // This does thing    <--- yes!
@@ -170,22 +186,27 @@ DoThingHere();//This does thing        <--- no!
 
 ## Use STL, avoid Irrlicht containers, and no, Boost will not even be considered, so forget it
 
-* In general, adding new dependencies is considered serious business.
-* We are using C++14; Boost will never be an option.
+In general, adding new dependencies is considered serious business.
+
+We are using C++14; Boost will never be an option.
 
 
 ## Don't let things get too large
 
-* **Try to keep lines under 95 characters.** It's okay if it goes over by a few, but do not exaggerate. (Note that this column count assumes 4-space indents.)
-* Functions should not have over 200 lines of code – if you are concerned with having to pass too many parameters to child functions, make whatever it is into a class.
-* Don't let files get too large (over 1500 lines of code). Currently, existing huge files (`game.cpp`, `server.cpp`, …) are in the slow process of being cleaned up.
+**Try to keep lines under 95 characters.** It's okay if it goes over by a few, but do not exaggerate. (Note that this column count assumes 4-space indents.)
+
+Functions should not have over 200 lines of code – if you are concerned with having to pass too many parameters to child functions, make whatever it is into a class.
+
+Don't let files get too large (over 1500 lines of code). Currently, existing huge files (`game.cpp`, `server.cpp`, …) are in the slow process of being cleaned up.
 
 
 ## Files
 
-* Files should be named using *snake_case* style.
-* Files should have includes for everything that they depend on. Don't depend on, eg, `"util/numeric.h"` including `<string>`!
-* Uniqueness when compiling headers is ensured by using `#pragma once`. ([Accepted by all coredevs](https://github.com/minetest/minetest/issues/6259))
+Files should be named using *snake_case* style.
+
+Files should have includes for everything that they depend on. Don't depend on, eg, `"util/numeric.h"` including `<string>`!
+
+Uniqueness when compiling headers is ensured by using `#pragma once`. ([Accepted by all coredevs](https://github.com/minetest/minetest/issues/6259))
 
 ```cpp
 #pragma once
@@ -197,19 +218,29 @@ class Foo {
 
 ```
 
-* All files should include the appropriate license header.
+All files should include the appropriate license header.
 
 
 ## Miscellaneous
 
-* <span style="color: red">Do **not** use `or`, use `||`.</span>
-* Set pointer values to `nullptr` (C++11), not 0.
-* When using floats, add the `f` suffix, e.g. `float k = 0.0f;` and not `float k = 0.0;`.
-* Avoid non-ASCII characters in source files. Other UTF-8 characters may (only) be used in string literals and comments where ASCII would worsen readability.
-* Use of Hungarian notation is very limited. Scope specifiers such as `g_` for globals, `s_` for statics, or `m_` for members are allowed. The prefix `m_` is discouraged for public members in newer code as it is a part of the class' interface, but sometimes needed for consistency when adding a member to older code.
-* Use *snake_case* for local variables, not *camelCase*.
-* Don't use distracting and unnecessary amounts of object-oriented abstraction. See [Terasology](https://github.com/MovingBlocks/Terasology) as an example of what not to do.
-    * Don't add unnecessary design patterns to your code, such as factories/providers/sources.
-* In `switch-case` statements, add `break` to the last case and to the `default` case.
-* In `if-else` statements, put the code which is more likely to be executed first.
-* For consistency, use American English where spellings differ (e.g. use "color", not "colour").
+<span style="color: red">Do **not** use `or`, use `||`.</span>
+
+Set pointer values to `nullptr` (C++11), not 0.
+
+When using floats, add the `f` suffix, e.g. `float k = 0.0f;` and not `float k = 0.0;`.
+
+Avoid non-ASCII characters in source files. Other UTF-8 characters may (only) be used in string literals and comments where ASCII would worsen readability.
+
+Use of Hungarian notation is very limited. Scope specifiers such as `g_` for globals, `s_` for statics, or `m_` for members are allowed. The prefix `m_` is discouraged for public members in newer code as it is a part of the class' interface, but sometimes needed for consistency when adding a member to older code.
+
+Use *snake_case* for local variables, not *camelCase*.
+
+Don't use distracting and unnecessary amounts of object-oriented abstraction. See [Terasology](https://github.com/MovingBlocks/Terasology) as an example of what not to do.
+
+Don't add unnecessary design patterns to your code, such as factories/providers/sources.
+
+In `switch-case` statements, add `break` to the last case and to the `default` case.
+
+In `if-else` statements, put the code which is more likely to be executed first.
+
+For consistency, use American English where spellings differ (e.g. use "color", not "colour").
