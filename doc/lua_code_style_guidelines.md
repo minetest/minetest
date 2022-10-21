@@ -13,12 +13,12 @@ Avoid inline comments, unless they're very short.
 
 Write comments to clarify anything that may be confusing. Don't write comments that describe things that are obvious from the code:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 width = width - 2  -- Adjust for 1px border on each side
 ```
 
-<span style="color: #b44;">Bad:
+Bad:
 ```lua
 width = width - 2  -- Decrement width by two
 ```
@@ -126,7 +126,7 @@ Use two empty lines to separate top-level functions and large tables.
 
 Do not use a empty line after conditional, looping, or function opening statements:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 function foo()
 	if x then
@@ -135,7 +135,7 @@ function foo()
 end
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 function foo()
 
@@ -152,13 +152,13 @@ Don't leave white-space at the end of lines.
 
 Spaces are not used around parenthesis, brackets, or curly braces:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 foo({baz=true})
 bar[1] = "Hello world"
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 foo ( { baz=true } )
 bar [ 1 ]
@@ -166,12 +166,12 @@ bar [ 1 ]
 
 Spaces are used after, but not before, commas and semicolons:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 foo(a, b, {c, d})
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 foo(a,b,{c , d})
 ```
@@ -183,7 +183,7 @@ Spaces are used around binary operators with following exceptions:
 * In short one-line table definitions the spaces around the equals sign can be omitted.
 * When in-/decrementing a variable by 1, the spaces around the + and - operator can be omitted if you want to "get the neighbour" of something, e.g. when increasing some counter variable.
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 local num = 2 * (3 / 4)
 foo({bar=true})
@@ -196,7 +196,7 @@ i = i+1
 sometable[#sometable+1] = v
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 local num=2*(3/4)
 local def={
@@ -208,7 +208,7 @@ playerpos.y = playerpos.y+1  -- playerpos.y is not an integer
 
 Use spaces to align related things, but don't go overboard:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 local node_up   = minetest.get_node(pos_up)
 local node_down = minetest.get_node(pos_down)
@@ -216,7 +216,7 @@ local node_down = minetest.get_node(pos_down)
 local node_up_1_east_2_north_3 = minetest.get_node(pos_up_1_east_2_north_3)
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 local x                       = true
 local very_long_variable_name = false
@@ -229,7 +229,7 @@ local unrelated = {}
 
 **Small tables may be placed on one line.**  Large tables have one entry per line, with the opening and closing braces on lines without items; and with a comma after the last item:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 local foo = {bar=true}
 foo = {
@@ -239,7 +239,7 @@ foo = {
 }
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 foo = {bar = 0,
 	biz = 1,
@@ -274,7 +274,7 @@ Don't put multiple statements on the same line.
 
 You can put conditionals / loops with small conditions and bodies on one line.  This is discouraged for all but the smallest ones though:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 local f, err = io.open(filename, "r")
 if not f then return err end
@@ -285,14 +285,14 @@ elseif qux then return qux
 end
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 if not f and use_error then error(err) elseif not f then return err end
 ```
 
 Don't compare values explicitly to `true`, `false`, or `nil`, unless it's really needed:
 
-<span style="color: #282;">Good:</span>
+Good:
 ```lua
 local f, err = io.open(filename, "r")
 if not f then return err end
@@ -307,7 +307,7 @@ for i = 1, 5 do
 end
 ```
 
-<span style="color: #b44;">Bad:</span>
+Bad:
 ```lua
 if f == nil then return err end
 ```

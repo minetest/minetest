@@ -46,7 +46,7 @@ No more than 7 parameters allowed (except for constructors).
 
 ## Spaces
 
-<span style="color: red">Do **not** use spaces to indent.</span>
+Do **not** use spaces to indent.
 
 Try to stay under 6 levels of indentation.
 
@@ -97,7 +97,7 @@ Align backslashes for multi-line macros with spaces:
 
 This rule has already been explicitly stated in the [Linux kernel code style](https://www.kernel.org/doc/html/latest/process/coding-style.html) from which this code style inherits, but it will be repeated here:
 
-<span style="color: red">**Putting the body of an `if` statement on the same line as the condition is strictly prohibited.**</span>
+**Putting the body of an `if` statement on the same line as the condition is strictly prohibited.**
 
 Example:
 ```cpp
@@ -223,7 +223,7 @@ All files should include the appropriate license header.
 
 ## Miscellaneous
 
-<span style="color: red">Do **not** use `or`, use `||`.</span>
+Do **not** use `or`, use `||`.
 
 Set pointer values to `nullptr` (C++11), not 0.
 
