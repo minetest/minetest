@@ -1077,9 +1077,10 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
 	PlayerSAO *playersao = NULL;
+	RemoteClient* client = nullptr;
 	{
 		ClientInterface::AutoLock clientlock(m_clients);
-		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
+		client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
 			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
@@ -1146,10 +1147,10 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	return playersao;
 }
 
-inline void Server::handleCommand(NetworkPacket *pkt)
+inline void Server::handleCommand(NetworkPacket *pkt, RemoteClient *client)
 {
 	const ToServerCommandHandler &opHandle = toServerCommandTable[pkt->getCommand()];
-	(this->*opHandle.handler)(pkt);
+	(this->*opHandle.handler)(pkt, client);
 }
 
 void Server::ProcessData(NetworkPacket *pkt)
@@ -1159,9 +1160,11 @@ void Server::ProcessData(NetworkPacket *pkt)
 
 	ScopeProfiler sp(g_profiler, "Server: Process network packet (sum)");
 	u32 peer_id = pkt->getPeerId();
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
+	assert(client);
 
 	try {
-		Address address = getPeerAddress(peer_id);
+		Address address = client->getAddress();
 		std::string addr_s = address.serializeString();
 
 		// FIXME: Isn't it a bit excessive to check this for every packet?
@@ -1195,12 +1198,19 @@ void Server::ProcessData(NetworkPacket *pkt)
 			return;
 		}
 
-		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {
-			handleCommand(pkt);
+		if (client->getState() < toServerCommandTable[command].min_client_state) {
+			errorstream << "Server::ProcessData(): Peer " << peer_id
+				<< " sent us command " << command << " whereas session is not yes ready to handle (state="
+				<< client->getState() << ")" << std::endl;
 			return;
 		}
 
-		u8 peer_ser_ver = getClient(peer_id, CS_InitDone)->serialization_version;
+		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {
+			handleCommand(pkt, client);
+			return;
+		}
+
+		u8 peer_ser_ver = client->serialization_version;
 
 		if(peer_ser_ver == SER_FMT_VER_INVALID) {
 			errorstream << "Server::ProcessData(): Cancelling: Peer"
@@ -1211,11 +1221,11 @@ void Server::ProcessData(NetworkPacket *pkt)
 
 		/* Handle commands related to client startup */
 		if (toServerCommandTable[command].state == TOSERVER_STATE_STARTUP) {
-			handleCommand(pkt);
+			handleCommand(pkt, client);
 			return;
 		}
 
-		if (m_clients.getClientState(peer_id) < CS_Active) {
+		if (client->getState() < CS_Active) {
 			if (command == TOSERVER_PLAYERPOS) return;
 
 			errorstream << "Got packet command: " << command << " for peer id "
@@ -1224,7 +1234,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 			return;
 		}
 
-		handleCommand(pkt);
+		handleCommand(pkt, client);
 	} catch (SendFailedException &e) {
 		errorstream << "Server::ProcessData(): SendFailedException: "
 				<< "what=" << e.what()

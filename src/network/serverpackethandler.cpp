@@ -41,20 +41,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/srp.h"
 
-void Server::handleCommand_Deprecated(NetworkPacket* pkt)
+void Server::handleCommand_Deprecated(NetworkPacket* pkt, RemoteClient *client)
 {
 	infostream << "Server: " << toServerCommandTable[pkt->getCommand()].name
 		<< " not supported anymore" << std::endl;
 }
 
-void Server::handleCommand_Init(NetworkPacket* pkt)
+void Server::handleCommand_Init(NetworkPacket* pkt, RemoteClient *client)
 {
 
 	if(pkt->getSize() < 1)
 		return;
 
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient *client = getClient(peer_id, CS_Created);
+	if (client->getState() < CS_Created) {
+		return;
+	}
 
 	Address addr;
 	std::string addr_s;
@@ -291,7 +293,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	m_clients.event(peer_id, CSE_Hello);
 }
 
-void Server::handleCommand_Init2(NetworkPacket* pkt)
+void Server::handleCommand_Init2(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
 	verbosestream << "Server: Got TOSERVER_INIT2 from " << peer_id << std::endl;
@@ -321,7 +323,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send media announcement
 	sendMediaAnnouncement(peer_id, lang);
 
-	RemoteClient *client = getClient(peer_id, CS_InitDone);
+	if (client->getState() < CS_InitDone) {
+		return;
+	}
 
 	// Keep client language for server translations
 	client->setLangCode(lang);
@@ -354,13 +358,12 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
+void Server::handleCommand_RequestMedia(NetworkPacket* pkt, RemoteClient *client)
 {
 	std::vector<std::string> tosend;
 	u16 numfiles;
 
 	*pkt >> numfiles;
-
 	session_t peer_id = pkt->getPeerId();
 	infostream << "Sending " << numfiles << " files to " <<
 		getPlayerName(peer_id) << std::endl;
@@ -378,7 +381,7 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	sendRequestedMedia(peer_id, tosend);
 }
 
-void Server::handleCommand_ClientReady(NetworkPacket* pkt)
+void Server::handleCommand_ClientReady(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
 
@@ -425,7 +428,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 		SendChatMessage(peer_id, m_shutdown_state.getShutdownTimerMessage());
 }
 
-void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
+void Server::handleCommand_GotBlocks(NetworkPacket* pkt, RemoteClient *client)
 {
 	if (pkt->getSize() < 1)
 		return;
@@ -447,7 +450,6 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	}
 
 	ClientInterface::AutoLock lock(m_clients);
-	RemoteClient *client = m_clients.lockedGetClientNoEx(pkt->getPeerId());
 
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
@@ -509,7 +511,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	}
 }
 
-void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+void Server::handleCommand_PlayerPos(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -540,7 +542,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	process_PlayerPos(player, playersao, pkt);
 }
 
-void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
+void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt, RemoteClient *client)
 {
 	if (pkt->getSize() < 1)
 		return;
@@ -556,8 +558,6 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 	u8 count;
 	*pkt >> count;
 
-	RemoteClient *client = getClient(pkt->getPeerId());
-
 	if ((s16)pkt->getSize() < 1 + (int)count * 6) {
 		throw con::InvalidIncomingDataException
 				("DELETEDBLOCKS length is too short");
@@ -570,7 +570,7 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
+void Server::handleCommand_InventoryAction(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -748,7 +748,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	a->apply(m_inventory_mgr.get(), playersao, this);
 }
 
-void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
+void Server::handleCommand_ChatMessage(NetworkPacket* pkt, RemoteClient *client)
 {
 	std::wstring message;
 	*pkt >> message;
@@ -773,7 +773,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_Damage(NetworkPacket* pkt)
+void Server::handleCommand_Damage(NetworkPacket* pkt, RemoteClient *client)
 {
 	u16 damage;
 
@@ -816,7 +816,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
+void Server::handleCommand_PlayerItem(NetworkPacket* pkt, RemoteClient *client)
 {
 	if (pkt->getSize() < 2)
 		return;
@@ -857,7 +857,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	playersao->getPlayer()->setWieldIndex(item);
 }
 
-void Server::handleCommand_Respawn(NetworkPacket* pkt)
+void Server::handleCommand_Respawn(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -913,7 +913,7 @@ static inline void getWieldedItem(const PlayerSAO *playersao, Optional<ItemStack
 	playersao->getWieldedItem(&(*ret));
 }
 
-void Server::handleCommand_Interact(NetworkPacket *pkt)
+void Server::handleCommand_Interact(NetworkPacket *pkt, RemoteClient *client)
 {
 	/*
 		[0] u16 command
@@ -962,7 +962,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 				<< " tried to interact while dead; ignoring." << std::endl;
 		if (pointed.type == POINTEDTHING_NODE) {
 			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(peer_id);
 			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
 			client->SetBlockNotSent(blockpos);
 		}
@@ -1011,7 +1010,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			return;
 
 		// Re-send block to revert change on client-side
-		RemoteClient *client = getClient(peer_id);
 		// Digging completed -> under
 		if (action == INTERACT_DIGGING_COMPLETED) {
 			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
@@ -1051,7 +1049,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		if (!checkInteractDistance(player, d, pointed.dump())) {
 			if (pointed.type == POINTEDTHING_NODE) {
 				// Re-send block to revert change on client-side
-				RemoteClient *client = getClient(peer_id);
 				v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
 				client->SetBlockNotSent(blockpos);
 			}
@@ -1208,7 +1205,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 			m_script->node_on_dig(p_under, n, playersao);
 
 		v3s16 blockpos = getNodeBlockPos(p_under);
-		RemoteClient *client = getClient(peer_id);
 		// Send unusual result (that is, node not being removed)
 		if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
 			// Re-send block to revert change on client-side
@@ -1227,7 +1223,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 		// Reset build time counter
 		if (pointed.type == POINTEDTHING_NODE &&
 				selected_item->getDefinition(m_itemdef).type == ITEM_NODE)
-			getClient(peer_id)->m_time_from_building = 0.0;
+			client->m_time_from_building = 0.0;
 
 		const bool had_prediction = !selected_item->getDefinition(m_itemdef).
 			node_placement_prediction.empty();
@@ -1263,7 +1259,6 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 		// If item has node placement prediction, always send the
 		// blocks to make sure the client knows what exactly happened
-		RemoteClient *client = getClient(peer_id);
 		v3s16 blockpos = getNodeBlockPos(pointed.node_abovesurface);
 		v3s16 blockpos2 = getNodeBlockPos(pointed.node_undersurface);
 		if (had_prediction) {
@@ -1320,7 +1315,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	}
 }
 
-void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
+void Server::handleCommand_RemovedSounds(NetworkPacket* pkt, RemoteClient *client)
 {
 	u16 num;
 	*pkt >> num;
@@ -1341,7 +1336,7 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt, RemoteClient *client)
 {
 	v3s16 p;
 	std::string formname;
@@ -1394,7 +1389,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
+void Server::handleCommand_InventoryFields(NetworkPacket* pkt, RemoteClient *client)
 {
 	std::string client_formspec_name;
 	u16 num;
@@ -1458,16 +1453,15 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	actionstream << ", possible exploitation attempt" << std::endl;
 }
 
-void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
+void Server::handleCommand_FirstSrp(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 	const std::string playername = client->getName();
 
 	std::string salt, verification_key;
 
-	std::string addr_s = getPeerAddress(peer_id).serializeString();
+	std::string addr_s = client->getAddress().serializeString();
 	u8 is_empty;
 
 	*pkt >> salt >> verification_key >> is_empty;
@@ -1545,15 +1539,14 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
+void Server::handleCommand_SrpBytesA(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _A packet in wrong state " << cstate <<
-			" from " << getPeerAddress(peer_id).serializeString() <<
+			" from " << client->getAddress().serializeString() <<
 			". Ignoring." << std::endl;
 		return;
 	}
@@ -1563,7 +1556,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
 		actionstream << "Server: got SRP _A packet, while auth is already "
 			"going on with mech " << client->chosen_mech << " from " <<
-			getPeerAddress(peer_id).serializeString() <<
+			client->getAddress().serializeString() <<
 			" (wantSudo=" << wantSudo << "). Ignoring." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(peer_id);
@@ -1588,7 +1581,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (wantSudo) {
 		if (!client->isSudoMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName() <<
-				"\" at " << getPeerAddress(peer_id).serializeString() <<
+				"\" at " << client->getAddress().serializeString() <<
 				" tried to change password using unallowed mech " << chosen <<
 				"." << std::endl;
 			DenySudoAccess(peer_id);
@@ -1597,7 +1590,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	} else {
 		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Client tried to authenticate from " <<
-				getPeerAddress(peer_id).serializeString() <<
+				client->getAddress().serializeString() <<
 				" using unallowed mech " << chosen << "." << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 			return;
@@ -1651,10 +1644,9 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	Send(&resp_pkt);
 }
 
-void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
+void Server::handleCommand_SrpBytesM(NetworkPacket* pkt, RemoteClient *client)
 {
 	session_t peer_id = pkt->getPeerId();
-	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	ClientState cstate = client->getState();
 	const std::string addr_s = client->getAddress().serializeString();
 	const std::string playername = client->getName();
@@ -1737,7 +1729,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
  * Mod channels
  */
 
-void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
+void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt, RemoteClient *client)
 {
 	std::string channel_name;
 	*pkt >> channel_name;
@@ -1762,7 +1754,7 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 	Send(&resp_pkt);
 }
 
-void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
+void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt, RemoteClient *client)
 {
 	std::string channel_name;
 	*pkt >> channel_name;
@@ -1786,7 +1778,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 	Send(&resp_pkt);
 }
 
-void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
+void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt, RemoteClient *client)
 {
 	std::string channel_name, channel_msg;
 	*pkt >> channel_name >> channel_msg;
@@ -1815,7 +1807,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	broadcastModChannelMessage(channel_name, channel_msg, peer_id);
 }
 
-void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
+void Server::handleCommand_HaveMedia(NetworkPacket *pkt, RemoteClient *client)
 {
 	std::vector<u32> tokens;
 	u8 numtokens;

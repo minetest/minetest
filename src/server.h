@@ -168,33 +168,33 @@ public:
 	 * Command Handlers
 	 */
 
-	void handleCommand(NetworkPacket* pkt);
+	void handleCommand(NetworkPacket* pkt, RemoteClient *client);
 
-	void handleCommand_Null(NetworkPacket* pkt) {};
-	void handleCommand_Deprecated(NetworkPacket* pkt);
-	void handleCommand_Init(NetworkPacket* pkt);
-	void handleCommand_Init2(NetworkPacket* pkt);
-	void handleCommand_ModChannelJoin(NetworkPacket *pkt);
-	void handleCommand_ModChannelLeave(NetworkPacket *pkt);
-	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
-	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ClientReady(NetworkPacket* pkt);
-	void handleCommand_GotBlocks(NetworkPacket* pkt);
-	void handleCommand_PlayerPos(NetworkPacket* pkt);
-	void handleCommand_DeletedBlocks(NetworkPacket* pkt);
-	void handleCommand_InventoryAction(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
-	void handleCommand_Damage(NetworkPacket* pkt);
-	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_Respawn(NetworkPacket* pkt);
-	void handleCommand_Interact(NetworkPacket* pkt);
-	void handleCommand_RemovedSounds(NetworkPacket* pkt);
-	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
-	void handleCommand_InventoryFields(NetworkPacket* pkt);
-	void handleCommand_FirstSrp(NetworkPacket* pkt);
-	void handleCommand_SrpBytesA(NetworkPacket* pkt);
-	void handleCommand_SrpBytesM(NetworkPacket* pkt);
-	void handleCommand_HaveMedia(NetworkPacket *pkt);
+	void handleCommand_Null(NetworkPacket* pkt, RemoteClient *client) {};
+	void handleCommand_Deprecated(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_Init(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_Init2(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_ModChannelJoin(NetworkPacket *pkt, RemoteClient *client);
+	void handleCommand_ModChannelLeave(NetworkPacket *pkt, RemoteClient *client);
+	void handleCommand_ModChannelMsg(NetworkPacket *pkt, RemoteClient *client);
+	void handleCommand_RequestMedia(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_ClientReady(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_GotBlocks(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_PlayerPos(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_DeletedBlocks(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_InventoryAction(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_ChatMessage(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_Damage(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_PlayerItem(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_Respawn(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_Interact(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_RemovedSounds(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_NodeMetaFields(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_InventoryFields(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_FirstSrp(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_SrpBytesA(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_SrpBytesM(NetworkPacket* pkt, RemoteClient *client);
+	void handleCommand_HaveMedia(NetworkPacket *pkt, RemoteClient *client);
 
 	void ProcessData(NetworkPacket *pkt);
 

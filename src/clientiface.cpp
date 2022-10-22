@@ -744,18 +744,6 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(session_t peer_id, ClientStat
 	return NULL;
 }
 
-ClientState ClientInterface::getClientState(session_t peer_id)
-{
-	RecursiveMutexAutoLock clientslock(m_clients_mutex);
-	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
-	// The client may not exist; clients are immediately removed if their
-	// access is denied, and this event occurs later then.
-	if (n == m_clients.end())
-		return CS_Invalid;
-
-	return n->second->getState();
-}
-
 void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)
 {
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);

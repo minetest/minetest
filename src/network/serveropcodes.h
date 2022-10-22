@@ -35,7 +35,8 @@ struct ToServerCommandHandler
 {
     const std::string name;
     ToServerConnectionState state;
-    void (Server::*handler)(NetworkPacket* pkt);
+    void (Server::*handler)(NetworkPacket* pkt, RemoteClient *client);
+	ClientState min_client_state = CS_Invalid;
 };
 
 struct ClientCommandFactory

@@ -481,9 +481,6 @@ public:
 	/* get client by peer_id (make sure you have list lock before!*/
 	RemoteClient *lockedGetClientNoEx(session_t peer_id,  ClientState state_min = CS_Active);
 
-	/* get state of client by id*/
-	ClientState getClientState(session_t peer_id);
-
 	/* set client playername */
 	void setPlayerName(session_t peer_id, const std::string &name);
 

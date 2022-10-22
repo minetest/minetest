@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "serveropcodes.h"
 
-const static ToServerCommandHandler null_command_handler = { "TOSERVER_NULL", TOSERVER_STATE_ALL, &Server::handleCommand_Null };
+const static ToServerCommandHandler null_command_handler = { "TOSERVER_NULL", TOSERVER_STATE_ALL, &Server::handleCommand_Null, CS_Invalid };
 
 const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_handler, // 0x00 (never use this)
 	null_command_handler, // 0x01
-	{ "TOSERVER_INIT",                     TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init }, // 0x02
+	{ "TOSERVER_INIT",                     TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init, CS_Created }, // 0x02
 	null_command_handler, // 0x03
 	null_command_handler, // 0x04
 	null_command_handler, // 0x05
@@ -41,15 +41,15 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0e
 	null_command_handler, // 0x0f
 	null_command_handler, // 0x10
-	{ "TOSERVER_INIT2",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init2 }, // 0x11
+	{ "TOSERVER_INIT2",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init2, CS_Created }, // 0x11
 	null_command_handler, // 0x12
 	null_command_handler, // 0x13
 	null_command_handler, // 0x14
 	null_command_handler, // 0x15
 	null_command_handler, // 0x16
-	{ "TOSERVER_MODCHANNEL_JOIN",          TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelJoin }, // 0x17
-	{ "TOSERVER_MODCHANNEL_LEAVE",         TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelLeave }, // 0x18
-	{ "TOSERVER_MODCHANNEL_MSG",           TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelMsg }, // 0x19
+	{ "TOSERVER_MODCHANNEL_JOIN",          TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelJoin, CS_Active }, // 0x17
+	{ "TOSERVER_MODCHANNEL_LEAVE",         TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelLeave, CS_Active }, // 0x18
+	{ "TOSERVER_MODCHANNEL_MSG",           TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelMsg, CS_Active }, // 0x19
 	null_command_handler, // 0x1a
 	null_command_handler, // 0x1b
 	null_command_handler, // 0x1c
@@ -59,9 +59,9 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x20
 	null_command_handler, // 0x21
 	null_command_handler, // 0x22
-	{ "TOSERVER_PLAYERPOS",                TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerPos }, // 0x23
-	{ "TOSERVER_GOTBLOCKS",                TOSERVER_STATE_STARTUP, &Server::handleCommand_GotBlocks }, // 0x24
-	{ "TOSERVER_DELETEDBLOCKS",            TOSERVER_STATE_INGAME, &Server::handleCommand_DeletedBlocks }, // 0x25
+	{ "TOSERVER_PLAYERPOS",                TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerPos, CS_Active }, // 0x23
+	{ "TOSERVER_GOTBLOCKS",                TOSERVER_STATE_STARTUP, &Server::handleCommand_GotBlocks, CS_Active }, // 0x24
+	{ "TOSERVER_DELETEDBLOCKS",            TOSERVER_STATE_INGAME, &Server::handleCommand_DeletedBlocks, CS_Active }, // 0x25
 	null_command_handler, // 0x26
 	null_command_handler, // 0x27
 	null_command_handler, // 0x28
@@ -73,25 +73,25 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x2e
 	null_command_handler, // 0x2f
 	null_command_handler, // 0x30
-	{ "TOSERVER_INVENTORY_ACTION",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryAction }, // 0x31
-	{ "TOSERVER_CHAT_MESSAGE",             TOSERVER_STATE_INGAME, &Server::handleCommand_ChatMessage }, // 0x32
+	{ "TOSERVER_INVENTORY_ACTION",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryAction, CS_Active }, // 0x31
+	{ "TOSERVER_CHAT_MESSAGE",             TOSERVER_STATE_INGAME, &Server::handleCommand_ChatMessage, CS_Active }, // 0x32
 	null_command_handler, // 0x33
 	null_command_handler, // 0x34
-	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage }, // 0x35
+	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage, CS_Active }, // 0x35
 	null_command_handler, // 0x36
-	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem }, // 0x37
-	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn }, // 0x38
-	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact }, // 0x39
-	{ "TOSERVER_REMOVED_SOUNDS",           TOSERVER_STATE_INGAME, &Server::handleCommand_RemovedSounds }, // 0x3a
-	{ "TOSERVER_NODEMETA_FIELDS",          TOSERVER_STATE_INGAME, &Server::handleCommand_NodeMetaFields }, // 0x3b
-	{ "TOSERVER_INVENTORY_FIELDS",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryFields }, // 0x3c
+	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem, CS_Active }, // 0x37
+	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn, CS_Active }, // 0x38
+	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact, CS_Active }, // 0x39
+	{ "TOSERVER_REMOVED_SOUNDS",           TOSERVER_STATE_INGAME, &Server::handleCommand_RemovedSounds, CS_Active }, // 0x3a
+	{ "TOSERVER_NODEMETA_FIELDS",          TOSERVER_STATE_INGAME, &Server::handleCommand_NodeMetaFields, CS_Active }, // 0x3b
+	{ "TOSERVER_INVENTORY_FIELDS",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryFields, CS_Active }, // 0x3c
 	null_command_handler, // 0x3d
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
-	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
-	{ "TOSERVER_HAVE_MEDIA",               TOSERVER_STATE_INGAME, &Server::handleCommand_HaveMedia }, // 0x41
+	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia, CS_Created }, // 0x40
+	{ "TOSERVER_HAVE_MEDIA",               TOSERVER_STATE_INGAME, &Server::handleCommand_HaveMedia, CS_Active }, // 0x41
 	null_command_handler, // 0x42
-	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
+	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady, CS_DefinitionsSent }, // 0x43
 	null_command_handler, // 0x44
 	null_command_handler, // 0x45
 	null_command_handler, // 0x46
@@ -104,9 +104,9 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x4d
 	null_command_handler, // 0x4e
 	null_command_handler, // 0x4f
-	{ "TOSERVER_FIRST_SRP",                TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_FirstSrp }, // 0x50
-	{ "TOSERVER_SRP_BYTES_A",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesA }, // 0x51
-	{ "TOSERVER_SRP_BYTES_M",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesM }, // 0x52
+	{ "TOSERVER_FIRST_SRP",                TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_FirstSrp, CS_HelloSent }, // 0x50
+	{ "TOSERVER_SRP_BYTES_A",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesA, CS_HelloSent }, // 0x51
+	{ "TOSERVER_SRP_BYTES_M",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesM, CS_HelloSent }, // 0x52
 };
 
 const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
