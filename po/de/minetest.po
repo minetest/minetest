@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-24 09:24+0000\n"
+"PO-Revision-Date: 2022-11-06 20:09+0000\n"
 "Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -995,7 +995,7 @@ msgstr "Adresse"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
-msgstr "Clear"
+msgstr "Leeren"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -3550,9 +3550,7 @@ msgstr "Bildwiederholrate"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr ""
-"Maximale Bildwiederholrate, während das Spiel pausiert oder nicht fokussiert "
-"ist"
+msgstr "Bildwiederholrate bei Bildwiederholrate/Pause"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -7899,7 +7897,7 @@ msgstr ""
 "gestaltetes Texturenparket benutzen; mit dieser Einstellung versucht\n"
 "der Client, die Skalierung automatisch basierend auf der Texturengröße\n"
 "zu ermitteln.\n"
-"Sie auch: texture_min_size.\n"
+"Siehe auch: texture_min_size.\n"
 "Achtung: Diese Einstellung ist EXPERIMENTELL!"
 
 #: src/settings_translation_file.cpp
