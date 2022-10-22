@@ -86,7 +86,7 @@ public:
 	inline void clearStored() { m_stored.clear(); }
 	void pushStored(const StaticObject &obj) { m_stored.push_back(obj); }
 
-	bool moveActiveToStored(u16 id);
+	bool storeActiveObject(u16 id);
 
 	inline void clear()
 	{

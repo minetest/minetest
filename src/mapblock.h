@@ -434,7 +434,7 @@ public:
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
 
-	bool moveActiveObjectToStored(u16 id);
+	bool storeActiveObject(u16 id);
 	// clearObject and return removed objects count
 	u32 clearObjects();
 

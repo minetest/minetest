@@ -268,7 +268,6 @@ bool getExecPathFromProcfs(char *buf, size_t buflen)
 		return false;
 
 	buf[len] = '\0';
-	warningstream << buf << std::endl;
 	return true;
 #else
 	return false;

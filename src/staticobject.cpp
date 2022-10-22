@@ -122,7 +122,7 @@ void StaticObjectList::deSerialize(std::istream &is)
 	}
 }
 
-bool StaticObjectList::moveActiveToStored(u16 id)
+bool StaticObjectList::storeActiveObject(u16 id)
 {
 	const auto i = m_active.find(id);
 	if (i == m_active.end())

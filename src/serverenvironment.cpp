@@ -1834,7 +1834,7 @@ void ServerEnvironment::removeRemovedObjects()
 		*/
 		if (!obj->isPendingRemoval() && obj->m_static_exists) {
 			if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
-				if (!block->moveActiveObjectToStored(id)) {
+				if (!block->storeActiveObject(id)) {
 					warningstream << "ServerEnvironment::removeRemovedObjects(): "
 							<< "id=" << id << " m_static_exists=true but "
 							<< "static data doesn't actually exist in "
