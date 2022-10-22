@@ -404,9 +404,9 @@ bool ModMetadataDatabaseFiles::getModKeys(const std::string &modname,
 		return false;
 
 	std::vector<std::string> keys = meta->getMemberNames();
-	for (std::string &key : keys) {
-		storage->emplace_back(std::move(key));
-	}
+	storage->reserve(storage->size() + keys.size());
+	for (std::string &key : keys)
+		storage->push_back(std::move(key));
 
 	return true;
 }

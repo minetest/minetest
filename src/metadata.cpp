@@ -111,9 +111,9 @@ const StringMap &SimpleMetadata::getStrings(StringMap *) const
 const std::vector<std::string> &SimpleMetadata::getKeys(std::vector<std::string> *place) const
 {
 	place->clear();
-	for (const auto &pair : m_stringvars) {
+	place->reserve(m_stringvars.size());
+	for (const auto &pair : m_stringvars)
 		place->push_back(pair.first);
-	}
 	return *place;
 }
 

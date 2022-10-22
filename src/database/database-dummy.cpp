@@ -96,9 +96,9 @@ bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::str
 {
 	const auto mod_pair = m_mod_meta_database.find(modname);
 	if (mod_pair != m_mod_meta_database.cend()) {
-		for (const auto &pair : mod_pair->second) {
+		storage->reserve(storage->size() + mod_pair->second.size());
+		for (const auto &pair : mod_pair->second)
 			storage->push_back(pair.first);
-		}
 	}
 	return true;
 }
