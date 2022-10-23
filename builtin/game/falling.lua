@@ -316,6 +316,17 @@ core.register_entity(":__builtin:falling_node", {
 		-- Check what's here
 		local n2 = core.get_node(np)
 		local nd = core.registered_nodes[n2.name]
+
+		-- Convert self into ordinary drop if specially secured nodes were affected
+		if core.get_item_group(n2.name, "nostomp") ~= 0 then
+			local drops = core.get_node_drops(self.node, "")
+			for _, dropped_item in pairs(drops) do
+				core.add_item(np, dropped_item)
+			end
+			self.object:remove()
+			return true
+		end
+
 		-- If it's not air or liquid, remove node and replace it with
 		-- it's drops
 		if n2.name ~= "air" and (not nd or nd.liquidtype ~= "source") then
