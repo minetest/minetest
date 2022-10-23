@@ -420,6 +420,13 @@ void ServerEnvironment::init()
 
 	// If we open world.mt read the backend configurations.
 	if (succeeded) {
+		// Check that the world's blocksize matches the compiled MAP_BLOCKSIZE
+		u16 blocksize = 16;
+		conf.getU16NoEx("blocksize", blocksize);
+		if (blocksize != MAP_BLOCKSIZE) {
+			throw BaseException(std::string("The map's blocksize is not supported."));
+		}
+
 		// Read those values before setting defaults
 		bool player_backend_exists = conf.exists("player_backend");
 		bool auth_backend_exists = conf.exists("auth_backend");
