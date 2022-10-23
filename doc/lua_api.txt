@@ -6861,6 +6861,8 @@ and [`PlayerMetaRef`].
 * `get_int(key)`: Returns `0` if key not present.
 * `set_float(key, value)`
 * `get_float(key)`: Returns `0` if key not present.
+* `set_bool(key, value)`
+* `get_bool(key)`: Returns `false` if key not present.
 * `to_table()`: returns `nil` or a table with keys:
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)

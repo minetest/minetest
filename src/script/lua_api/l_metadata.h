@@ -74,6 +74,12 @@ protected:
 	// set_float(self, name, var)
 	static int l_set_float(lua_State *L);
 
+	// get_bool(self, name)
+	static int l_get_bool(lua_State *L);
+
+	// set_bool(self, name, var)
+	static int l_set_bool(lua_State *L);
+
 	// to_table(self)
 	static int l_to_table(lua_State *L);
 

@@ -54,6 +54,16 @@ local function test_metadata(meta)
 	assert(meta:get_float("h") > 1)
 	assert(meta:get_string("i") == "${f}")
 
+	assert(meta:get_bool("") == false)
+	meta:set_bool("j", true)
+	assert(meta:get_bool("j") == true)
+	meta:set_bool("j", false)
+	assert(meta:get_bool("j") == false)
+	meta:set_string("j", "yes")
+	assert(meta:get_bool("j") == true)
+	meta:set_string("j", "no")
+	assert(meta:get_bool("j") == false)
+
 	meta:from_table()
 	assert(next(meta:to_table().fields) == nil)
 
