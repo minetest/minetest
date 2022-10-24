@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-09-18 20:16+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"PO-Revision-Date: 2022-10-25 20:07+0000\n"
+"Last-Translator: Kisjuhász Attila <kj.attil@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1158,7 +1158,7 @@ msgstr "Beállítások"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Árnyalók"
+msgstr "Árnyékolók"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
@@ -1214,7 +1214,7 @@ msgstr "Ringatózó növények"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Kapcsolódási hiba (protokollhiba?)"
+msgstr "A kapcsolat megszakadt (protokollhiba?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1351,9 +1351,9 @@ msgid "Camera update enabled"
 msgstr "Kamera frissítés engedélyezve"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr "Blokkhatárok mutatása nem lehetséges (szerver, vagy mod által letiltva)"
+msgstr ""
+"Nem lehet megjeleníteni a blokkhatárokat (mod vagy játék által letiltva)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1809,39 +1809,39 @@ msgstr "Num Lock"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr "Numpad *"
+msgstr "Számbillentyűzet *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr "Numpad +"
+msgstr "Számbillentyűzet +"
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr "Numpad -"
+msgstr "Számbillentyűzet -"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr "Numpad ."
+msgstr "Számbillentyűzet ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr "Numpad /"
+msgstr "Számbillentyűzet /"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr "Numpad 0"
+msgstr "Számbillentyűzet 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr "Számbillentyűzet 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr "Numpad 2"
+msgstr "Számbillentyűzet 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr "Numpad 3"
+msgstr "Számbillentyűzet 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
@@ -1849,27 +1849,27 @@ msgstr "Numpad 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr "Numpad 5"
+msgstr "Számbillentyűzet 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr "Numpad 6"
+msgstr "Számbillentyűzet 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr "Numpad 7"
+msgstr "Számbillentyűzet 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr "Numpad 8"
+msgstr "Számbillentyűzet 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr "Numpad 9"
+msgstr "Számbillentyűzet 9"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "OEM Tisztítás"
 
 #: src/client/keycode.cpp
 msgid "Page down"
@@ -2077,7 +2077,7 @@ msgstr "A gomb már használatban van"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Kulcstartók."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2448,13 +2448,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
-"A lebegő föld réteg sűrűségét szabályozza.\n"
-"Nagyobb sűrűséghez használjon nagyobb értéket. Lehet pozitív vagy negatív "
-"is.\n"
-"Érték = 0,0: a térfogat 50%-a lebegő föld.\n"
-"Érték = 2,0 (magasabb is lehet az 'mgv7_np_floatland'-től függően, a "
-"biztonság\n"
-"kedvéért mindig próbálja ki) egybefüggő lebegő föld réteget eredményez."
+"Beállítja az úszó réteg sűrűségét\n"
+"Növelje az értéket a sűrűség növelése érdekében. Lehet pozitív vagy negatív."
+"\n"
+"Érték = 0,0: 50%-a térfogata a lebegő földnek\n"
+"Érték = 2,0 (magasabb is lehet az 'mgv7_np_floatland'-től függően', mindig "
+"teszteljen\n"
+"hogy biztos legyen benne) szilárd úszó réteget hoz létre."
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
@@ -2969,7 +2969,7 @@ msgstr "ContentDB egyidejű letöltések maximális száma"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
-msgstr "ContentDB URL"
+msgstr "TartalomDB URL"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -3268,6 +3268,10 @@ msgid ""
 "Distance in nodes at which transparency depth sorting is enabled\n"
 "Use this to limit the performance impact of transparency depth sorting"
 msgstr ""
+"Távolság azokban a csomópontokban, amelyeknél az átlátszósági mélység "
+"szerinti rendezés engedélyezve van\n"
+"Ezzel korlátozhatja az átlátszósági mélységrendezés teljesítményre gyakorolt "
+"hatását"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3351,6 +3355,7 @@ msgstr "Joystick engedélyezése"
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
 msgstr ""
+"Engedélyezi a joystickokat. Újraindítást igényel az érvénybe léptetéshez"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3379,7 +3384,6 @@ msgstr ""
 "A sebesség érdekében vagy másféle kinézetért kikapcsolhatod."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable split login/register"
 msgstr "Osztott bejelentkezés/regisztráció engedélyezése"
 
@@ -3607,7 +3611,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
-msgstr "Szűrés és élsimítás:"
+msgstr "Szűrés és Élsimítás"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3862,14 +3866,12 @@ msgid "GUI scaling filter txr2img"
 msgstr "Felhasználói felület méretarány szűrő txr2img"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUIs"
-msgstr "GUI-k"
+msgstr "Grafikus felhasználói felületek"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Gamepads"
-msgstr "Játékok"
+msgstr "Gampadok"
 
 #: src/settings_translation_file.cpp
 msgid "General"
@@ -3940,9 +3942,8 @@ msgid "HUD"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "HUD méretaránya"
+msgstr "HUD (fej feletti kijelző) méretaránya"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -4210,13 +4211,12 @@ msgstr ""
 "A magasabb érték stabilabb, de több RAM-ot használ."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
 msgstr ""
-"Mennyire lassulsz le, amikor egy folyadékban mozogsz.\n"
-"Ha ezt csökkented, a folyadék mozgással szembeni ellenállása növekszik."
+"Mennyire lassul le, amikor folyadékban mozogsz.\n"
+"Ha ezt csökkentik, a folyadék mozgással szembeni ellenállása növekszik."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4255,8 +4255,8 @@ msgid ""
 "If disabled, \"Aux1\" key is used to fly fast if both fly and fast mode are\n"
 "enabled."
 msgstr ""
-"Ha le van tiltva, az \"Aux1\" gombbal lehet gyorsan repülni, ha a repülés és "
-"a gyors mód is engedélyezve van."
+"Ha le van tiltva, az \"Aux1\" billentyű a gyors repüléshez használható, \n"
+"ha a repülés és a gyors mód is engedélyezett."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4286,18 +4286,19 @@ msgid ""
 "and\n"
 "descending."
 msgstr ""
-"Ha engedélyezve van, az \"Aux1\" gombbal lehet lefelé mászni vagy "
-"leereszkedni a \"Lopakodás\" gomb helyett."
+"Ha engedélyezve van, a \"Sneak\" billentyű helyett az \"Aux1\" billentyű "
+"kerül\n"
+"felhasználásra a lemászáshoz, és felmászáshoz."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"Ha be van kapcsolva, a regisztráció megerősítését kéri, amikor csatlakozik "
-"egy szerverhez.\n"
-"Ha ki van kapcsolva, az új fiók automatikusan regisztrálásra kerül."
+"Ha engedélyezve van, a fiókregisztráció elkülönül a felhasználói felületen "
+"való bejelentkezéstől.\n"
+"Ha le van tiltva, az új fiókok automatikusan regisztrálva lesznek a "
+"bejelentkezéskor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4504,7 +4505,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
-msgstr "Joystick ID"
+msgstr "Botkormány ID"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
@@ -5381,9 +5382,9 @@ msgid ""
 "updated over\n"
 "network, stated in seconds."
 msgstr ""
-"A szerver órajelének hossza és az az intervallum, amely alatt az "
-"objektumokat általánosan\n"
-"frissíti a hálózaton, másodpercben megadva."
+"A szerver jelölés hossza és az időköz, amelyen az objektumokat általában "
+"frissíti\n"
+"a hálózat, másodpercben megadva."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5407,13 +5408,12 @@ msgstr ""
 "Két NodeTimer végrehajtás között eltelt idő hossza, másodpercben megadva."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Length of time between active block management cycles, stated in seconds."
-msgstr "Két aktív blokk kezelési fázis között eltelt idő"
+msgstr ""
+"Az aktív blokk kezelési ciklusok közötti időtartam, másodpercben megadva."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -5425,14 +5425,15 @@ msgid ""
 "-    verbose\n"
 "-    trace"
 msgstr ""
-"A debug.txt fájlba írandó naplózási szint:\n"
-"-semmi (nincs naplózás)\n"
-"-minimális (szint nélküli üzenetek)\n"
-"-hiba\n"
-"-figyelmeztetés\n"
-"-művelet\n"
-"-információ\n"
-"-fecsegő"
+"A hibakereséshez írandó naplózási szint. debug.txt:\n"
+"-<semmi> (nincs naplózás)\n"
+"-     egyik sem (szint nélküli üzenetek)\n"
+"-     hiba\n"
+"-     figyelmeztetés\n"
+"-     akció\n"
+"-     információ\n"
+"-     csevegés\n"
+"-     követés"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve boost"
@@ -6322,7 +6323,7 @@ msgstr "Jogosultságok, amiket a basic_privs adhat a játékosoknak"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr "Profiler"
+msgstr "Profilozó"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
@@ -6638,9 +6639,8 @@ msgid "Server"
 msgstr "Szerver"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Gameplay"
-msgstr "Szerver játékmenet"
+msgstr "Szerver Játékmenet"
 
 #: src/settings_translation_file.cpp
 msgid "Server Security"
@@ -6671,18 +6671,16 @@ msgid "Server side occlusion culling"
 msgstr "Takarásban lévő térképblokkok szerveroldali kiválogatása"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server/Env Performance"
-msgstr "Szerver/környezet teljesítménye"
+msgstr "Szerver/Környezet Teljesítménye"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
 msgstr "Szerverlista URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist and MOTD"
-msgstr "Szerverlista és a nap üzenete"
+msgstr "Szerverlista és nap üzenete"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
@@ -6704,25 +6702,24 @@ msgstr ""
 "küldhetnek."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the shadow strength gamma.\n"
 "Adjusts the intensity of in-game dynamic shadows.\n"
 "Lower value means lighter shadows, higher value means darker shadows."
 msgstr ""
-"Az árnyékok kivehetőségét szabályozza.\n"
+"Az árnyékerősség gamma beállítása\n"
+"A játékon belüli dinamikus árnyékok intenzitásának beállítása.\n"
 "Kisebb érték világosabb, magasabb érték sötétebb árnyékokat jelent."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
 msgstr ""
-"Az árnyékok lágy szélének kiterjedését szabályozza.\n"
+"A lágy árnyék sugarának méreti beállítása\n"
 "Kisebb érték élesebb, nagyobb érték lágyabb árnyékokat jelent.\n"
-"Minimális érték: 1,0; maximális érték: 10,0"
+"Minimális érték: 1.0; maximális érték: 15.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6815,9 +6812,8 @@ msgid ""
 msgstr "Betűtípus árnyékának eltolása. Ha 0, akkor nem lesz árnyék rajzolva."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow strength gamma"
-msgstr "Árnyék kivehetősége"
+msgstr "Árnyékerősség gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -7259,8 +7255,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
-"A jostick tengelyeinek érzékenysége, amely a játékbeli látómező mozgatását "
-"befolyásolja."
+"A joystick tengelyek érzékenysége a\n"
+"játékon belüli látótérben."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7300,16 +7296,16 @@ msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
-"Ennyi másodperc szükséges az esemény megismétléséhez a joystick gombok "
-"nyomva tartásakor."
+"Ismétlődő események között eltelt idő másodpercben\n"
+"ha lenyomva tartja a joystick gombkombinációját."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Ennyi másodperc szükséges az ismételt kockalehelyezéshez a lehelyezés gomb "
-"nyomva tartásakor."
+"Az az idő másodpercben kifejezve, amely a csomópontok ismételt elhelyezése\n"
+"között telik el, amikor lenyomva tartja az elhelyezés gombot."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -7791,6 +7787,11 @@ msgid ""
 "setting names in All Settings.\n"
 "Controlled by the checkbox in the \"All settings\" menu."
 msgstr ""
+"Megjelenítse-e a technikai neveket.\n"
+"Hatással van a modokra és a textúracsomagokra a Tartalom és a Modok "
+"kiválasztása menüben, valamint\n"
+"a nevek beállítására Minden Beállításban.\n"
+"Az \"Összes beállítás\" menü jelölőnégyzetével vezérelhető."
 
 #: src/settings_translation_file.cpp
 msgid ""
