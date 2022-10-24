@@ -3515,10 +3515,10 @@ GUIInventoryList::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 		s32 item_index = e->getItemIndexAtPos(p);
 		if (item_index != -1)
 			return GUIInventoryList::ItemSpec(e->getInventoryloc(), e->getListname(),
-					item_index);
+					item_index, e->getSlotSize());
 	}
 
-	return GUIInventoryList::ItemSpec(InventoryLocation(), "", -1);
+	return GUIInventoryList::ItemSpec(InventoryLocation(), "", -1, {0,0});
 }
 
 void GUIFormSpecMenu::drawSelectedItem()
@@ -3540,7 +3540,8 @@ void GUIFormSpecMenu::drawSelectedItem()
 	ItemStack stack = list->getItem(m_selected_item->i);
 	stack.count = m_selected_amount;
 
-	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	v2s32 slotsize = m_selected_item->slotsize;
+	core::rect<s32> imgrect(0, 0, slotsize.X, slotsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
 	rect.constrainTo(driver->getViewPort());
 	drawItemStack(driver, m_font, stack, rect, NULL, m_client, IT_ROT_DRAGGED);
@@ -3791,6 +3792,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 			m_selected_item->inventoryloc = e->getInventoryloc();
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
+			m_selected_item->slotsize = e->getSlotSize();
 			m_selected_amount = item.count;
 			m_selected_dragging = false;
 			break;
