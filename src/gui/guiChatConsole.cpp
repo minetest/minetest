@@ -353,44 +353,48 @@ void GUIChatConsole::drawPrompt()
 	if (!m_font)
 		return;
 
-	u32 row = m_chat_backend->getConsoleBuffer().getRows();
-	s32 line_height = m_fontsize.Y;
-	s32 y = row * line_height + m_height - m_desired_height;
-
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	// FIXME Draw string at once, not character by character
-	// That will only work with the cursor once we have a monospace font
-	for (u32 i = 0; i < prompt_text.size(); ++i)
-	{
-		wchar_t ws[2] = {prompt_text[i], 0};
-		s32 x = (1 + i) * m_fontsize.X;
-		core::rect<s32> destrect(
-			x, y, x + m_fontsize.X, y + m_fontsize.Y);
-		m_font->draw(
-			ws,
-			destrect,
-			video::SColor(255, 255, 255, 255),
-			false,
-			false,
-			&AbsoluteClippingRect);
-	}
+	u32 font_width  = m_fontsize.X;
+	u32 font_height = m_fontsize.Y;
+
+	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
+	u32 text_width = size.Width;
+	if (size.Height > font_height)
+		font_height = size.Height;
+
+	u32 row = m_chat_backend->getConsoleBuffer().getRows();
+	s32 y = row * font_height + m_height - m_desired_height;
+
+	core::rect<s32> destrect(
+		font_width, y, font_width + text_width, y + font_height);
+	m_font->draw(
+		prompt_text.c_str(),
+		destrect,
+		video::SColor(255, 255, 255, 255),
+		false,
+		false,
+		&AbsoluteClippingRect);
 
 	// Draw the cursor during on periods
 	if ((m_cursor_blink & 0x8000) != 0)
 	{
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
+
 		if (cursor_pos >= 0)
 		{
+
+			u32 text_to_cursor_pos_width = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
+
 			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
-			s32 x = (1 + cursor_pos) * m_fontsize.X;
+			s32 x = font_width + text_to_cursor_pos_width;
 			core::rect<s32> destrect(
 				x,
-				y + m_fontsize.Y * (1.0 - m_cursor_height),
-				x + m_fontsize.X * MYMAX(cursor_len, 1),
-				y + m_fontsize.Y * (cursor_len ? m_cursor_height+1 : 1)
+				y + font_height * (1.0 - m_cursor_height),
+				x + font_width * MYMAX(cursor_len, 1),
+				y + font_height * (cursor_len ? m_cursor_height+1 : 1)
 			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(

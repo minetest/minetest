@@ -223,6 +223,11 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 	dummymesh->drop(); // m_meshnode grabbed it
 
 	m_shadow = RenderingEngine::get_shadow_renderer();
+
+	if (m_shadow) {
+		// Add mesh to shadow caster
+		m_shadow->addNodeToShadowList(m_meshnode);
+	}
 }
 
 WieldMeshSceneNode::~WieldMeshSceneNode()
@@ -230,8 +235,8 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 	sanity_check(g_extrusion_mesh_cache);
 
 	// Remove node from shadow casters. m_shadow might be an invalid pointer!
-	if (auto shadow = RenderingEngine::get_shadow_renderer())
-		shadow->removeNodeFromShadowList(m_meshnode);
+	if (m_shadow)
+		m_shadow->removeNodeFromShadowList(m_meshnode);
 
 	if (g_extrusion_mesh_cache->drop())
 		g_extrusion_mesh_cache = nullptr;
@@ -552,11 +557,6 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	// need to normalize normals when lighting is enabled (because of setScale())
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
-
-	if (m_shadow) {
-		// Add mesh to shadow caster
-		m_shadow->addNodeToShadowList(m_meshnode);
-	}
 }
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)

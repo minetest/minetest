@@ -342,7 +342,7 @@ examples.
 
 #### `bgcolor[<color>;<fullscreen>]`
 * Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not effect the size of the formspec)
+* If `true`, the background color is drawn fullscreen (does not affect the size of the formspec)
 
 #### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 * Use a background. Inventory rectangles are not drawn then.
@@ -364,7 +364,7 @@ examples.
   of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centered on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
@@ -376,7 +376,7 @@ examples.
   of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centered on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
@@ -418,7 +418,7 @@ examples.
 * Clickable button. When clicked, fields will be sent.
 * `x`, `y` and `name` work as per field
 * `w` and `h` are the size of the button
-* Fixed button height. It will be vertically centred on `h`
+* Fixed button height. It will be vertically centered on `h`
 * `label` is the text on the button
 * Position and size units are inventory slots
 
@@ -565,7 +565,7 @@ examples.
     * `color` column options:
         * `span=<value>`: number of following columns to affect (default: infinite)
 
-**Note**: do _not_ use a element name starting with `key_`; those names are reserved to
+**Note**: do _not_ use an element name starting with `key_`; those names are reserved to
 pass key press events to formspec!
 
 Spatial Vectors
@@ -684,7 +684,7 @@ Call these functions only at load time!
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
 * `minetest.register_on_sending_chat_message(function(message))`
-    * Called always when a client send a message from chat
+    * Called always when a client sends a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
@@ -692,7 +692,7 @@ Call these functions only at load time!
     * Unregisters a chatcommands registered with register_chatcommand.
 * `minetest.register_on_chatcommand(function(command, params))`
     * Called always when a chatcommand is triggered, before `minetest.registered_chatcommands`
-      is checked to see if that the command exists, but after the input is parsed.
+      is checked to see if the command exists, but after the input is parsed.
     * Return `true` to mark the command as handled, which means that the default
       handlers will be prevented.
 * `minetest.register_on_death(function())`
@@ -879,7 +879,7 @@ Call these functions only at load time!
     * Unserializable things like functions and userdata are saved as null.
     * **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as keys.
-        2. You can not mix string and integer keys.
+        2. You cannot mix string and integer keys.
            This is due to the fact that JSON has two distinct array and object values.
     * Example: `write_json({10, {a = false}})`, returns `"[10, {\"a\": false}]"`
 * `minetest.serialize(table)`: returns a string
@@ -911,7 +911,7 @@ Call these functions only at load time!
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
 * `minetest.rgba(red, green, blue[, alpha])`: returns a string
-    * Each argument is a 8 Bit unsigned integer
+    * Each argument is an 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
@@ -1216,7 +1216,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 		paramtype = string,             -- Paramtype of the node
 		paramtype2 = string,            -- ParamType2 of the node
 		drawtype = string,              -- Drawtype of the node
-		mesh = <string>,                -- Mesh name if existant
+		mesh = <string>,                -- Mesh name if existent
 		minimap_color = <Color>,        -- Color of node on minimap *May not exist*
 		visual_scale = number,          -- Visual scale of node
 		alpha = number,                 -- Alpha of the node. Only used for liquids
@@ -1336,7 +1336,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 Escape sequences
 ----------------
-Most text can contain escape sequences, that can for example color the text.
+Most text can contain escape sequences that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
 * `minetest.get_color_escape_sequence(color)`:

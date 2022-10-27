@@ -50,7 +50,7 @@ minetest.register_node("testnodes:nodebox_overhigh2", {
 minetest.register_node("testnodes:nodebox_leveled", {
 	description = S("Leveled Nodebox Test Node").."\n"..
 		S("param2 = height (0..127)"),
-	tiles = {"testnodes_nodebox.png"},
+	tiles = {"testnodes_nodebox.png^[colorize:#0F0:32"},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "leveled",
@@ -85,7 +85,7 @@ local nodebox_wall_thick = {
 minetest.register_node("testnodes:nodebox_connected", {
 	description = S("Connected Nodebox Test Node").."\n"..
 		S("Connects to neighbors"),
-	tiles = {"testnodes_nodebox.png"},
+	tiles = {"testnodes_nodebox.png^[colorize:#F00:32"},
 	groups = {connected_nodebox=1, dig_immediate=3},
 	drawtype = "nodebox",
 	paramtype = "light",
@@ -120,12 +120,12 @@ minetest.register_node("testnodes:nodebox_connected_4dir", {
 		S("Connects to neighbors").."\n"..
 		S("param2 = 4dir rotation of textures (not of the nodebox!)"),
 	tiles = {
-		"testnodes_1.png^[colorize:#FFFF00:127",
-		"testnodes_2.png^[colorize:#FFFF00:127",
-		"testnodes_3.png^[colorize:#FFFF00:127",
-		"testnodes_4.png^[colorize:#FFFF00:127",
-		"testnodes_5.png^[colorize:#FFFF00:127",
-		"testnodes_6.png^[colorize:#FFFF00:127",
+		"testnodes_1f.png",
+		"testnodes_2f.png",
+		"testnodes_3f.png",
+		"testnodes_4f.png",
+		"testnodes_5f.png",
+		"testnodes_6f.png",
 	},
 	groups = {connected_nodebox=1, dig_immediate=3},
 	drawtype = "nodebox",

@@ -109,7 +109,7 @@ local function wait_for_player(callback)
 end
 
 local function wait_for_map(player, callback)
-	local check = function()
+	local function check()
 		if core.get_node_or_nil(player:get_pos()) ~= nil then
 			callback()
 		else

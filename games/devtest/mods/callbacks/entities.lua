@@ -1,7 +1,7 @@
 -- Entities that test their callbacks
 
 local message = function(msg)
-	minetest.log("action", msg)
+	minetest.log("action", "[callbacks] "..msg)
 	minetest.chat_send_all(msg)
 end
 
@@ -22,10 +22,10 @@ local spos = function(self)
 end
 
 -- Callback test entity (all callbacks except on_step)
-minetest.register_entity("testentities:callback", {
+minetest.register_entity("callbacks:callback", {
 	initial_properties = {
 		visual = "upright_sprite",
-		textures = { "testentities_callback.png" },
+		textures = { "callbacks_callback_entity.png" },
 	},
 
 	on_activate = function(self, staticdata, dtime_s)
@@ -69,9 +69,9 @@ minetest.register_entity("testentities:callback", {
 })
 
 -- Only test on_step callback
-minetest.register_entity("testentities:callback_step", {
+minetest.register_entity("callbacks:callback_step", {
 	visual = "upright_sprite",
-	textures = { "testentities_callback_step.png" },
+	textures = { "callbacks_callback_entity_step.png" },
 	on_step = function(self, dtime)
 		message("on_step callback entity: on_step! pos="..spos(self).."; dtime="..dtime)
 	end,
