@@ -1470,14 +1470,21 @@ bool Game::createClient(const GameStartData &start_data)
 
 	/* Set window caption
 	 */
-	// set caption to subgame name in singleplayer mode
-	std::wstring str = utf8_to_wide(start_data.game_spec.title);
-	if (!simple_singleplayer_mode)
+	std::wstring str;
+	
+	if (simple_singleplayer_mode && !start_data.game_spec.title.empty())
 	{
+		// set caption to game title in singleplayer mode
+		str = utf8_to_wide(start_data.game_spec.title);
+	}
+	else
+	{
+		// set caption to project name in multiplayer mode
 		str = utf8_to_wide(PROJECT_NAME_C);
 		str += L" ";
 		str += utf8_to_wide(g_version_hash);
 	}
+	
 	{
 		const wchar_t *text = nullptr;
 		if (simple_singleplayer_mode)
