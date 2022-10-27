@@ -454,7 +454,7 @@ fake_function() {
 	gettext("Floatland tapering distance");
 	gettext("Y-distance over which floatlands taper from full density to nothing.\nTapering starts at this distance from the Y limit.\nFor a solid floatland layer, this controls the height of hills/mountains.\nMust be less than or equal to half the distance between the Y limits.");
 	gettext("Floatland taper exponent");
-	gettext("Exponent of the floatland tapering. Alters the tapering behaviour.\nValue = 1.0 creates a uniform, linear tapering.\nValues > 1.0 create a smooth tapering suitable for the default separated\nfloatlands.\nValues < 1.0 (for example 0.25) create a more defined surface level with\nflatter lowlands, suitable for a solid floatland layer.");
+	gettext("Exponent of the floatland tapering. Alters the tapering behavior.\nValue = 1.0 creates a uniform, linear tapering.\nValues > 1.0 create a smooth tapering suitable for the default separated\nfloatlands.\nValues < 1.0 (for example 0.25) create a more defined surface level with\nflatter lowlands, suitable for a solid floatland layer.");
 	gettext("Floatland density");
 	gettext("Adjusts the density of the floatland layer.\nIncrease value to increase density. Can be positive or negative.\nValue = 0.0: 50% of volume is floatland.\nValue = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\nto be sure) creates a solid floatland layer.");
 	gettext("Floatland water level");

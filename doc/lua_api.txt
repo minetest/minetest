@@ -1691,7 +1691,7 @@ Amount and wear
 ---------------
 
 All item stacks have an amount between 0 and 65535. It is 1 by
-default. Tool item stacks can not have an amount greater than 1.
+default. Tool item stacks cannot have an amount greater than 1.
 
 Tools use a wear (damage) value ranging from 0 to 65535. The
 value 0 is the default and is used for unworn tools. The values
@@ -3546,10 +3546,10 @@ Operators can be used if all of the involved vectors have metatables:
     * Returns the additive inverse of v.
 * `v1 + v2`:
     * Returns the sum of both vectors.
-    * Note: `+` can not be used together with scalars.
+    * Note: `+` cannot be used together with scalars.
 * `v1 - v2`:
     * Returns the difference of `v1` subtracted by `v2`.
-    * Note: `-` can not be used together with scalars.
+    * Note: `-` cannot be used together with scalars.
 * `v * s` or `s * v`:
     * Returns `v` scaled by `s`.
 * `v / s`:
@@ -3650,7 +3650,7 @@ Helper functions
     * Example: `minetest.string_to_area("(1,2,3) (~5,~-5,~)", {x=10,y=10,z=10})`
       returns `{x=1,y=2,z=3}, {x=15,y=5,z=10}`
 * `minetest.formspec_escape(string)`: returns a string
-    * escapes the characters "[", "]", "\", "," and ";", which can not be used
+    * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
 * `minetest.is_yes(arg)`
     * returns true if passed 'y', 'yes', 'true' or a number that isn't zero.
@@ -5812,7 +5812,7 @@ Formspec
       `minetest.close_formspec(playername, "")`.
       **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
 * `minetest.formspec_escape(string)`: returns a string
-    * escapes the characters "[", "]", "\", "," and ";", which can not be used
+    * escapes the characters "[", "]", "\", "," and ";", which cannot be used
       in formspecs.
 * `minetest.explode_table_event(string)`: returns a table
     * returns e.g. `{type="CHG", row=1, column=2}`
@@ -6379,7 +6379,7 @@ Misc.
     * **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as
            keys.
-        2. You can not mix string and integer keys.
+        2. You cannot mix string and integer keys.
            This is due to the fact that JSON has two distinct array and object
            values.
     * Example: `write_json({10, {a = false}})`,

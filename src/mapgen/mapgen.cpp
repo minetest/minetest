@@ -82,7 +82,7 @@ struct MapgenDesc {
 //// Built-in mapgens
 ////
 
-// Order used here defines the order of appearence in mainmenu.
+// Order used here defines the order of appearance in mainmenu.
 // v6 always last to discourage selection.
 // Special mapgens flat, fractal, singlenode, next to last. Of these, singlenode
 // last to discourage selection.
@@ -745,7 +745,7 @@ void MapgenBasic::generateBiomes()
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;
 				water_above = false;
-			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
+			} else {  // Possible various nodes overgenerated from neighboring mapchunks
 				nplaced = U16_MAX;  // Disable top/filler placement
 				air_above = false;
 				water_above = false;

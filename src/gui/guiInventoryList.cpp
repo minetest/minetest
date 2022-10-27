@@ -205,7 +205,7 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 			!AbsoluteClippingRect.isPointInside(p))
 		return -1;
 
-	// there can not be an item if the inventory or the inventorylist does not exist
+	// there cannot be an item if the inventory or the inventorylist does not exist
 	Inventory *inv = m_invmgr->getInventory(m_inventoryloc);
 	if (!inv)
 		return -1;

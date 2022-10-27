@@ -1720,7 +1720,7 @@ void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progres
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
 
-		// update the loading menu -- if neccessary
+		// update the loading menu -- if necessary
 		bool do_draw = false;
 		u64 time_ms = targs->last_time_ms;
 		if (cur_percent != targs->last_percent) {

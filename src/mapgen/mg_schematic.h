@@ -63,7 +63,7 @@ class Server;
 	1 - Initial version
 	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
 	3 - Added y-slice probabilities; this allows for variable height structures
-	4 - Compressed range of node occurence prob., added per-node force placement bit
+	4 - Compressed range of node occurrence prob., added per-node force placement bit
 */
 
 //// Schematic constants

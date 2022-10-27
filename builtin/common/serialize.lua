@@ -8,7 +8,7 @@ local next, rawget, pairs, pcall, error, type, setfenv, loadstring
 local table_concat, string_dump, string_format, string_match, math_huge
 	= table.concat, string.dump, string.format, string.match, math.huge
 
--- Recursively counts occurences of objects (non-primitives including strings) in a table.
+-- Recursively counts occurrences of objects (non-primitives including strings) in a table.
 local function count_objects(value)
 	local counts = {}
 	if value == nil then

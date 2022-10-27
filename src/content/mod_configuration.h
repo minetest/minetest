@@ -33,7 +33,7 @@ class ModConfiguration
 {
 public:
 	/**
-	 * @returns true if all dependencies are fullfilled.
+	 * @returns true if all dependencies are fulfilled.
 	 */
 	inline bool isConsistent() const { return m_unsatisfied_mods.empty(); }
 

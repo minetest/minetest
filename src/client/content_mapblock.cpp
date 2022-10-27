@@ -787,7 +787,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		aabb3f(-a,  b, -a,  a,  a, -b), // z-
 	};
 
-	// tables of neighbour (connect if same type and merge allowed),
+	// tables of neighbor (connect if same type and merge allowed),
 	// checked with g_26dirs
 
 	// 1 = connect, 0 = face visible
@@ -802,7 +802,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		{1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
 	const bool *check_nb = check_nb_all;
 
-	// neighbours checks for frames visibility
+	// neighbors checks for frames visibility
 	if (H_merge || V_merge) {
 		if (!H_merge)
 			check_nb = check_nb_vertical; // vertical-only merge

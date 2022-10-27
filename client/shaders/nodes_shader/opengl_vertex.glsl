@@ -18,7 +18,7 @@ varying vec3 worldPosition;
 varying lowp vec4 varColor;
 // The centroid keyword ensures that after interpolation the texture coordinates
 // lie within the same bounds when MSAA is en- and disabled.
-// This fixes the stripes problem with nearest-neighbour textures and MSAA.
+// This fixes the stripes problem with nearest-neighbor textures and MSAA.
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else

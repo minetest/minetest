@@ -86,7 +86,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 	//TODO verify that username_legacy matches sent username, only
 	// differs in casing (make both uppercase and compare)
-	// This is only neccessary though when we actually want to add casing support
+	// This is only necessary though when we actually want to add casing support
 
 	if (m_chosen_auth_mech != AUTH_MECHANISM_NONE) {
 		// we received a TOCLIENT_HELLO while auth was already going on
@@ -186,7 +186,7 @@ void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 {
 	// The server didn't like our password. Note, this needs
-	// to be processed even if the serialisation format has
+	// to be processed even if the serialization format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
 	m_access_denied_reason = "Unknown";

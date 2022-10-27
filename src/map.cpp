@@ -695,7 +695,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 			else
 				new_node_content = floodable_node;
 		} else if (ignored_sources && liquid_level >= 0) {
-			// Maybe there are neighbouring sources that aren't loaded yet
+			// Maybe there are neighboring sources that aren't loaded yet
 			// so prevent flowing away.
 			new_node_level = liquid_level;
 			new_node_content = liquid_kind;
@@ -820,7 +820,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		/*
-			enqueue neighbors for update if neccessary
+			enqueue neighbors for update if necessary
 		 */
 		switch (m_nodedef->get(n0.getContent()).liquid_type) {
 			case LIQUID_SOURCE:
@@ -854,7 +854,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
 
 	/* ----------------------------------------------------------------------
-	 * Manage the queue so that it does not grow indefinately
+	 * Manage the queue so that it does not grow indefinitely
 	 */
 	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
 

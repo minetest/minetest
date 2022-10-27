@@ -52,7 +52,7 @@ void ReflowScan::scan(MapBlock *block, UniqueQueue<v3s16> *liquid_queue)
 		scanColumn(x, z);
 	}
 
-	// Scan neighbouring columns from the nearby blocks as they might contain
+	// Scan neighboring columns from the nearby blocks as they might contain
 	// liquid nodes that weren't allowed to flow to prevent gaps.
 	for (s16 i = 0; i < MAP_BLOCKSIZE; i++) {
 		scanColumn(i, -1);
@@ -66,7 +66,7 @@ inline MapBlock *ReflowScan::lookupBlock(int x, int y, int z)
 {
 	// Gets the block that contains (x,y,z) relativ to the scanned block.
 	// This uses a lookup as there might be many lookups into the same
-	// neighbouring block which makes fetches from Map costly.
+	// neighboring block which makes fetches from Map costly.
 	int bx = (MAP_BLOCKSIZE + x) / MAP_BLOCKSIZE;
 	int by = (MAP_BLOCKSIZE + y) / MAP_BLOCKSIZE;
 	int bz = (MAP_BLOCKSIZE + z) / MAP_BLOCKSIZE;
@@ -105,7 +105,7 @@ inline bool ReflowScan::isLiquidFlowableTo(int x, int y, int z)
 inline bool ReflowScan::isLiquidHorizontallyFlowable(int x, int y, int z)
 {
 	// Check if the (x,y,z) might spread to one of the horizontally
-	// neighbouring nodes
+	// neighboring nodes
 	return isLiquidFlowableTo(x - 1, y, z) ||
 		isLiquidFlowableTo(x + 1, y, z) ||
 		isLiquidFlowableTo(x, y, z - 1) ||

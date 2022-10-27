@@ -334,7 +334,7 @@ cpack_add_component_group(Subgames
 )
 
 if(WIN32)
-	# Include all dynamically linked runtime libaries such as MSVCRxxx.dll
+	# Include all dynamically linked runtime libraries such as MSVCRxxx.dll
 	include(InstallRequiredSystemLibraries)
 
 	if(RUN_IN_PLACE)

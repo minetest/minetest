@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 bool RaycastSort::operator() (const PointedThing &pt1,
 	const PointedThing &pt2) const
 {
-	// "nothing" can not be sorted
+	// "nothing" cannot be sorted
 	assert(pt1.type != POINTEDTHING_NOTHING);
 	assert(pt2.type != POINTEDTHING_NOTHING);
 	f32 pt1_distSq = pt1.distanceSq;

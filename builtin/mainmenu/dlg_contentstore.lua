@@ -278,7 +278,7 @@ local function resolve_dependencies_2(raw_deps, installed_mods, out)
 			end
 		end
 
-		-- Otherwise, find the first mod that fulfils it
+		-- Otherwise, find the first mod that fulfills it
 		if fallback then
 			return {
 				is_optional = dep.is_optional,

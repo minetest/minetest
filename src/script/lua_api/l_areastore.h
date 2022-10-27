@@ -54,7 +54,7 @@ public:
 	~LuaAreaStore();
 
 	// AreaStore()
-	// Creates a AreaStore and leaves it on top of stack
+	// Creates an AreaStore and leaves it on top of stack
 	static int create_object(lua_State *L);
 
 	static void Register(lua_State *L);

@@ -973,7 +973,7 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 	if (!clist)
 		return false;
 
-	// Mangle crafting grid to an another format
+	// Mangle crafting grid to another format
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
 	ci.width = clist->getWidth() ? clist->getWidth() : 3;

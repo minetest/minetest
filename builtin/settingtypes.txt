@@ -994,7 +994,7 @@ mgv7_floatland_ymax (Floatland maximum Y) int 4096 -31000 31000
 #    Must be less than or equal to half the distance between the Y limits.
 mgv7_floatland_taper (Floatland tapering distance) int 256 0 32767
 
-#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Exponent of the floatland tapering. Alters the tapering behavior.
 #    Value = 1.0 creates a uniform, linear tapering.
 #    Values > 1.0 create a smooth tapering suitable for the default separated
 #    floatlands.

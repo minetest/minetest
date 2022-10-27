@@ -512,7 +512,7 @@ struct TestMapBlock: public TestBase
 			while being underground
 		*/
 		{
-			// Make neighbours to exist and set some non-sunlight to them
+			// Make neighbors to exist and set some non-sunlight to them
 			parent.position_valid = true;
 			b.setIsUnderground(true);
 			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
@@ -547,7 +547,7 @@ struct TestMapBlock: public TestBase
 					}
 				}
 			}
-			// Make neighbours invalid
+			// Make neighbors invalid
 			parent.position_valid = false;
 			// Add exceptions to the top of the bottom block
 			for(u16 x=0; x<MAP_BLOCKSIZE; x++)

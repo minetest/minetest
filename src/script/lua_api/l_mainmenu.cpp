@@ -884,7 +884,7 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 		}
 	} else {
 		errorstream << "DOWNLOAD denied: " << absolute_destination
-				<< " isn't a allowed path" << std::endl;
+				<< " isn't an allowed path" << std::endl;
 	}
 	lua_pushboolean(L,false);
 	return 1;

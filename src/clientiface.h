@@ -409,7 +409,7 @@ private:
 		There is an excess amount because the client sometimes
 		gets a block so late that the server sends it again,
 		and the client then sends two GOTBLOCKs.
-		This is resetted by PrintInfo()
+		This is reset by PrintInfo()
 	*/
 	u32 m_excess_gotblocks = 0;
 

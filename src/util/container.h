@@ -147,7 +147,7 @@ public:
 		m_signal.post();
 	}
 
-	/* this version of pop_front returns a empty element of T on timeout.
+	/* this version of pop_front returns an empty element of T on timeout.
 	* Make sure default constructor of T creates a recognizable "empty" element
 	*/
 	T pop_frontNoEx(u32 wait_time_max_ms)
@@ -200,7 +200,7 @@ public:
 		throw ItemNotFoundException("MutexedQueue: queue is empty");
 	}
 
-	/* this version of pop_back returns a empty element of T on timeout.
+	/* this version of pop_back returns an empty element of T on timeout.
 	* Make sure default constructor of T creates a recognizable "empty" element
 	*/
 	T pop_backNoEx(u32 wait_time_max_ms)

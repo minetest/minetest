@@ -1302,7 +1302,7 @@
 #    type: int min: 0 max: 32767
 # mgv7_floatland_taper = 256
 
-#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Exponent of the floatland tapering. Alters the tapering behavior.
 #    Value = 1.0 creates a uniform, linear tapering.
 #    Values > 1.0 create a smooth tapering suitable for the default separated
 #    floatlands.

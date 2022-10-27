@@ -418,7 +418,7 @@ bool setSystemPaths()
 	path_share = exepath + "\\..";
 	if (detectMSVCBuildDir(exepath)) {
 		// The msvc build dir schould normaly not be present if properly installed,
-		// but its usefull for debugging.
+		// but its useful for debugging.
 		path_share += DIR_DELIM "..";
 	}
 

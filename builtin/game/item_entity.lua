@@ -103,7 +103,7 @@ core.register_entity(":__builtin:item", {
 
 	try_merge_with = function(self, own_stack, object, entity)
 		if self.age == entity.age then
-			-- Can not merge with itself
+			-- Cannot merge with itself
 			return false
 		end
 
@@ -113,7 +113,7 @@ core.register_entity(":__builtin:item", {
 				own_stack:get_meta() ~= stack:get_meta() or
 				own_stack:get_wear() ~= stack:get_wear() or
 				own_stack:get_free_space() == 0 then
-			-- Can not merge different or full stack
+			-- Cannot merge different or full stack
 			return false
 		end
 

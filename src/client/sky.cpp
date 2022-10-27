@@ -465,7 +465,7 @@ void Sky::update(float time_of_day, float time_brightness,
 
 			video::SColorf pointcolor_sun_f(1, 1, 1, 1);
 			// Use tonemap only if default sun/moon tinting is used
-			// which keeps previous behaviour.
+			// which keeps previous behavior.
 			if (m_sun_tonemap && m_default_tint) {
 				pointcolor_sun_f.r = pointcolor_light *
 					(float)m_materials[3].EmissiveColor.getRed() / 255;

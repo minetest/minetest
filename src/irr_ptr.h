@@ -149,7 +149,7 @@ public:
 /** Constructs a shared pointer as a *secondary* reference to an object
  *
  * This function is intended to make a temporary reference to an object which
- * is owned elsewhere so that it is not destroyed too early. To acheive that
+ * is owned elsewhere so that it is not destroyed too early. To achieve that
  * it does balanced reference counting, i.e. reference count is increased
  * in this function and decreased when the returned pointer is destroyed.
  */

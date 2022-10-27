@@ -327,7 +327,7 @@ public:
 			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
 			m_camera_pos.set(cam_pos, services);
 
-			// I dont like using this hardcoded value. maybe something like
+			// I don't like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);

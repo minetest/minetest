@@ -3407,7 +3407,7 @@ gmp_lucas_mod (mpz_t V, mpz_t Qk, long Q,
       gmp_lucas_step_k_2k (V, Qk, n);
 
       /* A step k->k+1 is performed if the bit in $n$ is 1	*/
-      /* mpz_tstbit(n,bs) or the the bit is 0 in $n$ but	*/
+      /* mpz_tstbit(n,bs) or the bit is 0 in $n$ but		*/
       /* should be 1 in $n+1$ (bs == b0)			*/
       if (b0 == bs || mpz_tstbit (n, bs))
 	{
