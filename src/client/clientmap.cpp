@@ -259,11 +259,13 @@ void ClientMap::updateDrawList()
 			}
 
 			v3s16 block_coord = block->getPos();
-			v3s16 block_position = block->getPosRelative() + MAP_BLOCKSIZE / 2;
-
-			// First, perform a simple distance check, with a padding of one extra block.
+			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
+					+ block->mesh->getBoundingSphereCenter();
+			f32 mesh_sphere_radius = block->mesh->getBoundingRadius();
+			// First, perform a simple distance check.
 			if (!m_control.range_all &&
-					block_position.getDistanceFrom(cam_pos_nodes) > m_control.wanted_range)
+				mesh_sphere_center.getDistanceFrom(intToFloat(cam_pos_nodes, BS)) >
+					m_control.wanted_range * BS + mesh_sphere_radius)
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
@@ -274,9 +276,6 @@ void ClientMap::updateDrawList()
 			// Only do coarse culling here, to account for fast camera movement.
 			// This is needed because this function is not called every frame.
 			constexpr float frustum_cull_extra_radius = 300.0f;
-			v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
-					+ block->mesh->getBoundingSphereCenter();
-			f32 mesh_sphere_radius = block->mesh->getBoundingRadius();
 			if (is_frustum_culled(mesh_sphere_center,
 					mesh_sphere_radius + frustum_cull_extra_radius))
 				continue;
