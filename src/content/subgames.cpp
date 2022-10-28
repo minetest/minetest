@@ -390,6 +390,8 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		conf.set("mod_storage_backend", "sqlite3");
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
+		if (MAP_BLOCKSIZE != 16)
+			conf.set("blocksize", std::to_string(MAP_BLOCKSIZE));
 
 		if (!conf.updateConfigFile(worldmt_path.c_str())) {
 			throw BaseException("Failed to update the config file");
