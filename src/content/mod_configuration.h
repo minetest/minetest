@@ -51,7 +51,7 @@ public:
 	 */
 	const std::vector<ModSpec> &getMods() const { return m_sorted_mods; }
 
-	void printUnsatisfiedModsError() const;
+	std::string getUnsatisfiedModsError() const;
 
 	/**
 	 * Adds all mods in the given path. used for games, modpacks
@@ -73,7 +73,7 @@ public:
 	void addGameMods(const SubgameSpec &gamespec);
 
 	/**
-	 * Adds mods specifed by a world.mt config
+	 * Adds mods specified by a world.mt config
 	 *
 	 * @param settings_path Path to world.mt
 	 * @param modPaths Map from virtual name to mod path

@@ -111,8 +111,6 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 		if (bitmap.get(ctrx, ctry))
 			continue;
 
-		video::SColor c = src->getPixel(ctrx, ctry);
-
 		// Sample size and total weighted r, g, b values
 		u32 ss = 0, sr = 0, sg = 0, sb = 0;
 
@@ -137,6 +135,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 
 		// Set pixel to average weighted by alpha
 		if (ss > 0) {
+			video::SColor c = src->getPixel(ctrx, ctry);
 			c.setRed(sr / ss);
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);

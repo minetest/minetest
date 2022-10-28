@@ -203,12 +203,14 @@ enum ClearObjectsMode {
 		CLEAR_OBJECTS_MODE_QUICK,
 };
 
-class ServerEnvironment : public Environment
+class ServerEnvironment final : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, ServerScripting *scriptIface,
+	ServerEnvironment(ServerMap *map, ServerScripting *script_iface,
 		Server *server, const std::string &path_world, MetricsBackend *mb);
 	~ServerEnvironment();
+
+	void init();
 
 	Map & getMap();
 

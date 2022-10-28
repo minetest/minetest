@@ -19,42 +19,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "stereo.h"
+#include "client/client.h"
 #include "client/camera.h"
 #include "constants.h"
 #include "settings.h"
 
-RenderingCoreStereo::RenderingCoreStereo(
-	IrrlichtDevice *_device, Client *_client, Hud *_hud)
-	: RenderingCore(_device, _client, _hud)
+OffsetCameraStep::OffsetCameraStep(float eye_offset)
 {
-	eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f);
+	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
-void RenderingCoreStereo::beforeDraw()
+
+OffsetCameraStep::OffsetCameraStep(bool right_eye)
 {
-	cam = camera->getCameraNode();
-	base_transform = cam->getRelativeTransformation();
+	float eye_offset = BS * g_settings->getFloat("3d_paralax_strength", -0.087f, 0.087f) * (right_eye ? 1 : -1);
+	move.setTranslation(core::vector3df(eye_offset, 0.0f, 0.0f));
 }
 
-void RenderingCoreStereo::useEye(bool right)
+void OffsetCameraStep::reset(PipelineContext &context)
 {
-	core::matrix4 move;
-	move.setTranslation(
-			core::vector3df(right ? eye_offset : -eye_offset, 0.0f, 0.0f));
-	cam->setPosition((base_transform * move).getTranslation());
+	base_transform = context.client->getCamera()->getCameraNode()->getRelativeTransformation();
 }
 
-void RenderingCoreStereo::resetEye()
+void OffsetCameraStep::run(PipelineContext &context)
 {
-	cam->setPosition(base_transform.getTranslation());
-}
-
-void RenderingCoreStereo::renderBothImages()
-{
-	useEye(false);
-	draw3D();
-	resetEye();
-	useEye(true);
-	draw3D();
-	resetEye();
+	context.client->getCamera()->getCameraNode()->setPosition((base_transform * move).getTranslation());
 }

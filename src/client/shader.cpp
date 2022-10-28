@@ -184,7 +184,7 @@ public:
 	ShaderCallback(const Factories &factories)
 	{
 		for (auto &&factory : factories)
-			m_setters.push_back(std::unique_ptr<IShaderConstantSetter>(factory->create()));
+			m_setters.emplace_back(factory->create());
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
@@ -214,13 +214,13 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
+	CachedPixelShaderSetting<f32, 16, false> m_shadow_view_proj;
 	CachedPixelShaderSetting<f32, 3> m_light_direction;
 	CachedPixelShaderSetting<f32> m_texture_res;
 	CachedPixelShaderSetting<f32> m_shadow_strength;
 	CachedPixelShaderSetting<f32> m_time_of_day;
 	CachedPixelShaderSetting<f32> m_shadowfar;
-	CachedPixelShaderSetting<f32, 4> m_camera_pos;
+	CachedPixelShaderSetting<f32, 4, false> m_camera_pos;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
 	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
@@ -402,7 +402,7 @@ public:
 
 	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
-		m_setter_factories.push_back(std::unique_ptr<IShaderConstantSetterFactory>(setter));
+		m_setter_factories.emplace_back(setter);
 	}
 
 private:
@@ -682,6 +682,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// map legacy semantic texture names to texture identifiers
+	fragment_header += R"(
+		#define baseTexture texture0
+		#define normalTexture texture1
+		#define textureFlags texture2
+	)";
+
 	// Since this is the first time we're using the GL bindings be extra careful.
 	// This should be removed before 5.6.0 or similar.
 	if (!GL.GetString) {
@@ -769,6 +776,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (shadow_soft_radius < 1.0f)
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
+	}
+
+	if (g_settings->getBool("enable_bloom")) {
+		shaders_header << "#define ENABLE_BLOOM 1\n";
+		if (g_settings->getBool("enable_bloom_debug"))
+			shaders_header << "#define ENABLE_BLOOM_DEBUG 1\n";
 	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics

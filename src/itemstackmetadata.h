@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class ItemStackMetadata : public Metadata
+class ItemStackMetadata : public SimpleMetadata
 {
 public:
 	ItemStackMetadata() : toolcaps_overridden(false) {}

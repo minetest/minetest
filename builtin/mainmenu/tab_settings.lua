@@ -308,10 +308,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.show_keys_menu()
 		return true
 	end
-	if fields["cb_touchscreen_target"] then
-		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
-		return true
-	end
 
 	--Note dropdowns have to be handled LAST!
 	local ddhandled = false

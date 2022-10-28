@@ -4,7 +4,7 @@ AppDir:
   path: ./AppDir
 
   app_info:
-    id: minetest
+    id: net.minetest.minetest
     name: Minetest
     icon: minetest
     version: !ENV ${VERSION}
@@ -17,36 +17,35 @@ AppDir:
   apt:
     arch: amd64
     sources:
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main universe
         key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-updates main universe
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-backports main universe
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ bionic-security main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-updates main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-backports main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-security main universe
 
     include:
       - libc6
+      - libcrypt1
       - libcurl3-gnutls
       - libfreetype6
       - libgl1
       - libjpeg-turbo8
       - libjsoncpp1
-      - libleveldb1v5
+      - libleveldb1d
+      - libluajit-5.1-2
       - libopenal1
       - libpng16-16
       - libsqlite3-0
       - libstdc++6
       - libvorbisfile3
       - libx11-6
-      - libxxf86vm1
+      - libxi6
       - zlib1g
 
   files:
     exclude:
       - usr/share/man
-      - usr/share/doc/*/README.*
-      - usr/share/doc/*/changelog.*
-      - usr/share/doc/*/NEWS.*
-      - usr/share/doc/*/TODO.*
+      - usr/share/doc
 
 AppImage:
   update-information: None

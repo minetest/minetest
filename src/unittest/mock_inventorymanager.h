@@ -1,7 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
+Copyright (C) 2022 Minetest core developers & community
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,26 +17,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
-#include "stereo.h"
+#include <gamedef.h>
+#include <inventorymanager.h>
 
-// The support is absent in 1.9.0 (dropped in r5068)
-#if (IRRLICHT_VERSION_MAJOR == 1) && (IRRLICHT_VERSION_MINOR <= 8)
-#define STEREO_PAGEFLIP_SUPPORTED
-
-class RenderingCorePageflip : public RenderingCoreStereo
+class MockInventoryManager : public InventoryManager
 {
-protected:
-	video::ITexture *hud = nullptr;
-
-	void initTextures() override;
-	void clearTextures() override;
-	void useEye(bool right) override;
-	void resetEye() override;
-
 public:
-	using RenderingCoreStereo::RenderingCoreStereo;
-	void drawAll() override;
-};
+	MockInventoryManager(IGameDef *gamedef) :
+		p1(gamedef->getItemDefManager()),
+		p2(gamedef->getItemDefManager())
+	{};
 
-#endif
+	virtual Inventory* getInventory(const InventoryLocation &loc){
+		if (loc.type == InventoryLocation::PLAYER && loc.name == "p1")
+			return &p1;
+		if (loc.type == InventoryLocation::PLAYER && loc.name == "p2")
+			return &p2;
+		return nullptr;
+	}
+
+	Inventory p1;
+	Inventory p2;
+};

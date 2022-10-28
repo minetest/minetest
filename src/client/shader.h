@@ -80,7 +80,7 @@ public:
 };
 
 
-template <typename T, std::size_t count=1>
+template <typename T, std::size_t count, bool cache>
 class CachedShaderSetting {
 	const char *m_name;
 	T m_sent[count];
@@ -93,30 +93,32 @@ protected:
 public:
 	void set(const T value[count], video::IMaterialRendererServices *services)
 	{
-		if (has_been_set && std::equal(m_sent, m_sent + count, value))
+		if (cache && has_been_set && std::equal(m_sent, m_sent + count, value))
 			return;
 		if (is_pixel)
 			services->setPixelShaderConstant(services->getPixelShaderConstantID(m_name), value, count);
 		else
 			services->setVertexShaderConstant(services->getVertexShaderConstantID(m_name), value, count);
 
-		std::copy(value, value + count, m_sent);
-		has_been_set = true;
+		if (cache) {
+			std::copy(value, value + count, m_sent);
+			has_been_set = true;
+		}
 	}
 };
 
-template <typename T, std::size_t count = 1>
-class CachedPixelShaderSetting : public CachedShaderSetting<T, count> {
+template <typename T, std::size_t count = 1, bool cache=true>
+class CachedPixelShaderSetting : public CachedShaderSetting<T, count, cache> {
 public:
 	CachedPixelShaderSetting(const char *name) :
-		CachedShaderSetting<T, count>(name, true){}
+		CachedShaderSetting<T, count, cache>(name, true){}
 };
 
-template <typename T, std::size_t count = 1>
-class CachedVertexShaderSetting : public CachedShaderSetting<T, count> {
+template <typename T, std::size_t count = 1, bool cache=true>
+class CachedVertexShaderSetting : public CachedShaderSetting<T, count, cache> {
 public:
 	CachedVertexShaderSetting(const char *name) :
-		CachedShaderSetting<T, count>(name, false){}
+		CachedShaderSetting<T, count, cache>(name, false){}
 };
 
 

@@ -1,5 +1,6 @@
 minetest.register_node("experimental:callback_node", {
-	description = "Callback Test Node (construct/destruct/timer)",
+	description = "Callback Test Node".."\n"..
+		"Tests callbacks: on_construct, after_place_node, on_destruct, after_destruct, after_dig_node, on_timer",
 	tiles = {"experimental_callback_node.png"},
 	groups = {dig_immediate=3},
 	-- This was known to cause a bug in minetest.item_place_node() when used

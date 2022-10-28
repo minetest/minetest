@@ -28,16 +28,13 @@ env:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
         run: |
-          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
-          brew update
-          brew install ${pkgs[@]}
-          brew unlink $(brew ls --formula)
-          brew link ${pkgs[@]}
+          source ./util/ci/common.sh
+          install_macos_deps
 
       - name: Build
         run: |
@@ -49,8 +46,7 @@ jobs:
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-            -DRUN_IN_PLACE=FALSE \
-            -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+            -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
           make -j2
           make install
 

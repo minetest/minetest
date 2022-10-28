@@ -292,7 +292,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"rawset",
 		"select",
 		"setfenv",
-		// getmetatable can be used to escape the sandbox <- ???
+		"getmetatable",
 		"setmetatable",
 		"tonumber",
 		"tostring",

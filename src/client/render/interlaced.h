@@ -21,23 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
-class RenderingCoreInterlaced : public RenderingCoreStereo
+class InitInterlacedMaskStep : public TrivialRenderStep
 {
-protected:
-	video::ITexture *left = nullptr;
-	video::ITexture *right = nullptr;
-	video::ITexture *mask = nullptr;
-	video::SMaterial mat;
-
-	void initMaterial();
-	void initTextures() override;
-	void clearTextures() override;
-	void initMask();
-	void useEye(bool right) override;
-	void resetEye() override;
-	void merge();
-
 public:
-	RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud);
-	void drawAll() override;
+	InitInterlacedMaskStep(TextureBuffer *buffer, u8 index);
+	void run(PipelineContext &context);
+private:
+	TextureBuffer *buffer;
+	video::ITexture *last_mask { nullptr };
+	u8 index;
 };
+
+void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client);

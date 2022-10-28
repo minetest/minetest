@@ -53,13 +53,13 @@
 	</description>
 	<screenshots>
 		<screenshot type="default">
-			<image width="1920" height="1080">http://www.minetest.net/media/gallery/1.jpg</image>
+			<image>http://www.minetest.net/media/gallery/1.jpg</image>
 		</screenshot>
 		<screenshot>
-			<image width="1920" height="1080">http://www.minetest.net/media/gallery/3.jpg</image>
+			<image>http://www.minetest.net/media/gallery/3.jpg</image>
 		</screenshot>
 		<screenshot>
-			<image width="1920" height="1080">http://www.minetest.net/media/gallery/5.jpg</image>
+			<image>http://www.minetest.net/media/gallery/5.jpg</image>
 		</screenshot>
 	</screenshots>
 	<keywords>

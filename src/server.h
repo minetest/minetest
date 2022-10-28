@@ -357,9 +357,6 @@ public:
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
-	virtual bool registerModStorage(ModMetadata *storage);
-	virtual void unregisterModStorage(const std::string &name);
-
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
@@ -695,7 +692,6 @@ private:
 	s32 m_next_sound_id = 0; // positive values only
 	s32 nextSoundId();
 
-	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	ModMetadataDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 

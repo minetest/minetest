@@ -52,21 +52,21 @@ jobs:
           ./bin/minetest --run-unittests
 
   # Current gcc version
-  gcc_10:
-    runs-on: ubuntu-20.04
+  gcc_12:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps g++-10
+          install_linux_deps g++-12 libluajit-5.1-dev
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: gcc-10
-          CXX: g++-10
+          CC: gcc-12
+          CXX: g++-12
 
       - name: Test
         run: |
@@ -80,7 +80,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-3.9 gdb
+          install_linux_deps clang-3.9 valgrind
 
       - name: Build
         run: |
@@ -93,35 +93,34 @@ jobs:
         run: |
           ./bin/minetest --run-unittests
 
-      - name: Integration test + devtest
+      - name: Valgrind
         run: |
-          ./util/test_multiplayer.sh
+          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
   # Current clang version
-  clang_10:
-    runs-on: ubuntu-20.04
+  clang_14:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-10 valgrind libluajit-5.1-dev
+          install_linux_deps clang-14 gdb
 
       - name: Build
         run: |
           ./util/ci/build.sh
         env:
-          CC: clang-10
-          CXX: clang++-10
-          CMAKE_FLAGS: "-DREQUIRE_LUAJIT=1"
+          CC: clang-14
+          CXX: clang++-14
 
       - name: Test
         run: |
           ./bin/minetest --run-unittests
 
-      - name: Valgrind
+      - name: Integration test + devtest
         run: |
-          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
+          ./util/test_multiplayer.sh
 
   # Build with prometheus-cpp (server-only)
   clang_9_prometheus:

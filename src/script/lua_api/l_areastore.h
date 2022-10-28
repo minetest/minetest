@@ -26,7 +26,6 @@ class AreaStore;
 class LuaAreaStore : public ModApiBase
 {
 private:
-	static const char className[];
 	static const luaL_Reg methods[];
 
 	static int gc_object(lua_State *L);
@@ -58,7 +57,7 @@ public:
 	// Creates a AreaStore and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static LuaAreaStore *checkobject(lua_State *L, int narg);
-
 	static void Register(lua_State *L);
+
+	static const char className[];
 };

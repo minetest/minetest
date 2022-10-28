@@ -596,7 +596,7 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 
 	// 1). Attempt to fetch block from memory
 	*block = m_map->getBlockNoCreateNoEx(pos);
-	if (*block && !(*block)->isDummy()) {
+	if (*block) {
 		if ((*block)->isGenerated())
 			return EMERGE_FROM_MEMORY;
 	} else {

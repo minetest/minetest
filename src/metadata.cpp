@@ -21,95 +21,110 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 /*
-	Metadata
+	IMetadata
 */
 
-void Metadata::clear()
+bool IMetadata::operator==(const IMetadata &other) const
 {
-	m_stringvars.clear();
-	m_modified = true;
-}
+	StringMap this_map_, other_map_;
+	const StringMap &this_map = getStrings(&this_map_);
+	const StringMap &other_map = other.getStrings(&other_map_);
 
-bool Metadata::empty() const
-{
-	return m_stringvars.empty();
-}
-
-size_t Metadata::size() const
-{
-	return m_stringvars.size();
-}
-
-bool Metadata::contains(const std::string &name) const
-{
-	return m_stringvars.find(name) != m_stringvars.end();
-}
-
-bool Metadata::operator==(const Metadata &other) const
-{
-	if (size() != other.size())
+	if (this_map.size() != other_map.size())
 		return false;
 
-	for (const auto &sv : m_stringvars) {
-		if (!other.contains(sv.first) || other.getString(sv.first) != sv.second)
+	for (const auto &this_pair : this_map) {
+		const auto &other_pair = other_map.find(this_pair.first);
+		if (other_pair == other_map.cend() || other_pair->second != this_pair.second)
 			return false;
 	}
 
 	return true;
 }
 
-const std::string &Metadata::getString(const std::string &name, u16 recursion) const
+const std::string &IMetadata::getString(const std::string &name, std::string *place,
+		u16 recursion) const
 {
-	StringMap::const_iterator it = m_stringvars.find(name);
-	if (it == m_stringvars.end()) {
+	const std::string *raw = getStringRaw(name, place);
+	if (!raw) {
 		static const std::string empty_string = std::string("");
 		return empty_string;
 	}
 
-	return resolveString(it->second, recursion);
+	return resolveString(*raw, place, recursion);
 }
 
-bool Metadata::getStringToRef(
-		const std::string &name, std::string &str, u16 recursion) const
+bool IMetadata::getStringToRef(const std::string &name,
+		std::string &str, u16 recursion) const
 {
-	StringMap::const_iterator it = m_stringvars.find(name);
-	if (it == m_stringvars.end()) {
+	const std::string *raw = getStringRaw(name, &str);
+	if (!raw)
 		return false;
-	}
 
-	str = resolveString(it->second, recursion);
+	const std::string &resolved = resolveString(*raw, &str, recursion);
+	if (&resolved != &str)
+		str = resolved;
 	return true;
 }
 
-/**
- * Sets var to name key in the metadata storage
- *
- * @param name
- * @param var
- * @return true if key-value pair is created or changed
- */
-bool Metadata::setString(const std::string &name, const std::string &var)
-{
-	if (var.empty()) {
-		m_stringvars.erase(name);
-		return true;
-	}
-
-	StringMap::iterator it = m_stringvars.find(name);
-	if (it != m_stringvars.end() && it->second == var) {
-		return false;
-	}
-
-	m_stringvars[name] = var;
-	m_modified = true;
-	return true;
-}
-
-const std::string &Metadata::resolveString(const std::string &str, u16 recursion) const
+const std::string &IMetadata::resolveString(const std::string &str, std::string *place,
+		u16 recursion) const
 {
 	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
-		return getString(str.substr(2, str.length() - 3), recursion + 1);
+		// It may be the case that &str == place, but that's fine.
+		return getString(str.substr(2, str.length() - 3), place, recursion + 1);
 	}
 
 	return str;
+}
+
+/*
+	SimpleMetadata
+*/
+
+void SimpleMetadata::clear()
+{
+	m_stringvars.clear();
+	m_modified = true;
+}
+
+bool SimpleMetadata::empty() const
+{
+	return m_stringvars.empty();
+}
+
+size_t SimpleMetadata::size() const
+{
+	return m_stringvars.size();
+}
+
+bool SimpleMetadata::contains(const std::string &name) const
+{
+	return m_stringvars.find(name) != m_stringvars.end();
+}
+
+const StringMap &SimpleMetadata::getStrings(StringMap *) const
+{
+	return m_stringvars;
+}
+
+const std::string *SimpleMetadata::getStringRaw(const std::string &name, std::string *) const
+{
+	const auto found = m_stringvars.find(name);
+	return found != m_stringvars.cend() ? &found->second : nullptr;
+}
+
+bool SimpleMetadata::setString(const std::string &name, const std::string &var)
+{
+	if (var.empty()) {
+		if (m_stringvars.erase(name) == 0)
+			return false;
+	} else {
+		StringMap::iterator it = m_stringvars.find(name);
+		if (it != m_stringvars.end() && it->second == var)
+			return false;
+		m_stringvars[name] = var;
+	}
+	m_modified = true;
+	return true;
 }

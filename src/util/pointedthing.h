@@ -61,7 +61,7 @@ struct PointedThing
 	 * Only valid if type is POINTEDTHING_OBJECT.
 	 * The ID of the object the ray hit.
 	 */
-	s16 object_id = -1;
+	u16 object_id = 0;
 	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
 	 * First intersection point of the ray and the nodebox in irrlicht

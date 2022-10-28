@@ -28,7 +28,7 @@ minetest.register_chatcommand("hp", {
 			return false, "No player."
 		end
 		local hp = tonumber(param)
-		if not hp then
+		if not hp or minetest.is_nan(hp) or hp < 0 or hp > 65535 then
 			return false, "Missing or incorrect hp parameter!"
 		end
 		player:set_hp(hp)

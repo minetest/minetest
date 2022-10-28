@@ -93,15 +93,11 @@ public:
 		}
 	}
 	// Undefined behaviour if there already is a timer
-	void insert(NodeTimer timer) {
+	void insert(const NodeTimer &timer) {
 		v3s16 p = timer.position;
 		double trigger_time = m_time + (double)(timer.timeout - timer.elapsed);
-		std::multimap<double, NodeTimer>::iterator it =
-			m_timers.insert(std::pair<double, NodeTimer>(
-				trigger_time, timer
-			));
-		m_iterators.insert(
-			std::pair<v3s16, std::multimap<double, NodeTimer>::iterator>(p, it));
+		std::multimap<double, NodeTimer>::iterator it = m_timers.emplace(trigger_time, timer);
+		m_iterators.emplace(p, it);
 		if (m_next_trigger_time == -1. || trigger_time < m_next_trigger_time)
 			m_next_trigger_time = trigger_time;
 	}
