@@ -517,7 +517,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 		}
 		if (collision) {
 			current_intersection += obj->getPosition();
-			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
+			objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}

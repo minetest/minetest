@@ -98,7 +98,7 @@ struct PointedThing
 		const v3s16 &real_under, const v3f &point, const v3f &normal,
 		u16 box_id, f32 distSq);
 	//! Constructor for POINTEDTHING_OBJECT
-	PointedThing(s16 id, const v3f &point, const v3f &normal, const v3f &raw_normal, f32 distSq);
+	PointedThing(u16 id, const v3f &point, const v3f &normal, const v3f &raw_normal, f32 distSq);
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
