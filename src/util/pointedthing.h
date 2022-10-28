@@ -76,7 +76,7 @@ struct PointedThing
 	 */
 	v3f intersection_normal;
 	/*!
-	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * Only valid if type is POINTEDTHING_OBJECT.
 	 * Raw normal vector of the intersection before applying rotation.
 	 */
 	v3f raw_intersection_normal;
