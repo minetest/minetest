@@ -27,6 +27,7 @@ core.features = {
 	get_light_data_buffer = true,
 	mod_storage_on_disk = true,
 	compress_zstd = true,
+	preserve_liquid_param2 = true,
 }
 
 function core.has_feature(arg)

@@ -673,6 +673,15 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
+	if (features.post_effect_use_node_color) {
+		video::SColor color;
+		n.getColor(features, &color);
+		post_effect_color.set(
+				post_effect_color.getAlpha(),
+				(post_effect_color.getRed() * color.getRed()) / 255,
+				(post_effect_color.getGreen() * color.getGreen()) / 255,
+				(post_effect_color.getBlue() * color.getBlue()) / 255);
+	}
 
 	// If the camera is in a solid node, make everything black.
 	// (first person mode only)

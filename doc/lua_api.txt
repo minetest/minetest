@@ -1168,6 +1168,10 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The first (most-significant) three bits of `param2` tells which color
       is picked from the palette. The palette should have 8 pixels.
     * Remaining 5 bits store rotation in range 0–23 (i.e. in 15° steps)
+* `paramtype2 = "colorflowingliquid"`
+    * Same as `flowingliquid`, but with colors.
+    * The upper four bits of `param2` tell which color is picked from the
+      palette. The palette should have 16 pixels.
 * `paramtype2 = "none"`
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
@@ -4934,6 +4938,9 @@ Utilities
           mod_storage_on_disk = true,
           -- "zstd" method for compress/decompress (5.7.0)
           compress_zstd = true,
+          -- The upper four bits of liquid node param2 values are preserved
+          -- during liquid flow (5.7.0)
+          preserve_liquid_param2 = true,
       }
 
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
@@ -8206,6 +8213,10 @@ Used by `minetest.register_node`.
 
         post_effect_color = "#00000000",
         -- Screen tint if player is inside node, see "ColorSpec"
+
+        post_effect_use_node_color = false,
+        -- If true, the specific node's coloration (with param2 etc.) will be
+        -- applied to the post effect color as it is applied to the node itself.
 
         paramtype = "none",  -- See "Nodes"
 
