@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "irr_v3d.h"
 #include "irr_aabb3d.h"
+#include <quaternion.h>
 #include "constants.h"
 
 bool RaycastSort::operator() (const PointedThing &pt1,
@@ -68,7 +69,7 @@ RaycastState::RaycastState(const core::line3d<f32> &shootline,
 
 
 bool boxLineCollision(const aabb3f &box, const v3f &start,
-	const v3f &dir, v3f *collision_point, v3s16 *collision_normal)
+	const v3f &dir, v3f *collision_point, v3f *collision_normal)
 {
 	if (box.isPointInside(start)) {
 		*collision_point = start;
@@ -134,4 +135,24 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 		}
 	}
 	return false;
+}
+
+bool boxLineCollision(const aabb3f &box, const v3f &rotation,
+	const v3f &start, const v3f &dir,
+	v3f *collision_point, v3f *collision_normal, v3f *raw_collision_normal)
+{
+	// Inversely transform the ray rather than rotating the box faces;
+	// this allows us to continue using a simple ray - AABB intersection
+	core::quaternion rot(rotation * core::DEGTORAD);
+	rot.makeInverse();
+
+	bool collision = boxLineCollision(box, rot * start, rot * dir, collision_point, collision_normal);
+	if (!collision) return collision;
+
+	// Transform the results back
+	rot.makeInverse();
+	*collision_point = rot * *collision_point;
+	*raw_collision_normal = *collision_normal;
+	*collision_normal = rot * *collision_normal;
+	return collision;
 }

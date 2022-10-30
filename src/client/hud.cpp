@@ -826,28 +826,31 @@ void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 
 void Hud::drawSelectionMesh()
 {
+	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh))
+		return;
+	const video::SMaterial oldmaterial = driver->getMaterial2D();
+	driver->setMaterial(m_selection_material);
+	const core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
+
+	core::matrix4 translate;
+	translate.setTranslation(m_selection_pos_with_offset);
+	core::matrix4 rotation;
+	rotation.setRotationDegrees(m_selection_rotation);
+	driver->setTransform(video::ETS_WORLD, translate * rotation);
+
 	if (m_mode == HIGHLIGHT_BOX) {
 		// Draw 3D selection boxes
-		video::SMaterial oldmaterial = driver->getMaterial2D();
-		driver->setMaterial(m_selection_material);
 		for (auto & selection_box : m_selection_boxes) {
-			aabb3f box = aabb3f(
-				selection_box.MinEdge + m_selection_pos_with_offset,
-				selection_box.MaxEdge + m_selection_pos_with_offset);
-
 			u32 r = (selectionbox_argb.getRed() *
 					m_selection_mesh_color.getRed() / 255);
 			u32 g = (selectionbox_argb.getGreen() *
 					m_selection_mesh_color.getGreen() / 255);
 			u32 b = (selectionbox_argb.getBlue() *
 					m_selection_mesh_color.getBlue() / 255);
-			driver->draw3DBox(box, video::SColor(255, r, g, b));
+			driver->draw3DBox(selection_box, video::SColor(255, r, g, b));
 		}
-		driver->setMaterial(oldmaterial);
 	} else if (m_mode == HIGHLIGHT_HALO && m_selection_mesh) {
 		// Draw selection mesh
-		video::SMaterial oldmaterial = driver->getMaterial2D();
-		driver->setMaterial(m_selection_material);
 		setMeshColor(m_selection_mesh, m_selection_mesh_color);
 		video::SColor face_color(0,
 			MYMIN(255, m_selection_mesh_color.getRed() * 1.5),
@@ -855,16 +858,14 @@ void Hud::drawSelectionMesh()
 			MYMIN(255, m_selection_mesh_color.getBlue() * 1.5));
 		setMeshColorByNormal(m_selection_mesh, m_selected_face_normal,
 			face_color);
-		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
-		translateMesh(mesh, m_selection_pos_with_offset);
 		u32 mc = m_selection_mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; i++) {
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			scene::IMeshBuffer *buf = m_selection_mesh->getMeshBuffer(i);
 			driver->drawMeshBuffer(buf);
 		}
-		mesh->drop();
-		driver->setMaterial(oldmaterial);
 	}
+	driver->setMaterial(oldmaterial);
+	driver->setTransform(video::ETS_WORLD, oldtransform);
 }
 
 enum Hud::BlockBoundsMode Hud::toggleBlockBounds()

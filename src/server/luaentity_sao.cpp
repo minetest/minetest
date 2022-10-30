@@ -197,6 +197,11 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
+	if (fabs(m_prop.automatic_rotate) > 0.001f) {
+		m_rotation_add_yaw = modulo360f(m_rotation_add_yaw + dtime * core::RADTODEG *
+				m_prop.automatic_rotate);
+	}
+
 	if(m_registered) {
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime, moveresult_p);
 	}

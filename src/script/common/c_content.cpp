@@ -236,10 +236,12 @@ void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "selectionbox");
-	if (lua_istable(L, -1))
+	if (lua_istable(L, -1)) {
+		getboolfield(L, -1, "rotate", prop->rotate_selectionbox);
 		prop->selectionbox = read_aabb3f(L, -1, 1.0);
-	else if (collisionbox_defined)
+	} else if (collisionbox_defined) {
 		prop->selectionbox = prop->collisionbox;
+	}
 	lua_pop(L, 1);
 
 	getboolfield(L, -1, "pointable", prop->pointable);
@@ -377,6 +379,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	push_aabb3f(L, prop->collisionbox);
 	lua_setfield(L, -2, "collisionbox");
 	push_aabb3f(L, prop->selectionbox);
+	lua_pushboolean(L, prop->rotate_selectionbox);
+	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
 	lua_pushboolean(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
@@ -1880,7 +1884,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 	if (hitpoint && (pointed.type != POINTEDTHING_NOTHING)) {
 		push_v3f(L, pointed.intersection_point / BS); // convert to node coords
 		lua_setfield(L, -2, "intersection_point");
-		push_v3s16(L, pointed.intersection_normal);
+		push_v3f(L, pointed.intersection_normal);
 		lua_setfield(L, -2, "intersection_normal");
 		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
 		lua_setfield(L, -2, "box_id");
