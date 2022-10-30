@@ -47,11 +47,9 @@ build/.cmake/
 /screenshots
 /sounds
 /mods/*
-!/mods/minetest/
-/mods/minetest/*
-!/mods/minetest/mods_here.txt
-/worlds
-/world/
+!/mods/mods_here.txt
+/worlds/*
+!/worlds/worlds_here.txt
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/
