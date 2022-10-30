@@ -623,13 +623,12 @@ static void push_bone_override(lua_State *L, BoneOverride props)
 	auto push_prop = [L](const char *name, auto prop, v3f vec) {
 		lua_newtable(L);
 		push_v3f(L, vec);
-		lua_setfield(L, -2, "vector");
+		lua_setfield(L, -2, "vec");
 		lua_pushnumber(L, prop.interp_timer);
 		lua_setfield(L, -2, "interpolate");
 		lua_pushboolean(L, prop.absolute);
 		lua_setfield(L, -2, "absolute");
 		lua_setfield(L, -2, name);
-		lua_pop(L, 1);
 	};
 
 	push_prop("position", props.position, props.position.vector);

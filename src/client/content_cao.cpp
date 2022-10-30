@@ -1541,9 +1541,8 @@ void GenericCAO::updateBonePosition(f32 dtime)
 		if (!bone)
 			continue;
 
-		BoneOverride props = it.second;
+		BoneOverride &props = it.second;
 		props.dtime_passed += dtime;
-		m_bone_override[bone_name] = props;
 
 		bone->setPosition(props.getPosition(bone->getPosition()));
 		bone->setRotation(props.getRotationEulerDeg(bone->getRotation()));

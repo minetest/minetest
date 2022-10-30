@@ -103,7 +103,7 @@ public:
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
 	static std::string generateUpdateBonePositionCommand(
-			const std::string &bone, const BoneOverride props);
+			const std::string &bone, const BoneOverride &props);
 	void sendPunchCommand();
 
 protected:

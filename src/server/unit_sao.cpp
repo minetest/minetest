@@ -277,7 +277,7 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 }
 
 std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const BoneOverride props)
+		const std::string &bone, const BoneOverride &props)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
