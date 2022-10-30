@@ -1990,13 +1990,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 */
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
-
-	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
-		// force_delete might be overriden per object
-
 	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
 		// force_delete might be overridden per object
-
 		bool force_delete = _force_delete;
 
 		// Do not deactivate if disallowed

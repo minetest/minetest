@@ -1282,7 +1282,7 @@ bool OurReader::parse(const char* beginDoc, const char* endDoc, Value& root,
 }
 
 bool OurReader::readValue() {
-  //  To preserve the old behavior we cast size_t to int.
+  //  To preserve the old behaviour we cast size_t to int.
   if (nodes_.size() > features_.stackLimit_)
     throwRuntimeError("Exceeded stackLimit in readValue().");
   Token token;
@@ -2274,7 +2274,7 @@ ValueIteratorBase::computeDistance(const SelfType& other) const {
   // Iterator for null value are initialized using the default
   // constructor, which initialize current_ to the default
   // std::map::iterator. As begin() and end() are two instance
-  // of the default std::map::iterator, they cannot be compared.
+  // of the default std::map::iterator, they can not be compared.
   // To allow this, we handle this comparison specifically.
   if (isNull_ && other.isNull_) {
     return 0;

@@ -353,7 +353,7 @@
 /*
 @@ LUA_COMPAT_LSTR controls compatibility with old long string nesting
 @* facility.
-** CHANGE it to 2 if you want the old behavior, or undefine it to turn
+** CHANGE it to 2 if you want the old behaviour, or undefine it to turn
 ** off the advisory error when nesting [[...]].
 */
 #define LUA_COMPAT_LSTR		1
