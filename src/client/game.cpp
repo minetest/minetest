@@ -1407,6 +1407,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (g_touchscreengui) {
 		g_touchscreengui->init(texture_src);
 		g_touchscreengui->hide();
+		g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
 	}
 #endif
 	if (!connectToServer(start_data, &could_connect, &connect_aborted))
