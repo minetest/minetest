@@ -240,6 +240,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 			// Set undersurface and abovesurface nodes
 			f32 d = 0.002 * BS;
 			v3f fake_intersection = result.intersection_point;
+			found_boxcenter += npf; // translate back to world coords
 			// Move intersection towards its source block.
 			if (fake_intersection.X < found_boxcenter.X) {
 				fake_intersection.X += d;
