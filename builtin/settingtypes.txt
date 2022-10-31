@@ -487,8 +487,8 @@ bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 #    Set the radius of the bloom filter in pixels.
 #    Larger values render more glow around bright objects
 #    at the cost of higher resource consumption.
-#    Range: from 1 to 64, default: 16
-bloom_radius (Bloom Radius) int 16 1 64
+#    Range: from 0.1 to 8, default: 1
+bloom_radius (Bloom Radius) float 1 0.1 8
 
 
 [*Audio]

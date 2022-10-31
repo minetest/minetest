@@ -449,7 +449,7 @@ public:
 		if (name == "bloom_strength_factor")
 			m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		if (name == "bloom_radius")
-			m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
+			m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -496,7 +496,7 @@ public:
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
-		m_bloom_radius = g_settings->getFloat("bloom_radius", 1.0f, 64.0f);
+		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()

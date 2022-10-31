@@ -115,8 +115,8 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_COLOR = 0;
 	static const u8 TEXTURE_DEPTH = 1;
 	static const u8 TEXTURE_BLOOM = 2;
-	static const u8 TEXTURE_BLUR = 3;
-	static const u8 TEXTURE_BLUR_SECONDARY = 4;
+	static const u8 TEXTURE_BLOOM_DOWN = 10;
+	static const u8 TEXTURE_BLOOM_UP = 20;
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
 	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
@@ -124,39 +124,56 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// attach buffer to the previous step
 	previousStep->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, std::vector<u8> { TEXTURE_COLOR }, TEXTURE_DEPTH));
 
+	// shared variables
+	u32 shader_id;
+
 	// post-processing stage
 	// set up bloom
 	if (g_settings->getBool("enable_bloom")) {
 
-		buffer->setTexture(TEXTURE_BLUR, scale * 0.5, "blur", color_format);
-		buffer->setTexture(TEXTURE_BLOOM, scale * 0.5, "bloom", color_format);
-		u8 bloom_input_texture = TEXTURE_BLOOM;
-		
-		if (g_settings->getBool("enable_bloom_dedicated_texture")) {
-			buffer->setTexture(TEXTURE_BLUR_SECONDARY, scale * 0.5, "blur2", color_format);
-			bloom_input_texture = TEXTURE_BLUR_SECONDARY;
+
+		buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+
+		const u8 MIPMAP_LEVELS = 4;
+		v2f downscale = scale * 0.5;
+		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
+			buffer->setTexture(TEXTURE_BLOOM_DOWN + i, downscale, std::string("bloom_down") + std::to_string(i), color_format);
+			buffer->setTexture(TEXTURE_BLOOM_UP + i, downscale, std::string("bloom_up") + std::to_string(i), color_format);
+			downscale *= 0.5;
 		}
 
 		// get bright spots
 		u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
 		RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
 		extract_bloom->setRenderSource(buffer);
-		extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, bloom_input_texture));
-		// horizontal blur
-		shader_id = client->getShaderSource()->getShader("blur_h", TILE_MATERIAL_PLAIN, NDT_MESH);
-		RenderStep *blur_h = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { bloom_input_texture });
-		blur_h->setRenderSource(buffer);
-		blur_h->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLUR));
-		// vertical blur
-		shader_id = client->getShaderSource()->getShader("blur_v", TILE_MATERIAL_PLAIN, NDT_MESH);
-		RenderStep *blur_v = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_BLUR });
-		blur_v->setRenderSource(buffer);
-		blur_v->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
+		extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
+
+		// downsample
+		shader_id = client->getShaderSource()->getShader("bloom_downsample", TILE_MATERIAL_PLAIN, NDT_MESH);
+		u8 source = TEXTURE_BLOOM;
+		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
+			auto step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source });
+			step->setRenderSource(buffer);
+			step->setBilinearFilter(0, true);
+			step->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM_DOWN + i));
+			source = TEXTURE_BLOOM_DOWN + i;
+		}
+
+		// upsample
+		shader_id = client->getShaderSource()->getShader("bloom_upsample", TILE_MATERIAL_PLAIN, NDT_MESH);
+		for (u8 i = MIPMAP_LEVELS - 1; i > 0; i--) {
+			auto step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { u8(TEXTURE_BLOOM_DOWN + i - 1), source });
+			step->setRenderSource(buffer);
+			step->setBilinearFilter(0, true);
+			step->setBilinearFilter(1, true);
+			step->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, u8(TEXTURE_BLOOM_UP + i - 1)));
+			source = TEXTURE_BLOOM_UP + i - 1;
+		}
 	}
 
 	// final post-processing
-	u32 shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
-	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM });
+	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
+	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM_UP });
 	pipeline->addStep(effect);
 	effect->setBilinearFilter(1, true); // apply filter to the bloom
 	effect->setRenderSource(buffer);
