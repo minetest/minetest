@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-	compileSdkVersion 30
-	buildToolsVersion '30.0.3'
+	compileSdkVersion 32
+	buildToolsVersion '32.0.0'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
 		minSdkVersion 16
-		targetSdkVersion 30
+		targetSdkVersion 32
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
 	}
@@ -87,12 +87,12 @@ task prepareAssets() {
 		from "${projRoot}/textures" into "${assetsFolder}/textures"
 	}
 
-	file("${assetsFolder}/.nomedia").text = "";
+	file("${assetsFolder}/.nomedia").text = ""
 
 	task zipAssets(type: Zip) {
-		archiveName "Minetest.zip"
+		archiveFileName = "Minetest.zip"
 		from "${assetsFolder}"
-		destinationDir file("src/main/assets")
+		destinationDirectory = file("src/main/assets")
 	}
 }
 
@@ -112,5 +112,5 @@ android.applicationVariants.all { variant ->
 
 dependencies {
 	implementation project(':native')
-	implementation 'androidx.appcompat:appcompat:1.3.1'
+	implementation 'androidx.appcompat:appcompat:1.5.1'
 }
