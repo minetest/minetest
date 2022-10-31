@@ -52,6 +52,9 @@ namespace ui
 		std::string m_root_elem = NO_ID;
 		std::string m_active_elem = NO_ID;
 
+		bool m_needs_layout = true;
+		Dim<s32> m_last_screen_size;
+
 	public:
 		Env(std::string id, bool is_hud) :
 			m_id(std::move(id)),
@@ -94,13 +97,11 @@ namespace ui
 
 		float getPixelSize() const;
 
-		Dim<float> getScreenSize() const
+		Dim<float> getScreenSize() const;
+
+		void requireLayout()
 		{
-			Dim<s32> int_size = Texture().getSize();
-			return Dim<float>(
-				int_size.Width / m_pixel_size,
-				int_size.Height / m_pixel_size
-			);
+			m_needs_layout = true;
 		}
 
 		void drawAll();

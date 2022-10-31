@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "debug.h"
 #include "exceptions.h"
 #include "irrlichttypes_extrabloated.h"
 
@@ -61,10 +62,76 @@ namespace ui
 	Rect<T> add_rect_edges(const Rect<T> &rect, const Rect<T> &edges)
 	{
 		return Rect<T>(
-			left(rect) + left(edges),
-			top(rect) + top(edges),
-			right(rect) - right(edges),
-			bottom(rect) - bottom(edges)
+			rect.UpperLeftCorner - edges.UpperLeftCorner,
+			rect.LowerRightCorner + edges.LowerRightCorner
+		);
+	}
+
+	template<typename T>
+	Rect<T> sub_rect_edges(const Rect<T> &rect, const Rect<T> &edges)
+	{
+		return Rect<T>(
+			rect.UpperLeftCorner + edges.UpperLeftCorner,
+			rect.LowerRightCorner - edges.LowerRightCorner
+		);
+	}
+
+	template<typename T>
+	Rect<T> add_edges(const Rect<T> &lhs, const Rect<T> &rhs)
+	{
+		return Rect<T>(
+			lhs.UpperLeftCorner + rhs.UpperLeftCorner,
+			lhs.LowerRightCorner + rhs.LowerRightCorner
+		);
+	}
+
+	template<typename T>
+	Rect<T> sub_edges(const Rect<T> &lhs, const Rect<T> &rhs)
+	{
+		return Rect<T>(
+			lhs.UpperLeftCorner - rhs.UpperLeftCorner,
+			lhs.LowerRightCorner - rhs.LowerRightCorner
+		);
+	}
+
+	template<typename T>
+	Dim<T> edges_dim(const Rect<T> &edges)
+	{
+		return Dim<T>(
+			left(edges) + right(edges),
+			top(edges) + bottom(edges)
+		);
+	}
+
+	template<typename T>
+	const T &dim_at(const Dim<T> &dim, size_t index)
+	{
+		sanity_check(index < 2);
+		return index == 1 ? dim.Height : dim.Width;
+	}
+
+	template<typename T>
+	T &dim_at(Dim<T> &dim, size_t index)
+	{
+		sanity_check(index < 2);
+		return index == 1 ? dim.Height : dim.Width;
+	}
+
+	template<typename T>
+	Dim<T> dim_min(const Dim<T> &first, const Dim<T> &second)
+	{
+		return Dim<T>(
+			std::min(first.Width, second.Width),
+			std::min(first.Height, second.Height)
+		);
+	}
+
+	template<typename T>
+	Dim<T> dim_max(const Dim<T> &first, const Dim<T> &second)
+	{
+		return Dim<T>(
+			std::max(first.Width, second.Width),
+			std::max(first.Height, second.Height)
 		);
 	}
 

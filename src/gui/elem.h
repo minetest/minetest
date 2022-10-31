@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "drawable.h"
 #include "json_reader.h"
 #include "ui_types.h"
+#include "util/string.h"
 
 #include <array>
 #include <string>
@@ -48,31 +49,101 @@ namespace ui
 
 	class Env;
 
+	enum LayoutDir
+	{
+		LAYOUT_DIR_HORIZ,
+		LAYOUT_DIR_VERT
+	};
+
+	constexpr EnumNameMap<LayoutDir> LAYOUT_DIR_NAME_MAP = {
+		{"horiz", LAYOUT_DIR_HORIZ},
+		{"vert", LAYOUT_DIR_VERT}
+	};
+
+	enum Spacing
+	{
+		SPACING_BEFORE,
+		SPACING_BETWEEN,
+		SPACING_AFTER,
+
+		SPACING_LEN
+	};
+
+	enum class ExtraSpace
+	{
+		OUTSIDE,
+		AROUND,
+		BETWEEN
+	};
+
+	constexpr EnumNameMap<ExtraSpace> EXTRA_SPACE_NAME_MAP = {
+		{"outside", ExtraSpace::OUTSIDE},
+		{"around", ExtraSpace::AROUND},
+		{"between", ExtraSpace::BETWEEN}
+	};
+
+	struct LayoutItem
+	{
+		std::unordered_set<size_t> elems;
+		float weight = 0.0f;
+
+		float size; // Computed
+
+		void applyLayout(const JsonReader &json);
+	};
+
+	struct LayoutAxis
+	{
+		LayoutDir dir = LAYOUT_DIR_HORIZ;
+
+		std::vector<LayoutItem> items;
+
+		std::array<float, SPACING_LEN> spacing = {0.0f, 0.0f, 0.0f};
+		ExtraSpace extra_space = ExtraSpace::OUTSIDE;
+		float align = 0.0f;
+
+		float min_size; // Computed
+		float total_weight; // Computed
+
+		void applyLayout(const JsonReader &json);
+	};
+
 	class Elem
 	{
 	private:
+		// Universal properties
 		Env &m_env;
 		std::string m_id; // Computed; cross reference to ID in Env
 
+		// State properties
 		std::vector<std::string> m_children;
 		std::string m_parent; // Computed
 
 		std::unordered_set<std::string> m_classes;
 
-		Vec<float> m_pos;
-		Dim<float> m_size;
-		Vec<float> m_anchor;
-
+		// Layout properties
 		Dim<float> m_min_size;
-		Dim<float> m_max_size;
+
+		Vec<float> m_scale;
+		Vec<float> m_align;
 
 		Rect<float> m_padding;
 		Rect<float> m_border;
 		Rect<float> m_margin;
 
-		Dim<float> m_abs_min_size; // Computed by sizer
-		Rect<float> m_draw_rect; // Computed by sizer
+		float m_aspect_ratio;
 
+		std::vector<LayoutAxis> m_axes;
+
+		// Computed layout properties
+		Dim<float> m_content_size;
+
+		Rect<float> m_clip_rect;
+		Rect<float> m_draw_rect;
+
+		std::array<bool, 2> m_clip_constrained;
+
+		// View properties
 		bool m_visible;
 		bool m_noclip;
 
@@ -117,15 +188,31 @@ namespace ui
 			return m_parent;
 		}
 
-		void draw(const Rect<float> &parent_rect);
+		void draw();
 		virtual void onDraw(Canvas &canvas);
 
 		void applyJson(const JsonReader &json);
 		virtual void applyState(const JsonReader &json);
-		virtual void resetStyle();
-		virtual void applyStyle(const JsonReader &json);
+
+		void resetStyle()
+		{
+			resetLayout();
+			resetView();
+		}
+
+		void resetLayout();
+		void applyLayout(const JsonReader &json);
+
+		void resetView();
+		void applyView(const JsonReader &json);
 
 	private:
+		Rect<float> getDrawEdges() const;
+		Rect<float> getAllEdges() const;
+
+		Dim<float> getMinDrawSize() const;
+		Dim<float> getMinMarginSize() const;
+
 		// Begin Env friend interface
 		friend class Env;
 
@@ -133,6 +220,12 @@ namespace ui
 		{
 			m_parent = std::move(parent);
 		}
+
+		void layout();
 		// End Env friend interface
+
+		void layoutContentSize();
+		void layoutDrawRect();
+		void layoutClipRects();
 	};
 }

@@ -51,11 +51,29 @@ namespace ui
 		return g_manager.getPixelSize(m_is_hud);
 	}
 
+	Dim<float> Env::getScreenSize() const
+	{
+		Dim<s32> screen_size = Texture().getSize();
+		float pixel_size = getPixelSize();
+
+		return Dim<float>(
+			screen_size.Width / pixel_size,
+			screen_size.Height / pixel_size
+		);
+	}
+
 	void Env::drawAll()
 	{
 		Elem &root = getElem(m_root_elem);
-		Rect<float> parent_rect({0.0f, 0.0f}, getScreenSize());
-		root.draw(parent_rect);
+
+		Dim<s32> screen_size = Texture().getSize();
+		if (m_needs_layout || m_last_screen_size != screen_size) {
+			root.layout();
+			m_needs_layout = false;
+			m_last_screen_size = screen_size;
+		}
+
+		root.draw();
 	}
 
 	void Env::applyJson(const JsonReader &json)
