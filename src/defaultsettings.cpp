@@ -274,6 +274,7 @@ void set_default_settings()
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("enable_bloom_debug", "false");
 	settings->setDefault("enable_bloom_dedicated_texture", "false");
+	settings->setDefault("bloom_strength_factor", "1.0");
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "16");
 

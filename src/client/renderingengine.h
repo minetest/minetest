@@ -46,6 +46,8 @@ class RenderingCore;
 class RenderingEngine
 {
 public:
+	static const float BASE_BLOOM_STRENGTH;
+
 	RenderingEngine(IEventReceiver *eventReceiver);
 	~RenderingEngine();
 

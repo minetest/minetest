@@ -475,10 +475,14 @@ enable_bloom_debug (Enable Bloom Debug) bool false
 #    on certain GPUs and video drivers.
 enable_bloom_dedicated_texture (Enable Bloom Dedicated Texture) bool false
 
-#    Set the intensity of bloom
+#    Defines how much bloom is applied to the rendered image
 #    Smaller values make bloom more subtle
 #    Range: from 0.01 to 1.0, default: 0.05
 bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
+
+#    Defines the magnitude of bloom overexposure.
+#    Range: from 1.0 to 10.0, default: 1.0
+bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 
 #    Set the radius of the bloom filter in pixels.
 #    Larger values render more glow around bright objects

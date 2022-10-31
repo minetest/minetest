@@ -16,15 +16,14 @@ centroid varying vec2 varTexCoord;
 
 vec4 applyBloom(vec4 color, vec2 uv)
 {
-	float bias = bloomIntensity;
-	vec4 bloom = texture2D(bloom, uv);
+	vec3 bloom = texture2D(bloom, uv).rgb;
 #ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 && uv.y < 0.5)
-		return vec4(bloom.rgb, color.a);
+		return vec4(bloom, color.a);
 	if (uv.x < 0.5)
 		return color;
 #endif
-	color.rgb = mix(color.rgb, bloom.rgb, bias);
+	color.rgb = mix(color.rgb, bloom, bloomIntensity);
 	return color;
 }
 
