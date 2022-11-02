@@ -390,9 +390,10 @@ public:
 	 * @return RenderStep* Pointer to the created step for further configuration.
 	 */
 	template<typename T, typename... Args>
-	RenderStep *addStep(Args&&... args) {
+	T *addStep(Args&&... args) {
 		T* result = own(std::make_unique<T>(std::forward<Args>(args)...));
-		return addStep(result);
+		addStep(result);
+		return result;
 	}
 
 	RenderSource *getInput();
