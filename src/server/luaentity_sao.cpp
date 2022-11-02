@@ -175,8 +175,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_velocity = p_velocity;
 			m_acceleration = p_acceleration;
 		} else {
-			m_base_position += dtime * m_velocity + 0.5 * dtime
-					* dtime * m_acceleration;
+			m_base_position += (m_velocity + m_acceleration * 0.5f * dtime) * dtime;
 			m_velocity += dtime * m_acceleration;
 		}
 
@@ -196,6 +195,11 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 				m_rotation.Y = target_yaw;
 			}
 		}
+	}
+
+	if (fabs(m_prop.automatic_rotate) > 0.001f) {
+		m_rotation_add_yaw = modulo360f(m_rotation_add_yaw + dtime * core::RADTODEG *
+				m_prop.automatic_rotate);
 	}
 
 	if(m_registered) {

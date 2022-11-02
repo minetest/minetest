@@ -45,12 +45,11 @@ public:
 
 	static void Register(lua_State *L);
 
-	static ObjectRef *checkobject(lua_State *L, int narg);
-
 	static ServerActiveObject* getobject(ObjectRef *ref);
+
+	static const char className[];
 private:
 	ServerActiveObject *m_object = nullptr;
-	static const char className[];
 	static luaL_Reg methods[];
 
 

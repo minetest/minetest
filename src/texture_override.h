@@ -57,7 +57,8 @@ struct TextureOverride
 {
 	std::string id;
 	std::string texture;
-	override_t target;
+	override_t target = 0;
+	u8 world_scale = 0;
 
 	// Helper function for checking if an OverrideTarget is found in
 	// a TextureOverride without casting

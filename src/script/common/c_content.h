@@ -129,10 +129,8 @@ void               read_inventory_list       (lua_State *L, int tableindex,
                                               Inventory *inv, const char *name,
                                               IGameDef *gdef, int forcesize=-1);
 
-MapNode            readnode                  (lua_State *L, int index,
-                                              const NodeDefManager *ndef);
-void               pushnode                  (lua_State *L, const MapNode &n,
-                                              const NodeDefManager *ndef);
+MapNode            readnode                  (lua_State *L, int index);
+void               pushnode                  (lua_State *L, const MapNode &n);
 
 
 void               read_groups               (lua_State *L, int index,

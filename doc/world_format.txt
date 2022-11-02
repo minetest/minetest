@@ -311,7 +311,7 @@ NOTE: Since version 29 zstd is used instead of zlib. In addition the entire
       block is first serialized and then compressed (except the version byte).
 
 u8 version
-- map format version number, see serialisation.h for the latest number
+- map format version number, see serialization.h for the latest number
 
 u8 flags
 - Flag bitmasks:
@@ -367,7 +367,7 @@ if map format version >= 29:
     u16 name_len
     u8[name_len] name
 if map format version < 29:
-  -- Nothing right here, timpstamp and node id mappings are serialized later
+  -- Nothing right here, timestamp and node id mappings are serialized later
 
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes

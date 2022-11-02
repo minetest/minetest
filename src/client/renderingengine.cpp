@@ -56,6 +56,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
+const float RenderingEngine::BASE_BLOOM_STRENGTH = 8.0f;
 
 
 static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,

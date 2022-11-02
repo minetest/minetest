@@ -57,8 +57,8 @@ public:
 		return configuration.isConsistent();
 	}
 
-	inline void printUnsatisfiedModsError() const {
-		return configuration.printUnsatisfiedModsError();
+	inline std::string getUnsatisfiedModsError() const {
+		return configuration.getUnsatisfiedModsError();
 	}
 
 	/**

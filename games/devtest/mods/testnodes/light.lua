@@ -4,7 +4,7 @@ local S = minetest.get_translator("testnodes")
 
 -- All possible light levels
 for i=1, minetest.LIGHT_MAX do
-	minetest.register_node("testnodes:light"..i, {
+	minetest.register_node("testnodes:light"..string.format("%02d", i), {
 		description = S("Light Source (@1)", i),
 		paramtype = "light",
 		light_source = i,

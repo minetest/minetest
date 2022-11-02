@@ -1,0 +1,53 @@
+version: 1
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: net.minetest.minetest
+    name: Minetest
+    icon: minetest
+    version: !ENV ${VERSION}
+    exec: usr/bin/minetest
+    exec_args: $@
+  runtime:
+    env:
+      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main universe
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-updates main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-backports main universe
+      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-security main universe
+
+    include:
+      - libc6
+      - libcrypt1
+      - libcurl3-gnutls
+      - libfreetype6
+      - libgl1
+      - libjpeg-turbo8
+      - libjsoncpp1
+      - libleveldb1d
+      - libluajit-5.1-2
+      - libopenal1
+      - libpng16-16
+      - libsqlite3-0
+      - libstdc++6
+      - libvorbisfile3
+      - libx11-6
+      - libxi6
+      - zlib1g
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc
+
+AppImage:
+  update-information: None
+  sign-key: None
+  arch: x86_64

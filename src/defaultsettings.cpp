@@ -87,7 +87,7 @@ void set_default_settings()
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
-	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
+	settings->setDefault("keymap_rangeselect", "");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
@@ -146,11 +146,18 @@ void set_default_settings()
 	settings->setDefault("keymap_slot31", "");
 	settings->setDefault("keymap_slot32", "");
 
-	// Some (temporary) keys for debugging
+#ifndef NDEBUG
+	// Default keybinds for quicktune in debug builds
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
 	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
+#else
+	settings->setDefault("keymap_quicktune_prev", "");
+	settings->setDefault("keymap_quicktune_next", "");
+	settings->setDefault("keymap_quicktune_dec", "");
+	settings->setDefault("keymap_quicktune_inc", "");
+#endif
 
 	// Visuals
 #ifdef NDEBUG
@@ -263,6 +270,12 @@ void set_default_settings()
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
+	settings->setDefault("exposure_factor", "1.0");
+	settings->setDefault("enable_bloom", "false");
+	settings->setDefault("enable_bloom_debug", "false");
+	settings->setDefault("bloom_strength_factor", "1.0");
+	settings->setDefault("bloom_intensity", "0.05");
+	settings->setDefault("bloom_radius", "1");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
@@ -465,8 +478,8 @@ void set_default_settings()
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	settings->setDefault("touchtarget", "true");
 	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
 	settings->setDefault("clickable_chat_weblinks", "false");

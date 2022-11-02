@@ -303,14 +303,16 @@ end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
 
 function core.craft_predict(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_craft_predicts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
@@ -605,6 +607,7 @@ core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
+core.registered_on_item_pickups, core.register_on_item_pickup = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
 core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()

@@ -157,23 +157,24 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
+	const auto &phys = player->physics_override;
 	lua_newtable(L);
-	lua_pushnumber(L, player->physics_override_speed);
+	lua_pushnumber(L, phys.speed);
 	lua_setfield(L, -2, "speed");
 
-	lua_pushnumber(L, player->physics_override_jump);
+	lua_pushnumber(L, phys.jump);
 	lua_setfield(L, -2, "jump");
 
-	lua_pushnumber(L, player->physics_override_gravity);
+	lua_pushnumber(L, phys.gravity);
 	lua_setfield(L, -2, "gravity");
 
-	lua_pushboolean(L, player->physics_override_sneak);
+	lua_pushboolean(L, phys.sneak);
 	lua_setfield(L, -2, "sneak");
 
-	lua_pushboolean(L, player->physics_override_sneak_glitch);
+	lua_pushboolean(L, phys.sneak_glitch);
 	lua_setfield(L, -2, "sneak_glitch");
 
-	lua_pushboolean(L, player->physics_override_new_move);
+	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
 
 	return 1;
@@ -400,17 +401,6 @@ int LuaLocalPlayer::l_hud_get(lua_State *L)
 	return 1;
 }
 
-LuaLocalPlayer *LuaLocalPlayer::checkobject(lua_State *L, int narg)
-{
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(LuaLocalPlayer **)ud;
-}
-
 LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
 {
 	return ref->m_localplayer;
@@ -418,7 +408,7 @@ LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
 
 LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)
 {
-	LuaLocalPlayer *ref = checkobject(L, narg);
+	LuaLocalPlayer *ref = checkObject<LuaLocalPlayer>(L, narg);
 	assert(ref);
 	LocalPlayer *player = getobject(ref);
 	assert(player);
@@ -434,27 +424,11 @@ int LuaLocalPlayer::gc_object(lua_State *L)
 
 void LuaLocalPlayer::Register(lua_State *L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable); // hide metatable from lua getmetatable()
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1); // Drop metatable
-
-	luaL_register(L, nullptr, methods); // fill methodtable
-	lua_pop(L, 1);			// Drop methodtable
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object},
+		{0, 0}
+	};
+	registerClass(L, className, methods, metamethods);
 }
 
 const char LuaLocalPlayer::className[] = "LocalPlayer";

@@ -694,7 +694,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	e->setMax(max);
 	e->setMin(min);
 
-	e->setPos(stoi(parts[4]));
+	e->setPos(stoi(value));
 
 	e->setSmallStep(data->scrollbar_options.small_step);
 	e->setLargeStep(data->scrollbar_options.large_step);
@@ -825,9 +825,9 @@ void GUIFormSpecMenu::parseImage(parserData* data, const std::string &element)
 	core::rect<s32> middle;
 	if (parts.size() >= 4)
 		parseMiddleRect(parts[3], &middle);
-	
+
 	// Temporary fix for issue #12581 in 5.6.0.
-	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage 
+	// Use legacy image when not rendering 9-slice image because GUIAnimatedImage
 	// uses NNAA filter which causes visual artifacts when image uses alpha blending.
 
 	gui::IGUIElement *e;
@@ -1180,7 +1180,6 @@ void GUIFormSpecMenu::parseTable(parserData* data, const std::string &element)
 	std::string name = parts[2];
 	std::vector<std::string> items = split(parts[3],',');
 	std::string str_initial_selection;
-	std::string str_transparent = "false";
 
 	if (parts.size() >= 5)
 		str_initial_selection = parts[4];
@@ -2264,7 +2263,7 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 	}
 
 	// bgcolor
-	if (parameter_count >= 1 && parts[0] != "")
+	if (parameter_count >= 1 && !parts[0].empty())
 		parseColorString(parts[0], m_bgcolor, false);
 
 	// fullscreen
@@ -2275,14 +2274,14 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 		} else if (parts[1] == "neither") {
 			m_bgnonfullscreen = false;
 			m_bgfullscreen = false;
-		} else if (parts[1] != "" || m_formspec_version < 3) {
+		} else if (!parts[1].empty() || m_formspec_version < 3) {
 			m_bgfullscreen = is_yes(parts[1]);
 			m_bgnonfullscreen = !m_bgfullscreen;
 		}
 	}
 
 	// fbgcolor
-	if (parameter_count >= 3 && parts[2] != "")
+	if (parameter_count >= 3 && !parts[2].empty())
 		parseColorString(parts[2], m_fullscreen_bgcolor, false);
 }
 
@@ -3047,7 +3046,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element = "";
+		m_focused_element = nullopt;
 	}
 
 	// Remove children
@@ -3516,10 +3515,10 @@ GUIInventoryList::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 		s32 item_index = e->getItemIndexAtPos(p);
 		if (item_index != -1)
 			return GUIInventoryList::ItemSpec(e->getInventoryloc(), e->getListname(),
-					item_index);
+					item_index, e->getSlotSize());
 	}
 
-	return GUIInventoryList::ItemSpec(InventoryLocation(), "", -1);
+	return GUIInventoryList::ItemSpec(InventoryLocation(), "", -1, {0,0});
 }
 
 void GUIFormSpecMenu::drawSelectedItem()
@@ -3541,7 +3540,8 @@ void GUIFormSpecMenu::drawSelectedItem()
 	ItemStack stack = list->getItem(m_selected_item->i);
 	stack.count = m_selected_amount;
 
-	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	v2s32 slotsize = m_selected_item->slotsize;
+	core::rect<s32> imgrect(0, 0, slotsize.X, slotsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
 	rect.constrainTo(driver->getViewPort());
 	drawItemStack(driver, m_font, stack, rect, NULL, m_client, IT_ROT_DRAGGED);
@@ -3643,13 +3643,21 @@ void GUIFormSpecMenu::drawMenu()
 #endif
 	bool hovered_element_found = false;
 
-	if (hovered != NULL) {
+	if (hovered) {
 		if (m_show_debug) {
 			core::rect<s32> rect = hovered->getAbsoluteClippingRect();
 			driver->draw2DRectangle(0x22FFFF00, rect, &rect);
 		}
 
-		s32 id = hovered->getID();
+		// find the formspec-element of the hovered IGUIElement (a parent)
+		s32 id;
+		for (gui::IGUIElement *hovered_fselem = hovered; hovered_fselem;
+				hovered_fselem = hovered_fselem->getParent()) {
+			id = hovered_fselem->getID();
+			if (id != -1)
+				break;
+		}
+
 		u64 delta = 0;
 		if (id == -1) {
 			m_old_tooltip_id = id;
@@ -3784,6 +3792,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 			m_selected_item->inventoryloc = e->getInventoryloc();
 			m_selected_item->listname = "craftresult";
 			m_selected_item->i = 0;
+			m_selected_item->slotsize = e->getSlotSize();
 			m_selected_amount = item.count;
 			m_selected_dragging = false;
 			break;
@@ -3865,7 +3874,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 
 		if (!current_field_enter_pending.empty()) {
 			fields["key_enter_field"] = current_field_enter_pending;
-			current_field_enter_pending = "";
+			current_field_enter_pending.clear();
 		}
 
 		if (current_keys_pending.key_escape) {
@@ -4600,7 +4609,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				} else if (s.ftype == f_ScrollBar) {
 					s.fdefault = L"Changed";
 					acceptInput(quit_mode_no);
-					s.fdefault = L"";
+					s.fdefault.clear();
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
 						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));

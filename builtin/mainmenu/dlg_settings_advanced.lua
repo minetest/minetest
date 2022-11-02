@@ -344,9 +344,7 @@ local function parse_config_file(read_all, parse_mods)
 	if parse_mods then
 		-- Parse games
 		local games_category_initialized = false
-		local index = 1
-		local game = pkgmgr.get_game(index)
-		while game do
+		for _, game in ipairs(pkgmgr.games) do
 			local path = game.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
 			if file then
@@ -370,15 +368,12 @@ local function parse_config_file(read_all, parse_mods)
 
 				file:close()
 			end
-
-			index = index + 1
-			game = pkgmgr.get_game(index)
 		end
 
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), "mods", mods)
+		pkgmgr.get_mods(core.get_modpath(), "mods", mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
@@ -409,7 +404,7 @@ local function parse_config_file(read_all, parse_mods)
 		-- Parse client mods
 		local clientmods_category_initialized = false
 		local clientmods = {}
-		get_mods(core.get_clientmodpath(), "clientmods", clientmods)
+		pkgmgr.get_mods(core.get_clientmodpath(), "clientmods", clientmods)
 		for _, mod in ipairs(clientmods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")

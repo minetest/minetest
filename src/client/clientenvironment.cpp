@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"
 #include "content_cao.h"
+#include "porting.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -194,21 +195,24 @@ void ClientEnvironment::step(float dtime)
 		lplayer->applyControl(dtime_part, this);
 
 		// Apply physics
+		lplayer->gravity = 0;
 		if (!free_move) {
 			// Gravity
-			v3f speed = lplayer->getSpeed();
 			if (!is_climbing && !lplayer->in_liquid)
-				speed.Y -= lplayer->movement_gravity *
-					lplayer->physics_override_gravity * dtime_part * 2.0f;
+				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
+				lplayer->gravity = 2 * lplayer->movement_gravity * lplayer->physics_override.gravity;
 
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&
 					!lplayer->swimming_vertical &&
 					!lplayer->swimming_pitch)
-				speed.Y -= lplayer->movement_liquid_sink * dtime_part * 2.0f;
+				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
+				lplayer->gravity = 2 * lplayer->movement_liquid_sink;
 
 			// Movement resistance
 			if (lplayer->move_resistance > 0) {
+				v3f speed = lplayer->getSpeed();
+
 				// How much the node's move_resistance blocks movement, ranges
 				// between 0 and 1. Should match the scale at which liquid_viscosity
 				// increase affects other liquid attributes.
@@ -231,15 +235,16 @@ void ClientEnvironment::step(float dtime)
 					(1 - resistance_factor);
 				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);
 				speed += d;
-			}
 
-			lplayer->setSpeed(speed);
+				lplayer->setSpeed(speed);
+			}
 		}
 
 		/*
 			Move the lplayer.
 			This also does collision detection.
 		*/
+
 		lplayer->move(dtime_part, this, position_max_increment,
 			&player_collisions);
 	}
@@ -500,16 +505,35 @@ void ClientEnvironment::getSelectedActiveObjects(
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		const v3f &pos = obj->getPosition();
-		aabb3f offsetted_box(selection_box.MinEdge + pos,
-			selection_box.MaxEdge + pos);
-
 		v3f current_intersection;
-		v3s16 current_normal;
-		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
-				&current_intersection, &current_normal)) {
-			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal,
+		v3f current_normal, current_raw_normal;
+		const v3f rel_pos = shootline_on_map.start - obj->getPosition();
+		bool collision;
+		GenericCAO* gcao = dynamic_cast<GenericCAO*>(obj);
+		if (gcao != nullptr && gcao->getProperties().rotate_selectionbox) {
+			gcao->getSceneNode()->updateAbsolutePosition();
+			const v3f deg = obj->getSceneNode()->getAbsoluteTransformation().getRotationDegrees();
+			collision = boxLineCollision(selection_box, deg,
+				rel_pos, line_vector, &current_intersection, &current_normal, &current_raw_normal);
+		} else {
+			collision = boxLineCollision(selection_box, rel_pos, line_vector,
+				&current_intersection, &current_normal);
+			current_raw_normal = current_normal;
+		}
+		if (collision) {
+			current_intersection += obj->getPosition();
+			objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}
+}
+
+void ClientEnvironment::updateFrameTime(bool is_paused)
+{
+	// if paused, m_frame_time_pause_accumulator increases by dtime,
+	// otherwise, m_frame_time increases by dtime
+	if (is_paused)
+		m_frame_time_pause_accumulator = porting::getTimeMs() - m_frame_time;
+	else
+		m_frame_time = porting::getTimeMs() - m_frame_time_pause_accumulator;
 }

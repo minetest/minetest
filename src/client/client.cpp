@@ -196,6 +196,7 @@ void Client::loadMods()
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+	m_script->checkSetByBuiltin();
 
 	ModConfiguration modconf;
 	{
@@ -213,9 +214,10 @@ void Client::loadMods()
 	}
 
 	m_mods = modconf.getMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+		errorstream << modconf.getUnsatisfiedModsError() << std::endl;
 		return;
 	}
 
@@ -574,7 +576,8 @@ void Client::step(float dtime)
 					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
-						force_update_shadows = true;
+						if (r.urgent)
+							force_update_shadows = true;
 					}
 				}
 			} else {
@@ -1987,26 +1990,6 @@ const std::string* Client::getModFile(std::string filename)
 	if (it == m_mod_vfs.end())
 		return nullptr;
 	return &it->second;
-}
-
-bool Client::registerModStorage(ModMetadata *storage)
-{
-	if (m_mod_storages.find(storage->getModName()) != m_mod_storages.end()) {
-		errorstream << "Unable to register same mod storage twice. Storage name: "
-				<< storage->getModName() << std::endl;
-		return false;
-	}
-
-	m_mod_storages[storage->getModName()] = storage;
-	return true;
-}
-
-void Client::unregisterModStorage(const std::string &name)
-{
-	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
-		m_mod_storages.find(name);
-	if (it != m_mod_storages.end())
-		m_mod_storages.erase(name);
 }
 
 /*

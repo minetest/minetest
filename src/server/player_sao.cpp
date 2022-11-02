@@ -305,17 +305,23 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 {
+	if (!m_player) {
+		// Will output a format warning client-side
+		return "";
+	}
+
+	const auto &phys = m_player->physics_override;
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_PHYSICS_OVERRIDE);
 	// parameters
-	writeF32(os, m_physics_override_speed);
-	writeF32(os, m_physics_override_jump);
-	writeF32(os, m_physics_override_gravity);
-	// these are sent inverted so we get true when the server sends nothing
-	writeU8(os, !m_physics_override_sneak);
-	writeU8(os, !m_physics_override_sneak_glitch);
-	writeU8(os, !m_physics_override_new_move);
+	writeF32(os, phys.speed);
+	writeF32(os, phys.jump);
+	writeF32(os, phys.gravity);
+	// MT 0.4.10 legacy: send inverted for detault `true` if the server sends nothing
+	writeU8(os, !phys.sneak);
+	writeU8(os, !phys.sneak_glitch);
+	writeU8(os, !phys.new_move);
 	return os.str();
 }
 
@@ -604,10 +610,10 @@ bool PlayerSAO::checkMovementCheat()
 		player_max_walk = m_player->movement_speed_fast; // Fast speed
 	else
 		player_max_walk = m_player->movement_speed_walk; // Normal speed
-	player_max_walk *= m_physics_override_speed;
+	player_max_walk *= m_player->physics_override.speed;
 	player_max_walk = MYMAX(player_max_walk, override_max_H);
 
-	player_max_jump = m_player->movement_speed_jump * m_physics_override_jump;
+	player_max_jump = m_player->movement_speed_jump * m_player->physics_override.jump;
 	// FIXME: Bouncy nodes cause practically unbound increase in Y speed,
 	//        until this can be verified correctly, tolerate higher jumping speeds
 	player_max_jump *= 2.0;

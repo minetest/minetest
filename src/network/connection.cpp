@@ -64,7 +64,7 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
 
-	BufferedPacketPtr p(new BufferedPacket(packet_size));
+	auto p = std::make_shared<BufferedPacket>(packet_size);
 	p->address = address;
 
 	writeU32(&p->data[0], protocol_id);
@@ -492,10 +492,10 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
-	std::deque<u16> remove_queue;
+	std::vector<u16> remove_queue;
 	{
 		MutexAutoLock listlock(m_map_mutex);
-		for (auto &i : m_buf) {
+		for (const auto &i : m_buf) {
 			IncomingSplitPacket *p = i.second;
 			// Reliable ones are not removed by timeout
 			if (p->reliable)

@@ -1,4 +1,4 @@
-_G.vector = {metatable = {}}
+_G.vector = {}
 dofile("builtin/common/vector.lua")
 
 describe("vector", function()

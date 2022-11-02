@@ -2,6 +2,7 @@ local full_description = "Description Test Item\nFor testing item decription"
 minetest.register_tool("unittests:description_test", {
 	description = full_description,
 	inventory_image = "unittests_description_test.png",
+	groups = { dummy = 1 },
 })
 
 minetest.register_chatcommand("item_description", {

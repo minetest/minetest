@@ -35,7 +35,7 @@ void ToolGroupCap::toJson(Json::Value &object) const
 	Json::Value times_object;
 	for (auto time : times)
 		times_object[time.first] = time.second;
-	object["times"] = times_object;
+	object["times"] = std::move(times_object);
 }
 
 void ToolGroupCap::fromJson(const Json::Value &json)
@@ -134,14 +134,13 @@ void ToolCapabilities::serializeJson(std::ostream &os) const
 	for (const auto &groupcap : groupcaps) {
 		groupcap.second.toJson(groupcaps_object[groupcap.first]);
 	}
-	root["groupcaps"] = groupcaps_object;
+	root["groupcaps"] = std::move(groupcaps_object);
 
 	Json::Value damage_groups_object;
-	DamageGroup::const_iterator dgiter;
-	for (dgiter = damageGroups.begin(); dgiter != damageGroups.end(); ++dgiter) {
-		damage_groups_object[dgiter->first] = dgiter->second;
+	for (const auto &damagegroup : damageGroups) {
+		damage_groups_object[damagegroup.first] = damagegroup.second;
 	}
-	root["damage_groups"] = damage_groups_object;
+	root["damage_groups"] = std::move(damage_groups_object);
 
 	fastWriteJson(root, os);
 }

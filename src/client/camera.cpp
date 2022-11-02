@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "script/scripting_client.h"
 #include "gettext.h"
+#include <SViewFrustum.h>
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -318,6 +319,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position = player->getPosition();
 
+	f32 yaw = player->getYaw();
+	f32 pitch = player->getPitch();
+
 	// This is worse than `LocalPlayer::getPosition()` but
 	// mods expect the player head to be at the parent's position
 	// plus eye height.
@@ -342,7 +346,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Set player node transformation
 	m_playernode->setPosition(player_position);
-	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
+	m_playernode->setRotation(v3f(0, -1 * yaw, 0));
 	m_playernode->updateAbsolutePosition();
 
 	// Get camera tilt timer (hurt animation)
@@ -379,7 +383,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		// Set head node transformation
 		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
 		m_headnode->setPosition(eye_offset);
-		m_headnode->setRotation(v3f(player->getPitch(), 0,
+		m_headnode->setRotation(v3f(pitch, 0,
 			cameratilt * player->hurt_tilt_strength));
 		m_headnode->updateAbsolutePosition();
 	}
@@ -463,6 +467,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 	// Set camera node transformation
 	m_cameranode->setPosition(my_cp-intToFloat(m_camera_offset, BS));
+	m_cameranode->updateAbsolutePosition();
 	m_cameranode->setUpVector(abs_cam_up);
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(my_cp-intToFloat(m_camera_offset, BS) + 100 * m_camera_direction);
@@ -511,8 +516,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
+	// Make new matrices and frustum
+	m_cameranode->updateMatrices();
+
 	if (m_arm_inertia)
-		addArmInertia(player->getYaw());
+		addArmInertia(yaw);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
@@ -627,14 +635,11 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
-	// Clear Z buffer so that the wielded tool stays in front of world geometry
-	m_wieldmgr->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
-
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
 	cam->setFOV(72.0*M_PI/180.0);
-	cam->setNearValue(10);
+	cam->setNearValue(40); // give wield tool smaller z-depth than the world in most cases.
 	cam->setFarValue(1000);
 	if (translation != NULL)
 	{
@@ -646,6 +651,7 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 		irr::core::vector3df camera_pos =
 				(startMatrix * *translation).getTranslation();
 		cam->setPosition(camera_pos);
+		cam->updateAbsolutePosition();
 		cam->setTarget(focusPoint);
 	}
 	m_wieldmgr->drawAll();
@@ -679,11 +685,12 @@ void Camera::drawNametags()
 			screen_pos.Y = screensize.Y *
 				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
 			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
-			core::rect<s32> bg_size(-2, 0, textsize.Width+2, textsize.Height);
 
 			auto bgcolor = nametag->getBgColor(m_show_nametag_backgrounds);
-			if (bgcolor.getAlpha() != 0)
+			if (bgcolor.getAlpha() != 0) {
+				core::rect<s32> bg_size(-2, 0, textsize.Width + 2, textsize.Height);
 				driver->draw2DRectangle(bgcolor, bg_size + screen_pos);
+			}
 
 			font->draw(
 				translate_string(utf8_to_wide(nametag->text)).c_str(),
@@ -705,4 +712,16 @@ void Camera::removeNametag(Nametag *nametag)
 {
 	m_nametags.remove(nametag);
 	delete nametag;
+}
+
+std::array<core::plane3d<f32>, 4> Camera::getFrustumCullPlanes() const
+{
+	using irr::scene::SViewFrustum;
+	const auto &frustum_planes = m_cameranode->getViewFrustum()->planes;
+	return {
+		frustum_planes[SViewFrustum::VF_LEFT_PLANE],
+		frustum_planes[SViewFrustum::VF_RIGHT_PLANE],
+		frustum_planes[SViewFrustum::VF_BOTTOM_PLANE],
+		frustum_planes[SViewFrustum::VF_TOP_PLANE],
+	};
 }

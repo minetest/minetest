@@ -107,8 +107,7 @@ void ShadowRenderer::disable()
 	}
 
 	for (auto node : m_shadow_node_array)
-		if (node.shadowMode & E_SHADOW_MODE::ESM_RECEIVE)
-			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
 }
 
 void ShadowRenderer::initialize()
@@ -180,8 +179,7 @@ void ShadowRenderer::addNodeToShadowList(
 	if (!node)
 		return;
 	m_shadow_node_array.emplace_back(node, shadowMode);
-	if (shadowMode == ESM_RECEIVE || shadowMode == ESM_BOTH)
-		node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
@@ -258,8 +256,7 @@ void ShadowRenderer::updateSMTextures()
 		assert(shadowMapTextureFinal != nullptr);
 
 		for (auto &node : m_shadow_node_array)
-			if (node.shadowMode == ESM_RECEIVE || node.shadowMode == ESM_BOTH)
-				node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	}
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
@@ -706,4 +703,23 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 	fs::ReadFile(path, content);
 
 	return prefix + content;
+}
+
+ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
+{
+	// disable if unsupported
+	if (g_settings->getBool("enable_dynamic_shadows") && (
+		g_settings->get("video_driver") != "opengl" ||
+		!g_settings->getBool("enable_shaders"))) {
+		g_settings->setBool("enable_dynamic_shadows", false);
+	}
+
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		ShadowRenderer *shadow_renderer = new ShadowRenderer(device, client);
+		shadow_renderer->initialize();
+		return shadow_renderer;
+	}
+
+	return nullptr;
 }

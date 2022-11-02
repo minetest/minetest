@@ -57,14 +57,14 @@ ModChannelRef::ModChannelRef(const std::string &modchannel) :
 
 int ModChannelRef::l_leave(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	getGameDef(L)->leaveModChannel(ref->m_modchannel_name);
 	return 0;
 }
 
 int ModChannelRef::l_send_all(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel || !channel->canWrite())
 		return 0;
@@ -78,7 +78,7 @@ int ModChannelRef::l_send_all(lua_State *L)
 
 int ModChannelRef::l_is_writeable(lua_State *L)
 {
-	ModChannelRef *ref = checkobject(L, 1);
+	ModChannelRef *ref = checkObject<ModChannelRef>(L, 1);
 	ModChannel *channel = getobject(L, ref);
 	if (!channel)
 		return 0;
@@ -88,27 +88,11 @@ int ModChannelRef::l_is_writeable(lua_State *L)
 }
 void ModChannelRef::Register(lua_State *L)
 {
-	lua_newtable(L);
-	int methodtable = lua_gettop(L);
-	luaL_newmetatable(L, className);
-	int metatable = lua_gettop(L);
-
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable); // hide metatable from lua getmetatable()
-
-	lua_pushliteral(L, "__index");
-	lua_pushvalue(L, methodtable);
-	lua_settable(L, metatable);
-
-	lua_pushliteral(L, "__gc");
-	lua_pushcfunction(L, gc_object);
-	lua_settable(L, metatable);
-
-	lua_pop(L, 1); // Drop metatable
-
-	luaL_register(L, nullptr, methods); // fill methodtable
-	lua_pop(L, 1);			// Drop methodtable
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object},
+		{0, 0}
+	};
+	registerClass(L, className, methods, metamethods);
 }
 
 void ModChannelRef::create(lua_State *L, const std::string &channel)
@@ -124,17 +108,6 @@ int ModChannelRef::gc_object(lua_State *L)
 	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
 	delete o;
 	return 0;
-}
-
-ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
-{
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(ModChannelRef **)ud; // unbox pointer
 }
 
 ModChannel *ModChannelRef::getobject(lua_State *L, ModChannelRef *ref)

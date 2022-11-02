@@ -51,5 +51,3 @@ minetest.register_craftitem("testitems:overlay_global", {
 	wield_overlay = "testitems_overlay_overlay.png",
 	color = GLOBAL_COLOR_ARG,
 })
-
-

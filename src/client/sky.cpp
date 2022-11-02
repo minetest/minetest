@@ -103,10 +103,8 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
 
-	if (g_settings->getBool("enable_dynamic_shadows")) {
-		float val = g_settings->getFloat("shadow_sky_body_orbit_tilt");
-		m_sky_body_orbit_tilt = rangelim(val, 0.0f, 60.0f);
-	}
+	if (g_settings->getBool("enable_dynamic_shadows"))
+		m_sky_body_orbit_tilt = g_settings->getFloat("shadow_sky_body_orbit_tilt", -60.0f, 60.0f);
 
 	setStarCount(1000);
 }
@@ -142,7 +140,6 @@ void Sky::render()
 	driver->setTransform(video::ETS_WORLD, translate * scale);
 
 	if (m_sunlight_seen) {
-		float sunsize = 0.07;
 		video::SColorf suncolor_f(1, 1, 0, 1);
 		//suncolor_f.r = 1;
 		//suncolor_f.g = MYMAX(0.3, MYMIN(1.0, 0.7 + m_time_brightness * 0.5));
@@ -156,7 +153,6 @@ void Sky::render()
 		suncolor_f.g = MYMAX(0.3, MYMIN(1.0, 0.85 + m_time_brightness * 0.5));
 		suncolor_f.b = MYMAX(0.0, m_brightness);
 
-		float moonsize = 0.04;
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
 
@@ -294,11 +290,11 @@ void Sky::render()
 
 		// Draw sun
 		if (m_sun_params.visible)
-			draw_sun(driver, sunsize, suncolor, suncolor2, wicked_time_of_day);
+			draw_sun(driver, suncolor, suncolor2, wicked_time_of_day);
 
 		// Draw moon
 		if (m_moon_params.visible)
-			draw_moon(driver, moonsize, mooncolor, mooncolor2, wicked_time_of_day);
+			draw_moon(driver, mooncolor, mooncolor2, wicked_time_of_day);
 
 		// Draw far cloudy fog thing below all horizons in front of sun, moon
 		// and stars.
@@ -554,16 +550,37 @@ void Sky::update(float time_of_day, float time_brightness,
 	}
 }
 
-void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
+static v3f getSkyBodyPosition(float horizon_position, float day_position, float orbit_tilt)
+{
+	v3f result = v3f(0, 0, -1);
+	result.rotateXZBy(horizon_position);
+	result.rotateXYBy(day_position);
+	result.rotateYZBy(orbit_tilt);
+	return result;
+}
+
+v3f Sky::getSunDirection()
+{
+	return getSkyBodyPosition(90, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+}
+
+v3f Sky::getMoonDirection()
+{
+	return getSkyBodyPosition(270, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+}
+
+void Sky::draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
 	const video::SColor &suncolor2, float wicked_time_of_day)
 	/* Draw sun in the sky.
 	 * driver: Video driver object used to draw
-	 * sunsize: the default size of the sun
 	 * suncolor: main sun color
 	 * suncolor2: second sun color
 	 * wicked_time_of_day: current time of day, to know where should be the sun in the sky
 	 */
 {
+	// A magic number that contributes to the ratio 1.57 sun/moon size difference.
+	constexpr float sunsize = 0.07;
+
 	static const u16 indices[] = {0, 1, 2, 0, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
 	if (!m_sun_texture) {
@@ -586,6 +603,8 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 		}
 	} else {
 		driver->setMaterial(m_materials[3]);
+		// Another magic number that contributes to the ratio 1.57 sun/moon size
+		// difference.
 		float d = (sunsize * 1.7) * m_sun_params.scale;
 		video::SColor c;
 		if (m_sun_tonemap)
@@ -599,18 +618,20 @@ void Sky::draw_sun(video::IVideoDriver *driver, float sunsize, const video::SCol
 }
 
 
-void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor &mooncolor,
+void Sky::draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
 	const video::SColor &mooncolor2, float wicked_time_of_day)
 /*
 	* Draw moon in the sky.
 	* driver: Video driver object used to draw
-	* moonsize: the default size of the moon
 	* mooncolor: main moon color
 	* mooncolor2: second moon color
 	* wicked_time_of_day: current time of day, to know where should be the moon in
 	* the sky
 	*/
 {
+	// A magic number that contributes to the ratio 1.57 sun/moon size difference.
+	constexpr float moonsize = 0.04;
+
 	static const u16 indices[] = {0, 1, 2, 0, 2, 3};
 	std::array<video::S3DVertex, 4> vertices;
 	if (!m_moon_texture) {
@@ -639,6 +660,8 @@ void Sky::draw_moon(video::IVideoDriver *driver, float moonsize, const video::SC
 		}
 	} else {
 		driver->setMaterial(m_materials[4]);
+		// Another magic number that contributes to the ratio 1.57 sun/moon size
+		// difference.
 		float d = (moonsize * 1.9) * m_moon_params.scale;
 		video::SColor c;
 		if (m_moon_tonemap)
@@ -703,15 +726,13 @@ void Sky::place_sky_body(
 	* day_position: turn the body around the Z axis, to place it depending of the time of the day
 	*/
 {
-	v3f centrum(0, 0, -1);
-	centrum.rotateXZBy(horizon_position);
-	centrum.rotateXYBy(day_position);
-	centrum.rotateYZBy(m_sky_body_orbit_tilt);
+	v3f centrum = getSkyBodyPosition(horizon_position, day_position, m_sky_body_orbit_tilt);
+	v3f untilted_centrum = getSkyBodyPosition(horizon_position, day_position, 0.f);
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default
 		vertex.Pos.rotateXZBy(horizon_position);
 		vertex.Pos.rotateXYBy(day_position);
-		vertex.Pos.Z += centrum.Z;
+		vertex.Pos += centrum - untilted_centrum;
 	}
 }
 

@@ -24,7 +24,7 @@ The "gamedata" table is read when calling core.start(). It should contain:
 {
     playername     = <name>,
     password       = <password>,
-    address        = <IP/adress>,
+    address        = <IP/address>,
     port           = <port>,
     selected_world = <index>, -- 0 for client mode
     singleplayer   = <true/false>,
@@ -64,7 +64,7 @@ core.create_dir(absolute_path) (possible in async calls)
 core.delete_dir(absolute_path) (possible in async calls)
 ^ absolute_path to directory to delete (needs to be absolute)
 ^ returns true/false
-core.copy_dir(source,destination,keep_soure) (possible in async calls)
+core.copy_dir(source,destination,keep_source) (possible in async calls)
 ^ source folder
 ^ destination folder
 ^ keep_source DEFAULT true --> if set to false source is deleted after copying
@@ -76,7 +76,7 @@ core.extract_zip(zipfile,destination) [unzip within path required]
 ^ destination folder to extract to
 ^ returns true/false
 core.sound_play(spec, looped) -> handle
-^ spec = SimpleSoundSpec (see lua-api.txt)
+^ spec = SimpleSoundSpec (see lua_api.txt)
 ^ looped = bool
 core.sound_stop(handle)
 core.get_video_drivers()
@@ -247,9 +247,9 @@ Package - content which is downloadable from the content db, may or may not be i
     * returns path to global gamepath
 * core.get_texturepath() (possible in async calls)
     * returns path to default textures
-* core.get_game(index)
+* core.get_games() -> table of all games (possible in async calls)
     * `name` in return value is deprecated, use `title` instead.
-    * returns:
+    * returns a table (ipairs) with values:
 
         {
             id               = <id>,
@@ -261,8 +261,6 @@ Package - content which is downloadable from the content db, may or may not be i
             DEPRECATED:
             addon_mods_paths = {[1] = <path>,},
         }
-
-* core.get_games() -> table of all games in upper format (possible in async calls)
 * core.get_content_info(path)
     * returns
 
@@ -323,7 +321,7 @@ core.get_worlds() -> list of worlds (possible in async calls)
     gameid = <gameid of world>,
     },
 }
-core.create_world(worldname, gameid)
+core.create_world(worldname, gameid, init_settings)
 core.delete_world(index)
 
 

@@ -58,7 +58,7 @@ enum ContentParamType2
 	CPT2_FULL,
 	// Flowing liquid properties
 	CPT2_FLOWINGLIQUID,
-	// Direction for chests and furnaces and such
+	// Direction for chests and furnaces and such (with axis rotation)
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
@@ -78,6 +78,10 @@ enum ContentParamType2
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
 	// 3 bits of palette index, then degrotate
 	CPT2_COLORED_DEGROTATE,
+	// Simplified direction for chests and furnaces and such (4 directions)
+	CPT2_4DIR,
+	// 6 bits of palette index, then 4dir
+	CPT2_COLORED_4DIR,
 };
 
 enum LiquidType
@@ -318,6 +322,9 @@ struct ContentFeatures
 	bool has_on_destruct;
 	bool has_after_destruct;
 
+	// "float" group
+	bool floats;
+
 	/*
 		Actual data
 	 */
@@ -489,15 +496,25 @@ struct ContentFeatures
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
-	bool sameLiquid(const ContentFeatures &f) const{
-		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+
+	bool isLiquidRender() const {
+		return (drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID);
 	}
 
-	bool lightingEquivalent(const ContentFeatures &other) const {
-		return light_propagates == other.light_propagates
-				&& sunlight_propagates == other.sunlight_propagates
-				&& light_source == other.light_source;
+	bool sameLiquidRender(const ContentFeatures &f) const {
+		if (!isLiquidRender() || !f.isLiquidRender())
+			return false;
+		return liquid_alternative_flowing_id == f.liquid_alternative_flowing_id &&
+			liquid_alternative_source_id == f.liquid_alternative_source_id;
+	}
+
+	ContentLightingFlags getLightingFlags() const {
+		ContentLightingFlags flags;
+		flags.has_light = param_type == CPT_LIGHT;
+		flags.light_propagates = light_propagates;
+		flags.sunlight_propagates = sunlight_propagates;
+		flags.light_source = light_source;
+		return flags;
 	}
 
 	int getGroup(const std::string &group) const
@@ -567,6 +584,15 @@ public:
 	 */
 	inline const ContentFeatures& get(const MapNode &n) const {
 		return get(n.getContent());
+	}
+
+	inline ContentLightingFlags getLightingFlags(content_t c) const {
+		// No bound check is necessary, since the array's length is CONTENT_MAX + 1.
+		return m_content_lighting_flag_cache[c];
+	}
+
+	inline ContentLightingFlags getLightingFlags(const MapNode &n) const {
+		return getLightingFlags(n.getContent());
 	}
 
 	/*!
@@ -815,6 +841,11 @@ private:
 	 * Even constant NodeDefManager instances can register listeners.
 	 */
 	mutable std::vector<NodeResolver *> m_pending_resolve_callbacks;
+
+	/*!
+	 * Fast cache of content lighting flags.
+	 */
+	ContentLightingFlags m_content_lighting_flag_cache[CONTENT_MAX + 1L];
 };
 
 NodeDefManager *createNodeDefManager();
