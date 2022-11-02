@@ -2015,7 +2015,7 @@ static void push_clouds(lua_State *L, const CloudParams &cloud_params)
 int ObjectRef::l_set_celestial_vault(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject<ObjectRef>(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2064,7 +2064,7 @@ int ObjectRef::l_set_celestial_vault(lua_State *L)
 int ObjectRef::l_get_celestial_vault(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject<ObjectRef>(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
@@ -2087,7 +2087,7 @@ int ObjectRef::l_get_celestial_vault(lua_State *L)
 int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject<ObjectRef>(L, 1);
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	RemotePlayer *player = getplayer(ref);
 	if (player == nullptr)
 		return 0;
