@@ -21,7 +21,7 @@ vec4 applyBloom(vec4 color, vec2 uv)
 	if (uv.x > 0.5 && uv.y < 0.5)
 		return vec4(light, color.a);
 	if (uv.x < 0.5)
-		return light;
+		return color;
 #endif
 	color.rgb = mix(color.rgb, light, bloomIntensity);
 	return color;
