@@ -177,7 +177,7 @@ void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
 {
 	m_shadow_node_array.emplace_back(node, shadowMode);
-	// If node is clientMap, assert, that should never happen
+	// node should never be ClientMap
 	assert(strcmp(node->getName(), "ClientMap") != 0);
 
 	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);

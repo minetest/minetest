@@ -90,7 +90,7 @@ bool MapBlock::onObjectsActivation()
 	if (m_static_objects.getAllStored().empty())
 		return false;
 
-	verbosestream << "ServerEnvironment::activateObjects(): "
+	verbosestream << "MapBlock::onObjectsActivation(): "
 			<< "activating objects of block " << PP(getPos()) << " ("
 			<< m_static_objects.getStoredSize() << " objects)" << std::endl;
 
@@ -110,7 +110,7 @@ bool MapBlock::onObjectsActivation()
 bool MapBlock::saveStaticObject(u16 id, const StaticObject &obj, u32 reason)
 {
 	if (m_static_objects.getStoredSize() >= g_settings->getU16("max_objects_per_block")) {
-		warningstream << "ServerEnv: Trying to store id = " << id
+		warningstream << "MapBlock::saveStaticObject(): Trying to store id = " << id
 				<< " statically but block " << PP(getPos()) << " already contains "
 				<< m_static_objects.getStoredSize() << " objects."
 				<< std::endl;
@@ -652,10 +652,8 @@ u32 MapBlock::clearObjects()
 	if (size > 0) {
 		m_static_objects.clear();
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_CLEAR_ALL_OBJECTS);
-		return size;
 	}
-
-	return 0;
+	return size;
 }
 /*
 	Legacy serialization

@@ -2151,7 +2151,8 @@ bool ServerEnvironment::saveStaticToBlock(
 		return false;
 	}
 
-	block->saveStaticObject(store_id, s_obj, mod_reason);
+	if (!block->saveStaticObject(store_id, s_obj, mod_reason))
+		return false;
 
 	obj->m_static_exists = true;
 	obj->m_static_block = blockpos;
