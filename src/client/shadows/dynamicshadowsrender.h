@@ -163,7 +163,7 @@ private:
 
 /**
  * @brief Create a shadow renderer if settings allow this.
- * 
+ *
  * @param device Device to be used to render shadows.
  * @param client Reference to the client context.
  * @return A new ShadowRenderer instance or nullptr if shadows are disabled or not supported.

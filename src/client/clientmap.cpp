@@ -146,12 +146,8 @@ void ClientMap::OnRegisterSceneNode()
 	}
 
 	ISceneNode::OnRegisterSceneNode();
-
-	if (!m_added_to_shadow_renderer) {
-		m_added_to_shadow_renderer = true;
-		if (auto shadows = m_rendering_engine->get_shadow_renderer())
-			shadows->addNodeToShadowList(this);
-	}
+	// It's not needed to register this node to the shadow renderer
+	// we have other way to find it
 }
 
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
@@ -721,7 +717,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		return;
 	}
 
-	for (auto &i : m_drawlist_shadow) {
+	for (const auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
 		++count;
 		if (count <= low_bound)

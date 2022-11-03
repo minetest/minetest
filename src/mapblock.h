@@ -325,6 +325,11 @@ public:
 		return m_day_night_differs;
 	}
 
+	bool onObjectsActivation();
+	bool saveStaticObject(u16 id, const StaticObject &obj, u32 reason);
+
+	void step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb);
+
 	////
 	//// Timestamp (see m_timestamp)
 	////
@@ -428,6 +433,11 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
+
+	bool storeActiveObject(u16 id);
+	// clearObject and return removed objects count
+	u32 clearObjects();
+
 private:
 	/*
 		Private methods
@@ -445,7 +455,6 @@ public:
 #endif
 
 	NodeMetadataList m_node_metadata;
-	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 
 	static const u32 ystride = MAP_BLOCKSIZE;
@@ -536,6 +545,7 @@ private:
 	int m_refcount = 0;
 
 	MapNode data[nodecount];
+	NodeTimerList m_node_timers;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;

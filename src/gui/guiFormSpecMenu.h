@@ -404,6 +404,8 @@ private:
 	std::string current_field_enter_pending = "";
 	std::vector<std::string> m_hovered_item_tooltips;
 
+	void removeAll();
+
 	void parseElement(parserData* data, const std::string &element);
 
 	void parseSize(parserData* data, const std::string &element);

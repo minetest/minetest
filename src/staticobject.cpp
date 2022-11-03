@@ -99,6 +99,7 @@ void StaticObjectList::serialize(std::ostream &os)
 		s_obj.serialize(os);
 	}
 }
+
 void StaticObjectList::deSerialize(std::istream &is)
 {
 	if (m_active.size()) {
@@ -121,3 +122,13 @@ void StaticObjectList::deSerialize(std::istream &is)
 	}
 }
 
+bool StaticObjectList::storeActiveObject(u16 id)
+{
+	const auto i = m_active.find(id);
+	if (i == m_active.end())
+		return false;
+
+	m_stored.push_back(i->second);
+	m_active.erase(id);
+	return true;
+}

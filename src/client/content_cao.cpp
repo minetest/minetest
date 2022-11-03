@@ -568,7 +568,8 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 
 	if (auto shadow = RenderingEngine::get_shadow_renderer())
-		shadow->removeNodeFromShadowList(getSceneNode());
+		if (auto node = getSceneNode())
+			shadow->removeNodeFromShadowList(node);
 
 	if (m_meshnode) {
 		m_meshnode->remove();
