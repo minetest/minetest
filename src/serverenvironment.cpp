@@ -633,8 +633,8 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 	/* Add object to environment */
 	addActiveObject(playersao);
 
-	// Update active blocks asap so objects in those blocks appear on the client
-	m_force_update_active_blocks = true;
+	// Update active blocks quickly for a bit so objects in those blocks appear on the client
+	m_fast_active_block_divider = 10;
 
 	return playersao;
 }
@@ -1327,8 +1327,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active block list
 	*/
-	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval) ||
-		m_force_update_active_blocks) {
+	if (m_active_blocks_mgmt_interval.step(dtime, m_cache_active_block_mgmt_interval / m_fast_active_block_divider)) {
 		ScopeProfiler sp(g_profiler, "ServerEnv: update active blocks", SPT_AVG);
 
 		/*
@@ -1397,8 +1396,10 @@ void ServerEnvironment::step(float dtime)
 
 		// Some blocks may be removed again by the code above so do this here
 		m_active_block_gauge->set(m_active_blocks.size());
+
+		if (m_fast_active_block_divider > 1)
+			--m_fast_active_block_divider;
 	}
-	m_force_update_active_blocks = false;
 
 	/*
 		Mess around in active blocks
