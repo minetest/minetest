@@ -52,7 +52,6 @@ android {
 
 task prepareAssets() {
 	def assetsFolder = "build/assets"
-	def projRoot = "../.."
 	def gameToCopy = "minetest_game"
 
 	copy {
@@ -68,7 +67,7 @@ task prepareAssets() {
 		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
 	}
 	copy {
-		from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+		from "${projRoot}/native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
 	}
 	copy {
 		from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
