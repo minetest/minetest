@@ -83,10 +83,12 @@ core.register_entity(":__builtin:falling_node", {
         self.liquidtype = def.liquidtype
 
 		-- Set entity visuals
+		local variant = core.strip_param2_variant(node.param2, def)
 		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
-			if def.tiles and def.tiles[1] then
-				local tile = def.tiles[1]
+			local tiles = def.variants and def.variants[variant] and def.variants[variant].tiles or def.tiles
+			if tiles and tiles[1] then
+				local tile = tiles[1]
 				if type(tile) == "table" then
 					tile = tile.name
 				end
@@ -112,6 +114,9 @@ core.register_entity(":__builtin:falling_node", {
 			local itemstring = node.name
 			if core.is_colored_paramtype(def.paramtype2) then
 				itemstring = core.itemstring_with_palette(itemstring, node.param2)
+			end
+			if variant > 0 then
+				itemstring = core.itemstring_with_variant(itemstring, variant)
 			end
 			-- FIXME: solution needed for paramtype2 == "leveled"
 			-- Calculate size of falling node
