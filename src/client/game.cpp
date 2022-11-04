@@ -1204,8 +1204,6 @@ void Game::run()
 		processQueues();
 
 		m_game_ui->clearInfoText();
-		hud->resizeHotbar();
-
 
 		updateProfilers(stats, draw_times, dtime);
 		processUserInput(dtime);
