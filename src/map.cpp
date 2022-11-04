@@ -1558,11 +1558,11 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	return NULL;
 }
 
-MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
+MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d, bool activate_on_load)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if (block == NULL)
-		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false);
+		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false, false, activate_on_load);
 
 	return block;
 }

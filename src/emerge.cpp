@@ -327,13 +327,16 @@ bool EmergeManager::enqueueBlockEmerge(
 	session_t peer_id,
 	v3s16 blockpos,
 	bool allow_generate,
-	bool ignore_queue_limits)
+	bool ignore_queue_limits,
+	bool activate_on_load)
 {
 	u16 flags = 0;
 	if (allow_generate)
 		flags |= BLOCK_EMERGE_ALLOW_GEN;
 	if (ignore_queue_limits)
 		flags |= BLOCK_EMERGE_FORCE_QUEUE;
+	if (activate_on_load)
+		flags |= BLOCK_EMERGE_ACTIVATE;
 
 	return enqueueBlockEmergeEx(blockpos, peer_id, flags, NULL, NULL);
 }
@@ -721,6 +724,11 @@ void *EmergeThread::run()
 
 		if (block)
 			modified_blocks[pos] = block;
+
+		if (block && (bedata.flags & BLOCK_EMERGE_ACTIVATE)) {
+			MutexAutoLock envlock(m_server->m_env_mutex);
+			m_server->m_env->activateObjects(block, 0);
+		}
 
 		if (!modified_blocks.empty())
 			m_server->SetBlocksNotSent(modified_blocks);

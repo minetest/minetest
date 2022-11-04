@@ -312,6 +312,11 @@ public:
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
 	/*
+		Convert stored objects from block to active
+	*/
+	void activateObjects(MapBlock *block, u32 dtime_s);
+
+	/*
 		{Active,Loading}BlockModifiers
 		-------------------------------------------
 	*/
@@ -416,11 +421,6 @@ private:
 		Remove all objects that satisfy (isGone() && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
-
-	/*
-		Convert stored objects from block to active
-	*/
-	void activateObjects(MapBlock *block, u32 dtime_s);
 
 	/*
 		Convert objects that are not in active blocks to static.

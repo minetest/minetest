@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
 #define BLOCK_EMERGE_FORCE_QUEUE (1 << 1)
+#define BLOCK_EMERGE_ACTIVATE (1 << 2)
 
 #define EMERGE_DBG_OUT(x) {                            \
 	if (enable_mapgen_debug_info)                      \
@@ -174,7 +175,8 @@ public:
 		session_t peer_id,
 		v3s16 blockpos,
 		bool allow_generate,
-		bool ignore_queue_limits=false);
+		bool ignore_queue_limits=false,
+		bool activate_on_load=false);
 
 	bool enqueueBlockEmergeEx(
 		v3s16 blockpos,
