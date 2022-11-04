@@ -120,10 +120,12 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	// variant must be valid
+	virtual video::ITexture* getInventoryTexture(const std::string &name, u16 variant,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	// variant must be valid
+	virtual ItemMesh* getWieldMesh(const std::string &name, u16 variant,
 		Client *client) const=0;
 	// Get item palette
 	virtual Palette* getPalette(const std::string &name,
@@ -154,10 +156,10 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual video::ITexture* getInventoryTexture(const std::string &name, u16 variant,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh* getWieldMesh(const std::string &name, u16 variant,
 		Client *client) const=0;
 #endif
 

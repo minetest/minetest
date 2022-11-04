@@ -253,6 +253,12 @@ class CItemDefManager: public IWritableItemDefManager
 			inventory_texture(NULL),
 			palette(NULL)
 		{}
+
+		~ClientCached()
+		{
+			if (wield_mesh.mesh)
+				wield_mesh.mesh->drop();
+		}
 	};
 #endif
 
@@ -269,11 +275,8 @@ public:
 	{
 #ifndef SERVER
 		const std::vector<ClientCached*> &values = m_clientcached.getValues();
-		for (ClientCached *cc : values) {
-			if (cc->wield_mesh.mesh)
-				cc->wield_mesh.mesh->drop();
-			delete cc;
-		}
+		for (ClientCached *cc : values)
+			delete[] cc;
 
 #endif
 		for (auto &item_definition : m_item_definitions) {
@@ -336,21 +339,26 @@ public:
 
 		ITextureSource *tsrc = client->getTextureSource();
 		const ItemDefinition &def = get(name);
+		u16 variant_count = client->ndef()->get(name).variant_count;
 
 		// Create new ClientCached
-		cc = new ClientCached();
+		cc = new ClientCached[variant_count];
 
-		// Create an inventory texture
-		cc->inventory_texture = NULL;
-		if (!def.inventory_image.empty())
-			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
+		for (u16 v = 0; v < variant_count; v++) {
+			// Create an inventory texture
+			cc[v].inventory_texture = NULL;
+			if (!def.inventory_image.empty())
+				cc[v].inventory_texture = tsrc->getTexture(def.inventory_image);
 
-		ItemStack item = ItemStack();
-		item.name = def.name;
+			ItemStack item = ItemStack();
+			item.name = def.name;
+			if (v > 0)
+				item.metadata.setString("variant", std::to_string(v));
 
-		getItemMesh(client, item, &(cc->wield_mesh));
+			getItemMesh(client, item, &cc[v].wield_mesh);
 
-		cc->palette = tsrc->getPalette(def.palette_image);
+			cc[v].palette = tsrc->getPalette(def.palette_image);
+		}
 
 		// Put in cache
 		m_clientcached.set(name, cc);
@@ -391,22 +399,22 @@ public:
 		}
 	}
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual video::ITexture* getInventoryTexture(const std::string &name, u16 variant,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
 			return NULL;
-		return cc->inventory_texture;
+		return cc[variant].inventory_texture;
 	}
 	// Get item wield mesh
-	virtual ItemMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh* getWieldMesh(const std::string &name, u16 variant,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
 			return NULL;
-		return &(cc->wield_mesh);
+		return &(cc[variant].wield_mesh);
 	}
 
 	// Get item palette

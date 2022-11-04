@@ -58,6 +58,7 @@ public:
 	void testEulerConversion();
 	void testBase64();
 	void testSanitizeDirName();
+	void testBitField();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +91,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testEulerConversion);
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
+	TEST(testBitField);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -635,4 +637,25 @@ void TestUtilities::testSanitizeDirName()
 	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
 	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
 	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
+}
+
+
+void TestUtilities::testBitField()
+{
+	UASSERTEQ(int, BitField<u16>(5, 4).getWidth(), 5);
+	UASSERTEQ(int, BitField<u16>(5, 4).getOffset(), 4);
+	UASSERTEQ(u16, BitField<u16>(5, 4).get(0xEFDCU), 0x1DU);
+	UASSERTEQ(u16, BitField<u16>(5, 4).set(0xEFDCU, 0xF0FU), 0xEEFCU);
+	UASSERTEQ(int, BitField<u16>(17, 0).getWidth(), 16);
+	UASSERTEQ(int, BitField<u16>(17, 0).getOffset(), 0);
+	UASSERTEQ(u16, BitField<u16>(17, 0).get(0xEFDCU), 0xEFDCU);
+	UASSERTEQ(u16, BitField<u16>(17, 0).set(0xEFDCU, 0xFFFFU), 0xFFFFU);
+	UASSERTEQ(int, BitField<u16>(16, 17).getWidth(), 0);
+	UASSERTEQ(int, BitField<u16>(16, 17).getOffset(), 0);
+	UASSERTEQ(u16, BitField<u16>(16, 17).get(0xEFDCU), 0);
+	UASSERTEQ(u16, BitField<u16>(16, 17).set(0xEFDCU, 0), 0xEFDCU);
+	UASSERTEQ(int, BitField<u16>(8, 15).getWidth(), 1);
+	UASSERTEQ(int, BitField<u16>(8, 15).getOffset(), 15);
+	UASSERTEQ(u16, BitField<u16>(8, 15).get(0xEFDCU), 1);
+	UASSERTEQ(u16, BitField<u16>(8, 15).set(0xEFDCU, 0), 0x6FDCU);
 }
