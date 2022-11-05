@@ -112,6 +112,10 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
+#    ADS mouse sensitivity multiplier.
+ads_sensitivity (ADS sensitivity) float 1.0 0.0 100.0
+
+
 [*Touchscreen]
 
 #    The length in pixels it takes for touch screen interaction to start.

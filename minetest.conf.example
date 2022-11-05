@@ -74,6 +74,10 @@
 #    type: float min: 0.001 max: 10
 # mouse_sensitivity = 0.2
 
+#    ADS mouse sensitivity multiplier.
+#    type: float
+# ADS_sensitivity = 1.0
+
 ## Touchscreen
 
 #    The length in pixels it takes for touch screen interaction to start.
