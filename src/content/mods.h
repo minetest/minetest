@@ -110,18 +110,26 @@ std::map<std::string, ModSpec> getModsInPath(const std::string &path,
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
 
-class ModMetadata : public Metadata
+class ModMetadata : public IMetadata
 {
 public:
 	ModMetadata() = delete;
 	ModMetadata(const std::string &mod_name, ModMetadataDatabase *database);
 	~ModMetadata() = default;
 
-	virtual void clear();
-
 	const std::string &getModName() const { return m_mod_name; }
 
-	virtual bool setString(const std::string &name, const std::string &var);
+	void clear() override;
+
+	bool contains(const std::string &name) const override;
+
+	bool setString(const std::string &name, const std::string &var) override;
+
+	const StringMap &getStrings(StringMap *place) const override;
+
+protected:
+	const std::string *getStringRaw(const std::string &name,
+			std::string *place) const override;
 
 private:
 	std::string m_mod_name;

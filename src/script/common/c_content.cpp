@@ -112,6 +112,19 @@ void read_item_definition(lua_State* L, int index,
 	}
 	lua_pop(L, 1);
 
+	// No, this is not a mistake. Item sounds are in "sound", node sounds in "sounds".
+	lua_getfield(L, index, "sound");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "punch_use");
+		read_soundspec(L, -1, def.sound_use);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "punch_use_air");
+		read_soundspec(L, -1, def.sound_use_air);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
 	def.range = getfloatfield_default(L, index, "range", def.range);
 
 	// Client shall immediately place this node when player places the item.
@@ -223,10 +236,12 @@ void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "selectionbox");
-	if (lua_istable(L, -1))
+	if (lua_istable(L, -1)) {
+		getboolfield(L, -1, "rotate", prop->rotate_selectionbox);
 		prop->selectionbox = read_aabb3f(L, -1, 1.0);
-	else if (collisionbox_defined)
+	} else if (collisionbox_defined) {
 		prop->selectionbox = prop->collisionbox;
+	}
 	lua_pop(L, 1);
 
 	getboolfield(L, -1, "pointable", prop->pointable);
@@ -364,6 +379,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	push_aabb3f(L, prop->collisionbox);
 	lua_setfield(L, -2, "collisionbox");
 	push_aabb3f(L, prop->selectionbox);
+	lua_pushboolean(L, prop->rotate_selectionbox);
+	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
 	lua_pushboolean(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
@@ -673,7 +690,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 			!(f.param_type_2 == CPT2_COLOR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED ||
-			f.param_type_2 == CPT2_COLORED_DEGROTATE))
+			f.param_type_2 == CPT2_COLORED_DEGROTATE ||
+			f.param_type_2 == CPT2_COLORED_4DIR))
 		warningstream << "Node " << f.name.c_str()
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
@@ -1064,7 +1082,7 @@ void read_server_sound_params(lua_State *L, int index,
 		lua_pop(L, 1);
 		lua_getfield(L, index, "object");
 		if(!lua_isnil(L, -1)){
-			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			ObjectRef *ref = ModApiBase::checkObject<ObjectRef>(L, -1);
 			ServerActiveObject *sao = ObjectRef::getobject(ref);
 			if(sao){
 				params.object = sao->getId();
@@ -1161,43 +1179,27 @@ NodeBox read_nodebox(lua_State *L, int index)
 }
 
 /******************************************************************************/
-MapNode readnode(lua_State *L, int index, const NodeDefManager *ndef)
+MapNode readnode(lua_State *L, int index)
 {
-	lua_getfield(L, index, "name");
-	if (!lua_isstring(L, -1))
-		throw LuaError("Node name is not set or is not a string!");
-	std::string name = lua_tostring(L, -1);
-	lua_pop(L, 1);
-
-	u8 param1 = 0;
-	lua_getfield(L, index, "param1");
-	if (!lua_isnil(L, -1))
-		param1 = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	u8 param2 = 0;
-	lua_getfield(L, index, "param2");
-	if (!lua_isnil(L, -1))
-		param2 = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	content_t id = CONTENT_IGNORE;
-	if (!ndef->getId(name, id))
-		throw LuaError("\"" + name + "\" is not a registered node!");
-
-	return {id, param1, param2};
+	lua_pushvalue(L, index);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_READ_NODE);
+	lua_insert(L, -2);
+	lua_call(L, 1, 3);
+	content_t content = lua_tointeger(L, -3);
+	u8 param1 = lua_tointeger(L, -2);
+	u8 param2 = lua_tointeger(L, -1);
+	lua_pop(L, 3);
+	return MapNode(content, param1, param2);
 }
 
 /******************************************************************************/
-void pushnode(lua_State *L, const MapNode &n, const NodeDefManager *ndef)
+void pushnode(lua_State *L, const MapNode &n)
 {
-	lua_createtable(L, 0, 3);
-	lua_pushstring(L, ndef->get(n).name.c_str());
-	lua_setfield(L, -2, "name");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_PUSH_NODE);
+	lua_pushinteger(L, n.getContent());
 	lua_pushinteger(L, n.getParam1());
-	lua_setfield(L, -2, "param1");
 	lua_pushinteger(L, n.getParam2());
-	lua_setfield(L, -2, "param2");
+	lua_call(L, 3, 1);
 }
 
 /******************************************************************************/
@@ -1250,7 +1252,7 @@ ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 
 	if (lua_isuserdata(L, index)) {
 		// Convert from LuaItemStack
-		LuaItemStack *o = LuaItemStack::checkobject(L, index);
+		LuaItemStack *o = ModApiBase::checkObject<LuaItemStack>(L, index);
 		return o->getItem();
 	}
 
@@ -1882,7 +1884,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 	if (hitpoint && (pointed.type != POINTEDTHING_NOTHING)) {
 		push_v3f(L, pointed.intersection_point / BS); // convert to node coords
 		lua_setfield(L, -2, "intersection_point");
-		push_v3s16(L, pointed.intersection_normal);
+		push_v3f(L, pointed.intersection_normal);
 		lua_setfield(L, -2, "intersection_normal");
 		lua_pushinteger(L, pointed.box_id + 1); // change to Lua array index
 		lua_setfield(L, -2, "box_id");

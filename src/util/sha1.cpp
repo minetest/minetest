@@ -103,7 +103,7 @@ void SHA1::process()
 	{
 		if( t < 20 ) {
 			K = 0x5a827999;
-			f = (b & c) | ((b ^ 0xFFFFFFFF) & d);//TODO: try using ~
+			f = (b & c) | ((~b) & d);
 		} else if( t < 40 ) {
 			K = 0x6ed9eba1;
 			f = b ^ c ^ d;

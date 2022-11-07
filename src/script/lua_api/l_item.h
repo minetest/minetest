@@ -21,12 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "inventory.h"  // ItemStack
+#include "util/pointer.h"
 
-class LuaItemStack : public ModApiBase {
+class LuaItemStack : public ModApiBase, public IntrusiveReferenceCounted {
 private:
 	ItemStack m_stack;
 
-	static const char className[];
+	LuaItemStack(const ItemStack &item);
+	~LuaItemStack() = default;
+
 	static const luaL_Reg methods[];
 
 	// Exported functions
@@ -137,24 +140,27 @@ private:
 	// peek_item(self, peekcount=1) -> itemstack
 	static int l_peek_item(lua_State *L);
 
-public:
-	LuaItemStack(const ItemStack &item);
-	~LuaItemStack() = default;
+	// equals(self, other) -> bool
+	static int l_equals(lua_State *L);
 
-	const ItemStack& getItem() const;
-	ItemStack& getItem();
+public:
+	DISABLE_CLASS_COPY(LuaItemStack)
+
+	inline const ItemStack& getItem() const { return m_stack; }
+	inline ItemStack& getItem() { return m_stack; }
 
 	// LuaItemStack(itemstack or itemstring or table or nil)
 	// Creates an LuaItemStack and leaves it on top of stack
 	static int create_object(lua_State *L);
 	// Not callable from Lua
 	static int create(lua_State *L, const ItemStack &item);
-	static LuaItemStack* checkobject(lua_State *L, int narg);
 
 	static void *packIn(lua_State *L, int idx);
 	static void packOut(lua_State *L, void *ptr);
 
 	static void Register(lua_State *L);
+
+	static const char className[];
 };
 
 class ModApiItemMod : public ModApiBase {
@@ -168,4 +174,5 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);
+	static void InitializeClient(lua_State *L, int top);
 };

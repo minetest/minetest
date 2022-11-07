@@ -239,7 +239,7 @@ public:
 	Client *m_client;
 };
 
-class NodeDugEvent: public MtEvent
+class NodeDugEvent : public MtEvent
 {
 public:
 	v3s16 p;
@@ -249,16 +249,14 @@ public:
 		p(p),
 		n(n)
 	{}
-	MtEvent::Type getType() const
-	{
-		return MtEvent::NODE_DUG;
-	}
+	Type getType() const { return NODE_DUG; }
 };
 
 class SoundMaker
 {
 	ISoundManager *m_sound;
 	const NodeDefManager *m_ndef;
+
 public:
 	bool makes_footstep_sound;
 	float m_player_step_timer;
@@ -266,6 +264,8 @@ public:
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
+	// Second sound made on left punch, currently used for item 'use' sound
+	SimpleSoundSpec m_player_leftpunch_sound2;
 	SimpleSoundSpec m_player_rightpunch_sound;
 
 	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef):
@@ -316,6 +316,7 @@ public:
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound2);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
@@ -405,6 +406,7 @@ typedef s32 SamplerLayer_t;
 class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
 	Sky *m_sky;
+	Client *m_client;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
@@ -419,16 +421,35 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
 	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
-	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
-	Client *m_client;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture0;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
+	CachedPixelShaderSetting<float, 2> m_texel_size0;
+	std::array<float, 2> m_texel_size0_values;
+	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
+	float m_user_exposure_factor;
+	bool m_bloom_enabled;
+	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
+	float m_bloom_intensity;
+	CachedPixelShaderSetting<float> m_bloom_strength_pixel;
+	float m_bloom_strength;
+	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
+	float m_bloom_radius;
 
 public:
 	void onSettingsChange(const std::string &name)
 	{
 		if (name == "enable_fog")
 			m_fog_enabled = g_settings->getBool("enable_fog");
+		if (name == "exposure_factor")
+			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		if (name == "bloom_intensity")
+			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
+		if (name == "bloom_strength_factor")
+			m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
+		if (name == "bloom_radius")
+			m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -441,6 +462,7 @@ public:
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
 			f32 *fog_range, Client *client) :
 		m_sky(sky),
+		m_client(client),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
 		m_sky_bg_color("skyBgColor"),
@@ -454,13 +476,27 @@ public:
 		m_minimap_yaw("yawVec"),
 		m_camera_offset_pixel("cameraOffset"),
 		m_camera_offset_vertex("cameraOffset"),
-		m_base_texture("baseTexture"),
-		m_normal_texture("normalTexture"),
-		m_texture_flags("textureFlags"),
-		m_client(client)
+		m_texture0("texture0"),
+		m_texture1("texture1"),
+		m_texture2("texture2"),
+		m_texture3("texture3"),
+		m_texel_size0("texelSize0"),
+		m_exposure_factor_pixel("exposureFactor"),
+		m_bloom_intensity_pixel("bloomIntensity"),
+		m_bloom_strength_pixel("bloomStrength"),
+		m_bloom_radius_pixel("bloomRadius")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
+		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_strength_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
+		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		m_bloom_enabled = g_settings->getBool("enable_bloom");
+		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
+		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
+		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -526,12 +562,42 @@ public:
 		m_camera_offset_pixel.set(camera_offset_array, services);
 		m_camera_offset_vertex.set(camera_offset_array, services);
 
-		SamplerLayer_t base_tex = 0,
-				normal_tex = 1,
-				flags_tex = 2;
-		m_base_texture.set(&base_tex, services);
-		m_normal_texture.set(&normal_tex, services);
-		m_texture_flags.set(&flags_tex, services);
+		SamplerLayer_t tex_id;
+		tex_id = 0;
+		m_texture0.set(&tex_id, services);
+		tex_id = 1;
+		m_texture1.set(&tex_id, services);
+		tex_id = 2;
+		m_texture2.set(&tex_id, services);
+		tex_id = 3;
+		m_texture3.set(&tex_id, services);
+
+		m_texel_size0.set(m_texel_size0_values.data(), services);
+
+		float exposure_factor = m_user_exposure_factor;
+		if (std::isnan(exposure_factor))
+			exposure_factor = 1.0f;
+		m_exposure_factor_pixel.set(&exposure_factor, services);
+
+		if (m_bloom_enabled) {
+			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);
+			m_bloom_radius_pixel.set(&m_bloom_radius, services);
+			m_bloom_strength_pixel.set(&m_bloom_strength, services);
+		}
+	}
+
+	void onSetMaterial(const video::SMaterial &material)
+	{
+		video::ITexture *texture = material.getTexture(0);
+		if (texture) {
+			core::dimension2du size = texture->getSize();
+			m_texel_size0_values[0] = 1.f / size.Width;
+			m_texel_size0_values[1] = 1.f / size.Height;
+		}
+		else {
+			m_texel_size0_values[0] = 0.f;
+			m_texel_size0_values[1] = 0.f;
+		}
 	}
 };
 
@@ -619,7 +685,10 @@ struct GameRunData {
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
 
-	float jump_timer;
+	float jump_timer_up;          // from key up until key down
+	float jump_timer_down;        // since last key down
+	float jump_timer_down_before; // from key down until key down again
+
 	float damage_flash;
 	float update_draw_list_timer;
 
@@ -723,7 +792,7 @@ protected:
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
-	void step(f32 *dtime);
+	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
 	void updateSound(f32 dtime);
@@ -910,12 +979,20 @@ private:
 
 	bool m_does_lost_focus_pause_game = false;
 
+	// if true, (almost) the whole game is paused
+	// this happens in pause menu in singleplayer
+	bool m_is_paused = false;
+
 #if IRRLICHT_VERSION_MT_REVISION < 5
 	int m_reset_HW_buffer_counter = 0;
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
+	bool m_touch_use_crosshair;
+	inline bool isNoCrosshairAllowed() {
+		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
+	}
 #endif
 #ifdef __ANDROID__
 	bool m_android_chat_open;
@@ -1047,6 +1124,10 @@ bool Game::startup(bool *kill,
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
+#ifdef HAVE_TOUCHSCREENGUI
+	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
+#endif
+
 	g_client_translations->clear();
 
 	// address can change if simple_singleplayer_mode
@@ -1135,7 +1216,21 @@ void Game::run()
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
-		step(&dtime);
+
+		{
+			bool was_paused = m_is_paused;
+			m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
+			if (m_is_paused)
+				dtime = 0.0f;
+
+			if (!was_paused && m_is_paused)
+				pauseAnimation();
+			else if (was_paused && !m_is_paused)
+				resumeAnimation();
+		}
+
+		if (!m_is_paused)
+			step(dtime);
 		processClientEvents(&cam_view_target);
 		updateDebugState();
 		updateCamera(dtime);
@@ -1320,6 +1415,7 @@ bool Game::createClient(const GameStartData &start_data)
 	if (g_touchscreengui) {
 		g_touchscreengui->init(texture_src);
 		g_touchscreengui->hide();
+		g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
 	}
 #endif
 	if (!connectToServer(start_data, &could_connect, &connect_aborted))
@@ -1875,8 +1971,10 @@ void Game::processUserInput(f32 dtime)
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
-	if (m_cache_doubletap_jump && runData.jump_timer <= 0.2f)
-		runData.jump_timer += dtime;
+	if (m_cache_doubletap_jump && runData.jump_timer_up <= 0.2f)
+		runData.jump_timer_up += dtime;
+	if (m_cache_doubletap_jump && runData.jump_timer_down <= 0.4f)
+		runData.jump_timer_down += dtime;
 
 	processKeyInput();
 	processItemSelection(&runData.new_playeritem);
@@ -1997,7 +2095,7 @@ void Game::processKeyInput()
 
 	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {
 		runData.reset_jump_timer = false;
-		runData.jump_timer = 0.0f;
+		runData.jump_timer_up = 0.0f;
 	}
 
 	if (quicktune->hasMessage()) {
@@ -2138,7 +2236,14 @@ void Game::toggleFreeMove()
 
 void Game::toggleFreeMoveAlt()
 {
-	if (m_cache_doubletap_jump && runData.jump_timer < 0.2f)
+	if (!runData.reset_jump_timer) {
+		runData.jump_timer_down_before = runData.jump_timer_down;
+		runData.jump_timer_down = 0.0f;
+	}
+
+	// key down (0.2 s max.), then key up (0.2 s max.), then key down
+	if (m_cache_doubletap_jump && runData.jump_timer_up < 0.2f &&
+			runData.jump_timer_down_before < 0.4f) // 0.2 + 0.2
 		toggleFreeMove();
 
 	runData.reset_jump_timer = true;
@@ -2535,22 +2640,12 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 }
 
 
-inline void Game::step(f32 *dtime)
+inline void Game::step(f32 dtime)
 {
-	bool can_be_and_is_paused =
-			(simple_singleplayer_mode && g_menumgr.pausesGame());
+	if (server)
+		server->step(dtime);
 
-	if (can_be_and_is_paused) { // This is for a singleplayer server
-		*dtime = 0;             // No time passes
-	} else {
-		if (simple_singleplayer_mode && !paused_animated_nodes.empty())
-			resumeAnimation();
-
-		if (server)
-			server->step(*dtime);
-
-		client->step(*dtime);
-	}
+	client->step(dtime);
 }
 
 static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node) {
@@ -2973,6 +3068,11 @@ void Game::updateCamera(f32 dtime)
 
 		camera->toggleCameraMode();
 
+#ifdef HAVE_TOUCHSCREENGUI
+		if (g_touchscreengui)
+			g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
+#endif
+
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
 		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
@@ -3083,16 +3183,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	shootline.end = shootline.start + camera_direction * BS * d;
 
 #ifdef HAVE_TOUCHSCREENGUI
-
-	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
+	if (g_touchscreengui && isNoCrosshairAllowed()) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
-		shootline.end = shootline.start
-			+ shootline.getVector().normalize() * BS * d;
+		shootline.end = shootline.start +
+				shootline.getVector().normalize() * BS * d;
 		shootline.start += intToFloat(camera_offset, BS);
 		shootline.end += intToFloat(camera_offset, BS);
 	}
-
 #endif
 
 	PointedThing pointed = updatePointedThing(shootline,
@@ -3150,7 +3248,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound.name.clear();
+	soundmaker->m_player_leftpunch_sound = SimpleSoundSpec();
+	soundmaker->m_player_leftpunch_sound2 = pointed.type != POINTEDTHING_NOTHING ?
+		selected_def.sound_use : selected_def.sound_use_air;
 
 	// Prepare for repeating, unless we're not supposed to
 	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))
@@ -3206,7 +3306,7 @@ PointedThing Game::updatePointedThing(
 {
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
-	hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
+	hud->setSelectedFaceNormal(v3f());
 	static thread_local const bool show_entity_selectionbox = g_settings->getBool(
 		"show_entity_selectionbox");
 
@@ -3230,7 +3330,13 @@ PointedThing Game::updatePointedThing(
 			v3f pos = runData.selected_object->getPosition();
 			selectionboxes->push_back(aabb3f(selection_box));
 			hud->setSelectionPos(pos, camera_offset);
+			GenericCAO* gcao = dynamic_cast<GenericCAO*>(runData.selected_object);
+			if (gcao != nullptr && gcao->getProperties().rotate_selectionbox)
+				hud->setSelectionRotation(gcao->getSceneNode()->getAbsoluteTransformation().getRotationDegrees());
+			else
+				hud->setSelectionRotation(v3f());
 		}
+		hud->setSelectedFaceNormal(result.raw_intersection_normal);
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
 		MapNode n = map.getNode(result.node_undersurface);
@@ -3248,10 +3354,8 @@ PointedThing Game::updatePointedThing(
 		}
 		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
 			camera_offset);
-		hud->setSelectedFaceNormal(v3f(
-			result.intersection_normal.X,
-			result.intersection_normal.Y,
-			result.intersection_normal.Z));
+		hud->setSelectionRotation(v3f());
+		hud->setSelectedFaceNormal(result.intersection_normal);
 	}
 
 	// Update selection mesh light level and vertex colors
@@ -3462,7 +3566,9 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			param2 = dir.Z < 0 ? 5 : 4;
 		}
 	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
-			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
+			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR ||
+			predicted_f.param_type_2 == CPT2_4DIR ||
+			predicted_f.param_type_2 == CPT2_COLORED_4DIR) {
 		v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
 		if (abs(dir.X) > abs(dir.Z)) {
@@ -3501,6 +3607,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	// Apply color
 	if (!place_param2 && (predicted_f.param_type_2 == CPT2_COLOR
 			|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
+			|| predicted_f.param_type_2 == CPT2_COLORED_4DIR
 			|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
 		const auto &indexstr = selected_item.metadata.
 			getString("palette_index", 0);
@@ -3514,6 +3621,9 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			} else if (predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
 				// param2 = pure palette index + other
 				param2 = (index & 0xe0) | (param2 & 0x1f);
+			} else if (predicted_f.param_type_2 == CPT2_COLORED_4DIR) {
+				// param2 = pure palette index + other
+				param2 = (index & 0xfc) | (param2 & 0x03);
 			}
 		}
 	}
@@ -3610,18 +3720,19 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// See also: serverpackethandle.cpp, action == 2
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
-	MapNode n = client->getEnv().getClientMap().getNode(nodepos);
+	MapNode n = map.getNode(nodepos);
+	const auto &features = nodedef_manager->get(n);
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
 	// Get digging parameters
-	DigParams params = getDigParams(nodedef_manager->get(n).groups,
+	DigParams params = getDigParams(features.groups,
 			&selected_item.getToolCapabilities(itemdef_manager),
 			selected_item.wear);
 
 	// If can't dig, try hand
 	if (!params.diggable) {
-		params = getDigParams(nodedef_manager->get(n).groups,
+		params = getDigParams(features.groups,
 				&hand_item.getToolCapabilities(itemdef_manager));
 	}
 
@@ -3632,7 +3743,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_time_complete = params.time;
 
 		if (m_cache_enable_particles) {
-			const ContentFeatures &features = client->getNodeDefManager()->get(n);
 			client->getParticleManager()->addNodeParticle(client,
 					player, nodepos, n, features);
 		}
@@ -3643,6 +3753,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_instantly = runData.dig_time_complete == 0;
 		if (client->modsLoaded() && client->getScript()->on_punchnode(nodepos, n))
 			return;
+
 		client->interact(INTERACT_START_DIGGING, pointed);
 		runData.digging = true;
 		runData.btn_down_for_dig = true;
@@ -3657,7 +3768,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_index = crack_animation_length;
 	}
 
-	SimpleSoundSpec sound_dig = nodedef_manager->get(n).sound_dig;
+	const auto &sound_dig = features.sound_dig;
 
 	if (sound_dig.exists() && params.diggable) {
 		if (sound_dig.name == "__group") {
@@ -3675,8 +3786,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	// Don't show cracks if not diggable
 	if (runData.dig_time_complete >= 100000.0) {
 	} else if (runData.dig_index < crack_animation_length) {
-		//TimeTaker timer("client.setTempMod");
-		//infostream<<"dig_index="<<dig_index<<std::endl;
 		client->setCrack(runData.dig_index, nodepos);
 	} else {
 		infostream << "Digging completed" << std::endl;
@@ -3698,38 +3807,31 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		else if (runData.dig_instantly)
 			runData.nodig_delay_timer = 0.15;
 
-		bool is_valid_position;
-		MapNode wasnode = map.getNode(nodepos, &is_valid_position);
-		if (is_valid_position) {
-			if (client->modsLoaded() &&
-					client->getScript()->on_dignode(nodepos, wasnode)) {
-				return;
-			}
-
-			const ContentFeatures &f = client->ndef()->get(wasnode);
-			if (f.node_dig_prediction == "air") {
-				client->removeNode(nodepos);
-			} else if (!f.node_dig_prediction.empty()) {
-				content_t id;
-				bool found = client->ndef()->getId(f.node_dig_prediction, id);
-				if (found)
-					client->addNode(nodepos, id, true);
-			}
-			// implicit else: no prediction
+		if (client->modsLoaded() &&
+				client->getScript()->on_dignode(nodepos, n)) {
+			return;
 		}
+
+		if (features.node_dig_prediction == "air") {
+			client->removeNode(nodepos);
+		} else if (!features.node_dig_prediction.empty()) {
+			content_t id;
+			bool found = nodedef_manager->getId(features.node_dig_prediction, id);
+			if (found)
+				client->addNode(nodepos, id, true);
+		}
+		// implicit else: no prediction
 
 		client->interact(INTERACT_DIGGING_COMPLETED, pointed);
 
 		if (m_cache_enable_particles) {
-			const ContentFeatures &features =
-				client->getNodeDefManager()->get(wasnode);
 			client->getParticleManager()->addDiggingParticles(client,
-				player, nodepos, wasnode, features);
+				player, nodepos, n, features);
 		}
 
 
 		// Send event to trigger sound
-		client->getEventManager()->put(new NodeDugEvent(nodepos, wasnode));
+		client->getEventManager()->put(new NodeDugEvent(nodepos, n));
 	}
 
 	if (runData.dig_time_complete < 100000.0) {
@@ -3752,7 +3854,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Frame time
 	*/
 
-	client->getEnv().updateFrameTime();
+	client->getEnv().updateFrameTime(m_is_paused);
 
 	/*
 		Fog range
@@ -3977,10 +4079,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 #ifdef HAVE_TOUCHSCREENGUI
-	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
-	} catch (SettingNotFoundException) {
-	}
+	if (isNoCrosshairAllowed())
+		draw_crosshair = false;
 #endif
 	m_rendering_engine->draw_scene(skycolor, m_game_ui->m_flags.show_hud,
 			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
@@ -4328,10 +4428,8 @@ void Game::showPauseMenu()
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
 			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
 	formspec->setFocus("btn_continue");
+	// game will be paused in next step, if in singleplayer (see m_is_paused)
 	formspec->doPause = true;
-
-	if (simple_singleplayer_mode)
-		pauseAnimation();
 }
 
 /****************************************************************************/

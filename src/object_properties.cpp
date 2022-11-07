@@ -72,6 +72,7 @@ std::string ObjectProperties::dump()
 		os << ", nametag_bgcolor=null ";
 
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
+	os << ", rotate_selectionbox=" << rotate_selectionbox;
 	os << ", pointable=" << pointable;
 	os << ", static_save=" << static_save;
 	os << ", eye_height=" << eye_height;
@@ -169,6 +170,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	else
 		writeARGB8(os, nametag_bgcolor.value());
 
+	writeU8(os, rotate_selectionbox);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -236,5 +238,10 @@ void ObjectProperties::deSerialize(std::istream &is)
 			nametag_bgcolor = bgcolor;
 		else
 			nametag_bgcolor = nullopt;
+
+		tmp = readU8(is);
+		if (is.eof())
+			return;
+		rotate_selectionbox = tmp;
 	} catch (SerializationError &e) {}
 }

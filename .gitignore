@@ -30,6 +30,8 @@ gtags.files
 build/.cmake/
 # Gradle
 .gradle
+# Clang
+.cache
 
 ## Files related to Minetest development cycle
 /*.patch
@@ -47,11 +49,9 @@ build/.cmake/
 /screenshots
 /sounds
 /mods/*
-!/mods/minetest/
-/mods/minetest/*
-!/mods/minetest/mods_here.txt
-/worlds
-/world/
+!/mods/mods_here.txt
+/worlds/*
+!/worlds/worlds_here.txt
 /clientmods/*
 !/clientmods/preview/
 /client/mod_storage/

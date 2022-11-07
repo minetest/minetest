@@ -73,7 +73,7 @@ class VoxelManipulator;
 class MapBlock
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
+	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef);
 	~MapBlock();
 
 	/*virtual u16 nodeContainerId() const
@@ -88,11 +88,8 @@ public:
 
 	void reallocate()
 	{
-		delete[] data;
-		data = new MapNode[nodecount];
 		for (u32 i = 0; i < nodecount; i++)
 			data[i] = MapNode(CONTENT_IGNORE);
-
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
 	}
 
@@ -139,17 +136,6 @@ public:
 	////
 	//// Flags
 	////
-
-	inline bool isDummy() const
-	{
-		return !data;
-	}
-
-	inline void unDummify()
-	{
-		assert(isDummy()); // Pre-condition
-		reallocate();
-	}
 
 	// is_underground getter/setter
 	inline bool getIsUnderground()
@@ -242,8 +228,7 @@ public:
 
 	inline bool isValidPosition(s16 x, s16 y, s16 z)
 	{
-		return data
-			&& x >= 0 && x < MAP_BLOCKSIZE
+		return x >= 0 && x < MAP_BLOCKSIZE
 			&& y >= 0 && y < MAP_BLOCKSIZE
 			&& z >= 0 && z < MAP_BLOCKSIZE;
 	}
@@ -274,7 +259,7 @@ public:
 		return getNode(p.X, p.Y, p.Z, &is_valid);
 	}
 
-	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNode(s16 x, s16 y, s16 z, MapNode n)
 	{
 		if (!isValidPosition(x, y, z))
 			throw InvalidPositionException();
@@ -283,7 +268,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
 
-	inline void setNode(v3s16 p, MapNode & n)
+	inline void setNode(v3s16 p, MapNode n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
 	}
@@ -292,46 +277,23 @@ public:
 	//// Non-checking variants of the above
 	////
 
-	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position)
-	{
-		*valid_position = data != nullptr;
-		if (!*valid_position)
-			return {CONTENT_IGNORE};
-
-		return data[z * zstride + y * ystride + x];
-	}
-
-	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
-	{
-		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
-	}
-
-	////
-	//// Non-checking, unsafe variants of the above
-	//// MapBlock must be loaded by another function in the same scope/function
-	//// Caller must ensure that this is not a dummy block (by calling isDummy())
-	////
-
-	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z)
+	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z)
 	{
 		return data[z * zstride + y * ystride + x];
 	}
 
-	inline const MapNode &getNodeUnsafe(v3s16 &p)
+	inline MapNode getNodeNoCheck(v3s16 p)
 	{
-		return getNodeUnsafe(p.X, p.Y, p.Z);
+		return getNodeNoCheck(p.X, p.Y, p.Z);
 	}
 
-	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode n)
 	{
-		if (!data)
-			throw InvalidPositionException();
-
 		data[z * zstride + y * ystride + x] = n;
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
 	}
 
-	inline void setNodeNoCheck(v3s16 p, MapNode & n)
+	inline void setNodeNoCheck(v3s16 p, MapNode n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
@@ -362,6 +324,11 @@ public:
 			actuallyUpdateDayNightDiff();
 		return m_day_night_differs;
 	}
+
+	bool onObjectsActivation();
+	bool saveStaticObject(u16 id, const StaticObject &obj, u32 reason);
+
+	void step(float dtime, const std::function<bool(v3s16, MapNode, f32)> &on_timer_cb);
 
 	////
 	//// Timestamp (see m_timestamp)
@@ -432,12 +399,12 @@ public:
 	//// Node Timers
 	////
 
-	inline NodeTimer getNodeTimer(const v3s16 &p)
+	inline NodeTimer getNodeTimer(v3s16 p)
 	{
 		return m_node_timers.get(p);
 	}
 
-	inline void removeNodeTimer(const v3s16 &p)
+	inline void removeNodeTimer(v3s16 p)
 	{
 		m_node_timers.remove(p);
 	}
@@ -466,29 +433,17 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
+
+	bool storeActiveObject(u16 id);
+	// clearObject and return removed objects count
+	u32 clearObjects();
+
 private:
 	/*
 		Private methods
 	*/
 
 	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
-
-	/*
-		Used only internally, because changes can't be tracked
-	*/
-
-	inline MapNode &getNodeRef(s16 x, s16 y, s16 z)
-	{
-		if (!isValidPosition(x, y, z))
-			throw InvalidPositionException();
-
-		return data[z * zstride + y * ystride + x];
-	}
-
-	inline MapNode &getNodeRef(v3s16 &p)
-	{
-		return getNodeRef(p.X, p.Y, p.Z);
-	}
 
 public:
 	/*
@@ -500,7 +455,6 @@ public:
 #endif
 
 	NodeMetadataList m_node_metadata;
-	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 
 	static const u32 ystride = MAP_BLOCKSIZE;
@@ -535,12 +489,6 @@ private:
 	v3s16 m_pos_relative;
 
 	IGameDef *m_gamedef;
-
-	/*
-		If NULL, block is a dummy block.
-		Dummy blocks are used for caching not-found-on-disk blocks.
-	*/
-	MapNode *data = nullptr;
 
 	/*
 		- On the server, this is used for telling whether the
@@ -595,6 +543,9 @@ private:
 		the list of blocks to be drawn.
 	*/
 	int m_refcount = 0;
+
+	MapNode data[nodecount];
+	NodeTimerList m_node_timers;
 };
 
 typedef std::vector<MapBlock*> MapBlockVect;
@@ -624,12 +575,12 @@ inline bool blockpos_over_max_limit(v3s16 p)
 /*
 	Returns the position of the block where the node is located
 */
-inline v3s16 getNodeBlockPos(const v3s16 &p)
+inline v3s16 getNodeBlockPos(v3s16 p)
 {
 	return getContainerPos(p, MAP_BLOCKSIZE);
 }
 
-inline void getNodeBlockPosWithOffset(const v3s16 &p, v3s16 &block, v3s16 &offset)
+inline void getNodeBlockPosWithOffset(v3s16 p, v3s16 &block, v3s16 &offset)
 {
 	getContainerPosWithOffset(p, MAP_BLOCKSIZE, block, offset);
 }

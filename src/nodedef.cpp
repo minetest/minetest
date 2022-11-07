@@ -992,6 +992,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
+			param_type_2 == CPT2_COLORED_4DIR ||
 			param_type_2 == CPT2_COLORED_WALLMOUNTED ||
 			param_type_2 == CPT2_COLORED_DEGROTATE)
 		palette = tsrc->getPalette(palette_name);
@@ -1013,6 +1014,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			(param_type_2 == CPT2_FACEDIR
 			|| param_type_2 == CPT2_COLORED_FACEDIR)) {
 		for (u16 j = 1; j < 24; j++) {
+			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
+			rotateMeshBy6dFacedir(mesh_ptr[j], j);
+			recalculateBoundingBox(mesh_ptr[j]);
+			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
+		}
+	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
+			(param_type_2 == CPT2_4DIR
+			|| param_type_2 == CPT2_COLORED_4DIR)) {
+		for (u16 j = 1; j < 4; j++) {
 			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
 			rotateMeshBy6dFacedir(mesh_ptr[j], j);
 			recalculateBoundingBox(mesh_ptr[j]);
@@ -1088,6 +1098,8 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_UNKNOWN;
 		m_content_features[c] = f;
+		for (u32 ci = 0; ci <= CONTENT_MAX; ci++)
+			m_content_lighting_flag_cache[ci] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1108,6 +1120,7 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_AIR;
 		m_content_features[c] = f;
+		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 
@@ -1127,6 +1140,7 @@ void NodeDefManager::clear()
 		// Insert directly into containers
 		content_t c = CONTENT_IGNORE;
 		m_content_features[c] = f;
+		m_content_lighting_flag_cache[c] = f.getLightingFlags();
 		addNameIdMapping(c, f.name);
 	}
 }
@@ -1241,7 +1255,9 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||
-					features.param_type_2 == CPT2_COLORED_FACEDIR) {
+					features.param_type_2 == CPT2_COLORED_FACEDIR ||
+					features.param_type_2 == CPT2_4DIR ||
+					features.param_type_2 == CPT2_COLORED_4DIR) {
 				// Get maximal coordinate
 				f32 coords[] = {
 					fabsf(half_processed.MinEdge.X),
@@ -1377,6 +1393,8 @@ content_t NodeDefManager::set(const std::string &name, const ContentFeatures &de
 		eraseIdFromGroups(id);
 
 	m_content_features[id] = def;
+	m_content_features[id].floats = itemgroup_get(def.groups, "float") != 0;
+	m_content_lighting_flag_cache[id] = def.getLightingFlags();
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
@@ -1589,6 +1607,8 @@ void NodeDefManager::deSerialize(std::istream &is, u16 protocol_version)
 		if (i >= m_content_features.size())
 			m_content_features.resize((u32)(i) + 1);
 		m_content_features[i] = f;
+		m_content_features[i].floats = itemgroup_get(f.groups, "float") != 0;
+		m_content_lighting_flag_cache[i] = f.getLightingFlags();
 		addNameIdMapping(i, f.name);
 		TRACESTREAM(<< "NodeDef: deserialized " << f.name << std::endl);
 
@@ -1669,7 +1689,7 @@ static void removeDupes(std::vector<content_t> &list)
 void NodeDefManager::resolveCrossrefs()
 {
 	for (ContentFeatures &f : m_content_features) {
-		if (f.liquid_type != LIQUID_NONE || f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
+		if (f.isLiquid() || f.isLiquidRender()) {
 			f.liquid_alternative_flowing_id = getId(f.liquid_alternative_flowing);
 			f.liquid_alternative_source_id = getId(f.liquid_alternative_source);
 			continue;
@@ -1705,7 +1725,9 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
 		if ((f2.param_type_2 == CPT2_FACEDIR ||
-				f2.param_type_2 == CPT2_COLORED_FACEDIR)
+				f2.param_type_2 == CPT2_COLORED_FACEDIR ||
+				f2.param_type_2 == CPT2_4DIR ||
+				f2.param_type_2 == CPT2_COLORED_4DIR)
 				&& (connect_face >= 4)) {
 			static const u8 rot[33 * 4] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1719,8 +1741,15 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 32, 16, 8, 4 // 32 - left
 				};
-			return (f2.connect_sides
-				& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
+			if (f2.param_type_2 == CPT2_FACEDIR ||
+					f2.param_type_2 == CPT2_COLORED_FACEDIR) {
+				return (f2.connect_sides
+					& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
+			} else if (f2.param_type_2 == CPT2_4DIR ||
+					f2.param_type_2 == CPT2_COLORED_4DIR) {
+				return (f2.connect_sides
+					& rot[(connect_face * 4) + (to.param2 & 0x03)]);
+			}
 		}
 		return (f2.connect_sides & connect_face);
 	}

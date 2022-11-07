@@ -19,10 +19,10 @@ These goals were created from the top points in a
 [roadmap brainstorm](https://github.com/minetest/minetest/issues/10461).
 This should be reviewed approximately yearly, or when goals are achieved.
 
-Pull requests that address one of these goals will be labelled as "Roadmap".
+Pull requests that address one of these goals will be labeled as "Roadmap".
 PRs that are not on the roadmap will be closed unless they receive a concept
 approval within a week, issues can be used for preapproval.
-Bug fixes are exempt for this, and are always accepted and prioritised.
+Bug fixes are exempt for this, and are always accepted and prioritized.
 See [CONTRIBUTING.md](../.github/CONTRIBUTING.md) for more info.
 
 ### 2.1 Rendering/Graphics improvements

@@ -684,6 +684,10 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 			translated->MouseInput.Control      = false;
 			translated->MouseInput.ButtonStates = 0;
 			translated->MouseInput.Event        = EMIE_LMOUSE_LEFT_UP;
+			if (m_draw_crosshair) {
+				translated->MouseInput.X = m_screensize.X / 2;
+				translated->MouseInput.Y = m_screensize.Y / 2;
+			}
 			m_receiver->OnEvent(*translated);
 			delete translated;
 		} else {
@@ -805,6 +809,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_move_downtime            = porting::getTimeMs();
 					m_move_downlocation        = v2s32(event.TouchInput.X, event.TouchInput.Y);
 					m_move_sent_as_mouse_event = false;
+					if (m_draw_crosshair)
+						m_move_downlocation = v2s32(m_screensize.X / 2, m_screensize.Y / 2);
 				}
 			}
 		}
@@ -823,9 +829,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			return;
 
 		if (m_has_move_id) {
-			if ((event.TouchInput.ID == m_move_id) &&
-				(!m_move_sent_as_mouse_event)) {
-
+			if (event.TouchInput.ID == m_move_id &&
+					(!m_move_sent_as_mouse_event || m_draw_crosshair)) {
 				double distance = sqrt(
 						(m_pointerpos[event.TouchInput.ID].X - event.TouchInput.X) *
 						(m_pointerpos[event.TouchInput.ID].X - event.TouchInput.X) +
@@ -841,6 +846,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					// update camera_yaw and camera_pitch
 					s32 dx = X - m_pointerpos[event.TouchInput.ID].X;
 					s32 dy = Y - m_pointerpos[event.TouchInput.ID].Y;
+					m_pointerpos[event.TouchInput.ID] = v2s32(X, Y);
 
 					// adapt to similar behaviour as pc screen
 					const double d = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f) * 3.0f;
@@ -849,11 +855,11 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dy * d), -180), 180);
 
 					// update shootline
+					// no need to update (X, Y) when using crosshair since the shootline is not used
 					m_shootline = m_device
 							->getSceneManager()
 							->getSceneCollisionManager()
 							->getRayFromScreenCoordinates(v2s32(X, Y));
-					m_pointerpos[event.TouchInput.ID] = v2s32(X, Y);
 				}
 			} else if ((event.TouchInput.ID == m_move_id) &&
 					(m_move_sent_as_mouse_event)) {
@@ -1010,11 +1016,17 @@ bool TouchScreenGUI::doubleTapDetection()
 	if (distance > (20 + m_touchscreen_threshold))
 		return false;
 
+	v2s32 mPos = v2s32(m_key_events[0].x, m_key_events[0].y);
+	if (m_draw_crosshair) {
+		mPos.X = m_screensize.X / 2;
+		mPos.Y = m_screensize.Y / 2;
+	}
+
 	auto *translated = new SEvent();
 	memset(translated, 0, sizeof(SEvent));
 	translated->EventType               = EET_MOUSE_INPUT_EVENT;
-	translated->MouseInput.X            = m_key_events[0].x;
-	translated->MouseInput.Y            = m_key_events[0].y;
+	translated->MouseInput.X            = mPos.X;
+	translated->MouseInput.Y            = mPos.Y;
 	translated->MouseInput.Shift        = false;
 	translated->MouseInput.Control      = false;
 	translated->MouseInput.ButtonStates = EMBSM_RIGHT;
@@ -1023,7 +1035,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	m_shootline = m_device
 			->getSceneManager()
 			->getSceneCollisionManager()
-			->getRayFromScreenCoordinates(v2s32(m_key_events[0].x, m_key_events[0].y));
+			->getRayFromScreenCoordinates(mPos);
 
 	translated->MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
 	verbosestream << "TouchScreenGUI::translateEvent right click press" << std::endl;
@@ -1124,17 +1136,23 @@ void TouchScreenGUI::step(float dtime)
 		u64 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
 		if (delta > MIN_DIG_TIME_MS) {
+			s32 mX = m_move_downlocation.X;
+			s32 mY = m_move_downlocation.Y;
+			if (m_draw_crosshair) {
+				mX = m_screensize.X / 2;
+				mY = m_screensize.Y / 2;
+			}
 			m_shootline = m_device
 					->getSceneManager()
 					->getSceneCollisionManager()
 					->getRayFromScreenCoordinates(
-							v2s32(m_move_downlocation.X,m_move_downlocation.Y));
+							v2s32(mX, mY));
 
 			SEvent translated;
 			memset(&translated, 0, sizeof(SEvent));
 			translated.EventType               = EET_MOUSE_INPUT_EVENT;
-			translated.MouseInput.X            = m_move_downlocation.X;
-			translated.MouseInput.Y            = m_move_downlocation.Y;
+			translated.MouseInput.X            = mX;
+			translated.MouseInput.Y            = mY;
 			translated.MouseInput.Shift        = false;
 			translated.MouseInput.Control      = false;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT;

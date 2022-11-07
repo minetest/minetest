@@ -447,6 +447,7 @@ void Server::init()
 	m_inventory_mgr = std::make_unique<ServerInventoryManager>();
 
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	m_script->checkSetByBuiltin();
 
 	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
@@ -482,6 +483,7 @@ void Server::init()
 	m_startup_server_map = nullptr; // Ownership moved to ServerEnvironment
 	m_env = new ServerEnvironment(servermap, m_script, this,
 		m_path_world, m_metrics_backend.get());
+	m_env->init();
 
 	m_inventory_mgr->setEnv(m_env);
 	m_clients.setEnv(m_env);
@@ -1868,7 +1870,7 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 {
 	NetworkPacket pkt(TOCLIENT_SET_LIGHTING,
 			4, peer_id);
-	
+
 	pkt << lighting.shadow_intensity;
 
 	Send(&pkt);
@@ -2249,50 +2251,31 @@ void Server::fadeSound(s32 handle, float step, float gain)
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
 		float far_d_nodes)
 {
-	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
 	v3s16 block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
 	pkt << p;
 
-	std::vector<session_t> clients = m_clients.getClientIDs();
-	ClientInterface::AutoLock clientlock(m_clients);
-
-	for (session_t client_id : clients) {
-		RemoteClient *client = m_clients.lockedGetClientNoEx(client_id);
-		if (!client)
-			continue;
-
-		RemotePlayer *player = m_env->getPlayer(client_id);
-		PlayerSAO *sao = player ? player->getPlayerSAO() : nullptr;
-
-		// If player is far away, only set modified blocks not sent
-		if (!client->isBlockSent(block_pos) || (sao &&
-				sao->getBasePosition().getDistanceFrom(p_f) > maxd)) {
-			if (far_players)
-				far_players->emplace(client_id);
-			else
-				client->SetBlockNotSent(block_pos);
-			continue;
-		}
-
-		// Send as reliable
-		m_clients.send(client_id, 0, &pkt, true);
-	}
+	sendNodeChangePkt(pkt, block_pos, p_f, far_d_nodes, far_players);
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_players,
 		float far_d_nodes, bool remove_metadata)
 {
-	float maxd = far_d_nodes * BS;
 	v3f p_f = intToFloat(p, BS);
 	v3s16 block_pos = getNodeBlockPos(p);
 
 	NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
 	pkt << p << n.param0 << n.param1 << n.param2
 			<< (u8) (remove_metadata ? 0 : 1);
+	sendNodeChangePkt(pkt, block_pos, p_f, far_d_nodes, far_players);
+}
 
+void Server::sendNodeChangePkt(NetworkPacket &pkt, v3s16 block_pos,
+		v3f p, float far_d_nodes, std::unordered_set<u16> *far_players)
+{
+	float maxd = far_d_nodes * BS;
 	std::vector<session_t> clients = m_clients.getClientIDs();
 	ClientInterface::AutoLock clientlock(m_clients);
 
@@ -2306,7 +2289,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_player
 
 		// If player is far away, only set modified blocks not sent
 		if (!client->isBlockSent(block_pos) || (sao &&
-				sao->getBasePosition().getDistanceFrom(p_f) > maxd)) {
+				sao->getBasePosition().getDistanceFrom(p) > maxd)) {
 			if (far_players)
 				far_players->emplace(client_id);
 			else
@@ -3889,25 +3872,6 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 	}
 
 	return playersao;
-}
-
-bool Server::registerModStorage(ModMetadata *storage)
-{
-	if (m_mod_storages.find(storage->getModName()) != m_mod_storages.end()) {
-		errorstream << "Unable to register same mod storage twice. Storage name: "
-				<< storage->getModName() << std::endl;
-		return false;
-	}
-
-	m_mod_storages[storage->getModName()] = storage;
-	return true;
-}
-
-void Server::unregisterModStorage(const std::string &name)
-{
-	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
-	if (it != m_mod_storages.end())
-		m_mod_storages.erase(name);
 }
 
 void dedicated_server_loop(Server &server, bool &kill)

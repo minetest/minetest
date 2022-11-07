@@ -258,7 +258,6 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 	v3s16 pos;
 	MapNode n;
 	content_t c;
-	bool pos_valid; // dummy, we know it's valid
 	auto it = getLBMsIntroducedAfter(stamp);
 	for (; it != m_lbm_lookup.end(); ++it) {
 		// Cache previous version to speedup lookup which has a very high performance
@@ -269,7 +268,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 		for (pos.X = 0; pos.X < MAP_BLOCKSIZE; pos.X++)
 			for (pos.Y = 0; pos.Y < MAP_BLOCKSIZE; pos.Y++)
 				for (pos.Z = 0; pos.Z < MAP_BLOCKSIZE; pos.Z++) {
-					n = block->getNodeNoCheck(pos, &pos_valid);
+					n = block->getNodeNoCheck(pos);
 					c = n.getContent();
 
 					// If content_t are not matching perform an LBM lookup
@@ -371,7 +370,7 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	// Go through new list
 	for (v3s16 p : newlist) {
 		// If not on old list, it's been added
-		if(m_list.find(p) == m_list.end())
+		if (m_list.find(p) == m_list.end())
 			blocks_added.insert(p);
 	}
 
@@ -389,17 +388,29 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 static std::random_device seed;
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	ServerScripting *scriptIface, Server *server,
+	ServerScripting *script_iface, Server *server,
 	const std::string &path_world, MetricsBackend *mb):
 	Environment(server),
 	m_map(map),
-	m_script(scriptIface),
+	m_script(script_iface),
 	m_server(server),
 	m_path_world(path_world),
 	m_rgen(seed())
 {
+	m_step_time_counter = mb->addCounter(
+		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
+
+	m_active_block_gauge = mb->addGauge(
+		"minetest_env_active_blocks", "Number of active blocks");
+
+	m_active_object_gauge = mb->addGauge(
+		"minetest_env_active_objects", "Number of active objects");
+}
+
+void ServerEnvironment::init()
+{
 	// Determine which database backend to use
-	std::string conf_path = path_world + DIR_DELIM + "world.mt";
+	std::string conf_path = m_path_world + DIR_DELIM + "world.mt";
 	Settings conf;
 
 	std::string player_backend_name = "sqlite3";
@@ -409,6 +420,13 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 
 	// If we open world.mt read the backend configurations.
 	if (succeeded) {
+		// Check that the world's blocksize matches the compiled MAP_BLOCKSIZE
+		u16 blocksize = 16;
+		conf.getU16NoEx("blocksize", blocksize);
+		if (blocksize != MAP_BLOCKSIZE) {
+			throw BaseException(std::string("The map's blocksize is not supported."));
+		}
+
 		// Read those values before setting defaults
 		bool player_backend_exists = conf.exists("player_backend");
 		bool auth_backend_exists = conf.exists("auth_backend");
@@ -455,17 +473,8 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
-	m_player_database = openPlayerDatabase(player_backend_name, path_world, conf);
-	m_auth_database = openAuthDatabase(auth_backend_name, path_world, conf);
-
-	m_step_time_counter = mb->addCounter(
-		"minetest_env_step_time", "Time spent in environment step (in microseconds)");
-
-	m_active_block_gauge = mb->addGauge(
-		"minetest_env_active_blocks", "Number of active blocks");
-
-	m_active_object_gauge = mb->addGauge(
-		"minetest_env_active_objects", "Number of active objects");
+	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
+	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -478,7 +487,8 @@ ServerEnvironment::~ServerEnvironment()
 	deactivateFarObjects(true);
 
 	// Drop/delete map
-	m_map->drop();
+	if (m_map)
+		m_map->drop();
 
 	// Delete ActiveBlockModifiers
 	for (ABMWithState &m_abm : m_abms) {
@@ -768,16 +778,16 @@ public:
 				actual_interval = trigger_interval;
 			}
 			float chance = abm->getTriggerChance();
-			if(chance == 0)
+			if (chance == 0)
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
 			if (abm->getSimpleCatchUp()) {
 				float intervals = actual_interval / trigger_interval;
-				if(intervals == 0)
+				if (intervals == 0)
 					continue;
 				aabm.chance = chance / intervals;
-				if(aabm.chance == 0)
+				if (aabm.chance == 0)
 					aabm.chance = 1;
 			} else {
 				aabm.chance = chance;
@@ -834,19 +844,17 @@ public:
 						wider_unknown_count++;
 						continue;
 					}
-					wider += block2->m_static_objects.m_active.size()
-						+ block2->m_static_objects.m_stored.size();
+					wider += block2->m_static_objects.size();
 				}
 		// Extrapolate
-		u32 active_object_count = block->m_static_objects.m_active.size();
-		u32 wider_known_count = 3*3*3 - wider_unknown_count;
+		u32 active_object_count = block->m_static_objects.getActiveSize();
+		u32 wider_known_count = 3 * 3 * 3 - wider_unknown_count;
 		wider += wider_unknown_count * wider / wider_known_count;
 		return active_object_count;
-
 	}
 	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
 	{
-		if(m_aabms.empty() || block->isDummy())
+		if (m_aabms.empty())
 			return;
 
 		// Check the content type cache first
@@ -880,7 +888,7 @@ public:
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
 		{
-			const MapNode &n = block->getNodeUnsafe(p0);
+			const MapNode &n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
 			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
@@ -916,7 +924,7 @@ public:
 						if (block->isValidPosition(p1)) {
 							// if the neighbor is found on the same map block
 							// get it straight from there
-							const MapNode &n = block->getNodeUnsafe(p1);
+							const MapNode &n = block->getNodeNoCheck(p1);
 							c = n.getContent();
 						} else {
 							// otherwise consult the map
@@ -970,7 +978,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 	// Remove stored static objects if clearObjects was called since block's timestamp
 	if (stamp == BLOCK_TIMESTAMP_UNDEFINED || stamp < m_last_clear_objects_time) {
-		block->m_static_objects.m_stored.clear();
+		block->m_static_objects.clearStored();
 		// do not set changed flag to avoid unnecessary mapblock writes
 	}
 
@@ -987,18 +995,9 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	m_lbm_mgr.applyLBMs(this, block, stamp);
 
 	// Run node timers
-	std::vector<NodeTimer> elapsed_timers =
-		block->m_node_timers.step((float)dtime_s);
-	if (!elapsed_timers.empty()) {
-		MapNode n;
-		for (const NodeTimer &elapsed_timer : elapsed_timers) {
-			n = block->getNodeNoEx(elapsed_timer.position);
-			v3s16 p = elapsed_timer.position + block->getPosRelative();
-			if (m_script->node_on_timer(p, n, elapsed_timer.elapsed))
-				block->setNodeTimer(NodeTimer(elapsed_timer.timeout, 0,
-					elapsed_timer.position));
-		}
-	}
+	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
+		return m_script->node_on_timer(p, n, d);
+	});
 }
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
@@ -1128,7 +1127,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 				m_map->emergeBlock(neighborPos, false);
 				node = m_map->getNode(neighborPos, &is_position_ok);
 				if (!is_position_ok)
-					continue;  // not generated
+					continue; // not generated
 			}
 
 			const ContentFeatures &def = ndef->get(node);
@@ -1248,14 +1247,10 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 				<< "Failed to emerge block " << PP(p) << std::endl;
 			continue;
 		}
-		u32 num_stored = block->m_static_objects.m_stored.size();
-		u32 num_active = block->m_static_objects.m_active.size();
-		if (num_stored != 0 || num_active != 0) {
-			block->m_static_objects.m_stored.clear();
-			block->m_static_objects.m_active.clear();
-			block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				MOD_REASON_CLEAR_ALL_OBJECTS);
-			num_objs_cleared += num_stored + num_active;
+
+		u32 num_cleared = block->clearObjects();
+		if (num_cleared > 0) {
+			num_objs_cleared += num_cleared;
 			num_blocks_cleared++;
 		}
 		num_blocks_checked++;
@@ -1430,19 +1425,9 @@ void ServerEnvironment::step(float dtime)
 					MOD_REASON_BLOCK_EXPIRED);
 
 			// Run node timers
-			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(dtime);
-			if (!elapsed_timers.empty()) {
-				MapNode n;
-				v3s16 p2;
-				for (const NodeTimer &elapsed_timer: elapsed_timers) {
-					n = block->getNodeNoEx(elapsed_timer.position);
-					p2 = elapsed_timer.position + block->getPosRelative();
-					if (m_script->node_on_timer(p2, n, elapsed_timer.elapsed)) {
-						block->setNodeTimer(NodeTimer(
-							elapsed_timer.timeout, 0, elapsed_timer.position));
-					}
-				}
-			}
+			block->step(dtime, [&](v3s16 p, MapNode n, f32 d) -> bool {
+				return m_script->node_on_timer(p, n, d);
+			});
 		}
 	}
 
@@ -1520,7 +1505,7 @@ void ServerEnvironment::step(float dtime)
 
 		u32 object_count = 0;
 
-		auto cb_state = [&] (ServerActiveObject *obj) {
+		auto cb_state = [&](ServerActiveObject *obj) {
 			if (obj->isGone())
 				return;
 			object_count++;
@@ -1585,7 +1570,7 @@ ServerEnvironment::BlockStatus ServerEnvironment::getBlockStatus(v3s16 blockpos)
 		return BS_ACTIVE;
 
 	const MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if (block && !block->isDummy())
+	if (block)
 		return BS_LOADED;
 
 	if (m_map->isBlockInQueue(blockpos))
@@ -1718,7 +1703,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 	if (!block)
 		return;
 
-	for (auto &so_it : block->m_static_objects.m_active) {
+	for (auto &so_it : block->m_static_objects.getAllActives()) {
 		// Get the ServerActiveObject counterpart to this StaticObject
 		ServerActiveObject *sao = m_ao_manager.getActiveObject(so_it.first);
 		if (!sao) {
@@ -1736,7 +1721,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 
 bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 {
-	if(m_active_object_messages.empty())
+	if (m_active_object_messages.empty())
 		return false;
 
 	*dest = std::move(m_active_object_messages.front());
@@ -1761,16 +1746,27 @@ void ServerEnvironment::getSelectedActiveObjects(
 			continue;
 
 		v3f pos = obj->getBasePosition();
-
-		aabb3f offsetted_box(selection_box.MinEdge + pos,
-			selection_box.MaxEdge + pos);
+		v3f rel_pos = shootline_on_map.start - pos;
 
 		v3f current_intersection;
-		v3s16 current_normal;
-		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
-				&current_intersection, &current_normal)) {
+		v3f current_normal;
+		v3f current_raw_normal;
+
+		ObjectProperties *props = obj->accessObjectProperties();
+		bool collision;
+		UnitSAO* usao = dynamic_cast<UnitSAO*>(obj);
+		if (props->rotate_selectionbox && usao != nullptr) {
+			collision = boxLineCollision(selection_box, usao->getTotalRotation(),
+				rel_pos, line_vector, &current_intersection, &current_normal, &current_raw_normal);
+		} else {
+			collision = boxLineCollision(selection_box, rel_pos, line_vector,
+				&current_intersection, &current_normal);
+			current_raw_normal = current_normal;
+		}
+		if (collision) {
+			current_intersection += pos;
 			objects.emplace_back(
-				(s16) obj->getId(), current_intersection, current_normal,
+				(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
 				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}
@@ -1800,8 +1796,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 		MapBlock *block = m_map->emergeBlock(blockpos);
-		if(block){
-			block->m_static_objects.m_active[object->getId()] = s_obj;
+		if (block) {
+			block->m_static_objects.setActive(object->getId(), s_obj);
 			object->m_static_exists = true;
 			object->m_static_block = blockpos;
 
@@ -1826,7 +1822,7 @@ void ServerEnvironment::removeRemovedObjects()
 {
 	ScopeProfiler sp(g_profiler, "ServerEnvironment::removeRemovedObjects()", SPT_AVG);
 
-	auto clear_cb = [this] (ServerActiveObject *obj, u16 id) {
+	auto clear_cb = [this](ServerActiveObject *obj, u16 id) {
 		// This shouldn't happen but check it
 		if (!obj) {
 			errorstream << "ServerEnvironment::removeRemovedObjects(): "
@@ -1848,22 +1844,15 @@ void ServerEnvironment::removeRemovedObjects()
 
 		// If still known by clients, don't actually remove. On some future
 		// invocation this will be 0, which is when removal will continue.
-		if(obj->m_known_by_count > 0)
+		if (obj->m_known_by_count > 0)
 			return false;
 
 		/*
 			Move static data from active to stored if deactivated
 		*/
 		if (!obj->isPendingRemoval() && obj->m_static_exists) {
-			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
-			if (block) {
-				const auto i = block->m_static_objects.m_active.find(id);
-				if (i != block->m_static_objects.m_active.end()) {
-					block->m_static_objects.m_stored.push_back(i->second);
-					block->m_static_objects.m_active.erase(id);
-					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						MOD_REASON_REMOVE_OBJECTS_DEACTIVATE);
-				} else {
+			if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
+				if (!block->storeActiveObject(id)) {
 					warningstream << "ServerEnvironment::removeRemovedObjects(): "
 							<< "id=" << id << " m_static_exists=true but "
 							<< "static data doesn't actually exist in "
@@ -1893,33 +1882,33 @@ void ServerEnvironment::removeRemovedObjects()
 static void print_hexdump(std::ostream &o, const std::string &data)
 {
 	const int linelength = 16;
-	for(int l=0; ; l++){
+	for (int l = 0;; l++) {
 		int i0 = linelength * l;
 		bool at_end = false;
 		int thislinelength = linelength;
-		if(i0 + thislinelength > (int)data.size()){
+		if (i0 + thislinelength > (int)data.size()) {
 			thislinelength = data.size() - i0;
 			at_end = true;
 		}
-		for(int di=0; di<linelength; di++){
+		for (int di = 0; di < linelength; di++) {
 			int i = i0 + di;
 			char buf[4];
-			if(di<thislinelength)
+			if (di < thislinelength)
 				porting::mt_snprintf(buf, sizeof(buf), "%.2x ", data[i]);
 			else
 				porting::mt_snprintf(buf, sizeof(buf), "   ");
-			o<<buf;
+			o << buf;
 		}
-		o<<" ";
-		for(int di=0; di<thislinelength; di++){
+		o << " ";
+		for (int di = 0; di < thislinelength; di++) {
 			int i = i0 + di;
-			if(data[i] >= 32)
-				o<<data[i];
+			if (data[i] >= 32)
+				o << data[i];
 			else
-				o<<".";
+				o << ".";
 		}
-		o<<std::endl;
-		if(at_end)
+		o << std::endl;
+		if (at_end)
 			break;
 	}
 }
@@ -1941,59 +1930,41 @@ ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
 */
 void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 {
-	if(block == NULL)
+	if (block == NULL)
 		return;
 
-	// Ignore if no stored objects (to not set changed flag)
-	if(block->m_static_objects.m_stored.empty())
+	if (!block->onObjectsActivation())
 		return;
-
-	verbosestream<<"ServerEnvironment::activateObjects(): "
-		<<"activating objects of block "<<PP(block->getPos())
-		<<" ("<<block->m_static_objects.m_stored.size()
-		<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
-	if (large_amount) {
-		errorstream<<"suspiciously large amount of objects detected: "
-			<<block->m_static_objects.m_stored.size()<<" in "
-			<<PP(block->getPos())
-			<<"; removing all of them."<<std::endl;
-		// Clear stored list
-		block->m_static_objects.m_stored.clear();
-		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-			MOD_REASON_TOO_MANY_OBJECTS);
-		return;
-	}
 
 	// Activate stored objects
 	std::vector<StaticObject> new_stored;
-	for (const StaticObject &s_obj : block->m_static_objects.m_stored) {
+	for (const StaticObject &s_obj : block->m_static_objects.getAllStored()) {
 		// Create an active object from the data
-		ServerActiveObject *obj = createSAO((ActiveObjectType) s_obj.type, s_obj.pos,
-			s_obj.data);
+		ServerActiveObject *obj =
+				createSAO((ActiveObjectType)s_obj.type, s_obj.pos, s_obj.data);
 		// If couldn't create object, store static data back.
 		if (!obj) {
-			errorstream<<"ServerEnvironment::activateObjects(): "
-				<<"failed to create active object from static object "
-				<<"in block "<<PP(s_obj.pos/BS)
-				<<" type="<<(int)s_obj.type<<" data:"<<std::endl;
+			errorstream << "ServerEnvironment::activateObjects(): "
+				<< "failed to create active object from static object "
+				<< "in block " << PP(s_obj.pos / BS)
+				<< " type=" << (int)s_obj.type << " data:" << std::endl;
 			print_hexdump(verbosestream, s_obj.data);
 
 			new_stored.push_back(s_obj);
 			continue;
 		}
-		verbosestream<<"ServerEnvironment::activateObjects(): "
-			<<"activated static object pos="<<PP(s_obj.pos/BS)
-			<<" type="<<(int)s_obj.type<<std::endl;
+		verbosestream << "ServerEnvironment::activateObjects(): "
+			<< "activated static object pos=" << PP(s_obj.pos / BS)
+			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false, dtime_s);
 	}
 
 	// Clear stored list
-	block->m_static_objects.m_stored.clear();
+	block->m_static_objects.clearStored();
 	// Add leftover failed stuff to stored list
 	for (const StaticObject &s_obj : new_stored) {
-		block->m_static_objects.m_stored.push_back(s_obj);
+		block->m_static_objects.pushStored(s_obj);
 	}
 
 	/*
@@ -2019,7 +1990,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 */
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
-	auto cb_deactivate = [this, _force_delete] (ServerActiveObject *obj, u16 id) {
+	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;
 
@@ -2082,11 +2053,9 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 				if (obj->m_static_block == blockpos_o)
 					stays_in_same_block = true;
 
-				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
-
-				if (block) {
-					const auto n = block->m_static_objects.m_active.find(id);
-					if (n != block->m_static_objects.m_active.end()) {
+				if (MapBlock *block = m_map->emergeBlock(obj->m_static_block, false)) {
+					const auto n = block->m_static_objects.getAllActives().find(id);
+					if (n != block->m_static_objects.getAllActives().end()) {
 						StaticObject static_old = n->second;
 
 						float save_movem = obj->getMinimumSavedMovement();
@@ -2199,18 +2168,9 @@ bool ServerEnvironment::saveStaticToBlock(
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}
-	if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
-		warningstream << "ServerEnv: Trying to store id = " << store_id
-				<< " statically but block " << PP(blockpos)
-				<< " already contains "
-				<< block->m_static_objects.m_stored.size()
-				<< " objects." << std::endl;
-		return false;
-	}
 
-	block->m_static_objects.insert(store_id, s_obj);
-	if (mod_reason != MOD_REASON_UNKNOWN) // Do not mark as modified if requested
-		block->raiseModified(MOD_STATE_WRITE_NEEDED, mod_reason);
+	if (!block->saveStaticObject(store_id, s_obj, mod_reason))
+		return false;
 
 	obj->m_static_exists = true;
 	obj->m_static_block = blockpos;

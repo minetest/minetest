@@ -91,7 +91,7 @@ function unittests.run_one(idx, counters, out_callback, player, pos)
 		done(status, err)
 		out_callback(true)
 	end
-	
+
 	return true
 end
 
@@ -109,7 +109,7 @@ local function wait_for_player(callback)
 end
 
 local function wait_for_map(player, callback)
-	local check = function()
+	local function check()
 		if core.get_node_or_nil(player:get_pos()) ~= nil then
 			callback()
 		else
@@ -178,6 +178,9 @@ dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")
 dofile(modpath .. "/async_env.lua")
 dofile(modpath .. "/entity.lua")
+dofile(modpath .. "/itemstack_equals.lua")
+dofile(modpath .. "/content_ids.lua")
+dofile(modpath .. "/metadata.lua")
 
 --------------
 

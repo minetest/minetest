@@ -53,95 +53,6 @@ void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 	*color = f.color;
 }
 
-void MapNode::setLight(LightBank bank, u8 a_light, const ContentFeatures &f) noexcept
-{
-	// If node doesn't contain light data, ignore this
-	if(f.param_type != CPT_LIGHT)
-		return;
-	if(bank == LIGHTBANK_DAY)
-	{
-		param1 &= 0xf0;
-		param1 |= a_light & 0x0f;
-	}
-	else if(bank == LIGHTBANK_NIGHT)
-	{
-		param1 &= 0x0f;
-		param1 |= (a_light & 0x0f)<<4;
-	}
-	else
-		assert("Invalid light bank" == NULL);
-}
-
-void MapNode::setLight(LightBank bank, u8 a_light, const NodeDefManager *nodemgr)
-{
-	setLight(bank, a_light, nodemgr->get(*this));
-}
-
-bool MapNode::isLightDayNightEq(const NodeDefManager *nodemgr) const
-{
-	const ContentFeatures &f = nodemgr->get(*this);
-	bool isEqual;
-
-	if (f.param_type == CPT_LIGHT) {
-		u8 day   = MYMAX(f.light_source, param1 & 0x0f);
-		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
-		isEqual = day == night;
-	} else {
-		isEqual = true;
-	}
-
-	return isEqual;
-}
-
-u8 MapNode::getLight(LightBank bank, const NodeDefManager *nodemgr) const
-{
-	// Select the brightest of [light source, propagated light]
-	const ContentFeatures &f = nodemgr->get(*this);
-
-	u8 light;
-	if(f.param_type == CPT_LIGHT)
-		light = bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
-	else
-		light = 0;
-
-	return MYMAX(f.light_source, light);
-}
-
-u8 MapNode::getLightRaw(LightBank bank, const ContentFeatures &f) const noexcept
-{
-	if(f.param_type == CPT_LIGHT)
-		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
-	return 0;
-}
-
-u8 MapNode::getLightNoChecks(LightBank bank, const ContentFeatures *f) const noexcept
-{
-	return MYMAX(f->light_source,
-	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
-}
-
-bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight,
-	const NodeDefManager *nodemgr) const
-{
-	// Select the brightest of [light source, propagated light]
-	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type == CPT_LIGHT)
-	{
-		lightday = param1 & 0x0f;
-		lightnight = (param1>>4)&0x0f;
-	}
-	else
-	{
-		lightday = 0;
-		lightnight = 0;
-	}
-	if(f.light_source > lightday)
-		lightday = f.light_source;
-	if(f.light_source > lightnight)
-		lightnight = f.light_source;
-	return f.param_type == CPT_LIGHT || f.light_source != 0;
-}
-
 u8 MapNode::getFaceDir(const NodeDefManager *nodemgr,
 	bool allow_wallmounted) const
 {
@@ -149,6 +60,9 @@ u8 MapNode::getFaceDir(const NodeDefManager *nodemgr,
 	if (f.param_type_2 == CPT2_FACEDIR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR)
 		return (getParam2() & 0x1F) % 24;
+	if (f.param_type_2 == CPT2_4DIR ||
+			f.param_type_2 == CPT2_COLORED_4DIR)
+		return getParam2() & 0x03;
 	if (allow_wallmounted && (f.param_type_2 == CPT2_WALLMOUNTED ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
 		return wallmounted_to_facedir[getParam2() & 0x07];
@@ -196,7 +110,8 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
-	if (cpt2 == CPT2_FACEDIR || cpt2 == CPT2_COLORED_FACEDIR) {
+	if (cpt2 == CPT2_FACEDIR || cpt2 == CPT2_COLORED_FACEDIR ||
+			cpt2 == CPT2_4DIR || cpt2 == CPT2_COLORED_4DIR) {
 		static const u8 rotate_facedir[24 * 4] = {
 			// Table value = rotated facedir
 			// Columns: 0, 90, 180, 270 degrees rotation around vertical axis
@@ -232,10 +147,17 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 			22, 21, 20, 23,
 			23, 22, 21, 20
 		};
-		u8 facedir = (param2 & 31) % 24;
-		u8 index = facedir * 4 + rot;
-		param2 &= ~31;
-		param2 |= rotate_facedir[index];
+		if (cpt2 == CPT2_FACEDIR || cpt2 == CPT2_COLORED_FACEDIR) {
+			u8 facedir = (param2 & 31) % 24;
+			u8 index = facedir * 4 + rot;
+			param2 &= ~31;
+			param2 |= rotate_facedir[index];
+		} else if (cpt2 == CPT2_4DIR || cpt2 == CPT2_COLORED_4DIR) {
+			u8 fourdir = param2 & 3;
+			u8 index = fourdir + rot;
+			param2 &= ~3;
+			param2 |= rotate_facedir[index];
+		}
 	} else if (cpt2 == CPT2_WALLMOUNTED ||
 			cpt2 == CPT2_COLORED_WALLMOUNTED) {
 		u8 wmountface = (param2 & 7);

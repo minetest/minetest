@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "activeobject.h"
+#include "mock_activeobject.h"
 
 class TestActiveObject : public TestBase
 {
@@ -39,20 +39,9 @@ void TestActiveObject::runTests(IGameDef *gamedef)
 	TEST(testAOAttributes);
 }
 
-class TestAO : public ActiveObject
-{
-public:
-	TestAO(u16 id) : ActiveObject(id) {}
-
-	virtual ActiveObjectType getType() const { return ACTIVEOBJECT_TYPE_TEST; }
-	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
-	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
-	virtual bool collideWithObjects() const { return false; }
-};
-
 void TestActiveObject::testAOAttributes()
 {
-	TestAO ao(44);
+	MockActiveObject ao(44);
 	UASSERT(ao.getId() == 44);
 
 	ao.setId(558);

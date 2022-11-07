@@ -44,7 +44,7 @@ Any other PNG files will be interpreted as textures. They must have the same
 names as the textures they are supposed to override. For example, to override
 the apple texture of Minetest Game, add a PNG file named `default_apple.png`.
 
-The custom textures do not necceessarily require the same size as their
+The custom textures do not necessarily require the same size as their
 originals, but this might be required for a few particular textures. When
 unsure, just test your texture pack in-game.
 
@@ -204,7 +204,7 @@ Here are targets you can choose from:
 | special6      | The sixth entry in the special_tiles list         |
 | inventory     | The inventory texture                             |
 | wield         | The texture used when held by the player          |
-| align_world=N | Overrides the "world align" behaviour of tiles ¹  |
+| align_world=N | Overrides the "world align" behavior of tiles ¹   |
 
 Nodes support all targets, but other items only support 'inventory'
 and 'wield'.

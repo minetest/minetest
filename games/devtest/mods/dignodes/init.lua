@@ -32,6 +32,8 @@ end
 
 -- Node without any digging groups
 minetest.register_node("dignodes:none", {
-	description = "Dig Test Node: groupless",
+	description = "Dig Test Node: groupless".."\n"..
+		"Can't be dug by normal digging tools".."\n"..
+		"(use the Remover tool to remove)",
 	tiles = {"dignodes_none.png"},
 })

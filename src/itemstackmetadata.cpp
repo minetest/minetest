@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ItemStackMetadata::clear()
 {
-	Metadata::clear();
+	SimpleMetadata::clear();
 	updateToolCapabilities();
 }
 
@@ -52,7 +52,7 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 	sanitize_string(clean_name);
 	sanitize_string(clean_var);
 
-	bool result = Metadata::setString(clean_name, clean_var);
+	bool result = SimpleMetadata::setString(clean_name, clean_var);
 	if (clean_name == TOOLCAP_KEY)
 		updateToolCapabilities();
 	return result;

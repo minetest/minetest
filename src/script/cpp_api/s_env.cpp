@@ -257,6 +257,18 @@ void ScriptApiEnv::on_emerge_area_completion(
 	}
 }
 
+void ScriptApiEnv::check_for_falling(v3s16 p)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "check_for_falling");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	push_v3s16(L, p);
+	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+}
+
 void ScriptApiEnv::on_liquid_transformed(
 	const std::vector<std::pair<v3s16, MapNode>> &list)
 {
@@ -274,7 +286,6 @@ void ScriptApiEnv::on_liquid_transformed(
 
 	// Convert the list to a pos array and a node array for lua
 	int index = 1;
-	const NodeDefManager *ndef = getEnv()->getGameDef()->ndef();
 	lua_createtable(L, list.size(), 0);
 	lua_createtable(L, list.size(), 0);
 	for(std::pair<v3s16, MapNode> p : list) {
@@ -282,7 +293,7 @@ void ScriptApiEnv::on_liquid_transformed(
 		push_v3s16(L, p.first);
 		lua_rawset(L, -4);
 		lua_pushnumber(L, index++);
-		pushnode(L, p.second, ndef);
+		pushnode(L, p.second);
 		lua_rawset(L, -3);
 	}
 

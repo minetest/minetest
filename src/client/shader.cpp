@@ -682,6 +682,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// map legacy semantic texture names to texture identifiers
+	fragment_header += R"(
+		#define baseTexture texture0
+		#define normalTexture texture1
+		#define textureFlags texture2
+	)";
+
 	// Since this is the first time we're using the GL bindings be extra careful.
 	// This should be removed before 5.6.0 or similar.
 	if (!GL.GetString) {
@@ -769,6 +776,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (shadow_soft_radius < 1.0f)
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
+	}
+
+	if (g_settings->getBool("enable_bloom")) {
+		shaders_header << "#define ENABLE_BLOOM 1\n";
+		if (g_settings->getBool("enable_bloom_debug"))
+			shaders_header << "#define ENABLE_BLOOM_DEBUG 1\n";
 	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics

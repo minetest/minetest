@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include <algorithm>
+#include "database/database-dummy.h"
 #include "database/database-files.h"
 #include "database/database-sqlite3.h"
 #include "filesys.h"
@@ -133,14 +134,27 @@ void TestModMetadataDatabase::runTests(IGameDef *gamedef)
 	// fixed directory, for persistence
 	thread_local const std::string test_dir = getTestTempDirectory();
 
-	// Each set of tests is run twice for each database type:
+	// Each set of tests is run twice for each database type except dummy:
 	// one where we reuse the same ModMetadataDatabase object (to test local caching),
 	// and one where we create a new ModMetadataDatabase object for each call
 	// (to test actual persistence).
+	// Since the dummy database is only in-memory, it has no persistence to test.
+
+	ModMetadataDatabase *mod_meta_db;
+
+	rawstream << "-------- Dummy database (same object only)" << std::endl;
+
+	mod_meta_db = new Database_Dummy();
+	mod_meta_provider = new FixedProvider(mod_meta_db);
+
+	runTestsForCurrentDB();
+
+	delete mod_meta_db;
+	delete mod_meta_provider;
 
 	rawstream << "-------- Files database (same object)" << std::endl;
 
-	ModMetadataDatabase *mod_meta_db = new ModMetadataDatabaseFiles(test_dir);
+	mod_meta_db = new ModMetadataDatabaseFiles(test_dir);
 	mod_meta_provider = new FixedProvider(mod_meta_db);
 
 	runTestsForCurrentDB();
@@ -201,6 +215,9 @@ void TestModMetadataDatabase::testRecallFail()
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
 	UASSERT(recalled.empty());
+	std::string key1_value;
+	UASSERT(!mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERT(!mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testCreate()
@@ -214,8 +231,12 @@ void TestModMetadataDatabase::testRecall()
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
-	UASSERT(recalled.size() == 1);
-	UASSERT(recalled["key1"] == "value1");
+	UASSERTCMP(std::size_t, ==, recalled.size(), 1);
+	UASSERTCMP(std::string, ==, recalled["key1"], "value1");
+	std::string key1_value;
+	UASSERT(mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERTCMP(std::string, ==, key1_value, "value1");
+	UASSERT(mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testChange()
@@ -229,8 +250,12 @@ void TestModMetadataDatabase::testRecallChanged()
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
 	mod_meta_db->getModEntries("mod1", &recalled);
-	UASSERT(recalled.size() == 1);
-	UASSERT(recalled["key1"] == "value2");
+	UASSERTCMP(std::size_t, ==, recalled.size(), 1);
+	UASSERTCMP(std::string, ==, recalled["key1"], "value2");
+	std::string key1_value;
+	UASSERT(mod_meta_db->getModEntry("mod1", "key1", &key1_value));
+	UASSERTCMP(std::string, ==, key1_value, "value2");
+	UASSERT(mod_meta_db->hasModEntry("mod1", "key1"));
 }
 
 void TestModMetadataDatabase::testListMods()
@@ -239,7 +264,7 @@ void TestModMetadataDatabase::testListMods()
 	UASSERT(mod_meta_db->setModEntry("mod2", "key1", "value1"));
 	std::vector<std::string> mod_list;
 	mod_meta_db->listMods(&mod_list);
-	UASSERT(mod_list.size() == 2);
+	UASSERTCMP(size_t, ==, mod_list.size(), 2);
 	UASSERT(std::find(mod_list.cbegin(), mod_list.cend(), "mod1") != mod_list.cend());
 	UASSERT(std::find(mod_list.cbegin(), mod_list.cend(), "mod2") != mod_list.cend());
 }
@@ -248,4 +273,6 @@ void TestModMetadataDatabase::testRemove()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	UASSERT(mod_meta_db->removeModEntry("mod1", "key1"));
+	UASSERT(!mod_meta_db->removeModEntries("mod1"));
+	UASSERT(mod_meta_db->removeModEntries("mod2"));
 }

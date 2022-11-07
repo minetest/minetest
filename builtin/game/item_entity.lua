@@ -318,16 +318,29 @@ core.register_entity(":__builtin:item", {
 		end
 	end,
 
-	on_punch = function(self, hitter)
-		local inv = hitter:get_inventory()
-		if inv and self.itemstring ~= "" then
-			local left = inv:add_item("main", self.itemstring)
-			if left and not left:is_empty() then
-				self:set_item(left)
-				return
-			end
+	on_punch = function(self, hitter, ...)
+		if self.itemstring == "" then
+			self.object:remove()
+			return
 		end
-		self.itemstring = ""
-		self.object:remove()
+
+		-- Call on_pickup callback in item definition.
+		local itemstack = ItemStack(self.itemstring)
+		local callback = itemstack:get_definition().on_pickup
+
+		local ret = callback(itemstack, hitter, {type = "object", ref = self.object}, ...)
+		if not ret then
+			-- Don't modify (and don't reset rotation)
+			return
+		end
+		itemstack = ItemStack(ret)
+
+		-- Handle the leftover itemstack
+		if itemstack:is_empty() then
+			self.itemstring = ""
+			self.object:remove()
+		else
+			self:set_item(itemstack)
+		end
 	end,
 })

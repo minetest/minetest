@@ -1,7 +1,18 @@
 project(minetest)
 
+INCLUDE(CheckTypeSize)
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
+
+check_type_size(int SIZEOF_INT BUILTIN_TYPES_ONLY LANGUAGE CXX)
+if(SIZEOF_INT LESS 4)
+	message(FATAL_ERROR "Minetest will not work with int less than 32 bits wide.")
+endif()
+
+check_type_size(size_t SIZEOF_SIZE_T LANGUAGE CXX)
+if(SIZEOF_SIZE_T LESS 4)
+	message(FATAL_ERROR "Minetest will not work with size_t less than 32 bits wide.")
+endif()
 
 # Add custom SemiDebug build mode
 set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall" CACHE STRING
@@ -241,6 +252,10 @@ endif()
 # Use cmake_config.h
 add_definitions(-DUSE_CMAKE_CONFIG_H)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+set(PLATFORM_LIBS Threads::Threads)
+
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
@@ -251,8 +266,6 @@ if(WIN32)
 		add_definitions(/D "_USE_MATH_DEFINES")
 		# Dont define min/max macros in minwindef.h
 		add_definitions(/D "NOMINMAX")
-	else() # Probably MinGW = GCC
-		set(PLATFORM_LIBS "")
 	endif()
 	set(PLATFORM_LIBS ws2_32.lib version.lib shlwapi.lib winmm.lib ${PLATFORM_LIBS})
 
@@ -282,7 +295,7 @@ else()
 		endif(NOT HAIKU AND NOT APPLE)
 	endif()
 
-	set(PLATFORM_LIBS -lpthread ${CMAKE_DL_LIBS})
+	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_DL_LIBS})
 	if(APPLE)
 		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
 	else()
@@ -292,16 +305,15 @@ else()
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
-	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
 	mark_as_advanced(ICONV_LIBRARY)
 	if (ICONV_LIBRARY)
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICONV_LIBRARY})
 	endif()
-	if (HAIKU)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} intl network)
-	endif()
 
+	if (HAIKU)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} network)
+	endif()
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
@@ -672,6 +684,41 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
+include(CheckSymbolExists)
+
+set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
+if(USE_LUAJIT)
+	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
+	# LuaJIT provides exactly zero ways to determine how recent it is (the version
+	# is unchanged since 2017), however it happens that string buffers were added
+	# after the changes which we care about so that works as an indicator.
+	# (https://github.com/LuaJIT/LuaJIT/commit/4c6b669 March 2021)
+	unset(HAVE_RECENT_LJ CACHE)
+	check_symbol_exists(luaopen_string_buffer "lualib.h" HAVE_RECENT_LJ)
+	if(NOT HAVE_RECENT_LJ)
+		string(CONCAT explanation_msg
+			"You are using a relatively old version of LuaJIT. We recommend "
+			"running a recent version (from git) as older ones are known not "
+			"to build/work correctly in all cases.\n"
+			"THIS APPLIES ESPECIALLY ON macOS OR Linux/aarch64!")
+		message(WARNING ${explanation_msg})
+	endif()
+elseif(NOT MSVC)
+	set(CMAKE_REQUIRED_LIBRARIES "")
+	unset(HAVE_ATCCALL CACHE)
+	# Note: we need to check the function without having the library
+	#       available for linking, so check_symbol_exists won't work.
+	# Incidentally this doesn't seem to work on MSVC...
+	check_c_source_compiles("#include <lua.h>\nint main(){return sizeof(lua_atccall);}" HAVE_ATCCALL)
+	if(NOT HAVE_ATCCALL)
+		string(CONCAT explanation_msg
+			"It looks like you're trying to build Minetest using a system-wide "
+			"Lua installation. This is no longer supported because PUC Lua "
+			"cannot interoperate with C++ correctly. Read src/unittest/test_lua.cpp "
+			" for technical details.")
+		message(FATAL_ERROR ${explanation_msg})
+	endif()
+endif()
 
 if(MSVC)
 	# Visual Studio
@@ -716,26 +763,6 @@ else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
 
-	if(APPLE AND USE_LUAJIT)
-		# required per http://luajit.org/install.html
-		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000")
-	elseif(UNIX AND USE_LUAJIT)
-		check_c_source_compiles("#ifndef __aarch64__\n#error\n#endif\nint main(){}" IS_AARCH64)
-		if(IS_AARCH64)
-			# Move text segment below LuaJIT's 47-bit limit (see issue #9367)
-			if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-				# FreeBSD uses lld, and lld does not support -Ttext-segment, suggesting
-				# --image-base instead. Not sure if it's equivalent change for the purpose
-				# but at least if fixes build on FreeBSD/aarch64
-				# XXX: the condition should also be changed to check for lld regardless of
-				# os, bit CMake doesn't have anything like CMAKE_LINKER_IS_LLD yet
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--image-base=0x200000000")
-			else()
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Ttext-segment=0x200000000")
-			endif()
-		endif()
-	endif()
-
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
@@ -743,8 +770,8 @@ else()
 
 	# Use a safe subset of flags to speed up math calculations:
 	# - we don't need errno or math exceptions
-	# - we don't deal with Inf/NaN or signed zero
-	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -ffinite-math-only -fno-signed-zeros")
+	# - we don't deal with signed zero
+	set(MATH_FLAGS "-fno-math-errno -fno-trapping-math -fno-signed-zeros")
 
 	# Enable SSE for floating point math on 32-bit x86 by default
 	# reasoning see minetest issue #11810 and https://gcc.gnu.org/wiki/FloatingPointMath

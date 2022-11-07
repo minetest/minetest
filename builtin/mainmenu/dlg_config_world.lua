@@ -57,8 +57,7 @@ local function init_data(data)
 		hide_game = data.hide_gamemods,
 		hide_modpackcontents = data.hide_modpackcontents
 	})
-	data.list:add_sort_mechanism("alphabetic", sort_mod_list)
-	data.list:set_sortmode("alphabetic")
+	-- Sorting is already done by pgkmgr.get_mods
 end
 
 

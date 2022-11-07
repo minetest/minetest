@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "network/networkprotocol.h"
 #include "content/mod_configuration.h"
+#include "threading/mutex_auto_lock.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
@@ -522,8 +523,8 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_create_world(lua_State *L)
 {
-	const char *name	= luaL_checkstring(L, 1);
-	int gameidx			= luaL_checkinteger(L,2) -1;
+	const char *name   = luaL_checkstring(L, 1);
+	const char *gameid = luaL_checkstring(L, 2);
 
 	StringMap use_settings;
 	luaL_checktype(L, 3, LUA_TTABLE);
@@ -540,8 +541,11 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			+ sanitizeDirName(name, "world_");
 
 	std::vector<SubgameSpec> games = getAvailableGames();
-	if (gameidx < 0 || gameidx >= (int) games.size()) {
-		lua_pushstring(L, "Invalid game index");
+	auto game_it = std::find_if(games.begin(), games.end(), [gameid] (const SubgameSpec &spec) {
+		return spec.id == gameid;
+	});
+	if (game_it == games.end()) {
+		lua_pushstring(L, "Game ID not found");
 		return 1;
 	}
 
@@ -556,7 +560,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 
 	// Create world if it doesn't exist
 	try {
-		loadGameConfAndInitWorld(path, name, games[gameidx], true);
+		loadGameConfAndInitWorld(path, name, *game_it, true);
 		lua_pushnil(L);
 	} catch (const BaseException &e) {
 		auto err = std::string("Failed to initialize world: ") + e.what();
@@ -1005,6 +1009,44 @@ int ModApiMainMenu::l_do_async_callback(lua_State *L)
 }
 
 /******************************************************************************/
+// this is intentionally a global and not part of MainMenuScripting or such
+namespace {
+	std::unordered_map<std::string, std::string> once_values;
+	std::mutex once_mutex;
+}
+
+int ModApiMainMenu::l_set_once(lua_State *L)
+{
+	std::string key = readParam<std::string>(L, 1);
+	if (lua_isnil(L, 2))
+		return 0;
+	std::string value = readParam<std::string>(L, 2);
+
+	{
+		MutexAutoLock lock(once_mutex);
+		once_values[key] = value;
+	}
+
+	return 0;
+}
+
+int ModApiMainMenu::l_get_once(lua_State *L)
+{
+	std::string key = readParam<std::string>(L, 1);
+
+	{
+		MutexAutoLock lock(once_mutex);
+		auto it = once_values.find(key);
+		if (it == once_values.end())
+			lua_pushnil(L);
+		else
+			lua_pushstring(L, it->second.c_str());
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
 void ModApiMainMenu::Initialize(lua_State *L, int top)
 {
 	API_FCT(update_formspec);
@@ -1051,6 +1093,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(open_dir);
 	API_FCT(share_file);
 	API_FCT(do_async_callback);
+	API_FCT(set_once);
+	API_FCT(get_once);
 }
 
 /******************************************************************************/
