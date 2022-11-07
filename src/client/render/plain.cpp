@@ -49,10 +49,11 @@ void DrawHUD::run(PipelineContext &context)
 		if (context.shadow_renderer)
 			context.shadow_renderer->drawDebug();
 
+		context.hud->resizeHotbar();
+
 		if (context.draw_crosshair)
 			context.hud->drawCrosshair();
 
-		context.hud->resizeHotbar();
 		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
 		context.client->getCamera()->drawNametags();
