@@ -166,8 +166,8 @@ int ModApiUtil::l_get_tool_wear_after_use(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	u32 uses = readParam<int>(L, 1);
 	u16 initial_wear = readParam<int>(L, 2, 0);
-	u16 wear = calculateResultWear(uses, initial_wear);
-	lua_pushnumber(L, wear);
+	u32 add_wear = calculateResultWear(uses, initial_wear);
+	lua_pushnumber(L, add_wear);
 	return 1;
 }
 
