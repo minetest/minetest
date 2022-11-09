@@ -4,8 +4,9 @@ FROM $DOCKER_IMAGE AS builder
 ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
 
-RUN apk add --no-cache git build-base cmake sqlite-dev curl-dev zlib-dev zstd-dev \
-		gmp-dev jsoncpp-dev postgresql-dev ninja luajit-dev ca-certificates
+RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
+		sqlite-dev postgresql-dev hiredis-dev leveldb-dev \
+		gmp-dev jsoncpp-dev ninja luajit-dev ca-certificates
 
 WORKDIR /usr/src/
 RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
@@ -52,7 +53,8 @@ RUN git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/
 ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS runtime
 
-RUN apk add --no-cache sqlite-libs curl gmp libstdc++ libgcc libpq luajit jsoncpp zstd-libs && \
+RUN apk add --no-cache curl gmp libstdc++ libgcc libpq luajit jsoncpp zstd-libs \
+						sqlite-libs postgresql hiredis leveldb && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
 
