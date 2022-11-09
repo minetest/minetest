@@ -66,7 +66,7 @@ public:
 			throw PrngException("Invalid range (max < min)");
 		/*
 		Here, we ensure the range is not too large relative to RANDOM_MAX,
-		as otherwise the effects of bias would become noticable.  Unlike
+		as otherwise the effects of bias would become noticeable.  Unlike
 		PcgRandom, we cannot modify this RNG's range as it would change the
 		output of this RNG for reverse compatibility.
 		*/

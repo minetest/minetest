@@ -189,7 +189,7 @@ JoystickLayout create_dragonrise_gamecube_layout()
 	// D-Pad
 	JLO_A_PB(KeyType::HOTBAR_PREV, 5,  1, jlo.axes_deadzone); // left
 	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_deadzone); // right
-	// Axis are hard to actuate independantly, best to leave up and down unused.
+	// Axis are hard to actuate independently, best to leave up and down unused.
 	//JLO_A_PB(0, 6,  1, jlo.axes_deadzone); // up
 	//JLO_A_PB(0, 6, -1, jlo.axes_deadzone); // down
 

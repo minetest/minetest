@@ -121,7 +121,7 @@ function core.get_player_radius_area(player_name, radius)
 end
 
 
--- To be overriden by protection mods
+-- To be overridden by protection mods
 
 function core.is_protected(pos, name)
 	return false

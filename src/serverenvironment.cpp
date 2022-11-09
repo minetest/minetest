@@ -826,10 +826,10 @@ public:
 			delete aabms;
 	}
 
-	// Find out how many objects the given block and its neighbours contain.
+	// Find out how many objects the given block and its neighbors contain.
 	// Returns the number of objects in the block, and also in 'wider' the
-	// number of objects in the block and all its neighbours. The latter
-	// may an estimate if any neighbours are unloaded.
+	// number of objects in the block and all its neighbors. The latter
+	// may an estimate if any neighbors are unloaded.
 	u32 countObjects(MapBlock *block, ServerMap * map, u32 &wider)
 	{
 		wider = 0;
@@ -1081,7 +1081,7 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 
 u8 ServerEnvironment::findSunlight(v3s16 pos) const
 {
-	// Directions for neighbouring nodes with specified order
+	// Directions for neighboring nodes with specified order
 	static const v3s16 dirs[] = {
 		v3s16(-1, 0, 0), v3s16(1, 0, 0), v3s16(0, 0, -1), v3s16(0, 0, 1),
 		v3s16(0, -1, 0), v3s16(0, 1, 0)
@@ -1156,7 +1156,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 				// Found a valid daylight
 				found_light = possible_finlight;
 			} else {
-				// Sunlight may be darker, so walk the neighbours
+				// Sunlight may be darker, so walk the neighbors
 				stack.push({neighborPos, dist});
 			}
 		}
@@ -1991,7 +1991,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
 	auto cb_deactivate = [this, _force_delete](ServerActiveObject *obj, u16 id) {
-		// force_delete might be overriden per object
+		// force_delete might be overridden per object
 		bool force_delete = _force_delete;
 
 		// Do not deactivate if disallowed

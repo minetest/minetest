@@ -233,7 +233,7 @@ u32 calculateResultWear(const u32 uses, const u16 initial_wear)
 		   only oversized blocks remain.
 		   This also implies the raw tool wear number
 		   increases a bit faster after this point,
-		   but this should be barely noticable by the
+		   but this should be barely noticeable by the
 		   player.
 		*/
 		u16 wear_extra_at = blocks_normal * wear_normal;

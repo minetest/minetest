@@ -1355,7 +1355,7 @@ void NodeDefManager::eraseIdFromGroups(content_t id)
 		// Get the group items vector.
 		std::vector<content_t> &items = iter_groups->second;
 
-		// Remove any occurence of the id in the group items vector.
+		// Remove any occurrence of the id in the group items vector.
 		items.erase(std::remove(items.begin(), items.end(), id), items.end());
 
 		// If group is empty, erase its vector from the map.

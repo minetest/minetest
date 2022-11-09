@@ -45,7 +45,7 @@ enum CraftMethod
 /*
 	The type a hash can be. The earlier a type is mentioned in this enum,
 	the earlier it is tried at crafting, and the less likely is a collision.
-	Changing order causes changes in behaviour, so know what you do.
+	Changing order causes changes in behavior, so know what you do.
  */
 enum CraftHashType
 {

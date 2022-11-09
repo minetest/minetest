@@ -440,7 +440,7 @@ void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 	// justification
 	switch (m_halign) {
 	case EGUIA_CENTER:
-		// align to h centre
+		// align to h center
 		m_current_text_rect.UpperLeftCorner.X = (m_frame_rect.getWidth() / 2) - (d.Width / 2);
 		m_current_text_rect.LowerRightCorner.X = (m_frame_rect.getWidth() / 2) + (d.Width / 2);
 		break;
@@ -458,7 +458,7 @@ void GUIEditBoxWithScrollBar::setTextRect(s32 line)
 
 	switch (m_valign) {
 	case EGUIA_CENTER:
-		// align to v centre
+		// align to v center
 		m_current_text_rect.UpperLeftCorner.Y =
 			(m_frame_rect.getHeight() / 2) - (line_count*d.Height) / 2 + d.Height*line;
 		break;
@@ -518,7 +518,7 @@ void GUIEditBoxWithScrollBar::calculateScrollPos()
 
 		if (txt_width < m_frame_rect.getWidth()) {
 			// TODO: Needs a clean left and right gap removal depending on HAlign, similar to vertical scrolling tests for top/bottom.
-			// This check just fixes the case where it was most noticable (text smaller than clipping area).
+			// This check just fixes the case where it was most noticeable (text smaller than clipping area).
 
 			m_hscroll_pos = 0;
 			setTextRect(curs_line);

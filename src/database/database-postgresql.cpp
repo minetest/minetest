@@ -754,7 +754,7 @@ bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 
 	int numrows = PQntuples(result);
 	if (numrows == 0) {
-		errorstream << "Strange behaviour on auth creation, no ID returned." << std::endl;
+		errorstream << "Strange behavior on auth creation, no ID returned." << std::endl;
 		PQclear(result);
 		rollback();
 		return false;

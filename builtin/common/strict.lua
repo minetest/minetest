@@ -10,7 +10,7 @@ end
 
 local meta = {}
 local declared = {}
--- Key is source file, line, and variable name; seperated by NULs
+-- Key is source file, line, and variable name; separated by NULs
 local warned = {}
 
 function meta:__newindex(name, value)

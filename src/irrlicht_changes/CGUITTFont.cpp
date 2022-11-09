@@ -1096,7 +1096,7 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 	if (!Driver || !smgr) return container;
 	if (!parent)
 		parent = smgr->addEmptySceneNode(smgr->getRootSceneNode(), -1);
-	// if you don't specify parent, then we add a empty node attached to the root node
+	// if you don't specify parent, then we add an empty node attached to the root node
 	// this is generally undesirable.
 
 	if (!shared_plane_ptr_) //this points to a static mesh that contains the plane

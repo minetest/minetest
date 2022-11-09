@@ -157,7 +157,7 @@ public:
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
-	// Actual processing is done in an another thread.
+	// Actual processing is done in another thread.
 	void step(float dtime);
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);

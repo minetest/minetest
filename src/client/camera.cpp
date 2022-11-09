@@ -53,7 +53,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 {
 	auto smgr = rendering_engine->get_scene_manager();
 	// note: making the camera node a child of the player node
-	// would lead to unexpected behaviour, so we don't do that.
+	// would lead to unexpected behavior, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
 	m_headnode = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
@@ -418,7 +418,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	v3f abs_cam_up;
 	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 
-	// Seperate camera position for calculation
+	// Separate camera position for calculation
 	v3f my_cp = m_camera_position;
 
 	// Reposition the camera for third person view

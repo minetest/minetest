@@ -37,7 +37,7 @@ private:
 	static std::string getTextData(lua_State *L, std::string name);
 
 	/**
-	 * read a integer variable from gamedata table within lua stack
+	 * read an integer variable from gamedata table within lua stack
 	 * @param L stack to read variable from
 	 * @param name name of variable to read
 	 * @return integer value of requested variable

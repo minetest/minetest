@@ -548,7 +548,7 @@ u8 MapNode::getLevel(const NodeDefManager *nodemgr) const
 		return LIQUID_LEVEL_SOURCE;
 	if (f.param_type_2 == CPT2_FLOWINGLIQUID)
 		return getParam2() & LIQUID_LEVEL_MASK;
-	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 setted
+	if(f.liquid_type == LIQUID_FLOWING) // can remove if all param_type_2 set
 		return getParam2() & LIQUID_LEVEL_MASK;
 	if (f.param_type_2 == CPT2_LEVELED) {
 		u8 level = getParam2() & LEVELED_MASK;

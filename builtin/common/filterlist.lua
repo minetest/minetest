@@ -20,8 +20,8 @@
 -- TODO code cleanup                                                          --
 -- Generic implementation of a filter/sortable list                           --
 -- Usage:                                                                     --
--- Filterlist needs to be initialized on creation. To achieve this you need to --
--- pass following functions:                                                  --
+-- Filterlist needs to be initialized on creation. To achieve this you need   --
+-- to pass following functions:                                               --
 -- raw_fct() (mandatory):                                                     --
 --     function returning a table containing the elements to be filtered      --
 -- compare_fct(element1,element2) (mandatory):                                --
@@ -31,7 +31,7 @@
 -- filter_fct(element,filtercriteria) (optional)                              --
 --     function returning true/false if filtercriteria met to element         --
 -- fetch_param (optional)                                                     --
---     parameter passed to raw_fct to aquire correct raw data                 --
+--     parameter passed to raw_fct to acquire correct raw data                --
 --                                                                            --
 --------------------------------------------------------------------------------
 filterlist = {}

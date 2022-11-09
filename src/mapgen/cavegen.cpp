@@ -528,7 +528,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 		if (use_biome_liquid) {
 			liquidnode = c_biome_liquid;
 		} else {
-			// If cave liquid not defined by biome, fallback to old hardcoded behaviour.
+			// If cave liquid not defined by biome, fallback to old hardcoded behavior.
 			// TODO 'np_caveliquids' is deprecated and should eventually be removed.
 			// Cave liquids are now defined and located using biome definitions.
 			float nval = NoisePerlin3D(np_caveliquids, startp.X,

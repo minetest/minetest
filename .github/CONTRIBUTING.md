@@ -138,7 +138,7 @@ These notes are for those who have push access Minetest (core developers / maint
 If a Pull Request is not a bug fix:
 
 * If it matches a goal in [the roadmap](../doc/direction.md), then the PR should
-  be labelled as "Roadmap" and the goal stated by number in the description.
+  be labeled as "Roadmap" and the goal stated by number in the description.
 * If it doesn't match a goal, then it needs to receive a concept approval within
   a week of being opened to remain open. This 1 week deadline does not apply to
   PRs opened before the roadmap was adopted; instead, they may remain open or be

@@ -516,7 +516,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 	return 0;
 }
 
-// Draw an image on top of an another one, using the alpha channel of the
+// Draw an image on top of another one, using the alpha channel of the
 // source image
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
@@ -1854,7 +1854,7 @@ static inline video::SColor blitPixel(const video::SColor &src_c, const video::S
 }
 
 /*
-	Draw an image on top of an another one, using the alpha channel of the
+	Draw an image on top of another one, using the alpha channel of the
 	source image
 
 	This exists because IImage::copyToWithAlpha() doesn't seem to always
@@ -1878,7 +1878,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 }
 
 /*
-	Draw an image on top of an another one, using the alpha channel of the
+	Draw an image on top of another one, using the alpha channel of the
 	source image; only modify fully opaque pixels in destinaion
 */
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
@@ -1905,7 +1905,7 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 // Feel free to re-enable if you find it handy.
 #if 0
 /*
-	Draw an image on top of an another one, using the specified ratio
+	Draw an image on top of another one, using the specified ratio
 	modify all partially-opaque pixels in the destination.
 */
 static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst,

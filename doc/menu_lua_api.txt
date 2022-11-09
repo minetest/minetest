@@ -171,7 +171,7 @@ core.update_formspec(formspec)
 core.get_table_index(tablename) -> index
 ^ can also handle textlists
 core.formspec_escape(string) -> string
-^ escapes characters [ ] \ , ; that can not be used in formspecs
+^ escapes characters [ ] \ , ; that cannot be used in formspecs
 core.explode_table_event(string) -> table
 ^ returns e.g. {type="CHG", row=1, column=2}
 ^ type: "INV" (no row selected), "CHG" (selected) or "DCL" (double-click)

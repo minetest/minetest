@@ -138,7 +138,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 				}
 			}
 		} else {
-			// legacy behaviour: check just one node
+			// legacy behavior: check just one node
 			node = map->getNode(p + v3s16(0, 1, 0), &is_valid_position);
 			ok = is_valid_position && !nodemgr->get(node).walkable;
 		}
@@ -355,7 +355,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f sneak_max = m_collisionbox.getExtent() * 0.49f;
 
 	if (m_sneak_ladder_detected) {
-		// restore legacy behaviour (this makes the m_speed.Y hack necessary)
+		// restore legacy behavior (this makes the m_speed.Y hack necessary)
 		sneak_max = v3f(0.4f * BS, 0.0f, 0.4f * BS);
 	}
 
@@ -924,7 +924,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
-	// Positition was slightly changed; update standing node pos
+	// Position was slightly changed; update standing node pos
 	if (touching_ground)
 		m_standing_node = floatToInt(m_position - v3f(0.0f, 0.1f * BS, 0.0f), BS);
 	else

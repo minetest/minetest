@@ -81,7 +81,7 @@ metatable.__eq = vector.equals
 function vector.length(v)
 	return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
 end
--- Note: we can not use __len because it is already used for primitive table length
+-- Note: we cannot use __len because it is already used for primitive table length
 
 function vector.normalize(v)
 	local len = vector.length(v)
@@ -356,7 +356,7 @@ function vector.dir_to_rotation(forward, up)
 
 	-- Since vector.angle never returns a negative value or a value greater
 	-- than math.pi, rot.z has to be inverted sometimes.
-	-- To determine wether this is the case, we rotate the up vector back around
+	-- To determine whether this is the case, we rotate the up vector back around
 	-- the forward vector and check if it worked out.
 	local back = vector.rotate_around_axis(up, forward, -rot.z)
 

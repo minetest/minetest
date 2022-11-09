@@ -92,7 +92,7 @@ public:
 			}
 		}
 	}
-	// Undefined behaviour if there already is a timer
+	// Undefined behavior if there already is a timer
 	void insert(const NodeTimer &timer) {
 		v3s16 p = timer.position;
 		double trigger_time = m_time + (double)(timer.timeout - timer.elapsed);

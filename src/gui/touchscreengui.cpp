@@ -739,7 +739,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		/*
 		 * Add to own copy of event list...
 		 * android would provide this information but Irrlicht guys don't
-		 * wanna design a efficient interface
+		 * wanna design an efficient interface
 		 */
 		id_status toadd{};
 		toadd.id = event.TouchInput.ID;
@@ -848,7 +848,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					s32 dy = Y - m_pointerpos[event.TouchInput.ID].Y;
 					m_pointerpos[event.TouchInput.ID] = v2s32(X, Y);
 
-					// adapt to similar behaviour as pc screen
+					// adapt to similar behavior as pc screen
 					const double d = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f) * 3.0f;
 
 					m_camera_yaw_change -= dx * d;

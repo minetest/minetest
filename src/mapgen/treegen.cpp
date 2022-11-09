@@ -806,7 +806,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 		dev--;
 	}
 
-	// Centre top nodes
+	// Center top nodes
 	leaves_d[leaves_a.index(v3s16(0, 1, 0))] = 1;
 	leaves_d[leaves_a.index(v3s16(0, 2, 0))] = 1;
 	leaves_d[leaves_a.index(v3s16(0, 3, 0))] = 2;

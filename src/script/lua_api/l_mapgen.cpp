@@ -408,7 +408,7 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 
 	size_t nnames = getstringlistfield(L, index, "node_cave_liquid", &nn);
 	// If no cave liquids defined, set list to "ignore" to trigger old hardcoded
-	// cave liquid behaviour.
+	// cave liquid behavior.
 	if (nnames == 0) {
 		nn.emplace_back("ignore");
 		nnames = 1;

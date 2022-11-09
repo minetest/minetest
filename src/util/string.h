@@ -450,7 +450,7 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
- * Escapes characters [ ] \ , ; that can not be used in formspecs
+ * Escapes characters [ ] \ , ; that cannot be used in formspecs
  */
 inline void str_formspec_escape(std::string &str)
 {
@@ -729,7 +729,7 @@ inline std::string str_join(const std::vector<std::string> &list,
 }
 
 /**
- * Create a UTF8 std::string from a irr::core::stringw.
+ * Create a UTF8 std::string from an irr::core::stringw.
  */
 inline std::string stringw_to_utf8(const irr::core::stringw &input)
 {
@@ -738,7 +738,7 @@ inline std::string stringw_to_utf8(const irr::core::stringw &input)
 }
 
  /**
-  * Create a irr::core:stringw from a UTF8 std::string.
+  * Create an irr::core:stringw from a UTF8 std::string.
   */
 inline irr::core::stringw utf8_to_stringw(const std::string &input)
 {

@@ -256,7 +256,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (s.Z - 1) / 2;
 
-	//// Create VManip for effected area, emerge our area, modify area
+	//// Create VManip for affected area, emerge our area, modify area
 	//// inside VManip, then blit back.
 	v3s16 bp1 = getNodeBlockPos(p);
 	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1, 1, 1));
