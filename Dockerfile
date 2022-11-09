@@ -3,13 +3,15 @@ FROM $DOCKER_IMAGE AS builder
 
 ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
+ENV SPATIALINDEX_VERSION 1.9.3
 
 RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
 		sqlite-dev postgresql-dev hiredis-dev leveldb-dev \
 		gmp-dev jsoncpp-dev ninja luajit-dev ca-certificates
 
 WORKDIR /usr/src/
-RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
+RUN cd /usr/src/ && \
+	git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
 	cd prometheus-cpp && \
 	cmake -B build \
 		-DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -17,9 +19,20 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
 		-DENABLE_TESTING=0 \
 		-GNinja && \
 	cmake --build build && \
-	cmake --install build
-
-RUN git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
+	cmake --install build && \
+	cd /usr/src/ && \
+	git clone --recursive https://github.com/libspatialindex/libspatialindex -b ${SPATIALINDEX_VERSION} && \
+	cd libspatialindex && \
+	cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr/local && \
+	cmake --build build && \
+	cmake --install build && \
+	cd /usr/src/ && \
+	git clone --recursive https://luajit.org/git/luajit.git -b ${LUAJIT_VERSION} && \
+	cd luajit && \
+	make && make install && \
+	cd /usr/src/ && \
+	git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
 	cp -r irrlicht/include /usr/include/irrlichtmt
 
 COPY .git /usr/src/minetest/.git
@@ -63,7 +76,7 @@ WORKDIR /var/lib/minetest
 COPY --from=builder /usr/local/share/minetest /usr/local/share/minetest
 COPY --from=builder /usr/local/bin/minetestserver /usr/local/bin/minetestserver
 COPY --from=builder /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
-
+COPY --from=builder /usr/local/lib/libspatialindex* /usr/local/lib/
 USER minetest:minetest
 
 EXPOSE 30000/udp 30000/tcp
