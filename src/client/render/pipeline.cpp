@@ -101,6 +101,16 @@ void TextureBuffer::reset(PipelineContext &context)
 	RenderSource::reset(context);
 }
 
+void TextureBuffer::swapTextures(u8 texture_a, u8 texture_b)
+{
+	assert(m_definitions[texture_a].valid && m_definitions[texture_b].valid);
+
+	video::ITexture *temp = m_textures[texture_a];
+	m_textures[texture_a] = m_textures[texture_b];
+	m_textures[texture_b] = temp;
+}
+
+
 bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
 {
 	bool modify;
@@ -228,6 +238,16 @@ SetRenderTargetStep::SetRenderTargetStep(RenderStep *_step, RenderTarget *_targe
 void SetRenderTargetStep::run(PipelineContext &context)
 {
 	step->setRenderTarget(target);
+}
+
+SwapTexturesStep::SwapTexturesStep(TextureBuffer *_buffer, u8 _texture_a, u8 _texture_b)
+		: buffer(_buffer), texture_a(_texture_a), texture_b(_texture_b)
+{
+}
+
+void SwapTexturesStep::run(PipelineContext &context)
+{
+	buffer->swapTextures(texture_a, texture_b);
 }
 
 RenderSource *RenderPipeline::getInput()

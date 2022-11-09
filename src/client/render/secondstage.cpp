@@ -115,10 +115,14 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_COLOR = 0;
 	static const u8 TEXTURE_DEPTH = 1;
 	static const u8 TEXTURE_BLOOM = 2;
+	static const u8 TEXTURE_EXPOSURE_1 = 3;
+	static const u8 TEXTURE_EXPOSURE_2 = 4;
 	static const u8 TEXTURE_BLOOM_DOWN = 10;
 	static const u8 TEXTURE_BLOOM_UP = 20;
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
+	buffer->setTexture(TEXTURE_EXPOSURE_1, core::dimension2du(1,1), "exposure_1", color_format);
+	buffer->setTexture(TEXTURE_EXPOSURE_2, core::dimension2du(1,1), "exposure_2", color_format);
 	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
@@ -127,30 +131,40 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// shared variables
 	u32 shader_id;
 
+	// Number of mipmap levels of the bloom downsampling texture
+	const u8 MIPMAP_LEVELS = 4;
+
+	const bool enable_bloom = g_settings->getBool("enable_bloom");
+	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
+
 	// post-processing stage
-	// set up bloom
-	if (g_settings->getBool("enable_bloom")) {
 
+	u8 source = TEXTURE_COLOR;
 
-		buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+	// common downsampling step for bloom or autoexposure
+	if (enable_bloom || enable_auto_exposure) {
 
-		const u8 MIPMAP_LEVELS = 4;
 		v2f downscale = scale * 0.5;
 		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
-			buffer->setTexture(TEXTURE_BLOOM_DOWN + i, downscale, std::string("bloom_down") + std::to_string(i), color_format);
-			buffer->setTexture(TEXTURE_BLOOM_UP + i, downscale, std::string("bloom_up") + std::to_string(i), color_format);
+			buffer->setTexture(TEXTURE_BLOOM_DOWN + i, downscale, std::string("downsample") + std::to_string(i), color_format);
+			if (enable_bloom)
+				buffer->setTexture(TEXTURE_BLOOM_UP + i, downscale, std::string("upsample") + std::to_string(i), color_format);
 			downscale *= 0.5;
 		}
 
-		// get bright spots
-		u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
-		RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR });
-		extract_bloom->setRenderSource(buffer);
-		extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
+		if (enable_bloom) {
+			buffer->setTexture(TEXTURE_BLOOM, scale, "bloom", color_format);
+
+			// get bright spots
+			u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
+			RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_EXPOSURE_1 });
+			extract_bloom->setRenderSource(buffer);
+			extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
+			source = TEXTURE_BLOOM;
+		}
 
 		// downsample
 		shader_id = client->getShaderSource()->getShader("bloom_downsample", TILE_MATERIAL_PLAIN, NDT_MESH);
-		u8 source = TEXTURE_BLOOM;
 		for (u8 i = 0; i < MIPMAP_LEVELS; i++) {
 			auto step = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { source });
 			step->setRenderSource(buffer);
@@ -158,7 +172,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 			step->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM_DOWN + i));
 			source = TEXTURE_BLOOM_DOWN + i;
 		}
+	}
 
+	if (enable_bloom) {
 		// upsample
 		shader_id = client->getShaderSource()->getShader("bloom_upsample", TILE_MATERIAL_PLAIN, NDT_MESH);
 		for (u8 i = MIPMAP_LEVELS - 1; i > 0; i--) {
@@ -171,11 +187,24 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 		}
 	}
 
+	if (enable_auto_exposure) {
+		shader_id = client->getShaderSource()->getShader("update_exposure", TILE_MATERIAL_PLAIN, NDT_MESH);
+		auto update_exposure = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_EXPOSURE_1, u8(TEXTURE_BLOOM_DOWN + MIPMAP_LEVELS - 1) });
+		update_exposure->setBilinearFilter(1, true);
+		update_exposure->setRenderSource(buffer);
+		update_exposure->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_EXPOSURE_2));
+	}
+
 	// final post-processing
 	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
-	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM_UP });
+	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_BLOOM_UP, TEXTURE_EXPOSURE_2 });
 	pipeline->addStep(effect);
 	effect->setBilinearFilter(1, true); // apply filter to the bloom
 	effect->setRenderSource(buffer);
+
+	if (enable_auto_exposure) {
+		pipeline->addStep<SwapTexturesStep>(buffer, TEXTURE_EXPOSURE_1, TEXTURE_EXPOSURE_2);
+	}
+
 	return effect;
 }

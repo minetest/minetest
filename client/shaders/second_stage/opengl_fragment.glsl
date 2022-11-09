@@ -13,6 +13,8 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
+varying float exposure;
+
 #ifdef ENABLE_BLOOM
 
 vec4 applyBloom(vec4 color, vec2 uv)
@@ -80,7 +82,7 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-		color.rgb *= exposureFactor;
+		color.rgb *= exposure * exposureFactor;
 	}
 
 
