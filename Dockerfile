@@ -4,10 +4,11 @@ FROM $DOCKER_IMAGE AS builder
 ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
 ENV SPATIALINDEX_VERSION 1.9.3
+ENV LUAJIT_VERSION v2.1
 
 RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
 		sqlite-dev postgresql-dev hiredis-dev leveldb-dev \
-		gmp-dev jsoncpp-dev ninja luajit-dev ca-certificates
+		gmp-dev jsoncpp-dev ninja ca-certificates
 
 WORKDIR /usr/src/
 RUN cd /usr/src/ && \
@@ -66,7 +67,7 @@ RUN git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/
 ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS runtime
 
-RUN apk add --no-cache curl gmp libstdc++ libgcc libpq luajit jsoncpp zstd-libs \
+RUN apk add --no-cache curl gmp libstdc++ libgcc libpq jsoncpp zstd-libs \
 						sqlite-libs postgresql hiredis leveldb && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
@@ -77,6 +78,7 @@ COPY --from=builder /usr/local/share/minetest /usr/local/share/minetest
 COPY --from=builder /usr/local/bin/minetestserver /usr/local/bin/minetestserver
 COPY --from=builder /usr/local/share/doc/minetest/minetest.conf.example /etc/minetest/minetest.conf
 COPY --from=builder /usr/local/lib/libspatialindex* /usr/local/lib/
+COPY --from=builder /usr/local/lib/libluajit* /usr/local/lib/
 USER minetest:minetest
 
 EXPOSE 30000/udp 30000/tcp
