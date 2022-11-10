@@ -91,8 +91,8 @@ public:
 	bool contains(const std::string &name) const override;
 	virtual bool setString(const std::string &name, const std::string &var) override;
 	const StringMap &getStrings(StringMap *) const override final;
-	const std::vector<std::string> &getKeys(
-			std::vector<std::string> *place) const override final;
+	const std::vector<std::string> &getKeys(std::vector<std::string> *place)
+		const override final;
 
 	// Simple version of getters, possible due to in-memory storage:
 
