@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Romanian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2021-07-25 23:36+0000\n"
+"PO-Revision-Date: 2022-11-11 16:53+0000\n"
 "Last-Translator: Nicolae Crefelean <kneekoo@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ro/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -678,9 +678,8 @@ msgid "Content: Games"
 msgstr "Conţinut"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Conţinut"
+msgstr "Conținut: Modificări"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -707,7 +706,6 @@ msgid "Offset"
 msgstr "Decalaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Persistență"
 
@@ -892,7 +890,7 @@ msgstr "Dezvoltatori de bază precedenți"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "Distribuie jurnalul de depanare"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1025,7 +1023,7 @@ msgstr "Alatură-te jocului"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Conectare"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1040,9 +1038,8 @@ msgid "Refresh"
 msgstr "Actualizează"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Şterge Favorit"
+msgstr "Șterge favorit"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1050,7 +1047,7 @@ msgstr "Descrierea serverului"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(necesită suportul jocului)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1097,9 +1094,8 @@ msgid "Dynamic shadows"
 msgstr "Umbre dinamice"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Umbre dinamice: "
+msgstr "Umbre dinamice:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1107,15 +1103,15 @@ msgstr "Frunze detaliate"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Înalt"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Redus"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Mediu"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1194,9 +1190,8 @@ msgid "Tone Mapping"
 msgstr "Mapare ton"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "PragulAtingerii: (px)"
+msgstr "Pragul atingerii (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1204,11 +1199,11 @@ msgstr "Filtrare Triliniară"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very High"
-msgstr ""
+msgstr "Foarte înalt"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Foarte redus"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1223,9 +1218,8 @@ msgid "Waving Plants"
 msgstr "Plante legănătoare"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Eroare de conexiune (timeout?)"
+msgstr "Conexiune anulată (eroare de protocol?)"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1256,9 +1250,8 @@ msgid "Connection error (timed out?)"
 msgstr "Eroare de conexiune (timeout?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Nu se poate găsi sau încărca jocul \""
+msgstr "Nu se poate găsi sau încărca jocul: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1322,14 +1315,13 @@ msgid "- Server Name: "
 msgstr "- Numele serverului: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "A apărut o eroare:"
+msgstr "A apărut o eroare de serializare:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Acces refuzat. Motiv: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1341,19 +1333,19 @@ msgstr "Redirecționare automată activată"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Limite blocuri ascunse"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Limite blocuri afișate pentru toate blocurile"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Limite blocuri afișate pentru blocul curent"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Limit blocuri afișate pentru blocurile învecinate"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1365,7 +1357,7 @@ msgstr "Actualizarea camerei este activată"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+msgstr "Nu se pot afișa limitele blocurilor (dezactivate de modificare sau joc)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1380,9 +1372,8 @@ msgid "Cinematic mode enabled"
 msgstr "Modul cinematografic activat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Modare la client"
+msgstr "Client deconectat"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1394,7 +1385,7 @@ msgstr "Se conectează la server..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Conexiune eșuată din motiv necunoscut"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1436,7 +1427,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Adresa n-a putut fi rezolvată: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1495,9 +1486,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Interval de vizualizare nelimitat activat"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Se creează clientul..."
+msgstr "Eroare la crearea clientului: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
