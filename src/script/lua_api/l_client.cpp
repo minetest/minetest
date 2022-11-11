@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
+#include "cpp_api/s_security.h"
 #include "gettext.h"
 #include "l_internal.h"
 #include "lua_api/l_nodemeta.h"
@@ -62,8 +63,7 @@ const static CSMFlagDesc flagdesc_csm_restriction[] = {
 // get_current_modname()
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	return 1;
+	return ScriptApiSecurity::l_get_current_modname(L);
 }
 
 // get_modpath(modname)

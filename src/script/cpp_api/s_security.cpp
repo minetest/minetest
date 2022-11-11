@@ -420,6 +420,7 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	bool secure = !lua_isnil(L, -1);
 	lua_pop(L, 1);
+	if (secure) secure = !checkWhitelisted(L, "secure.trusted_mods");
 	return secure;
 }
 
@@ -503,6 +504,110 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 	return result;
 }
 
+std::string inline _get_mod_name_from_debug(lua_Debug *info)
+{
+	std::string mod_name;
+	std::string src = info->source;
+	std::string BIN_DIR = std::string(DIR_DELIM) + "bin" + DIR_DELIM;
+	std::string MOD_DIR = BIN_DIR + ".." + DIR_DELIM + "mods" + DIR_DELIM;
+
+	size_t found = src.find(MOD_DIR);
+	if (found != std::string::npos) {
+		// Check the path whether be faked.
+		if (src.find(BIN_DIR) == found) {
+			mod_name = src.substr(found+MOD_DIR.length());
+			found = mod_name.find(DIR_DELIM_CHAR);
+			if (found != std::string::npos) mod_name = mod_name.substr(0, found);
+		} else {
+			warningstream << "Mod security:: fake "<< MOD_DIR << " folder found in mod " << src.substr(found+MOD_DIR.length()) << std::endl;
+		}
+	}
+	return mod_name;
+}
+
+std::vector<std::string> inline _get_caller_mod_names(lua_State *L) {
+  lua_Debug info;
+  std::vector<std::string> result;
+  int level = 1;
+	std::string mod_name;
+  while (lua_getstack(L, level, &info)) {
+    FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+    mod_name = _get_mod_name_from_debug(&info);
+    if (mod_name.empty()) break;
+    if (result.size() == 0 || result.back() != mod_name) {
+      result.push_back(mod_name);
+    }
+		level++;
+  }
+  return result;
+}
+
+std::string inline _get_real_caller_mod_name(lua_State *L)
+{
+	std::string result;
+	// Get gamedef from registry
+	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
+	const IGameDef *gamedef = script->getGameDef();
+	if (gamedef) {
+		std::vector<std::string> caller_mods = _get_caller_mod_names(L);
+		if (caller_mods.empty()) return result;
+		std::string executor_mod_name = caller_mods.at(0);
+		const ModSpec *executor_mod = gamedef->getModSpec(executor_mod_name);
+		if (executor_mod) {
+			bool ok = false;
+			std::string prev_mod_name;
+			std::size_t i = caller_mods.size() - 1;
+			// get the first event trigger
+			while (i>0) {
+				result = caller_mods.at(i);
+				if (i > 0) {
+					prev_mod_name = caller_mods.at(i-1);
+					const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
+					if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
+						break;
+					}
+					if (prev_mod_name == executor_mod_name) {
+						ok = true;
+						// this means the second is the trigger, the first is caller for no more callers
+						if (i == 1) result = executor_mod_name;
+						break;
+					}
+				}
+				i--;
+			}
+			const ModSpec *mod;
+			// get real caller
+			while (i>0) {
+				if (result.empty()) result = caller_mods.at(i);
+				mod = gamedef->getModSpec(result);
+				if (mod && (CONTAINS(mod->depends, executor_mod_name) || CONTAINS(mod->optdepends, executor_mod_name))) {
+					ok = true;
+					break;
+				}
+				i--;
+			}
+			if (!ok) {
+				warningstream << "Mod security:: FAKE(MAYBE) the mod "<< result << " is hooked by " << executor_mod_name << std::endl;
+				result.clear();
+			}
+		}
+	}
+	// warningstream << "Mod security:: _get_real_caller_mod_name "<< result << std::endl;
+	return result;
+}
+
+int ScriptApiSecurity::l_get_current_modname(lua_State *L)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1)) {
+		std::string mod_name = _get_real_caller_mod_name(L);
+		if (!mod_name.empty()) {
+			lua_pop(L, 1);  // Pop rawgeti
+			lua_pushstring(L, mod_name.c_str());
+		}
+	}
+	return 1;
+}
 
 bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		bool write_required, bool *write_allowed)
@@ -554,9 +659,16 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		return false;
 
 	// Get mod name
+	std::string mod_name;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (lua_isstring(L, -1)) {
-		std::string mod_name = readParam<std::string>(L, -1);
+		mod_name = readParam<std::string>(L, -1);
+	} else {
+		mod_name = _get_real_caller_mod_name(L);
+	}
+	lua_pop(L, 1);  // Pop mod name
+
+	if (!mod_name.empty()) {
 
 		// Builtin can access anything
 		if (mod_name == BUILTIN_MOD_NAME) {
@@ -577,7 +689,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			}
 		}
 	}
-	lua_pop(L, 1);  // Pop mod name
 
 	// Allow read-only access to all mod directories
 	if (!write_required) {
@@ -617,26 +728,16 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 {
 	assert(str_starts_with(setting, "secure."));
 
-	// We have to make sure that this function is being called directly by
-	// a mod, otherwise a malicious mod could override this function and
-	// steal its return value.
-	lua_Debug info;
-
-	// Make sure there's only one item below this function on the stack...
-	if (lua_getstack(L, 2, &info))
-		return false;
-	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
-	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
-
-	// ...and that that item is the main file scope.
-	if (strcmp(info.what, "main") != 0)
-		return false;
-
 	// Mod must be listed in secure.http_mods or secure.trusted_mods
+	std::string mod_name;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1))
-		return false;
-	std::string mod_name = readParam<std::string>(L, -1);
+	if (lua_isstring(L, -1)) {
+		mod_name = readParam<std::string>(L, -1);
+	} else {
+		mod_name = _get_real_caller_mod_name(L);
+	}
+	lua_pop(L, 1);  // Pop mod name
+	if (mod_name.empty()) return false;
 
 	std::string value = g_settings->get(setting);
 	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
@@ -788,7 +889,7 @@ int ScriptApiSecurity::sl_io_open(lua_State *L)
 			strchr(mode, '+') != NULL ||
 			strchr(mode, 'a') != NULL;
 	}
-	CHECK_SECURE_PATH_INTERNAL(L, path, write_requested, NULL);
+	CHECK_SECURE_PATH(L, path, write_requested);
 
 	push_original(L, "io", "open");
 	lua_pushvalue(L, 1);
@@ -805,7 +906,7 @@ int ScriptApiSecurity::sl_io_input(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
+		CHECK_SECURE_PATH(L, path, false);
 	}
 
 	push_original(L, "io", "input");
@@ -819,7 +920,7 @@ int ScriptApiSecurity::sl_io_output(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
+		CHECK_SECURE_PATH(L, path, true);
 	}
 
 	push_original(L, "io", "output");
@@ -833,7 +934,7 @@ int ScriptApiSecurity::sl_io_lines(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
+		CHECK_SECURE_PATH(L, path, false);
 	}
 
 	int top_precall = lua_gettop(L);
@@ -850,11 +951,11 @@ int ScriptApiSecurity::sl_os_rename(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path1 = lua_tostring(L, 1);
-	CHECK_SECURE_PATH_INTERNAL(L, path1, true, NULL);
+	CHECK_SECURE_PATH(L, path1, true);
 
 	luaL_checktype(L, 2, LUA_TSTRING);
 	const char *path2 = lua_tostring(L, 2);
-	CHECK_SECURE_PATH_INTERNAL(L, path2, true, NULL);
+	CHECK_SECURE_PATH(L, path2, true);
 
 	push_original(L, "os", "rename");
 	lua_pushvalue(L, 1);
@@ -868,7 +969,7 @@ int ScriptApiSecurity::sl_os_remove(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
-	CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
+	CHECK_SECURE_PATH(L, path, true);
 
 	push_original(L, "os", "remove");
 	lua_pushvalue(L, 1);
