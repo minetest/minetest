@@ -541,6 +541,13 @@ std::vector<std::string> inline _get_caller_mod_names(lua_State *L) {
   }
   return result;
 }
+bool inline _is_in_whitelist(const std::string &setting, const std::string &mod_name)
+{
+	std::string value = g_settings->get(setting);
+	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+	auto mod_list = str_split(value, ',');
+	return CONTAINS(mod_list, mod_name);
+}
 
 std::string inline _get_real_caller_mod_name(lua_State *L)
 {
@@ -587,8 +594,12 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 				i--;
 			}
 			if (!ok) {
-				warningstream << "Mod security:: FAKE(MAYBE) the mod "<< result << " is hooked by " << executor_mod_name << std::endl;
-				result.clear();
+				if (_is_in_whitelist("secure.trusted_mods", executor_mod_name)) {
+					warningstream << "Mod security:: The mod "<< result << " is hooked by trusted mod:" << executor_mod_name << std::endl;
+				} else {
+					errorstream << "Mod security:: FAKE(MAYBE) the mod "<< result << " is hooked by " << executor_mod_name << ". Add it in secure.trusted_mods to allow hooking IO operation." << std::endl;
+					result.clear();
+				}
 			}
 		}
 	}
@@ -739,10 +750,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 bool ScriptApiSecurity::isInWhitelist(const std::string &setting, const std::string &mod_name)
 {
-	std::string value = g_settings->get(setting);
-	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-	auto mod_list = str_split(value, ',');
-	return CONTAINS(mod_list, mod_name);
+	return _is_in_whitelist(setting, mod_name);
 }
 
 bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &setting)
