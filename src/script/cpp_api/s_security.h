@@ -55,9 +55,9 @@ public:
 	// Check if mod is whitelisted in the given setting
 	// This additionally checks that the mod's main file scope is executing.
 	static bool checkWhitelisted(lua_State *L, const std::string &setting);
+	static std::string get_current_modname(lua_State *L);
 	// The internal implementation of get_current_modname()
 	static int l_get_current_modname(lua_State *L);
-
 private:
 	int getThread(lua_State *L);
 	// sets the enviroment to the table thats on top of the stack

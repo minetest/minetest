@@ -596,6 +596,19 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 	return result;
 }
 
+std::string ScriptApiSecurity::get_current_modname(lua_State *L)
+{
+	std::string result;
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (lua_isstring(L, -1)) {
+		result = readParam<std::string>(L, -1);
+	} else {
+		result = _get_real_caller_mod_name(L);
+	}
+	lua_pop(L, 1);
+	return result;
+}
+
 int ScriptApiSecurity::l_get_current_modname(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
