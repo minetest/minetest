@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
+#include "map.h" // for probing supported worlds
+#include "database/database.h"
 #include "map_settings_manager.h"
 #include "util/string.h"
 
@@ -380,11 +382,29 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// Create world.mt if does not already exist
 	std::string worldmt_path = final_path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
-		Settings conf;
+		Settings gameconf;
+		std::string gameconf_path = gamespec.path + DIR_DELIM "game.conf";
+		gameconf.readConfigFile(gameconf_path.c_str());
+
+		Settings conf; // for world.mt
 
 		conf.set("world_name", name);
 		conf.set("gameid", gamespec.id);
-		conf.set("backend", "sqlite3");
+
+		std::string backend = "sqlite3";
+		if (gameconf.getNoEx("backend", backend)) {
+			try {
+				// Probe whether the backend is supported
+				MapDatabase *mapdb = ServerMap::createDatabase(backend, final_path, conf);
+				delete mapdb;
+			} catch (BaseException &e) {
+				backend = "sqlite3";
+				warningstream << "Game-requested map backend cannot be created. Falling back to "
+					<< backend << ". Reason: " << e.what() << std::endl;
+			}
+		}
+		conf.set("backend", backend);
+
 		conf.set("player_backend", "sqlite3");
 		conf.set("auth_backend", "sqlite3");
 		conf.set("mod_storage_backend", "sqlite3");

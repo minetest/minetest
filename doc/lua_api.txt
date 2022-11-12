@@ -85,6 +85,8 @@ The game directory can contain the following files:
       (this does not work for `enable_server`).
       Only these settings are supported:
           `enable_damage`, `creative_mode`, `enable_server`.
+    * `backend`: Specifies the desired map backend for this game. If the backend is not
+      available or cannot be initialized, the default backend will be used.
     * `author`: The author of the game. It only appears when downloaded from
                 ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
