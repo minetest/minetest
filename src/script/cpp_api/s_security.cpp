@@ -737,6 +737,14 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	return false;
 }
 
+bool ScriptApiSecurity::isInWhitelist(const std::string &setting, const std::string &mod_name)
+{
+	std::string value = g_settings->get(setting);
+	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+	auto mod_list = str_split(value, ',');
+	return CONTAINS(mod_list, mod_name);
+}
+
 bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &setting)
 {
 	assert(str_starts_with(setting, "secure."));
@@ -752,11 +760,7 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 	lua_pop(L, 1);  // Pop mod name
 	if (mod_name.empty()) return false;
 
-	std::string value = g_settings->get(setting);
-	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-	auto mod_list = str_split(value, ',');
-
-	return CONTAINS(mod_list, mod_name);
+	return isInWhitelist(setting, mod_name);
 }
 
 
