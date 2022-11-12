@@ -564,21 +564,20 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 			bool ok = false;
 			std::string prev_mod_name;
 			std::size_t i = caller_mods.size() - 1;
+			if (i == 0) return executor_mod_name;
 			// get the first event trigger
 			while (i>0) {
 				result = caller_mods.at(i);
-				if (i > 0) {
-					prev_mod_name = caller_mods.at(i-1);
-					const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
-					if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
-						break;
-					}
-					if (prev_mod_name == executor_mod_name) {
-						ok = true;
-						// this means the second is the trigger, the first is caller for no more callers
-						if (i == 1) result = executor_mod_name;
-						break;
-					}
+				prev_mod_name = caller_mods.at(i-1);
+				const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
+				if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
+					break;
+				}
+				if (prev_mod_name == executor_mod_name) {
+					ok = true;
+					// this means the second is the trigger, the first is caller for no more callers
+					if (i == 1) result = executor_mod_name;
+					break;
 				}
 				i--;
 			}
