@@ -64,7 +64,7 @@ vec3 applySaturation(vec3 color, float factor)
 	// Calculate the perceived luminosity from the RGB color.
 	// See also: https://www.w3.org/WAI/GL/wiki/Relative_luminance
 	float brightness = dot(color, vec3(0.2125, 0.7154, 0.0721));
-       	return mix(vec3(brightness), color, factor);
+	return mix(vec3(brightness), color, factor);
 }
 #endif
 
