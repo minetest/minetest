@@ -19,10 +19,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+
+/**
+ * Parameters for automatic exposure compensation
+ *
+ * Automatic exposure compensation uses the following equation:
+ *
+ * wanted_exposure = luminance_key / clamp(observed_luminance + luminance_bias, luminance_min, luminance_max)
+ *
+ */
+struct AutoExposure
+{
+    /// @brief Minimum boundary for computed luminance
+    float luminance_min { 0.02f};
+    /// @brief Maximum boundary for computed luminance
+    float luminance_max { 10.0f};
+    /// @brief Luminance bias. Higher values make the scene darker, can be negative.
+    float luminance_bias { 0.f };
+    /// @brief Target luminance value
+    float luminance_key { 0.5f };
+    /// @brief Speed of transition from dark to bright scenes
+    float speed_dark_bright { 2.0f };
+    /// @brief Speed of transition from bright to dark scenes
+    float speed_bright_dark { 0.2f };
+    /// @brief Power value for center-weighted metering. Value of 1.0 measures entire screen uniformly
+    float center_weight_power { 2.0f };
+    /// @brief Post-processing exposure compentation factor
+    float compensation_factor { 1.0f };
+};
+
 /** Describes ambient light settings for a player
  */
 struct Lighting
 {
+    AutoExposure exposure;
     float shadow_intensity {0.0f};
     float saturation {1.0f};
 };
