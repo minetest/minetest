@@ -1,6 +1,7 @@
 package net.minetest.minetest;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,7 +11,8 @@ public class Utils {
 	public static @NonNull File createDirs(File root, String dir) {
 		File f = new File(root, dir);
 		if (!f.isDirectory())
-			f.mkdirs();
+			if (!f.mkdirs())
+				Log.e("Utils", "Directory " + dir + " cannot be created");
 
 		return f;
 	}

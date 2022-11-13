@@ -29,10 +29,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
 import java.io.File;
@@ -98,7 +98,9 @@ public class UnzipService extends IntentService {
 			failureMessage = e.getLocalizedMessage();
 		} finally {
 			setIsRunning(false);
-			zipFile.delete();
+			if (!zipFile.delete()) {
+				Log.w("UnzipService", "Minetest installation ZIP cannot be deleted");
+			}
 		}
 	}
 
@@ -131,8 +133,12 @@ public class UnzipService extends IntentService {
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		int pendingIntentFlag = 0;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			pendingIntentFlag = PendingIntent.FLAG_MUTABLE;
+		}
 		PendingIntent intent = PendingIntent.getActivity(this, 0,
-			notificationIntent, 0);
+			notificationIntent, pendingIntentFlag);
 
 		builder.setContentTitle(getString(R.string.notification_title))
 				.setSmallIcon(R.mipmap.ic_launcher)
@@ -210,7 +216,9 @@ public class UnzipService extends IntentService {
 			return;
 
 		publishProgress(notificationBuilder, R.string.migrating, 0);
-		newLocation.mkdir();
+		if (!newLocation.mkdir()) {
+			Log.e("UnzipService", "New installation folder cannot be made");
+		}
 
 		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
 		for (int i = 0; i < dirs.length; i++) {
@@ -228,7 +236,9 @@ public class UnzipService extends IntentService {
 			}
 		}
 
-		recursivelyDeleteDirectory(oldLocation);
+		if (!recursivelyDeleteDirectory(oldLocation)) {
+			Log.w("UnzipService", "Old installation files cannot be deleted successfully");
+		}
 	}
 
 	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {

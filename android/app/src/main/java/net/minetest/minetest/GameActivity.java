@@ -45,6 +45,7 @@ import java.util.Objects;
 // Native code finds these methods by name (see porting_android.cpp).
 // This annotation prevents the minifier/Proguard from mangling them.
 @Keep
+@SuppressWarnings("unused")
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
@@ -180,11 +181,17 @@ public class GameActivity extends NativeActivity {
 	}
 
 	public String getUserDataPath() {
-		return Utils.getUserDataDirectory(this).getAbsolutePath();
+		return Objects.requireNonNull(
+			Utils.getUserDataDirectory(this),
+			"Cannot get user data directory"
+		).getAbsolutePath();
 	}
 
 	public String getCachePath() {
-		return Utils.getCacheDirectory(this).getAbsolutePath();
+		return Objects.requireNonNull(
+			Utils.getCacheDirectory(this),
+			"Cannot get cache directory"
+		).getAbsolutePath();
 	}
 
 	public void shareFile(String path) {
