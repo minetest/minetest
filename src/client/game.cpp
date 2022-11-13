@@ -414,6 +414,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_fog_distance;
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
+	CachedVertexShaderSetting<float> m_animation_timer_delta_vertex;
+	CachedPixelShaderSetting<float> m_animation_timer_delta_pixel;
 	CachedPixelShaderSetting<float, 3> m_day_light;
 	CachedPixelShaderSetting<float, 4> m_star_color;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
@@ -470,6 +472,8 @@ public:
 		m_fog_distance("fogDistance"),
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
+		m_animation_timer_delta_vertex("animationTimerDelta"),
+		m_animation_timer_delta_pixel("animationTimerDelta"),
 		m_day_light("dayLight"),
 		m_star_color("starColor"),
 		m_eye_position_pixel("eyePosition"),
@@ -545,6 +549,10 @@ public:
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
+
+		float animation_timer_delta_f = (float)m_client->getEnv().getFrameTimeDelta() / 100000.f;
+		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
+		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
 		float eye_position_array[3];
 		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
