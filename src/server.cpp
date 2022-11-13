@@ -1866,6 +1866,15 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 	pkt << lighting.shadow_intensity;
 	pkt << lighting.saturation;
 
+	pkt << lighting.exposure.luminance_min;
+	pkt << lighting.exposure.luminance_max;
+	pkt << lighting.exposure.luminance_bias;
+	pkt << lighting.exposure.luminance_key;
+	pkt << lighting.exposure.speed_dark_bright;
+	pkt << lighting.exposure.speed_bright_dark;
+	pkt << lighting.exposure.center_weight_power;
+	pkt << lighting.exposure.compensation_factor;
+
 	Send(&pkt);
 }
 

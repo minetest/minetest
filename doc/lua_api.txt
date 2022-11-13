@@ -7472,6 +7472,16 @@ child will follow movement and rotation of that bone.
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
+      * `exposure` is a table that controls automatic exposure if supported and enabled on the client
+        Basic exposure factor equation is `e = luminance_key / clamp(luminance + luminance_bias, luminance_min, luminance_max)`
+        * `luminance_min` set the lower  luminance boundary to use in the calculation
+        * `luminance_max` set the upper luminance boundary to use in the calculation
+        * `lumiance_bias` set the bias value to add to observed luminance when calculating exposure
+        * `luminance_key` set the target luminance value for the scene
+        * `speed_dark_bright` set the speed of adapting to bright light
+        * `speed_bright_dark` set the speed of adapting to dark scene
+        * `center_weight_power` set the power factor for center-weighted luminance measurement
+        * `compensation_factor` set the factor to apply exposure after the equation
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,

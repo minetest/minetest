@@ -1766,4 +1766,14 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.shadow_intensity;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.saturation;
+	if (pkt->getRemainingBytes() >= 32) {
+		*pkt >> lighting.exposure.luminance_min;
+		*pkt >> lighting.exposure.luminance_max;
+		*pkt >> lighting.exposure.luminance_bias;
+		*pkt >> lighting.exposure.luminance_key;
+		*pkt >> lighting.exposure.speed_dark_bright;
+		*pkt >> lighting.exposure.speed_bright_dark;
+		*pkt >> lighting.exposure.center_weight_power;
+		*pkt >> lighting.exposure.compensation_factor;
+	}
 }

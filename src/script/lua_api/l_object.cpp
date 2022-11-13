@@ -2297,7 +2297,21 @@ int ObjectRef::l_set_lighting(lua_State *L)
 		getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
 	}
 	lua_pop(L, 1); // shadows
+
 	getfloatfield(L, -1, "saturation", lighting.saturation);
+
+	lua_getfield(L, 2, "exposure");
+	if (lua_istable(L, -1)) {
+		lighting.exposure.luminance_min       = getfloatfield_default(L, -1, "luminance_min",       lighting.exposure.luminance_min);
+		lighting.exposure.luminance_max       = getfloatfield_default(L, -1, "luminance_max",       lighting.exposure.luminance_max);
+		lighting.exposure.luminance_bias      = getfloatfield_default(L, -1, "luminance_bias",      lighting.exposure.luminance_bias);
+		lighting.exposure.luminance_key       = getfloatfield_default(L, -1, "luminance_key",       lighting.exposure.luminance_key);
+		lighting.exposure.speed_dark_bright   = getfloatfield_default(L, -1, "speed_dark_bright",   lighting.exposure.speed_dark_bright);
+		lighting.exposure.speed_bright_dark   = getfloatfield_default(L, -1, "speed_bright_dark",   lighting.exposure.speed_bright_dark);
+		lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
+		lighting.exposure.compensation_factor = getfloatfield_default(L, -1, "compensation_factor", lighting.exposure.compensation_factor);
+	}
+	lua_pop(L, 1); // exposure
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;
@@ -2321,6 +2335,24 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_setfield(L, -2, "shadows");
 	lua_pushnumber(L, lighting.saturation);
 	lua_setfield(L, -2, "saturation");
+	lua_newtable(L); // "exposure"
+	lua_pushnumber(L, lighting.exposure.luminance_min);
+	lua_setfield(L, -2, "luminance_min");
+	lua_pushnumber(L, lighting.exposure.luminance_max);
+	lua_setfield(L, -2, "luminance_max");
+	lua_pushnumber(L, lighting.exposure.luminance_bias);
+	lua_setfield(L, -2, "luminance_bias");
+	lua_pushnumber(L, lighting.exposure.luminance_key);
+	lua_setfield(L, -2, "luminance_key");
+	lua_pushnumber(L, lighting.exposure.speed_dark_bright);
+	lua_setfield(L, -2, "speed_dark_bright");
+	lua_pushnumber(L, lighting.exposure.speed_bright_dark);
+	lua_setfield(L, -2, "speed_bright_dark");
+	lua_pushnumber(L, lighting.exposure.center_weight_power);
+	lua_setfield(L, -2, "center_weight_power");
+	lua_pushnumber(L, lighting.exposure.compensation_factor);
+	lua_setfield(L, -2, "compensation_factor");
+	lua_setfield(L, -2, "exposure");
 	return 1;
 }
 

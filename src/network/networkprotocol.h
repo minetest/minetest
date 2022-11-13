@@ -831,6 +831,15 @@ enum ToClientCommand
 	/*
 		f32 shadow_intensity
 		f32 saturation
+		exposure parameters
+			f32 luminance_min
+			f32 luminance_max
+			f32 luminance_bias
+			f32 luminance_key
+			f32 speed_dark_bright
+			f32 speed_bright_dark
+			f32 center_weight_power
+			f32 compensation_factor
 	*/
 
 	TOCLIENT_NUM_MSG_TYPES = 0x64,
