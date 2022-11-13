@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h" // for set_default_settings
-#include "map.h" // for probing supported worlds
-#include "database/database.h"
 #include "map_settings_manager.h"
 #include "util/string.h"
 
@@ -392,16 +390,8 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		conf.set("gameid", gamespec.id);
 
 		std::string backend = "sqlite3";
-		if (gameconf.getNoEx("backend", backend)) {
-			try {
-				// Probe whether the backend is supported
-				MapDatabase *mapdb = ServerMap::createDatabase(backend, final_path, conf);
-				delete mapdb;
-			} catch (BaseException &e) {
-				backend = "sqlite3";
-				warningstream << "Game-requested map backend cannot be created. Falling back to "
-					<< backend << ". Reason: " << e.what() << std::endl;
-			}
+		if (gameconf.exists("map_persistent") && !gameconf.getBool("map_persistent")) {
+			backend = "dummy";
 		}
 		conf.set("backend", backend);
 
