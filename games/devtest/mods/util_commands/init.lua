@@ -210,20 +210,6 @@ minetest.register_chatcommand("dump_item", {
 	end,
 })
 
--- shadow control
-minetest.register_on_joinplayer(function (player)
-	player:set_lighting({shadows={intensity = 0.33}})
-end)
-
-core.register_chatcommand("set_shadow", {
-    params = "<shadow_intensity>",
-    description = "Set shadow parameters of current player.",
-    func = function(player_name, param)
-        local shadow_intensity = tonumber(param)
-        minetest.get_player_by_name(player_name):set_lighting({shadows = { intensity = shadow_intensity} })
-    end
-})
-
 core.register_chatcommand("set_saturation", {
     params = "<saturation>",
     description = "Set the saturation for current player.",
