@@ -429,7 +429,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
 	CachedPixelShaderSetting<float, 2> m_texel_size0;
 	std::array<float, 2> m_texel_size0_values;
-	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
+	CachedStructPixelShaderSetting<float, 8> m_exposure_params_pixel;
 	float m_user_exposure_factor;
 	bool m_bloom_enabled;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
@@ -486,7 +486,11 @@ public:
 		m_texture2("texture2"),
 		m_texture3("texture3"),
 		m_texel_size0("texelSize0"),
-		m_exposure_factor_pixel("exposureFactor"),
+		m_exposure_params_pixel("exposureParams",
+				std::array<const char*, 8> {
+						"luminanceMin", "luminanceMax", "luminanceBias", "luminanceKey", 
+						"speedDarkBright", "speedBrightDark", "centerWeightPower", "compensationFactor"
+				}),
 		m_bloom_intensity_pixel("bloomIntensity"),
 		m_bloom_strength_pixel("bloomStrength"),
 		m_bloom_radius_pixel("bloomRadius"),
@@ -585,10 +589,18 @@ public:
 
 		m_texel_size0.set(m_texel_size0_values.data(), services);
 
-		float exposure_factor = m_user_exposure_factor;
-		if (std::isnan(exposure_factor))
-			exposure_factor = 1.0f;
-		m_exposure_factor_pixel.set(&exposure_factor, services);
+		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
+		std::array<float, 8> exposure_buffer = {
+			exposure_params.luminance_min,
+			exposure_params.luminance_max,
+			exposure_params.luminance_bias,
+			exposure_params.luminance_key,
+			exposure_params.speed_dark_bright,
+			exposure_params.speed_bright_dark,
+			exposure_params.center_weight_power,
+			exposure_params.compensation_factor * m_user_exposure_factor
+		};
+		m_exposure_params_pixel.set(exposure_buffer.data(), services);
 
 		if (m_bloom_enabled) {
 			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);

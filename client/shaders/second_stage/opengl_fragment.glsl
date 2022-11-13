@@ -1,9 +1,14 @@
 #define rendered texture0
 #define bloom texture1
 
+struct ExposureParams {
+	float compensationFactor;
+};
+
 uniform sampler2D rendered;
 uniform sampler2D bloom;
-uniform mediump float exposureFactor;
+
+uniform ExposureParams exposureParams;
 uniform lowp float bloomIntensity;
 uniform lowp float saturation;
 
@@ -82,7 +87,7 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-		color.rgb *= exposure * exposureFactor;
+		color.rgb *= exposure * exposureParams.compensationFactor;
 	}
 
 

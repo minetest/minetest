@@ -31,9 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct AutoExposure
 {
     /// @brief Minimum boundary for computed luminance
-    float luminance_min { 0.02f};
+    float luminance_min { 0.02f };
     /// @brief Maximum boundary for computed luminance
-    float luminance_max { 10.0f};
+    float luminance_max { 10.0f };
     /// @brief Luminance bias. Higher values make the scene darker, can be negative.
     float luminance_bias { 0.f };
     /// @brief Target luminance value

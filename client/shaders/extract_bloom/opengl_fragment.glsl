@@ -1,8 +1,12 @@
 #define rendered texture0
 
+struct ExposureParams {
+	float compensationFactor;
+};
+
 uniform sampler2D rendered;
-uniform mediump float exposureFactor;
 uniform mediump float bloomStrength;
+uniform ExposureParams exposureParams;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -19,6 +23,6 @@ void main(void)
 	// translate to linear colorspace (approximate)
 	color = pow(color, vec3(2.2));
 
-	color *= exposure * exposureFactor * bloomStrength;
+	color *= exposure * exposureParams.compensationFactor * bloomStrength;
 	gl_FragColor = vec4(color, 1.0); // force full alpha to avoid holes in the image.
 }
