@@ -5741,15 +5741,19 @@ Environment access
       might be removed.
     * returns `false` if the area is not fully generated,
       `true` otherwise
-* `minetest.check_single_for_falling(pos)`
+* `minetest.check_single_for_falling(pos, player_name)`
     * causes an unsupported `group:falling_node` node to fall and causes an
       unattached `group:attached_node` node to fall.
     * does not spread these updates to neighbors.
-* `minetest.check_for_falling(pos)`
+    * if player_name is not nil, will first check whether the area is protected
+      from modification by the player
+* `minetest.check_for_falling(pos, player_name)`
     * causes an unsupported `group:falling_node` node to fall and causes an
       unattached `group:attached_node` node to fall.
     * spread these updates to neighbors and can cause a cascade
       of nodes to fall.
+    * if player_name is not nil, will first check whether the area is protected
+      from modification by the player
 * `minetest.get_spawn_level(x, z)`
     * Returns a player spawn y co-ordinate for the provided (x, z)
       co-ordinates, or `nil` for an unsuitable spawn point.
@@ -7698,7 +7702,7 @@ Player properties need to be saved manually.
         -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
         -- If `rotate = true`, it will match the object's rotation and any attachment rotations.
         -- Raycasts use the selection box and object's rotation, but do *not* obey attachment rotations.
-        
+
 
         pointable = true,
         -- Whether the object can be pointed at

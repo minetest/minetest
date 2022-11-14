@@ -492,7 +492,11 @@ end
 -- Some common functions
 --
 
-function core.check_single_for_falling(p)
+function core.check_single_for_falling(p, player_name)
+	if player_name and core.is_protected(p, player_name) then
+		return
+	end
+
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = vector.offset(p, 0, -1, 0)
@@ -547,9 +551,13 @@ local check_for_falling_neighbors = {
 	vector.new( 0,  1,  0),
 }
 
-function core.check_for_falling(p)
+function core.check_for_falling(p, player_name)
 	-- Round p to prevent falling entities to get stuck.
 	p = vector.round(p)
+
+	if player_name and core.is_protected(p, player_name) then
+		return
+	end
 
 	-- We make a stack, and manually maintain size for performance.
 	-- Stored in the stack, we will maintain tables with pos, and
@@ -569,7 +577,7 @@ function core.check_for_falling(p)
 		p = vector.add(p, check_for_falling_neighbors[v])
 		-- Now we check out the node. If it is in need of an update,
 		-- it will let us know in the return value (true = updated).
-		if not core.check_single_for_falling(p) then
+		if not core.check_single_for_falling(p, player_name) then
 			-- If we don't need to "recurse" (walk) to it then pop
 			-- our previous pos off the stack and continue from there,
 			-- with the v value we were at when we last were at that
@@ -601,17 +609,29 @@ end
 -- Global callbacks
 --
 
-local function on_placenode(p, node)
-	core.check_for_falling(p)
+local function on_placenode(pos, newnode, placer, oldnode, itemstack, pointed_thing)
+	if core.is_player(placer) then
+		core.check_for_falling(pos, placer:get_player_name())
+	else
+		core.check_for_falling(pos)
+	end
 end
 core.register_on_placenode(on_placenode)
 
-local function on_dignode(p, node)
-	core.check_for_falling(p)
+local function on_dignode(pos, oldnode, digger)
+	if core.is_player(digger) then
+		core.check_for_falling(pos, digger:get_player_name())
+	else
+		core.check_for_falling(pos)
+	end
 end
 core.register_on_dignode(on_dignode)
 
-local function on_punchnode(p, node)
-	core.check_for_falling(p)
+local function on_punchnode(pos, node, puncher, pointed_thing)
+	if core.is_player(puncher) then
+		core.check_for_falling(pos, puncher:get_player_name())
+	else
+		core.check_for_falling(pos)
+	end
 end
 core.register_on_punchnode(on_punchnode)
