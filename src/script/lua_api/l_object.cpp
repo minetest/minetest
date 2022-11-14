@@ -721,7 +721,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	std::string nametag = getstringfield_default(L, 2, "text", "");
+	std::string nametag = getstringfield_default(L, 2, "text", prop->nametag);
 	prop->nametag = nametag;
 
 	prop->validate();
