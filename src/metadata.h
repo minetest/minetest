@@ -60,6 +60,9 @@ public:
 	// May (not must!) put strings in `place` and return a reference to these strings.
 	virtual const StringMap &getStrings(StringMap *place) const = 0;
 
+	// May (not must!) put keys in `place` and return a reference to these keys.
+	virtual const std::vector<std::string> &getKeys(std::vector<std::string> *place) const = 0;
+
 	// Add support for variable names in values. Uses place like getString.
 	const std::string &resolveString(const std::string &str, std::string *place,
 			u16 recursion = 0) const;
@@ -88,6 +91,8 @@ public:
 	bool contains(const std::string &name) const override;
 	virtual bool setString(const std::string &name, const std::string &var) override;
 	const StringMap &getStrings(StringMap *) const override final;
+	const std::vector<std::string> &getKeys(std::vector<std::string> *place)
+		const override final;
 
 	// Simple version of getters, possible due to in-memory storage:
 

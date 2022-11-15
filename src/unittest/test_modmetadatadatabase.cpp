@@ -286,8 +286,11 @@ void TestModMetadataDatabase::testRecallFail()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
+	std::vector<std::string> recalled_keys;
 	mod_meta_db->getModEntries("mod1", &recalled);
+	mod_meta_db->getModKeys("mod1", &recalled_keys);
 	UASSERT(recalled.empty());
+	UASSERT(recalled_keys.empty());
 	std::string key1_value;
 	UASSERT(!mod_meta_db->getModEntry("mod1", "key1", &key1_value));
 	UASSERT(!mod_meta_db->hasModEntry("mod1", "key1"));
@@ -303,9 +306,13 @@ void TestModMetadataDatabase::testRecall()
 {
 	ModMetadataDatabase *mod_meta_db = mod_meta_provider->getModMetadataDatabase();
 	StringMap recalled;
+	std::vector<std::string> recalled_keys;
 	mod_meta_db->getModEntries("mod1", &recalled);
+	mod_meta_db->getModKeys("mod1", &recalled_keys);
 	UASSERTCMP(std::size_t, ==, recalled.size(), 1);
+	UASSERTCMP(std::size_t, ==, recalled_keys.size(), 1);
 	UASSERTCMP(std::string, ==, recalled["key1"], "value1");
+	UASSERTCMP(std::string, ==, recalled_keys[0], "key1");
 	std::string key1_value;
 	UASSERT(mod_meta_db->getModEntry("mod1", "key1", &key1_value));
 	UASSERTCMP(std::string, ==, key1_value, "value1");

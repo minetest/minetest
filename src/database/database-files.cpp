@@ -396,6 +396,21 @@ bool ModMetadataDatabaseFiles::getModEntries(const std::string &modname, StringM
 	return true;
 }
 
+bool ModMetadataDatabaseFiles::getModKeys(const std::string &modname,
+		std::vector<std::string> *storage)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	std::vector<std::string> keys = meta->getMemberNames();
+	storage->reserve(storage->size() + keys.size());
+	for (std::string &key : keys)
+		storage->push_back(std::move(key));
+
+	return true;
+}
+
 bool ModMetadataDatabaseFiles::getModEntry(const std::string &modname,
 	const std::string &key, std::string *value)
 {

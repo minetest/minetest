@@ -247,6 +247,13 @@ const StringMap &ModMetadata::getStrings(StringMap *place) const
 	return *place;
 }
 
+const std::vector<std::string> &ModMetadata::getKeys(std::vector<std::string> *place) const
+{
+	place->clear();
+	m_database->getModKeys(m_mod_name, place);
+	return *place;
+}
+
 const std::string *ModMetadata::getStringRaw(const std::string &name, std::string *place) const
 {
 	return m_database->getModEntry(m_mod_name, name, place) ? place : nullptr;
