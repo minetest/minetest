@@ -380,11 +380,21 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// Create world.mt if does not already exist
 	std::string worldmt_path = final_path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
-		Settings conf;
+		Settings gameconf;
+		std::string gameconf_path = gamespec.path + DIR_DELIM "game.conf";
+		gameconf.readConfigFile(gameconf_path.c_str());
+
+		Settings conf; // for world.mt
 
 		conf.set("world_name", name);
 		conf.set("gameid", gamespec.id);
-		conf.set("backend", "sqlite3");
+
+		std::string backend = "sqlite3";
+		if (gameconf.exists("map_persistent") && !gameconf.getBool("map_persistent")) {
+			backend = "dummy";
+		}
+		conf.set("backend", backend);
+
 		conf.set("player_backend", "sqlite3");
 		conf.set("auth_backend", "sqlite3");
 		conf.set("mod_storage_backend", "sqlite3");
