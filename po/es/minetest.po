@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-11-02 00:44+0000\n"
-"Last-Translator: runs <runspect@yahoo.es>\n"
+"PO-Revision-Date: 2022-11-16 08:47+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6733,7 +6733,6 @@ msgstr ""
 "sombras más oscuras."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
@@ -6742,7 +6741,7 @@ msgstr ""
 "Establecer el tamaño del radio de las sombras suaves.\n"
 "Los valores más bajos significan sombras más nítidas, los valores más altos "
 "significan sombras más suaves.\n"
-"Valor mínimo: 1.0; valor máximo: 10.0"
+"Valor mínimo: 1.0; valor máximo: 15.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
