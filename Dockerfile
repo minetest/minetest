@@ -11,30 +11,29 @@ RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
 		gmp-dev jsoncpp-dev ninja ca-certificates
 
 WORKDIR /usr/src/
-RUN cd /usr/src/ && \
-	git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
-	cd prometheus-cpp && \
-	cmake -B build \
-		-DCMAKE_INSTALL_PREFIX=/usr/local \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DENABLE_TESTING=0 \
-		-GNinja && \
-	cmake --build build && \
-	cmake --install build && \
+RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
+		cd prometheus-cpp && \
+		cmake -B build \
+			-DCMAKE_INSTALL_PREFIX=/usr/local \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DENABLE_TESTING=0 \
+			-GNinja && \
+		cmake --build build && \
+		cmake --install build && \
 	cd /usr/src/ && \
 	git clone --recursive https://github.com/libspatialindex/libspatialindex -b ${SPATIALINDEX_VERSION} && \
-	cd libspatialindex && \
-	cmake -B build \
-		-DCMAKE_INSTALL_PREFIX=/usr/local && \
-	cmake --build build && \
-	cmake --install build && \
+		cd libspatialindex && \
+		cmake -B build \
+			-DCMAKE_INSTALL_PREFIX=/usr/local && \
+		cmake --build build && \
+		cmake --install build && \
 	cd /usr/src/ && \
 	git clone --recursive https://luajit.org/git/luajit.git -b ${LUAJIT_VERSION} && \
-	cd luajit && \
-	make && make install && \
+		cd luajit && \
+		make && make install && \
 	cd /usr/src/ && \
 	git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
-	cp -r irrlicht/include /usr/include/irrlichtmt
+		cp -r irrlicht/include /usr/include/irrlichtmt
 
 COPY .git /usr/src/minetest/.git
 COPY CMakeLists.txt /usr/src/minetest/CMakeLists.txt
@@ -52,23 +51,23 @@ COPY textures /usr/src/minetest/textures
 
 WORKDIR /usr/src/minetest
 RUN git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
-	rm -fr ./games/minetest_game/.git && \
-	cmake -B build \
-		-DCMAKE_INSTALL_PREFIX=/usr/local \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DBUILD_SERVER=TRUE \
-		-DENABLE_PROMETHEUS=TRUE \
-		-DBUILD_UNITTESTS=FALSE \
-		-DBUILD_CLIENT=FALSE \
-		-GNinja && \
-	cmake --build build && \
-	cmake --install build
+		rm -fr ./games/minetest_game/.git && \
+		cmake -B build \
+			-DCMAKE_INSTALL_PREFIX=/usr/local \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DBUILD_SERVER=TRUE \
+			-DENABLE_PROMETHEUS=TRUE \
+			-DBUILD_UNITTESTS=FALSE \
+			-DBUILD_CLIENT=FALSE \
+			-GNinja && \
+		cmake --build build && \
+		cmake --install build
 
 ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS runtime
 
 RUN apk add --no-cache curl gmp libstdc++ libgcc libpq jsoncpp zstd-libs \
-						sqlite-libs postgresql hiredis leveldb && \
+				sqlite-libs postgresql hiredis leveldb && \
 	adduser -D minetest --uid 30000 -h /var/lib/minetest && \
 	chown -R minetest:minetest /var/lib/minetest
 
