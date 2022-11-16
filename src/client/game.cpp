@@ -430,7 +430,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float, 2> m_texel_size0;
 	std::array<float, 2> m_texel_size0_values;
 	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel;
-	float m_user_exposure_factor;
+	float m_user_exposure_compensation;
 	bool m_bloom_enabled;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
 	float m_bloom_intensity;
@@ -445,8 +445,8 @@ public:
 	{
 		if (name == "enable_fog")
 			m_fog_enabled = g_settings->getBool("enable_fog");
-		if (name == "exposure_factor")
-			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		if (name == "exposure_compensation")
+			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		if (name == "bloom_intensity")
 			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		if (name == "bloom_strength_factor")
@@ -497,13 +497,13 @@ public:
 		m_saturation_pixel("saturation")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
-		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_strength_factor", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
 		g_settings->registerChangedCallback("saturation", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
-		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
@@ -597,7 +597,7 @@ public:
 			exposure_params.speed_dark_bright,
 			exposure_params.speed_bright_dark,
 			exposure_params.center_weight_power,
-			m_user_exposure_factor
+			powf(2.f, m_user_exposure_compensation)
 		};
 		m_exposure_params_pixel.set(exposure_buffer.data(), services);
 
