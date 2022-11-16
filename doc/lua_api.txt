@@ -8482,6 +8482,9 @@ Used by `minetest.register_node`.
         -- Node constructor; called after adding node.
         -- Can set up metadata and stuff like that.
         -- Not called for bulk node placement (i.e. schematics and VoxelManip).
+        -- Note: Within an on_construct callback, minetest.set_node can cause an
+        -- infinite loop if it invokes the same callback.
+        --  Consider using minetest.swap_node instead.
         -- default: nil
 
         on_destruct = function(pos),
