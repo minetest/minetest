@@ -65,7 +65,7 @@ public:
 
 	// Add support for variable names in values. Uses place like getString.
 	const std::string &resolveString(const std::string &str, std::string *place,
-			u16 recursion = 0) const;
+			u16 recursion = 0, bool deprecated = false) const;
 
 protected:
 	// Returns nullptr to indicate absence of value. Uses place like getString.
