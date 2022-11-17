@@ -250,11 +250,12 @@ local formspec_escapes = {
 	["["] = "\\[",
 	["]"] = "\\]",
 	[";"] = "\\;",
-	[","] = "\\,"
+	[","] = "\\,",
+	["$"] = "\\$",
 }
 function core.formspec_escape(text)
 	-- Use explicit character set instead of dot here because it doubles the performance
-	return text and string.gsub(text, "[\\%[%];,]", formspec_escapes)
+	return text and string.gsub(text, "[\\%[%];,$]", formspec_escapes)
 end
 
 

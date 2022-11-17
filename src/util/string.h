@@ -459,6 +459,7 @@ inline void str_formspec_escape(std::string &str)
 	str_replace(str, "[", "\\[");
 	str_replace(str, ";", "\\;");
 	str_replace(str, ",", "\\,");
+	str_replace(str, "$", "\\$");
 }
 
 /**
