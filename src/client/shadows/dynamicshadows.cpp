@@ -44,6 +44,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	static const float COS_15_DEG = 0.965926f;
 	v3f newCenter;
 	v3f look = cam->getDirection().normalize();
+
+	// if current look direction is < 15 degrees away from the captured
+	// look direction then stick to the captured value, otherwise recapture.
 	if (look.dotProduct(last_look) >= COS_15_DEG)
 		look = last_look;
 	else
@@ -59,6 +62,9 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 
 	// adjusted camera positions
 	v3f cam_pos_world = cam->getPosition();
+
+	// if world position is less than 1 block away from the captured
+	// world position then stick to the captured value, otherwise recapture.
 	if (cam_pos_world.getDistanceFromSQ(last_cam_pos_world) < BS * BS)
 		cam_pos_world = last_cam_pos_world;
 	else
