@@ -9844,6 +9844,10 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
         -- Default is false.
         -- Post only, data must be array
 
+        print_error = boolean,
+        -- Optional, if true then an error message is printed on failure.
+        -- Default is true.
+
         post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
         -- Deprecated, use `data` instead. Forces `method = "POST"`.
     }

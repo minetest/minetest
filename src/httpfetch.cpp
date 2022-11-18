@@ -390,17 +390,19 @@ const HTTPFetchResult * HTTPFetchOngoing::complete(CURLcode res)
 		result.response_code = 0;
 	}
 
-	if (res != CURLE_OK) {
-		errorstream << "HTTPFetch for " << request.url << " failed ("
-			<< curl_easy_strerror(res) << ")" << std::endl;
-	} else if (result.response_code >= 400) {
-		errorstream << "HTTPFetch for " << request.url
-			<< " returned response code " << result.response_code
-			<< std::endl;
-		if (result.caller == HTTPFETCH_PRINT_ERR && !result.data.empty()) {
-			errorstream << "Response body:" << std::endl;
-			safe_print_string(errorstream, result.data);
-			errorstream << std::endl;
+	if (request.print_error) {
+		if (res != CURLE_OK) {
+			errorstream << "HTTPFetch for " << request.url << " failed ("
+				<< curl_easy_strerror(res) << ")" << std::endl;
+		} else if (result.response_code >= 400) {
+			errorstream << "HTTPFetch for " << request.url
+				<< " returned response code " << result.response_code
+				<< std::endl;
+			if (result.caller == HTTPFETCH_PRINT_BODY && !result.data.empty()) {
+				errorstream << "Response body:" << std::endl;
+				safe_print_string(errorstream, result.data);
+				errorstream << std::endl;
+			}
 		}
 	}
 

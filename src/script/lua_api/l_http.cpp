@@ -91,6 +91,8 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 		}
 	}
 	lua_pop(L, 1);
+
+	req.print_error = getboolfield_default(L, 1, "print_error", true);
 }
 
 void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed)

@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // requests because the result does not have to be retrieved later).
 #define HTTPFETCH_SYNC 1
 // Print response body to console if the server returns an error code.
-#define HTTPFETCH_PRINT_ERR 2
+#define HTTPFETCH_PRINT_BODY 2
 // Start of regular allocated caller IDs.
 #define HTTPFETCH_CID_START 3
 
@@ -81,6 +81,9 @@ struct HTTPFetchRequest
 
 	// useragent to use
 	std::string useragent;
+
+	// If true, print to errorstream when result is not OK.
+	bool print_error = true;
 
 	HTTPFetchRequest();
 };
