@@ -5,6 +5,7 @@ uniform sampler2D rendered;
 uniform sampler2D bloom;
 uniform mediump float exposureFactor;
 uniform lowp float bloomIntensity;
+uniform lowp float saturation;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -57,6 +58,14 @@ vec4 applyToneMapping(vec4 color)
 	color.rgb *= whiteScale;
 	return color;
 }
+
+vec3 applySaturation(vec3 color, float factor)
+{
+	// Calculate the perceived luminosity from the RGB color.
+	// See also: https://www.w3.org/WAI/GL/wiki/Relative_luminance
+	float brightness = dot(color, vec3(0.2125, 0.7154, 0.0721));
+	return mix(vec3(brightness), color, factor);
+}
 #endif
 
 void main(void)
@@ -85,6 +94,7 @@ void main(void)
 	{
 #if ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);
+		color.rgb = applySaturation(color.rgb, saturation);
 #endif
 	}
 
