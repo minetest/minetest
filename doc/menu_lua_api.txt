@@ -12,23 +12,24 @@ Callbacks
 ---------
 
 * `core.button_handler(fields)`: called when a button is pressed.
-  * `fields` = {name1 = value1, name2 = value2, ...}
+  * `fields` = `{name1 = value1, name2 = value2, ...}`
 * `core.event_handler(event)`
-  * `event`: "MenuQuit", "KeyEnter", "ExitButton" or "EditBoxEnter"
+  * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
 
 
 Gamedata
 --------
 
 The "gamedata" table is read when calling `core.start()`. It should contain:
-`{
-    playername     = <name>,
-    password       = <password>,
-    address        = <IP/address>,
-    port           = <port>,
-    selected_world = <index>, -- 0 for client mode
-    singleplayer   = <true/false>,
-}`
+
+    {
+        playername     = <name>,
+        password       = <password>,
+        address        = <IP/address>,
+        port           = <port>,
+        selected_world = <index>, -- 0 for client mode
+        singleplayer   = <true/false>,
+    }
 
 
 Functions
@@ -203,14 +204,16 @@ GUI
   * if `is_file_select` is `true`, a file and not a folder will be selected
   * returns nil or selected file/folder
 * `core.get_screen_info()`
-  * returns `{
-    density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
-    display_width   = <width of display>,
-    display_height  = <height of display>,
-    window_width    = <current window width>,
-    window_height   = <current window height>,
-    render_info     = <active render information>
-    }`
+  * returns
+
+        {
+          density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
+          display_width   = <width of display>,
+          display_height  = <height of display>,
+          window_width    = <current window width>,
+          window_height   = <current window height>,
+          render_info     = <active render information>
+        }
 
 
 Content and Packages
@@ -314,13 +317,15 @@ Worlds
 ------
 
 * `core.get_worlds()` -> list of worlds (possible in async calls)
-  * returns `{
-    [1] = {
-    path   = <full path to world>,
-    name   = <name of world>,
-    gameid = <gameid of world>,
-    },
-}`
+  * returns
+
+        {
+           [1] = {
+           path   = <full path to world>,
+           name   = <name of world>,
+           gameid = <gameid of world>,
+           },
+        }
 * `core.create_world(worldname, gameid, init_settings)`
 * `core.delete_world(index)`
 
@@ -363,7 +368,7 @@ Async
   * `finished` function to be called once `async_job` has finished
     the result of `async_job` is passed to this function
 
-### Limitations of `Async` operations
+### Limitations of Async operations
  * No access to global lua variables, don't even try
  * Limited set of available functions
     e.g. No access to functions modifying menu like `core.start`, `core.close`,
