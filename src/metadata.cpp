@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "metadata.h"
 #include "log.h"
-#include "convert_json.h"
 
 /*
 	IMetadata
@@ -72,9 +71,11 @@ const std::string &IMetadata::resolveString(const std::string &str, std::string 
 		u16 recursion, bool deprecated) const
 {
 	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
-		if (deprecated)
-			warningstream << "Deprecated use of recursive resolution syntax in metadata: "
-					<< fastWriteJson(Json::Value(str)) << std::endl;
+		if (deprecated) {
+			warningstream << "Deprecated use of recursive resolution syntax in metadata: ";
+			safe_print_string(warningstream, str);
+			warningstream << std::endl;
+		}
 		// It may be the case that &str == place, but that's fine.
 		return getString(str.substr(2, str.length() - 3), place, recursion + 1);
 	}
