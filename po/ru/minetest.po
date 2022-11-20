@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-11-05 12:08+0000\n"
-"Last-Translator: Nyuh Nyash <egor.kuryasev@ya.ru>\n"
+"PO-Revision-Date: 2022-11-21 05:47+0000\n"
+"Last-Translator: Mikitko <rudzik8@protonmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -33,7 +33,7 @@ msgstr "Неверная команда: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "Выданная команда: "
+msgstr "Введённая команда: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
