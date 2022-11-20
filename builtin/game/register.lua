@@ -86,7 +86,7 @@ local function check_node_list(list, field)
 			assert(type(entry) == "string",
 				"Field '" .. field .. "' contains non-string entry")
 		end
-	elseif t ~= "string" and t ~= "number" and t ~= "nil" then
+	elseif t ~= "string" and t ~= "nil" then
 		error("Field '" .. field .. "' has invalid type " .. t)
 	end
 end
