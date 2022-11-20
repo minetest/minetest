@@ -79,8 +79,22 @@ local function check_modname_prefix(name)
 	end
 end
 
+local function check_node_list(list, field)
+	local t = type(list)
+	if t == "table" then
+		for _, entry in pairs(list) do
+			assert(type(entry) == "string",
+				"Field '" .. field .. "' contains non-string entry")
+		end
+	elseif t ~= "string" and t ~= "nil" then
+		error("Field '" .. field .. "' has invalid type " .. t)
+	end
+end
+
 function core.register_abm(spec)
 	-- Add to core.registered_abms
+	check_node_list(spec.nodenames, "nodenames")
+	check_node_list(spec.neighbors, "neighbors")
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
@@ -89,6 +103,7 @@ end
 function core.register_lbm(spec)
 	-- Add to core.registered_lbms
 	check_modname_prefix(spec.name)
+	check_node_list(spec.nodenames, "nodenames")
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_lbms[#core.registered_lbms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
