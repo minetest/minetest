@@ -495,8 +495,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 	std::vector<PointedThing> &objects)
 {
 	std::vector<DistanceSortedActiveObject> allObjects;
-	getActiveObjects(shootline_on_map.start,
-		shootline_on_map.getLength() + 10.0f, allObjects);
+	m_ao_manager.getActiveSelectableObjects(shootline_on_map, allObjects);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (const auto &allObject : allObjects) {
