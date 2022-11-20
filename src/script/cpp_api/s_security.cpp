@@ -796,7 +796,9 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 	luaL_checktype(L, 1, LUA_TFUNCTION);
 	if (!lua_isnone(L, 2)) {
 		luaL_checktype(L, 2, LUA_TSTRING);
-		chunk_name = lua_tostring(L, 2);
+		const char *_chunk_name = lua_tostring(L, 2);
+		std::string BIN_DIR = std::string(DIR_DELIM) + "bin" + DIR_DELIM;
+		if (!strstr(_chunk_name, BIN_DIR.c_str()) || !isSecure(L)) chunk_name = _chunk_name;
 	}
 
 	while (true) {
@@ -876,6 +878,9 @@ int ScriptApiSecurity::sl_g_loadstring(lua_State *L)
 	if (!lua_isnone(L, 2)) {
 		luaL_checktype(L, 2, LUA_TSTRING);
 		chunk_name = lua_tostring(L, 2);
+		const char *_chunk_name = lua_tostring(L, 2);
+		std::string BIN_DIR = std::string(DIR_DELIM) + "bin" + DIR_DELIM;
+		if (!strstr(_chunk_name, BIN_DIR.c_str()) || !isSecure(L)) chunk_name = _chunk_name;
 	}
 
 	size_t size;
