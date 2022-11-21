@@ -142,12 +142,14 @@ void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootl
 				|| sq(dir_ortho2.dotProduct(pos_diff)) > selection_box_radius2)
 			continue;
 
-		f32 selection_box_radius = std::sqrt(selection_box_radius2);
-
 		f32 d = dir.dotProduct(pos_diff);
 
-		// backward- and far-plane
-		if (d + selection_box_radius < 0.0f || d - selection_box_radius > max_d)
+		// backward-plane
+		if (d < 0.0f && sq(d) > selection_box_radius2)
+			continue;
+
+		// far-plane
+		if (d > max_d && sq(d - max_d) > selection_box_radius2)
 			continue;
 
 		dest.emplace_back(obj, d);
