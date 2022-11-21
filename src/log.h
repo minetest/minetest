@@ -124,9 +124,10 @@ public:
 		m_stream(stream)
 	{
 #if !defined(_WIN32)
-		is_tty = isatty(fileno(stdout));
-#else
-		is_tty = false;
+		if (&stream == &std::cout)
+			is_tty = isatty(STDOUT_FILENO);
+		else if (&stream == &std::cerr)
+			is_tty = isatty(STDERR_FILENO);
 #endif
 	}
 
@@ -134,7 +135,7 @@ public:
 
 private:
 	std::ostream &m_stream;
-	bool is_tty;
+	bool is_tty = false;
 };
 
 class FileLogOutput : public ICombinedLogOutput {
