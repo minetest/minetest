@@ -128,6 +128,15 @@ u64 httpfetch_caller_alloc_secure();
 // to stop any ongoing fetches for the given caller.
 void httpfetch_caller_free(u64 caller);
 
+// This does the same thing but returns before the caller has been freed.
+void httpfetch_caller_free_async(u64 caller);
+
 // Performs a synchronous HTTP request. This blocks and therefore should
 // only be used from background threads.
 void httpfetch_sync(const HTTPFetchRequest &fetch_request, HTTPFetchResult &fetch_result);
+
+// Performs a synchronous HTTP request that is interruptible if the current
+// thread is a Thread object. interval is the completion check interval in ms.
+// Returned is whether the request completed without interruption.
+bool httpfetch_sync_interruptible(const HTTPFetchRequest &fetch_request,
+		HTTPFetchResult &fetch_result, long interval = 100);

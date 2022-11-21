@@ -60,6 +60,9 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 
+thread_local Thread *current_thread = nullptr;
+
+
 Thread::Thread(const std::string &name) :
 	m_name(name),
 	m_request_stop(false),
@@ -176,6 +179,8 @@ void Thread::threadProc(Thread *thr)
 	thr->m_kernel_thread_id = thread_self();
 #endif
 
+	current_thread = thr;
+
 	thr->setName(thr->m_name);
 
 	g_logger.registerThread(thr->m_name);
@@ -193,6 +198,12 @@ void Thread::threadProc(Thread *thr)
 	// released. We try to unlock it from caller thread and it's refused by system.
 	thr->m_start_finished_mutex.unlock();
 	g_logger.deregisterThread();
+}
+
+
+Thread *Thread::getCurrentThread()
+{
+	return current_thread;
 }
 
 
