@@ -125,8 +125,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< std::setprecision(2)
 			<< " | RTT: " << (client->getRTT() * 1000.0f) << "ms";
 
-		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X,
-			5 + g_fontengine->getTextHeight() * 2));
+		m_guitext->setRelativePosition(core::rect<s32>(5, 5, screensize.X, screensize.Y));
 
 		setStaticText(m_guitext, utf8_to_wide(os.str()).c_str());
 
@@ -166,10 +165,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			}
 		}
 
-		m_guitext2->setRelativePosition(core::rect<s32>(5,
-			5 + minimal_debug_height, screensize.X,
-			5 + minimal_debug_height + g_fontengine->getTextHeight() * 2
-		));
+		m_guitext2->setRelativePosition(core::rect<s32>(5, 5 + minimal_debug_height,
+				screensize.X, screensize.Y));
 
 		setStaticText(m_guitext2, utf8_to_wide(os.str()).c_str());
 	}
