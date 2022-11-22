@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-11-08 19:07+0000\n"
-"Last-Translator: LL Productions FR <crocodilchannel@gmail.com>\n"
+"PO-Revision-Date: 2022-11-23 07:47+0000\n"
+"Last-Translator: Emmily <Emmilyrose779@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -116,8 +116,9 @@ msgid "The server has requested a reconnect:"
 msgstr "La servilo petis rekonekton:"
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Nova versio $1 disponeblas"
 
 #: builtin/mainmenu/common.lua
 #, fuzzy
@@ -134,11 +135,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Later"
-msgstr ""
+msgstr "Poste"
 
 #: builtin/mainmenu/common.lua
 msgid "Never"
-msgstr ""
+msgstr "Neniam"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -154,7 +155,7 @@ msgstr "La servilo subtenas protokolajn versiojn inter $1 kaj $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Vizitu retejon"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -166,11 +167,12 @@ msgstr "Ni subtenas protokolajn versiojn inter versioj $1 kaj $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Ebligita, havas eraron)"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Malkontenta)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -472,8 +474,9 @@ msgid "Install a game"
 msgstr "Instali $1"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Install another game"
-msgstr ""
+msgstr "Instalu alian ludon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -613,7 +616,7 @@ msgstr "Konfirmi pasvorton"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Aliĝu al $1"
 
 #: builtin/mainmenu/dlg_register.lua
 #, fuzzy
@@ -1026,7 +1029,7 @@ msgstr "Aliĝi al ludo"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Ensaluti"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1050,8 +1053,9 @@ msgid "Server Description"
 msgstr "Priskribo pri servilo"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "(game support required)"
-msgstr ""
+msgstr "(ludsubteno bezonata)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1329,9 +1333,9 @@ msgid "A serialization error occurred:"
 msgstr "Eraro okazis:"
 
 #: src/client/game.cpp
-#, c-format
+#, c-format, fuzzy
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Aliro malakceptita. Kialo: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -2081,8 +2085,9 @@ msgid "Inc. volume"
 msgstr "Plilaŭtigi"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Inventory"
-msgstr "Portaĵujo"
+msgstr "Inventaro"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
