@@ -544,7 +544,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_DELETE)
 		{
-			if (!event.KeyInput.Char) { // no num lock
+			if (!event.KeyInput.Char || iswcntrl(event.KeyInput.Char)) { // no num lock
 				// Delete or Ctrl-Delete pressed
 				// delete character / word to the right
 				ChatPrompt::CursorOpScope scope =
