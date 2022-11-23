@@ -866,7 +866,7 @@ void ModStorageDatabasePostgreSQL::initStatements()
 		"SELECT DISTINCT modname FROM mod_storage");
 }
 
-bool ModStorageDatabasePostgreSQL::getModEntries(const std::string &modname, StringMap *storage)
+void ModStorageDatabasePostgreSQL::getModEntries(const std::string &modname, StringMap *storage)
 {
 	verifyDatabase();
 
@@ -882,11 +882,9 @@ bool ModStorageDatabasePostgreSQL::getModEntries(const std::string &modname, Str
 		(*storage)[pg_to_string(results, row, 0)] = pg_to_string(results, row, 1);
 
 	PQclear(results);
-
-	return true;
 }
 
-bool ModStorageDatabasePostgreSQL::getModKeys(const std::string &modname,
+void ModStorageDatabasePostgreSQL::getModKeys(const std::string &modname,
 		std::vector<std::string> *storage)
 {
 	verifyDatabase();
@@ -904,8 +902,6 @@ bool ModStorageDatabasePostgreSQL::getModKeys(const std::string &modname,
 		storage->push_back(pg_to_string(results, row, 0));
 
 	PQclear(results);
-
-	return true;
 }
 
 bool ModStorageDatabasePostgreSQL::getModEntry(const std::string &modname,

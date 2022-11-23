@@ -181,8 +181,8 @@ public:
 	ModStorageDatabasePostgreSQL(const std::string &connect_string);
 	~ModStorageDatabasePostgreSQL() = default;
 
-	bool getModEntries(const std::string &modname, StringMap *storage);
-	bool getModKeys(const std::string &modname, std::vector<std::string> *storage);
+	void getModEntries(const std::string &modname, StringMap *storage);
+	void getModKeys(const std::string &modname, std::vector<std::string> *storage);
 	bool getModEntry(const std::string &modname, const std::string &key, std::string *value);
 	bool hasModEntry(const std::string &modname, const std::string &key);
 	bool setModEntry(const std::string &modname,

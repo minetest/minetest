@@ -381,34 +381,30 @@ ModStorageDatabaseFiles::ModStorageDatabaseFiles(const std::string &savedir):
 {
 }
 
-bool ModStorageDatabaseFiles::getModEntries(const std::string &modname, StringMap *storage)
+void ModStorageDatabaseFiles::getModEntries(const std::string &modname, StringMap *storage)
 {
 	Json::Value *meta = getOrCreateJson(modname);
 	if (!meta)
-		return false;
+		return;
 
 	const Json::Value::Members attr_list = meta->getMemberNames();
 	for (const auto &it : attr_list) {
 		Json::Value attr_value = (*meta)[it];
 		(*storage)[it] = attr_value.asString();
 	}
-
-	return true;
 }
 
-bool ModStorageDatabaseFiles::getModKeys(const std::string &modname,
+void ModStorageDatabaseFiles::getModKeys(const std::string &modname,
 		std::vector<std::string> *storage)
 {
 	Json::Value *meta = getOrCreateJson(modname);
 	if (!meta)
-		return false;
+		return;
 
 	std::vector<std::string> keys = meta->getMemberNames();
 	storage->reserve(storage->size() + keys.size());
 	for (std::string &key : keys)
 		storage->push_back(std::move(key));
-
-	return true;
 }
 
 bool ModStorageDatabaseFiles::getModEntry(const std::string &modname,

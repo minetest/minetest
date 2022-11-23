@@ -37,8 +37,8 @@ public:
 	bool removePlayer(const std::string &name);
 	void listPlayers(std::vector<std::string> &res);
 
-	bool getModEntries(const std::string &modname, StringMap *storage);
-	bool getModKeys(const std::string &modname, std::vector<std::string> *storage);
+	void getModEntries(const std::string &modname, StringMap *storage);
+	void getModKeys(const std::string &modname, std::vector<std::string> *storage);
 	bool getModEntry(const std::string &modname,
 			const std::string &key, std::string *value);
 	bool hasModEntry(const std::string &modname, const std::string &key);

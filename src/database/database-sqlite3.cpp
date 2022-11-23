@@ -808,7 +808,7 @@ void ModStorageDatabaseSQLite3::initStatements()
 	PREPARE_STATEMENT(remove_all, "DELETE FROM `entries` WHERE `modname` = ?");
 }
 
-bool ModStorageDatabaseSQLite3::getModEntries(const std::string &modname, StringMap *storage)
+void ModStorageDatabaseSQLite3::getModEntries(const std::string &modname, StringMap *storage)
 {
 	verifyDatabase();
 
@@ -823,11 +823,9 @@ bool ModStorageDatabaseSQLite3::getModEntries(const std::string &modname, String
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
 	sqlite3_reset(m_stmt_get_all);
-
-	return true;
 }
 
-bool ModStorageDatabaseSQLite3::getModKeys(const std::string &modname,
+void ModStorageDatabaseSQLite3::getModKeys(const std::string &modname,
 		std::vector<std::string> *storage)
 {
 	verifyDatabase();
@@ -841,8 +839,6 @@ bool ModStorageDatabaseSQLite3::getModKeys(const std::string &modname,
 	sqlite3_vrfy(sqlite3_errcode(m_database), SQLITE_DONE);
 
 	sqlite3_reset(m_stmt_get_keys);
-
-	return true;
 }
 
 bool ModStorageDatabaseSQLite3::getModEntry(const std::string &modname,
