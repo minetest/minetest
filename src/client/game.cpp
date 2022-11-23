@@ -3498,6 +3498,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			} else if (predicted_f.param_type_2 == CPT2_4DIR ||
 					predicted_f.param_type_2 == CPT2_COLORED_4DIR ) {
 				pp = p + fourdir_dirs[param2];
+			} else {
+				pp = p;
 			}
 		} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
