@@ -276,7 +276,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
-	virtual ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
+	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	NodeDefManager* getWritableNodeDefManager();
@@ -368,9 +368,9 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
-	static ModMetadataDatabase *openModStorageDatabase(const std::string &world_path);
+	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
-	static ModMetadataDatabase *openModStorageDatabase(const std::string &backend,
+	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,
 			const std::string &world_path, const Settings &world_mt);
 
 	static bool migrateModStorageDatabase(const GameParams &game_params,
@@ -694,7 +694,7 @@ private:
 	s32 m_next_sound_id = 0; // positive values only
 	s32 nextSoundId();
 
-	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag

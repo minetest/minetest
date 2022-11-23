@@ -61,7 +61,7 @@ public:
 		return emptymodspec;
 	}
 	const ModSpec* getModSpec(const std::string &modname) const override { return nullptr; }
-	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
+	ModStorageDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
 	bool joinModChannel(const std::string &channel) override { return false; }
 	bool leaveModChannel(const std::string &channel) override { return false; }
@@ -75,5 +75,5 @@ protected:
 	IItemDefManager *m_itemdef = nullptr;
 	NodeDefManager *m_nodedef = nullptr;
 	ICraftDefManager *m_craftdef = nullptr;
-	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	ModStorageDatabase *m_mod_storage_database = nullptr;
 };

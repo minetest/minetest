@@ -32,8 +32,8 @@ class IRollbackManager;
 class EmergeManager;
 class Camera;
 class ModChannel;
-class ModMetadata;
-class ModMetadataDatabase;
+class ModStorage;
+class ModStorageDatabase;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
@@ -73,7 +73,7 @@ public:
 	virtual const std::vector<ModSpec> &getMods() const = 0;
 	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
 	virtual std::string getWorldPath() const { return ""; }
-	virtual ModMetadataDatabase *getModStorageDatabase() = 0;
+	virtual ModStorageDatabase *getModStorageDatabase() = 0;
 
 	virtual bool joinModChannel(const std::string &channel) = 0;
 	virtual bool leaveModChannel(const std::string &channel) = 0;

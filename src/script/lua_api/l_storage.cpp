@@ -41,7 +41,7 @@ void ModApiStorage::Initialize(lua_State *L, int top)
 	API_FCT(get_mod_storage);
 }
 
-void StorageRef::create(lua_State *L, const std::string &mod_name, ModMetadataDatabase *db)
+void StorageRef::create(lua_State *L, const std::string &mod_name, ModStorageDatabase *db)
 {
 	StorageRef *o = new StorageRef(mod_name, db);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;

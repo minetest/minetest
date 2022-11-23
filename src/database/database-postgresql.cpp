@@ -813,14 +813,14 @@ void AuthDatabasePostgreSQL::writePrivileges(const AuthEntry &authEntry)
 	}
 }
 
-ModMetadataDatabasePostgreSQL::ModMetadataDatabasePostgreSQL(const std::string &connect_string):
+ModStorageDatabasePostgreSQL::ModStorageDatabasePostgreSQL(const std::string &connect_string):
 	Database_PostgreSQL(connect_string, "_mod_storage"),
-	ModMetadataDatabase()
+	ModStorageDatabase()
 {
 	connectToDatabase();
 }
 
-void ModMetadataDatabasePostgreSQL::createDatabase()
+void ModStorageDatabasePostgreSQL::createDatabase()
 {
 	createTableIfNotExists("mod_storage",
 		"CREATE TABLE mod_storage ("
@@ -833,7 +833,7 @@ void ModMetadataDatabasePostgreSQL::createDatabase()
 	infostream << "PostgreSQL: Mod Storage Database was initialized." << std::endl;
 }
 
-void ModMetadataDatabasePostgreSQL::initStatements()
+void ModStorageDatabasePostgreSQL::initStatements()
 {
 	prepareStatement("get_all",
 		"SELECT key, value FROM mod_storage WHERE modname = $1");
@@ -866,7 +866,7 @@ void ModMetadataDatabasePostgreSQL::initStatements()
 		"SELECT DISTINCT modname FROM mod_storage");
 }
 
-bool ModMetadataDatabasePostgreSQL::getModEntries(const std::string &modname, StringMap *storage)
+bool ModStorageDatabasePostgreSQL::getModEntries(const std::string &modname, StringMap *storage)
 {
 	verifyDatabase();
 
@@ -886,7 +886,7 @@ bool ModMetadataDatabasePostgreSQL::getModEntries(const std::string &modname, St
 	return true;
 }
 
-bool ModMetadataDatabasePostgreSQL::getModKeys(const std::string &modname,
+bool ModStorageDatabasePostgreSQL::getModKeys(const std::string &modname,
 		std::vector<std::string> *storage)
 {
 	verifyDatabase();
@@ -908,7 +908,7 @@ bool ModMetadataDatabasePostgreSQL::getModKeys(const std::string &modname,
 	return true;
 }
 
-bool ModMetadataDatabasePostgreSQL::getModEntry(const std::string &modname,
+bool ModStorageDatabasePostgreSQL::getModEntry(const std::string &modname,
 	const std::string &key, std::string *value)
 {
 	verifyDatabase();
@@ -929,7 +929,7 @@ bool ModMetadataDatabasePostgreSQL::getModEntry(const std::string &modname,
 	return found;
 }
 
-bool ModMetadataDatabasePostgreSQL::hasModEntry(const std::string &modname,
+bool ModStorageDatabasePostgreSQL::hasModEntry(const std::string &modname,
 		const std::string &key)
 {
 	verifyDatabase();
@@ -947,7 +947,7 @@ bool ModMetadataDatabasePostgreSQL::hasModEntry(const std::string &modname,
 	return found;
 }
 
-bool ModMetadataDatabasePostgreSQL::setModEntry(const std::string &modname,
+bool ModStorageDatabasePostgreSQL::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
 	verifyDatabase();
@@ -969,7 +969,7 @@ bool ModMetadataDatabasePostgreSQL::setModEntry(const std::string &modname,
 	return true;
 }
 
-bool ModMetadataDatabasePostgreSQL::removeModEntry(const std::string &modname,
+bool ModStorageDatabasePostgreSQL::removeModEntry(const std::string &modname,
 		const std::string &key)
 {
 	verifyDatabase();
@@ -986,7 +986,7 @@ bool ModMetadataDatabasePostgreSQL::removeModEntry(const std::string &modname,
 	return affected > 0;
 }
 
-bool ModMetadataDatabasePostgreSQL::removeModEntries(const std::string &modname)
+bool ModStorageDatabasePostgreSQL::removeModEntries(const std::string &modname)
 {
 	verifyDatabase();
 
@@ -1002,7 +1002,7 @@ bool ModMetadataDatabasePostgreSQL::removeModEntries(const std::string &modname)
 	return affected > 0;
 }
 
-void ModMetadataDatabasePostgreSQL::listMods(std::vector<std::string> *res)
+void ModStorageDatabasePostgreSQL::listMods(std::vector<std::string> *res)
 {
 	verifyDatabase();
 

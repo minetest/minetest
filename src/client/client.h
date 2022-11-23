@@ -381,7 +381,7 @@ public:
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename, bool cache = false);
 	const std::string* getModFile(std::string filename);
-	ModMetadataDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
+	ModStorageDatabase *getModStorageDatabase() override { return m_mod_storage_database; }
 
 	// Migrates away old files-based mod storage if necessary
 	void migrateModStorage();
@@ -590,7 +590,7 @@ private:
 
 	// Client modding
 	ClientScripting *m_script = nullptr;
-	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
 	StringMap m_mod_vfs;
