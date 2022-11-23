@@ -883,10 +883,14 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
+	// Initialize with full alpha, otherwise entity won't be visible
+	video::SColor light{0xFFFFFFFF};
+
 	// Encode light into color, adding a small boost
 	// based on the entity glow.
-	video::SColor light = encode_light(light_at_pos, m_prop.glow);
-	if (!m_enable_shaders)
+	if (m_enable_shaders)
+		light = encode_light(light_at_pos, m_prop.glow);
+	else
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
 	if (light != m_last_light) {
