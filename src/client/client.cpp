@@ -134,7 +134,7 @@ Client::Client(
 
 	// Make the mod storage database and begin the save for later
 	m_mod_storage_database =
-		new ModMetadataDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
+			new ModStorageDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
 	m_mod_storage_database->beginSave();
 
 	if (g_settings->getBool("enable_minimap")) {
@@ -151,7 +151,7 @@ void Client::migrateModStorage()
 	if (fs::IsDir(old_mod_storage)) {
 		infostream << "Migrating client mod storage to SQLite3 database" << std::endl;
 		{
-			ModMetadataDatabaseFiles files_db(mod_storage_dir);
+			ModStorageDatabaseFiles files_db(mod_storage_dir);
 			std::vector<std::string> mod_list;
 			files_db.listMods(&mod_list);
 			for (const std::string &modname : mod_list) {

@@ -233,11 +233,11 @@ private:
 	sqlite3_stmt *m_stmt_last_insert_rowid = nullptr;
 };
 
-class ModMetadataDatabaseSQLite3 : private Database_SQLite3, public ModMetadataDatabase
+class ModStorageDatabaseSQLite3 : private Database_SQLite3, public ModStorageDatabase
 {
 public:
-	ModMetadataDatabaseSQLite3(const std::string &savedir);
-	virtual ~ModMetadataDatabaseSQLite3();
+	ModStorageDatabaseSQLite3(const std::string &savedir);
+	virtual ~ModStorageDatabaseSQLite3();
 
 	virtual bool getModEntries(const std::string &modname, StringMap *storage);
 	virtual bool getModKeys(const std::string &modname, std::vector<std::string> *storage);

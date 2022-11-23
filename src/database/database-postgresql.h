@@ -175,11 +175,11 @@ private:
 	virtual void writePrivileges(const AuthEntry &authEntry);
 };
 
-class ModMetadataDatabasePostgreSQL : private Database_PostgreSQL, public ModMetadataDatabase
+class ModStorageDatabasePostgreSQL : private Database_PostgreSQL, public ModStorageDatabase
 {
 public:
-	ModMetadataDatabasePostgreSQL(const std::string &connect_string);
-	~ModMetadataDatabasePostgreSQL() = default;
+	ModStorageDatabasePostgreSQL(const std::string &connect_string);
+	~ModStorageDatabasePostgreSQL() = default;
 
 	bool getModEntries(const std::string &modname, StringMap *storage);
 	bool getModKeys(const std::string &modname, std::vector<std::string> *storage);

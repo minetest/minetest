@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "metadata.h"
 #include "subgames.h"
 
-class ModMetadataDatabase;
+class ModStorageDatabase;
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -110,12 +110,12 @@ std::map<std::string, ModSpec> getModsInPath(const std::string &path,
 std::vector<ModSpec> flattenMods(const std::map<std::string, ModSpec> &mods);
 
 
-class ModMetadata : public IMetadata
+class ModStorage : public IMetadata
 {
 public:
-	ModMetadata() = delete;
-	ModMetadata(const std::string &mod_name, ModMetadataDatabase *database);
-	~ModMetadata() = default;
+	ModStorage() = delete;
+	ModStorage(const std::string &mod_name, ModStorageDatabase *database);
+	~ModStorage() = default;
 
 	const std::string &getModName() const { return m_mod_name; }
 
@@ -135,5 +135,5 @@ protected:
 
 private:
 	std::string m_mod_name;
-	ModMetadataDatabase *m_database;
+	ModStorageDatabase *m_database;
 };

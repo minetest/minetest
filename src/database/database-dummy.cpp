@@ -83,8 +83,8 @@ void Database_Dummy::listPlayers(std::vector<std::string> &res)
 
 bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
 {
-	const auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair != m_mod_meta_database.cend()) {
+	const auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair != m_mod_storage_database.cend()) {
 		for (const auto &pair : mod_pair->second) {
 			(*storage)[pair.first] = pair.second;
 		}
@@ -94,8 +94,8 @@ bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storag
 
 bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::string> *storage)
 {
-	const auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair != m_mod_meta_database.cend()) {
+	const auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair != m_mod_storage_database.cend()) {
 		storage->reserve(storage->size() + mod_pair->second.size());
 		for (const auto &pair : mod_pair->second)
 			storage->push_back(pair.first);
@@ -106,8 +106,8 @@ bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::str
 bool Database_Dummy::getModEntry(const std::string &modname,
 	const std::string &key, std::string *value)
 {
-	auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair == m_mod_meta_database.end())
+	auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair == m_mod_storage_database.end())
 		return false;
 	const StringMap &meta = mod_pair->second;
 
@@ -121,8 +121,8 @@ bool Database_Dummy::getModEntry(const std::string &modname,
 
 bool Database_Dummy::hasModEntry(const std::string &modname, const std::string &key)
 {
-	auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair == m_mod_meta_database.end())
+	auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair == m_mod_storage_database.end())
 		return false;
 	const StringMap &meta = mod_pair->second;
 
@@ -132,9 +132,9 @@ bool Database_Dummy::hasModEntry(const std::string &modname, const std::string &
 bool Database_Dummy::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
-	auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair == m_mod_meta_database.end()) {
-		m_mod_meta_database[modname] = StringMap({{key, value}});
+	auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair == m_mod_storage_database.end()) {
+		m_mod_storage_database[modname] = StringMap({{key, value}});
 	} else {
 		mod_pair->second[key] = value;
 	}
@@ -143,16 +143,16 @@ bool Database_Dummy::setModEntry(const std::string &modname,
 
 bool Database_Dummy::removeModEntry(const std::string &modname, const std::string &key)
 {
-	auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair != m_mod_meta_database.end())
+	auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair != m_mod_storage_database.end())
 		return mod_pair->second.erase(key) > 0;
 	return false;
 }
 
 bool Database_Dummy::removeModEntries(const std::string &modname)
 {
-	auto mod_pair = m_mod_meta_database.find(modname);
-	if (mod_pair != m_mod_meta_database.end() && !mod_pair->second.empty()) {
+	auto mod_pair = m_mod_storage_database.find(modname);
+	if (mod_pair != m_mod_storage_database.end() && !mod_pair->second.empty()) {
 		mod_pair->second.clear();
 		return true;
 	}
@@ -161,7 +161,7 @@ bool Database_Dummy::removeModEntries(const std::string &modname)
 
 void Database_Dummy::listMods(std::vector<std::string> *res)
 {
-	for (const auto &pair : m_mod_meta_database) {
+	for (const auto &pair : m_mod_storage_database) {
 		res->push_back(pair.first);
 	}
 }
