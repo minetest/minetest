@@ -81,7 +81,7 @@ void Database_Dummy::listPlayers(std::vector<std::string> &res)
 	}
 }
 
-bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
+void Database_Dummy::getModEntries(const std::string &modname, StringMap *storage)
 {
 	const auto mod_pair = m_mod_storage_database.find(modname);
 	if (mod_pair != m_mod_storage_database.cend()) {
@@ -89,10 +89,9 @@ bool Database_Dummy::getModEntries(const std::string &modname, StringMap *storag
 			(*storage)[pair.first] = pair.second;
 		}
 	}
-	return true;
 }
 
-bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::string> *storage)
+void Database_Dummy::getModKeys(const std::string &modname, std::vector<std::string> *storage)
 {
 	const auto mod_pair = m_mod_storage_database.find(modname);
 	if (mod_pair != m_mod_storage_database.cend()) {
@@ -100,7 +99,6 @@ bool Database_Dummy::getModKeys(const std::string &modname, std::vector<std::str
 		for (const auto &pair : mod_pair->second)
 			storage->push_back(pair.first);
 	}
-	return true;
 }
 
 bool Database_Dummy::getModEntry(const std::string &modname,

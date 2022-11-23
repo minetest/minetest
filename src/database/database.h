@@ -91,8 +91,8 @@ class ModStorageDatabase : public Database
 public:
 	virtual ~ModStorageDatabase() = default;
 
-	virtual bool getModEntries(const std::string &modname, StringMap *storage) = 0;
-	virtual bool getModKeys(const std::string &modname, std::vector<std::string> *storage) = 0;
+	virtual void getModEntries(const std::string &modname, StringMap *storage) = 0;
+	virtual void getModKeys(const std::string &modname, std::vector<std::string> *storage) = 0;
 	virtual bool hasModEntry(const std::string &modname, const std::string &key) = 0;
 	virtual bool getModEntry(const std::string &modname,
 		const std::string &key, std::string *value) = 0;
