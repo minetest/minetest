@@ -1868,13 +1868,13 @@ to games.
 * `attached_node`: the node is 'attached' to a neighboring node. It checks
                    whether the node it is attached to is walkable. If it
                    isn't, the node will drop as an item.
-    * `1`: if the node is wallmounted, node is attached to the wallmounted
-           direction. Otherwise, node is attached to the node below.
+    * `1`: if the node is wallmounted, the node is attached in the wallmounted
+           direction. Otherwise, the node is attached to the node below.
     * `2`: if the node is facedir or 4dir, the facedir or 4dir direction is checked.
            No effect for other nodes.
            Note: The "attaching face" of this node is tile no. 5 (back face).
-    * `3`: it's always attached to the node below.
-    * `4`: it's always attached to the node above.
+    * `3`: the node is always attached to the node below.
+    * `4`: the node is always attached to the node above.
 * `bouncy`: value is bounce speed in percent.
   If positive, jump/sneak on floor impact will increase/decrease bounce height.
   Negative value is the same bounciness, but non-controllable.
