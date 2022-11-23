@@ -1694,6 +1694,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 
 	const SchematicManager *schemmgr =
 		getServer(L)->getEmergeManager()->getSchematicManager();
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
 
 	//// Read options
 	std::string write_yslice = getstringfield_default(L, 2, "write_yslice_prob", "all");
@@ -1713,6 +1714,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 
 	//// Create the Lua table
 	u32 numnodes = schem->size.X * schem->size.Y * schem->size.Z;
+	bool resolve_done = schem->isResolveDone();
 	const std::vector<std::string> &names = schem->m_nodenames;
 
 	lua_createtable(L, 0, (write_yslice == "none") ? 2 : 3);
@@ -1742,10 +1744,12 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	lua_createtable(L, numnodes, 0); // data table
 	for (u32 i = 0; i < numnodes; ++i) {
 		MapNode node = schem->schemdata[i];
+		const std::string &name =
+				resolve_done ? ndef->get(node.getContent()).name : names[node.getContent()];
 		u8 probability   = node.param1 & MTSCHEM_PROB_MASK;
 		bool force_place = node.param1 & MTSCHEM_FORCE_PLACE;
 		lua_createtable(L, 0, force_place ? 4 : 3);
-		lua_pushstring(L, names[schem->schemdata[i].getContent()].c_str());
+		lua_pushstring(L, name.c_str());
 		lua_setfield(L, 3, "name");
 		lua_pushinteger(L, probability * 2);
 		lua_setfield(L, 3, "prob");
