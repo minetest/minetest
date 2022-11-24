@@ -4879,6 +4879,20 @@ Utilities
   or checking if a mod is enabled.
 * `minetest.get_modnames()`: returns a list of enabled mods, sorted alphabetically.
     * Does not include disabled mods, even if they are installed.
+* `minetest.get_game_info()`: returns a table containing information about the
+  current game. Note that information missing from this table can be read from
+  `game.conf` in the game's root directory.
+
+      {
+          id = string,
+          title = string,
+          author = string,
+          -- The root directory of the game
+          path = string,
+          -- The directory containing game mods
+          mods_path = string,
+      }
+
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
 * `minetest.is_singleplayer()`

@@ -590,6 +590,15 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
+	// Allow read-only access to game.conf
+	if (!write_required) {
+		if (const Server *server = dynamic_cast<const Server *>(gamedef)) {
+			str = fs::AbsolutePath(server->getGameSpec().path + DIR_DELIM "game.conf");
+			if (abs_path == str)
+				return true;
+		}
+	}
+
 	str = fs::AbsolutePath(gamedef->getWorldPath());
 	if (!str.empty()) {
 		// Don't allow access to other paths in the world mod/game path.
