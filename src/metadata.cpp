@@ -51,7 +51,7 @@ const std::string &IMetadata::getString(const std::string &name, std::string *pl
 		return empty_string;
 	}
 
-	return resolveString(*raw, place, recursion);
+	return resolveString(*raw, place, recursion, true);
 }
 
 bool IMetadata::getStringToRef(const std::string &name,
@@ -61,16 +61,21 @@ bool IMetadata::getStringToRef(const std::string &name,
 	if (!raw)
 		return false;
 
-	const std::string &resolved = resolveString(*raw, &str, recursion);
+	const std::string &resolved = resolveString(*raw, &str, recursion, true);
 	if (&resolved != &str)
 		str = resolved;
 	return true;
 }
 
 const std::string &IMetadata::resolveString(const std::string &str, std::string *place,
-		u16 recursion) const
+		u16 recursion, bool deprecated) const
 {
 	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+		if (deprecated) {
+			warningstream << "Deprecated use of recursive resolution syntax in metadata: ";
+			safe_print_string(warningstream, str);
+			warningstream << std::endl;
+		}
 		// It may be the case that &str == place, but that's fine.
 		return getString(str.substr(2, str.length() - 3), place, recursion + 1);
 	}

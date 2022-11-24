@@ -6861,6 +6861,11 @@ Can be obtained via `item:get_meta()`.
 Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
 and [`PlayerMetaRef`].
 
+Note: If a metadata value is in the format `${k}`, an attempt to get the value
+will return the value associated with key `k`. There is a low recursion limit.
+This behavior is **deprecated** and will be removed in a future version. Usage
+of the `${k}` syntax in formspecs is not deprecated.
+
 ### Methods
 
 * `contains(key)`: Returns true if key present, otherwise false.
