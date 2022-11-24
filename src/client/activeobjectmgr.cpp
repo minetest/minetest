@@ -115,10 +115,7 @@ void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootl
 	// shootline (+selection box radius forwards and backwards). We check whether
 	// the selection box center is inside this cuboid.
 
-	auto sq = [](f32 a) { return a * a; };
-
-	f32 max_d2 = shootline.getLengthSQ();
-	f32 max_d = std::sqrt(max_d2);
+	f32 max_d = shootline.getLength();
 	v3f dir = shootline.getVector().normalize();
 	// arbitrary linearly independent vector and orthogonal dirs
 	v3f li2dir = dir + (std::fabs(dir.X) < 0.5f ? v3f(1,0,0) : v3f(0,1,0));
@@ -132,22 +129,20 @@ void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootl
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		// aabb3f::getRadius() squared
-		f32 selection_box_radius2 = selection_box.getExtent().getLengthSQ() * 0.25f;
+		// possible optimization: get rid of the sqrt here
+		f32 selection_box_radius = selection_box.getRadius();
 
 		v3f pos_diff = obj->getPosition() + selection_box.getCenter() - shootline.start;
-
-		// side-planes
-		if (sq(dir_ortho1.dotProduct(pos_diff)) > selection_box_radius2
-				|| sq(dir_ortho2.dotProduct(pos_diff)) > selection_box_radius2)
-			continue;
-
-		f32 selection_box_radius = std::sqrt(selection_box_radius2);
 
 		f32 d = dir.dotProduct(pos_diff);
 
 		// backward- and far-plane
 		if (d + selection_box_radius < 0.0f || d - selection_box_radius > max_d)
+			continue;
+
+		// side-planes
+		if (std::fabs(dir_ortho1.dotProduct(pos_diff)) > selection_box_radius
+				|| std::fabs(dir_ortho2.dotProduct(pos_diff)) > selection_box_radius)
 			continue;
 
 		dest.emplace_back(obj, d);
