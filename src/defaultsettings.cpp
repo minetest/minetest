@@ -87,7 +87,12 @@ void set_default_settings()
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
+#if HAVE_TOUCHSCREENGUI
+	// See https://github.com/minetest/minetest/issues/12792
+	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
+#else
 	settings->setDefault("keymap_rangeselect", "");
+#endif
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
