@@ -40,6 +40,7 @@ namespace irr { namespace scene {
 	class ISceneManager;
 }}
 
+struct SubgameSpec;
 struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
@@ -72,6 +73,7 @@ public:
 
 	virtual const std::vector<ModSpec> &getMods() const = 0;
 	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
+	virtual const SubgameSpec* getGameSpec() const { return nullptr; }
 	virtual std::string getWorldPath() const { return ""; }
 	virtual ModStorageDatabase *getModStorageDatabase() = 0;
 

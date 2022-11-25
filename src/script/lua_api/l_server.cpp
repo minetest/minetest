@@ -428,13 +428,15 @@ int ModApiServer::l_get_modnames(lua_State *L)
 int ModApiServer::l_get_game_info(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const SubgameSpec &game_spec = getServer(L)->getGameSpec();
+	const SubgameSpec *game_spec = getGameDef(L)->getGameSpec();
+	if (!game_spec)
+		throw LuaError("Game information is not available");
 	lua_newtable(L);
-	setstringfield(L, -1, "id", game_spec.id);
-	setstringfield(L, -1, "title", game_spec.title);
-	setstringfield(L, -1, "author", game_spec.author);
-	setstringfield(L, -1, "path", game_spec.path);
-	setstringfield(L, -1, "mods_path", game_spec.gamemods_path);
+	setstringfield(L, -1, "id", game_spec->id);
+	setstringfield(L, -1, "title", game_spec->title);
+	setstringfield(L, -1, "author", game_spec->author);
+	setstringfield(L, -1, "path", game_spec->path);
+	setstringfield(L, -1, "mods_path", game_spec->gamemods_path);
 	return 1;
 }
 
