@@ -4880,8 +4880,8 @@ Utilities
 * `minetest.get_modnames()`: returns a list of enabled mods, sorted alphabetically.
     * Does not include disabled mods, even if they are installed.
 * `minetest.get_game_info()`: returns a table containing information about the
-  current game. Note that information missing from this table can be read from
-  `game.conf` in the game's root directory.
+  current game. Note that other meta information (e.g. version/release number)
+  can be manually read from `game.conf` in the game's root directory.
 
       {
           id = string,
