@@ -85,7 +85,7 @@ void               push_palette              (lua_State *L,
                                               const std::vector<video::SColor> *palette);
 
 TileDef            read_tiledef              (lua_State *L, int index,
-                                              u8 drawtype);
+                                              u8 drawtype, bool special);
 
 void               read_soundspec            (lua_State *L, int index,
                                               SimpleSoundSpec &spec);

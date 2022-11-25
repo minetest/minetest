@@ -462,7 +462,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 }
 
 /******************************************************************************/
-TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
+TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -473,7 +473,6 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	bool default_culling = true;
 	switch (drawtype) {
 		case NDT_PLANTLIKE:
-		case NDT_PLANTLIKE_ROOTED:
 		case NDT_FIRELIKE:
 			default_tiling = false;
 			// "break" is omitted here intentionaly, as PLANTLIKE
@@ -482,6 +481,10 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		case NDT_MESH:
 		case NDT_LIQUID:
 			default_culling = false;
+			break;
+		case NDT_PLANTLIKE_ROOTED:
+			default_tiling = !special;
+			default_culling = !special;
 			break;
 		default:
 			break;
@@ -576,7 +579,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		int i = 0;
 		while(lua_next(L, table) != 0){
 			// Read tiledef from value
-			f.tiledef[i] = read_tiledef(L, -1, f.drawtype);
+			f.tiledef[i] = read_tiledef(L, -1, f.drawtype, false);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
@@ -604,7 +607,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		int i = 0;
 		while (lua_next(L, table) != 0) {
 			// Read tiledef from value
-			f.tiledef_overlay[i] = read_tiledef(L, -1, f.drawtype);
+			f.tiledef_overlay[i] = read_tiledef(L, -1, f.drawtype, false);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
@@ -632,7 +635,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		int i = 0;
 		while(lua_next(L, table) != 0){
 			// Read tiledef from value
-			f.tiledef_special[i] = read_tiledef(L, -1, f.drawtype);
+			f.tiledef_special[i] = read_tiledef(L, -1, f.drawtype, true);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
