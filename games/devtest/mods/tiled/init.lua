@@ -11,6 +11,21 @@ minetest.register_node("tiled:tiled", {
         groups = {cracky=3},
 })
 
+minetest.register_node("tiled:tiled_rooted", {
+        description = "Tiled 'plantlike_rooted' Node (world-aligned)".."\n"..
+                "Base node texture spans over a space of 8×8 nodes".."\n"..
+                "A plantlike thing grows on top",
+        paramtype = "light",
+        drawtype = "plantlike_rooted",
+        tiles = {{
+                name = "tiled_tiled.png",
+                align_style = "world",
+                scale = 8,
+        }},
+        special_tiles = {"tiled_tiled_node.png"},
+        groups = {cracky=3},
+})
+
 minetest.register_node("tiled:tiled_n", {
         description = "Tiled Node (node-aligned)".."\n"..align_help_n,
         tiles = {{
