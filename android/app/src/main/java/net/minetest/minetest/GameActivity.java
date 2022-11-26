@@ -181,17 +181,11 @@ public class GameActivity extends NativeActivity {
 	}
 
 	public String getUserDataPath() {
-		return Objects.requireNonNull(
-			Utils.getUserDataDirectory(this),
-			"Cannot get user data directory"
-		).getAbsolutePath();
+		return Utils.getUserDataDirectory(this).getAbsolutePath();
 	}
 
 	public String getCachePath() {
-		return Objects.requireNonNull(
-			Utils.getCacheDirectory(this),
-			"Cannot get cache directory"
-		).getAbsolutePath();
+		return Utils.getCacheDirectory(this).getAbsolutePath();
 	}
 
 	public void shareFile(String path) {

@@ -77,9 +77,6 @@ public class UnzipService extends IntentService {
 		try {
 			setIsRunning(true);
 			File userDataDirectory = Utils.getUserDataDirectory(this);
-			if (userDataDirectory == null) {
-				throw new IOException("Unable to find user data directory");
-			}
 
 			try (InputStream in = this.getAssets().open(zipFile.getName())) {
 				try (OutputStream out = new FileOutputStream(zipFile)) {
