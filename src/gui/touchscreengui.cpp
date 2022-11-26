@@ -773,7 +773,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			m_rarecontrolsbar.deactivate();
 
 			s32 dxj = event.TouchInput.X - button_size * 5.0f / 2.0f;
-			s32 dyj = event.TouchInput.Y - m_screensize.Y + button_size * 5.0f / 2.0f;
+			s32 dyj = event.TouchInput.Y - (s32)m_screensize.Y + button_size * 5.0f / 2.0f;
 
 			/* Select joystick when left 1/3 of screen dragged or
 			 * when joystick tapped (fixed joystick position)
@@ -824,8 +824,9 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 	} else {
 		assert(event.TouchInput.Event == ETIE_MOVED);
 
-		if (m_pointerpos[event.TouchInput.ID] ==
-				v2s32(event.TouchInput.X, event.TouchInput.Y))
+		if (!(m_has_joystick_id && m_fixed_joystick) &&
+				m_pointerpos[event.TouchInput.ID] ==
+						v2s32(event.TouchInput.X, event.TouchInput.Y))
 			return;
 
 		if (m_has_move_id) {
@@ -878,14 +879,14 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			s32 dx = X - m_pointerpos[event.TouchInput.ID].X;
 			s32 dy = Y - m_pointerpos[event.TouchInput.ID].Y;
 			if (m_fixed_joystick) {
-				dx = X - button_size * 5 / 2;
-				dy = Y - m_screensize.Y + button_size * 5 / 2;
+				dx = X - button_size * 5.0f / 2.0f;
+				dy = Y - (s32)m_screensize.Y + button_size * 5.0f / 2.0f;
 			}
 
 			double distance_sq = dx * dx + dy * dy;
 
 			s32 dxj = event.TouchInput.X - button_size * 5.0f / 2.0f;
-			s32 dyj = event.TouchInput.Y - m_screensize.Y + button_size * 5.0f / 2.0f;
+			s32 dyj = event.TouchInput.Y - (s32)m_screensize.Y + button_size * 5.0f / 2.0f;
 			bool inside_joystick = (dxj * dxj + dyj * dyj <= button_size * button_size * 1.5 * 1.5);
 
 			if (m_joystick_has_really_moved || inside_joystick ||
@@ -936,8 +937,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					s32 ndy = button_size * dy / distance - button_size / 2.0f;
 					if (m_fixed_joystick) {
 						m_joystick_btn_center->guibutton->setRelativePosition(v2s32(
-							button_size * 5 / 2 + ndx,
-							m_screensize.Y - button_size * 5 / 2 + ndy));
+							button_size * 5.0f / 2.0f + ndx,
+							m_screensize.Y - button_size * 5.0f / 2.0f + ndy));
 					} else {
 						m_joystick_btn_center->guibutton->setRelativePosition(v2s32(
 							m_pointerpos[event.TouchInput.ID].X + ndx,
