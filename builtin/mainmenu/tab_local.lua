@@ -22,6 +22,7 @@ local valid_disabled_settings = {
 	["creative_mode"]=true,
 	["enable_server"]=true,
 }
+local is_in_dlg_create_world = false
 
 -- Currently chosen game in gamebar for theming and filtering
 function current_game()
@@ -269,6 +270,14 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["play"] ~= nil or world_doubleclick or fields["key_enter"] then
+		if is_in_dlg_create_world then
+			is_in_dlg_create_world = false
+
+			if fields["play"] == nil and not this.is_dlg_create_world_canceled then
+				return true
+			end
+		end
+
 		local selected = core.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
@@ -316,6 +325,8 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
+		is_in_dlg_create_world = true
+		this.is_dlg_create_world_canceled = false
 		local create_world_dlg = create_create_world_dlg()
 		create_world_dlg:set_parent(this)
 		this:hide()

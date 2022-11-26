@@ -435,6 +435,7 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	if fields["world_create_cancel"] then
+		this.parent.is_dlg_create_world_canceled = true
 		this:delete()
 		return true
 	end
