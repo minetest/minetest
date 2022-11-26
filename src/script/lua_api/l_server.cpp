@@ -429,8 +429,7 @@ int ModApiServer::l_get_game_info(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const SubgameSpec *game_spec = getGameDef(L)->getGameSpec();
-	if (!game_spec)
-		throw LuaError("Game information is not available");
+	assert(game_spec);
 	lua_newtable(L);
 	setstringfield(L, -1, "id", game_spec->id);
 	setstringfield(L, -1, "title", game_spec->title);
