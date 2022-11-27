@@ -888,7 +888,7 @@ public:
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
 		{
-			const MapNode &n = block->getNodeNoCheck(p0);
+			MapNode n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
 			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
@@ -950,6 +950,11 @@ public:
 					active_object_count = countObjects(block, map, active_object_count_wider);
 					m_env->m_added_objects = 0;
 				}
+
+				// Update and check node after possible modification
+				n = block->getNodeNoCheck(p0);
+				if (n.getContent() != c)
+					break;
 			}
 		}
 		block->contents_cached = !block->do_not_cache_contents;
@@ -1435,6 +1440,9 @@ void ServerEnvironment::step(float dtime)
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval)) {
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg per interval", SPT_AVG);
 		TimeTaker timer("modify in active blocks per interval");
+
+		// Shuffle to prevent persistent artifacts of ordering
+		std::shuffle(m_abms.begin(), m_abms.end(), m_rgen);
 
 		// Initialize handling of ActiveBlockModifiers
 		ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
