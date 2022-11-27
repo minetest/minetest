@@ -435,7 +435,6 @@ int ModApiServer::l_get_game_info(lua_State *L)
 	setstringfield(L, -1, "title", game_spec->title);
 	setstringfield(L, -1, "author", game_spec->author);
 	setstringfield(L, -1, "path", game_spec->path);
-	setstringfield(L, -1, "mods_path", game_spec->gamemods_path);
 	return 1;
 }
 

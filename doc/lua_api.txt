@@ -4889,8 +4889,6 @@ Utilities
           author = string,
           -- The root directory of the game
           path = string,
-          -- The directory containing game mods
-          mods_path = string,
       }
 
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
