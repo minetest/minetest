@@ -379,7 +379,10 @@ local function on_change(type, old_tab, new_tab)
 			gamebar:hide()
 		end
 		core.set_topleft_text("")
-		mm_game_theme.update(new_tab,nil)
+		-- If new_tab is nil, a dialog is being shown; avoid resetting the theme
+		if new_tab then
+			mm_game_theme.update(new_tab,nil)
+		end
 	end
 end
 
