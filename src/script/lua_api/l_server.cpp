@@ -424,6 +424,20 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	return 1;
 }
 
+// get_game_info()
+int ModApiServer::l_get_game_info(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const SubgameSpec *game_spec = getGameDef(L)->getGameSpec();
+	assert(game_spec);
+	lua_newtable(L);
+	setstringfield(L, -1, "id", game_spec->id);
+	setstringfield(L, -1, "title", game_spec->title);
+	setstringfield(L, -1, "author", game_spec->author);
+	setstringfield(L, -1, "path", game_spec->path);
+	return 1;
+}
+
 // get_worldpath()
 int ModApiServer::l_get_worldpath(lua_State *L)
 {
@@ -608,6 +622,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(get_modpath);
 	API_FCT(get_modnames);
+	API_FCT(get_game_info);
 
 	API_FCT(print);
 
@@ -643,4 +658,5 @@ void ModApiServer::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(get_modpath);
 	API_FCT(get_modnames);
+	API_FCT(get_game_info);
 }

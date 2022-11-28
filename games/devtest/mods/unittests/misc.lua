@@ -103,3 +103,10 @@ local function test_compress()
 end
 unittests.register("test_compress", test_compress)
 
+local function test_game_info()
+	local info = minetest.get_game_info()
+	local game_conf = Settings(info.path .. "/game.conf")
+	assert(info.id == "devtest")
+	assert(info.title == game_conf:get("title"))
+end
+unittests.register("test_game_info", test_game_info)

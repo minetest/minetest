@@ -579,6 +579,17 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	}
 	lua_pop(L, 1);  // Pop mod name
 
+	// Allow read-only access to game directory
+	if (!write_required) {
+		const SubgameSpec *game_spec = gamedef->getGameSpec();
+		if (game_spec && !game_spec->path.empty()) {
+			str = fs::AbsolutePath(game_spec->path);
+			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+				return true;
+			}
+		}
+	}
+
 	// Allow read-only access to all mod directories
 	if (!write_required) {
 		const std::vector<ModSpec> &mods = gamedef->getMods();
