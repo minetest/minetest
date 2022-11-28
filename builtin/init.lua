@@ -6,19 +6,22 @@
 --
 
 -- Initialize some very basic things
-function core.debug(...) core.log(table.concat({...}, "\t")) end
-if core.print then
-	local core_print = core.print
-	-- Override native print and use
-	-- terminal if that's turned on
-	function print(...)
+do
+	local function concat_args(...)
 		local n, t = select("#", ...), {...}
 		for i = 1, n do
 			t[i] = tostring(t[i])
 		end
-		core_print(table.concat(t, "\t"))
+		return table.concat(t, "\t")
 	end
-	core.print = nil -- don't pollute our namespace
+	function core.debug(...) core.log(concat_args(...)) end
+	if core.print then
+		local core_print = core.print
+		-- Override native print and use
+		-- terminal if that's turned on
+		function print(...) core_print(concat_args(...)) end
+		core.print = nil -- don't pollute our namespace
+	end
 end
 math.randomseed(os.time())
 minetest = core
