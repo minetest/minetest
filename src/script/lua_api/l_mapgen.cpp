@@ -817,6 +817,10 @@ int ModApiMapgen::l_get_mapgen_edges(lua_State *L)
 
 	MapSettingsManager *settingsmgr = getServer(L)->getEmergeManager()->map_settings_mgr;
 
+	// MapSettingsManager::makeMapgenParams cannot be used here because it would
+	// make mapgen settings immutable from then on. Mapgen settings should stay
+	// mutable until after mod loading ends.
+
 	s16 mapgen_limit;
 	if (lua_isnumber(L, 1)) {
 		 mapgen_limit = lua_tointeger(L, 1);
