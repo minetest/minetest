@@ -438,7 +438,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 
 		// Mac OS sends private use characters along with some keys.
-		bool has_char = event.KeyInput.Char &&
+		bool has_char = event.KeyInput.Char && !event.KeyInput.Control &&
 				!iswcntrl(event.KeyInput.Char) && !IS_PRIVATE_USE_CHAR(event.KeyInput.Char);
 
 		if (event.KeyInput.Key == KEY_ESCAPE) {
@@ -647,7 +647,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
-		if (has_char && !event.KeyInput.Control) {
+		if (has_char) {
 			prompt.input(event.KeyInput.Char);
 			return true;
 		}
