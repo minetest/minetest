@@ -5628,6 +5628,13 @@ Environment access
       prefix `"no"` is attached, clears instead.
     * `flags` is in the same format and has the same options as `mg_flags` in
       `minetest.conf`.
+* `minetest.get_mapgen_edges([mapgen_limit[, chunksize]])`
+    * Returns the the real mapgen limits in the negative and positive directions
+      in that order.
+    * `mapgen_limit` is an optional number. If it is absent, its value is that
+      of the *active* mapgen setting `"mapgen_limit"`.
+    * `chunksize` is an optional number. If it is absent, its value is that
+      of the *active* mapgen setting `"chunksize"`.
 * `minetest.get_mapgen_setting(name)`
     * Gets the *active* mapgen setting (or nil if none exists) in string
       format with the following order of precedence:

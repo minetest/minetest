@@ -1063,9 +1063,20 @@ void MapgenParams::writeParams(Settings *settings) const
 }
 
 
-// Calculate exact edges of the outermost mapchunks that are within the
-// set 'mapgen_limit'.
-void MapgenParams::calcMapgenEdges()
+s32 MapgenParams::getSpawnRangeMax()
+{
+	if (!m_mapgen_edges_calculated) {
+		std::pair<s16, s16> edges = get_mapgen_edges(mapgen_limit, chunksize);
+		mapgen_edge_min = edges.first;
+		mapgen_edge_max = edges.second;
+		m_mapgen_edges_calculated = true;
+	}
+
+	return MYMIN(-mapgen_edge_min, mapgen_edge_max);
+}
+
+
+std::pair<s16, s16> get_mapgen_edges(s16 mapgen_limit, s16 chunksize)
 {
 	// Central chunk offset, in blocks
 	s16 ccoff_b = -chunksize / 2;
@@ -1089,17 +1100,5 @@ void MapgenParams::calcMapgenEdges()
 	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize_n, 0);
 	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize_n, 0);
 	// Mapgen edges, in nodes
-	mapgen_edge_min = ccmin - numcmin * csize_n;
-	mapgen_edge_max = ccmax + numcmax * csize_n;
-
-	m_mapgen_edges_calculated = true;
-}
-
-
-s32 MapgenParams::getSpawnRangeMax()
-{
-	if (!m_mapgen_edges_calculated)
-		calcMapgenEdges();
-
-	return MYMIN(-mapgen_edge_min, mapgen_edge_max);
+	return std::pair<s16, s16>(ccmin - numcmin * csize_n, ccmax + numcmax * csize_n);
 }
