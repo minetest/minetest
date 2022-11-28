@@ -41,6 +41,15 @@ class Translations;
 	(((unsigned int)(x) >= 0x20) &&  \
 	( (unsigned int)(x) <= 0x7e))
 
+// Checks whether a value is in a Unicode private use area
+#define IS_PRIVATE_USE_CHAR(x)    \
+	(((wchar_t)(x) >= 0xE000 &&   \
+	  (wchar_t)(x) <= 0xF8FF) ||  \
+	 ((wchar_t)(x) >= 0xF0000 &&  \
+	  (wchar_t)(x) <= 0xFFFFD) || \
+	 ((wchar_t)(x) >= 0x100000 && \
+	  (wchar_t)(x) <= 0x10FFFD))  \
+
 // Checks whether a byte is an inner byte for an utf-8 multibyte sequence
 #define IS_UTF8_MULTB_INNER(x)       \
 	(((unsigned char)(x) >= 0x80) && \
