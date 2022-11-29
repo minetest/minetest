@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "client/meshgen/collector.h"
 #include "client/renderingengine.h"
+#include "util/string.h"
 #include <array>
 #include <algorithm>
 
@@ -1284,6 +1285,13 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					for (FrameSpec &frame : *p.layer.frames) {
 						// Find the texture name plus ^[crack:1:
 						std::string name = m_tsrc->getTextureName(frame.texture_id);
+						{
+							// Remove superfluous [applyfiltersformesh
+							const char *remove_ends[] = {"^[applyfiltersformesh", nullptr};
+							std::string cleaned_name = removeStringEnd(name, remove_ends);
+							if (!cleaned_name.empty())
+								name = std::move(cleaned_name);
+						}
 						name += "^[crack";
 						if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
 							name += "o";  // use ^[cracko
