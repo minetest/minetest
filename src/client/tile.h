@@ -294,6 +294,10 @@ struct TileLayer
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
+	//! This is used by some code to determine whether to
+	//! delete frames on destruction.
+	bool frames_owned = false;
+
 	std::vector<FrameSpec> *frames = nullptr;
 
 	/*!

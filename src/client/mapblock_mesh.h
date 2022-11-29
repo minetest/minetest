@@ -244,6 +244,11 @@ private:
 		TileLayer tile;
 	};
 
+	struct CrackMaterials {
+		std::string main; // Main texture base
+		std::vector<std::string> frames; // Frame texture bases
+	};
+
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
 	ITextureSource *m_tsrc;
@@ -264,7 +269,7 @@ private:
 	// Last crack value passed to animate()
 	int m_last_crack;
 	// Maps mesh and mesh buffer (i.e. material) indices to base texture names
-	std::map<std::pair<u8, u32>, std::string> m_crack_materials;
+	std::map<std::pair<u8, u32>, CrackMaterials> m_crack_materials;
 
 	// Animation info: texture animation
 	// Maps mesh and mesh buffer indices to TileSpecs
