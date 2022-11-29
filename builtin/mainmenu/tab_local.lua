@@ -273,7 +273,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		if is_in_dlg_create_world then
 			is_in_dlg_create_world = false
 
-			if fields["play"] == nil and not this.is_dlg_create_world_canceled then
+			if fields["play"] == nil and not this.dlg_create_world_just_closed then
 				return true
 			end
 		end
@@ -326,7 +326,7 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["world_create"] ~= nil then
 		is_in_dlg_create_world = true
-		this.is_dlg_create_world_canceled = false
+		this.dlg_create_world_just_closed = false
 		local create_world_dlg = create_create_world_dlg()
 		create_world_dlg:set_parent(this)
 		this:hide()
