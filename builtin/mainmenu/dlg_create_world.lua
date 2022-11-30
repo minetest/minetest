@@ -352,8 +352,8 @@ local function create_world_buttonhandler(this, fields)
 	if fields["world_create_confirm"] or
 		fields["key_enter"] then
 
-		if not fields["key_enter"] then
-			this.parent.dlg_create_world_just_closed = true
+		if fields["key_enter"] then
+			this.parent.dlg_create_world_closed_at = core.get_us_time()
 		end
 
 		local worldname = fields["te_world_name"]
@@ -439,7 +439,6 @@ local function create_world_buttonhandler(this, fields)
 	end
 
 	if fields["world_create_cancel"] then
-		this.parent.dlg_create_world_just_closed = true
 		this:delete()
 		return true
 	end

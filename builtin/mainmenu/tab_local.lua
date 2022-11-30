@@ -22,7 +22,6 @@ local valid_disabled_settings = {
 	["creative_mode"]=true,
 	["enable_server"]=true,
 }
-local is_in_dlg_create_world = false
 
 -- Currently chosen game in gamebar for theming and filtering
 function current_game()
@@ -270,12 +269,10 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["play"] ~= nil or world_doubleclick or fields["key_enter"] then
-		if is_in_dlg_create_world then
-			is_in_dlg_create_world = false
-
-			if fields["play"] == nil and not this.dlg_create_world_just_closed then
-				return true
-			end
+		local enter_key_duration = core.get_us_time() - this.dlg_create_world_closed_at
+		if world_doubleclick and enter_key_duration <= 200000 then -- 200 ms
+			this.dlg_create_world_closed_at = 0
+			return true
 		end
 
 		local selected = core.get_textlist_index("sp_worlds")
@@ -325,8 +322,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["world_create"] ~= nil then
-		is_in_dlg_create_world = true
-		this.dlg_create_world_just_closed = false
+		this.dlg_create_world_closed_at = 0
 		local create_world_dlg = create_create_world_dlg()
 		create_world_dlg:set_parent(this)
 		this:hide()
