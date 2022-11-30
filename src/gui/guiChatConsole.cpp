@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gettext.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "util/string.h"
 #include <string>
 
 inline u32 clamp_u8(s32 value)
@@ -436,6 +437,10 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
+		// Mac OS sends private use characters along with some keys.
+		bool has_char = event.KeyInput.Char && !event.KeyInput.Control &&
+				!iswcntrl(event.KeyInput.Char) && !IS_PRIVATE_USE_CHAR(event.KeyInput.Char);
+
 		if (event.KeyInput.Key == KEY_ESCAPE) {
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
@@ -445,13 +450,17 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_PRIOR)
 		{
-			m_chat_backend->scrollPageUp();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageUp();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_NEXT)
 		{
-			m_chat_backend->scrollPageDown();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageDown();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
@@ -466,53 +475,63 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_UP)
 		{
-			// Up pressed
-			// Move back in history
-			prompt.historyPrev();
-			return true;
+			if (!has_char) { // no num lock
+				// Up pressed
+				// Move back in history
+				prompt.historyPrev();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_DOWN)
 		{
-			// Down pressed
-			// Move forward in history
-			prompt.historyNext();
-			return true;
+			if (!has_char) { // no num lock
+				// Down pressed
+				// Move forward in history
+				prompt.historyNext();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
 		{
-			// Left/right pressed
-			// Move/select character/word to the left depending on control and shift keys
-			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
-				ChatPrompt::CURSOROP_SELECT :
-				ChatPrompt::CURSOROP_MOVE;
-			ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
-				ChatPrompt::CURSOROP_DIR_LEFT :
-				ChatPrompt::CURSOROP_DIR_RIGHT;
-			ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(op, dir, scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Left/right pressed
+				// Move/select character/word to the left depending on control and shift keys
+				ChatPrompt::CursorOp op = event.KeyInput.Shift ?
+					ChatPrompt::CURSOROP_SELECT :
+					ChatPrompt::CURSOROP_MOVE;
+				ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
+					ChatPrompt::CURSOROP_DIR_LEFT :
+					ChatPrompt::CURSOROP_DIR_RIGHT;
+				ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(op, dir, scope);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_HOME)
 		{
-			// Home pressed
-			// move to beginning of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// Home pressed
+				// move to beginning of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_LEFT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_END)
 		{
-			// End pressed
-			// move to end of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// End pressed
+				// move to end of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_BACK)
 		{
@@ -530,17 +549,19 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_DELETE)
 		{
-			// Delete or Ctrl-Delete pressed
-			// delete character / word to the right
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Delete or Ctrl-Delete pressed
+				// delete character / word to the right
+				ChatPrompt::CursorOpScope scope =
+					event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					scope);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
 		{
@@ -624,7 +645,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
-		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
+		}
+
+		if (has_char) {
 			prompt.input(event.KeyInput.Char);
 			return true;
 		}
