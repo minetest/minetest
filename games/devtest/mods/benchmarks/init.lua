@@ -1,3 +1,5 @@
+local using_ffi = core.global_exists("jit") and core.settings:get_bool("use_ffi", true)
+
 -- Safeguard against too much optimization. This way the results cannot be optimized
 -- away, but they can be garbage collected (due to __mode = "k").
 _G._bench_content_ids_data = setmetatable({}, {__mode = "k"})

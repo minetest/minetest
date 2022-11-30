@@ -40,6 +40,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "gettime.h"
 
+#ifdef _WIN32
+	#define EXPORT_ATTRIBUTE __declspec(dllexport)
+#else
+	#define EXPORT_ATTRIBUTE __attribute__ ((visibility("default")))
+#endif
+
 #ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
 #else

@@ -649,6 +649,10 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 		return false;
 	std::string mod_name = readParam<std::string>(L, -1);
 
+	// Builtin can access all parts of the API
+	if (mod_name == BUILTIN_MOD_NAME)
+		return true;
+
 	std::string value = g_settings->get(setting);
 	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
 	auto mod_list = str_split(value, ',');

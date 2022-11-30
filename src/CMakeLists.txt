@@ -763,6 +763,11 @@ else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
 
+	if (NOT APPLE AND UNIX AND USE_LUAJIT)
+		# Make symbols that start with "mtffi_" available to LuaJIT's FFI library.
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--dynamic-list=${CMAKE_SOURCE_DIR}/src/ffi_dynamic_list.txt")
+	endif()
+
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
