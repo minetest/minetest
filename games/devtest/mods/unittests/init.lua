@@ -173,6 +173,7 @@ end
 
 local modpath = core.get_modpath("unittests")
 dofile(modpath .. "/misc.lua")
+dofile(modpath .. "/random.lua")
 dofile(modpath .. "/player.lua")
 dofile(modpath .. "/crafting.lua")
 dofile(modpath .. "/itemdescription.lua")

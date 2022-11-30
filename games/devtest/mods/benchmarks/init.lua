@@ -116,4 +116,37 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+_G._bench_pcgrandom_bits = 0
 
+local function bench_pcgrandom()
+	local rng = PcgRandom(13)
+
+	local bits = 0
+
+	local bxor = bit.bxor
+
+	local start = minetest.get_us_time()
+
+	for i = 1, 10000000 do
+		bits = bxor(bits, rng:next(-i, i))
+	end
+
+	local finish = minetest.get_us_time()
+
+	_G._bench_pcgrandom_bits = bits
+
+	return (finish - start) / 1000
+end
+
+minetest.register_chatcommand("bench_pcgrandom", {
+	params = "",
+	description = "Benchmark: PcgRandom",
+	func = function(name, param)
+		minetest.chat_send_player(name, "Benchmarking PcgRandom with FFI " ..
+			(using_ffi and "enabled" or "disabled"))
+		bench_pcgrandom()
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+		local time = bench_pcgrandom()
+		return true, ("Time: %.2f ms"):format(time)
+	end,
+})

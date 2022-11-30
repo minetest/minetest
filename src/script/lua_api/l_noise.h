@@ -154,6 +154,8 @@ public:
 	LuaPcgRandom(u64 seed) : m_rnd(seed) {}
 	LuaPcgRandom(u64 seed, u64 seq) : m_rnd(seed, seq) {}
 
+	inline PcgRandom &getRnd() { return m_rnd; }
+
 	// LuaPcgRandom(seed)
 	// Creates an LuaPcgRandom and leaves it on top of stack
 	static int create_object(lua_State *L);

@@ -628,3 +628,13 @@ const luaL_Reg LuaSecureRandom::methods[] = {
 	luamethod(LuaSecureRandom, next_bytes),
 	{0,0}
 };
+
+FFI_FCT(int32_t, pcg_rng_next, void *ud, int32_t min, int32_t max)
+{
+	return (*(LuaPcgRandom **)ud)->getRnd().range(min, max);
+}
+
+FFI_FCT(int32_t, pcg_rng_rand_normal_dist, void *ud, int32_t min, int32_t max, int num_trials)
+{
+	return (*(LuaPcgRandom **)ud)->getRnd().randNormalDist(min, max, num_trials);
+}

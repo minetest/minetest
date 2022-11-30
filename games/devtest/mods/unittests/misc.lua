@@ -1,11 +1,3 @@
-local function test_random()
-	-- Try out PseudoRandom
-	local pseudo = PseudoRandom(13)
-	assert(pseudo:next() == 22290)
-	assert(pseudo:next() == 13854)
-end
-unittests.register("test_random", test_random)
-
 local function test_dynamic_media(cb, player)
 	if core.get_player_information(player:get_player_name()).protocol_version < 40 then
 		core.log("warning", "test_dynamic_media: Client too old, skipping test.")
