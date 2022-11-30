@@ -520,6 +520,13 @@ if(USE_CURL)
 	include_directories(${CURL_INCLUDE_DIR})
 endif()
 
+# Make symbols that start with "mtffi_" available to LuaJIT's FFI library.
+if (USE_LUAJIT AND UNIX AND NOT APPLE)
+	SET(LUAJIT_LINKER_OPTIONS "LINKER:--dynamic-list=${CMAKE_SOURCE_DIR}/src/ffi_dynamic_list.txt")
+else()
+	SET(LUAJIT_LINKER_OPTIONS "")
+endif()
+
 
 # When cross-compiling assume the user doesn't want to run the executable anyway,
 # otherwise place it in <source dir>/bin/ since Minetest can only run from there.
@@ -544,6 +551,10 @@ if(BUILD_CLIENT)
 		${LUA_BIT_LIBRARY}
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
+	)
+	target_link_options(
+		${PROJECT_NAME}
+		PRIVATE "${LUAJIT_LINKER_OPTIONS}"
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -616,6 +627,10 @@ if(BUILD_SERVER)
 	)
 	set_target_properties(${PROJECT_NAME}server PROPERTIES
 		COMPILE_DEFINITIONS "SERVER")
+	target_link_options(
+		${PROJECT_NAME}server
+		PRIVATE "${LUAJIT_LINKER_OPTIONS}"
+	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES
 			# This is necessary for dynamic Lua modules

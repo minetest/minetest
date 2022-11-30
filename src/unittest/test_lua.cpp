@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 #include "config.h"
+#include "script/lua_api/l_internal.h"
 
 #include <stdexcept>
 
@@ -30,6 +31,7 @@ extern "C" {
 	#include <lua.h>
 #endif
 #include <lauxlib.h>
+#include <lualib.h>
 }
 
 /*
@@ -50,6 +52,9 @@ public:
 
 	void testLuaDestructors();
 	void testCxxExceptions();
+#if USE_LUAJIT
+	void testLuaJITFFILinking();
+#endif
 };
 
 static TestLua g_test_instance;
@@ -58,6 +63,9 @@ void TestLua::runTests(IGameDef *gamedef)
 {
 	TEST(testLuaDestructors);
 	TEST(testCxxExceptions);
+#if USE_LUAJIT
+	TEST(testLuaJITFFILinking);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,3 +161,28 @@ void TestLua::testCxxExceptions()
 	UASSERTEQ(int, caught, 2);
 	UASSERT(errmsg.find("example") != std::string::npos);
 }
+
+#if USE_LUAJIT
+FFI_FCT(void, test_symbol) {}
+
+void TestLua::testLuaJITFFILinking()
+{
+	lua_State *L = luaL_newstate();
+	assert(L);
+	try {
+		luaL_openlibs(L);
+		int result = luaL_dostring(L,
+			"local has_ffi, ffi = pcall(require, 'ffi')\n"
+			"if has_ffi then\n"
+			"    ffi.cdef('void mtffi_test_symbol();')\n"
+			"    assert(ffi.C.mtffi_test_symbol, 'Test symbol not found')\n"
+			"end\n"
+		);
+		UTEST(result == 0, "Lua error: %s", luaL_checkstring(L, -1));
+	} catch (...) {
+		lua_close(L);
+		throw;
+	}
+	lua_close(L);
+}
+#endif // USE_LUAJIT

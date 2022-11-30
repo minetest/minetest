@@ -80,3 +80,11 @@ files["builtin/common/tests"] = {
 		"assert",
 	},
 }
+
+files["builtin/ffi_overrides"] = {
+	std = {
+		read_globals = { "_G" }
+	},
+	new_globals = {},
+	new_read_globals = {},
+}

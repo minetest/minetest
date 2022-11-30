@@ -628,6 +628,16 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 {
 	assert(str_starts_with(setting, "secure."));
 
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1))
+		return false;
+	std::string mod_name = readParam<std::string>(L, -1);
+	lua_pop(L, 1);
+
+	// builtin is unrestricted
+	if (mod_name == BUILTIN_MOD_NAME)
+		return true;
+
 	// We have to make sure that this function is being called directly by
 	// a mod, otherwise a malicious mod could override this function and
 	// steal its return value.
@@ -642,12 +652,6 @@ bool ScriptApiSecurity::checkWhitelisted(lua_State *L, const std::string &settin
 	// ...and that that item is the main file scope.
 	if (strcmp(info.what, "main") != 0)
 		return false;
-
-	// Mod must be listed in secure.http_mods or secure.trusted_mods
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
-	if (!lua_isstring(L, -1))
-		return false;
-	std::string mod_name = readParam<std::string>(L, -1);
 
 	std::string value = g_settings->get(setting);
 	value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
