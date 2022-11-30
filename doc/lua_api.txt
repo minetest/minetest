@@ -7951,7 +7951,8 @@ gets activated (not loaded!)
 
         action = function(pos, node, dtime_s),
         -- Function triggered for each qualifying node.
-        -- `dtime_s` is the in-game time elapsed since the block was last active
+        -- `dtime_s` is the in-game time (in seconds) elapsed since the block
+        -- was last active
     }
 
 Tile definition
