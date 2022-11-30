@@ -287,7 +287,7 @@ public:
 		this->trigger_contents = trigger_contents;
 		this->name = name;
 	}
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n, float dtime_s);
 };
 
 //! Lua wrapper for RaycastState objects

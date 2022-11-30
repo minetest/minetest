@@ -7949,8 +7949,9 @@ gets activated (not loaded!)
         -- and not only the first time the block gets activated after the LBM
         -- was introduced.
 
-        action = function(pos, node),
+        action = function(pos, node, dtime_s),
         -- Function triggered for each qualifying node.
+        -- `dtime_s` is the in-game time elapsed since the block was last active
     }
 
 Tile definition

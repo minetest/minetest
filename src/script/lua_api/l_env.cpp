@@ -109,7 +109,8 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pop(L, 1); // Pop error handler
 }
 
-void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+void LuaLBM::trigger(ServerEnvironment *env, v3s16 p,
+	const MapNode n, const float dtime_s)
 {
 	ServerScripting *scriptIface = env->getScriptIface();
 	scriptIface->realityCheck();
@@ -141,8 +142,9 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	lua_remove(L, -2); // Remove registered_lbms[m_id]
 	push_v3s16(L, p);
 	pushnode(L, n);
+	lua_pushnumber(L, dtime_s);
 
-	int result = lua_pcall(L, 2, 0, error_handler);
+	int result = lua_pcall(L, 3, 0, error_handler);
 	if (result)
 		scriptIface->scriptError(result, "LuaLBM::trigger");
 
