@@ -2116,287 +2116,216 @@ show_technical_names (Show technical names) bool false
 enable_sound (Sound) bool true
 
 #    Key for moving the player forward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_forward (Forward key) key KEY_KEY_W
 
 #    Key for moving the player backward.
 #    Will also disable autoforward, when active.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_backward (Backward key) key KEY_KEY_S
 
 #    Key for moving the player left.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_left (Left key) key KEY_KEY_A
 
 #    Key for moving the player right.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_right (Right key) key KEY_KEY_D
 
 #    Key for jumping.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_jump (Jump key) key KEY_SPACE
 
 #    Key for sneaking.
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_sneak (Sneak key) key KEY_LSHIFT
 
 #    Key for digging.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_dig (Dig key) key KEY_LBUTTON
 
 #    Key for placing.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_place (Place key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_inventory (Inventory key) key KEY_KEY_I
 
 #    Key for moving fast in fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_aux1 (Aux1 key) key KEY_KEY_E
 
 #    Key for opening the chat window.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_chat (Chat key) key KEY_KEY_T
 
 #    Key for opening the chat window to type commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_cmd (Command key) key /
 
 #    Key for opening the chat window to type local commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_cmd_local (Command key) key .
 
 #    Key for toggling unlimited view range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_rangeselect (Range select key) key
 
 #    Key for toggling flying.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_freemove (Fly key) key KEY_KEY_K
 
 #    Key for toggling pitch move mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_pitchmove (Pitch move key) key KEY_KEY_P
 
 #    Key for toggling fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_fastmove (Fast key) key KEY_KEY_J
 
 #    Key for toggling noclip mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_noclip (Noclip key) key KEY_KEY_H
 
 #    Key for selecting the next item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_hotbar_next (Hotbar next key) key KEY_KEY_N
 
 #    Key for selecting the previous item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_hotbar_previous (Hotbar previous key) key KEY_KEY_B
 
 #    Key for muting the game.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_mute (Mute key) key KEY_KEY_M
 
 #    Key for increasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_increase_volume (Inc. volume key) key
 
 #    Key for decreasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_decrease_volume (Dec. volume key) key
 
 #    Key for toggling autoforward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_autoforward (Automatic forward key) key
 
 #    Key for toggling cinematic mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_minimap (Minimap key) key KEY_KEY_V
 
 #    Key for taking screenshots.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_screenshot (Screenshot) key KEY_F12
 
 #    Key for dropping the currently selected item.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_drop (Drop item key) key KEY_KEY_Q
 
 #    Key to use view zoom when possible.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_zoom (View zoom key) key KEY_KEY_Z
 
 #    Key for selecting the first hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot1 (Hotbar slot 1 key) key KEY_KEY_1
 
 #    Key for selecting the second hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot2 (Hotbar slot 2 key) key KEY_KEY_2
 
 #    Key for selecting the third hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot3 (Hotbar slot 3 key) key KEY_KEY_3
 
 #    Key for selecting the fourth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot4 (Hotbar slot 4 key) key KEY_KEY_4
 
 #    Key for selecting the fifth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot5 (Hotbar slot 5 key) key KEY_KEY_5
 
 #    Key for selecting the sixth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot6 (Hotbar slot 6 key) key KEY_KEY_6
 
 #    Key for selecting the seventh hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot7 (Hotbar slot 7 key) key KEY_KEY_7
 
 #    Key for selecting the eighth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot8 (Hotbar slot 8 key) key KEY_KEY_8
 
 #    Key for selecting the ninth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot9 (Hotbar slot 9 key) key KEY_KEY_9
 
 #    Key for selecting the tenth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot10 (Hotbar slot 10 key) key KEY_KEY_0
 
 #    Key for selecting the 11th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot11 (Hotbar slot 11 key) key
 
 #    Key for selecting the 12th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot12 (Hotbar slot 12 key) key
 
 #    Key for selecting the 13th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot13 (Hotbar slot 13 key) key
 
 #    Key for selecting the 14th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot14 (Hotbar slot 14 key) key
 
 #    Key for selecting the 15th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot15 (Hotbar slot 15 key) key
 
 #    Key for selecting the 16th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot16 (Hotbar slot 16 key) key
 
 #    Key for selecting the 17th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot17 (Hotbar slot 17 key) key
 
 #    Key for selecting the 18th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot18 (Hotbar slot 18 key) key
 
 #    Key for selecting the 19th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot19 (Hotbar slot 19 key) key
 
 #    Key for selecting the 20th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot20 (Hotbar slot 20 key) key
 
 #    Key for selecting the 21st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot21 (Hotbar slot 21 key) key
 
 #    Key for selecting the 22nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot22 (Hotbar slot 22 key) key
 
 #    Key for selecting the 23rd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot23 (Hotbar slot 23 key) key
 
 #    Key for selecting the 24th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot24 (Hotbar slot 24 key) key
 
 #    Key for selecting the 25th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot25 (Hotbar slot 25 key) key
 
 #    Key for selecting the 26th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot26 (Hotbar slot 26 key) key
 
 #    Key for selecting the 27th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot27 (Hotbar slot 27 key) key
 
 #    Key for selecting the 28th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot28 (Hotbar slot 28 key) key
 
 #    Key for selecting the 29th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot29 (Hotbar slot 29 key) key
 
 #    Key for selecting the 30th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot30 (Hotbar slot 30 key) key
 
 #    Key for selecting the 31st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot31 (Hotbar slot 31 key) key
 
 #    Key for selecting the 32nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_slot32 (Hotbar slot 32 key) key
 
 #    Key for toggling the display of the HUD.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_hud (HUD toggle key) key KEY_F1
 
 #    Key for toggling the display of chat.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_chat (Chat toggle key) key KEY_F2
 
 #    Key for toggling the display of the large chat console.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_console (Large chat console key) key KEY_F10
 
 #    Key for toggling the display of fog.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
 
 #    Key for toggling the camera update. Only used for development
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_update_camera (Camera update toggle key) key
 
 #    Key for toggling the display of debug info.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_debug (Debug info toggle key) key KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 
 #    Key for switching between first- and third-person camera.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_camera_mode (Toggle camera mode key) key KEY_KEY_C
 
 #    Key for increasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_increase_viewing_range_min (View range increase key) key +
 
 #    Key for decreasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_decrease_viewing_range_min (View range decrease key) key -
