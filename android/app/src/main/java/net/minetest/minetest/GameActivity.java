@@ -45,6 +45,7 @@ import java.util.Objects;
 // Native code finds these methods by name (see porting_android.cpp).
 // This annotation prevents the minifier/Proguard from mangling them.
 @Keep
+@SuppressWarnings("unused")
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
