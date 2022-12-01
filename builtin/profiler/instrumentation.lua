@@ -187,7 +187,8 @@ local function init()
 		-- Wrap register_abm() to automatically instrument abms.
 		local orig_register_abm = core.register_abm
 		core.register_abm = function(spec)
-			local field = spec.bulk_action and "bulk_action" or "action"
+			local field = type(spec.bulk_action) == "function" and
+					"bulk_action" or "action"
 			spec[field] = instrument {
 				func = spec[field],
 				class = "ABM",
