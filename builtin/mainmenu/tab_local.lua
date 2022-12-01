@@ -215,6 +215,10 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	assert(name == "local")
 
+	if this.dlg_create_world_closed_at == nil then
+		this.dlg_create_world_closed_at = 0
+	end
+
 	local world_doubleclick = false
 
 	if fields["sp_worlds"] ~= nil then
