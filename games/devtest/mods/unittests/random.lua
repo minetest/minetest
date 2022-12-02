@@ -27,12 +27,6 @@ local function test_pseudo_random_invalid_range()
 end
 unittests.register("test_pseudo_random_invalid_range", test_pseudo_random_invalid_range)
 
-local function test_pseudo_random_overflow()
-	local rng = PseudoRandom(13)
-	assert(rng:next(0x80000000, 0x180000000) == -0x80000000)
-end
-unittests.register("test_pseudo_random_overflow", test_pseudo_random_overflow)
-
 -- PcgRandom
 
 local function test_pcg_random_no_range()
@@ -58,12 +52,6 @@ local function test_pcg_random_invalid_range()
 	assert(rng:next() == PcgRandom(13):next())
 end
 unittests.register("test_pcg_random_invalid_range", test_pcg_random_invalid_range)
-
-local function test_pcg_random_overflow()
-	local rng = PcgRandom(13)
-	assert(rng:next(0x80000000, 0x100000000) == -1349792524)
-end
-unittests.register("test_pcg_random_overflow", test_pcg_random_overflow)
 
 local function test_pcg_random_normal_dist()
 	local rng = PcgRandom(13)
