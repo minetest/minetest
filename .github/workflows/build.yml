@@ -64,6 +64,10 @@ jobs:
           source ./util/ci/common.sh
           install_linux_deps g++-12 libluajit-5.1-dev
 
+- name: Clone Minetest Game
+  run: |
+    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+
       - name: Build
         run: |
           ./util/ci/build.sh
