@@ -68,6 +68,10 @@ jobs:
   run: |
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
+- name: Clone Shader
+  run: |
+    git clone --depth 1 https://github.com/minetest/minetest/client/shaders/
+
       - name: Build
         run: |
           ./util/ci/build.sh
