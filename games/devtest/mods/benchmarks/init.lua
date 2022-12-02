@@ -116,6 +116,11 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+local bxor = bit.bxor
+local function bench_pcgrandom_inner(bits, rng, i)
+	return (bxor(bits, rng:next(-i, i)))
+end
+
 _G._bench_pcgrandom_bits = 0
 
 local function bench_pcgrandom()
@@ -123,12 +128,10 @@ local function bench_pcgrandom()
 
 	local bits = 0
 
-	local bxor = bit.bxor
-
 	local start = minetest.get_us_time()
 
 	for i = 1, 10000000 do
-		bits = bxor(bits, rng:next(-i, i))
+		bits = bench_pcgrandom_inner(bits, rng, i)
 	end
 
 	local finish = minetest.get_us_time()
@@ -136,6 +139,11 @@ local function bench_pcgrandom()
 	_G._bench_pcgrandom_bits = bits
 
 	return (finish - start) / 1000
+end
+
+if minetest.global_exists("jit") then
+	-- Prevent looping trace to increase realism.
+	jit.off(bench_pcgrandom)
 end
 
 minetest.register_chatcommand("bench_pcgrandom", {
