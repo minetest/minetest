@@ -565,10 +565,13 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 			std::string prev_mod_name;
 			std::size_t i = caller_mods.size() - 1;
 			if (i == 0) return executor_mod_name;
+
 			// get the first event trigger
 			while (i>0) {
 				result = caller_mods.at(i);
 				prev_mod_name = caller_mods.at(i-1);
+				i--;
+
 				const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
 				if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
 					break;
@@ -576,19 +579,22 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 				if (prev_mod_name == executor_mod_name) {
 					ok = true;
 					// this means the second is the trigger, the first is caller for no more callers
-					if (i == 1) result = executor_mod_name;
+					if (i == 0) result = executor_mod_name;
 					break;
 				}
-				i--;
 			}
 			const ModSpec *mod;
 			// get real caller
 			while (i>0) {
-				if (result.empty()) result = caller_mods.at(i);
+				result = caller_mods.at(i);
 				mod = gamedef->getModSpec(result);
-				if (mod && (CONTAINS(mod->depends, executor_mod_name) || CONTAINS(mod->optdepends, executor_mod_name))) {
+				prev_mod_name = caller_mods.at(i-1);
+				// check the whole depends chain
+				if (mod && (CONTAINS(mod->depends, prev_mod_name) || CONTAINS(mod->optdepends, prev_mod_name))) {
 					ok = true;
-					break;
+				} else {
+					executor_mod_name = prev_mod_name;
+					ok = false;
 				}
 				i--;
 			}
