@@ -49,6 +49,9 @@ enum ClientEventType : u8
 	CE_SET_STARS,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
 	CE_CLOUD_PARAMS,
+	CE_ADD_3DLINE,
+	CE_CHANGE_3DLINE_PROPERTIES,
+	CE_REMOVE_3DLINE,
 	CLIENTEVENT_MAX,
 };
 
@@ -141,6 +144,15 @@ struct ClientEvent
 			f32 speed_x;
 			f32 speed_y;
 		} cloud_params;
+		struct
+		{
+			LineParams *p;
+			u32 id;
+		} line;
+		struct
+		{
+			u32 id;
+		} remove_line;
 		SunParams *sun_params;
 		MoonParams *moon_params;
 		StarParams *star_params;

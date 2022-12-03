@@ -42,6 +42,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "util/string.h"
 #include "translation.h"
+#include <cstring>
+#include "log.h"
+#include "l_object.h"
 #ifndef SERVER
 #include "client/client.h"
 #endif
@@ -221,6 +224,256 @@ const luaL_Reg LuaRaycast::methods[] =
 	luamethod(LuaRaycast, next),
 	{ 0, 0 }
 };
+
+const char Lua3DLine::className[] = "3DLine";
+
+const luaL_Reg Lua3DLine::methods[] = {
+	luamethod(Lua3DLine, is_valid),
+	luamethod(Lua3DLine, set_properties),
+	luamethod(Lua3DLine, remove),
+	{ 0, 0 }
+};
+
+int Lua3DLine::gc_object(lua_State *L)
+{
+	Lua3DLine *o = *(Lua3DLine **) (lua_touserdata(L, 1));
+	delete o;
+	return 0;
+}
+
+int Lua3DLine::objects_equal(lua_State *L)
+{
+	Lua3DLine *line1 = checkObject<Lua3DLine>(L, 1);
+	Lua3DLine *line2 = checkObject<Lua3DLine>(L, 2);
+
+	if (!line1)
+		return 0;
+	if (!line2)
+		return 0;
+
+	lua_pushboolean(L, line1->m_id == line2->m_id);
+
+	return 1;
+}
+
+void Lua3DLine::Register(lua_State *L)
+{
+	static const luaL_Reg metamethods[] = {
+		{"__gc", gc_object},
+		{"__eq", objects_equal},
+		{ 0, 0 }
+	};
+
+	registerClass(L, className, methods, metamethods);
+}
+
+int Lua3DLine::l_is_valid(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Lua3DLine *line = checkObject<Lua3DLine>(L, 1);
+
+	if (!line)
+	{
+		lua_pushboolean(L, false);
+		return 0;
+	}
+
+	lua_pushboolean(L, getServer(L)->getEnv().is3DLineExists(line->m_id));
+
+	return 1;
+}
+
+int Lua3DLine::l_set_properties(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Lua3DLine *line = checkObject<Lua3DLine>(L, 1);
+
+	if (!line)
+		return 0;
+
+	if (line->m_pending_removal)
+		return 0;
+
+	LineParams line_params;
+
+	lua_getfield(L, 2, "type");
+
+	if (!lua_isnil(L, -1)) {
+		const char *type = luaL_checkstring(L, -1);
+
+		line_params.last_changed_props[LineParams::LP_TYPE] = true;
+
+		if (!strcmp(type, "flat"))
+			line_params.type = LineType::FLAT;
+		else if (!strcmp(type, "dihedral"))
+			line_params.type = LineType::DIHEDRAL;
+		else if (!strcmp(type, "cylindric"))
+			line_params.type = LineType::CYLINDRIC;
+		else
+			line_params.last_changed_props[LineParams::LP_TYPE] = false;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "start_pos");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.pos.first = checkFloatPos(L, -1);
+		line_params.last_changed_props[LineParams::LP_START_POS] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "end_pos");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.pos.second = checkFloatPos(L, -1);
+		line_params.last_changed_props[LineParams::LP_END_POS] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "start_color");
+
+	if (!lua_isnil(L, -1)) {
+		read_color(L, -1, &line_params.color.first);
+		line_params.last_changed_props[LineParams::LP_START_COLOR] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "end_color");
+
+	if (!lua_isnil(L, -1)) {
+		read_color(L, -1, &line_params.color.second);
+		line_params.last_changed_props[LineParams::LP_END_COLOR] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "start_attach_to");
+
+	if (lua_isuserdata(L, -1)) {
+		ObjectRef *obj_start = checkObject<ObjectRef>(L, -1);
+
+		if (obj_start) {
+			line_params.attached_ids.first = ObjectRef::getobject(obj_start)->getId();
+			line_params.last_changed_props[LineParams::LP_START_ATTACH_TO] = true;
+		}
+	}
+	else if (lua_isnumber(L, -1) && lua_tointeger(L, -1) == 0) {
+		line_params.attached_ids.first = 0;
+		line_params.last_changed_props[LineParams::LP_START_ATTACH_TO] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "end_attach_to");
+
+	if (lua_isuserdata(L, -1)) {
+		ObjectRef *obj_end = checkObject<ObjectRef>(L, -1);
+
+		if (obj_end) {
+			line_params.attached_ids.second = ObjectRef::getobject(obj_end)->getId();
+			line_params.last_changed_props[LineParams::LP_END_ATTACH_TO] = true;
+		}
+	}
+	else if (lua_isnumber(L, -1) && lua_tointeger(L, -1) == 0) {
+		line_params.attached_ids.second = 0;
+		line_params.last_changed_props[LineParams::LP_END_ATTACH_TO] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "width");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.width = lua_tonumber(L, -1) * BS;
+		line_params.last_changed_props[LineParams::LP_WIDTH] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "texture");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.texture = luaL_checkstring(L, -1);
+		line_params.last_changed_props[LineParams::LP_TEXTURE] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "playername");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.playername = luaL_checkstring(L, -1);
+		line_params.last_changed_props[LineParams::LP_PLAYERNAME] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "animation");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.animation = read_animation_definition(L, -1);
+		line_params.last_changed_props[LineParams::LP_ANIMATION] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "backface_culling");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.backface_culling = (bool)lua_toboolean(L, -1);
+		line_params.last_changed_props[LineParams::LP_BACKFACE_CULLING] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "light_level");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.light_level = rangelim(lua_tointeger(L, -1), 0, 14);
+		line_params.last_changed_props[LineParams::LP_LIGHT_LEVEL] = true;
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "axis_angle");
+
+	if (!lua_isnil(L, -1)) {
+		line_params.axis_angle = lua_tonumber(L, -1);
+		line_params.last_changed_props[LineParams::LP_AXIS_ANGLE] = true;
+	}
+
+	lua_pop(L, 1);
+
+	getServer(L)->change3DLineProperties(line->m_id, line_params);
+
+	return 1;
+
+}
+
+int Lua3DLine::l_remove(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Lua3DLine *line = checkObject<Lua3DLine>(L, 1);
+
+	if (!line)
+		return 0;
+
+	if (line->m_pending_removal)
+		return 0;
+
+	line->m_pending_removal = true;
+
+	getServer(L)->remove3DLine(line->m_id);
+
+	return 1;
+}
 
 void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 {
@@ -623,6 +876,96 @@ int ModApiEnv::l_add_entity(lua_State *L)
 	if (obj->isGone())
 		return 0;
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
+	return 1;
+}
+
+// add_3dline(line_params) -> Lua3DLine or nil
+int ModApiEnv::l_add_3dline(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LineParams line_params;
+
+	std::string type = getstringfield_default(L, 1, "type", "flat");
+
+	if (type == "flat")
+		line_params.type = LineType::FLAT;
+	else if (type == "dihedral")
+		line_params.type = LineType::DIHEDRAL;
+	else if (type == "cylindric")
+		line_params.type = LineType::CYLINDRIC;
+
+	lua_getfield(L, 1, "start_pos");
+
+	if (lua_istable(L, -1))
+		line_params.pos.first = checkFloatPos(L, -1);
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "end_pos");
+
+	if (lua_istable(L, -1))
+		line_params.pos.second = checkFloatPos(L, -1);
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "start_color");
+
+	read_color(L, -1, &line_params.color.first);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "end_color");
+
+	read_color(L, -1, &line_params.color.second);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "start_attach_to");
+
+	if (!lua_isnil(L, -1)) {
+		ObjectRef *obj_start = checkObject<ObjectRef>(L, -1);
+
+		if (obj_start)
+			line_params.attached_ids.first = ObjectRef::getobject(obj_start)->getId();
+	}
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "end_attach_to");
+
+	if (!lua_isnil(L, -1)) {
+		ObjectRef *obj_end = checkObject<ObjectRef>(L, -1);
+
+		if (obj_end)
+			line_params.attached_ids.second = ObjectRef::getobject(obj_end)->getId();
+	}
+
+	lua_pop(L, 1);
+
+	line_params.width = getfloatfield_default(L, 1, "width", 0.05f) * BS;
+
+	line_params.texture = getstringfield_default(L, 1, "texture", "");
+
+	line_params.playername = getstringfield_default(L, 1, "playername", "");
+
+	lua_getfield(L, 1, "animation");
+
+	line_params.animation = read_animation_definition(L, -1);
+
+	lua_pop(L, 1);
+
+	line_params.backface_culling = getboolfield_default(L, 1, "backface_culling", false);
+
+	line_params.light_level = rangelim((u8)getintfield_default(L, 1, "light_level", 0), 0, 14);
+
+	line_params.axis_angle = getfloatfield_default(L, 1, "axis_angle", 0.0f);
+
+	u32 id = getServer(L)->add3DLine(line_params);
+	Lua3DLine *line = new Lua3DLine(id);
+
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = line;
+	luaL_getmetatable(L, Lua3DLine::className);
+	lua_setmetatable(L, -2);
+
 	return 1;
 }
 
@@ -1457,6 +1800,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(set_node_level);
 	API_FCT(add_node_level);
 	API_FCT(add_entity);
+	API_FCT(add_3dline);
 	API_FCT(find_nodes_with_meta);
 	API_FCT(get_meta);
 	API_FCT(get_node_timer);
@@ -1502,4 +1846,5 @@ void ModApiEnv::InitializeClient(lua_State *L, int top)
 	API_FCT(find_nodes_in_area_under_air);
 	API_FCT(line_of_sight);
 	API_FCT(raycast);
+	API_FCT(add_3dline);
 }

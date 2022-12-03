@@ -133,6 +133,9 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_entity(lua_State *L);
 
+	// add_3dline(line_params) -> Lua3DLine or nil
+	static int l_add_3dline(lua_State *L);
+
 	// add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
 	static int l_add_item(lua_State *L);
@@ -345,6 +348,34 @@ public:
 	static int create_object(lua_State *L);
 
 	//! Registers Raycast as a Lua userdata type.
+	static void Register(lua_State *L);
+
+	static const char className[];
+};
+
+class Lua3DLine : public ModApiBase
+{
+private:
+	u32 m_id;
+	bool m_pending_removal;
+
+	static int gc_object(lua_State *L);
+
+	static int objects_equal(lua_State *L);
+
+	static int l_is_valid(lua_State *L);
+
+	static int l_set_properties(lua_State *L);
+
+	static int l_remove(lua_State *L);
+
+	static const luaL_Reg methods[];
+public:
+	Lua3DLine(u32 id)
+		: m_id(id), m_pending_removal(false)
+	{
+	}
+
 	static void Register(lua_State *L);
 
 	static const char className[];

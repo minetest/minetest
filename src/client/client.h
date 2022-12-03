@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "clientdynamicinfo.h"
 #include <fstream>
-#include "util/numeric.h"
+#include "line.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -230,6 +230,9 @@ public:
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
+	void handleCommand_Add3DLine(NetworkPacket *pkt);
+	void handleCommand_Change3DLineProperties(NetworkPacket *pkt);
+	void handleCommand_Remove3DLine(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -369,6 +372,8 @@ public:
 	Camera* getCamera () { return m_camera; }
 	scene::ISceneManager *getSceneManager();
 
+	LineSceneNodeManager *getLineSceneNodeManager() { return &m_line_scenenode_manager; }
+
 	bool shouldShowMinimap() const;
 
 	// IGameDef interface
@@ -489,7 +494,7 @@ private:
 	MtEventManager *m_event;
 	RenderingEngine *m_rendering_engine;
 
-
+	LineSceneNodeManager m_line_scenenode_manager;
 	std::unique_ptr<MeshUpdateManager> m_mesh_update_manager;
 	ClientEnvironment m_env;
 	std::unique_ptr<ParticleManager> m_particle_manager;

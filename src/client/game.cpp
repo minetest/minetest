@@ -918,6 +918,7 @@ private:
 	void handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
 		CameraOrientation *cam);
 	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_Handle3DLineEvent(ClientEvent *event, CameraOrientation *cam);
 
 	void updateChat(f32 dtime);
 
@@ -2851,6 +2852,9 @@ const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
 	{&Game::handleClientEvent_SetStars},
 	{&Game::handleClientEvent_OverrideDayNigthRatio},
 	{&Game::handleClientEvent_CloudParams},
+	{&Game::handleClientEvent_Handle3DLineEvent},
+	{&Game::handleClientEvent_Handle3DLineEvent},
+	{&Game::handleClientEvent_Handle3DLineEvent}
 };
 
 void Game::handleClientEvent_None(ClientEvent *event, CameraOrientation *cam)
@@ -3175,6 +3179,14 @@ void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *
 	clouds->setHeight(event->cloud_params.height);
 	clouds->setThickness(event->cloud_params.thickness);
 	clouds->setSpeed(v2f(event->cloud_params.speed_x, event->cloud_params.speed_y));
+}
+
+void Game::handleClientEvent_Handle3DLineEvent(ClientEvent *event, CameraOrientation *cam)
+{
+	if (event->type != CE_REMOVE_3DLINE)
+		client->getLineSceneNodeManager()->handle3DLineEvent(event->type, event->line.id, event->line.p);
+	else
+		client->getLineSceneNodeManager()->handle3DLineEvent(event->type, event->remove_line.id, nullptr);
 }
 
 void Game::processClientEvents(CameraOrientation *cam)
@@ -4131,6 +4143,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Update particles
 	*/
 	client->getParticleManager()->step(dtime);
+
+	/*
+		Update 3d lines
+	*/
+	client->getLineSceneNodeManager()->step(dtime);
 
 	/*
 		Damage camera tilt

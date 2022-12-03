@@ -126,6 +126,9 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_FORMSPEC_PREPEND",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FormspecPrepend }, // 0x61,
 	{ "TOCLIENT_MINIMAP_MODES",            TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MinimapModes }, // 0x62,
 	{ "TOCLIENT_SET_LIGHTING",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SetLighting }, // 0x63,
+	{ "TOCLIENT_ADD_3DLINE",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Add3DLine }, // 0x64
+	{ "TOCLIENT_CHANGE_3DLINE_PROPERTIES", TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Change3DLineProperties }, // 0x65
+	{ "TOCLIENT_REMOVE_3DLINE",            TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Remove3DLine } // 0x66
 };
 
 const static ServerCommandFactory null_command_factory = { nullptr, 0, false };

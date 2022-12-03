@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 #include <unordered_set>
+#include "line_params.h"
 
 class ChatEvent;
 struct ChatEventChat;
@@ -257,6 +258,14 @@ public:
 		ServerActiveObject *attached, const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
+
+	u32 add3DLine(const LineParams &p);
+	void change3DLineProperties(u32 id, const LineParams &new_p);
+	void remove3DLine(u32 id);
+
+	void add3DLineToClient(const LineParams &p, RemotePlayer *player, u32 id);
+	void change3DLinePropertiesToClient(const LineParams &new_p, RemotePlayer *player, u32 id);
+	void remove3DLineToClient(RemotePlayer *player, u32 id);
 
 	bool dynamicAddMedia(std::string filepath, u32 token,
 		const std::string &to_player, bool ephemeral);
@@ -530,6 +539,9 @@ private:
 		const ParticleSpawnerParameters &p, u16 attached_id, u32 id);
 
 	void SendDeleteParticleSpawner(session_t peer_id, u32 id);
+
+	void Send3DLine(session_t peer_id, u32 proto_ver,
+		u32 id, u16 action = 2, const LineParams *p = nullptr);
 
 	// Spawns particle on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendSpawnParticle(session_t peer_id, u16 protocol_version,

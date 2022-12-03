@@ -258,6 +258,9 @@ public:
 	u32 addParticleSpawner(float exptime, u16 attached_id);
 	void deleteParticleSpawner(u32 id, bool remove_from_object = true);
 
+	u32 addNew3DLine();
+	void remove3DLine(u32 id);
+	bool is3DLineExists(u32 id);
 	/*
 		External ActiveObject interface
 		-------------------------------------------
@@ -515,6 +518,7 @@ private:
 	u32 m_particle_spawners_id_last_used = 0;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 
+	std::set<u32> m_3dlines_ids;
 	// Environment metrics
 	MetricCounterPtr m_step_time_counter;
 	MetricGaugePtr m_active_block_gauge;

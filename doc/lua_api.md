@@ -5950,6 +5950,9 @@ Environment access
     * Returns `ObjectRef`, or `nil` if failed
     * Entities with `static_save = true` can be added also 
       to unloaded and non-generated blocks.
+* `minetest.add_3dline(3dline_definition)`: returns `Lua3DLine`
+	* Creates and render a `Lua3DLine` object from the start to the end position.
+	* See for description of `3dline_definition` in `3D Line` definition section.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
     * Items can be added also to unloaded and non-generated blocks.
@@ -8269,6 +8272,20 @@ In multiplayer mode, the error may be arbitrarily large.
 
 * `next()`: returns a `pointed_thing` with exact pointing location
     * Returns the next thing pointed by the ray or nil.
+
+`Lua3DLine`
+--------
+
+A dynamic 3d line. Can be attached from both ends to objects.
+If the objects which they are attached to are invalid, automatically detach them.
+
+It can be created via `minetest.add_3dline(3dline_definition)`.
+
+### Methods
+
+* `set_properties(3dline_definition)`: overrides the given properties.
+* `remove()`: removes the Lua3DLine object.
+* `is_valid()`: returns true in case if the Lua3DLine object is valid, otherwise false.
 
 `SecureRandom`
 --------------
@@ -10732,6 +10749,82 @@ lifespan, and then vanish again before expiring.
 * float `alpha` (0.0 - 1.0): controls the visibility of the texture
 * vec2 `scale`: controls the size of the displayed billboard onscreen. Its units
   are multiples of the parent particle's assigned size (see the `size` property above)
+
+
+`3DLine` definition
+-------------------
+
+Used by `minetest.add_3dline`.
+
+```lua
+{
+	type = "flat",
+	-- Type can be "flat", "cylindric" and "dihedral".
+	-- It only affects the rendering of the line itself.
+	-- "flat": represents a 3d rectangle.
+	-- "dihedral": the same as "flat", but has two crossing rectangles under 90 degrees.
+	-- "cylindric": represents a 3d cylinder.
+	-- Default type is "flat".
+
+	start_pos = vector.new(0, 0, 0),
+	-- The start position of the line.
+	-- Default value is (0, 0, 0).
+
+	end_pos = vector.new(0, 0, 0),
+	-- Same as `start_pos`, but for the end vertex.
+
+	start_color = <ColorSpec>,
+	-- Color of the start vertex.
+	-- The color of the line is interpolated from `start_color` to `end_color`.
+	-- Default value is "0x000000" (black).
+
+	end_color = <ColorSpec>,
+	-- Same as `start_color`, but for the end vertex.
+
+	start_attach_to = <ObjectRef>,
+	-- Optional. If defined, position of the start vertex will be relative
+	-- to the ObjectRef's position and rotation and will follow it.
+	-- Setting it to 0 detaches it from that ObjectRef.
+
+	end_attach_to = <ObjectRef>,
+	-- Same as `start_attach_to`, but for the end vertex.
+
+	width = 0.05,
+	-- The diameter of the line. The higher value the line looks visually thicker.
+	-- Default value is 0.05.
+
+	texture = "texture.png",
+	-- Optional. The texture laid on the line.
+
+	clamp_mode = "repeat",
+	-- Optional. Next modes are supported: "repeat", "clamp", "clamp_to_edge" and "clamp_to_border".
+	-- Default mode is "repeat".
+
+	playername = "",
+	-- Optional. If specified, the line data will be sent for rendering
+	-- only to this client with the given name, otherwise to all ones.
+	-- Default value is "".
+
+	animation = {Tile Animation Definition},
+	-- Optional. Defines animation of the line texture.
+	-- Note: this is currently not supported for `cylindric` type.
+	-- See `Tile Animation Definition`.
+
+	backface_culling = false,
+	-- Optional. Defines whether enable backface_culling or not.
+	-- Default value is "false".
+
+	light_level = 5,
+	-- Optional. Level of the light of the line. Can be from 0 - 14 value.
+	-- Default value is 0.
+
+	axis_angle = math.pi/4,
+	-- Optional. Angle in radians around the lengthwise axis of the line.
+	-- Positive values mean counter-clockwise rotation,
+	-- negative ones - clockwise relatively if the axis looks at the watcher.
+	-- Default value is 0.0.
+}
+```
 
 `HTTPRequest` definition
 ------------------------
