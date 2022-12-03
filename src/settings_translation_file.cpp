@@ -33,6 +33,8 @@ fake_function() {
 	gettext("Touchscreen");
 	gettext("Touch screen threshold");
 	gettext("The length in pixels it takes for touch screen interaction to start.");
+	gettext("Use crosshair for touch screen");
+	gettext("Use crosshair to select object instead of whole screen.\nIf enabled, a crosshair will be shown and will be used for selecting object.");
 	gettext("Fixed virtual joystick");
 	gettext("(Android) Fixes the position of virtual joystick.\nIf disabled, virtual joystick will center to first-touch's position.");
 	gettext("Virtual joystick triggers Aux1 button");
@@ -148,6 +150,8 @@ fake_function() {
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables Hable's 'Uncharted 2' filmic tone mapping.\nSimulates the tone curve of photographic film and how this approximates the\nappearance of high dynamic range images. Mid-range contrast is slightly\nenhanced, highlights and shadows are gradually compressed.");
+	gettext("Saturation");
+	gettext("Adjust the saturation (or vividness) of the scene\nValues\n< 1.0 decrease saturation\n> 1.0 increase saturation\n1.0 = unchanged saturation\n0.0 = black and white\n(Tone mapping needs to be enabled.)");
 	gettext("Waving Nodes");
 	gettext("Waving leaves");
 	gettext("Set to true to enable waving leaves.\nRequires shaders to be enabled.");
@@ -184,6 +188,20 @@ fake_function() {
 	gettext("Set the soft shadow radius size.\nLower values mean sharper shadows, bigger values mean softer shadows.\nMinimum value: 1.0; maximum value: 15.0");
 	gettext("Sky Body Orbit Tilt");
 	gettext("Set the tilt of Sun/Moon orbit in degrees.\nValue of 0 means no tilt / vertical orbit.\nMinimum value: 0.0; maximum value: 60.0");
+	gettext("Post processing");
+	gettext("Exposure Factor");
+	gettext("Set the exposure compensation factor.\nThis factor is applied to linear color value \nbefore all other post-processing effects.\nValue of 1.0 (default) means no exposure compensation.\nRange: from 0.1 to 10.0");
+	gettext("Bloom");
+	gettext("Enable Bloom");
+	gettext("Set to true to enable bloom effect.\nBright colors will bleed over the neighboring objects.");
+	gettext("Enable Bloom Debug");
+	gettext("Set to true to render debugging breakdown of the bloom effect.\nIn debug mode, the screen is split into 4 quadrants: \ntop-left - processed base image, top-right - final image\nbottom-left - raw base image, bottom-right - bloom texture.");
+	gettext("Bloom Intensity");
+	gettext("Defines how much bloom is applied to the rendered image\nSmaller values make bloom more subtle\nRange: from 0.01 to 1.0, default: 0.05");
+	gettext("Bloom Strength Factor");
+	gettext("Defines the magnitude of bloom overexposure.\nRange: from 0.1 to 10.0, default: 1.0");
+	gettext("Bloom Radius");
+	gettext("Logical value that controls how far the bloom effect spreads\nfrom the bright objects.\nRange: from 0.1 to 8, default: 1");
 	gettext("Audio");
 	gettext("Volume");
 	gettext("Volume of all sounds.\nRequires the sound system to be enabled.");
@@ -460,7 +478,7 @@ fake_function() {
 	gettext("Floatland tapering distance");
 	gettext("Y-distance over which floatlands taper from full density to nothing.\nTapering starts at this distance from the Y limit.\nFor a solid floatland layer, this controls the height of hills/mountains.\nMust be less than or equal to half the distance between the Y limits.");
 	gettext("Floatland taper exponent");
-	gettext("Exponent of the floatland tapering. Alters the tapering behaviour.\nValue = 1.0 creates a uniform, linear tapering.\nValues > 1.0 create a smooth tapering suitable for the default separated\nfloatlands.\nValues < 1.0 (for example 0.25) create a more defined surface level with\nflatter lowlands, suitable for a solid floatland layer.");
+	gettext("Exponent of the floatland tapering. Alters the tapering behavior.\nValue = 1.0 creates a uniform, linear tapering.\nValues > 1.0 create a smooth tapering suitable for the default separated\nfloatlands.\nValues < 1.0 (for example 0.25) create a more defined surface level with\nflatter lowlands, suitable for a solid floatland layer.");
 	gettext("Floatland density");
 	gettext("Adjusts the density of the floatland layer.\nIncrease value to increase density. Can be positive or negative.\nValue = 0.0: 50% of volume is floatland.\nValue = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\nto be sure) creates a solid floatland layer.");
 	gettext("Floatland water level");
@@ -946,7 +964,7 @@ fake_function() {
 	gettext("Max block send distance");
 	gettext("From how far blocks are sent to clients, stated in mapblocks (16 nodes).");
 	gettext("Maximum forceloaded blocks");
-	gettext("Maximum number of forceloaded mapblocks.");
+	gettext("Default maximum number of forceloaded mapblocks.\nSet this to -1 to disable the limit.");
 	gettext("Time send interval");
 	gettext("Interval of sending time of day to clients, stated in seconds.");
 	gettext("Map save interval");

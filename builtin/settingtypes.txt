@@ -117,6 +117,10 @@ mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 #    The length in pixels it takes for touch screen interaction to start.
 touchscreen_threshold (Touch screen threshold) int 20 0 100
 
+#    Use crosshair to select object instead of whole screen.
+#    If enabled, a crosshair will be shown and will be used for selecting object.
+touch_use_crosshair (Use crosshair for touch screen) bool false
+
 #    (Android) Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 fixed_virtual_joystick (Fixed virtual joystick) bool false
@@ -362,6 +366,15 @@ enable_shaders (Shaders) bool true
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
+#    Adjust the saturation (or vividness) of the scene
+#    Values
+#    < 1.0 decrease saturation
+#    > 1.0 increase saturation
+#    1.0 = unchanged saturation
+#    0.0 = black and white
+#    (Tone mapping needs to be enabled.)
+saturation (Saturation) float 1.0 0.0 5.0
+
 [**Waving Nodes]
 
 #    Set to true to enable waving leaves.
@@ -443,7 +456,43 @@ shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 #    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
 #    Minimum value: 0.0; maximum value: 60.0
-shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 0.0 60.0
+shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
+
+[**Post processing]
+
+#    Set the exposure compensation factor.
+#    This factor is applied to linear color value 
+#    before all other post-processing effects.
+#    Value of 1.0 (default) means no exposure compensation.
+#    Range: from 0.1 to 10.0
+exposure_factor	(Exposure Factor) float 1.0 0.1 10.0
+
+[**Bloom]
+
+#    Set to true to enable bloom effect.
+#    Bright colors will bleed over the neighboring objects.
+enable_bloom (Enable Bloom) bool false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants: 
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+enable_bloom_debug (Enable Bloom Debug) bool false
+
+#    Defines how much bloom is applied to the rendered image
+#    Smaller values make bloom more subtle
+#    Range: from 0.01 to 1.0, default: 0.05
+bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
+
+#    Defines the magnitude of bloom overexposure.
+#    Range: from 0.1 to 10.0, default: 1.0
+bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
+
+#    Logical value that controls how far the bloom effect spreads
+#    from the bright objects.
+#    Range: from 0.1 to 8, default: 1
+bloom_radius (Bloom Radius) float 1 0.1 8
+
 
 [*Audio]
 
@@ -954,7 +1003,7 @@ mgv7_floatland_ymax (Floatland maximum Y) int 4096 -31000 31000
 #    Must be less than or equal to half the distance between the Y limits.
 mgv7_floatland_taper (Floatland tapering distance) int 256 0 32767
 
-#    Exponent of the floatland tapering. Alters the tapering behaviour.
+#    Exponent of the floatland tapering. Alters the tapering behavior.
 #    Value = 1.0 creates a uniform, linear tapering.
 #    Values > 1.0 create a smooth tapering suitable for the default separated
 #    floatlands.
@@ -1889,8 +1938,9 @@ active_block_range (Active block range) int 4 1 65535
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 max_block_send_distance (Max block send distance) int 12 1 65535
 
-#    Maximum number of forceloaded mapblocks.
-max_forceloaded_blocks (Maximum forceloaded blocks) int 16 0
+#    Default maximum number of forceloaded mapblocks.
+#    Set this to -1 to disable the limit.
+max_forceloaded_blocks (Maximum forceloaded blocks) int 16 -1
 
 #    Interval of sending time of day to clients, stated in seconds.
 time_send_interval (Time send interval) float 5.0 0.001
@@ -2185,7 +2235,7 @@ keymap_cmd_local (Command key) key .
 
 #    Key for toggling unlimited view range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_rangeselect (Range select key) key KEY_KEY_R
+keymap_rangeselect (Range select key) key
 
 #    Key for toggling flying.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
