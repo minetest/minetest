@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "util/string.h"
 #include "util/container.h"
-#include <utility>
 
 #define MAPGEN_DEFAULT MAPGEN_V7
 #define MAPGEN_DEFAULT_NAME "v7"
@@ -111,6 +110,7 @@ enum MapgenType {
 	MAPGEN_FRACTAL,
 	MAPGEN_SINGLENODE,
 	MAPGEN_V6,
+	MAPGEN_TRAILGEN,
 	MAPGEN_INVALID,
 };
 
@@ -140,6 +140,7 @@ struct MapgenParams {
 	s32 getSpawnRangeMax();
 
 private:
+	void calcMapgenEdges();
 	bool m_mapgen_edges_calculated = false;
 };
 
@@ -324,12 +325,9 @@ protected:
 	int small_cave_num_max;
 	int large_cave_num_min;
 	int large_cave_num_max;
+	int map_height_mod;
 	float large_cave_flooded;
 	s16 large_cave_depth;
 	s16 dungeon_ymin;
 	s16 dungeon_ymax;
 };
-
-// Calculate exact edges of the outermost mapchunks that are within the set
-// mapgen_limit. Returns the minimum and maximum edges in nodes in that order.
-std::pair<s16, s16> get_mapgen_edges(s16 mapgen_limit, s16 chunksize);

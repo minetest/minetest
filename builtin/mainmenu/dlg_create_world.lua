@@ -72,6 +72,9 @@ local flag_checkboxes = {
 		{ "mudflow", fgettext("Mud flow"), fgettext("Terrain surface erosion") },
 		-- Biome settings are in mgv6_biomes below
 	},
+	trailgen = {
+		cb_caverns,
+	},
 }
 
 local mgv6_biomes = {
@@ -104,12 +107,14 @@ local function create_world_formspec(dialogdata)
 	local current_mg = dialogdata.mg
 	local mapgens = core.get_mapgen_names()
 
+	local gameid = core.settings:get("menu_last_game")
+
 	local flags = dialogdata.flags
 
-	local game = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+	local game = pkgmgr.find_by_gameid(gameid)
 	if game == nil then
 		-- should never happen but just pick the first game
-		game = pkgmgr.games[1]
+		game = pkgmgr.get_game(1)
 		core.settings:set("menu_last_game", game.id)
 	end
 
@@ -353,7 +358,7 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		local worldname = fields["te_world_name"]
-		local game, _ = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
+		local game, gameindex = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 
 		local message
 		if game == nil then
@@ -395,9 +400,10 @@ local function create_world_buttonhandler(this, fields)
 				mgfractal_spflags = table_to_flags(this.data.flags.fractal),
 				mgcarpathian_spflags = table_to_flags(this.data.flags.carpathian),
 				mgvalleys_spflags = table_to_flags(this.data.flags.valleys),
+				mgtrailgen_spflags = table_to_flags(this.data.flags.trailgen),
 				mgflat_spflags = table_to_flags(this.data.flags.flat),
 			}
-			message = core.create_world(worldname, game.id, settings)
+			message = core.create_world(worldname, gameindex, settings)
 		end
 
 		if message == nil then
@@ -478,6 +484,7 @@ function create_create_world_dlg()
 			fractal = core.settings:get_flags("mgfractal_spflags"),
 			carpathian = core.settings:get_flags("mgcarpathian_spflags"),
 			valleys = core.settings:get_flags("mgvalleys_spflags"),
+			trailgen = core.settings:get_flags("mgtrailgen_spflags"),
 			flat = core.settings:get_flags("mgflat_spflags"),
 		}
 	}
