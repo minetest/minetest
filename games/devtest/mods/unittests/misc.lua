@@ -114,21 +114,19 @@ unittests.register("test_game_info", test_game_info)
 local function test_mapgen_edges(cb)
 	-- Test that the map can extend to the expected edges and no further.
 	local min_edge, max_edge = minetest.get_mapgen_edges()
-	local min_pos = vector.new(min_edge, min_edge, min_edge)
-	local max_pos = vector.new(max_edge, max_edge, max_edge)
 	local min_finished = {}
 	local max_finished = {}
 	local function finish()
 		if #min_finished ~= 1 then
 			return cb("Expected 1 block to emerge around mapgen minimum edge")
 		end
-		if min_finished[1] ~= (min_pos / minetest.MAP_BLOCKSIZE):floor() then
+		if min_finished[1] ~= (min_edge / minetest.MAP_BLOCKSIZE):floor() then
 			return cb("Expected block within minimum edge to emerge")
 		end
 		if #max_finished ~= 1 then
 			return cb("Expected 1 block to emerge around mapgen maximum edge")
 		end
-		if max_finished[1] ~= (max_pos / minetest.MAP_BLOCKSIZE):floor() then
+		if max_finished[1] ~= (max_edge / minetest.MAP_BLOCKSIZE):floor() then
 			return cb("Expected block within maximum edge to emerge")
 		end
 		return cb()
@@ -145,7 +143,7 @@ local function test_mapgen_edges(cb)
 			end
 		end
 	end
-	minetest.emerge_area(min_pos:subtract(1), min_pos, emerge_block, min_finished)
-	minetest.emerge_area(max_pos, max_pos:add(1), emerge_block, max_finished)
+	minetest.emerge_area(min_edge:subtract(1), min_edge, emerge_block, min_finished)
+	minetest.emerge_area(max_edge, max_edge:add(1), emerge_block, max_finished)
 end
 unittests.register("test_mapgen_edges", test_mapgen_edges, {map=true, async=true})
