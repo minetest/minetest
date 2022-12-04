@@ -95,7 +95,8 @@ struct LoadingBlockModifierDef
 
 	virtual ~LoadingBlockModifierDef() = default;
 
-	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
+	virtual void trigger(ServerEnvironment *env, v3s16 p,
+			MapNode n, float dtime_s) {};
 };
 
 struct LBMContentMapping
@@ -129,7 +130,8 @@ public:
 	std::string createIntroductionTimesString();
 
 	// Don't call this before loadIntroductionTimes() ran.
-	void applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp);
+	void applyLBMs(ServerEnvironment *env, MapBlock *block,
+			u32 stamp, float dtime_s);
 
 	// Warning: do not make this std::unordered_map, order is relevant here
 	typedef std::map<u32, LBMContentMapping> lbm_lookup_map;

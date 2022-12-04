@@ -249,7 +249,8 @@ std::string LBMManager::createIntroductionTimesString()
 	return oss.str();
 }
 
-void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
+void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
+		const u32 stamp, const float dtime_s)
 {
 	// Precondition, we need m_lbm_lookup to be initialized
 	FATAL_ERROR_IF(!m_query_mode,
@@ -280,7 +281,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 					if (!lbm_list)
 						continue;
 					for (auto lbmdef : *lbm_list) {
-						lbmdef->trigger(env, pos + pos_of_block, n);
+						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
 					}
 				}
 	}
@@ -997,7 +998,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block, dtime_s);
 
 	/* Handle LoadingBlockModifiers */
-	m_lbm_mgr.applyLBMs(this, block, stamp);
+	m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
 
 	// Run node timers
 	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
