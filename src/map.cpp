@@ -1312,6 +1312,8 @@ ServerMap::~ServerMap()
 	*/
 	delete dbase;
 	delete dbase_ro;
+
+	deleteDeletedBlocks();
 }
 
 MapgenParams *ServerMap::getMapgenParams()
@@ -1894,10 +1896,22 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 		MapSector *sector = getSectorNoGenerate(p2d);
 		if (!sector)
 			return false;
-		sector->deleteBlock(block);
+		// It may not be safe to delete the block from memory at the moment
+		// (pointers to it could still be in use)
+		sector->removeBlock(block);
+		m_deleted_blocks.push_back(block);
 	}
 
 	return true;
+}
+
+void ServerMap::deleteDeletedBlocks()
+{
+	for (MapBlock *block : m_deleted_blocks) {
+		assert(!block->getParent());
+		delete block;
+	}
+	m_deleted_blocks.clear();
 }
 
 void ServerMap::PrintInfo(std::ostream &out)

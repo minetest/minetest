@@ -664,6 +664,12 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	/*
+		Delete from memory blocks removed by deleteBlocks() only when pointers
+		to them are (probably) no longer in use
+	*/
+	m_env->getServerMap().deleteDeletedBlocks();
+
+	/*
 		Listen to the admin chat, if available
 	*/
 	if (m_admin_chat) {
