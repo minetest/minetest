@@ -282,6 +282,8 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 						continue;
 					for (auto lbmdef : *lbm_list) {
 						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
+						if (!block->getParent())
+							return; // The block was deleted
 						n = block->getNodeNoCheck(pos);
 						if (n.getContent() != c)
 							break; // The node was changed and the LBMs no longer apply
@@ -966,6 +968,9 @@ public:
 				aabm.abm->trigger(m_env, p, n,
 					active_object_count, active_object_count_wider);
 
+				if (!block->getParent())
+					return; // block was deleted
+
 				// Count surrounding objects again if the abms added any
 				if(m_env->m_added_objects > 0) {
 					active_object_count = countObjects(block, map, active_object_count_wider);
@@ -1018,11 +1023,12 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block, dtime_s);
 
 	/* Handle LoadingBlockModifiers */
-	m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
+	if (block->getParent()) // Block not deleted
+		m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
 
 	// Run node timers
 	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
-		return m_script->node_on_timer(p, n, d);
+		return block->getParent() && m_script->node_on_timer(p, n, d);
 	});
 }
 

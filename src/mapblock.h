@@ -86,6 +86,11 @@ public:
 		return m_parent;
 	}
 
+	void makeOrphan()
+	{
+		m_parent = nullptr;
+	}
+
 	void reallocate()
 	{
 		for (u32 i = 0; i < nodecount; i++)
