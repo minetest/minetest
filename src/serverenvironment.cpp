@@ -282,6 +282,9 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 						continue;
 					for (auto lbmdef : *lbm_list) {
 						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
+						n = block->getNodeNoCheck(pos);
+						if (n.getContent() != c)
+							break; // The node was changed and the LBMs no longer apply
 					}
 				}
 	}
