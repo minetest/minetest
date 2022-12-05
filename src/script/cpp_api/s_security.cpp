@@ -570,12 +570,11 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 			while (i>0) {
 				result = caller_mods.at(i);
 				prev_mod_name = caller_mods.at(i-1);
-				i--;
-
 				const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
 				if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
 					break;
 				}
+				i--;
 				if (prev_mod_name == executor_mod_name) {
 					ok = true;
 					// this means the second is the trigger, the first is caller for no more callers
