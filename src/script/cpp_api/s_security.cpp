@@ -508,18 +508,51 @@ std::string inline _get_mod_name_from_debug(lua_Debug *info)
 {
 	std::string mod_name;
 	std::string src = info->source;
+
+	if (src == "=[C]") {
+		mod_name = BUILTIN_MOD_NAME;
+		return mod_name;
+	}
+
 	std::string BIN_DIR = std::string(DIR_DELIM) + "bin" + DIR_DELIM;
 	std::string MOD_DIR = BIN_DIR + ".." + DIR_DELIM + "mods" + DIR_DELIM;
+	std::string BUILTIN_DIR = BIN_DIR + ".." + DIR_DELIM + "builtin" + DIR_DELIM;
+	std::string GAME_DIR = BIN_DIR + ".." + DIR_DELIM + "games" + DIR_DELIM;
 
-	size_t found = src.find(MOD_DIR);
+
+	size_t bin_pos = src.find(BIN_DIR);
+	size_t found = src.find(BUILTIN_DIR);
 	if (found != std::string::npos) {
 		// Check the path whether be faked.
-		if (src.find(BIN_DIR) == found) {
-			mod_name = src.substr(found+MOD_DIR.length());
-			found = mod_name.find(DIR_DELIM_CHAR);
-			if (found != std::string::npos) mod_name = mod_name.substr(0, found);
-		} else {
-			warningstream << "Mod security:: fake "<< MOD_DIR << " folder found in mod " << src.substr(found+MOD_DIR.length()) << std::endl;
+		if (bin_pos == found) {
+			mod_name = BUILTIN_MOD_NAME;
+		}
+	}
+
+	if (mod_name.empty()) {
+		found = src.find(GAME_DIR);
+		if (bin_pos == found) {
+			std::string t = src.substr(found + GAME_DIR.length());
+			found = t.find(DIR_DELIM_CHAR);
+			if (found != std::string::npos) {
+				t = t.substr(found + 6); // length of "mods/"
+				found = t.find(DIR_DELIM_CHAR);
+				if (found != std::string::npos) mod_name = t.substr(0, found);
+			}
+		}
+	}
+
+	if (mod_name.empty()) {
+		found = src.find(MOD_DIR);
+		if (found != std::string::npos) {
+			// Check the path whether be faked.
+			if (bin_pos == found) {
+				mod_name = src.substr(found+MOD_DIR.length());
+				found = mod_name.find(DIR_DELIM_CHAR);
+				if (found != std::string::npos) mod_name = mod_name.substr(0, found);
+			} else {
+				warningstream << "Mod security:: fake "<< MOD_DIR << " folder found in mod " << src.substr(found+MOD_DIR.length()) << std::endl;
+			}
 		}
 	}
 	return mod_name;
@@ -558,56 +591,74 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 	if (gamedef) {
 		std::vector<std::string> caller_mods = _get_caller_mod_names(L);
 		if (caller_mods.empty()) return result;
-		std::string executor_mod_name = caller_mods.at(0);
+
+		std::size_t iMin = 0;
+		std::string executor_mod_name;
+		while (iMin < caller_mods.size()) {
+			executor_mod_name = caller_mods.at(iMin);
+			if (executor_mod_name != BUILTIN_MOD_NAME) break;
+			iMin++;
+		}
+		if (iMin >= caller_mods.size()) return executor_mod_name;
 		const ModSpec *executor_mod = gamedef->getModSpec(executor_mod_name);
 		if (executor_mod) {
 			bool ok = false;
 			std::string prev_mod_name;
 			std::size_t i = caller_mods.size() - 1;
-			if (i == 0) return executor_mod_name;
+			if (i == iMin) return executor_mod_name;
 
 			// get the first event trigger
-			while (i>0) {
+			while (i>iMin) {
 				result = caller_mods.at(i);
 				prev_mod_name = caller_mods.at(i-1);
-				const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
-				if (!CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
+				if (prev_mod_name == BUILTIN_MOD_NAME) {
 					break;
+				}
+				if (result != BUILTIN_MOD_NAME) {
+					const ModSpec *prev_mod = gamedef->getModSpec(prev_mod_name);
+					if (prev_mod && !CONTAINS(prev_mod->depends, result) && !CONTAINS(prev_mod->optdepends, result)) {
+						break;
+					}
 				}
 				i--;
 				if (prev_mod_name == executor_mod_name) {
 					ok = true;
 					// this means the second is the trigger, the first is caller for no more callers
-					if (i == 0) result = executor_mod_name;
+					if (i == iMin) result = executor_mod_name;
 					break;
 				}
 			}
 			const ModSpec *mod;
 			// get real caller
-			while (i>0) {
+			while (i>iMin) {
 				result = caller_mods.at(i);
-				mod = gamedef->getModSpec(result);
-				prev_mod_name = caller_mods.at(i-1);
-				// check the whole depends chain
-				if (mod && (CONTAINS(mod->depends, prev_mod_name) || CONTAINS(mod->optdepends, prev_mod_name))) {
-					ok = true;
-				} else {
-					executor_mod_name = prev_mod_name;
-					ok = false;
+				if (result != BUILTIN_MOD_NAME) {
+					mod = gamedef->getModSpec(result);
+					prev_mod_name = caller_mods.at(i-1);
+					// check the whole depends chain
+					if (mod && (CONTAINS(mod->depends, prev_mod_name) || CONTAINS(mod->optdepends, prev_mod_name))) {
+						ok = true;
+					} else {
+						executor_mod_name = prev_mod_name;
+						ok = false;
+						break;
+					}
 				}
 				i--;
 			}
 			if (!ok) {
-				if (_is_in_whitelist("secure.trusted_mods", executor_mod_name)) {
-					warningstream << "Mod security:: The mod "<< result << " is hooked by trusted mod:" << executor_mod_name << std::endl;
-				} else {
-					errorstream << "Mod security:: FAKE(MAYBE) the mod "<< result << " is hooked by " << executor_mod_name << ". Add it in secure.trusted_mods to allow hooking IO operation." << std::endl;
-					result.clear();
+				if (executor_mod_name != BUILTIN_MOD_NAME) {
+					if (_is_in_whitelist("secure.trusted_mods", executor_mod_name)) {
+						warningstream << "Mod security:: The function used by mod "<< result << " is hooked by trusted mod:" << executor_mod_name << std::endl;
+					} else {
+						errorstream << "Mod security:: FAKE(MAYBE) the function used by mod "<< result << " is hooked by " << executor_mod_name << ". Add it in secure.trusted_mods to allow hooking IO operation." << std::endl;
+						result.clear();
+					}
 				}
 			}
 		}
 	}
-	// warningstream << "Mod security:: _get_real_caller_mod_name "<< result << std::endl;
+	warningstream << "Mod security:: _get_real_caller_mod_name: "<< result << std::endl;
 	return result;
 }
 
