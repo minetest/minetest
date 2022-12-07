@@ -4,7 +4,7 @@
 struct ExposureParams {
 	float luminanceMin;
 	float luminanceMax;
-	float luminanceBias;
+	float exposureCorrection;
 	float luminanceKey;
 	float speedDarkBright;
 	float speedBrightDark;
@@ -35,8 +35,6 @@ void main(void)
 {
 	float previousExposure = texture2D(exposure, vec2(0.5, 0.5)).r;
 
-	previousExposure = clamp(previousExposure, 1e-10, 1e5);
-
 	vec3 averageColor = vec3(0.);
 	float n = 0.;
 
@@ -56,15 +54,22 @@ void main(void)
 	float luminance = getLuminance(averageColor);
 	luminance /= n;
 
-	luminance /= bloomStrength * exposureParams.compensationFactor; // compensate for the configurable factors
+	luminance /= pow(2., previousExposure) * bloomStrength * exposureParams.compensationFactor; // compensate for the configurable factors
 
-	// Equations borrowed from https://knarkowicz.wordpress.com/2016/01/09/automatic-exposure/
-	float wantedExposure = exposureParams.luminanceKey / max(1e-10, clamp(luminance, exposureParams.luminanceMin, exposureParams.luminanceMax) - exposureParams.luminanceBias);
+	luminance = clamp(luminance, exposureParams.luminanceMin, exposureParams.luminanceMax);
+
+	// From https://media.contentapi.ea.com/content/dam/eacom/frostbite/files/course-notes-moving-frostbite-to-pbr-v2.pdf
+	// 1. EV100 = log2(luminance * S / K) where S = 100, K = 0.125 = log2(luminance) + 3
+	// 2. Lmax = 1.2 * 2 ^ (EV100 - EC)
+	//    => Lmax = 1.2 * 2^3 * luminance / 2^EC = 9.6 * luminance / 2^EC
+	// 3. exposure = 1 / Lmax
+	//    => exposure = 2^EC / (9.6 * luminance)
+	float wantedExposure = exposureParams.exposureCorrection - log(luminance)/0.693147180559945 - 3.263034405833794;
 
 	if (wantedExposure < previousExposure)
-		wantedExposure = mix(previousExposure, wantedExposure, 1. - exp(-animationTimerDelta * 100. * exposureParams.speedDarkBright)); // dark -> bright
+		wantedExposure = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * exposureParams.speedDarkBright)); // dark -> bright
 	else
-		wantedExposure = mix(previousExposure, wantedExposure, 1. - exp(-animationTimerDelta * 100. * exposureParams.speedBrightDark)); // bright -> dark
+		wantedExposure = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * exposureParams.speedBrightDark)); // bright -> dark
 
 	gl_FragColor = vec4(vec3(wantedExposure), 1.);
 }

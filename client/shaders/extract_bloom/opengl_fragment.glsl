@@ -23,6 +23,6 @@ void main(void)
 	// translate to linear colorspace (approximate)
 	color = pow(color, vec3(2.2));
 
-	color *= exposure * exposureParams.compensationFactor * bloomStrength;
+	color *= pow(2., exposure) * exposureParams.compensationFactor * bloomStrength;
 	gl_FragColor = vec4(color, 1.0); // force full alpha to avoid holes in the image.
 }
