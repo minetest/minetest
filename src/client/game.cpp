@@ -3600,16 +3600,16 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		} else if (an == 2) {
 			if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 					predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-				pp = p + facedir_dirs[param2];
+				pp = p + facedir_dirs[param2 % 32];
 			} else if (predicted_f.param_type_2 == CPT2_4DIR ||
 					predicted_f.param_type_2 == CPT2_COLORED_4DIR ) {
-				pp = p + fourdir_dirs[param2];
+				pp = p + fourdir_dirs[param2 % 4];
 			} else {
 				pp = p;
 			}
 		} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-			pp = p + wallmounted_dirs[param2];
+			pp = p + wallmounted_dirs[param2 % 8];
 		} else {
 			pp = p + v3s16(0, -1, 0);
 		}
