@@ -655,7 +655,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	f32 incH = 0.0f; // Horizontal (X, Z)
 	f32 incV = 0.0f; // Vertical (Y)
 	if ((!touching_ground && !free_move && !is_climbing && !in_liquid) ||
-			(!free_move && m_can_jump && control.jump)) {
+			(!free_move && m_can_jump && control.jump &&
+					movement_speed_jump * physics_override.jump != 0.0f)) {
 		// Jumping and falling
 		if (superspeed || (fast_move && control.aux1))
 			incH = movement_acceleration_fast * BS * dtime;
