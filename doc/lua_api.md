@@ -3661,6 +3661,16 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+* `offhand`: list containing the offhand wielded item.
+    * Is not created automatically, use `InvRef:set_size`
+    * Will be used for placements and secondary uses if the
+        main hand does not have any node_place_prediction, on_place
+        or on_secondary_use callbacks.
+    * Is passed to on_place and on_secondary_use callbacks; make sure
+        mods are aware of the itemstack not neccessarily being
+        located in the main hand.
+    *  The offhand item cannot have its own range or liquids_pointable and
+        will always reuse the characteristics from the hand item.
 
 Custom lists can be added and deleted with `InvRef:set_size(name, size)` like
 any other inventory.
@@ -9297,18 +9307,18 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     },
 
     on_place = function(itemstack, placer, pointed_thing),
-    -- When the 'place' key was pressed with the item in hand
+    -- When the 'place' key was pressed with the item one of the hands
     -- and a node was pointed at.
+    -- 'itemstack' may be the offhand item in cases where the main hand has
+    -- no on_place handler and no node_placement_prediction.
     -- Shall place item and return the leftover itemstack
     -- or nil to not modify the inventory.
     -- The placer may be any ObjectRef or nil.
     -- default: minetest.item_place
 
     on_secondary_use = function(itemstack, user, pointed_thing),
-    -- Same as on_place but called when not pointing at a node.
-    -- Function must return either nil if inventory shall not be modified,
-    -- or an itemstack to replace the original itemstack.
-    -- The user may be any ObjectRef or nil.
+    -- Same as on_place but called when not pointing at a node,
+    -- whereas `user` is the same as `placer` above.
     -- default: nil
 
     on_drop = function(itemstack, dropper, pos),

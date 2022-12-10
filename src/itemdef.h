@@ -121,6 +121,10 @@ struct ItemDefinition
 	// "" = no prediction
 	std::string node_placement_prediction;
 	std::optional<u8> place_param2;
+
+	bool has_on_place;
+	bool has_on_secondary_use;
+
 	bool wallmounted_rotate_vertical;
 
 	TouchInteraction touch_interaction;

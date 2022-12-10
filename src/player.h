@@ -226,6 +226,13 @@ public:
 
 	// Returns non-empty `selected` ItemStack. `hand` is a fallback, if specified
 	ItemStack &getWieldedItem(ItemStack *selected, ItemStack *hand) const;
+
+	// item currently in secondary hand is returned in `offhand`
+	// item to use for place / secondary_use (either main or offhand) is (optionally) returned in `place`
+	// return value: whether to use main or offhand for placing
+	bool getOffhandWieldedItem(ItemStack *offhand, ItemStack *place,
+			IItemDefManager *idef, const PointedThing &pointed) const;
+
 	void setWieldIndex(u16 index);
 	u16 getWieldIndex();
 
