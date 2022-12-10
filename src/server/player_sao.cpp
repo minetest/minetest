@@ -570,11 +570,26 @@ ItemStack PlayerSAO::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 	return m_player->getWieldedItem(selected, hand);
 }
 
+bool PlayerSAO::getOffhandWieldedItem(ItemStack *offhand, ItemStack *place, IItemDefManager *itemdef_manager, PointedThing pointed) const
+{
+	return m_player->getOffhandWieldedItem(offhand, place, itemdef_manager, pointed);
+}
+
 bool PlayerSAO::setWieldedItem(const ItemStack &item)
 {
 	InventoryList *mlist = m_player->inventory.getList(getWieldList());
 	if (mlist) {
 		mlist->changeItem(m_player->getWieldIndex(), item);
+		return true;
+	}
+	return false;
+}
+
+bool PlayerSAO::setOffhandWieldedItem(const ItemStack &item)
+{
+	InventoryList *olist = m_player->inventory.getList("offhand");
+	if (olist) {
+		olist->changeItem(0, item);
 		return true;
 	}
 	return false;

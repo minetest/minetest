@@ -45,6 +45,236 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
+// Returns the fractional part of x
+inline f32 my_modf(f32 x)
+{
+	f32 dummy;
+	return modff(x, &dummy);
+}
+
+WieldNode::WieldNode(HandIndex index, Client *client, scene::ISceneManager *mgr) :
+	m_index(index),
+	m_direction(index == MAINHAND ? +1 : -1),
+	m_client(client),
+	m_meshnode(new WieldMeshSceneNode(mgr, -1, false)),
+	m_player_light_color(0xFFFFFFFF)
+{
+	m_meshnode->setItem(ItemStack(), m_client);
+	m_meshnode->drop(); // mgr grabbed it
+}
+
+void WieldNode::step(f32 dtime)
+{
+	bool was_under_zero = m_change_timer < 0;
+	m_change_timer = MYMIN(m_change_timer + dtime, 0.125);
+
+	if (m_change_timer >= 0 && was_under_zero) {
+		m_meshnode->setItem(m_item_next, m_client);
+		m_meshnode->setNodeLightColor(m_player_light_color);
+	}
+
+	if (m_digging_button == -1)
+		return;
+
+	f32 offset = dtime * 3.5f;
+	float m_digging_anim_was = m_digging_anim;
+	m_digging_anim += offset;
+	if (m_digging_anim >= 1)
+	{
+		m_digging_anim = 0;
+		m_digging_button = -1;
+	}
+	float lim = 0.15;
+	if(m_digging_anim_was < lim && m_digging_anim >= lim)
+	{
+		if (m_digging_button == 0) {
+			m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
+		} else if(m_digging_button == 1) {
+			m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
+		}
+	}
+}
+
+static inline v2f dir(const v2f &pos_dist)
+{
+	f32 x = pos_dist.X - WIELDMESH_OFFSET_X;
+	f32 y = pos_dist.Y - WIELDMESH_OFFSET_Y;
+
+	f32 x_abs = std::fabs(x);
+	f32 y_abs = std::fabs(y);
+
+	if (x_abs >= y_abs) {
+		y *= (1.0f / x_abs);
+		x /= x_abs;
+	}
+
+	if (y_abs >= x_abs) {
+		x *= (1.0f / y_abs);
+		y /= y_abs;
+	}
+
+	return v2f(std::fabs(x), std::fabs(y));
+}
+
+void WieldNode::addArmInertia(f32 player_yaw, v3f camera_direction)
+{
+	m_cam_vel.X = std::fabs(rangelim(m_last_cam_pos.X - player_yaw,
+		-100.0f, 100.0f) / 0.016f) * 0.01f;
+	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - camera_direction.Y) / 0.016f);
+	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_offset.X);
+	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_offset.Y);
+
+	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
+		/*
+			The arm moves relative to the camera speed,
+			with an acceleration factor.
+		*/
+
+		if (m_cam_vel.X > 1.0f) {
+			if (m_cam_vel.X > m_cam_vel_old.X)
+				m_cam_vel_old.X = m_cam_vel.X;
+
+			f32 acc_X = 0.12f * (m_cam_vel.X - (gap_X * 0.1f));
+			m_offset.X += (m_last_cam_pos.X < player_yaw ? acc_X : -acc_X) * m_direction;
+
+			if (m_last_cam_pos.X != player_yaw)
+				m_last_cam_pos.X = player_yaw;
+
+			m_offset.X = rangelim(m_offset.X,
+				WIELDMESH_OFFSET_X - (WIELDMESH_AMPLITUDE_X * 0.5f),
+				WIELDMESH_OFFSET_X + (WIELDMESH_AMPLITUDE_X * 0.5f));
+		}
+
+		if (m_cam_vel.Y > 1.0f) {
+			if (m_cam_vel.Y > m_cam_vel_old.Y)
+				m_cam_vel_old.Y = m_cam_vel.Y;
+
+			f32 acc_Y = 0.12f * (m_cam_vel.Y - (gap_Y * 0.1f));
+			m_offset.Y +=
+				m_last_cam_pos.Y > camera_direction.Y ? acc_Y : -acc_Y;
+
+			if (m_last_cam_pos.Y != camera_direction.Y)
+				m_last_cam_pos.Y = camera_direction.Y;
+
+			m_offset.Y = rangelim(m_offset.Y,
+				WIELDMESH_OFFSET_Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
+				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
+		}
+
+		m_arm_dir = dir(m_offset);
+	} else {
+		/*
+			Now the arm gets back to its default position when the camera stops,
+			following a vector, with a smooth deceleration factor.
+		*/
+
+		f32 dec_X = 0.35f * (std::min(15.0f, m_cam_vel_old.X) * (1.0f +
+			(1.0f - m_arm_dir.X))) * (gap_X / 20.0f);
+
+		f32 dec_Y = 0.25f * (std::min(15.0f, m_cam_vel_old.Y) * (1.0f +
+			(1.0f - m_arm_dir.Y))) * (gap_Y / 15.0f);
+
+		if (gap_X < 0.1f)
+			m_cam_vel_old.X = 0.0f;
+
+		m_offset.X -=
+			m_offset.X > WIELDMESH_OFFSET_X ? dec_X : -dec_X;
+
+		if (gap_Y < 0.1f)
+			m_cam_vel_old.Y = 0.0f;
+
+		m_offset.Y -=
+			m_offset.Y > WIELDMESH_OFFSET_Y ? dec_Y : -dec_Y;
+	}
+}
+
+void WieldNode::update(video::SColor player_light_color, f32 view_bobbing_anim, f32 tool_reload_ratio)
+{
+	m_player_light_color = player_light_color;
+
+	// Position the wielded item
+	//v3f pos = v3f(45, -35, 65);
+	v3f pos = v3f(m_offset.X, m_offset.Y, 65);
+	//v3f rot = v3f(-100, 120, -100);
+	v3f rot = v3f(-100, 120, -100);
+
+	if (m_index == OFFHAND)
+		tool_reload_ratio = 1.0f;
+
+	pos.Y += fabs(m_change_timer)*320 - 40;
+	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
+	{
+		f32 frac = 1.0;
+		if(m_digging_anim > 0.5)
+			frac = 2.0 * (m_digging_anim - 0.5);
+		// This value starts from 1 and settles to 0
+		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
+		//f32 ratiothing2 = pow(ratiothing, 0.5f);
+		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
+		pos.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
+		//rot.Z += frac * 5.0 * ratiothing2;
+		pos.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
+		rot.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
+		//rot.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
+		//rot.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
+	}
+	if (m_digging_button != -1)
+	{
+		f32 digfrac = m_digging_anim;
+		pos.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
+		pos.Y += 24 * sin(digfrac * 1.8 * M_PI);
+		pos.Z += 25 * 0.5;
+
+		// Euler angles are PURE EVIL, so why not use quaternions?
+		core::quaternion quat_begin(rot * core::DEGTORAD);
+		//core::quaternion quat_end(v3f(s * 80, 30, s * 100) * core::DEGTORAD);
+		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
+		core::quaternion quat_slerp;
+		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+		quat_slerp.W *= m_direction;
+		quat_slerp.X *= m_direction;
+		quat_slerp.toEuler(rot);
+		rot *= core::RADTODEG;
+		pos.X *= m_direction;
+	} else {
+		f32 bobfrac = my_modf(view_bobbing_anim);
+		pos.X *= m_direction;
+		pos.X -= sin(bobfrac*M_PI*2.0+M_PI*m_index) * 3.0 * m_direction;
+		pos.Y += sin(my_modf(bobfrac*2.0)*M_PI+M_PI*m_index) * 3.0;
+	}
+
+	m_meshnode->setPosition(pos);
+	m_meshnode->setRotation(rot);
+
+	m_meshnode->setNodeLightColor(m_player_light_color);
+
+	if (m_index == OFFHAND) {
+		m_meshnode->setVisible(
+			m_change_timer > 0 ? !m_item_next.name.empty() : m_item_old);
+	}
+
+}
+
+void WieldNode::setDigging(s32 button)
+{
+	if (m_digging_button == -1)
+		m_digging_button = button;
+}
+
+void WieldNode::wield(const ItemStack &item)
+{
+	if (item.name == m_item_next.name &&
+			item.metadata == m_item_next.metadata)
+		return;
+
+	m_item_old = m_item_next.name != "";
+	m_item_next = item;
+	if (m_change_timer > 0)
+		m_change_timer = -m_change_timer;
+	else if (m_change_timer == 0)
+		m_change_timer = -0.001;
+}
+
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client),
@@ -62,9 +292,9 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
-	m_wieldnode->setItem(ItemStack(), m_client);
-	m_wieldnode->drop(); // m_wieldmgr grabbed it
+
+	m_wieldnodes[MAINHAND] = new WieldNode(MAINHAND, m_client, m_wieldmgr);
+	m_wieldnodes[ OFFHAND] = new WieldNode( OFFHAND, m_client, m_wieldmgr);
 
 	/* TODO: Add a callback function so these can be updated when a setting
 	 *       changes.  At this point in time it doesn't matter (e.g. /set
@@ -87,6 +317,8 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 
 Camera::~Camera()
 {
+	for (auto node : m_wieldnodes)
+		delete node;
 	m_wieldmgr->drop();
 }
 
@@ -144,6 +376,9 @@ inline f32 my_modf(f32 x)
 
 void Camera::step(f32 dtime)
 {
+	for (auto node : m_wieldnodes)
+		node->step(dtime);
+
 	if(m_view_bobbing_fall > 0)
 	{
 		m_view_bobbing_fall -= 3 * dtime;
@@ -218,97 +453,10 @@ void Camera::step(f32 dtime)
 	}
 }
 
-static inline v2f dir(const v2f &pos_dist)
-{
-	f32 x = pos_dist.X - WIELDMESH_OFFSET_X;
-	f32 y = pos_dist.Y - WIELDMESH_OFFSET_Y;
-
-	f32 x_abs = std::fabs(x);
-	f32 y_abs = std::fabs(y);
-
-	if (x_abs >= y_abs) {
-		y *= (1.0f / x_abs);
-		x /= x_abs;
-	}
-
-	if (y_abs >= x_abs) {
-		x *= (1.0f / y_abs);
-		y /= y_abs;
-	}
-
-	return v2f(std::fabs(x), std::fabs(y));
-}
-
 void Camera::addArmInertia(f32 player_yaw)
 {
-	m_cam_vel.X = std::fabs(rangelim(m_last_cam_pos.X - player_yaw,
-		-100.0f, 100.0f) / 0.016f) * 0.01f;
-	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / 0.016f);
-	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
-	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
-
-	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
-		/*
-		    The arm moves relative to the camera speed,
-		    with an acceleration factor.
-		*/
-
-		if (m_cam_vel.X > 1.0f) {
-			if (m_cam_vel.X > m_cam_vel_old.X)
-				m_cam_vel_old.X = m_cam_vel.X;
-
-			f32 acc_X = 0.12f * (m_cam_vel.X - (gap_X * 0.1f));
-			m_wieldmesh_offset.X += m_last_cam_pos.X < player_yaw ? acc_X : -acc_X;
-
-			if (m_last_cam_pos.X != player_yaw)
-				m_last_cam_pos.X = player_yaw;
-
-			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X,
-				WIELDMESH_OFFSET_X - (WIELDMESH_AMPLITUDE_X * 0.5f),
-				WIELDMESH_OFFSET_X + (WIELDMESH_AMPLITUDE_X * 0.5f));
-		}
-
-		if (m_cam_vel.Y > 1.0f) {
-			if (m_cam_vel.Y > m_cam_vel_old.Y)
-				m_cam_vel_old.Y = m_cam_vel.Y;
-
-			f32 acc_Y = 0.12f * (m_cam_vel.Y - (gap_Y * 0.1f));
-			m_wieldmesh_offset.Y +=
-				m_last_cam_pos.Y > m_camera_direction.Y ? acc_Y : -acc_Y;
-
-			if (m_last_cam_pos.Y != m_camera_direction.Y)
-				m_last_cam_pos.Y = m_camera_direction.Y;
-
-			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y,
-				WIELDMESH_OFFSET_Y - (WIELDMESH_AMPLITUDE_Y * 0.5f),
-				WIELDMESH_OFFSET_Y + (WIELDMESH_AMPLITUDE_Y * 0.5f));
-		}
-
-		m_arm_dir = dir(m_wieldmesh_offset);
-	} else {
-		/*
-		    Now the arm gets back to its default position when the camera stops,
-		    following a vector, with a smooth deceleration factor.
-		*/
-
-		f32 dec_X = 0.35f * (std::min(15.0f, m_cam_vel_old.X) * (1.0f +
-			(1.0f - m_arm_dir.X))) * (gap_X / 20.0f);
-
-		f32 dec_Y = 0.25f * (std::min(15.0f, m_cam_vel_old.Y) * (1.0f +
-			(1.0f - m_arm_dir.Y))) * (gap_Y / 15.0f);
-
-		if (gap_X < 0.1f)
-			m_cam_vel_old.X = 0.0f;
-
-		m_wieldmesh_offset.X -=
-			m_wieldmesh_offset.X > WIELDMESH_OFFSET_X ? dec_X : -dec_X;
-
-		if (gap_Y < 0.1f)
-			m_cam_vel_old.Y = 0.0f;
-
-		m_wieldmesh_offset.Y -=
-			m_wieldmesh_offset.Y > WIELDMESH_OFFSET_Y ? dec_Y : -dec_Y;
-	}
+	for (auto node : m_wieldnodes)
+		node->addArmInertia(player_yaw, m_camera_direction);
 }
 
 void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
@@ -530,46 +678,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	if (m_arm_inertia)
 		addArmInertia(yaw);
 
-	// Position the wielded item
-	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
-	v3f wield_rotation = v3f(-100, 120, -100);
-	wield_position.Y += std::abs(m_wield_change_timer)*320 - 40;
-	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
-	{
-		f32 frac = 1.0;
-		if(m_digging_anim > 0.5)
-			frac = 2.0 * (m_digging_anim - 0.5);
-		// This value starts from 1 and settles to 0
-		f32 ratiothing = std::pow((1.0f - tool_reload_ratio), 0.5f);
-		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0f * std::pow(ratiothing2, 1.7f);
-		wield_position.X -= frac * 35.0f * std::pow(ratiothing2, 1.1f);
-		wield_rotation.Y += frac * 70.0f * std::pow(ratiothing2, 1.4f);
-	}
-	if (m_digging_button != -1)
-	{
-		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * std::sin(std::pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * std::sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
-
-		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
-		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, std::sin(digfrac * M_PI));
-		quat_slerp.toEuler(wield_rotation);
-		wield_rotation *= core::RADTODEG;
-	} else {
-		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= std::sin(bobfrac*M_PI*2.0) * 3.0;
-		wield_position.Y += std::sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
-	}
-	m_wieldnode->setPosition(wield_position);
-	m_wieldnode->setRotation(wield_rotation);
-
 	m_player_light_color = player->light_color;
-	m_wieldnode->setNodeLightColor(m_player_light_color);
+
+	for (auto node : m_wieldnodes)
+		node->update(m_player_light_color, m_view_bobbing_anim, tool_reload_ratio);
 
 	// Set render distance
 	updateViewingRange();
@@ -611,22 +723,14 @@ void Camera::updateViewingRange()
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
 }
 
-void Camera::setDigging(s32 button)
+void Camera::setDigging(s32 button, HandIndex hand)
 {
-	if (m_digging_button == -1)
-		m_digging_button = button;
+	m_wieldnodes[hand]->setDigging(button);
 }
 
-void Camera::wield(const ItemStack &item)
+void Camera::wield(const ItemStack &item, HandIndex hand)
 {
-	if (item.name != m_wield_item_next.name ||
-			item.metadata != m_wield_item_next.metadata) {
-		m_wield_item_next = item;
-		if (m_wield_change_timer > 0)
-			m_wield_change_timer = -m_wield_change_timer;
-		else if (m_wield_change_timer == 0)
-			m_wield_change_timer = -0.001;
-	}
+	m_wieldnodes[hand]->wield(item);
 }
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)

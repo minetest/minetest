@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "unit_sao.h"
 #include "util/numeric.h"
+#include "util/pointedthing.h"
 
 /*
 	PlayerSAO needs some internals exposed.
@@ -134,7 +135,9 @@ public:
 	std::string getWieldList() const override { return "main"; }
 	u16 getWieldIndex() const override;
 	ItemStack getWieldedItem(ItemStack *selected, ItemStack *hand = nullptr) const override;
+	bool getOffhandWieldedItem(ItemStack *offhand, ItemStack *place, IItemDefManager *itemdef_manager, PointedThing pointed) const;
 	bool setWieldedItem(const ItemStack &item) override;
+	bool setOffhandWieldedItem(const ItemStack &item);
 
 	/*
 		PlayerSAO-specific

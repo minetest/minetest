@@ -781,7 +781,8 @@ protected:
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed,
-			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
+			const ItemStack &selected_item, const ItemStack &hand_item,
+			const ItemStack &place_item, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
@@ -1799,19 +1800,19 @@ inline bool Game::handleCallbacks()
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
-				       &g_menumgr, client, texture_src))->drop();
+					   &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
 		(new GUIVolumeChange(guienv, guiroot, -1,
-				     &g_menumgr, texture_src))->drop();
+					 &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
 		(new GUIKeyChangeMenu(guienv, guiroot, -1,
-				      &g_menumgr, texture_src))->drop();
+					  &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
 
@@ -3229,7 +3230,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		Calculate what block is the crosshair pointing to
 	*/
 
-	ItemStack selected_item, hand_item;
+	ItemStack selected_item, hand_item, offhand_item, place_item;
 	const ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
 
 	const ItemDefinition &selected_def = selected_item.getDefinition(itemdef_manager);
@@ -3268,6 +3269,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 			selected_def.pointabilities,
 			!runData.btn_down_for_dig,
 			camera_offset);
+
+	player->getOffhandWieldedItem(&offhand_item, &place_item, itemdef_manager, pointed);
 
 	if (pointed != runData.pointed_old)
 		infostream << "Pointing at " << pointed.dump() << std::endl;
@@ -3337,7 +3340,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 				!client->getScript()->on_item_use(selected_item, pointed)))
 			client->interact(INTERACT_USE, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
-		handlePointingAtNode(pointed, selected_item, hand_item, dtime);
+		handlePointingAtNode(pointed, selected_item, hand_item, place_item, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		v3f player_position  = player->getPosition();
 		bool basic_debug_allowed = client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG);
@@ -3350,13 +3353,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		if (wasKeyPressed(KeyType::DIG) && client->modsLoaded())
 			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (wasKeyPressed(KeyType::PLACE)) {
-		handlePointingAtNothing(selected_item);
+		handlePointingAtNothing(place_item);
 	}
 
 	runData.pointed_old = pointed;
 
 	if (runData.punching || wasKeyPressed(KeyType::DIG))
-		camera->setDigging(0); // dig animation
+		camera->setDigging(0, MAINHAND); // dig animation
 
 	input->clearWasKeyPressed();
 	input->clearWasKeyReleased();
@@ -3481,7 +3484,8 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 
 
 void Game::handlePointingAtNode(const PointedThing &pointed,
-	const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime)
+	const ItemStack &selected_item, const ItemStack &hand_item,
+	const ItemStack &place_item, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighborpos = pointed.node_abovesurface;
@@ -3519,7 +3523,10 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		infostream << "Place button pressed while looking at ground" << std::endl;
 
 		// Placing animation (always shown for feedback)
-		camera->setDigging(1);
+		if (place_item == selected_item)
+			camera->setDigging(1, MAINHAND);
+		else
+			camera->setDigging(1, OFFHAND);
 
 		soundmaker->m_player_rightpunch_sound = SoundSpec();
 
@@ -3527,8 +3534,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// make that happen
 		// And also set the sound and send the interact
 		// But first check for meta formspec and rightclickable
-		auto &def = selected_item.getDefinition(itemdef_manager);
-		bool placed = nodePlacement(def, selected_item, nodepos, neighborpos,
+		auto &def = place_item.getDefinition(itemdef_manager);
+		bool placed = nodePlacement(def, place_item, nodepos, neighborpos,
 			pointed, meta);
 
 		if (placed && client->modsLoaded())
@@ -3950,7 +3957,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		client->setCrack(-1, nodepos);
 	}
 
-	camera->setDigging(0);  // Dig animation
+	camera->setDigging(0, MAINHAND);  // Dig animation
 }
 
 void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
@@ -3997,7 +4004,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		direct_brightness = client->getEnv().getClientMap()
 				.getBackgroundBrightness(MYMIN(runData.fog_range * 1.2, 60 * BS),
 					daynight_ratio, (int)(old_brightness * 255.5), &sunlight_seen)
-				    / 255.0;
+					/ 255.0;
 	}
 
 	float time_of_day_smooth = runData.time_of_day_smooth;
@@ -4068,9 +4075,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (client->updateWieldedItem()) {
 		// Update wielded tool
-		ItemStack selected_item, hand_item;
+		ItemStack selected_item, hand_item, offhand_item;
 		ItemStack &tool_item = player->getWieldedItem(&selected_item, &hand_item);
-		camera->wield(tool_item);
+		camera->wield(tool_item, MAINHAND);
+		player->getOffhandWieldedItem(&offhand_item, nullptr, itemdef_manager, PointedThing());
+		camera->wield(offhand_item, OFFHAND);
 	}
 
 	/*

@@ -105,6 +105,46 @@ ItemStack &Player::getWieldedItem(ItemStack *selected, ItemStack *hand) const
 	return (hand && selected->name.empty()) ? *hand : *selected;
 }
 
+bool Player::getOffhandWieldedItem(ItemStack *offhand, ItemStack *place, IItemDefManager *idef, const PointedThing &pointed) const
+{
+	assert(offhand);
+
+	ItemStack main;
+
+	const InventoryList *mlist = inventory.getList("main");
+	const InventoryList *olist = inventory.getList("offhand");
+
+	if (olist)
+		*offhand = olist->getItem(0);
+
+	if (mlist && m_wield_index < mlist->getSize())
+		main = mlist->getItem(m_wield_index);
+
+	const ItemDefinition &main_def = main.getDefinition(idef);
+	const ItemDefinition &offhand_def = offhand->getDefinition(idef);
+	bool main_usable, offhand_usable;
+
+	// figure out which item to use for placements
+
+	if (pointed.type == POINTEDTHING_NODE) {
+		// an item can be used on nodes if it has a place handler or prediction
+		main_usable = main_def.has_on_place || main_def.node_placement_prediction != "";
+		offhand_usable = offhand_def.has_on_place || offhand_def.node_placement_prediction != "";
+	} else {
+		// an item can be used on anything else if it has a secondary use handler
+		main_usable = main_def.has_on_secondary_use;
+		offhand_usable = offhand_def.has_on_secondary_use;
+	}
+
+	// main hand has priority
+	bool use_offhand = offhand_usable && !main_usable;
+
+	if (place)
+		*place = use_offhand ? *offhand : main;
+
+	return use_offhand;
+}
+
 u32 Player::addHud(HudElement *toadd)
 {
 	MutexAutoLock lock(m_mutex);
