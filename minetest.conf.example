@@ -10,7 +10,7 @@
 #    to the program, eg. "minetest.exe --config ../minetest.conf.example".
 
 #    Further documentation:
-#    http://wiki.minetest.net/
+#    https://wiki.minetest.net/
 
 #
 # Controls
@@ -79,6 +79,11 @@
 #    The length in pixels it takes for touch screen interaction to start.
 #    type: int min: 0 max: 100
 # touchscreen_threshold = 20
+
+#    Use crosshair to select object instead of whole screen.
+#    If enabled, a crosshair will be shown and will be used for selecting object.
+#    type: bool
+# touch_use_crosshair = false
 
 #    (Android) Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
@@ -375,6 +380,16 @@
 #    type: bool
 # tone_mapping = false
 
+#    Adjust the saturation (or vividness) of the scene
+#    Values
+#    < 1.0 decrease saturation
+#    > 1.0 increase saturation
+#    1.0 = unchanged saturation
+#    0.0 = black and white
+#    (Tone mapping needs to be enabled.)
+#    type: float min: 0 max: 5
+# saturation = 1.0
+
 ### Waving Nodes
 
 #    Set to true to enable waving leaves.
@@ -472,8 +487,49 @@
 #    Set the tilt of Sun/Moon orbit in degrees.
 #    Value of 0 means no tilt / vertical orbit.
 #    Minimum value: 0.0; maximum value: 60.0
-#    type: float min: 0 max: 60
+#    type: float min: -60 max: 60
 # shadow_sky_body_orbit_tilt = 0.0
+
+### Post processing
+
+#    Set the exposure compensation factor.
+#    This factor is applied to linear color value 
+#    before all other post-processing effects.
+#    Value of 1.0 (default) means no exposure compensation.
+#    Range: from 0.1 to 10.0
+#    type: float min: 0.1 max: 10
+# exposure_factor = 1.0
+
+### Bloom
+
+#    Set to true to enable bloom effect.
+#    Bright colors will bleed over the neighboring objects.
+#    type: bool
+# enable_bloom = false
+
+#    Set to true to render debugging breakdown of the bloom effect.
+#    In debug mode, the screen is split into 4 quadrants: 
+#    top-left - processed base image, top-right - final image
+#    bottom-left - raw base image, bottom-right - bloom texture.
+#    type: bool
+# enable_bloom_debug = false
+
+#    Defines how much bloom is applied to the rendered image
+#    Smaller values make bloom more subtle
+#    Range: from 0.01 to 1.0, default: 0.05
+#    type: float min: 0.01 max: 1
+# bloom_intensity = 0.05
+
+#    Defines the magnitude of bloom overexposure.
+#    Range: from 0.1 to 10.0, default: 1.0
+#    type: float min: 0.1 max: 10
+# bloom_strength_factor = 1.0
+
+#    Logical value that controls how far the bloom effect spreads
+#    from the bright objects.
+#    Range: from 0.1 to 8, default: 1
+#    type: float min: 0.1 max: 8
+# bloom_radius = 1
 
 ## Audio
 
@@ -628,6 +684,22 @@
 #    If disabled, new accounts will be registered automatically when logging in.
 #    type: bool
 # enable_split_login_register = true
+
+#    URL to JSON file which provides information about the newest Minetest release
+#    type: string
+# update_information_url = https://www.minetest.net/release_info.json
+
+#    Unix timestamp (integer) of when the client last checked for an update
+#    Set this value to "disabled" to never check for updates.
+#    type: string
+# update_last_checked =
+
+#    Version number which was last seen during an update check.
+#
+#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
+#    Ex: 5.5.0 is 005005000
+#    type: int
+# update_last_known = 0
 
 ## Server
 
@@ -2871,8 +2943,9 @@
 #    type: int min: 1 max: 65535
 # max_block_send_distance = 12
 
-#    Maximum number of forceloaded mapblocks.
-#    type: int min: 0
+#    Default maximum number of forceloaded mapblocks.
+#    Set this to -1 to disable the limit.
+#    type: int min: -1
 # max_forceloaded_blocks = 16
 
 #    Interval of sending time of day to clients, stated in seconds.
@@ -3166,359 +3239,359 @@
 # enable_sound = true
 
 #    Key for moving the player forward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_forward = KEY_KEY_W
 
 #    Key for moving the player backward.
 #    Will also disable autoforward, when active.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_backward = KEY_KEY_S
 
 #    Key for moving the player left.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_left = KEY_KEY_A
 
 #    Key for moving the player right.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_right = KEY_KEY_D
 
 #    Key for jumping.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_jump = KEY_SPACE
 
 #    Key for sneaking.
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_sneak = KEY_LSHIFT
 
 #    Key for digging.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_dig = KEY_LBUTTON
 
 #    Key for placing.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_place = KEY_RBUTTON
 
 #    Key for opening the inventory.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_inventory = KEY_KEY_I
 
 #    Key for moving fast in fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_aux1 = KEY_KEY_E
 
 #    Key for opening the chat window.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_chat = KEY_KEY_T
 
 #    Key for opening the chat window to type commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cmd = /
 
 #    Key for opening the chat window to type local commands.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cmd_local = .
 
 #    Key for toggling unlimited view range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
-# keymap_rangeselect = KEY_KEY_R
+# keymap_rangeselect =
 
 #    Key for toggling flying.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_freemove = KEY_KEY_K
 
 #    Key for toggling pitch move mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_pitchmove = KEY_KEY_P
 
 #    Key for toggling fast mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_fastmove = KEY_KEY_J
 
 #    Key for toggling noclip mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_noclip = KEY_KEY_H
 
 #    Key for selecting the next item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_hotbar_next = KEY_KEY_N
 
 #    Key for selecting the previous item in the hotbar.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_hotbar_previous = KEY_KEY_B
 
 #    Key for muting the game.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_mute = KEY_KEY_M
 
 #    Key for increasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_increase_volume =
 
 #    Key for decreasing the volume.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_volume =
 
 #    Key for toggling autoforward.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_autoforward =
 
 #    Key for toggling cinematic mode.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_cinematic =
 
 #    Key for toggling display of minimap.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_minimap = KEY_KEY_V
 
 #    Key for taking screenshots.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_screenshot = KEY_F12
 
 #    Key for dropping the currently selected item.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_drop = KEY_KEY_Q
 
 #    Key to use view zoom when possible.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_zoom = KEY_KEY_Z
 
 #    Key for selecting the first hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot1 = KEY_KEY_1
 
 #    Key for selecting the second hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot2 = KEY_KEY_2
 
 #    Key for selecting the third hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot3 = KEY_KEY_3
 
 #    Key for selecting the fourth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot4 = KEY_KEY_4
 
 #    Key for selecting the fifth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot5 = KEY_KEY_5
 
 #    Key for selecting the sixth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot6 = KEY_KEY_6
 
 #    Key for selecting the seventh hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot7 = KEY_KEY_7
 
 #    Key for selecting the eighth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot8 = KEY_KEY_8
 
 #    Key for selecting the ninth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot9 = KEY_KEY_9
 
 #    Key for selecting the tenth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot10 = KEY_KEY_0
 
 #    Key for selecting the 11th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot11 =
 
 #    Key for selecting the 12th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot12 =
 
 #    Key for selecting the 13th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot13 =
 
 #    Key for selecting the 14th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot14 =
 
 #    Key for selecting the 15th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot15 =
 
 #    Key for selecting the 16th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot16 =
 
 #    Key for selecting the 17th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot17 =
 
 #    Key for selecting the 18th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot18 =
 
 #    Key for selecting the 19th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot19 =
 
 #    Key for selecting the 20th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot20 =
 
 #    Key for selecting the 21st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot21 =
 
 #    Key for selecting the 22nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot22 =
 
 #    Key for selecting the 23rd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot23 =
 
 #    Key for selecting the 24th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot24 =
 
 #    Key for selecting the 25th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot25 =
 
 #    Key for selecting the 26th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot26 =
 
 #    Key for selecting the 27th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot27 =
 
 #    Key for selecting the 28th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot28 =
 
 #    Key for selecting the 29th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot29 =
 
 #    Key for selecting the 30th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot30 =
 
 #    Key for selecting the 31st hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot31 =
 
 #    Key for selecting the 32nd hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_slot32 =
 
 #    Key for toggling the display of the HUD.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_hud = KEY_F1
 
 #    Key for toggling the display of chat.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_chat = KEY_F2
 
 #    Key for toggling the display of the large chat console.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_console = KEY_F10
 
 #    Key for toggling the display of fog.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_force_fog_off = KEY_F3
 
 #    Key for toggling the camera update. Only used for development
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_update_camera =
 
 #    Key for toggling the display of debug info.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_debug = KEY_F5
 
 #    Key for toggling the display of the profiler. Used for development.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_toggle_profiler = KEY_F6
 
 #    Key for switching between first- and third-person camera.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_camera_mode = KEY_KEY_C
 
 #    Key for increasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_increase_viewing_range_min = +
 
 #    Key for decreasing the viewing range.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
 
