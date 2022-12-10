@@ -1,10 +1,3 @@
-if _G.jit.version_num < 20100 then
-	-- debug.getmetatable is too slow.
-	_G.core.log("warning", "Your LuaJIT version is too old to support " ..
-			"the PcgRandom FFI override")
-	return
-end
-
 local ffi_shared = ...
 local ffi = ffi_shared.ffi
 local ie = ffi_shared.insecure_environment
