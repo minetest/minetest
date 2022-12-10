@@ -485,6 +485,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_can_jump = false;
 	}
 
+	// Prevent sliding on the ground when jump speed is 0
+	m_can_jump = m_can_jump && jumpspeed != 0.0f;
+
 	// Autojump
 	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }
@@ -655,8 +658,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	f32 incH = 0.0f; // Horizontal (X, Z)
 	f32 incV = 0.0f; // Vertical (Y)
 	if ((!touching_ground && !free_move && !is_climbing && !in_liquid) ||
-			(!free_move && m_can_jump && control.jump &&
-					movement_speed_jump * physics_override.jump != 0.0f)) {
+			(!free_move && m_can_jump && control.jump)) {
 		// Jumping and falling
 		if (superspeed || (fast_move && control.aux1))
 			incH = movement_acceleration_fast * BS * dtime;
