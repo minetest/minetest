@@ -9,6 +9,12 @@ if not _G.core.global_exists("jit") then
 	return
 end
 
+if _G.jit.version_num < 20100 then
+	_G.core.log("warning",
+		"FFI implementations are disabled on LuaJIT versions before 2.1.")
+	return
+end
+
 local has_ffi, ffi = _G.pcall(ie.require, "ffi")
 if not has_ffi then
 	_G.core.log("warning",
