@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2022-12-09 16:50+0000\n"
 "Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -115,34 +115,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Сервер запросил переподключение:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr "Доступна новая версия $1"
-
-#: builtin/mainmenu/common.lua
-msgid "Client Mods"
-msgstr "Клиентские дополнения"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-"Установленная версия: $1\n"
-"Новая версия: $2\n"
-"Посетите страницу $3, чтобы узнать, как получить новейшую версию и быть "
-"осведомлённым о последних возможностях и исправлениях."
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr "Позже"
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr "Никогда"
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Несоответствие версии протокола. "
 
@@ -153,10 +125,6 @@ msgstr "Сервер требует протокол версии $1. "
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Сервер поддерживает версии протокола с $1 по $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr "Посетить страницу в сети"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -315,8 +283,22 @@ msgid "Downloading..."
 msgstr "Загрузка..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Не удалось загрузить $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Не удалось загрузить $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Установка мода: неподдерживаемый тип файла или повреждённый архив"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -333,10 +315,6 @@ msgstr "Установить $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Установить недостающие зависимости"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Установка мода: неподдерживаемый тип файла или повреждённый архив"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -669,6 +647,10 @@ msgid "Browse"
 msgstr "Обзор"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Client Mods"
+msgstr "Клиентские дополнения"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
 msgstr "Содержимое: Игры"
 
@@ -791,6 +773,34 @@ msgstr "Базовый"
 msgid "eased"
 msgstr "облегчённый"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "Доступна новая версия $1"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Установленная версия: $1\n"
+"Новая версия: $2\n"
+"Посетите страницу $3, чтобы узнать, как получить новейшую версию и быть "
+"осведомлённым о последних возможностях и исправлениях."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Позже"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Никогда"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Посетить страницу в сети"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (включено)"
@@ -804,34 +814,25 @@ msgid "Failed to install $1 to $2"
 msgstr "Невозможно установить $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Установка мода: не удаётся определить название мода для «$1»"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Установка дополнения: не удаётся найти подходящую папку для набора модов «$1»"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr ""
 "Установка мода: не удаётся найти подходящий каталог для мода или пакета модов"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a texture pack"
-msgstr "Не удаётся установить $1 как набор текстур"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Не удаётся установить игру как $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
 msgstr "Не удаётся установить мод как $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Не удаётся установить пакет модов как $1"
+msgid "Unable to install a $1 as a texture pack"
+msgstr "Не удаётся установить $1 как набор текстур"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -861,6 +862,10 @@ msgstr "Активный отрисовщик:"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Основные разработчики"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1982,6 +1987,28 @@ msgstr "Миникарта в поверхностном режиме, увел�
 msgid "Minimap in texture mode"
 msgstr "Минимальный размер текстуры"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Нет жёстких зависимостей"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Не удалось открыть веб-страницу"
@@ -2098,7 +2125,7 @@ msgstr "Пред. предмет"
 msgid "Range select"
 msgstr "Дальность прорисовки"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Снимок экрана"
 
@@ -2440,6 +2467,17 @@ msgstr ""
 "элементов интерфейса."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2564,10 +2602,6 @@ msgid "Audio"
 msgstr "Звук"
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Автоматическая кнопка вперед"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr "Автоматический подъем на одиночные ноды."
 
@@ -2584,16 +2618,8 @@ msgid "Autoscaling mode"
 msgstr "Режим автоматического масштабирования"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Клавиша Aux1"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "Клавиша Aux1 для подъема/спуска"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Клавиша назад"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2634,6 +2660,23 @@ msgstr "Шум биомов"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Оптимизированное расстояние отправки блока"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Радиус облаков"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2688,10 +2731,6 @@ msgstr "Сглаживание камеры"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Сглаживание камеры в кинематографическом режиме"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Кнопка обновления камеры"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2758,10 +2797,6 @@ msgid "Chat font size"
 msgstr "Размер шрифта чата"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Кнопка чата"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Уровень журнала чата"
 
@@ -2782,10 +2817,6 @@ msgid "Chat message max length"
 msgstr "Предельная длина сообщения в чате"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Кнопка переключения чата"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "Сетевые ссылки в чате"
 
@@ -2796,10 +2827,6 @@ msgstr "Размер куска"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Кинематографический режим"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Кнопка переключения в кинематографический режим"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2898,10 +2925,6 @@ msgstr ""
 "Разделённый запятыми список доверенных модов, которым разрешён\n"
 "доступ к небезопасным функциям, даже когда включена защита модов (через "
 "request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Команда"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3065,10 +3088,6 @@ msgid "Damage"
 msgstr "Урон"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Клавиша переключения показа отладочной информации"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Порог размера файла журнала отладки"
 
@@ -3079,10 +3098,6 @@ msgstr "Отладочный уровень"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr "Отладка"
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Клавиша уменьшения громкости"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3103,6 +3118,13 @@ msgid ""
 msgstr ""
 "Игра по умолчанию при создании нового мира.\n"
 "Будет переопределена при создании мира из главного меню."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Предельное количество принудительно загруженных блоков."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3154,6 +3176,13 @@ msgstr ""
 "Определяет полный размер пещер, меньшие значения создают большие пещеры."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Определяет крупномасштабное строение каналов рек."
 
@@ -3168,6 +3197,12 @@ msgstr "Определяет базовый уровень земли."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Определяет глубину русла реки."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3246,10 +3281,6 @@ msgid "Developer Options"
 msgstr "Настройки для разработчиков"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Кнопка копать"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Частицы при рытье"
 
@@ -3287,10 +3318,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Двойное нажатие на прыжок включает режим полёта."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Кнопка выброса блока"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "Записывать отладочные данные картогенератора."
 
@@ -3305,6 +3332,15 @@ msgstr "Минимальная Y подземелья"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Шум подземелья"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Включить все"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3497,8 +3533,9 @@ msgid "Entity methods"
 msgstr "Методы сущностей"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3511,6 +3548,10 @@ msgstr ""
 " парящих островов по-умолчанию.\n"
 "Значения < 1.0 (например, 0.25) задают более точный уровень поверхности\n"
 "с более плоскими низинами, подходит для массивного уровня парящих островов."
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3535,10 +3576,6 @@ msgstr "Коэффициент покачивания при падении"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "Путь к резервному шрифту"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Клавиша ускорения"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3653,10 +3690,6 @@ msgid "Floatland water level"
 msgstr "Уровень воды на парящих островах"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Клавиша полёта"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Полёт"
 
@@ -3667,10 +3700,6 @@ msgstr "Туман"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr "Граница тумана"
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Клавиша переключения тумана"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
@@ -3778,10 +3807,6 @@ msgstr "Цвет фона формы в полноэкранном режиме 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr "Непрозрачность фона формы в полноэкранном режиме (от 0 до 255)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Клавиша вперёд"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3923,10 +3948,6 @@ msgid "HUD scaling"
 msgstr "Масштабирование игровой оболочки"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "Клавиша переключения игрового интерфейса"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4027,142 +4048,6 @@ msgid ""
 msgstr ""
 "Горизонтальное и вертикальное ускорение на земле или при лазании\n"
 "в нодах за секунду."
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "Следующий предмет на горячей панели"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "Предыдущий предмет на горячей панели"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "Быстрая кнопка 1"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "Быстрая кнопка 10"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "Быстрая кнопка 11"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "Быстрая кнопка 12"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "Быстрая кнопка 13"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "Быстрая кнопка 14"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "Быстрая кнопка 15"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "Быстрая кнопка 16"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "Быстрая кнопка 17"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "Быстрая кнопка 18"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "Быстрая кнопка 19"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "Быстрая кнопка 2"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "Быстрая кнопка 20"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "Быстрая кнопка 21"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "Быстрая кнопка 22"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "Быстрая кнопка 23"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "Быстрая кнопка 24"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "Быстрая кнопка 25"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "Быстрая кнопка 26"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "Быстрая кнопка 27"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "Быстрая кнопка 28"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "Быстрая кнопка 29"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "Быстрая кнопка 3"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "Быстрая кнопка 30"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "Быстрая кнопка 31"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "Быстрая кнопка 32"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "Быстрая кнопка 4"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "Быстрая кнопка 5"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "Быстрая кнопка 6"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "Быстрая кнопка 7"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "Быстрая кнопка 8"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "Быстрая кнопка 9"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4375,10 +4260,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr "Высота внутриигрового чата, между 0.1 (10%) и 1.0 (100%)."
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Клавиша увеличения громкости"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "Начальная вертикальная скорость при прыжках в нодах в секунду."
 
@@ -4428,10 +4309,6 @@ msgstr "Промежуток отправки клиентам сведений 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Анимация предметов в инвентаре"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Кнопка открытия инвентаря"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4556,729 +4433,8 @@ msgid "Julia z"
 msgstr "Жюлиа z"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Кнопка прыжка"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Скорость прыжков"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша уменьшения зоны видимости.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша уменьшения громкости.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша копания.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша, чтобы выбросить выбранный предмет.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша увеличения зоны видимости.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша увеличения громкости.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша прыжка.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша, включающая режим быстрого перемещения.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша движения назад.\n"
-"При активации также отключает автобег.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша движения вперёд.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша движения влево.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша движения вправо.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша отключения звука в игре.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша открытия окна чата для ввода команды.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша открытия окна чата для ввода локальных команд.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша открытия окна чата.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша открытия инвентаря.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша размещения.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 11 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 12 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 13 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 14 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 15 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 16 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 17 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 18 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 19 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 20 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 21 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 22 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 23 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 24 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 25 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 26 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 27 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 28 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 29 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 30 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 31 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 32 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 8 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 5 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 1 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 4 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора следующего предмета на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 9 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предыдущего предмета на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 2 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 7 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 6 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 10 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выбора предмета 3 на горячей панели.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша, чтобы красться.\n"
-"Также используется для спуска и погружения под воду, если параметр "
-"aux1_descends отключён.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения вида от первого или от третьего лица.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша для создания снимка экрана .\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения автобега.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения кинематографического режима.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения миникарты.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения режима быстрого перемещения.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения режима полёта.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения режима прохождения сквозь стены.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения режима движение вниз/вверх по направлению взгляда.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша выключения обновлений камеры. Используется только для разработки\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения чата.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения отладочной информации.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения тумана.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения игрового интерфейса.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша переключения отображения большого чата.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша для переключения отображения профилировщика. Используется для "
-"разработки.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша отключения ограничения зоны видимости.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Клавиша режима увеличения.\n"
-"См. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5319,8 +4475,13 @@ msgid "Large cave proportion flooded"
 msgstr "Соотношение затопленных больших пещер"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "Кнопка вызова консоли"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "Промежуток обновления жидкостей"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5338,10 +4499,6 @@ msgstr ""
 "-   Simple: прозрачность включена, видны только внешние стороны, если "
 "используются special_tiles\n"
 "-   Opaque: прозрачность отключена"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Кнопка выхода"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5499,6 +4656,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Модификаторы загружающихся блоков"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5796,10 +4960,6 @@ msgstr ""
 "Это должно быть меньше curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Предельное количество принудительно загруженных блоков."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5903,10 +5063,6 @@ msgid "Minimap"
 msgstr "Миникарта"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Клавиша переключения миникарты"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Высота сканирования миникарты"
 
@@ -5995,10 +5151,6 @@ msgstr ""
 "Например: 0 отключает покачивание; 1.0 для обычного; 2.0 для двойного."
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "Клавиша отключения звука"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "Заглушить звук"
 
@@ -6053,10 +5205,6 @@ msgstr "Новым пользователям нужно вводить этот
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Проходить сквозь стены"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Клавиша прохождения сквозь стены"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -6208,16 +5356,8 @@ msgid "Physics"
 msgstr "Физика"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "Кнопка движение вниз/вверх по направлению взгляда"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Режим движения вниз/вверх по направлению взгляда"
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr "Клавиша положить"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6253,6 +5393,10 @@ msgstr ""
 "настройку."
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6282,10 +5426,6 @@ msgstr "Привилегии, доступные игрокам с basic_privs"
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Профилировщик"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Клавиша переключения профилировщика"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6323,10 +5463,6 @@ msgstr "Поднимает местность, чтобы образовыват
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Случайный ввод"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Кнопка настройки дальности видимости"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6401,10 +5537,6 @@ msgid "Ridged mountain size noise"
 msgstr "Размер шума подводных хребтов"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Правая клавиша меню"
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr "Глубина русла реки"
 
@@ -6451,6 +5583,11 @@ msgstr "Аккуратное копание и размещение"
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Песчаные пляжи появляются, когда np_beach превышает это значение."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Итерации"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6509,8 +5646,8 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
-"Качество снимков экрана. Используется только для изображений в формате JPEG."
-"\n"
+"Качество снимков экрана. Используется только для изображений в формате "
+"JPEG.\n"
 "1 означает худшее качество; 100 означает лучшее качество.\n"
 "Используйте 0 для настроек по умолчанию."
 
@@ -6644,6 +5781,15 @@ msgstr "Файл списка серверов"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6698,6 +5844,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6719,6 +5871,14 @@ msgid ""
 msgstr ""
 "Установка в true включает покачивание растений.\n"
 "Требует, чтобы шейдеры были включены."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6882,10 +6042,6 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Плавное вращение камеры. 0 для отключения."
 
 #: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Красться"
-
-#: src/settings_translation_file.cpp
 msgid "Sneaking speed"
 msgstr "Скорость скрытной ходьбы"
 
@@ -6921,8 +6077,8 @@ msgid ""
 "items."
 msgstr ""
 "Устанавливает размер стопки блоков, предметов и инструментов по умолчанию.\n"
-"Обратите внимание, что дополнения могут установить стопку для определённых ("
-"или всех) предметов."
+"Обратите внимание, что дополнения могут установить стопку для определённых "
+"(или всех) предметов."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7316,10 +6472,6 @@ msgstr ""
 "ноды."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Клавиша переключения режима камеры"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Задержка подсказки"
 
@@ -7362,6 +6514,11 @@ msgid "Trusted mods"
 msgstr "Доверенные моды"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "Адрес списка серверов, отображающийся во вкладке Мультиплеер."
 
@@ -7385,12 +6542,22 @@ msgstr ""
 "Высокие значения приводят к менее проработанному изображению."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Неограниченное расстояние перемещения игрока"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Выгружать неиспользуемые сервером данные"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7416,6 +6583,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Использовать билинейную фильтрацию для масштабирования текстур."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7517,6 +6694,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Регулирует крутизну утёсов."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr "Скорость вертикального лазания в нодах в секунду."
 
@@ -7535,18 +6720,6 @@ msgstr "Коэффициент покачивания"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "Дальность отрисовки в нодах."
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Клавиша уменьшения видимого диапазона"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Клавиша увеличения видимого диапазона"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "Клавиша режима увеличения"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7743,8 +6916,8 @@ msgid ""
 "Controlled by the checkbox in the \"All settings\" menu."
 msgstr ""
 "Отображение технических названий.\n"
-"Влияет на моды и наборы текстур в разделе «Содержимое» и «Выбор дополнений»,"
-"\n"
+"Влияет на моды и наборы текстур в разделе «Содержимое» и «Выбор "
+"дополнений»,\n"
 "а также на названия параметров во всех настройках.\n"
 "Управляется с помощью флажка в меню «Все настройки»."
 
@@ -7906,8 +7079,17 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Уверены, что хотите сбросить мир одиночной игры?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Автоматическая кнопка вперед"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Клавиша Aux1"
+
 #~ msgid "Back"
 #~ msgstr "Назад"
+
+#~ msgid "Backward key"
+#~ msgstr "Клавиша назад"
 
 #, fuzzy
 #~ msgid "Basic"
@@ -7921,6 +7103,9 @@ msgstr "Предел одновременных соединений cURL"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Бампмаппинг"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Кнопка обновления камеры"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Центр среднего подъёма кривой света."
@@ -7938,6 +7123,18 @@ msgstr "Предел одновременных соединений cURL"
 #~ "текстур и т. д.\n"
 #~ "-   Simple: один однопользовательский мир без выбора игр или текстур. "
 #~ "Может быть полезно для небольших экранов."
+
+#~ msgid "Chat key"
+#~ msgstr "Кнопка чата"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Кнопка переключения чата"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Кнопка переключения в кинематографический режим"
+
+#~ msgid "Command key"
+#~ msgstr "Команда"
 
 #~ msgid "Config mods"
 #~ msgstr "Настройка модов"
@@ -7975,6 +7172,12 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Darkness sharpness"
 #~ msgstr "Резкость темноты"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Клавиша переключения показа отладочной информации"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Клавиша уменьшения громкости"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -8008,6 +7211,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ "определений биома.\n"
 #~ "Y верхней границы лавы в больших пещерах."
 
+#~ msgid "Dig key"
+#~ msgstr "Кнопка копать"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Скачивайте игры, такие как Minetest Game, на minetest.net"
 
@@ -8018,6 +7224,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgstr ""
 #~ "Загружается и устанавливается $1.\n"
 #~ "Пожалуйста, подождите..."
+
+#~ msgid "Drop item key"
+#~ msgstr "Кнопка выброса блока"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Включить объекты буфера вершин (VBO)"
@@ -8075,6 +7284,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Fallback font size"
 #~ msgstr "Размер резервного шрифта"
 
+#~ msgid "Fast key"
+#~ msgstr "Клавиша ускорения"
+
 #~ msgid "Filtering"
 #~ msgstr "Фильтрация"
 
@@ -8084,11 +7296,20 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Floatland mountain height"
 #~ msgstr "Высота гор на парящих островах"
 
+#~ msgid "Fly key"
+#~ msgstr "Клавиша полёта"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Клавиша переключения тумана"
+
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Прозрачность тени шрифта (непрозрачность от 0 до 255)."
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Размер резервного шрифта в пунктах (pt)."
+
+#~ msgid "Forward key"
+#~ msgstr "Клавиша вперёд"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "Шрифты FreeType"
@@ -8111,8 +7332,113 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "HUD scale factor"
 #~ msgstr "Масштаб игрового интерфейса"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "Клавиша переключения игрового интерфейса"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "Высокоточный FPU"
+
+#~ msgid "Hotbar next key"
+#~ msgstr "Следующий предмет на горячей панели"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "Предыдущий предмет на горячей панели"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "Быстрая кнопка 1"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "Быстрая кнопка 10"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "Быстрая кнопка 11"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "Быстрая кнопка 12"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "Быстрая кнопка 13"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "Быстрая кнопка 14"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "Быстрая кнопка 15"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "Быстрая кнопка 16"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "Быстрая кнопка 17"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "Быстрая кнопка 18"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "Быстрая кнопка 19"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "Быстрая кнопка 2"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "Быстрая кнопка 20"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "Быстрая кнопка 21"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "Быстрая кнопка 22"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "Быстрая кнопка 23"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "Быстрая кнопка 24"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "Быстрая кнопка 25"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "Быстрая кнопка 26"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "Быстрая кнопка 27"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "Быстрая кнопка 28"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "Быстрая кнопка 29"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "Быстрая кнопка 3"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "Быстрая кнопка 30"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "Быстрая кнопка 31"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "Быстрая кнопка 32"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "Быстрая кнопка 4"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "Быстрая кнопка 5"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "Быстрая кнопка 6"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "Быстрая кнопка 7"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "Быстрая кнопка 8"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "Быстрая кнопка 9"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Поддержка IPv6."
@@ -8120,11 +7446,669 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "In-Game"
 #~ msgstr "В игре"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "Клавиша увеличения громкости"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Установка мода: не удаётся определить название мода для «$1»"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Установка мода: файл \"$1\""
 
 #~ msgid "Instrumentation"
 #~ msgstr "Замеры"
+
+#~ msgid "Inventory key"
+#~ msgstr "Кнопка открытия инвентаря"
+
+#~ msgid "Jump key"
+#~ msgstr "Кнопка прыжка"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша уменьшения зоны видимости.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша уменьшения громкости.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша копания.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша, чтобы выбросить выбранный предмет.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша увеличения зоны видимости.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша увеличения громкости.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша прыжка.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша, включающая режим быстрого перемещения.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша движения назад.\n"
+#~ "При активации также отключает автобег.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша движения вперёд.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша движения влево.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша движения вправо.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша отключения звука в игре.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша открытия окна чата для ввода команды.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша открытия окна чата для ввода локальных команд.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша открытия окна чата.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша открытия инвентаря.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша размещения.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 11 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 12 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 13 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 14 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 15 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 16 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 17 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 18 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 19 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 20 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 21 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 22 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 23 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 24 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 25 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 26 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 27 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 28 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 29 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 30 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 31 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 32 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 8 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 5 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 1 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 4 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора следующего предмета на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 9 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предыдущего предмета на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 2 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 7 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 6 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 10 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выбора предмета 3 на горячей панели.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша, чтобы красться.\n"
+#~ "Также используется для спуска и погружения под воду, если параметр "
+#~ "aux1_descends отключён.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения вида от первого или от третьего лица.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша для создания снимка экрана .\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения автобега.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения кинематографического режима.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения миникарты.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения режима быстрого перемещения.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения режима полёта.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения режима прохождения сквозь стены.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения режима движение вниз/вверх по направлению взгляда.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша выключения обновлений камеры. Используется только для разработки\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения чата.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения отладочной информации.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения тумана.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения игрового интерфейса.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша переключения отображения большого чата.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша для переключения отображения профилировщика. Используется для "
+#~ "разработки.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша отключения ограничения зоны видимости.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Клавиша режима увеличения.\n"
+#~ "См. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -8132,8 +8116,14 @@ msgstr "Предел одновременных соединений cURL"
 #~ "Привязки клавиш. (Если это меню сломается, удалите настройки из minetest."
 #~ "conf)"
 
+#~ msgid "Large chat console key"
+#~ msgstr "Кнопка вызова консоли"
+
 #~ msgid "Lava depth"
 #~ msgstr "Глубина лавы"
+
+#~ msgid "Left key"
+#~ msgstr "Кнопка выхода"
 
 #~ msgid "Lightness sharpness"
 #~ msgstr "Резкость освещённости"
@@ -8167,6 +8157,12 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "Миникарта в поверхностном режиме, увеличение x4"
 
+#~ msgid "Minimap key"
+#~ msgstr "Клавиша переключения миникарты"
+
+#~ msgid "Mute key"
+#~ msgstr "Клавиша отключения звука"
+
 #~ msgid "Name / Password"
 #~ msgstr "Имя / Пароль"
 
@@ -8175,6 +8171,9 @@ msgstr "Предел одновременных соединений cURL"
 
 #~ msgid "No"
 #~ msgstr "Нет"
+
+#~ msgid "Noclip key"
+#~ msgstr "Клавиша прохождения сквозь стены"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Выборка карт нормалей"
@@ -8226,8 +8225,17 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Путь для сохранения скриншотов."
 
+#~ msgid "Pitch move key"
+#~ msgstr "Кнопка движение вниз/вверх по направлению взгляда"
+
+#~ msgid "Place key"
+#~ msgstr "Клавиша положить"
+
 #~ msgid "Player name"
 #~ msgstr "Имя игрока"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Клавиша переключения профилировщика"
 
 #~ msgid "Profiling"
 #~ msgstr "Профилирование"
@@ -8238,8 +8246,14 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "PvP enabled"
 #~ msgstr "PvP разрешён"
 
+#~ msgid "Range select key"
+#~ msgstr "Кнопка настройки дальности видимости"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Сброс одиночной игры"
+
+#~ msgid "Right key"
+#~ msgstr "Правая клавиша меню"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Выберите файл дополнения:"
@@ -8268,6 +8282,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ "Смещение тени резервного шрифта (в пикселях). Если указан 0, то тень не "
 #~ "будет показана."
 
+#~ msgid "Sneak key"
+#~ msgstr "Красться"
+
 #~ msgid "Special"
 #~ msgstr "Особенный"
 
@@ -8292,11 +8309,20 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Кино"
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Клавиша переключения режима камеры"
+
 #~ msgid ""
 #~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
 #~ "Типичная максимальная высота, выше и ниже средней точки гор парящих "
 #~ "островов."
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Не удаётся установить игру как $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Не удаётся установить пакет модов как $1"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8305,6 +8331,15 @@ msgstr "Предел одновременных соединений cURL"
 
 #~ msgid "View"
 #~ msgstr "Вид"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Клавиша уменьшения видимого диапазона"
+
+#~ msgid "View range increase key"
+#~ msgstr "Клавиша увеличения видимого диапазона"
+
+#~ msgid "View zoom key"
+#~ msgstr "Клавиша режима увеличения"
 
 #~ msgid "Waving Water"
 #~ msgstr "Волны на воде"

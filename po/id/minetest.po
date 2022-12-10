@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2022-11-12 18:53+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -115,34 +115,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Server ini meminta untuk menyambung ulang:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr "Versi baru ($1) tersedia"
-
-#: builtin/mainmenu/common.lua
-msgid "Client Mods"
-msgstr "Mod Klien"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-"Versi terpasang: $1\n"
-"Versi baru: $2\n"
-"Kunjungi $3 untuk mencari tahu cara mendapatkan versi terbaru serta tidak "
-"ketinggalan fitur dan perbaikan masalah."
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr "Nanti"
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr "Tidak Pernah"
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Versi protokol tidak sesuai. "
 
@@ -153,10 +125,6 @@ msgstr "Server mengharuskan protokol versi $1. "
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Server mendukung protokol antara versi $1 dan versi $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr "Kunjungi situs web"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -315,8 +283,22 @@ msgid "Downloading..."
 msgstr "Mengunduh..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Gagal mengunduh $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Gagal mengunduh $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Pemasangan: Tipe berkas tidak didukung atau arsip rusak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -333,10 +315,6 @@ msgstr "Pasang $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Pasang dependensi yang belum ada"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Pemasangan: Tipe berkas tidak didukung atau arsip rusak"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -668,6 +646,10 @@ msgid "Browse"
 msgstr "Jelajahi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Client Mods"
+msgstr "Mod Klien"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
 msgstr "Konten: Permainan"
 
@@ -790,6 +772,34 @@ msgstr "bawaan"
 msgid "eased"
 msgstr "kehalusan (eased)"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "Versi baru ($1) tersedia"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Versi terpasang: $1\n"
+"Versi baru: $2\n"
+"Kunjungi $3 untuk mencari tahu cara mendapatkan versi terbaru serta tidak "
+"ketinggalan fitur dan perbaikan masalah."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Nanti"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Tidak Pernah"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Kunjungi situs web"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Dinyalakan)"
@@ -803,34 +813,25 @@ msgid "Failed to install $1 to $2"
 msgstr "Gagal memasang $1 ke $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Pemasangan mod: Tidak dapat mencari nama yang sebenarnya dari: $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Pemasangan mod: Tidak dapat mencari nama folder yang sesuai untuk paket mod "
 "$1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Tidak dapat mencari mod atau paket mod yang sah"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Gagal memasang mod sebagai $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Gagal memasang $1 sebagai paket tekstur"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Gagal memasang permainan sebagai $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Gagal memasang mod sebagai $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Gagal memasang paket mod sebagai $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -860,6 +861,10 @@ msgstr "Penggambar aktif:"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Pengembang Inti"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1980,6 +1985,28 @@ msgstr "Peta mini mode permukaan, perbesaran %dx"
 msgid "Minimap in texture mode"
 msgstr "Peta mini mode tekstur"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Tiada dependensi wajib"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Gagal membuka laman web"
@@ -2096,7 +2123,7 @@ msgstr "Barang sebelumnya"
 msgid "Range select"
 msgstr "Jarak pandang"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Tangkapan layar"
 
@@ -2179,7 +2206,8 @@ msgstr "id"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
-msgstr "Nama belum terdaftar. Untuk membuat akun pada server ini, klik 'Daftar'"
+msgstr ""
+"Nama belum terdaftar. Untuk membuat akun pada server ini, klik 'Daftar'"
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
@@ -2432,6 +2460,17 @@ msgstr ""
 "elemen UI."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2552,10 +2591,6 @@ msgid "Audio"
 msgstr "Audio"
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Tombol maju otomatis"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr "Lompati otomatis halangan satu nodus."
 
@@ -2572,16 +2607,8 @@ msgid "Autoscaling mode"
 msgstr "Mode penyekalaan otomatis"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Tombol Aux1"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "Tombol Aux1 untuk memanjat/turun"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Tombol mundur"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2622,6 +2649,23 @@ msgstr "Noise bioma"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Jarak optimasi pengiriman blok"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Jari-jari awan"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2674,10 +2718,6 @@ msgstr "Penghalusan kamera"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Penghalusan kamera dalam mode sinema"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Tombol beralih pembaruan kamera"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2744,10 +2784,6 @@ msgid "Chat font size"
 msgstr "Ukuran fon obrolan"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Tombol obrolan"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Tingkat log obrolan"
 
@@ -2768,10 +2804,6 @@ msgid "Chat message max length"
 msgstr "Panjang maksimum pesan obrolan"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Tombol beralih obrolan"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "Tautan web obrolan"
 
@@ -2782,10 +2814,6 @@ msgstr "Besar chunk"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Mode sinema"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Tombol mode sinema"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2887,10 +2915,6 @@ msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
 "untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif "
 "(melalui request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Tombol perintah"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3050,10 +3074,6 @@ msgid "Damage"
 msgstr "Kerusakan"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Tombol info awakutu"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Ambang batas ukuran log awakutu"
 
@@ -3064,10 +3084,6 @@ msgstr "Tingkat log awakutu"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr "Pengawakutuan"
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Tombol turunkan volume"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3088,6 +3104,13 @@ msgid ""
 msgstr ""
 "Permainan bawaan saat membuat dunia baru.\n"
 "Ini akan diganti saat membuat dunia lewat menu utama."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Jumlah maksimum blok peta yang dipaksa muat."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3137,6 +3160,13 @@ msgstr ""
 "Mengatur ukuran penuh gua besar, nilai yang lebih kecil memperbesar gua."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Menetapkan struktur kanal sungai skala besar."
 
@@ -3151,6 +3181,12 @@ msgstr "Mengatur ketinggian dasar tanah."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Mengatur kedalaman kanal sungai."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3227,10 +3263,6 @@ msgid "Developer Options"
 msgstr "Pilihan Pengembang"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Tombol gali"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Partikel menggali"
 
@@ -3267,10 +3299,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Menekan ganda tombol lompat untuk beralih terbang."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Tombol menjatuhkan barang"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "Keluarkan informasi awakutu pembuat peta."
 
@@ -3285,6 +3313,15 @@ msgstr "Y minimum dungeon"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Noise dungeon"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Nyalakan semua"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3474,8 +3511,9 @@ msgid "Entity methods"
 msgstr "Metode benda (entity)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3488,6 +3526,10 @@ msgstr ""
 "floatland bawaan.\n"
 "Nilai < 1.0 (misal 0.25) membuat tingkat permukaan dengan lembah\n"
 "yang rata dan cocok untuk lapisan floatland padat (penuh)."
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3512,10 +3554,6 @@ msgstr "Faktor fall bobbing"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "Jalur fon cadangan"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Tombol gerak cepat"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3629,10 +3667,6 @@ msgid "Floatland water level"
 msgstr "Ketinggian permukaan air floatland"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Tombol terbang"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Terbang"
 
@@ -3643,10 +3677,6 @@ msgstr "Kabut"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr "Mulai kabut"
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Tombol beralih kabut"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
@@ -3754,10 +3784,6 @@ msgstr "Warna latar belakang layar penuh formspec (R,G,B)."
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr "Keburaman latar belakang layar penuh formspec (dari 0 sampai 255)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Tombol maju"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3900,10 +3926,6 @@ msgid "HUD scaling"
 msgstr "Skala HUD"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "Tombol beralih HUD"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4002,142 +4024,6 @@ msgid ""
 msgstr ""
 "Percepatan mendatar dan vertikal di atas tanah atau saat memanjat\n"
 "dalam nodus per detik per detik."
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "Tombol hotbar selanjutnya"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "Tombol hotbar sebelumnya"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "Tombol hotbar slot 1"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "Tombol hotbar slot 10"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "Tombol hotbar slot 11"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "Tombol hotbar slot 12"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "Tombol hotbar slot 13"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "Tombol hotbar slot 14"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "Tombol hotbar slot 15"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "Tombol hotbar slot 16"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "Tombol hotbar slot 17"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "Tombol hotbar slot 18"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "Tombol hotbar slot 19"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "Tombol hotbar slot 2"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "Tombol hotbar slot 20"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "Tombol hotbar slot 21"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "Tombol hotbar slot 22"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "Tombol hotbar slot 23"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "Tombol hotbar slot 24"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "Tombol hotbar slot 25"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "Tombol hotbar slot 26"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "Tombol hotbar slot 27"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "Tombol hotbar slot 28"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "Tombol hotbar slot 29"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "Tombol hotbar slot 3"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "Tombol hotbar slot 30"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "Tombol hotbar slot 31"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "Tombol hotbar slot 32"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "Tombol hotbar slot 4"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "Tombol hotbar slot 5"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "Tombol hotbar slot 6"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "Tombol hotbar slot 7"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "Tombol hotbar slot 8"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "Tombol hotbar slot 9"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4352,10 +4238,6 @@ msgstr ""
 "Tinggi konsol obrolan dalam permainan, dari 0.1 (10%) sampai 1.0 (100%)."
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Tombol konsol"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "Kelajuan vertikal awal ketika lompat dalam nodus per detik."
 
@@ -4408,10 +4290,6 @@ msgstr "Jarak pengiriman waktu hari kepada para klien dalam detik."
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Animasi barang inventaris"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Tombol inventaris"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4536,728 +4414,8 @@ msgid "Julia z"
 msgstr "Z Julia"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Tombol lompat"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Kelajuan lompat"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk mengurangi jarak pandang.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk mengurangi volume.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk gali.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk menjatuhkan barang yang sedang dipilih.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk menambah jarak pandang.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk menambah volume.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk lompat.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk bergerak cepat dalam mode cepat.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk bergerak mundur.\n"
-"Akan mematikan maju otomatis, saat dinyalakan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk bergerak maju.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk bergerak ke kiri.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk bergerak ke kanan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk membisukan permainan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk membuka jendela obrolan untuk mengetik perintah.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk membuka jendela obrolan untuk mengetik perintah lokal.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk membuka jendela obrolan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk membuka inventaris.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk taruh.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-11.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-12.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-13.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-14.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-15.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-16.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-17.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-18.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-19.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-20.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-21.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-22.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-23.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-24.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-25.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-26.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-27.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-28.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-29.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-30.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-31.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ke-32.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar kedelapan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar kelima.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar pertama.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar keempat.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih barang selanjutnya di hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar kesembilan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih barang sebelumnya di hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar kedua.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ketujuh.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar keenam.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar kesepuluh.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk memilih slot hotbar ketiga.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk menyelinap.\n"
-"Juga digunakan untuk turun dan menyelam dalam air jika aux1_descends "
-"dimatikan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk mengganti kamera antara orang pertama dan ketiga.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk mengambil tangkapan layar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih maju otomatis.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih mode sinema.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk mengganti tampilan peta mini.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih mode cepat.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih terbang.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih mode tembus nodus.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih mode gerak sesuai pandang.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih pembaruan kamera. Hanya digunakan dalam pengembangan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih tampilan obrolan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih tampilan info awakutu.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih tampilan kabut.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih tampilan HUD.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih tampilan konsol obrolan besar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk menampilkan profiler. Digunakan untuk pengembangan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk beralih menjadi jarak pandang tanpa batas.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tombol untuk zum jika bisa.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5296,8 +4454,13 @@ msgid "Large cave proportion flooded"
 msgstr "Perbandingan cairan dalam gua besar"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "Tombol konsol obrolan besar"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "Detikan pembaruan cairan"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5315,10 +4478,6 @@ msgstr ""
 "-   Simple: hanya sisi terluar jika special_tiles yang didefinisikan "
 "digunakan\n"
 "-   Opaque: matikan transparansi"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Tombol kiri"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5474,6 +4633,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Pengubah Blok Termuat"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5767,10 +4933,6 @@ msgstr ""
 "diantrekan. Nilai ini harus lebih rendah daripada curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Jumlah maksimum blok peta yang dipaksa muat."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5873,10 +5035,6 @@ msgid "Minimap"
 msgstr "Peta mini"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Tombol peta mini"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Ketinggian pemindaian peta mini"
 
@@ -5965,10 +5123,6 @@ msgstr ""
 "Misalkan 0 untuk tanpa view bobbing; 1.0 untuk normal; 2.0 untuk 2x lipat."
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "Tombol bisu"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "Bisukan suara"
 
@@ -6023,10 +5177,6 @@ msgstr "Pengguna baru butuh memasukkan kata sandi."
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Tembus nodus"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Tombol tembus nodus"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -6169,16 +5319,8 @@ msgid "Physics"
 msgstr "Fisika"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "Tombol gerak sesuai pandang"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Mode gerak sesuai pandang"
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr "Tombol taruh"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6213,6 +5355,10 @@ msgstr ""
 "Catat bahwa kolom porta pada menu utama mengubah pengaturan ini."
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6241,10 +5387,6 @@ msgstr "Hak yang dapat diberikan oleh pemain dengan basic_privs"
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Profiler"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Tombol profiler"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6282,10 +5424,6 @@ msgstr "Menaikkan medan untuk membuat lembah di sekitar sungai."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Masukan acak"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Tombol memilih jarak pandang"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6361,10 +5499,6 @@ msgid "Ridged mountain size noise"
 msgstr "Noise ukuran punggung gunung"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Tombol kanan"
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr "Kedalaman kanal sungai"
 
@@ -6411,6 +5545,11 @@ msgstr "Penggalian dan peletakan dengan aman"
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Pantai berpasir muncul saat np_beach melebihi nilai ini."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Perulangan"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6601,6 +5740,15 @@ msgstr "Berkas daftar server"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6630,8 +5778,8 @@ msgid ""
 "Minimum value: 1.0; maximum value: 15.0"
 msgstr ""
 "Atur besar jari-jari bayangan halus.\n"
-"Nilai rendah berarti bayangan lebih tajam, nilai tinggi berarti lebih halus."
-"\n"
+"Nilai rendah berarti bayangan lebih tajam, nilai tinggi berarti lebih "
+"halus.\n"
 "Nilai minimum: 1.0; nilai maksimum 15.0"
 
 #: src/settings_translation_file.cpp
@@ -6651,6 +5799,12 @@ msgid ""
 msgstr ""
 "Atur ke true untuk menyalakan Pemetaan Bayangan.\n"
 "Membutuhkan penggunaan shader."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6675,6 +5829,14 @@ msgid ""
 msgstr ""
 "Atur ke true untuk menyalakan tanaman berayun.\n"
 "Membutuhkan penggunaan shader."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6834,10 +5996,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Penghalusan perputaran kamera. 0 untuk tidak menggunakannya."
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Tombol menyelinap"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -7253,10 +6411,6 @@ msgstr ""
 "mencopot nodus."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Tombol beralih mode kamera"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Jeda tooltip"
 
@@ -7299,6 +6453,11 @@ msgid "Trusted mods"
 msgstr "Mod yang dipercaya"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "URL ke daftar server yang tampil pada Tab Multipemain."
 
@@ -7320,12 +6479,22 @@ msgstr ""
 "Nilai yang lebih tinggi menghasilkan gambar yang kurang detail."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Jarak pemindahan pemain tak terbatas"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Membongkar data server yang tak terpakai"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7351,6 +6520,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Gunakan pemfilteran bilinear saat mengubah ukuran tekstur."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7449,6 +6628,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Merubah kecuraman tebing."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr "Kelajuan vertikal memanjat dalam nodus per detik."
 
@@ -7467,18 +6654,6 @@ msgstr "Faktor view bobbing"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "Jarak pandang dalam nodus."
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Tombol mengurangi jarak pandang"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Tombol menambah jarak pandang"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "Tombol zum"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7827,8 +7002,17 @@ msgstr "Batas cURL paralel"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Apakah Anda yakin ingin mengatur ulang dunia Anda?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Tombol maju otomatis"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Tombol Aux1"
+
 #~ msgid "Back"
 #~ msgstr "Kembali"
+
+#~ msgid "Backward key"
+#~ msgstr "Tombol mundur"
 
 #~ msgid "Basic"
 #~ msgstr "Dasar"
@@ -7841,6 +7025,9 @@ msgstr "Batas cURL paralel"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Bumpmapping"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Tombol beralih pembaruan kamera"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Titik tengah penguatan tengah kurva cahaya."
@@ -7859,6 +7046,18 @@ msgstr "Batas cURL paralel"
 #~ "-   Simple: Satu dunia pemain tunggal, tanpa pilihan permainan atau "
 #~ "paket\n"
 #~ "tekstur. Cocok untuk layar kecil."
+
+#~ msgid "Chat key"
+#~ msgstr "Tombol obrolan"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Tombol beralih obrolan"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Tombol mode sinema"
+
+#~ msgid "Command key"
+#~ msgstr "Tombol perintah"
 
 #~ msgid "Config mods"
 #~ msgstr "Konfigurasi mod"
@@ -7895,6 +7094,12 @@ msgstr "Batas cURL paralel"
 #~ msgid "Darkness sharpness"
 #~ msgstr "Kecuraman kegelapan"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Tombol info awakutu"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Tombol turunkan volume"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -7919,6 +7124,9 @@ msgstr "Batas cURL paralel"
 #~ msgid "Del. Favorite"
 #~ msgstr "Hapus favorit"
 
+#~ msgid "Dig key"
+#~ msgstr "Tombol gali"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Unduh suatu permainan, misalnya Minetest Game, dari minetest.net"
 
@@ -7927,6 +7135,9 @@ msgstr "Batas cURL paralel"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Mengunduh dan memasang $1, mohon tunggu..."
+
+#~ msgid "Drop item key"
+#~ msgstr "Tombol menjatuhkan barang"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Gunakan VBO"
@@ -7983,6 +7194,9 @@ msgstr "Batas cURL paralel"
 #~ msgid "Fallback font size"
 #~ msgstr "Ukuran fon cadangan"
 
+#~ msgid "Fast key"
+#~ msgstr "Tombol gerak cepat"
+
 #~ msgid "Filtering"
 #~ msgstr "Pemfilteran"
 
@@ -7992,11 +7206,20 @@ msgstr "Batas cURL paralel"
 #~ msgid "Floatland mountain height"
 #~ msgstr "Ketinggian gunung floatland"
 
+#~ msgid "Fly key"
+#~ msgstr "Tombol terbang"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Tombol beralih kabut"
+
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Keburaman bayangan fon (keopakan, dari 0 sampai 255)."
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Ukuran fon cadangan bawaan dalam poin (pt)."
+
+#~ msgid "Forward key"
+#~ msgstr "Tombol maju"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "Fon FreeType"
@@ -8019,8 +7242,113 @@ msgstr "Batas cURL paralel"
 #~ msgid "HUD scale factor"
 #~ msgstr "Faktor skala HUD"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "Tombol beralih HUD"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "FPU (satuan titik mengambang) berketelitian tinggi"
+
+#~ msgid "Hotbar next key"
+#~ msgstr "Tombol hotbar selanjutnya"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "Tombol hotbar sebelumnya"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "Tombol hotbar slot 1"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "Tombol hotbar slot 10"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "Tombol hotbar slot 11"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "Tombol hotbar slot 12"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "Tombol hotbar slot 13"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "Tombol hotbar slot 14"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "Tombol hotbar slot 15"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "Tombol hotbar slot 16"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "Tombol hotbar slot 17"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "Tombol hotbar slot 18"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "Tombol hotbar slot 19"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "Tombol hotbar slot 2"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "Tombol hotbar slot 20"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "Tombol hotbar slot 21"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "Tombol hotbar slot 22"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "Tombol hotbar slot 23"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "Tombol hotbar slot 24"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "Tombol hotbar slot 25"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "Tombol hotbar slot 26"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "Tombol hotbar slot 27"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "Tombol hotbar slot 28"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "Tombol hotbar slot 29"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "Tombol hotbar slot 3"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "Tombol hotbar slot 30"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "Tombol hotbar slot 31"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "Tombol hotbar slot 32"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "Tombol hotbar slot 4"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "Tombol hotbar slot 5"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "Tombol hotbar slot 6"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "Tombol hotbar slot 7"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "Tombol hotbar slot 8"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "Tombol hotbar slot 9"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Dukungan IPv6."
@@ -8028,11 +7356,669 @@ msgstr "Batas cURL paralel"
 #~ msgid "In-Game"
 #~ msgstr "Dalam permainan"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "Tombol konsol"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Pemasangan mod: Tidak dapat mencari nama yang sebenarnya dari: $1"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Pemasangan: berkas: \"$1\""
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentasi"
+
+#~ msgid "Inventory key"
+#~ msgstr "Tombol inventaris"
+
+#~ msgid "Jump key"
+#~ msgstr "Tombol lompat"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk mengurangi jarak pandang.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk mengurangi volume.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk gali.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk menjatuhkan barang yang sedang dipilih.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk menambah jarak pandang.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk menambah volume.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk lompat.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk bergerak cepat dalam mode cepat.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk bergerak mundur.\n"
+#~ "Akan mematikan maju otomatis, saat dinyalakan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk bergerak maju.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk bergerak ke kiri.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk bergerak ke kanan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk membisukan permainan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk membuka jendela obrolan untuk mengetik perintah.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk membuka jendela obrolan untuk mengetik perintah lokal.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk membuka jendela obrolan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk membuka inventaris.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk taruh.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-11.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-12.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-13.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-14.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-15.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-16.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-17.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-18.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-19.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-20.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-21.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-22.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-23.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-24.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-25.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-26.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-27.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-28.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-29.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-30.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-31.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ke-32.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar kedelapan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar kelima.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar pertama.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar keempat.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih barang selanjutnya di hotbar.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar kesembilan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih barang sebelumnya di hotbar.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar kedua.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ketujuh.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar keenam.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar kesepuluh.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk memilih slot hotbar ketiga.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk menyelinap.\n"
+#~ "Juga digunakan untuk turun dan menyelam dalam air jika aux1_descends "
+#~ "dimatikan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk mengganti kamera antara orang pertama dan ketiga.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk mengambil tangkapan layar.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih maju otomatis.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih mode sinema.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk mengganti tampilan peta mini.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih mode cepat.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih terbang.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih mode tembus nodus.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih mode gerak sesuai pandang.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih pembaruan kamera. Hanya digunakan dalam "
+#~ "pengembangan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih tampilan obrolan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih tampilan info awakutu.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih tampilan kabut.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih tampilan HUD.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih tampilan konsol obrolan besar.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk menampilkan profiler. Digunakan untuk pengembangan.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk beralih menjadi jarak pandang tanpa batas.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tombol untuk zum jika bisa.\n"
+#~ "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -8040,8 +8026,14 @@ msgstr "Batas cURL paralel"
 #~ "Pengaturan tombol. (Jika menu ini kacau, hapus pengaturan kontrol dari "
 #~ "minetest.conf)"
 
+#~ msgid "Large chat console key"
+#~ msgstr "Tombol konsol obrolan besar"
+
 #~ msgid "Lava depth"
 #~ msgstr "Kedalaman lava"
+
+#~ msgid "Left key"
+#~ msgstr "Tombol kiri"
 
 #~ msgid "Lightness sharpness"
 #~ msgstr "Kecuraman keterangan"
@@ -8073,6 +8065,12 @@ msgstr "Batas cURL paralel"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "Peta mini mode permukaan, perbesaran 4x"
 
+#~ msgid "Minimap key"
+#~ msgstr "Tombol peta mini"
+
+#~ msgid "Mute key"
+#~ msgstr "Tombol bisu"
+
 #~ msgid "Name / Password"
 #~ msgstr "Nama/Kata Sandi"
 
@@ -8081,6 +8079,9 @@ msgstr "Batas cURL paralel"
 
 #~ msgid "No"
 #~ msgstr "Tidak"
+
+#~ msgid "Noclip key"
+#~ msgstr "Tombol tembus nodus"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Sampling normalmap"
@@ -8133,8 +8134,17 @@ msgstr "Batas cURL paralel"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Jalur untuk menyimpan tangkapan layar."
 
+#~ msgid "Pitch move key"
+#~ msgstr "Tombol gerak sesuai pandang"
+
+#~ msgid "Place key"
+#~ msgstr "Tombol taruh"
+
 #~ msgid "Player name"
 #~ msgstr "Nama pemain"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Tombol profiler"
 
 #~ msgid "Profiling"
 #~ msgstr "Profiling"
@@ -8145,8 +8155,14 @@ msgstr "Batas cURL paralel"
 #~ msgid "PvP enabled"
 #~ msgstr "PvP dinyalakan"
 
+#~ msgid "Range select key"
+#~ msgstr "Tombol memilih jarak pandang"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Atur ulang dunia pemain tunggal"
+
+#~ msgid "Right key"
+#~ msgstr "Tombol kanan"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Pilih berkas paket:"
@@ -8163,6 +8179,9 @@ msgstr "Batas cURL paralel"
 #~ msgstr ""
 #~ "Pergeseran bayangan fon cadangan dalam piksel. Jika 0, bayangan tidak "
 #~ "akan digambar."
+
+#~ msgid "Sneak key"
+#~ msgstr "Tombol menyelinap"
 
 #~ msgid "Special"
 #~ msgstr "Spesial"
@@ -8188,11 +8207,20 @@ msgstr "Batas cURL paralel"
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Mode sinema"
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Tombol beralih mode kamera"
+
 #~ msgid ""
 #~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
 #~ "Ketinggian maksimum secara umum, di atas dan di bawah titik tengah, dari "
 #~ "gunung floatland."
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Gagal memasang permainan sebagai $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Gagal memasang paket mod sebagai $1"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8201,6 +8229,15 @@ msgstr "Batas cURL paralel"
 
 #~ msgid "View"
 #~ msgstr "Tinjau"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Tombol mengurangi jarak pandang"
+
+#~ msgid "View range increase key"
+#~ msgstr "Tombol menambah jarak pandang"
+
+#~ msgid "View zoom key"
+#~ msgstr "Tombol zum"
 
 #~ msgid "Waving Water"
 #~ msgstr "Air Berombak"
