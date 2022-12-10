@@ -3332,6 +3332,16 @@ Player Inventory lists
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+* `offhand`: list containing the offhand wielded item.
+    * Is not created automatically, use `InvRef:set_size`
+    * Will be used for placements and secondary uses if the
+        main hand does not have any node_place_prediction, on_place
+        or on_secondary_use callbacks.
+    * Is passed to on_place and on_secondary_use callbacks; make sure
+        mods are aware of the itemstack not neccessarily being
+        located in the main hand.
+    *  The offhand item cannot have its own range or liquids_pointable and
+        will always reuse the characteristics from the hand item.
 
 Colors
 ======
@@ -3510,8 +3520,8 @@ vectors are written like this: `(x, y, z)`:
     * Returns a vector where the function `func` has been applied to each
       component.
 * `vector.combine(v, w, func)`:
-	* Returns a vector where the function `func` has combined both components of `v` and `w`
-	  for each component
+    * Returns a vector where the function `func` has combined both components of `v` and `w`
+      for each component
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -4634,12 +4644,12 @@ Callbacks:
       used for updating the entity state.
 * `on_deactivate(self, removal)`
     * Called when the object is about to get removed or unloaded.
-	* `removal`: boolean indicating whether the object is about to get removed.
-	  Calling `object:remove()` on an active object will call this with `removal=true`.
-	  The mapblock the entity resides in being unloaded will call this with `removal=false`.
-	* Note that this won't be called if the object hasn't been activated in the first place.
-	  In particular, `minetest.clear_objects({mode = "full"})` won't call this,
-	  whereas `minetest.clear_objects({mode = "quick"})` might call this.
+    * `removal`: boolean indicating whether the object is about to get removed.
+      Calling `object:remove()` on an active object will call this with `removal=true`.
+      The mapblock the entity resides in being unloaded will call this with `removal=false`.
+    * Note that this won't be called if the object hasn't been activated in the first place.
+      In particular, `minetest.clear_objects({mode = "full"})` won't call this,
+      whereas `minetest.clear_objects({mode = "quick"})` might call this.
 * `on_step(self, dtime, moveresult)`
     * Called on every server tick, after movement and collision processing.
     * `dtime`: elapsed time since last call
@@ -7796,7 +7806,7 @@ Player properties need to be saved manually.
 
         collisionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },  -- default
         selectionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, rotate = false },
-		-- { xmin, ymin, zmin, xmax, ymax, zmax } in nodes from object position.
+        -- { xmin, ymin, zmin, xmax, ymax, zmax } in nodes from object position.
         -- Collision boxes cannot rotate, setting `rotate = true` on it has no effect.
         -- If not set, the selection box copies the collision box, and will also not rotate.
         -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
@@ -8216,18 +8226,18 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         },
 
         on_place = function(itemstack, placer, pointed_thing),
-        -- When the 'place' key was pressed with the item in hand
+        -- When the 'place' key was pressed with the item one of the hands
         -- and a node was pointed at.
+        -- 'itemstack' may be the offhand item in cases where the main hand has
+        -- no on_place handler and no node_placement_prediction.
         -- Shall place item and return the leftover itemstack
         -- or nil to not modify the inventory.
         -- The placer may be any ObjectRef or nil.
         -- default: minetest.item_place
 
         on_secondary_use = function(itemstack, user, pointed_thing),
-        -- Same as on_place but called when not pointing at a node.
-        -- Function must return either nil if inventory shall not be modified,
-        -- or an itemstack to replace the original itemstack.
-        -- The user may be any ObjectRef or nil.
+        -- Same as on_place but called when not pointing at a node,
+        -- whereas `user` is the same as `placer` above.
         -- default: nil
 
         on_drop = function(itemstack, dropper, pos),

@@ -76,6 +76,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
+	has_on_place = def.has_on_place;
+	has_on_secondary_use = def.has_on_secondary_use;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	sound_use = def.sound_use;
@@ -124,6 +126,8 @@ void ItemDefinition::reset()
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2 = 0;
+	has_on_place = false;
+	has_on_secondary_use = false;
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -173,6 +177,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	sound_use.serialize(os, protocol_version);
 	sound_use_air.serialize(os, protocol_version);
+
+	writeU8(os, has_on_place);
+	writeU8(os, has_on_secondary_use);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -230,6 +237,9 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		sound_use.deSerialize(is, protocol_version);
 		sound_use_air.deSerialize(is, protocol_version);
+
+		has_on_place = readU8(is);
+		has_on_secondary_use = readU8(is);
 	} catch(SerializationError &e) {};
 }
 

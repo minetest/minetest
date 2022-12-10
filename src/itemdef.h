@@ -88,6 +88,8 @@ struct ItemDefinition
 	// "" = no prediction
 	std::string node_placement_prediction;
 	u8 place_param2;
+	bool has_on_place;
+	bool has_on_secondary_use;
 
 	/*
 		Some helpful methods
