@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-04 06:22+0000\n"
+"PO-Revision-Date: 2022-12-13 16:16+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -694,9 +694,8 @@ msgid "Offset"
 msgstr "Отместване"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Устойчивост"
+msgstr "Упоритост"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -1437,7 +1436,7 @@ msgstr ""
 "- %s: пускане на предмет\n"
 "- %s: инвентар\n"
 "- мишка: завъртане/разглеждане\n"
-"- колелце на мишка: избор на предмет\n"
+"- колелце мишка: избор на предмет\n"
 "- %s: разговор\n"
 
 #: src/client/game.cpp
