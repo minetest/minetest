@@ -520,10 +520,14 @@ std::string inline _get_mod_name_from_debug(lua_Debug *info)
 	std::string GAME_DIR = BIN_DIR + ".." + DIR_DELIM + "games" + DIR_DELIM;
 
 
+	// Find the first "/bin/" string posistion.
 	size_t bin_pos = src.find(BIN_DIR);
+	// Find the first "/bin/../builtin/" string posistion.
 	size_t found = src.find(BUILTIN_DIR);
 	if (found != std::string::npos) {
 		// Check the path whether be faked.
+		// the found position should be different from bin_pos if it's faked
+		// eg, "/bin/../mods/faked_mod/bin/../builtin/"
 		if (bin_pos == found) {
 			mod_name = BUILTIN_MOD_NAME;
 		}
@@ -608,6 +612,8 @@ std::string inline _get_real_caller_mod_name(lua_State *L)
 			if (i == iMin) return executor_mod_name;
 
 			// get the first event trigger
+			// Sometimes, the initiator of the action is not a builtin module, but an event trigger from a third-party module. For example, triggered by `formspecs`.
+			// And it should be in the prev_mod's dependencies or optional dependencies.
 			while (i>iMin) {
 				result = caller_mods.at(i);
 				prev_mod_name = caller_mods.at(i-1);
