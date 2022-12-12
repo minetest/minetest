@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-07-24 09:25+0000\n"
+"PO-Revision-Date: 2022-12-16 13:47+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -288,21 +288,21 @@ msgstr "Sťahujem..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Chyba inštalácie \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Nepodarilo sa stiahnuť $1"
+msgstr "Nepodarilo sa stiahnuť \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Nepodarilo sa stiahnuť $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Inštalácia: Nepodporovaný typ súboru, alebo poškodený archív"
+msgstr ""
+"Nepodarilo sa rozbaliť \"$1\" (nepodporovaný typ súboru, alebo poškodený "
+"archív)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -819,21 +819,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Zlyhala inštalácia $1 na $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Inštalácia rozšírenia: Nie je možné nájsť vhodný adresár pre balíček "
-"rozšírení $1"
+msgstr "Inštalácia: Nie je možné nájsť vhodné meno adresára pre $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Nie je možné nájsť platné rozšírenie, alebo balíček rozšírení"
+msgstr "Nie je možné nájsť správne rozšírenie, balíček rozšírení, ani hru"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Nie je možné nainštalovať rozšírenie $1"
+msgstr "Nie je možné nainštalovať $1 ako aj $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -871,7 +866,7 @@ msgstr "Hlavný vývojari"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Jadro tímu"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1997,23 +1992,26 @@ msgstr "Minimapa v móde textúry"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s chýba:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Nainštaluj a povoľ požadované rozšírenie, alebo zakáž rozšírenia, ktoré "
+"spôsobujú chyby."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Poznámka: toto môže byť spôsobené zacyklením závislosti, v takom prípade "
+"skús aktualizovať rozšírenia."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Bez povinných nevyhnutných doplnkov"
+msgstr "Niektoré rozšírenia majú nevybavené závislosti:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2478,6 +2476,13 @@ msgid ""
 "0.0 = black and white\n"
 "(Tone mapping needs to be enabled.)"
 msgstr ""
+"Uprav sýtosť (resp. živosť) scény\n"
+"Hodnoty\n"
+"< 1.0 zníž sýtosť\n"
+"> 1.0 zvýš sýtosť\n"
+"1.0 = sýtosť nezmenená\n"
+"0.0 = čierno-biele\n"
+"(Optimalizácia farieb musí byť povolená)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2663,20 +2668,19 @@ msgstr "Vzdialenosť pre optimalizáciu posielania blokov"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Žiara"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Intenzita ožiarenia"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Polomer mrakov"
+msgstr "Rozsah ožiarenia"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Činiteľ sily ožiarenia"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -3115,11 +3119,12 @@ msgstr ""
 "Toto bude prepísané pri vytvorení nového sveta z hlavného menu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Maximálny počet vynútene nahraných blokov mapy."
+msgstr ""
+"Maximálny počet vynútene nahraných blokov mapy.\n"
+"Nastav to na -1 pre zrušenie limitu."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3173,6 +3178,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Definuje aké výrazné osvetlenie bude aplikované na vyrenderovaný obraz\n"
+"Menšie hodnoty znamenajú jemnejšie ožiarenie\n"
+"Rozsah: od 0.01 do 1.0, predvolené: 0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3195,6 +3203,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Definuje rozsah preexponovania žiarenia.\n"
+"Rozsah: od 0.1 do 10.0, predvolené: 1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3323,13 +3333,12 @@ msgid "Dungeon noise"
 msgstr "Šum kobky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Povoliť všetko"
+msgstr "Povoliť žiaru"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Povoliť ladenie žiary"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3516,7 +3525,6 @@ msgid "Entity methods"
 msgstr "Metódy bytostí"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3525,8 +3533,8 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
-"Exponent zošpicatenia lietajúcej pevniny. Pozmeňuje fungovanie "
-"zošpicatenia.\n"
+"Exponent zošpicatenia lietajúcej pevniny. Pozmeňuje fungovanie zošpicatenia."
+"\n"
 "Hodnota = 1.0 vytvorí stále, lineárne zošpicatenie.\n"
 "Hodnoty > 1.0 vytvoria plynulé zošpicatenie, vhodné pre štandardné oddelené\n"
 "lietajúce pevniny.\n"
@@ -3535,7 +3543,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Exposure Factor"
-msgstr ""
+msgstr "Faktor expozície"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4466,12 +4474,11 @@ msgstr "Pomer zaplavených častí veľkých jaskýň"
 
 #: src/settings_translation_file.cpp
 msgid "Last known version update"
-msgstr ""
+msgstr "Posledná známa aktualizácia verzie"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Last update check"
-msgstr "Aktualizačný interval tekutín"
+msgstr "Posledná kontrola aktualizácií"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4655,6 +4662,9 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"Logická hodnota, ktorá určuje ako ďaleko sa bude efekt ožiarenia šíriť\n"
+"od žiariacich objektov.\n"
+"Rozsah: od 0.1 do 8, predvolené: 1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5372,7 +5382,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post processing"
-msgstr ""
+msgstr "Post processing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5562,9 +5572,8 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Pieskové pláže sa objavia keď np_beach presiahne túto hodnotu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Saturation"
-msgstr "Iterácie"
+msgstr "Sýtosť"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -5760,6 +5769,11 @@ msgid ""
 "Value of 1.0 (default) means no exposure compensation.\n"
 "Range: from 0.1 to 10.0"
 msgstr ""
+"Nastav kompenzačný faktor expozície.\n"
+"Tento faktor sa aplikuje na lineárnu hodnotu farby \n"
+"pred všetkými ostatnými post-process efektami.\n"
+"Hodnota 1.0 (predvolená) znamená, bez kompenzácie expozície.\n"
+"Rozsah: od 0.1 do 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5818,6 +5832,8 @@ msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
 msgstr ""
+"Nastav na true pre povolenie efektu žiary.\n"
+"Rozžiarené farby sa prelejú na susedné objekty."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5850,6 +5866,10 @@ msgid ""
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
+"Nastav na true pre renderovanie ladiacich zlomový efektu žiary.\n"
+"V režime ladenia je obrazovka rozdelená na 4 kvadranty:\n"
+"Horný ľavý - spracúva základný obraz, Horný pravý - výsledný obraz\n"
+"Dolný ľavý - základný raw obraz, Dolný pravý - textúra žiary."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6470,6 +6490,8 @@ msgstr "Dôveryhodné rozšírenia"
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
 msgstr ""
+"URL na súbor JSON, ktorý sprostredkúva informácie o najnovšej verzií "
+"Minetestu"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6498,6 +6520,9 @@ msgid ""
 "Unix timestamp (integer) of when the client last checked for an update\n"
 "Set this value to \"disabled\" to never check for updates."
 msgstr ""
+"Unix časová pečiatka (integer) kedy klient naposledy kontroloval "
+"aktualizácie\n"
+"Túto hodnotu nastav na \"vypnuté\" aby sa nikdy nekontrolovali aktualizácie."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6509,7 +6534,7 @@ msgstr "Uvoľni nepoužívané serverové dáta"
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
-msgstr ""
+msgstr "URL adresa pre update informácií"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -6537,13 +6562,16 @@ msgstr "Použi bilineárne filtrovanie pri zmene mierky textúr."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr ""
+msgstr "Použiť zameriavací kríž na dotykovej obrazovke"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
+"Použi zameriavač pre výber objektu, namiesto použitia celej obrazovky.\n"
+"Ak je povolené, tak zameriavač bude zobrazený a bude použitý na výber "
+"objektu."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6648,6 +6676,10 @@ msgid ""
 "Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
 "Ex: 5.5.0 is 005005000"
 msgstr ""
+"Číslo verzie, ktoré bolo naposledy zistené počas kontroly aktualizácií.\n"
+"\n"
+"Reprezentácia: MMMIIIPPP, kde M=hlavná, I=vedľajšia, P=Patch\n"
+"Napr.: 5.5.0 je 005005000"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
