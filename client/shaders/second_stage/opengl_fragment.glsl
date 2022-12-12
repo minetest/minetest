@@ -87,7 +87,7 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-		color.rgb *= pow(2., exposure) * exposureParams.compensationFactor;
+		color.rgb *= exposure * exposureParams.compensationFactor;
 	}
 
 
