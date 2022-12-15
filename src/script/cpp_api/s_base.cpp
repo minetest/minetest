@@ -103,11 +103,8 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 #endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
-	// Add and save an error handler
-	lua_getglobal(m_luastack, "debug");
-	lua_getfield(m_luastack, -1, "traceback");
-	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
-	lua_pop(m_luastack, 1); // pop debug
+	lua_pushcfunction(m_luastack, script_error_handler);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
 
 	// Add a C++ wrapper function to catch exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
