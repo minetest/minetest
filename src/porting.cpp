@@ -122,6 +122,9 @@ void signal_handler_init(void)
 {
 	(void)signal(SIGINT, signal_handler);
 	(void)signal(SIGTERM, signal_handler);
+#ifdef SIGPIPE
+	(void)signal(SIGPIPE, SIG_IGN);
+#endif
 }
 
 #else // _WIN32

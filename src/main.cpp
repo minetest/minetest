@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientlauncher.h"
 #include "gui/guiEngine.h"
 #include "gui/mainmenumanager.h"
+#include "script/sscsm/sscsm_script_process.h"
 #endif
 #ifdef HAVE_TOUCHSCREENGUI
 	#include "gui/touchscreengui.h"
@@ -136,6 +137,9 @@ int main(int argc, char *argv[])
 {
 	int retval;
 	debug_set_exception_handler();
+
+	if (argc >= 2 && strcmp(argv[1], "--sscsm") == 0)
+		return sscsm_script_main(argc, argv);
 
 	g_logger.registerThread("Main");
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
