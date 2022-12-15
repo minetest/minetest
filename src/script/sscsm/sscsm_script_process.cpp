@@ -3,6 +3,8 @@
 #include "sscsm_script_api.h"
 #include "debug.h"
 #include "log.h"
+#include "network/networkprotocol.h"
+#include "nodedef.h"
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -12,6 +14,8 @@ extern "C" {
 
 FILE *g_sscsm_from_controller = nullptr;
 FILE *g_sscsm_to_controller = nullptr;
+
+NodeDefManager *g_sscsm_nodedef = nullptr;
 
 int sscsm_script_main(int argc, char *argv[])
 {
@@ -25,6 +29,14 @@ int sscsm_script_main(int argc, char *argv[])
 
 	SSCSMRecvMsg msg = sscsm_recv_msg_ex(g_sscsm_from_controller);
 	if (msg.type == SSCSMMsgType::C2S_RUN_LOAD_MODS) {
+		g_sscsm_nodedef = createNodeDefManager();
+		{
+			std::istringstream is(std::string((char *)msg.data.data(), msg.data.size()));
+			g_sscsm_nodedef->deSerialize(is, LATEST_PROTOCOL_VERSION);
+		}
+		msg.data.clear();
+		msg.data.shrink_to_fit();
+
 		sscsm_load_mods(L);
 
 		Optional<SSCSMRecvMsg> msg;

@@ -4,6 +4,8 @@
 #include "client/client.h"
 #include "log.h"
 #include "map.h"
+#include "network/networkprotocol.h"
+#include "nodedef.h"
 #include <signal.h>
 #include <spawn.h>
 #include <string.h>
@@ -104,6 +106,24 @@ void SSCSMController::stop()
 	m_from_script = nullptr;
 }
 
+void SSCSMController::runLoadMods()
+{
+	if (!isStarted())
+		return;
+
+	{
+		std::string nodedef;
+		{
+			std::ostringstream os;
+			m_client->ndef()->serialize(os, LATEST_PROTOCOL_VERSION);
+			nodedef = os.str();
+		}
+		sscsm_send_msg(m_to_script, SSCSMMsgType::C2S_RUN_LOAD_MODS,
+				nodedef.size(), nodedef.data());
+	}
+	listen();
+}
+
 void SSCSMController::runStep(float dtime)
 {
 	if (!isStarted())
@@ -113,18 +133,8 @@ void SSCSMController::runStep(float dtime)
 	listen();
 }
 
-void SSCSMController::runLoadMods()
-{
-	if (!isStarted())
-		return;
-
-	sscsm_send_msg(m_to_script, SSCSMMsgType::C2S_RUN_LOAD_MODS, 0, nullptr);
-	listen();
-}
-
 void SSCSMController::listen()
 {
-	std::vector<u8> send; // Data to send, shared for efficiency
 	Optional<SSCSMRecvMsg> msg;
 	while ((msg = sscsm_recv_msg(m_from_script))) {
 		switch (msg->type) {
@@ -133,13 +143,7 @@ void SSCSMController::listen()
 				v3s16 pos;
 				memcpy(&pos, msg->data.data(), sizeof(v3s16));
 				MapNode n = m_client->getEnv().getMap().getNode(pos);
-				const std::string &name = m_client->ndef()->get(n).name;
-				send.resize(name.size() + 2);
-				send[0] = n.getParam1();
-				send[1] = n.getParam2();
-				memcpy(send.data() + 2, name.c_str(), name.size());
-				if (sscsm_send_msg(m_to_script, SSCSMMsgType::C2S_GET_NODE,
-						send.size(), send.data()))
+				if (sscsm_send_msg(m_to_script, SSCSMMsgType::C2S_GET_NODE, sizeof(n), &n))
 					break;
 			}
 			goto error;

@@ -16,8 +16,8 @@ public:
 
 	bool isStarted() { return m_script_pid != 0; }
 
-	void runStep(float dtime);
 	void runLoadMods();
+	void runStep(float dtime);
 
 private:
 	void listen();

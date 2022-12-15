@@ -3,7 +3,7 @@
 #include "sscsm_script_process.h"
 #include "cmake_config.h"
 #include "irr_v3d.h"
-#include "log.h"
+#include "nodedef.h"
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -53,17 +53,19 @@ void sscsm_load_libraries(lua_State *L)
 		sscsm_send_msg_ex(g_sscsm_to_controller, SSCSMMsgType::S2C_GET_NODE,
 				sizeof(v3s16), &pos);
 		SSCSMRecvMsg msg = sscsm_recv_msg_ex(g_sscsm_from_controller);
-		if (msg.type != SSCSMMsgType::C2S_GET_NODE || msg.data.size() < 2) {
+		if (msg.type != SSCSMMsgType::C2S_GET_NODE || msg.data.size() < sizeof(MapNode)) {
 			assert(false);
 			return 0;
 		}
+		MapNode n;
+		memcpy(&n, msg.data.data(), sizeof(MapNode));
 		lua_createtable(L, 0, 3);
-		lua_pushinteger(L, msg.data[0]);
-		lua_setfield(L, -2, "param1");
-		lua_pushinteger(L, msg.data[1]);
-		lua_setfield(L, -2, "param2");
-		lua_pushlstring(L, (char *)msg.data.data() + 2, msg.data.size() - 2);
+		lua_pushstring(L, g_sscsm_nodedef->get(n).name.c_str());
 		lua_setfield(L, -2, "name");
+		lua_pushinteger(L, n.getParam1());
+		lua_setfield(L, -2, "param1");
+		lua_pushinteger(L, n.getParam2());
+		lua_setfield(L, -2, "param2");
 		return 1;
 	});
 	lua_setfield(L, -2, "get_node");
