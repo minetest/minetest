@@ -138,8 +138,10 @@ int main(int argc, char *argv[])
 	int retval;
 	debug_set_exception_handler();
 
+#ifndef SERVER
 	if (argc >= 2 && strcmp(argv[1], "--sscsm") == 0)
 		return sscsm_script_main(argc, argv);
+#endif
 
 	g_logger.registerThread("Main");
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
