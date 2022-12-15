@@ -76,11 +76,9 @@ void sscsm_load_libraries(lua_State *L)
 void sscsm_load_mods(lua_State *L)
 {
 	luaL_dostring(L, "print('mods loaded', core.get_node({x=0,y=0,z=0}).name)");
-	sscsm_send_msg_ex(g_sscsm_to_controller, SSCSMMsgType::S2C_DONE, 0, nullptr);
 }
 
 void sscsm_run_step(lua_State *L, float dtime)
 {
 	luaL_dostring(L, "print('step', core.get_node({x=0,y=0,z=0}).name)");
-	sscsm_send_msg_ex(g_sscsm_to_controller, SSCSMMsgType::S2C_DONE, 0, nullptr);
 }

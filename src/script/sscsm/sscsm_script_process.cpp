@@ -38,6 +38,7 @@ int sscsm_script_main(int argc, char *argv[])
 		msg.data.shrink_to_fit();
 
 		sscsm_load_mods(L);
+		sscsm_send_msg_ex(g_sscsm_to_controller, SSCSMMsgType::S2C_DONE, 0, nullptr);
 
 		Optional<SSCSMRecvMsg> msg;
 		while ((msg = sscsm_recv_msg(g_sscsm_from_controller))) {
@@ -45,11 +46,14 @@ int sscsm_script_main(int argc, char *argv[])
 			case SSCSMMsgType::C2S_RUN_STEP:
 				if (msg->data.size() >= sizeof(float)) {
 					float dtime;
-					memcpy(&dtime, msg->data.data(), sizeof(dtime));
+					memcpy(&dtime, msg->data.data(), sizeof(float));
 					sscsm_run_step(L, dtime);
 				}
 				break;
+			default:
+				break;
 			}
+			sscsm_send_msg_ex(g_sscsm_to_controller, SSCSMMsgType::S2C_DONE, 0, nullptr);
 		}
 	}
 
