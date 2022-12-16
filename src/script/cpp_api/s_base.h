@@ -60,6 +60,7 @@ extern "C" {
 enum class ScriptingType: u8 {
 	Async,
 	Client,
+	SSCSM,
 	MainMenu,
 	Server
 };
