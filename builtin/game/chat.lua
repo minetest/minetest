@@ -456,7 +456,7 @@ core.register_chatcommand("setpassword", {
 
 core.register_chatcommand("clearpassword", {
 	params = S("<name>"),
-	description = S("Set empty password for a player"),
+	description = S("Set player's password (sent unencrypted, thus insecure)"),
 	privs = {password=true},
 	func = function(name, param)
 		local toname = param
