@@ -2,16 +2,16 @@
 #pragma once
 
 #include "cpp_api/s_base.h"
-#include "cpp_api/s_sscsm.h"
+#include "cpp_api/s_csm.h"
 
-class SSCSMGameDef;
+class CSMGameDef;
 
-class SSCSMScripting:
+class CSMScripting:
 		virtual public ScriptApiBase,
-		public ScriptApiSSCSM
+		public ScriptApiCSM
 {
 public:
-	SSCSMScripting(SSCSMGameDef *gamedef);
+	CSMScripting(CSMGameDef *gamedef);
 
 private:
 	void InitializeModApi(lua_State *L, int top);

@@ -1,4 +1,4 @@
-#include "sscsm_message.h"
+#include "csm_message.h"
 #include "exceptions.h"
 #include <utility>
 
@@ -26,7 +26,7 @@ static bool write_complete(FILE *f, size_t size, const void *buf)
 	return true;
 }
 
-bool sscsm_send_msg(FILE *f, SSCSMMsgType type, size_t size, const void *data)
+bool csm_send_msg(FILE *f, CSMMsgType type, size_t size, const void *data)
 {
 	if (!write_complete(f, sizeof(type), &type))
 		return false;
@@ -38,9 +38,9 @@ bool sscsm_send_msg(FILE *f, SSCSMMsgType type, size_t size, const void *data)
 	return true;
 }
 
-Optional<SSCSMRecvMsg> sscsm_recv_msg(FILE *f)
+Optional<CSMRecvMsg> csm_recv_msg(FILE *f)
 {
-	SSCSMRecvMsg msg;
+	CSMRecvMsg msg;
 	if (!read_complete(f, sizeof(msg.type), &msg.type))
 		return nullopt;
 	size_t size;
@@ -49,19 +49,19 @@ Optional<SSCSMRecvMsg> sscsm_recv_msg(FILE *f)
 	msg.data.resize(size);
 	if (!read_complete(f, size, msg.data.data()))
 		return nullopt;
-	return Optional<SSCSMRecvMsg>(std::move(msg));
+	return Optional<CSMRecvMsg>(std::move(msg));
 }
 
-void sscsm_send_msg_ex(FILE *f, SSCSMMsgType type, size_t size, const void *data)
+void csm_send_msg_ex(FILE *f, CSMMsgType type, size_t size, const void *data)
 {
-	if (!sscsm_send_msg(f, type, size, data))
-		throw BaseException("Unable to send SSCSM message");
+	if (!csm_send_msg(f, type, size, data))
+		throw BaseException("Unable to send CSM message");
 }
 
-SSCSMRecvMsg sscsm_recv_msg_ex(FILE *f)
+CSMRecvMsg csm_recv_msg_ex(FILE *f)
 {
-	Optional<SSCSMRecvMsg> msg = sscsm_recv_msg(f);
+	Optional<CSMRecvMsg> msg = csm_recv_msg(f);
 	if (!msg)
-		throw BaseException("Unable to read SSCSM message");
+		throw BaseException("Unable to read CSM message");
 	return std::move(*msg);
 }

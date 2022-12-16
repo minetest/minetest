@@ -5,11 +5,11 @@
 
 class Client;
 
-class SSCSMController
+class CSMController
 {
 public:
-	SSCSMController(Client *client);
-	~SSCSMController();
+	CSMController(Client *client);
+	~CSMController();
 
 	bool start();
 	void stop();

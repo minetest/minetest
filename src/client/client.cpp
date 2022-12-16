@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "guiscalingfilter.h"
 #include "script/scripting_client.h"
-#include "script/sscsm/sscsm_controller.h"
+#include "script/csm/csm_controller.h"
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
@@ -180,9 +180,9 @@ void Client::loadMods()
 	if (m_mods_loaded || !g_settings->getBool("enable_client_modding"))
 		return;
 
-	m_sscsm_controller = new SSCSMController(this);
-	m_sscsm_controller->start();
-	m_sscsm_controller->runLoadMods();
+	m_csm_controller = new CSMController(this);
+	m_csm_controller->start();
+	m_csm_controller->runLoadMods();
 
 	// If client scripting is disabled by the server, don't load builtin or
 	// client-provided mods.
@@ -326,7 +326,7 @@ void Client::Stop()
 
 	if (m_mods_loaded) {
 		delete m_script;
-		delete m_sscsm_controller;
+		delete m_csm_controller;
 	}
 }
 

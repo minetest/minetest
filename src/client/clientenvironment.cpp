@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "content_cao.h"
 #include "porting.h"
-#include "script/sscsm/sscsm_controller.h"
+#include "script/csm/csm_controller.h"
 #include <algorithm>
 #include "client/renderingengine.h"
 
@@ -297,7 +297,7 @@ void ClientEnvironment::step(float dtime)
 
 	if (m_client->modsLoaded()) {
 		m_script->environment_step(dtime);
-		m_client->getSSCSMController()->runStep(dtime);
+		m_client->getCSMController()->runStep(dtime);
 	}
 
 	// Update lighting on local player (used for wield item)

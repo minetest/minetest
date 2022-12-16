@@ -1,23 +1,23 @@
 #pragma once
 
 #include "gamedef.h"
-#include "sscsm_message.h"
+#include "csm_message.h"
 
 class IWritableItemDefManager;
 
-class SSCSMGameDef : public IGameDef
+class CSMGameDef : public IGameDef
 {
 public:
-	SSCSMGameDef(FILE *from_controller, FILE *to_controller);
-	~SSCSMGameDef();
+	CSMGameDef(FILE *from_controller, FILE *to_controller);
+	~CSMGameDef();
 
-	SSCSMRecvMsg recvEx()
+	CSMRecvMsg recvEx()
 	{
-		return sscsm_recv_msg_ex(m_from_controller);
+		return csm_recv_msg_ex(m_from_controller);
 	}
-	void sendEx(SSCSMMsgType type, size_t size = 0, const void *data = nullptr)
+	void sendEx(CSMMsgType type, size_t size = 0, const void *data = nullptr)
 	{
-		sscsm_send_msg_ex(m_to_controller, type, size, data);
+		csm_send_msg_ex(m_to_controller, type, size, data);
 	}
 
 	IItemDefManager *getItemDefManager() override;

@@ -16,6 +16,6 @@ set(common_SCRIPT_CPP_API_SRCS
 set(client_SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_client.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_mainmenu.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/s_sscsm.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/s_csm.cpp
 	PARENT_SCOPE)
 

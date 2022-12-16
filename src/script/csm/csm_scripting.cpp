@@ -1,12 +1,12 @@
-#include "sscsm_scripting.h"
-#include "sscsm_gamedef.h"
+#include "csm_scripting.h"
+#include "csm_gamedef.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_util.h"
 
-SSCSMScripting::SSCSMScripting(SSCSMGameDef *gamedef):
-		ScriptApiBase(ScriptingType::SSCSM)
+CSMScripting::CSMScripting(CSMGameDef *gamedef):
+		ScriptApiBase(ScriptingType::CSM)
 {
 	setGameDef(gamedef);
 
@@ -20,14 +20,14 @@ SSCSMScripting::SSCSMScripting(SSCSMGameDef *gamedef):
 	lua_pop(L, 1);
 
 	// Push builtin initialization type
-	lua_pushstring(L, "sscsm");
+	lua_pushstring(L, "csm");
 	lua_setglobal(L, "INIT");
 }
 
-void SSCSMScripting::InitializeModApi(lua_State *L, int top)
+void CSMScripting::InitializeModApi(lua_State *L, int top)
 {
-	ModApiItemMod::InitializeSSCSM(L, top);
-	ModApiUtil::InitializeSSCSM(L, top);
+	ModApiItemMod::InitializeCSM(L, top);
+	ModApiUtil::InitializeCSM(L, top);
 	LuaItemStack::Register(L);
 	ItemStackMetaRef::Register(L);
 }

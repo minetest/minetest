@@ -60,7 +60,7 @@ extern "C" {
 enum class ScriptingType: u8 {
 	Async,
 	Client,
-	SSCSM,
+	CSM, // TODO: Remove distinction between this and Client
 	MainMenu,
 	Server
 };

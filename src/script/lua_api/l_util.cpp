@@ -713,7 +713,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	lua_setfield(L, top, "settings");
 }
 
-void ModApiUtil::InitializeSSCSM(lua_State *L, int top)
+void ModApiUtil::InitializeCSM(lua_State *L, int top)
 {
 	API_FCT(log);
 

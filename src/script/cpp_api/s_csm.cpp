@@ -1,7 +1,7 @@
-#include "cpp_api/s_sscsm.h"
+#include "cpp_api/s_csm.h"
 #include "cpp_api/s_internal.h"
 
-void ScriptApiSSCSM::environment_Step(float dtime)
+void ScriptApiCSM::environment_Step(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
 

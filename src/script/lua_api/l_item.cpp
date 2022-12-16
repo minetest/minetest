@@ -729,7 +729,7 @@ void ModApiItemMod::InitializeClient(lua_State *L, int top)
 	API_FCT(get_name_from_content_id);
 }
 
-void ModApiItemMod::InitializeSSCSM(lua_State *L, int top)
+void ModApiItemMod::InitializeCSM(lua_State *L, int top)
 {
 	// all read-only functions
 	API_FCT(get_content_id);
