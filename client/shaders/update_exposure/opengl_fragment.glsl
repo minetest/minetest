@@ -47,7 +47,7 @@ void main(void)
 			averageColor += texture2D(screen, vec2(0.5 + 0.5 * x, 0.5 - 0.5 * y)).rgb;
 			averageColor += texture2D(screen, vec2(0.5 - 0.5 * x, 0.5 + 0.5 * y)).rgb;
 			averageColor += texture2D(screen, vec2(0.5 - 0.5 * x, 0.5 - 0.5 * y)).rgb;
-			n += 4;
+			n += 4.;
 		}
 	}
 
