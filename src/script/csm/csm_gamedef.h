@@ -21,10 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gamedef.h"
 #include "csm_message.h"
+#include "client/mod_vfs.h"
 
 class IWritableItemDefManager;
 
-class CSMGameDef : public IGameDef
+class CSMGameDef : public IGameDef, public ModVFS
 {
 public:
 	CSMGameDef(FILE *from_controller, FILE *to_controller);

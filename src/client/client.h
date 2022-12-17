@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include "gameparams.h"
+#include "mod_vfs.h"
 #include <fstream>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
@@ -109,7 +110,7 @@ private:
 class ClientScripting;
 class GameUI;
 
-class Client : public con::PeerHandler, public InventoryManager, public IGameDef
+class Client : public con::PeerHandler, public InventoryManager, public ModVFS, public IGameDef
 {
 public:
 	/*
@@ -135,14 +136,6 @@ public:
 
 	~Client();
 	DISABLE_CLASS_COPY(Client);
-
-	// Load local mods into memory
-	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
-				std::string mod_subpath);
-	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
-	{
-		scanModSubfolder(mod_name, mod_path, "");
-	}
 
 	/*
 	 request all threads managed by client to be stopped
@@ -595,7 +588,6 @@ private:
 	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 	std::vector<ModSpec> m_mods;
-	StringMap m_mod_vfs;
 
 	// Server-sent client modding
 	CSMController *m_csm_controller = nullptr;

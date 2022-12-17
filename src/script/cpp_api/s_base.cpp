@@ -255,12 +255,12 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 {
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
-	sanity_check(m_type == ScriptingType::Client);
+	sanity_check(m_type == ScriptingType::Client || m_type == ScriptingType::CSM);
 
 	const std::string init_filename = mod_name + ":init.lua";
 	const std::string chunk_name = "@" + init_filename;
 
-	const std::string *contents = getClient()->getModFile(init_filename);
+	const std::string *contents = getModVFS()->getModFile(init_filename);
 	if (!contents)
 		throw ModError("Mod \"" + mod_name + "\" lacks init.lua");
 
@@ -499,5 +499,9 @@ Server* ScriptApiBase::getServer()
 Client* ScriptApiBase::getClient()
 {
 	return dynamic_cast<Client *>(m_gamedef);
+}
+ModVFS* ScriptApiBase::getModVFS()
+{
+	return dynamic_cast<ModVFS *>(m_gamedef);
 }
 #endif

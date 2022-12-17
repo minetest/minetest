@@ -68,6 +68,7 @@ enum class ScriptingType: u8 {
 class Server;
 #ifndef SERVER
 class Client;
+class ModVFS;
 #endif
 class IGameDef;
 class Environment;
@@ -106,6 +107,7 @@ public:
 	ScriptingType getType() { return m_type; }
 #ifndef SERVER
 	Client* getClient();
+	ModVFS* getModVFS();
 #endif
 
 	// IMPORTANT: these cannot be used for any security-related uses, they exist

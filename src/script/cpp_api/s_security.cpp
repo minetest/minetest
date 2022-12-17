@@ -717,9 +717,9 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 	ScriptApiBase *script = ModApiBase::getScriptApiBase(L);
 
 	// Client implementation
-	if (script->getType() == ScriptingType::Client) {
+	if (ModVFS *vfs = script->getModVFS()) {
 		std::string path = readParam<std::string>(L, 1);
-		const std::string *contents = script->getClient()->getModFile(path);
+		const std::string *contents = vfs->getModFile(path);
 		if (!contents) {
 			std::string error_msg = "Coudln't find script called: " + path;
 			lua_pushnil(L);
