@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "skyparams.h"
 #include "lighting.h"
+#include "cameraparams.h"
 
 class PlayerSAO;
 
@@ -130,6 +131,28 @@ public:
 
 	const Lighting& getLighting() const { return m_lighting; }
 
+	s16 addCamera()
+	{
+		auto id = ++m_camera_count;
+		m_cam_params[id] = CameraParams(id);
+		return id;
+	}
+
+	const CameraParams getCameraParameters(s16 id) const
+	{
+		return m_cam_params.find(id) != m_cam_params.end() ? m_cam_params.at(id) : CameraParams(id);
+	}
+
+	void setCameraParameters(const CameraParams &value)
+	{
+		m_cam_params[value.id] = value;
+	}
+
+	void removeCamera(s16 id)
+	{
+		m_cam_params.erase(id);
+	}
+
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version = 0;
@@ -166,6 +189,9 @@ private:
 	StarParams m_star_params;
 
 	Lighting m_lighting;
+
+	std::unordered_map<s16, CameraParams> m_cam_params;
+	s16 m_camera_count {0};
 
 	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

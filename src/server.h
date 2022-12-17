@@ -74,6 +74,7 @@ class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
 struct PackedValue;
+struct CameraParams;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -329,6 +330,8 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
+	void setCamera(RemotePlayer *player, const CameraParams &params);
+
 	void RespawnPlayer(session_t peer_id);
 
 	/* con::PeerHandler implementation. */
@@ -465,6 +468,7 @@ private:
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void SendSetLighting(session_t peer_id, const Lighting &lighting);
+	void SendSetCamera(session_t peer_id, const CameraParams &params);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
 

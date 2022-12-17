@@ -230,6 +230,10 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
+#    Sets the render target resolution for secondary cameras rendered on entities.
+#    Higher values consume more client-side resources.
+render_target_resolution (Render Target Resolution) enum 512 64,128,256,512,1024,2048
+
 #   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
 #   Only works on GLES platforms. Most users will not need to change this.
 #   Increasing can reduce artifacting on weaker GPUs.

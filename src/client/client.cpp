@@ -1960,7 +1960,7 @@ ICraftDefManager* Client::getCraftDefManager()
 }
 ITextureSource* Client::getTextureSource()
 {
-	return m_tsrc;
+	return m_override_tsrc ? m_override_tsrc : m_tsrc;
 }
 IWritableShaderSource* Client::getShaderSource()
 {

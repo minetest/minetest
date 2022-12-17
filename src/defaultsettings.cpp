@@ -185,6 +185,7 @@ void set_default_settings()
 	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
+	settings->setDefault("render_target_resolution", "512");
 #if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
 #endif
