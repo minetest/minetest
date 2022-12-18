@@ -131,14 +131,14 @@ void CSMController::runLoadMods()
 		return;
 
 	{
-		std::string nodedef;
+		std::string defs;
 		{
-			std::ostringstream os;
+			std::ostringstream os(std::ios::binary);
+			m_client->idef()->serialize(os, LATEST_PROTOCOL_VERSION);
 			m_client->ndef()->serialize(os, LATEST_PROTOCOL_VERSION);
-			nodedef = os.str();
+			defs = os.str();
 		}
-		csm_send_msg(m_to_script, CSMMsgType::C2S_RUN_LOAD_MODS,
-				nodedef.size(), nodedef.data());
+		csm_send_msg(m_to_script, CSMMsgType::C2S_RUN_LOAD_MODS, defs.size(), defs.data());
 	}
 	listen();
 }

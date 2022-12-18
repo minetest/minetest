@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_message.h"
 #include "csm_scripting.h"
 #include "debug.h"
+#include "itemdef.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
 extern "C" {
@@ -47,9 +48,11 @@ int csm_script_main(int argc, char *argv[])
 	CSMRecvMsg msg = csm_recv_msg_ex(g_csm_from_controller);
 	if (msg.type == CSMMsgType::C2S_RUN_LOAD_MODS) {
 		{
-			std::istringstream is(std::string((char *)msg.data.data(), msg.data.size()));
+			std::istringstream is(std::string((char *)msg.data.data(), msg.data.size()),
+					std::ios::binary);
 			msg.data.clear();
 			msg.data.shrink_to_fit();
+			gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 			gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 		}
 
