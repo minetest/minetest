@@ -24,4 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CSM_SCRIPT_READ_FD 3
 #define CSM_SCRIPT_WRITE_FD 4
 
+extern FILE *g_csm_from_controller;
+extern FILE *g_csm_to_controller;
+
 int csm_script_main(int argc, char *argv[]);

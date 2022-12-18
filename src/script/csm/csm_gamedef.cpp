@@ -22,18 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "content/mods.h"
 
-CSMGameDef::CSMGameDef(FILE *from_controller, FILE *to_controller):
+CSMGameDef::CSMGameDef():
 	m_itemdef(createItemDefManager()),
-	m_nodedef(createNodeDefManager()),
-	m_from_controller(from_controller),
-	m_to_controller(to_controller)
+	m_nodedef(createNodeDefManager())
 {
 }
 
 CSMGameDef::~CSMGameDef()
 {
-	fclose(m_to_controller);
-	fclose(m_from_controller);
 	delete m_nodedef;
 	delete m_itemdef;
 }

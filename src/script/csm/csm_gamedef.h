@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "gamedef.h"
-#include "csm_message.h"
 #include "client/mod_vfs.h"
 
 class IWritableItemDefManager;
@@ -28,17 +27,8 @@ class IWritableItemDefManager;
 class CSMGameDef : public IGameDef, public ModVFS
 {
 public:
-	CSMGameDef(FILE *from_controller, FILE *to_controller);
+	CSMGameDef();
 	~CSMGameDef();
-
-	CSMRecvMsg recvEx()
-	{
-		return csm_recv_msg_ex(m_from_controller);
-	}
-	void sendEx(CSMMsgType type, size_t size = 0, const void *data = nullptr)
-	{
-		csm_send_msg_ex(m_to_controller, type, size, data);
-	}
 
 	IItemDefManager *getItemDefManager() override;
 	const NodeDefManager *getNodeDefManager() override;

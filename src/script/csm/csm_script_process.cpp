@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "csm_script_process.h"
 #include "csm_gamedef.h"
+#include "csm_message.h"
 #include "csm_scripting.h"
 #include "debug.h"
 #include "network/networkprotocol.h"
@@ -30,17 +31,20 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
+FILE *g_csm_from_controller = nullptr;
+FILE *g_csm_to_controller = nullptr;
+
 int csm_script_main(int argc, char *argv[])
 {
-	FILE *from_controller = fdopen(CSM_SCRIPT_READ_FD, "rb");
-	FILE *to_controller = fdopen(CSM_SCRIPT_WRITE_FD, "wb");
-	FATAL_ERROR_IF(!from_controller || !to_controller,
+	g_csm_from_controller = fdopen(CSM_SCRIPT_READ_FD, "rb");
+	g_csm_to_controller = fdopen(CSM_SCRIPT_WRITE_FD, "wb");
+	FATAL_ERROR_IF(!g_csm_from_controller || !g_csm_to_controller,
 			"CSM process unable to open pipe");
 
-	CSMGameDef gamedef(from_controller, to_controller);
+	CSMGameDef gamedef;
 	CSMScripting script(&gamedef);
 
-	CSMRecvMsg msg = gamedef.recvEx();
+	CSMRecvMsg msg = csm_recv_msg_ex(g_csm_from_controller);
 	if (msg.type == CSMMsgType::C2S_RUN_LOAD_MODS) {
 		{
 			std::istringstream is(std::string((char *)msg.data.data(), msg.data.size()));
@@ -49,10 +53,10 @@ int csm_script_main(int argc, char *argv[])
 			gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 		}
 
-		gamedef.sendEx(CSMMsgType::S2C_DONE);
+		csm_send_msg_ex(g_csm_to_controller, CSMMsgType::S2C_DONE, 0, nullptr);
 
 		while (true) {
-			msg = gamedef.recvEx();
+			msg = csm_recv_msg_ex(g_csm_from_controller);
 			switch (msg.type) {
 			case CSMMsgType::C2S_RUN_STEP:
 				if (msg.data.size() >= sizeof(float)) {
@@ -64,7 +68,7 @@ int csm_script_main(int argc, char *argv[])
 			default:
 				break;
 			}
-			gamedef.sendEx(CSMMsgType::S2C_DONE);
+			csm_send_msg_ex(g_csm_to_controller, CSMMsgType::S2C_DONE, 0, nullptr);
 		}
 	}
 
