@@ -35,6 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 #include "../gui/guiSkin.h"
+#include "filesys.h"
+#include <locale>
+#include <codecvt>
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
 		!defined(SERVER) && !defined(__HAIKU__)
@@ -80,6 +83,28 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 	return skin;
 }
 
+using wbuffer_convert_utf8_utf16 = std::wbuffer_convert<
+		std::codecvt_utf8_utf16<wchar_t, 0x10ffff, std::consume_header>>;
+
+static void getFileContent(const std::string &tippath, std::vector<std::wstring> &vec)
+{
+	std::ifstream file(tippath.c_str());
+
+	if (!file) {
+		std::cerr << "Cannot open tips file" << std::endl;
+		return;
+	}
+
+	wbuffer_convert_utf8_utf16 conv(file.rdbuf());
+	std::wistream file_utf16(&conv);
+	std::wstring str;
+
+	while (std::getline(file_utf16, str))
+		if (str.size() > 0)
+			vec.push_back(str);
+
+	file.close();
+}
 
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {
@@ -151,6 +176,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			gui::EGST_WINDOWS_METALLIC, driver);
 	m_device->getGUIEnvironment()->setSkin(skin);
 	skin->drop();
+
+	std::string tippath = porting::path_share + DIR_DELIM + "tips.txt";
+	getFileContent(tippath, m_tips);
 }
 
 RenderingEngine::~RenderingEngine()
@@ -446,6 +474,34 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			guienv->addStaticText(text.c_str(), textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
+	// Tips
+	gui::IGUIStaticText *guitip = nullptr;
+
+	if (!m_tips.empty()) {
+		auto time = porting::getTimeS();
+		int tip_idx = m_selected_tip_idx;
+		static const float change_after = 3.f;
+
+		if (time - m_tip_time > change_after || tip_idx == -1) {
+			do {
+				tip_idx = rand() % m_tips.size();
+				m_tip_time = time;
+			} while (tip_idx == m_selected_tip_idx); // Avoid choosing the previous tip
+		}
+
+		m_selected_tip_idx = tip_idx;
+		std::wstring tip = m_tips[tip_idx];
+
+		v2s32 tipsize(g_fontengine->getTextWidth(tip) + 50,
+				g_fontengine->getLineHeight() * getDisplayDensity());
+		v2s32 centertip(screensize.X / 2, screensize.Y / 4);
+		core::recti tiprect(centertip - tipsize / 2 - 22, centertip + tipsize / 2 + 15);
+
+		tip = L"\n" + tip;
+		guitip = guienv->addStaticText(tip.c_str(), tiprect, true, false, nullptr, -1, true);
+		guitip->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+	}
+
 	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
 	if (cloud_menu_background) {
 		g_menuclouds->step(dtime * 3);
@@ -455,6 +511,21 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 		g_menucloudsmgr->drawAll();
 	} else
 		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
+
+	// Custom loading screen background
+	auto loadscreen_bg = tsrc->getTexture("loading_screen.png");
+
+	if (loadscreen_bg) {
+		const auto &bg_size = loadscreen_bg->getSize();
+		auto screensize = get_video_driver()->getScreenSize();
+
+		draw2DImageFilterScaled(get_video_driver(), loadscreen_bg,
+				core::rect<s32>(0, 0,
+					bg_size.Width + (screensize.Width - bg_size.Width),
+					bg_size.Height + (screensize.Height - bg_size.Height)),
+				core::rect<s32>(0, 0, bg_size.Width, bg_size.Height),
+				0, 0, true);
+	}
 
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
@@ -466,8 +537,8 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 #ifndef __ANDROID__
 			const core::dimension2d<u32> &img_size =
 					progress_img_bg->getSize();
-			u32 imgW = rangelim(img_size.Width, 200, 600);
-			u32 imgH = rangelim(img_size.Height, 24, 72);
+			u32 imgW = rangelim(img_size.Width, 200, 600) * getDisplayDensity();
+			u32 imgH = rangelim(img_size.Height, 24, 72) * getDisplayDensity();
 #else
 			const core::dimension2d<u32> img_size(256, 48);
 			float imgRatio = (float)img_size.Height / img_size.Width;
@@ -499,6 +570,9 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	guienv->drawAll();
 	get_video_driver()->endScene();
 	guitext->remove();
+
+	if (guitip)
+		guitip->remove();
 }
 
 /*

@@ -137,4 +137,8 @@ private:
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
 	static RenderingEngine *s_singleton;
+
+	int m_selected_tip_idx = -1;
+	float m_tip_time = 0.f;
+	std::vector<std::wstring> m_tips;
 };
