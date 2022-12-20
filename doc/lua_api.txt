@@ -4991,7 +4991,7 @@ Utilities
       }
 * `minetest.get_player_window_information(player_name)`:
 
-      -- Will only be present if the client sent this information (requires v5.6+)
+      -- Will only be present if the client sent this information (requires v5.7+)
       --
       -- Note that none of these things are constant, they are likely to change during a client
       -- connection as the player resizes the window and moves it between monitors
@@ -5007,6 +5007,14 @@ Utilities
           size = {
               x = 1308,
               y = 577,
+          },
+
+          -- Estimated maximum formspec size before Minetest will start shrinking the
+          -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
+          -- this and `padding[-0.01,-0.01]`.
+          max_formspec_size = {
+              x = 20,
+              y = 11.25
           },
 
           -- GUI Scaling multiplier

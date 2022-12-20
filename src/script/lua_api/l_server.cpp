@@ -293,6 +293,10 @@ int ModApiServer::l_get_player_window_information(lua_State *L)
 	push_v2u32(L, dynamic->render_target_size);
 	lua_settable(L, dyn_table);
 
+	lua_pushstring(L, "max_formspec_size");
+	push_v2f(L, dynamic->max_fs_size);
+	lua_settable(L, dyn_table);
+
 	lua_pushstring(L, "real_gui_scaling");
 	lua_pushnumber(L, dynamic->real_gui_scaling);
 	lua_settable(L, dyn_table);

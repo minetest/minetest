@@ -2612,7 +2612,10 @@ ClientDynamicInfo Game::getCurrentDynamicInfo() const
 	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
 	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
 
-	return { screen_size, gui_scaling, hud_scaling };
+	return {
+		screen_size, gui_scaling, hud_scaling,
+		ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
+	};
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)

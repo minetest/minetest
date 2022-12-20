@@ -1850,6 +1850,8 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	*pkt >> info.render_target_size.Y;
 	*pkt >> info.real_gui_scaling;
 	*pkt >> info.real_hud_scaling;
+	*pkt >> info.max_fs_size.X;
+	*pkt >> info.max_fs_size.Y;
 
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);

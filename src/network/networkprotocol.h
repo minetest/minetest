@@ -1066,6 +1066,7 @@ enum ToServerCommand
 		v2s16 render_target_size
 		f32 gui_scaling
 		f32 hud_scaling
+		v2f32 max_fs_info
  	*/
 
 	TOSERVER_NUM_MSG_TYPES = 0x54,
