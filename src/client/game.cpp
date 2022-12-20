@@ -2614,7 +2614,7 @@ ClientDynamicInfo Game::getCurrentDynamicInfo() const
 
 	return {
 		screen_size, gui_scaling, hud_scaling,
-		ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
+		ClientDynamicInfo::calculateMaxFSSize(screen_size)
 	};
 }
 
