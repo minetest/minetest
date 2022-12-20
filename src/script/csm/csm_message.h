@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irr_v3d.h"
+#include "log.h"
 #include "mapnode.h"
 
 enum CSMMsgType {
@@ -31,6 +32,7 @@ enum CSMMsgType {
 
 	// script -> controller
 	CSM_S2C_DONE,
+	CSM_S2C_LOG,
 	CSM_S2C_GET_NODE,
 };
 
@@ -47,6 +49,12 @@ struct CSMC2SGetNode {
 };
 
 // script -> controller
+
+struct CSMS2CLog {
+	CSMMsgType type = CSM_S2C_LOG;
+	LogLevel level;
+	// message string follows
+};
 
 struct CSMS2CGetNode {
 	CSMMsgType type = CSM_S2C_GET_NODE;

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_scripting.h"
 #include "debug.h"
 #include "itemdef.h"
+#include "log.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
 extern "C" {
@@ -34,8 +35,33 @@ extern "C" {
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <utility>
 
 IPCChannelEnd g_csm_script_ipc;
+
+static bool g_can_log = false;
+static std::vector<std::pair<LogLevel, std::string>> g_waiting_logs;
+
+class CSMLogOutput : public ICombinedLogOutput {
+	void logRaw(LogLevel level, const std::string &line) override
+	{
+		g_waiting_logs.emplace_back(level, line);
+		if (g_can_log) {
+			std::vector<u8> send;
+			for (const auto &line : g_waiting_logs) {
+				CSMS2CLog log;
+				log.level = line.first;
+				send.resize(sizeof(log) + line.second.size());
+				memcpy(send.data(), &log, sizeof(log));
+				memcpy(send.data() + sizeof(log), line.second.data(), line.second.size());
+				CSM_IPC(exchange(send.size(), send.data()));
+			}
+			g_waiting_logs.clear();
+		}
+	}
+};
+
+static CSMLogOutput g_log_output;
 
 int csm_script_main(int argc, char *argv[])
 {
@@ -51,10 +77,16 @@ int csm_script_main(int argc, char *argv[])
 
 	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared);
 
+	// TODO: only send logs if they will actually be recorded.
+	g_logger.addOutput(&g_log_output);
+	g_logger.registerThread("CSM");
+
 	CSMGameDef gamedef;
 	CSMScripting script(&gamedef);
 
 	CSM_IPC(recv());
+
+	g_can_log = true;
 
 	{
 		std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
@@ -62,6 +94,8 @@ int csm_script_main(int argc, char *argv[])
 		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 	}
+
+	g_can_log = false;
 
 	CSM_IPC(exchange(CSM_S2C_DONE));
 
@@ -71,6 +105,7 @@ int csm_script_main(int argc, char *argv[])
 		CSMMsgType type = CSM_INVALID_MSG_TYPE;
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
+		g_can_log = true;
 		switch (type) {
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
@@ -82,6 +117,7 @@ int csm_script_main(int argc, char *argv[])
 		default:
 			break;
 		}
+		g_can_log = false;
 		CSM_IPC(exchange(CSM_S2C_DONE));
 	}
 

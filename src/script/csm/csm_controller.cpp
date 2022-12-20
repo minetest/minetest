@@ -155,12 +155,24 @@ void CSMController::listen(bool succeeded)
 			memcpy(&type, data, sizeof(type));
 		switch (type) {
 		case CSM_S2C_GET_NODE:
-			if (size >= sizeof(CSMS2CGetNode)) {
+			if ((succeeded = size >= sizeof(CSMS2CGetNode))) {
 				CSMS2CGetNode recv;
 				memcpy(&recv, data, sizeof(recv));
 				CSMC2SGetNode send;
 				send.n = m_client->getEnv().getMap().getNode(recv.pos, &send.pos_ok);
 				succeeded = m_ipc.exchange(send, m_timeout);
+			}
+			break;
+		case CSM_S2C_LOG:
+			if ((succeeded = size >= sizeof(CSMS2CLog))) {
+				CSMS2CLog recv;
+				memcpy(&recv, data, sizeof(recv));
+				if ((succeeded = recv.level >= 0 && recv.level < LL_MAX)) {
+					std::string line((char *)data + sizeof(recv), size - sizeof(recv));
+					g_logger.logRaw(recv.level, line);
+					int dummy;
+					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+				}
 			}
 			break;
 		case CSM_S2C_DONE:
