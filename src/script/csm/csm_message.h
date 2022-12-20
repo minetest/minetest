@@ -20,22 +20,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irr_v3d.h"
+#include "mapnode.h"
 
 enum CSMMsgType {
 	CSM_INVALID_MSG_TYPE = -1,
 
 	// controller -> script
 	CSM_C2S_RUN_STEP,
+	CSM_C2S_GET_NODE,
 
 	// script -> controller
 	CSM_S2C_DONE,
 	CSM_S2C_GET_NODE,
 };
 
+// controller -> script
+
 struct CSMC2SRunStep {
 	CSMMsgType type = CSM_C2S_RUN_STEP;
 	float dtime;
 };
+
+struct CSMC2SGetNode {
+	MapNode n;
+	bool pos_ok;
+};
+
+// script -> controller
 
 struct CSMS2CGetNode {
 	CSMMsgType type = CSM_S2C_GET_NODE;

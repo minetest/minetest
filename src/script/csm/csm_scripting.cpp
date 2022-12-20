@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_scripting.h"
 #include "csm_gamedef.h"
 #include "cpp_api/s_internal.h"
+#include "lua_api/l_csm.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_util.h"
@@ -45,6 +46,7 @@ CSMScripting::CSMScripting(CSMGameDef *gamedef):
 
 void CSMScripting::InitializeModApi(lua_State *L, int top)
 {
+	ModApiCSM::Initialize(L, top);
 	ModApiItemMod::InitializeCSM(L, top);
 	ModApiUtil::InitializeCSM(L, top);
 	LuaItemStack::Register(L);

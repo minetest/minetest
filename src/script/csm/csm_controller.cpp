@@ -156,10 +156,11 @@ void CSMController::listen(bool succeeded)
 		switch (type) {
 		case CSM_S2C_GET_NODE:
 			if (size >= sizeof(CSMS2CGetNode)) {
-				CSMS2CGetNode msg;
-				memcpy(&msg, data, sizeof(msg));
-				MapNode n = m_client->getEnv().getMap().getNode(msg.pos);
-				succeeded = m_ipc.exchange(n, m_timeout);
+				CSMS2CGetNode recv;
+				memcpy(&recv, data, sizeof(recv));
+				CSMC2SGetNode send;
+				send.n = m_client->getEnv().getMap().getNode(recv.pos, &send.pos_ok);
+				succeeded = m_ipc.exchange(send, m_timeout);
 			}
 			break;
 		case CSM_S2C_DONE:
