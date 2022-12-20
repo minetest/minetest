@@ -39,9 +39,11 @@ IPCChannelEnd g_csm_script_ipc;
 
 int csm_script_main(int argc, char *argv[])
 {
-	int shm = argc >= 3 ? shm_open(argv[2], O_RDWR, 0) : -1;
-	FATAL_ERROR_IF(shm == -1, "CSM process unable to open shared memory");
+	FATAL_ERROR_IF(argc < 3, "Too few arguments to CSM process");
+
+	int shm = shm_open(argv[2], O_RDWR, 0);
 	shm_unlink(argv[2]);
+	FATAL_ERROR_IF(shm == -1, "CSM process unable to open shared memory");
 
 	IPCChannelShared *ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
 			PROT_READ | PROT_WRITE, MAP_SHARED, shm, 0);
