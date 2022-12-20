@@ -25,9 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
+#include "util/numeric.h"
+#include "util/string.h"
+#include <errno.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <spawn.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 CSMController::CSMController(Client *client):
 	m_client(client)
@@ -44,42 +50,34 @@ bool CSMController::start()
 	if (isStarted())
 		return true;
 
-	const char *argv[] = {"minetest", "--csm", nullptr};
+	std::string shm_name;
 
-	int controller2script[2] = {-1, -1};
-	int script2controller[2] = {-1, -1};
-	if (pipe(controller2script) < 0 || pipe(script2controller) < 0)
-		goto error_pipe;
+	const char *argv[] = {"minetest", "--csm", nullptr, nullptr};
 
-	m_from_script = fdopen(script2controller[0], "rb");
-	if (!m_from_script)
-		goto error_fdopen_from_script;
+	int shm = -1;
+	for (int i = 0; i < 100; i++) { // 100 tries
+		shm_name = std::string("/minetest") + std::to_string(myrand());
+		shm = shm_open(shm_name.c_str(), O_RDWR | O_CREAT | O_EXCL, 0600);
+		if (shm != -1 || errno != EEXIST)
+			break;
+	}
+	if (shm == -1)
+		goto error_shm;
+	argv[2] = shm_name.c_str();
 
-	m_to_script = fdopen(controller2script[1], "wb");
-	if (!m_to_script)
-		goto error_fdopen_to_script;
+	if (ftruncate(shm, sizeof(IPCChannelShared)) != 0)
+		goto error_ftruncate;
+
+	m_ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
+			PROT_READ | PROT_WRITE, MAP_SHARED, shm, 0);
+	if (m_ipc_shared == MAP_FAILED)
+		goto error_mmap;
 
 	posix_spawn_file_actions_t file_actions;
 	if (posix_spawn_file_actions_init(&file_actions) != 0)
 		goto error_file_actions_init;
 
-	if (controller2script[0] != CSM_SCRIPT_READ_FD) {
-		if (posix_spawn_file_actions_adddup2(&file_actions,
-				controller2script[0], CSM_SCRIPT_READ_FD) != 0)
-			goto error_file_actions;
-		if (posix_spawn_file_actions_addclose(&file_actions, controller2script[0]) != 0)
-			goto error_file_actions;
-	}
-	if (script2controller[1] != CSM_SCRIPT_WRITE_FD) {
-		if (posix_spawn_file_actions_adddup2(&file_actions,
-				script2controller[1], CSM_SCRIPT_WRITE_FD) != 0)
-			goto error_file_actions;
-		if (posix_spawn_file_actions_addclose(&file_actions, script2controller[1]) != 0)
-			goto error_file_actions;
-	}
-	if (posix_spawn_file_actions_addclose(&file_actions, script2controller[0]) != 0)
-		goto error_file_actions;
-	if (posix_spawn_file_actions_addclose(&file_actions, controller2script[1]) != 0)
+	if (posix_spawn_file_actions_addclose(&file_actions, shm) != 0)
 		goto error_file_actions;
 
 	if (posix_spawn(&m_script_pid, "/proc/self/exe",
@@ -87,9 +85,10 @@ bool CSMController::start()
 		goto error_spawn;
 
 	posix_spawn_file_actions_destroy(&file_actions);
-	close(script2controller[1]);
-	close(controller2script[0]);
+	close(shm);
 
+	new (m_ipc_shared) IPCChannelShared;
+	m_ipc = IPCChannelEnd::makeA(m_ipc_shared);
 	return true;
 
 error_spawn:
@@ -97,17 +96,12 @@ error_spawn:
 error_file_actions:
 	posix_spawn_file_actions_destroy(&file_actions);
 error_file_actions_init:
-	fclose(m_to_script);
-	controller2script[1] = -1;
-error_fdopen_to_script:
-	fclose(m_from_script);
-	script2controller[0] = -1;
-error_fdopen_from_script:
-error_pipe:
-	close(controller2script[0]);
-	close(controller2script[1]);
-	close(script2controller[0]);
-	close(script2controller[1]);
+	munmap(m_ipc_shared, sizeof(IPCChannelShared));
+error_mmap:
+error_ftruncate:
+	shm_unlink(shm_name.c_str());
+	close(shm);
+error_shm:
 	errorstream << "Could not start CSM process" << std::endl;
 	return false;
 }
@@ -119,10 +113,7 @@ void CSMController::stop()
 
 	kill(m_script_pid, SIGKILL);
 	m_script_pid = 0;
-	fclose(m_to_script);
-	m_to_script = nullptr;
-	fclose(m_from_script);
-	m_from_script = nullptr;
+	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 }
 
 void CSMController::runLoadMods()
@@ -130,6 +121,7 @@ void CSMController::runLoadMods()
 	if (!isStarted())
 		return;
 
+	bool succeeded;
 	{
 		std::string defs;
 		{
@@ -138,9 +130,9 @@ void CSMController::runLoadMods()
 			m_client->ndef()->serialize(os, LATEST_PROTOCOL_VERSION);
 			defs = os.str();
 		}
-		csm_send_msg(m_to_script, CSMMsgType::C2S_RUN_LOAD_MODS, defs.size(), defs.data());
+		succeeded = m_ipc.exchange(defs.size(), defs.data(), m_timeout);
 	}
-	listen();
+	listen(succeeded);
 }
 
 void CSMController::runStep(float dtime)
@@ -148,31 +140,35 @@ void CSMController::runStep(float dtime)
 	if (!isStarted())
 		return;
 
-	csm_send_msg(m_to_script, CSMMsgType::C2S_RUN_STEP, sizeof(dtime), &dtime);
-	listen();
+	CSMC2SRunStep msg;
+	msg.dtime = dtime;
+	listen(m_ipc.exchange(msg, m_timeout));
 }
 
-void CSMController::listen()
+void CSMController::listen(bool succeeded)
 {
-	Optional<CSMRecvMsg> msg;
-	while ((msg = csm_recv_msg(m_from_script))) {
-		switch (msg->type) {
-		case CSMMsgType::S2C_GET_NODE:
-			if (msg->data.size() >= sizeof(v3s16)) {
-				v3s16 pos;
-				memcpy(&pos, msg->data.data(), sizeof(v3s16));
-				MapNode n = m_client->getEnv().getMap().getNode(pos);
-				if (csm_send_msg(m_to_script, CSMMsgType::C2S_GET_NODE, sizeof(n), &n))
-					break;
+	while (succeeded) {
+		size_t size = m_ipc.getRecvSize();
+		const void *data = m_ipc.getRecvData();
+		CSMMsgType type = CSM_INVALID_MSG_TYPE;
+		if (size >= sizeof(type))
+			memcpy(&type, data, sizeof(type));
+		switch (type) {
+		case CSM_S2C_GET_NODE:
+			if (size >= sizeof(CSMS2CGetNode)) {
+				CSMS2CGetNode msg;
+				memcpy(&msg, data, sizeof(msg));
+				MapNode n = m_client->getEnv().getMap().getNode(msg.pos);
+				succeeded = m_ipc.exchange(n, m_timeout);
 			}
-			goto error;
-		case CSMMsgType::S2C_DONE:
+			break;
+		case CSM_S2C_DONE:
 			return;
 		default:
-			goto error;
+			succeeded = false;
+			break;
 		}
 	}
-error:
 	stop();
 	errorstream << "Error executing CSM" << std::endl;
 }

@@ -19,12 +19,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <stdio.h>
+#include "debug.h"
+#include "threading/ipc_channel.h"
 
-#define CSM_SCRIPT_READ_FD 3
-#define CSM_SCRIPT_WRITE_FD 4
+extern IPCChannelEnd g_csm_script_ipc;
 
-extern FILE *g_csm_from_controller;
-extern FILE *g_csm_to_controller;
+#define CSM_IPC(call) \
+	do { \
+		if (!g_csm_script_ipc.call) \
+			FATAL_ERROR("CSM process IPC failed"); \
+	} while (0)
+
+inline size_t csm_recv_size() { return g_csm_script_ipc.getRecvSize(); }
+
+inline const void *csm_recv_data() { return g_csm_script_ipc.getRecvData(); }
 
 int csm_script_main(int argc, char *argv[]);

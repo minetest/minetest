@@ -19,31 +19,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes.h"
-#include "util/Optional.h"
-#include <stdio.h>
-#include <vector>
+#include "irr_v3d.h"
 
-enum class CSMMsgType {
+enum CSMMsgType {
+	CSM_INVALID_MSG_TYPE = -1,
+
 	// controller -> script
-	C2S_RUN_STEP,
-	C2S_RUN_LOAD_MODS,
-	C2S_GET_NODE,
+	CSM_C2S_RUN_STEP,
 
 	// script -> controller
-	S2C_DONE,
-	S2C_GET_NODE,
+	CSM_S2C_DONE,
+	CSM_S2C_GET_NODE,
 };
 
-struct CSMRecvMsg {
-	CSMMsgType type;
-	std::vector<u8> data;
+struct CSMC2SRunStep {
+	CSMMsgType type = CSM_C2S_RUN_STEP;
+	float dtime;
 };
 
-bool csm_send_msg(FILE *f, CSMMsgType type, size_t size, const void *data);
-
-Optional<CSMRecvMsg> csm_recv_msg(FILE *f);
-
-void csm_send_msg_ex(FILE *f, CSMMsgType type, size_t size, const void *data);
-
-CSMRecvMsg csm_recv_msg_ex(FILE *f);
+struct CSMS2CGetNode {
+	CSMMsgType type = CSM_S2C_GET_NODE;
+	v3s16 pos;
+};

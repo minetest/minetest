@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <stdio.h>
 #include <unistd.h>
+#include "threading/ipc_channel.h"
 
 class Client;
 
@@ -39,10 +39,11 @@ public:
 	void runStep(float dtime);
 
 private:
-	void listen();
+	void listen(bool succeeded);
 
 	Client *const m_client;
+	int m_timeout = 1000;
 	pid_t m_script_pid = 0;
-	FILE *m_to_script = nullptr;
-	FILE *m_from_script = nullptr;
+	IPCChannelShared *m_ipc_shared = nullptr;
+	IPCChannelEnd m_ipc;
 };

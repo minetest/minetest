@@ -29,50 +29,58 @@ extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 }
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
-FILE *g_csm_from_controller = nullptr;
-FILE *g_csm_to_controller = nullptr;
+IPCChannelEnd g_csm_script_ipc;
 
 int csm_script_main(int argc, char *argv[])
 {
-	g_csm_from_controller = fdopen(CSM_SCRIPT_READ_FD, "rb");
-	g_csm_to_controller = fdopen(CSM_SCRIPT_WRITE_FD, "wb");
-	FATAL_ERROR_IF(!g_csm_from_controller || !g_csm_to_controller,
-			"CSM process unable to open pipe");
+	int shm = argc >= 3 ? shm_open(argv[2], O_RDWR, 0) : -1;
+	FATAL_ERROR_IF(shm == -1, "CSM process unable to open shared memory");
+	shm_unlink(argv[2]);
+
+	IPCChannelShared *ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
+			PROT_READ | PROT_WRITE, MAP_SHARED, shm, 0);
+	FATAL_ERROR_IF(ipc_shared == MAP_FAILED, "CSM process unable to map shared memory");
+
+	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared);
 
 	CSMGameDef gamedef;
 	CSMScripting script(&gamedef);
 
-	CSMRecvMsg msg = csm_recv_msg_ex(g_csm_from_controller);
-	if (msg.type == CSMMsgType::C2S_RUN_LOAD_MODS) {
-		{
-			std::istringstream is(std::string((char *)msg.data.data(), msg.data.size()),
-					std::ios::binary);
-			msg.data.clear();
-			msg.data.shrink_to_fit();
-			gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
-			gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
-		}
+	CSM_IPC(recv());
 
-		csm_send_msg_ex(g_csm_to_controller, CSMMsgType::S2C_DONE, 0, nullptr);
+	{
+		std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
+				std::ios::binary);
+		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
+		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
+	}
 
-		while (true) {
-			msg = csm_recv_msg_ex(g_csm_from_controller);
-			switch (msg.type) {
-			case CSMMsgType::C2S_RUN_STEP:
-				if (msg.data.size() >= sizeof(float)) {
-					float dtime;
-					memcpy(&dtime, msg.data.data(), sizeof(float));
-					script.environment_Step(dtime);
-				}
-				break;
-			default:
-				break;
+	CSM_IPC(exchange(CSM_S2C_DONE));
+
+	while (true) {
+		size_t size = csm_recv_size();
+		const void *data = csm_recv_data();
+		CSMMsgType type = CSM_INVALID_MSG_TYPE;
+		if (size >= sizeof(type))
+			memcpy(&type, data, sizeof(type));
+		switch (type) {
+		case CSM_C2S_RUN_STEP:
+			if (size >= sizeof(CSMC2SRunStep)) {
+				CSMC2SRunStep msg;
+				memcpy(&msg, data, sizeof(msg));
+				script.environment_Step(msg.dtime);
 			}
-			csm_send_msg_ex(g_csm_to_controller, CSMMsgType::S2C_DONE, 0, nullptr);
+			break;
+		default:
+			break;
 		}
+		CSM_IPC(exchange(CSM_S2C_DONE));
 	}
 
 	return 0;
