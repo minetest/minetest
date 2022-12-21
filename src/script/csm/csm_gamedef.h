@@ -51,6 +51,4 @@ public:
 private:
 	IWritableItemDefManager *m_itemdef;
 	NodeDefManager *m_nodedef;
-	FILE *m_from_controller;
-	FILE *m_to_controller;
 };
