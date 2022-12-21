@@ -32,15 +32,16 @@ Special settings
 There are some settings especially useful for Android users. Minetest's config
 file can usually be found at:
 
-old version: /sdcard/Minetest/ or /storage/emulated/0/ if stored in device, if stored in SD card: /storage/emulated/(varying folder name)/
-new version: /sdcard/Android/data/net.minetest.minetest/ or /storage/emulated/0/Android/data/net.minetest.minetest/ if stored in device, if stored in SD card: /storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/
-**NOTE: since Android 11 you can't access Android folder with normal methods
-* gui_scaling: this is a user-specified scaling factor for the GUI- In case
+* old version: ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
+* new version: ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
+* NOTE: since Android 11 you can't access Android folder with normal methods
+## Useful settings:
+
+gui_scaling: this is a user-specified scaling factor for the GUI- In case
                main menu is too big or small on your device, try changing this
                value.
 
-Requirements
-------------
+## Requirements
 
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
@@ -56,8 +57,7 @@ versions may or may not work.
 Additionally, you'll need to have an Internet connection available on the
 build system, as the Android build will download some source packages.
 
-Build
------
+## Build
 
 The new build system Minetest Android is fully functional and is designed to
 speed up and simplify the work, as well as adding the possibility of
