@@ -30,8 +30,11 @@ When a menu or inventory is displayed:
 Special settings
 ----------------
 There are some settings especially useful for Android users. Minetest's config
-file can usually be found at /mnt/sdcard/Minetest.
+file can usually be found at:
 
+old version: /sdcard/Minetest/ or /storage/emulated/0/ if stored in device, if stored in SD card: /storage/emulated/(varying folder name)/
+new version: /sdcard/Android/data/net.minetest.minetest/ or /storage/emulated/0/Android/data/net.minetest.minetest/ if stored in device, if stored in SD card: /storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/
+**NOTE: since Android 11 you can't access Android folder with normal methods
 * gui_scaling: this is a user-specified scaling factor for the GUI- In case
                main menu is too big or small on your device, try changing this
                value.
