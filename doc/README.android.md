@@ -14,11 +14,11 @@ shown), the following controls are available:
 * touch shown buttons: press button
 * Buttons:
 
-** left upper corner: chat
-** right lower corner: jump
-** right lower corner: crouch
-** left lower corner (Joystick): walk/step...
-** left lower corner: display inventory
+1. left upper corner: chat
+2. right lower corner: jump
+3. right lower corner: crouch
+4. left lower corner (Joystick): walk/step...
+5. left lower corner: display inventory
 
 When a menu or inventory is displayed:
 * double tap outside menu area: close menu
