@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <type_traits>
 #include <vector>
 
-#define IPC_CHANNEL_MSG_SIZE 1024U
+#define IPC_CHANNEL_MSG_SIZE 8192U
 
 struct IPCChannelBuffer
 {
