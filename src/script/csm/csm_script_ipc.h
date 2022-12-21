@@ -19,4 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-int csm_script_main(int argc, char *argv[]);
+#include "debug.h"
+#include "threading/ipc_channel.h"
+
+extern IPCChannelEnd g_csm_script_ipc;
+
+#define CSM_IPC(call) \
+	do { \
+		if (!g_csm_script_ipc.call) \
+			FATAL_ERROR("CSM process IPC failed"); \
+	} while (0)
+
+inline size_t csm_recv_size() { return g_csm_script_ipc.getRecvSize(); }
+
+inline const void *csm_recv_data() { return g_csm_script_ipc.getRecvData(); }

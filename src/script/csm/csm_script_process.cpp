@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_script_process.h"
 #include "csm_gamedef.h"
 #include "csm_message.h"
+#include "csm_script_ipc.h"
 #include "csm_scripting.h"
 #include "cpp_api/s_base.h"
 #include "debug.h"

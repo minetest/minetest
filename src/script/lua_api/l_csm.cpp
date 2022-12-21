@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
 #include "csm/csm_message.h"
-#include "csm/csm_script_process.h"
+#include "csm/csm_script_ipc.h"
 #include "itemdef.h"
 #include "nodedef.h"
 

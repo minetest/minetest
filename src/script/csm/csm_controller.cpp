@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "csm_controller.h"
-#include "csm_script_process.h"
 #include "csm_message.h"
 #include "client/client.h"
 #include "filesys.h"
