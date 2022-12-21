@@ -981,7 +981,7 @@ These sound files are played back by the engine if provided.
  * `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
  * `player_jump`: Played when the local player jumps
- * `default_dig_<groupname>`: Default node digging sound
+ * `default_dig_<groupname>`: Default node digging sound (gain = 0.5)
    (see node sound definition for details)
 
 Registered definitions
@@ -8438,7 +8438,7 @@ Used by `minetest.register_node`.
             dig = <SimpleSoundSpec> or "__group",
             -- While digging node.
             -- If `"__group"`, then the sound will be
-            -- `default_dig_<groupname>`, where `<groupname>` is the
+            -- `{name = "default_dig_<groupname>", gain = 0.5}` , where `<groupname>` is the
             -- name of the item's digging group with the fastest digging time.
             -- In case of a tie, one of the sounds will be played (but we
             -- cannot predict which one)
