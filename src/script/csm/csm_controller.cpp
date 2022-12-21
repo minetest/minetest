@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 CSMController::CSMController(Client *client):
 	m_client(client)
@@ -116,6 +117,7 @@ void CSMController::stop()
 		return;
 
 	kill(m_script_pid, SIGKILL);
+	waitpid(m_script_pid, nullptr, 0);
 	m_script_pid = 0;
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 }
