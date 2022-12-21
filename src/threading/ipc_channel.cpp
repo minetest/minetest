@@ -21,11 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ipc_channel.h"
 #include "debug.h"
 #include <errno.h>
+#include <immintrin.h>
 #include <linux/futex.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
 #include <utility>
+
+static void busy_wait(int n)
+{
+	for (int i = 0; i < n; i++)
+		_mm_pause();
+}
 
 static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 		const struct timespec *timeout, u32 *uaddr2, u32 val3) noexcept
@@ -35,9 +42,13 @@ static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 
 static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 {
-	// posted?
-	if (buf->futex.exchange(0) == 1)
-		return true; // yes
+	// try busy waiting
+	for (int i = 0; i < 100; i++) {
+		// posted?
+		if (buf->futex.exchange(0) == 1)
+			return true; // yes
+		busy_wait(40);
+	}
 	// wait with futex
 	while (true) {
 		// write 2 to show that we're futexing
