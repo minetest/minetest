@@ -1,7 +1,7 @@
-Minetest: Android version
+# Minetest: Android version
 =========================
 
-Controls
+## Controls
 --------
 The Android port doesn't support everything you can do on PC due to the
 limited capabilities of common devices. What can be done is described
