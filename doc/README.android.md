@@ -1,8 +1,7 @@
 # Minetest: Android version
-=========================
 
 ## Controls
---------
+
 The Android port doesn't support everything you can do on PC due to the
 limited capabilities of common devices. What can be done is described
 below:
@@ -28,8 +27,7 @@ When a menu or inventory is displayed:
 * tap on an empty slot: if you selected a stack already, that stack is placed here
 * drag and drop: touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
-  --> places a single item from dragged stack into current (first touched) slot
-
+  --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
 Special settings
 ----------------
 There are some settings especially useful for Android users. Minetest's config
