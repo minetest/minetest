@@ -43,6 +43,7 @@ public:
 	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
 	void initializeSecurityClient();
+	void initializeSecurityCSM();
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
 	// Loads a string as Lua code safely (doesn't allow bytecode).

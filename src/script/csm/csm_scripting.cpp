@@ -32,6 +32,8 @@ CSMScripting::CSMScripting(CSMGameDef *gamedef):
 
 	SCRIPTAPI_PRECHECKHEADER
 
+	initializeSecurityCSM();
+
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
 

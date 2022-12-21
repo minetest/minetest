@@ -21,11 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_gamedef.h"
 #include "csm_message.h"
 #include "csm_scripting.h"
+#include "cpp_api/s_base.h"
 #include "debug.h"
+#include "filesys.h"
 #include "itemdef.h"
 #include "log.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
+#include "porting.h"
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -65,7 +68,7 @@ static CSMLogOutput g_log_output;
 
 int csm_script_main(int argc, char *argv[])
 {
-	FATAL_ERROR_IF(argc < 3, "Too few arguments to CSM process");
+	FATAL_ERROR_IF(argc < 4, "Too few arguments to CSM process");
 
 	int shm = shm_open(argv[2], O_RDWR, 0);
 	shm_unlink(argv[2]);
@@ -84,6 +87,12 @@ int csm_script_main(int argc, char *argv[])
 	CSMGameDef gamedef;
 	CSMScripting script(&gamedef);
 
+	{
+		std::string client_path = argv[3];
+		std::string builtin_path = client_path + DIR_DELIM "csmbuiltin";
+		gamedef.scanModIntoMemory(BUILTIN_MOD_NAME, builtin_path);
+	}
+
 	CSM_IPC(recv());
 
 	g_can_log = true;
@@ -94,6 +103,9 @@ int csm_script_main(int argc, char *argv[])
 		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 	}
+
+	script.loadModFromMemory(BUILTIN_MOD_NAME);
+	script.checkSetByBuiltin();
 
 	g_can_log = false;
 

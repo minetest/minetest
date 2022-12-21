@@ -33,6 +33,7 @@ minetest = core
 local scriptdir = core.get_builtin_path()
 local gamepath = scriptdir .. "game" .. DIR_DELIM
 local clientpath = scriptdir .. "client" .. DIR_DELIM
+local csmpath = scriptdir .. "csm" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
 
@@ -68,6 +69,8 @@ elseif INIT == "async_game" then
 	dofile(asyncpath .. "game.lua")
 elseif INIT == "client" then
 	dofile(clientpath .. "init.lua")
+elseif INIT == "csm" then
+	dofile(csmpath .. "init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end

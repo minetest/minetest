@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_script_process.h"
 #include "csm_message.h"
 #include "client/client.h"
+#include "filesys.h"
 #include "log.h"
 #include "map.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
+#include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
 #include <errno.h>
@@ -52,7 +54,9 @@ bool CSMController::start()
 
 	std::string shm_name;
 
-	const char *argv[] = {"minetest", "--csm", nullptr, nullptr};
+	std::string client_path = porting::path_user + DIR_DELIM "client";
+
+	const char *argv[] = {"minetest", "--csm", nullptr, client_path.c_str(), nullptr};
 
 	int shm = -1;
 	for (int i = 0; i < 100; i++) { // 100 tries
