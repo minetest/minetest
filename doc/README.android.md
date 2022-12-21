@@ -13,12 +13,11 @@ shown), the following controls are available:
 * long tap: dig node
 * touch shown buttons: press button
 * Buttons:
+
 ** left upper corner: chat
 ** right lower corner: jump
 ** right lower corner: crouch
-** left lower corner: walk/step...
-   left up right
-       down
+** left lower corner (Joystick): walk/step...
 ** left lower corner: display inventory
 
 When a menu or inventory is displayed:
