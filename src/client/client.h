@@ -484,6 +484,7 @@ private:
 
 
 	MeshUpdateThread m_mesh_update_thread;
+	int m_avg_mesh_queue_size {0};
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;

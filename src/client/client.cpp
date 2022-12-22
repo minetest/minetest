@@ -337,6 +337,7 @@ Client::~Client()
 
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
+	
 	while (!m_mesh_update_thread.m_queue_out.empty()) {
 		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 		delete r.mesh;
@@ -547,7 +548,9 @@ void Client::step(float dtime)
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
-		while (!m_mesh_update_thread.m_queue_out.empty())
+		auto mesh_queue_size = m_mesh_update_thread.m_queue_out.size();
+		m_avg_mesh_queue_size = MYMIN(mesh_queue_size, 0.95 * m_avg_mesh_queue_size + 0.05 * mesh_queue_size);
+		while (!m_mesh_update_thread.m_queue_out.empty() && num_processed_meshes < 0.33 * m_avg_mesh_queue_size)
 		{
 			num_processed_meshes++;
 

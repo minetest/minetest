@@ -284,6 +284,8 @@ void MeshUpdateWorkerThread::doUpdate()
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, *m_camera_offset);
 
+		
+
 		MeshUpdateResult r;
 		r.p = q->p;
 		r.mesh = mesh_new;

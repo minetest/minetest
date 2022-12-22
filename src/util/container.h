@@ -227,6 +227,11 @@ public:
 		return t;
 	}
 
+	std::size_t size()
+	{
+		return m_queue.size();
+	}
+
 protected:
 	std::mutex &getMutex() { return m_mutex; }
 
