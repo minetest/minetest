@@ -40,7 +40,15 @@ file can usually be found at:
 1. gui_scaling: this is a user-specified scaling factor for the GUI in case
                main menu is too big or small on your device, try changing this
                value.
-
+## Requirements
+### Minimum:
+1. Graphic: OpenGL ES 1.0
+2. Android version: Android 4.0 (API Level 14)
+3. RAM: 1 GB
+### Recommended:
+1. Graphic: OpenGL ES 2.0
+2. Android version: Android 5.0 (API Level 20)
+3. RAM: 3 GB
 ## Building Requirements
 
 In order to build, your PC has to be set up to build Minetest in the usual
