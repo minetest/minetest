@@ -41,29 +41,52 @@ extern "C" {
 #include <sys/stat.h>
 #include <utility>
 
-static bool g_can_log = false;
-static std::vector<std::pair<LogLevel, std::string>> g_waiting_logs;
+namespace {
 
 class CSMLogOutput : public ICombinedLogOutput {
+public:
 	void logRaw(LogLevel level, const std::string &line) override
 	{
-		g_waiting_logs.emplace_back(level, line);
-		if (g_can_log) {
-			std::vector<u8> send;
-			for (const auto &line : g_waiting_logs) {
-				CSMS2CLog log;
-				log.level = line.first;
-				send.resize(sizeof(log) + line.second.size());
-				memcpy(send.data(), &log, sizeof(log));
-				memcpy(send.data() + sizeof(log), line.second.data(), line.second.size());
-				CSM_IPC(exchange(send.size(), send.data()));
-			}
-			g_waiting_logs.clear();
+		if (m_can_log) {
+			sendLog(level, line);
+		} else {
+			m_waiting_logs.emplace_back(level, line);
 		}
 	}
+
+	void startLogging()
+	{
+		m_can_log = true;
+		for (const auto &log : m_waiting_logs) {
+			sendLog(log.first, log.second);
+		}
+		m_waiting_logs.clear();
+	}
+
+	void stopLogging()
+	{
+		m_can_log = false;
+	}
+
+private:
+	void sendLog(LogLevel level, const std::string &line)
+	{
+		CSMS2CLog log;
+		log.level = level;
+		m_send_data.resize(sizeof(log) + line.size());
+		memcpy(m_send_data.data(), &log, sizeof(log));
+		memcpy(m_send_data.data() + sizeof(log), line.data(), line.size());
+		CSM_IPC(exchange(m_send_data.size(), m_send_data.data()));
+	}
+
+	bool m_can_log;
+	std::vector<std::pair<LogLevel, std::string>> m_waiting_logs;
+	std::vector<u8> m_send_data;
 };
 
-static CSMLogOutput g_log_output;
+CSMLogOutput g_log_output;
+
+} // namespace
 
 int csm_script_main(int argc, char *argv[])
 {
@@ -94,11 +117,12 @@ int csm_script_main(int argc, char *argv[])
 
 	CSM_IPC(recv());
 
-	g_can_log = true;
-
 	{
 		std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
 				std::ios::binary);
+
+		g_log_output.startLogging();
+
 		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 	}
@@ -106,7 +130,7 @@ int csm_script_main(int argc, char *argv[])
 	script.loadModFromMemory(BUILTIN_MOD_NAME);
 	script.checkSetByBuiltin();
 
-	g_can_log = false;
+	g_log_output.stopLogging();
 
 	CSM_IPC(exchange(CSM_S2C_DONE));
 
@@ -116,19 +140,19 @@ int csm_script_main(int argc, char *argv[])
 		CSMMsgType type = CSM_INVALID_MSG_TYPE;
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
-		g_can_log = true;
 		switch (type) {
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;
 				memcpy(&msg, data, sizeof(msg));
+				g_log_output.startLogging();
 				script.environment_Step(msg.dtime);
 			}
 			break;
 		default:
 			break;
 		}
-		g_can_log = false;
+		g_log_output.stopLogging();
 		CSM_IPC(exchange(CSM_S2C_DONE));
 	}
 
