@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "nodedef.h"
 #include "porting.h"
+#include "util/string.h"
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -109,10 +110,24 @@ int csm_script_main(int argc, char *argv[])
 	CSMGameDef gamedef;
 	CSMScripting script(&gamedef);
 
+	std::vector<std::string> mods;
+
 	{
 		std::string client_path = argv[3];
 		std::string builtin_path = client_path + DIR_DELIM "csmbuiltin";
+		std::string mods_path = client_path + DIR_DELIM "csm";
+
 		gamedef.scanModIntoMemory(BUILTIN_MOD_NAME, builtin_path);
+		std::vector<fs::DirListNode> mod_dirs = fs::GetDirListing(mods_path);
+		for (const fs::DirListNode &dir : mod_dirs) {
+			if (dir.dir) {
+				size_t number = mystoi(dir.name.substr(0, 5), 0, 99999);
+				std::string name = dir.name.substr(5);
+				gamedef.scanModIntoMemory(name, mods_path + DIR_DELIM + dir.name);
+				mods.resize(number + 1);
+				mods[number] = std::move(name);
+			}
+		}
 	}
 
 	CSM_IPC(recv());
@@ -129,6 +144,10 @@ int csm_script_main(int argc, char *argv[])
 
 	script.loadModFromMemory(BUILTIN_MOD_NAME);
 	script.checkSetByBuiltin();
+	for (const std::string &mod : mods) {
+		if (!mod.empty())
+			script.loadModFromMemory(mod);
+	}
 
 	g_log_output.stopLogging();
 
