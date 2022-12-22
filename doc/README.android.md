@@ -32,12 +32,12 @@ Special settings
 There are some settings especially useful for Android users. Minetest's config
 file can usually be found at:
 
-* old version: ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
-* new version: ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
+* old version (Before 5.4.2): ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
+* new version (After 5.4.2): ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
 
-## Useful settings:
+## Useful settings
 
-gui_scaling: this is a user-specified scaling factor for the GUI- In case
+1. gui_scaling: this is a user-specified scaling factor for the GUI in case
                main menu is too big or small on your device, try changing this
                value.
 
