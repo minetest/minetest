@@ -41,7 +41,7 @@ file can usually be found at:
                main menu is too big or small on your device, try changing this
                value.
 
-## Requirements
+## Building Requirements
 
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
