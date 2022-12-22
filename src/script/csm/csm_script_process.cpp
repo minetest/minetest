@@ -41,8 +41,6 @@ extern "C" {
 #include <sys/stat.h>
 #include <utility>
 
-IPCChannelEnd g_csm_script_ipc;
-
 static bool g_can_log = false;
 static std::vector<std::pair<LogLevel, std::string>> g_waiting_logs;
 
