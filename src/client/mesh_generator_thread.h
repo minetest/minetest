@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
+#include <vector>
+#include <memory>
 
 struct CachedMapBlockData
 {
@@ -111,7 +113,24 @@ struct MeshUpdateResult
 	MeshUpdateResult() = default;
 };
 
-class MeshUpdateThread : public UpdateThread
+class MeshUpdateWorkerThread : public UpdateThread
+{
+public:
+	MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MutexedQueue<MeshUpdateResult> *queue_out, v3s16 *camera_offset);
+
+protected:
+	virtual void doUpdate();
+
+private:
+	MeshUpdateQueue *m_queue_in;
+	MutexedQueue<MeshUpdateResult> *m_queue_out;
+	v3s16 *m_camera_offset;
+
+	// TODO: Add callback to update these when g_settings changes
+	int m_generation_interval;
+};
+
+class MeshUpdateThread
 {
 public:
 	MeshUpdateThread(Client *client);
@@ -121,15 +140,20 @@ public:
 	void updateBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent,
 			bool update_neighbors = false);
 
-	v3s16 m_camera_offset;
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
+	v3s16 m_camera_offset;
+
+	void start();
+	void stop();
+	void wait();
+
+	bool isRunning();
+
 private:
+	void deferUpdate();
+
+
 	MeshUpdateQueue m_queue_in;
-
-	// TODO: Add callback to update these when g_settings changes
-	int m_generation_interval;
-
-protected:
-	virtual void doUpdate();
+	std::vector<std::unique_ptr<MeshUpdateWorkerThread>> m_workers;
 };

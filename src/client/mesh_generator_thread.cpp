@@ -264,15 +264,56 @@ void MeshUpdateQueue::cleanupCache()
 }
 
 /*
+	MeshUpdateWorkerThread
+*/
+
+MeshUpdateWorkerThread::MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MutexedQueue<MeshUpdateResult> *queue_out, v3s16 *camera_offset) :
+		UpdateThread("Mesh"), m_queue_in(queue_in), m_queue_out(queue_out), m_camera_offset(camera_offset)
+{
+	m_generation_interval = g_settings->getU16("mesh_generation_interval");
+	m_generation_interval = rangelim(m_generation_interval, 0, 50);
+}
+
+void MeshUpdateWorkerThread::doUpdate()
+{
+	QueuedMeshUpdate *q;
+	while ((q = m_queue_in->pop())) {
+		if (m_generation_interval)
+			sleep_ms(m_generation_interval);
+		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
+
+		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, *m_camera_offset);
+
+		MeshUpdateResult r;
+		r.p = q->p;
+		r.mesh = mesh_new;
+		r.ack_block_to_server = q->ack_block_to_server;
+		r.urgent = q->urgent;
+
+		m_queue_out->push_back(r);
+
+		delete q;
+	}
+}
+
+/*
 	MeshUpdateThread
 */
 
 MeshUpdateThread::MeshUpdateThread(Client *client):
-	UpdateThread("Mesh"),
 	m_queue_in(client)
 {
-	m_generation_interval = g_settings->getU16("mesh_generation_interval");
-	m_generation_interval = rangelim(m_generation_interval, 0, 50);
+	int number_of_threads = rangelim(g_settings->getS32("mesh_generation_threads"), 0, 32);
+
+	// Automatically use 33% of the system cores for mesh generation
+	if (number_of_threads == 0)
+		number_of_threads = std::thread::hardware_concurrency() / 3;
+	
+	// use at least one thread
+	number_of_threads = MYMAX(1, number_of_threads);
+
+	for (int i = 0; i < number_of_threads; i++)
+		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, &m_queue_out, &m_camera_offset));
 }
 
 void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
@@ -298,24 +339,34 @@ void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 	deferUpdate();
 }
 
-void MeshUpdateThread::doUpdate()
+void MeshUpdateThread::deferUpdate()
 {
-	QueuedMeshUpdate *q;
-	while ((q = m_queue_in.pop())) {
-		if (m_generation_interval)
-			sleep_ms(m_generation_interval);
-		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
+	for (auto &thread : m_workers)
+		thread->deferUpdate();
+}
 
-		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
+void MeshUpdateThread::start()
+{
+	for (auto &thread: m_workers)
+		thread->start();
+}
 
-		MeshUpdateResult r;
-		r.p = q->p;
-		r.mesh = mesh_new;
-		r.ack_block_to_server = q->ack_block_to_server;
-		r.urgent = q->urgent;
+void MeshUpdateThread::stop()
+{
+	for (auto &thread: m_workers)
+		thread->stop();
+}
 
-		m_queue_out.push_back(r);
+void MeshUpdateThread::wait()
+{
+	for (auto &thread: m_workers)
+		thread->wait();
+}
 
-		delete q;
-	}
+bool MeshUpdateThread::isRunning()
+{
+	for (auto &thread: m_workers)
+		if (thread->isRunning())
+			return true;
+	return false;
 }
