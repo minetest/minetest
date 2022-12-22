@@ -30,6 +30,9 @@ local function add_detached_inventories(player)
 		allow_put = function(inv, listname, index, stack, player)
 			return 0
 		end,
+		allow_take = function(inv, listname, index, stack, player)
+			return -1
+		end,
 	}, name)
 	local inv_trash = minetest.create_detached_inventory("chest_of_everything_trash_"..name, {
 		allow_take = function(inv, listname, index, stack, player)
