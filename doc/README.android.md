@@ -41,12 +41,14 @@ file can usually be found at:
 ## Requirements
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
-2. Android version: Android 4.0 (API Level 14)
-3. RAM: 1 GB
+2. Android version: Android 4.1 (API Level 16)
+3. Empty RAM: 500 MB
+4. Empty Storage: 20 MB
 ### Recommended:
 1. Graphic: OpenGL ES 2.0
-2. Android version: Android 5.0 (API Level 20)
-3. RAM: 3 GB
+2. Android version: No lowest recommended version
+3. Empty RAM: 850 MB
+4. Empty Storage: 480 MB
 ## Building Requirements
 
 In order to build, your PC has to be set up to build Minetest in the usual
