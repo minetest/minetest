@@ -1,7 +1,5 @@
 # Minetest: Android version
-
 ## Controls
-
 The Android port doesn't support everything you can do on PC due to the
 limited capabilities of common devices. What can be done is described
 below:
@@ -27,8 +25,7 @@ When a menu or inventory is displayed:
 * drag and drop: touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
-Special settings
-----------------
+## File Path
 There are some settings especially useful for Android users. Minetest's config
 file can usually be found at:
 
@@ -36,7 +33,6 @@ file can usually be found at:
 * new version (After 5.4.2): ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
 * <br> [Learn more about Android directory](https://developer.android.com/training/data-storage/compatibility)
 ## Useful settings
-
 1. gui_scaling: this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
 ## Requirements
 ### Minimum:
@@ -50,7 +46,6 @@ file can usually be found at:
 3. Empty RAM: 850 MB
 4. Empty Storage: 480 MB
 ## Building Requirements
-
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
 In addition to what is required for Minetest in general, you will need the
@@ -66,7 +61,6 @@ Additionally, you'll need to have an Internet connection available on the
 build system, as the Android build will download some source packages.
 
 ## Build
-
 The new build system Minetest Android is fully functional and is designed to
 speed up and simplify the work, as well as adding the possibility of
 cross-platform build.
