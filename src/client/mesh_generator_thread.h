@@ -130,10 +130,10 @@ private:
 	int m_generation_interval;
 };
 
-class MeshUpdateThread
+class MeshUpdateManager
 {
 public:
-	MeshUpdateThread(Client *client);
+	MeshUpdateManager(Client *client);
 
 	// Caches the block at p and its neighbors (if needed) and queues a mesh
 	// update for the block at p

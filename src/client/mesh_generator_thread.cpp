@@ -299,10 +299,10 @@ void MeshUpdateWorkerThread::doUpdate()
 }
 
 /*
-	MeshUpdateThread
+	MeshUpdateManager
 */
 
-MeshUpdateThread::MeshUpdateThread(Client *client):
+MeshUpdateManager::MeshUpdateManager(Client *client):
 	m_queue_in(client)
 {
 	int number_of_threads = rangelim(g_settings->getS32("mesh_generation_threads"), 0, 32);
@@ -318,7 +318,7 @@ MeshUpdateThread::MeshUpdateThread(Client *client):
 		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, &m_queue_out, &m_camera_offset));
 }
 
-void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
+void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 		bool urgent, bool update_neighbors)
 {
 	static thread_local const bool many_neighbors =
@@ -341,31 +341,31 @@ void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 	deferUpdate();
 }
 
-void MeshUpdateThread::deferUpdate()
+void MeshUpdateManager::deferUpdate()
 {
 	for (auto &thread : m_workers)
 		thread->deferUpdate();
 }
 
-void MeshUpdateThread::start()
+void MeshUpdateManager::start()
 {
 	for (auto &thread: m_workers)
 		thread->start();
 }
 
-void MeshUpdateThread::stop()
+void MeshUpdateManager::stop()
 {
 	for (auto &thread: m_workers)
 		thread->stop();
 }
 
-void MeshUpdateThread::wait()
+void MeshUpdateManager::wait()
 {
 	for (auto &thread: m_workers)
 		thread->wait();
 }
 
-bool MeshUpdateThread::isRunning()
+bool MeshUpdateManager::isRunning()
 {
 	for (auto &thread: m_workers)
 		if (thread->isRunning())

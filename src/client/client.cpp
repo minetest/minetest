@@ -111,7 +111,7 @@ Client::Client(
 	m_sound(sound),
 	m_event(event),
 	m_rendering_engine(rendering_engine),
-	m_mesh_update_thread(this),
+	m_mesh_update_manager(this),
 	m_env(
 		new ClientMap(this, rendering_engine, control, 666),
 		tsrc, this
@@ -312,7 +312,7 @@ void Client::Stop()
 	if (m_mods_loaded)
 		m_script->on_shutdown();
 	//request all client managed threads to stop
-	m_mesh_update_thread.stop();
+	m_mesh_update_manager.stop();
 	// Save local server map
 	if (m_localdb) {
 		infostream << "Local map saving ended." << std::endl;
@@ -325,7 +325,7 @@ void Client::Stop()
 
 bool Client::isShutdown()
 {
-	return m_shutdown || !m_mesh_update_thread.isRunning();
+	return m_shutdown || !m_mesh_update_manager.isRunning();
 }
 
 Client::~Client()
@@ -335,11 +335,11 @@ Client::~Client()
 
 	deleteAuthData();
 
-	m_mesh_update_thread.stop();
-	m_mesh_update_thread.wait();
+	m_mesh_update_manager.stop();
+	m_mesh_update_manager.wait();
 	
-	while (!m_mesh_update_thread.m_queue_out.empty()) {
-		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
+	while (!m_mesh_update_manager.m_queue_out.empty()) {
+		MeshUpdateResult r = m_mesh_update_manager.m_queue_out.pop_frontNoEx();
 		delete r.mesh;
 	}
 
@@ -548,16 +548,16 @@ void Client::step(float dtime)
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
-		auto mesh_queue_size = m_mesh_update_thread.m_queue_out.size();
+		auto mesh_queue_size = m_mesh_update_manager.m_queue_out.size();
 		m_avg_mesh_queue_size = MYMIN(mesh_queue_size, 0.95 * m_avg_mesh_queue_size + 0.05 * mesh_queue_size);
-		while (!m_mesh_update_thread.m_queue_out.empty() && num_processed_meshes < 0.33 * m_avg_mesh_queue_size)
+		while (!m_mesh_update_manager.m_queue_out.empty() && num_processed_meshes < 0.33 * m_avg_mesh_queue_size)
 		{
 			num_processed_meshes++;
 
 			MinimapMapblock *minimap_mapblock = NULL;
 			bool do_mapper_update = true;
 
-			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
+			MeshUpdateResult r = m_mesh_update_manager.m_queue_out.pop_frontNoEx();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if (block) {
 				// Delete the old mesh
@@ -1658,12 +1658,12 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	if (b == NULL)
 		return;
 
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
 }
 
 void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
 }
 
 void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
@@ -1677,7 +1677,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 	v3s16 blockpos = getNodeBlockPos(nodepos);
 	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
 	// Leading edge
 	if (nodepos.X == blockpos_relative.X)
 		addUpdateMeshTask(blockpos + v3s16(-1, 0, 0), false, urgent);
@@ -1796,7 +1796,7 @@ void Client::afterContentReceived()
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
-	m_mesh_update_thread.start();
+	m_mesh_update_manager.start();
 
 	m_state = LC_Ready;
 	sendReady();
