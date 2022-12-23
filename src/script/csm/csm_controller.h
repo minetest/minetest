@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <unistd.h>
 #include "threading/ipc_channel.h"
+#include "util/basic_macros.h"
 
 class Client;
 
@@ -29,6 +30,8 @@ class CSMController
 public:
 	CSMController(Client *client);
 	~CSMController();
+
+	DISABLE_CLASS_COPY(CSMController)
 
 	bool start();
 	void stop();
