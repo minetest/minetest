@@ -77,6 +77,13 @@ bool CSMController::start()
 	if (m_ipc_shared == MAP_FAILED)
 		goto error_mmap;
 
+	try {
+		new (m_ipc_shared) IPCChannelShared;
+		m_ipc = IPCChannelEnd::makeA(m_ipc_shared);
+	} catch (...) {
+		goto error_make_ipc;
+	}
+
 	posix_spawn_file_actions_t file_actions;
 	if (posix_spawn_file_actions_init(&file_actions) != 0)
 		goto error_file_actions_init;
@@ -91,8 +98,6 @@ bool CSMController::start()
 	posix_spawn_file_actions_destroy(&file_actions);
 	close(shm);
 
-	new (m_ipc_shared) IPCChannelShared;
-	m_ipc = IPCChannelEnd::makeA(m_ipc_shared);
 	return true;
 
 error_spawn:
@@ -100,6 +105,7 @@ error_spawn:
 error_file_actions:
 	posix_spawn_file_actions_destroy(&file_actions);
 error_file_actions_init:
+error_make_ipc:
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 error_mmap:
 error_ftruncate:

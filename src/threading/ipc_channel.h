@@ -46,12 +46,12 @@ class IPCChannelEnd
 public:
 	IPCChannelEnd() = default;
 
-	static IPCChannelEnd makeA(IPCChannelShared *shared) noexcept
+	static IPCChannelEnd makeA(IPCChannelShared *shared)
 	{
 		return IPCChannelEnd(&shared->a, &shared->b);
 	}
 
-	static IPCChannelEnd makeB(IPCChannelShared *shared) noexcept
+	static IPCChannelEnd makeB(IPCChannelShared *shared)
 	{
 		return IPCChannelEnd(&shared->b, &shared->a);
 	}
@@ -85,10 +85,7 @@ public:
 	inline const void *getRecvData() const noexcept { return m_recv.data(); }
 
 private:
-	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out) noexcept:
-			m_in(in), m_out(out)
-	{
-	}
+	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out): m_in(in), m_out(out) {}
 
 	bool sendSmall(size_t size, const void *data) noexcept;
 
