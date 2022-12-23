@@ -133,6 +133,20 @@ public:
 		return m_queue.empty();
 	}
 
+	void push_front(const T &t)
+	{
+		MutexAutoLock lock(m_mutex);
+		m_queue.push_front(t);
+		m_signal.post();
+	}
+
+	void push_front(T &&t)
+	{
+		MutexAutoLock lock(m_mutex);
+		m_queue.push_front(std::move(t));
+		m_signal.post();
+	}
+
 	void push_back(const T &t)
 	{
 		MutexAutoLock lock(m_mutex);

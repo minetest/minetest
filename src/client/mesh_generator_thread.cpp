@@ -292,7 +292,10 @@ void MeshUpdateWorkerThread::doUpdate()
 		r.ack_block_to_server = q->ack_block_to_server;
 		r.urgent = q->urgent;
 
-		m_queue_out->push_back(r);
+		if (r.urgent)
+			m_queue_out->push_front(r);
+		else
+			m_queue_out->push_back(r);
 
 		delete q;
 	}
