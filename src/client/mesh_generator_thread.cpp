@@ -308,11 +308,11 @@ void MeshUpdateWorkerThread::doUpdate()
 MeshUpdateManager::MeshUpdateManager(Client *client):
 	m_queue_in(client)
 {
-	int number_of_threads = rangelim(g_settings->getS32("mesh_generation_threads"), 0, 32);
+	int number_of_threads = rangelim(g_settings->getS32("mesh_generation_threads"), 0, 8);
 
-	// Automatically use 33% of the system cores for mesh generation
+	// Automatically use 33% of the system cores for mesh generation, max 4
 	if (number_of_threads == 0)
-		number_of_threads = std::thread::hardware_concurrency() / 3;
+		number_of_threads = MYMIN(4, Thread::getNumberOfProcessors() / 3);
 	
 	// use at least one thread
 	number_of_threads = MYMAX(1, number_of_threads);
