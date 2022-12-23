@@ -84,27 +84,17 @@ bool CSMController::start()
 		goto error_make_ipc;
 	}
 
-	posix_spawn_file_actions_t file_actions;
-	if (posix_spawn_file_actions_init(&file_actions) != 0)
-		goto error_file_actions_init;
-
-	if (posix_spawn_file_actions_addclose(&file_actions, shm) != 0)
-		goto error_file_actions;
+	close(shm);
+	shm = -1;
 
 	if (posix_spawn(&m_script_pid, "/proc/self/exe",
-			&file_actions, nullptr, (char *const *)argv, nullptr) != 0)
+			nullptr, nullptr, (char *const *)argv, nullptr) != 0)
 		goto error_spawn;
-
-	posix_spawn_file_actions_destroy(&file_actions);
-	close(shm);
 
 	return true;
 
 error_spawn:
 	m_script_pid = 0;
-error_file_actions:
-	posix_spawn_file_actions_destroy(&file_actions);
-error_file_actions_init:
 error_make_ipc:
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 error_mmap:
