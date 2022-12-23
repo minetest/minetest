@@ -107,7 +107,19 @@ int csm_script_main(int argc, char *argv[])
 	g_logger.addOutput(&g_log_output);
 	g_logger.registerThread("CSM");
 
+	CSM_IPC(recv());
+	std::string initial_recv((const char *)csm_recv_data(), csm_recv_size());
+
+	g_log_output.startLogging();
+
 	CSMGameDef gamedef;
+
+	{
+		std::istringstream is(std::move(initial_recv), std::ios::binary);
+		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
+		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
+	}
+
 	CSMScripting script(&gamedef);
 
 	std::vector<std::string> mods;
@@ -128,18 +140,6 @@ int csm_script_main(int argc, char *argv[])
 				mods[number] = std::move(name);
 			}
 		}
-	}
-
-	CSM_IPC(recv());
-
-	{
-		std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
-				std::ios::binary);
-
-		g_log_output.startLogging();
-
-		gamedef.getWritableItemDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
-		gamedef.getWritableNodeDefManager()->deSerialize(is, LATEST_PROTOCOL_VERSION);
 	}
 
 	script.loadModFromMemory(BUILTIN_MOD_NAME);
