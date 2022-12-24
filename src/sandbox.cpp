@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <linux/filter.h>
 #include <linux/seccomp.h>
 #include <stddef.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <unistd.h>
 
@@ -59,13 +60,13 @@ bool start_sandbox()
 		// Allow futex
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_futex, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
-		// Allow mmap/mmap2 if fd is -1
+		// Allow mmap/mmap2 with MAP_ANONYMOUS
 #if defined(__NR_mmap2)
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap2, 1, 0),
 #endif
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap, 0, 4),
-		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, SYSCALL_ARG(4)),
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, (__u32)-1, 0, 1),
+		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, SYSCALL_ARG(3)),
+		BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, MAP_ANONYMOUS, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS),
 		// Allow mprotect
