@@ -548,9 +548,7 @@ void Client::step(float dtime)
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
-		auto mesh_queue_size = m_mesh_update_manager.m_queue_out.size();
-		m_avg_mesh_queue_size = MYMAX(20, 0.95 * m_avg_mesh_queue_size + 0.05 * mesh_queue_size);
-		while (!m_mesh_update_manager.m_queue_out.empty() && num_processed_meshes < m_avg_mesh_queue_size)
+		while (!m_mesh_update_manager.m_queue_out.empty())
 		{
 			num_processed_meshes++;
 
