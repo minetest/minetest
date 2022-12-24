@@ -77,7 +77,7 @@ local function get_formspec(tabview, name, tabdata)
 		"container_end[]" ..
 
 		"container[9.75,0]" ..
-		"box[0,0;5.75,7;#666666]" ..
+		"box[0,0;5.75,7.1;#666666]" ..
 
 		-- Address / Port
 		"label[0.25,0.35;" .. fgettext("Address") .. "]" ..
@@ -148,7 +148,7 @@ local function get_formspec(tabview, name, tabdata)
 		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[0.25,1;9.25,5.75;servers;"
+		"table[0.25,1;9.25,5.8;servers;"
 
 	local servers = get_sorted_servers()
 
@@ -180,7 +180,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[15.5,7,false]real_coordinates[true]"
+	return retval, "size[15.5,7.1,false]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------
