@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "nodedef.h"
 #include "porting.h"
+#include "sandbox.h"
 #include "util/string.h"
 extern "C" {
 #include "lua.h"
@@ -141,6 +142,9 @@ int csm_script_main(int argc, char *argv[])
 			}
 		}
 	}
+
+	if (!start_sandbox())
+		warningstream << "Unable to start process sandbox" << std::endl;
 
 	script.loadModFromMemory(BUILTIN_MOD_NAME);
 	script.checkSetByBuiltin();
