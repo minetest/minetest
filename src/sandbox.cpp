@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <asm/unistd.h>
 #include <endian.h>
 #include <errno.h>
+#include <linux/audit.h>
 #include <linux/filter.h>
 #include <linux/seccomp.h>
 #include <stddef.h>
@@ -32,18 +33,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unistd.h>
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-#define SYSCALL_ARG(n) (offsetof(seccomp_data, args) + (n) * 8)
+#define IS_LE 1
 #elif __BYTE_ORDER == __BIG_ENDIAN
-#define SYSCALL_ARG(n) (offsetof(seccomp_data, args) + (n) * 8 + 4)
+#define IS_LE 0
 #else
 #error Unsupported byte order
+#endif
+
+#if IS_LE
+#define SYSCALL_ARG(n) (offsetof(seccomp_data, args) + (n) * 8)
+#else
+#define SYSCALL_ARG(n) (offsetof(seccomp_data, args) + (n) * 8 + 4)
 #endif
 
 bool start_sandbox()
 {
 	static const sock_filter filter_instrs[] = {
+		// Load architecture
+		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, arch)),
+		// Check that byte order matches (for argument checks)
+		BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, __AUDIT_ARCH_LE, IS_LE, !IS_LE),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS),
 		// Load syscall number
-		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(struct seccomp_data, nr)),
+		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, nr)),
 		// Allow futex
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_futex, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
