@@ -82,13 +82,14 @@ struct MapEditEvent
 	// Sets the event's position and marks the block as modified.
 	void setPositionModified(v3s16 pos)
 	{
+		assert(modified_blocks.empty()); // only meant for initialization (once)
 		p = pos;
 		modified_blocks.push_back(getNodeBlockPos(pos));
 	}
 
 	void setModifiedBlocks(const std::map<v3s16, MapBlock *> blocks)
 	{
-		modified_blocks.clear();
+		assert(modified_blocks.empty()); // only meant for initialization (once)
 		modified_blocks.reserve(blocks.size());
 		for (const auto &block : blocks)
 			modified_blocks.push_back(block.first);
