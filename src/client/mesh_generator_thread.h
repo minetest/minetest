@@ -77,6 +77,9 @@ public:
 	// Returns NULL if queue is empty
 	QueuedMeshUpdate *pop();
 
+	// Marks a position as finished, unblocking the next update
+	void done(v3s16 pos);
+
 	u32 size()
 	{
 		MutexAutoLock lock(m_mutex);
@@ -88,6 +91,7 @@ private:
 	std::vector<QueuedMeshUpdate *> m_queue;
 	std::unordered_set<v3s16> m_urgents;
 	std::unordered_map<v3s16, CachedMapBlockData *> m_cache;
+	std::unordered_set<v3s16> m_inflight_blocks;
 	u64 m_next_cache_cleanup; // milliseconds
 	std::mutex m_mutex;
 

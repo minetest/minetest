@@ -146,14 +146,23 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
 			i != m_queue.end(); ++i) {
 		QueuedMeshUpdate *q = *i;
-		if(must_be_urgent && m_urgents.count(q->p) == 0)
+		if (must_be_urgent && m_urgents.count(q->p) == 0)
+			continue;
+		if (m_inflight_blocks.find(q->p) != m_inflight_blocks.end())
 			continue;
 		m_queue.erase(i);
 		m_urgents.erase(q->p);
+		m_inflight_blocks.insert(q->p);
 		fillDataFromMapBlockCache(q);
 		return q;
 	}
 	return NULL;
+}
+
+void MeshUpdateQueue::done(v3s16 pos)
+{
+	MutexAutoLock lock(m_mutex);
+	m_inflight_blocks.erase(pos);
 }
 
 CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
@@ -297,6 +306,7 @@ void MeshUpdateWorkerThread::doUpdate()
 		else
 			m_queue_out->push_back(r);
 
+		m_queue_in->done(q->p);
 		delete q;
 	}
 }
