@@ -37,14 +37,16 @@ file can usually be found at:
 ## Requirements
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
-2. Android version: Android 4.1 (API Level 16)
+2. Android version: Android 4.1 (API Level 14)
 3. Empty RAM: 500 MB
 4. Empty Storage: 20 MB
+#### Able to play Minetest Game and some games with light weight mod
 ### Recommended:
 1. Graphic: OpenGL ES 2.0
 2. Android version: No lowest recommended version
 3. Empty RAM: 850 MB
 4. Empty Storage: 480 MB
+#### Able to play to play most of game with most of mod
 ## Building Requirements
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
