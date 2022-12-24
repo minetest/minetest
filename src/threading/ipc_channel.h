@@ -89,7 +89,7 @@ public:
 		using U = typename std::remove_reference<T>::type;
 		static_assert(std::is_trivially_copyable<U>::value,
 				"Cannot send value that is not trivially copyable");
-		return send(sizeof(U), &msg, timeout_ms) && recv(timeout_ms);
+		return exchange(sizeof(U), &msg, timeout_ms);
 	}
 
 	// Get information about the last received message
