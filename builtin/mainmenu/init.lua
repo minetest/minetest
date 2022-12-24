@@ -56,6 +56,7 @@ tabs.content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua")
 tabs.about    = dofile(menupath .. DIR_DELIM .. "tab_about.lua")
 tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
 tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+tabs.debug = dofile(menupath .. DIR_DELIM .. "tab_debug.lua")
 
 --------------------------------------------------------------------------------
 local function main_event_handler(tabview, event)
