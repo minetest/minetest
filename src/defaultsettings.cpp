@@ -281,7 +281,6 @@ void set_default_settings()
 	settings->setDefault("bloom_strength_factor", "1.0");
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "1");
-	settings->setDefault("saturation", "1.0");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");

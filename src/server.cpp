@@ -1864,6 +1864,7 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			4, peer_id);
 
 	pkt << lighting.shadow_intensity;
+	pkt << lighting.saturation;
 
 	Send(&pkt);
 }
