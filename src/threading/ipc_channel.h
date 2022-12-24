@@ -26,6 +26,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <type_traits>
 #include <vector>
 
+/*
+	An IPC channel is used for synchronous communication between two processes.
+	Sending two messages in succession from one end is not allowed; messages
+	must alternate back and forth.
+
+	IPCChannelShared is situated in shared memory and is used by both ends of
+	the channel.
+*/
+
 #define IPC_CHANNEL_MSG_SIZE 8192U
 
 struct IPCChannelBuffer
@@ -56,6 +65,8 @@ public:
 		return IPCChannelEnd(&shared->b, &shared->a);
 	}
 
+	// If send, recv, or exchange return false, stop using the channel.
+
 	bool send(size_t size, const void *data, int timeout_ms = -1) noexcept
 	{
 		if (size <= IPC_CHANNEL_MSG_SIZE) {
@@ -81,6 +92,7 @@ public:
 		return send(sizeof(U), &msg, timeout_ms) && recv(timeout_ms);
 	}
 
+	// Get information about the last received message
 	inline size_t getRecvSize() const noexcept { return m_recv.size(); }
 	inline const void *getRecvData() const noexcept { return m_recv.data(); }
 
