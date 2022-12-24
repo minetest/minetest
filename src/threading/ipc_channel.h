@@ -66,6 +66,7 @@ public:
 	}
 
 	// If send, recv, or exchange return false, stop using the channel.
+	// Note: timeouts are for receiving any response, not a whole message.
 
 	bool send(size_t size, const void *data, int timeout_ms = -1) noexcept
 	{
