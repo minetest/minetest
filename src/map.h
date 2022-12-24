@@ -86,6 +86,14 @@ struct MapEditEvent
 		modified_blocks.push_back(getNodeBlockPos(pos));
 	}
 
+	void setModifiedBlocks(const std::map<v3s16, MapBlock *> blocks)
+	{
+		modified_blocks.clear();
+		modified_blocks.reserve(blocks.size());
+		for (const auto &block : blocks)
+			modified_blocks.push_back(block.first);
+	}
+
 	VoxelArea getArea() const
 	{
 		switch(type){

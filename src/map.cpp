@@ -262,10 +262,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
-		// Copy modified_blocks to event
-		event.modified_blocks.reserve(modified_blocks.size());
-		for (const auto &modified_block : modified_blocks)
-			event.modified_blocks.push_back(modified_block.first);
+		event.setModifiedBlocks(modified_blocks);
 	}
 	catch(InvalidPositionException &e){
 		succeeded = false;
@@ -287,10 +284,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		removeNodeAndUpdate(p, modified_blocks);
 
-		// Copy modified_blocks to event
-		event.modified_blocks.reserve(modified_blocks.size());
-		for (const auto &modified_block : modified_blocks)
-			event.modified_blocks.push_back(modified_block.first);
+		event.setModifiedBlocks(modified_blocks);
 	}
 	catch(InvalidPositionException &e){
 		succeeded = false;
@@ -1873,9 +1867,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 			//Modified lighting, send event
 			MapEditEvent event;
 			event.type = MEET_OTHER;
-			event.modified_blocks.reserve(modified_blocks.size());
-			for (const auto &modified_block : modified_blocks)
-				event.modified_blocks.push_back(modified_block.first);
+			event.setModifiedBlocks(modified_blocks);
 			dispatchEvent(event);
 		}
 	}

@@ -1131,9 +1131,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 	if (!modified_blocks.empty()) {
 		MapEditEvent event;
 		event.type = MEET_OTHER;
-		event.modified_blocks.reserve(modified_blocks.size());
-		for (const auto &modified_block : modified_blocks)
-			event.modified_blocks.push_back(modified_block.first);
+		event.setModifiedBlocks(modified_blocks);
 
 		map.dispatchEvent(event);
 	}
