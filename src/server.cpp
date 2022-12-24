@@ -699,9 +699,7 @@ void Server::AsyncRunStep(bool initial_step)
 		if (!modified_blocks.empty()) {
 			MapEditEvent event;
 			event.type = MEET_OTHER;
-			for (const auto &pair : modified_blocks) {
-				event.modified_blocks.insert(pair.first);
-			}
+			event.setModifiedBlocks(modified_blocks);
 			m_env->getMap().dispatchEvent(event);
 		}
 	}

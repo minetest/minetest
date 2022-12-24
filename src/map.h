@@ -74,7 +74,7 @@ struct MapEditEvent
 	MapEditEventType type = MEET_OTHER;
 	v3s16 p;
 	MapNode n = CONTENT_AIR;
-	std::set<v3s16> modified_blocks;
+	std::vector<v3s16> modified_blocks; // Represents a set
 	bool is_private_change = false;
 
 	MapEditEvent() = default;
@@ -82,8 +82,17 @@ struct MapEditEvent
 	// Sets the event's position and marks the block as modified.
 	void setPositionModified(v3s16 pos)
 	{
+		assert(modified_blocks.empty()); // only meant for initialization (once)
 		p = pos;
-		modified_blocks.insert(getNodeBlockPos(pos));
+		modified_blocks.push_back(getNodeBlockPos(pos));
+	}
+
+	void setModifiedBlocks(const std::map<v3s16, MapBlock *> blocks)
+	{
+		assert(modified_blocks.empty()); // only meant for initialization (once)
+		modified_blocks.reserve(blocks.size());
+		for (const auto &block : blocks)
+			modified_blocks.push_back(block.first);
 	}
 
 	VoxelArea getArea() const
