@@ -725,9 +725,9 @@ void *EmergeThread::run()
 		if (!modified_blocks.empty()) {
 			MapEditEvent event;
 			event.type = MEET_OTHER;
-			for (const auto &pair : modified_blocks) {
-				event.modified_blocks.insert(pair.first);
-			}
+			event.modified_blocks.reserve(modified_blocks.size());
+			for (const auto &modified_block : modified_blocks)
+				event.modified_blocks.push_back(modified_block.first);
 			MutexAutoLock envlock(m_server->m_env_mutex);
 			m_map->dispatchEvent(event);
 		}

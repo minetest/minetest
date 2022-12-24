@@ -128,8 +128,9 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (const auto &it : modified_blocks)
-		event.modified_blocks.insert(it.first);
+	event.modified_blocks.reserve(modified_blocks.size());
+	for (const auto &modified_block : modified_blocks)
+		event.modified_blocks.push_back(modified_block.first);
 	map->dispatchEvent(event);
 
 	return 0;
