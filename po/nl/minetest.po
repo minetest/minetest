@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2021-12-29 20:51+0000\n"
-"Last-Translator: Gert-dev <qnyasgjhapqyuhoibr@kiabws.com>\n"
+"PO-Revision-Date: 2022-12-25 15:51+0000\n"
+"Last-Translator: CouldBeMathijs <mathijs.pittoors@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -403,7 +403,7 @@ msgstr "Grotten"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Maak aan"
+msgstr "Maken"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -842,7 +842,7 @@ msgstr "Kan $1 niet als textuurpakket installeren"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Laden..."
+msgstr "Bezig met laden..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
