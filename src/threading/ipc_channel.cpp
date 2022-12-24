@@ -112,20 +112,27 @@ bool IPCChannelEnd::recv(int timeout_ms) noexcept
 	if (!wait(m_in, timeoutp))
 		return false;
 	size_t size = m_in->size;
-	try {
-		m_recv.resize(size);
-	} catch (...) {
-		return false;
-	}
-	u8 *recv_data = m_recv.data();
-	while (size > IPC_CHANNEL_MSG_SIZE) {
-		memcpy(recv_data, m_in->data, IPC_CHANNEL_MSG_SIZE);
-		size -= IPC_CHANNEL_MSG_SIZE;
-		recv_data += IPC_CHANNEL_MSG_SIZE;
-		post(m_out);
-		if (!wait(m_in, timeoutp))
+	if (size <= IPC_CHANNEL_MSG_SIZE) {
+		m_recv_size = size;
+		m_recv_data = m_in->data;
+	} else {
+		try {
+			m_large_recv.resize(size);
+		} catch (...) {
 			return false;
+		}
+		u8 *recv_data = m_large_recv.data();
+		m_recv_size = size;
+		m_recv_data = recv_data;
+		do {
+			memcpy(recv_data, m_in->data, IPC_CHANNEL_MSG_SIZE);
+			size -= IPC_CHANNEL_MSG_SIZE;
+			recv_data += IPC_CHANNEL_MSG_SIZE;
+			post(m_out);
+			if (!wait(m_in, timeoutp))
+				return false;
+		} while (size > IPC_CHANNEL_MSG_SIZE);
+		memcpy(recv_data, m_in->data, size);
 	}
-	memcpy(recv_data, m_in->data, size);
 	return true;
 }

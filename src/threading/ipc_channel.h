@@ -93,8 +93,8 @@ public:
 	}
 
 	// Get information about the last received message
-	inline size_t getRecvSize() const noexcept { return m_recv.size(); }
-	inline const void *getRecvData() const noexcept { return m_recv.data(); }
+	inline size_t getRecvSize() const noexcept { return m_recv_size; }
+	inline const void *getRecvData() const noexcept { return m_recv_data; }
 
 private:
 	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out): m_in(in), m_out(out) {}
@@ -105,5 +105,7 @@ private:
 
 	IPCChannelBuffer *m_in = nullptr;
 	IPCChannelBuffer *m_out = nullptr;
-	std::vector<u8> m_recv;
+	const void *m_recv_data;
+	size_t m_recv_size;
+	std::vector<u8> m_large_recv;
 };
