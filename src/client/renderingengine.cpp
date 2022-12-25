@@ -98,9 +98,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	bool vsync = g_settings->getBool("vsync");
 	u16 fsaa = g_settings->getU16("fsaa");
 
-	// stereo buffer required for pageflip stereo
-	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
-
 	// Determine driver
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
 	const std::string &driverstring = g_settings->get("video_driver");
@@ -128,7 +125,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
 	params.Stencilbuffer = false;
-	params.Stereobuffer = stereo_buffer;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = true;

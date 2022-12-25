@@ -1258,11 +1258,7 @@ void Game::run()
 void Game::shutdown()
 {
 	m_rendering_engine->finalize();
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8
-	if (g_settings->get("3d_mode") == "pageflip") {
-		driver->setRenderTarget(irr::video::ERT_STEREO_BOTH_BUFFERS);
-	}
-#endif
+
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
