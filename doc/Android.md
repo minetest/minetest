@@ -7,9 +7,9 @@ below:
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
 * Look around: touch screen and slide finger
-* double tap: place a node or use selected item
-* long tap: dig node
-* touch shown buttons: press button
+* double tap: place a node
+* long tap: dig node or use the holding item
+* touch buttons: press button
 * Buttons:
 
 1. left upper corner: chat
@@ -31,9 +31,10 @@ file can usually be found at:
 
 * old version (Before 5.4.2): ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
 * new version (After 5.4.2): ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
-* <br> [Learn more about Android directory](https://developer.android.com/training/data-storage/compatibility)
+* [Learn more about Android directory](https://developer.android.com/training/data-storage/compatibility)
 ## Useful settings
-1. gui_scaling: this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
+### gui_scaling
+this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
 ## Requirements
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
