@@ -696,11 +696,11 @@ void Server::AsyncRunStep(bool initial_step)
 		std::map<v3s16, MapBlock*> modified_blocks;
 		m_env->getServerMap().transformLiquids(modified_blocks, m_env);
 
-		/*
-			Set the modified blocks unsent for all the clients
-		*/
 		if (!modified_blocks.empty()) {
-			SetBlocksNotSent(modified_blocks);
+			MapEditEvent event;
+			event.type = MEET_OTHER;
+			event.setModifiedBlocks(modified_blocks);
+			m_env->getMap().dispatchEvent(event);
 		}
 	}
 	m_clients.step(dtime);
@@ -1251,17 +1251,6 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 		return;
 
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
-}
-
-void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
-{
-	std::vector<session_t> clients = m_clients.getClientIDs();
-	ClientInterface::AutoLock clientlock(m_clients);
-	// Set the modified blocks unsent for all the clients
-	for (const session_t client_id : clients) {
-			if (RemoteClient *client = m_clients.lockedGetClientNoEx(client_id))
-				client->SetBlocksNotSent(block);
-	}
 }
 
 void Server::peerAdded(con::Peer *peer)

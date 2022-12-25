@@ -722,8 +722,13 @@ void *EmergeThread::run()
 		if (block)
 			modified_blocks[pos] = block;
 
-		if (!modified_blocks.empty())
-			m_server->SetBlocksNotSent(modified_blocks);
+		if (!modified_blocks.empty()) {
+			MapEditEvent event;
+			event.type = MEET_OTHER;
+			event.setModifiedBlocks(modified_blocks);
+			MutexAutoLock envlock(m_server->m_env_mutex);
+			m_map->dispatchEvent(event);
+		}
 		modified_blocks.clear();
 	}
 	} catch (VersionMismatchException &e) {

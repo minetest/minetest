@@ -273,8 +273,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	//// Create & dispatch map modification events to observers
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (it = modified_blocks.begin(); it != modified_blocks.end(); ++it)
-		event.modified_blocks.insert(it->first);
+	event.setModifiedBlocks(modified_blocks);
 
 	map->dispatchEvent(event);
 }

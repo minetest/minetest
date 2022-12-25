@@ -1131,8 +1131,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 	if (!modified_blocks.empty()) {
 		MapEditEvent event;
 		event.type = MEET_OTHER;
-		for (auto &modified_block : modified_blocks)
-			event.modified_blocks.insert(modified_block.first);
+		event.setModifiedBlocks(modified_blocks);
 
 		map.dispatchEvent(event);
 	}
@@ -1238,7 +1237,7 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 		v3s16 bp(x, y, z);
 		if (map.deleteBlock(bp)) {
 			env->setStaticForActiveObjectsInBlock(bp, false);
-			event.modified_blocks.insert(bp);
+			event.modified_blocks.push_back(bp);
 		} else {
 			success = false;
 		}
