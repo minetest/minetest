@@ -60,6 +60,12 @@ bool start_sandbox()
 		// Allow futex
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_futex, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow clock_gettime
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_clock_gettime, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow clock_getres
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_clock_getres, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		// Allow mmap/mmap2 with MAP_ANONYMOUS
 #if defined(__NR_mmap2)
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap2, 1, 0),
@@ -83,6 +89,12 @@ bool start_sandbox()
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		// Allow sigreturn
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_rt_sigreturn, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow exit
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_exit, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow exit_group
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_exit_group, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		// Allow write/writev if fd is stdout or stderr
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_write, 1, 0),

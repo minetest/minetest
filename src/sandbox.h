@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 // Sandbox the current process. The only allowed syscalls are for allocating
-// memory, using synchronization, and writing to stdout/stderr.
+// memory, getting the time, using synchronization, writing to stdout/stderr,
+// and exiting.
 // Returns true if successful, false otherwise.
 bool start_sandbox();
