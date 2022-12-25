@@ -1,4 +1,5 @@
 # Minetest: Android version
+Minetest for Android are the same Minetest on Windows, not seperate version
 ## Controls
 The Android port doesn't support everything you can do on PC due to the
 limited capabilities of common devices. What can be done is described
