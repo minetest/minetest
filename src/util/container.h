@@ -133,20 +133,6 @@ public:
 		return m_queue.empty();
 	}
 
-	void push_front(const T &t)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_queue.push_front(t);
-		m_signal.post();
-	}
-
-	void push_front(T &&t)
-	{
-		MutexAutoLock lock(m_mutex);
-		m_queue.push_front(std::move(t));
-		m_signal.post();
-	}
-
 	void push_back(const T &t)
 	{
 		MutexAutoLock lock(m_mutex);
@@ -239,11 +225,6 @@ public:
 		T t = std::move(m_queue.back());
 		m_queue.pop_back();
 		return t;
-	}
-
-	std::size_t size()
-	{
-		return m_queue.size();
 	}
 
 protected:
