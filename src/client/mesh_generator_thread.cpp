@@ -322,6 +322,7 @@ MeshUpdateManager::MeshUpdateManager(Client *client):
 	
 	// use at least one thread
 	number_of_threads = MYMAX(1, number_of_threads);
+	infostream << "MeshUpdateManager: using " << number_of_threads << " threads" << std::endl;
 
 	for (int i = 0; i < number_of_threads; i++)
 		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, this, &m_camera_offset));
