@@ -148,6 +148,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 		QueuedMeshUpdate *q = *i;
 		if (must_be_urgent && m_urgents.count(q->p) == 0)
 			continue;
+		// Make sure no two threads are processing the same mapblock, as that causes racing conditions
 		if (m_inflight_blocks.find(q->p) != m_inflight_blocks.end())
 			continue;
 		m_queue.erase(i);
