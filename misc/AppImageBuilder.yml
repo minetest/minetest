@@ -63,12 +63,12 @@ script: |
     #cd ../
 
     # Install the Minetest Game
-    wget https://github.com/minetest/minetest_game/archive/5.6.1.tar.gz -O appimage-build/minetest_game.tar.gz
+    wget -q https://github.com/minetest/minetest_game/archive/refs/heads/master.tar.gz -O appimage-build/minetest_game.tar.gz
     cd appimage-build
     tar -xaf minetest_game.tar.gz
     cd ../
     mkdir -p AppDir/usr/local/share/minetest/games/minetest_game
-    cp -r appimage-build/minetest_game-5.6.1/* AppDir/usr/local/share/minetest/games/minetest_game
+    cp -r appimage-build/minetest_game-master/* AppDir/usr/local/share/minetest/games/minetest_game
 
     # Is a backup icon location instead of usr/share/local
     mkdir -p AppDir/usr/local/share/minetest/misc
