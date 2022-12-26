@@ -32,6 +32,11 @@ build/.cmake/
 .gradle
 # Clang
 .cache
+# AppImage
+*.AppImage
+*.zsync
+appimage-build
+AppDir
 
 ## Files related to Minetest development cycle
 /*.patch
