@@ -2294,10 +2294,10 @@ int ObjectRef::l_set_lighting(lua_State *L)
 	Lighting lighting = player->getLighting();
 	lua_getfield(L, 2, "shadows");
 	if (lua_istable(L, -1)) {
-		lighting.shadow_intensity = getfloatfield_default(L, -1, "intensity", lighting.shadow_intensity);
+		getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
 	}
-	lighting.saturation = getfloatfield_default(L, 2, "saturation", lighting.saturation);
-	lua_pop(L, -1);
+	lua_pop(L, 1); // shadows
+	getfloatfield(L, -1, "saturation", lighting.saturation);
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;

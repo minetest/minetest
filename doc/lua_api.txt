@@ -7468,8 +7468,10 @@ child will follow movement and rotation of that bone.
       * `saturation` sets the saturation (vividness).
           values > 1 increase the saturation
           values in [0,1) decrease the saturation
+            * This value has no effect on clients who have the "Tone Mapping" shader disabled.
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
+            * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
