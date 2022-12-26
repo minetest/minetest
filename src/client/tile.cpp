@@ -498,7 +498,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 
 	try {
 		while(true) {
-			// Wait result for a second
+			// Wait for result for up to 4 seconds (empirical value)
 			GetResult<std::string, u32, u8, u8>
 				result = result_queue.pop_front(4000);
 
