@@ -32,10 +32,6 @@ AppDir:
     - libcurl4
     - libtinfo6
     - libncursesw6
-  test:
-    archlinux-latest:
-      image: appimagecrafters/tests-env:archlinux-latest
-      command: ./AppRun
 AppImage:
   arch: x86_64
   update-information: guess
