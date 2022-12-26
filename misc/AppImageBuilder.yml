@@ -1,27 +1,25 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
 version: 1
-
 AppDir:
-  path: ./AppDir
-
+  path: AppDir
   app_info:
     id: net.minetest.minetest
     name: Minetest
     icon: minetest
     version: !ENV ${VERSION}
-    exec: usr/bin/minetest
+    exec: usr/local/bin/minetest
     exec_args: $@
-  runtime:
-    env:
-      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu
-
+  files:
+    include: []
+    exclude:
+    - usr/share/man
+    - usr/share/doc
+    - usr/share/lintian
   apt:
     arch: amd64
     sources:
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal main universe
-        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3b4fe6acc0b21f32'
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-updates main universe
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-backports main universe
-      - sourceline: deb http://archive.ubuntu.com/ubuntu/ focal-security main universe
+      - sourceline: 'deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
 
     include:
       - libc6
@@ -41,13 +39,37 @@ AppDir:
       - libx11-6
       - libxi6
       - zlib1g
-
-  files:
-    exclude:
-      - usr/share/man
-      - usr/share/doc
-
 AppImage:
-  update-information: None
+  update-information: guess
   sign-key: None
   arch: x86_64
+script: |
+    # Remove any existent binaries
+    rm -rf AppDir appimage-build | true
+
+    # Compile and install binaries into AppDir
+    # Minetest looks at usr/local/share for some reason
+    cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/local -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release
+    cmake --build appimage-build --parallel $(nproc) --config Release
+    cmake --install appimage-build
+
+    # Install irrlicht into AppDir
+    wget -q "https://github.com/minetest/irrlicht/releases/download/$(cat misc/irrlichtmt_tag.txt)/ubuntu-bionic.tar.gz" -O appimage-build/irrlicht-ubuntu.tar.gz
+    tar -xaf appimage-build/irrlicht-ubuntu.tar.gz -C AppDir/usr
+
+    #mkdir AppDir/usr/local
+    #cd AppDir
+    #ln -s ../share usr/local/share
+    #cd ../
+
+    # Install the Minetest Game
+    wget https://github.com/minetest/minetest_game/archive/5.6.1.tar.gz -O appimage-build/minetest_game.tar.gz
+    cd appimage-build
+    tar -xaf minetest_game.tar.gz
+    cd ../
+    mkdir -p AppDir/usr/local/share/minetest/games/minetest_game
+    cp -r appimage-build/minetest_game-5.6.1/* AppDir/usr/local/share/minetest/games/minetest_game
+
+    # Is a backup icon location instead of usr/share/local
+    mkdir -p AppDir/usr/local/share/minetest/misc
+    cp AppDir/usr/local/share/icons/hicolor/128x128/apps/minetest.png AppDir/usr/local/share/minetest/misc/minetest-xorg-icon-128.png
