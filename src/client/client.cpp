@@ -338,11 +338,9 @@ Client::~Client()
 	m_mesh_update_manager.stop();
 	m_mesh_update_manager.wait();
 	
-	while (!m_mesh_update_manager.m_queue_out.empty()) {
-		MeshUpdateResult r = m_mesh_update_manager.m_queue_out.pop_frontNoEx();
+	MeshUpdateResult r;
+	while (m_mesh_update_manager.getNextResult(r))
 		delete r.mesh;
-	}
-
 
 	delete m_inventory_from_server;
 
@@ -548,14 +546,14 @@ void Client::step(float dtime)
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
-		while (!m_mesh_update_manager.m_queue_out.empty())
+		MeshUpdateResult r;
+		while (m_mesh_update_manager.getNextResult(r))
 		{
 			num_processed_meshes++;
 
 			MinimapMapblock *minimap_mapblock = NULL;
 			bool do_mapper_update = true;
 
-			MeshUpdateResult r = m_mesh_update_manager.m_queue_out.pop_frontNoEx();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if (block) {
 				// Delete the old mesh

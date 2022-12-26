@@ -276,8 +276,8 @@ void MeshUpdateQueue::cleanupCache()
 	MeshUpdateWorkerThread
 */
 
-MeshUpdateWorkerThread::MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MutexedQueue<MeshUpdateResult> *queue_out, v3s16 *camera_offset) :
-		UpdateThread("Mesh"), m_queue_in(queue_in), m_queue_out(queue_out), m_camera_offset(camera_offset)
+MeshUpdateWorkerThread::MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MeshUpdateManager *manager, v3s16 *camera_offset) :
+		UpdateThread("Mesh"), m_queue_in(queue_in), m_manager(manager), m_camera_offset(camera_offset)
 {
 	m_generation_interval = g_settings->getU16("mesh_generation_interval");
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
@@ -301,11 +301,7 @@ void MeshUpdateWorkerThread::doUpdate()
 		r.ack_block_to_server = q->ack_block_to_server;
 		r.urgent = q->urgent;
 
-		if (r.urgent)
-			m_queue_out->push_front(r);
-		else
-			m_queue_out->push_back(r);
-
+		m_manager->putResult(r);
 		m_queue_in->done(q->p);
 		delete q;
 	}
@@ -328,7 +324,7 @@ MeshUpdateManager::MeshUpdateManager(Client *client):
 	number_of_threads = MYMAX(1, number_of_threads);
 
 	for (int i = 0; i < number_of_threads; i++)
-		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, &m_queue_out, &m_camera_offset));
+		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, this, &m_camera_offset));
 }
 
 void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
@@ -352,6 +348,29 @@ void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 		}
 	}
 	deferUpdate();
+}
+
+void MeshUpdateManager::putResult(const MeshUpdateResult &result)
+{
+	if (result.urgent)
+		m_queue_out_urgent.push_back(result);
+	else
+		m_queue_out.push_back(result);
+}
+
+bool MeshUpdateManager::getNextResult(MeshUpdateResult &r)
+{
+	if (!m_queue_out_urgent.empty()) {
+		r = m_queue_out_urgent.pop_frontNoEx();
+		return true;
+	}
+
+	if (!m_queue_out.empty()) {
+		r = m_queue_out.pop_frontNoEx();
+		return true;
+	}
+
+	return false;
 }
 
 void MeshUpdateManager::deferUpdate()

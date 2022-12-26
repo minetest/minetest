@@ -117,17 +117,19 @@ struct MeshUpdateResult
 	MeshUpdateResult() = default;
 };
 
+class MeshUpdateManager;
+
 class MeshUpdateWorkerThread : public UpdateThread
 {
 public:
-	MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MutexedQueue<MeshUpdateResult> *queue_out, v3s16 *camera_offset);
+	MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MeshUpdateManager *manager, v3s16 *camera_offset);
 
 protected:
 	virtual void doUpdate();
 
 private:
 	MeshUpdateQueue *m_queue_in;
-	MutexedQueue<MeshUpdateResult> *m_queue_out;
+	MeshUpdateManager *m_manager;
 	v3s16 *m_camera_offset;
 
 	// TODO: Add callback to update these when g_settings changes
@@ -143,8 +145,9 @@ public:
 	// update for the block at p
 	void updateBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent,
 			bool update_neighbors = false);
+	void putResult(const MeshUpdateResult &r);
+	bool getNextResult(MeshUpdateResult &r);
 
-	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 	v3s16 m_camera_offset;
 
@@ -159,5 +162,8 @@ private:
 
 
 	MeshUpdateQueue m_queue_in;
+	MutexedQueue<MeshUpdateResult> m_queue_out;
+	MutexedQueue<MeshUpdateResult> m_queue_out_urgent;
+
 	std::vector<std::unique_ptr<MeshUpdateWorkerThread>> m_workers;
 };
