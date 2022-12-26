@@ -24,4 +24,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct Lighting
 {
     float shadow_intensity {0.0f};
+    float saturation {1.0f};
 };

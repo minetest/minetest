@@ -7465,6 +7465,9 @@ child will follow movement and rotation of that bone.
     * Resource intensive - use sparsely
 * `set_lighting(light_definition)`: sets lighting for the player
     * `light_definition` is a table with the following optional fields:
+      * `saturation` sets the saturation (vividness).
+          values > 1 increase the saturation
+          values in [0,1) decrease the saturation
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
 * `get_lighting()`: returns the current state of lighting for the player.

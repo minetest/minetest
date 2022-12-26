@@ -365,15 +365,6 @@ enable_shaders (Shaders) bool true
 #    enhanced, highlights and shadows are gradually compressed.
 tone_mapping (Filmic tone mapping) bool false
 
-#    Adjust the saturation (or vividness) of the scene
-#    Values
-#    < 1.0 decrease saturation
-#    > 1.0 increase saturation
-#    1.0 = unchanged saturation
-#    0.0 = black and white
-#    (Tone mapping needs to be enabled.)
-saturation (Saturation) float 1.0 0.0 5.0
-
 [**Waving Nodes]
 
 #    Set to true to enable waving leaves.

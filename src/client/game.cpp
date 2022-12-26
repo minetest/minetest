@@ -436,7 +436,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	float m_bloom_strength;
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
 	float m_bloom_radius;
-	float m_saturation;
 	CachedPixelShaderSetting<float> m_saturation_pixel;
 
 public:
@@ -452,8 +451,6 @@ public:
 			m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		if (name == "bloom_radius")
 			m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		if (name == "saturation")
-			m_saturation = g_settings->getFloat("saturation", 0.0f, 5.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -503,7 +500,6 @@ public:
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		m_saturation = g_settings->getFloat("saturation", 0.0f, 5.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -591,7 +587,8 @@ public:
 			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
-		m_saturation_pixel.set(&m_saturation, services);
+		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
+		m_saturation_pixel.set(&saturation, services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material)

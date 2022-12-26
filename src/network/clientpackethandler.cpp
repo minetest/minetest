@@ -1764,4 +1764,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_intensity;
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.saturation;
 }
