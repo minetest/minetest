@@ -32,6 +32,7 @@ AppDir:
     - libcurl4
     - libtinfo6
     - libncursesw6
+    - libc6
 AppImage:
   arch: x86_64
   update-information: guess
