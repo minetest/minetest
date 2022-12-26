@@ -155,15 +155,6 @@ void CSMController::listen(bool succeeded)
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
 		switch (type) {
-		case CSM_S2C_GET_NODE:
-			if ((succeeded = size >= sizeof(CSMS2CGetNode))) {
-				CSMS2CGetNode recv;
-				memcpy(&recv, data, sizeof(recv));
-				CSMC2SGetNode send;
-				send.n = m_client->getEnv().getMap().getNode(recv.pos, &send.pos_ok);
-				succeeded = m_ipc.exchange(send, m_timeout);
-			}
-			break;
 		case CSM_S2C_LOG:
 			if ((succeeded = size >= sizeof(CSMS2CLog))) {
 				CSMS2CLog recv;
@@ -174,6 +165,24 @@ void CSMController::listen(bool succeeded)
 					int dummy;
 					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
 				}
+			}
+			break;
+		case CSM_S2C_GET_NODE:
+			if ((succeeded = size >= sizeof(CSMS2CGetNode))) {
+				CSMS2CGetNode recv;
+				memcpy(&recv, data, sizeof(recv));
+				CSMC2SGetNode send;
+				send.n = m_client->getEnv().getMap().getNode(recv.pos, &send.pos_ok);
+				succeeded = m_ipc.exchange(send, m_timeout);
+			}
+			break;
+		case CSM_S2C_ADD_NODE:
+			if ((succeeded = size >= sizeof(CSMS2CAddNode))) {
+				CSMS2CAddNode recv;
+				memcpy(&recv, data, sizeof(recv));
+				m_client->addNode(recv.pos, recv.n, recv.remove_metadata);
+				int dummy;
+				succeeded = m_ipc.exchange(0, &dummy, m_timeout);
 			}
 			break;
 		case CSM_S2C_DONE:

@@ -108,6 +108,36 @@ int ModApiCSM::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+// set_node(pos, node)
+int ModApiCSM::l_set_node(lua_State *L)
+{
+	CSMS2CAddNode send;
+	send.pos = read_v3s16(L, 1);
+	send.n = readnode(L, 2);
+	send.remove_metadata = true;
+	CSM_IPC(exchange(send));
+	lua_pushboolean(L, true); // assume success
+	return 1;
+}
+
+// add_node(pos, node)
+int ModApiCSM::l_add_node(lua_State *L)
+{
+	return l_set_node(L);
+}
+
+// swap_node(pos, node)
+int ModApiCSM::l_swap_node(lua_State *L)
+{
+	CSMS2CAddNode send;
+	send.pos = read_v3s16(L, 1);
+	send.n = readnode(L, 2);
+	send.remove_metadata = false;
+	CSM_IPC(exchange(send));
+	lua_pushboolean(L, true); // assume success
+	return 1;
+}
+
 // get_item_def(itemstring)
 int ModApiCSM::l_get_item_def(lua_State *L)
 {
@@ -168,6 +198,9 @@ void ModApiCSM::Initialize(lua_State *L, int top)
 	API_FCT(get_last_run_mod);
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
+	API_FCT(set_node);
+	API_FCT(add_node);
+	API_FCT(swap_node);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
 	API_FCT(get_builtin_path);

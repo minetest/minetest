@@ -47,6 +47,15 @@ private:
 	// get_node_or_nil(pos)
 	static int l_get_node_or_nil(lua_State *L);
 
+	// set_node(pos, node)
+	static int l_set_node(lua_State *L);
+
+	// add_node(pos, node)
+	static int l_add_node(lua_State *L);
+
+	// swap_node(pos, node)
+	static int l_swap_node(lua_State *L);
+
 	// get_item_def(itemstring)
 	static int l_get_item_def(lua_State *L);
 

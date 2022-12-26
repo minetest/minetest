@@ -28,12 +28,12 @@ enum CSMMsgType {
 
 	// controller -> script
 	CSM_C2S_RUN_STEP,
-	CSM_C2S_GET_NODE,
 
 	// script -> controller
 	CSM_S2C_DONE,
 	CSM_S2C_LOG,
 	CSM_S2C_GET_NODE,
+	CSM_S2C_ADD_NODE,
 };
 
 // controller -> script
@@ -59,4 +59,11 @@ struct CSMS2CLog {
 struct CSMS2CGetNode {
 	CSMMsgType type = CSM_S2C_GET_NODE;
 	v3s16 pos;
+};
+
+struct CSMS2CAddNode {
+	CSMMsgType type = CSM_S2C_ADD_NODE;
+	MapNode n;
+	v3s16 pos;
+	bool remove_metadata = true;
 };
