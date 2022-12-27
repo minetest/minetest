@@ -136,6 +136,26 @@ void CSMController::runLoadMods()
 	listen(succeeded);
 }
 
+void CSMController::runShutdown()
+{
+	listen(m_ipc.exchange(C2S_RUN_SHUTDOWN, m_timeout));
+}
+
+void CSMController::runClientReady()
+{
+	listen(m_ipc.exchange(C2S_RUN_CLIENT_READY, m_timeout));
+}
+
+void CSMController::runCameraReady()
+{
+	listen(m_ipc.exchange(C2S_RUN_CAMERA_READY, m_timeout));
+}
+
+void CSMController::runMinimapReady()
+{
+	listen(m_ipc.exchange(C2S_RUN_MINIMAP_READY, m_timeout));
+}
+
 void CSMController::runStep(float dtime)
 {
 	if (!isStarted())

@@ -19,21 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "cpp_api/s_base.h"
+// TODO
 
-class ScriptApiCSM : public virtual ScriptApiBase
+#include "lua_api/l_base.h"
+
+class LuaCSMMinimap : public ModApiBase
 {
 public:
-	void on_mods_loaded();
+	static void create(lua_State *L) {}
 
-	void on_shutdown();
-
-	void on_client_ready();
-
-	void on_camera_ready();
-
-	void on_minimap_ready();
-
-	// Called on environment step
-	void environment_Step(float dtime);
+	static void Register(lua_State *L) {}
 };

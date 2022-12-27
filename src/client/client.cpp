@@ -249,12 +249,18 @@ void Client::loadMods()
 	m_script->on_mods_loaded();
 
 	// Create objects if they're ready
-	if (m_state == LC_Ready)
+	if (m_state == LC_Ready) {
+		m_csm_controller->runClientReady();
 		m_script->on_client_ready(m_env.getLocalPlayer());
-	if (m_camera)
+	}
+	if (m_camera) {
+		m_csm_controller->runCameraReady(m_camera);
 		m_script->on_camera_ready(m_camera);
-	if (m_minimap)
+	}
+	if (m_minimap) {
+		m_csm_controller->runMinimapReady(m_minimap);
 		m_script->on_minimap_ready(m_minimap);
+	}
 }
 
 const std::string &Client::getBuiltinLuaPath()
@@ -283,8 +289,10 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 void Client::Stop()
 {
 	m_shutdown = true;
-	if (m_mods_loaded)
+	if (m_mods_loaded) {
+		m_csm_controller->runShutdown();
 		m_script->on_shutdown();
+	}
 	//request all client managed threads to stop
 	m_mesh_update_manager.stop();
 	// Save local server map
@@ -1623,8 +1631,12 @@ void Client::typeChatMessage(const std::wstring &message)
 		return;
 
 	// If message was consumed by script API, don't send it to server
-	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
-		return;
+	if (m_mods_loaded) {
+		std::string message_utf8 = wide_to_utf8(message);
+		if (m_csm_controller->runSendingMessage(message_utf8) ||
+				m_script->on_sending_message(message_utf8))
+			return;
+	}
 
 	// Send to others
 	sendChatMessage(message);
@@ -1782,8 +1794,10 @@ void Client::afterContentReceived()
 	m_state = LC_Ready;
 	sendReady();
 
-	if (m_mods_loaded)
+	if (m_mods_loaded) {
+		m_csm_controller->runClientReady();
 		m_script->on_client_ready(m_env.getLocalPlayer());
+	}
 
 	text = wgettext("Done!");
 	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 100);

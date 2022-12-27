@@ -19,6 +19,52 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_csm.h"
 #include "cpp_api/s_internal.h"
+#include "lua_api/l_csm_localplayer.h"
+#include "lua_api/l_csm_camera.h"
+#include "lua_api/l_csm_minimap.h"
+
+void ScriptApiCSM::on_mods_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_mods_loaded
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_mods_loaded");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiCSM::on_shutdown()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_shutdown
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_shutdown");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiCSM::on_client_ready()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	LuaCSMLocalPlayer::create(L);
+}
+
+void ScriptApiCSM::on_camera_ready()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	LuaCSMCamera::create(L);
+}
+
+void ScriptApiCSM::on_minimap_ready()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	LuaCSMMinimap::create(L);
+}
 
 void ScriptApiCSM::environment_Step(float dtime)
 {

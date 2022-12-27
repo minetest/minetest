@@ -153,6 +153,8 @@ int csm_script_main(int argc, char *argv[])
 			script.loadModFromMemory(mod);
 	}
 
+	script.on_mods_loaded();
+
 	g_log_output.stopLogging();
 
 	CSM_IPC(exchange(CSM_S2C_DONE));
@@ -164,6 +166,22 @@ int csm_script_main(int argc, char *argv[])
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
 		switch (type) {
+		case CSM_C2S_RUN_SHUTDOWN:
+			g_log_output.startLogging();
+			script.on_shutdown();
+			break;
+		case CSM_C2S_RUN_CLIENT_READY:
+			g_log_output.startLogging();
+			script.on_client_ready();
+			break;
+		case CSM_C2S_RUN_CAMERA_READY:
+			g_log_output.startLogging();
+			script.on_camera_ready();
+			break;
+		case CSM_C2S_RUN_MINIMAP_READY:
+			g_log_output.startLogging();
+			script.on_minimap_ready();
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;

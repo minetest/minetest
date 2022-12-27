@@ -27,6 +27,10 @@ enum CSMMsgType {
 	CSM_INVALID_MSG_TYPE = -1,
 
 	// controller -> script
+	CSM_C2S_RUN_SHUTDOWN,
+	CSM_C2S_RUN_CLIENT_READY,
+	CSM_C2S_RUN_CAMERA_READY,
+	CSM_C2S_RUN_MINIMAP_READY,
 	CSM_C2S_RUN_STEP,
 
 	// script -> controller

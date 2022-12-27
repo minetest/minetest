@@ -39,6 +39,10 @@ public:
 	bool isStarted() { return m_script_pid != 0; }
 
 	void runLoadMods();
+	void runShutdown();
+	void runClientReady();
+	void runCameraReady();
+	void runMinimapReady();
 	void runStep(float dtime);
 
 private:
