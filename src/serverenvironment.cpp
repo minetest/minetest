@@ -249,7 +249,8 @@ std::string LBMManager::createIntroductionTimesString()
 	return oss.str();
 }
 
-void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
+void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
+		const u32 stamp, const float dtime_s)
 {
 	// Precondition, we need m_lbm_lookup to be initialized
 	FATAL_ERROR_IF(!m_query_mode,
@@ -280,7 +281,7 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 					if (!lbm_list)
 						continue;
 					for (auto lbmdef : *lbm_list) {
-						lbmdef->trigger(env, pos + pos_of_block, n);
+						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
 					}
 				}
 	}
@@ -381,6 +382,18 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 }
 
 /*
+	OnMapblocksChangedReceiver
+*/
+
+void OnMapblocksChangedReceiver::onMapEditEvent(const MapEditEvent &event)
+{
+	assert(receiving);
+	for (const v3s16 &p : event.modified_blocks) {
+		modified_blocks.insert(p);
+	}
+}
+
+/*
 	ServerEnvironment
 */
 
@@ -475,6 +488,11 @@ void ServerEnvironment::init()
 
 	m_player_database = openPlayerDatabase(player_backend_name, m_path_world, conf);
 	m_auth_database = openAuthDatabase(auth_backend_name, m_path_world, conf);
+
+	if (m_map && m_script->has_on_mapblocks_changed()) {
+		m_map->addEventReceiver(&m_on_mapblocks_changed_receiver);
+		m_on_mapblocks_changed_receiver.receiving = true;
+	}
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -997,7 +1015,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block, dtime_s);
 
 	/* Handle LoadingBlockModifiers */
-	m_lbm_mgr.applyLBMs(this, block, stamp);
+	m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
 
 	// Run node timers
 	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
@@ -1568,6 +1586,14 @@ void ServerEnvironment::step(float dtime)
 
 	// Send outdated detached inventories
 	m_server->sendDetachedInventories(PEER_ID_INEXISTENT, true);
+
+	// Notify mods of modified mapblocks
+	if (m_on_mapblocks_changed_receiver.receiving &&
+			!m_on_mapblocks_changed_receiver.modified_blocks.empty()) {
+		std::unordered_set<v3s16> modified_blocks;
+		std::swap(modified_blocks, m_on_mapblocks_changed_receiver.modified_blocks);
+		m_script->on_mapblocks_changed(modified_blocks);
+	}
 
 	const auto end_time = porting::getTimeUs();
 	m_step_time_counter->increment(end_time - start_time);

@@ -44,6 +44,7 @@ void set_default_settings()
 	settings->setDefault("mute_sound", "false");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
+	settings->setDefault("mesh_generation_threads", "0");
 	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
@@ -281,7 +282,6 @@ void set_default_settings()
 	settings->setDefault("bloom_strength_factor", "1.0");
 	settings->setDefault("bloom_intensity", "0.05");
 	settings->setDefault("bloom_radius", "1");
-	settings->setDefault("saturation", "1.0");
 
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");

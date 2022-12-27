@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
-"Last-Translator: Hùng Nguyễn <www.thuphan@gmail.com>\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"PO-Revision-Date: 2022-08-26 10:18+0000\n"
+"Last-Translator: Văn Chí <chiv8331@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
 "minetest/vi/>\n"
 "Language: vi\n"
@@ -114,35 +114,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Máy chủ đã yêu cầu kết nối lại:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr "Phiên bản mới $1 hiện có sẵn"
-
-#: builtin/mainmenu/common.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "Mod đã chọn"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-"Phiên bản đã cài đặt: $1\n"
-"Phiên bản mới: $2\n"
-"Truy cập $3 để biết cách tải phiên bản mới nhất với các tính năng mới và bản "
-"sửa lỗi."
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr "Để sau"
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr "Không bao giờ"
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Phiên bản giao thức không khớp. "
 
@@ -153,10 +124,6 @@ msgstr "Máy chủ thực thi phiên bản giao thức $1. "
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Máy chủ hỗ trợ các phiên bản giao thức trong khoảng từ $1 đến $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr "Truy cập website"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -182,7 +149,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr "Hủy bỏ"
+msgstr "Hủy"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -315,8 +282,22 @@ msgid "Downloading..."
 msgstr "Đang tải xuống..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -335,12 +316,9 @@ msgid "Install missing dependencies"
 msgstr "Cài đặt phần phụ thuộc bị thiếu"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
-
-#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Mods"
-msgstr "Mod"
+msgstr "Sửa đổi"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -424,7 +402,7 @@ msgstr "Hang động"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Tạo"
+msgstr "Tạo ra"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -636,7 +614,7 @@ msgstr "Mật khẩu không khớp"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Đăng kí"
+msgstr "Đăng ký"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -669,6 +647,11 @@ msgstr "< Về trang Cài đặt"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Duyệt"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Client Mods"
+msgstr "Mod đã chọn"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
@@ -794,6 +777,34 @@ msgstr "Mặc định"
 msgid "eased"
 msgstr "Nới lỏng"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "Phiên bản mới $1 hiện có sẵn"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Phiên bản đã cài đặt: $1\n"
+"Phiên bản mới: $2\n"
+"Truy cập $3 để biết cách tải phiên bản mới nhất với các tính năng mới và bản "
+"sửa lỗi."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Để sau"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Không bao giờ"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Truy cập website"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (đã kích hoạt)"
@@ -807,32 +818,23 @@ msgid "Failed to install $1 to $2"
 msgstr "Đã xảy ra lỗi khi cài đặt $1 đến $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Cài đặt mod: Không thể tìm thấy tên mod thật cho: $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr "Cài đặt mod: Không thể tìm thấy tên thư mục phù hợp cho modpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Không thể tìm thấy một mod hoặc modpack hợp lệ"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Không thể cài đặt mod dưới dạng $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Không thể cài đặt $1 dưới dạng gói kết cấu"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Không thể cài đặt trò chơi dưới dạng $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Không thể cài đặt mod dưới dạng $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Không thể cài đặt modpack dưới dạng $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -863,6 +865,10 @@ msgstr "Trình kết xuất hiện hoạt:"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Các nhà phát triển cốt lõi"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1137,7 +1143,7 @@ msgstr "Phác thảo node"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr "Không"
+msgstr "Không có"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1992,6 +1998,28 @@ msgstr "Minimap ở chế độ mặt nền, mức thu phóng %dx"
 msgid "Minimap in texture mode"
 msgstr "Minimap ở chế độ kết cấu"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Không có phần phụ thuộc bắt buộc nào"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Đã xảy ra lỗi khi mở trang web"
@@ -2108,7 +2136,7 @@ msgstr "Vật phẩm trước"
 msgid "Range select"
 msgstr "Lựa chọn phạm vi"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Chụp màn hình"
 
@@ -2404,13 +2432,24 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Điều chỉnh cấu hình DPI cho màn hình của bạn (chỉ cho Android/không phải X11)"
-", VD: cho màn hình 4K."
+"Điều chỉnh cấu hình DPI cho màn hình của bạn (chỉ cho Android/không phải "
+"X11), VD: cho màn hình 4K."
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Điều chỉnh mật độ điểm ảnh đã phát hiện, sử dụng để thu phóng các yếu tố UI."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2515,10 +2554,6 @@ msgid "Audio"
 msgstr "Âm thanh"
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Phím tự động tiến"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
@@ -2535,16 +2570,8 @@ msgid "Autoscaling mode"
 msgstr "Chế độ tự động thay đổi tỉ lệ"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Phím Aux1"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "Phím Aux1 cho việc leo lên/leo xuống"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Phím lùi"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2584,6 +2611,23 @@ msgstr "Nhiễu quần xã"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Bán kính mây"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2633,10 +2677,6 @@ msgstr "Máy ảnh mượt mà"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Máy ảnh mượt mà trong chế độ điện ảnh"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Nút chuyển đổi cập nhật máy ảnh"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2701,10 +2741,6 @@ msgid "Chat font size"
 msgstr "K.thước phông chữ tr.chuyện"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Phím trò chuyện"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr ""
 
@@ -2725,10 +2761,6 @@ msgid "Chat message max length"
 msgstr "Độ dài tin nhắn trò chuyện tối đa"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Phím chuyển đổi trò chuyện"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr ""
 
@@ -2739,10 +2771,6 @@ msgstr "Kích thước đoạn khúc"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Chế độ điện ảnh"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Phím chế độ điện ảnh"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2828,10 +2856,6 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Phím lệnh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2975,10 +2999,6 @@ msgid "Damage"
 msgstr "Sát thương"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Phím chuyển đổi thông tin gỡ lỗi"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr ""
 
@@ -2989,10 +3009,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr "Gỡ lỗi"
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Phím giảm âm lượng"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3013,6 +3029,12 @@ msgid ""
 msgstr ""
 "Trò chơi mặc định khi tạo thế giới mới.\n"
 "Nó sẽ bị ghi đè khi tạo một thế giới từ màn hình chính."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3058,6 +3080,13 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr ""
 
@@ -3071,6 +3100,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3142,10 +3177,6 @@ msgid "Developer Options"
 msgstr "Tùy chọn nhà phát triển"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Phím đào"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Hạt hiệu ứng khi đào"
 
@@ -3180,10 +3211,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Nhấn đúp phím nhảy để chuyển đổi chế độ bay."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Phím thả vật phẩm"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr ""
 
@@ -3198,6 +3225,15 @@ msgstr "Y nhỏ nhất của ngục tối"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Nhiễu ngục tối"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Kích hoạt tất cả"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3278,8 +3314,8 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"Kích hoạt để ngăn các máy khách sử dụng phiên bản cũ kết nối. Các máy khách "
-"\n"
+"Kích hoạt để ngăn các máy khách sử dụng phiên bản cũ kết nối. Các máy "
+"khách \n"
 "cũ hơn tương thích trong trường hợp chúng không gặp sự cố khi kết nối vàomáy "
 "chủ mới,\n"
 "tuy nhiên chúng có thể không hỗ trợ tất cả các tính năng mới như bạn mong "
@@ -3364,12 +3400,16 @@ msgstr "Phương thức thực thể"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3394,10 +3434,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3502,10 +3538,6 @@ msgid "Floatland water level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Bay"
 
@@ -3515,10 +3547,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3615,10 +3643,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3746,10 +3770,6 @@ msgid "HUD scaling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -3831,142 +3851,6 @@ msgstr ""
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4135,10 +4019,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Phím tăng âm lượng"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr ""
 
@@ -4182,10 +4062,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4290,511 +4166,7 @@ msgid "Julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4834,7 +4206,11 @@ msgid "Large cave proportion flooded"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Last update check"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4847,10 +4223,6 @@ msgid ""
 "-   Fancy:  all faces visible\n"
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4980,6 +4352,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5242,10 +4621,6 @@ msgstr ""
 "Giá trị này phải thấp hơn curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5335,10 +4710,6 @@ msgid "Minimap"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr ""
 
@@ -5425,10 +4796,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr ""
 
@@ -5472,10 +4839,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5592,15 +4955,7 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5632,6 +4987,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -5653,10 +5012,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5688,10 +5043,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5755,10 +5106,6 @@ msgid "Ridged mountain size noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr ""
 
@@ -5804,6 +5151,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Saturation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5860,9 +5211,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Màn hình:"
+msgstr "Ảnh chụp màn hình"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -5973,6 +5323,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6011,6 +5370,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6025,6 +5390,14 @@ msgstr ""
 msgid ""
 "Set to true to enable waving plants.\n"
 "Requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6159,10 +5532,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6492,10 +5861,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
@@ -6535,6 +5900,11 @@ msgid "Trusted mods"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 
@@ -6552,11 +5922,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6581,6 +5961,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6666,6 +6056,14 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
@@ -6683,18 +6081,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6962,8 +6348,41 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "- Damage: "
 #~ msgstr "- Tổn hại: "
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Phím tự động tiến"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Phím Aux1"
+
+#~ msgid "Backward key"
+#~ msgstr "Phím lùi"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Nút chuyển đổi cập nhật máy ảnh"
+
+#~ msgid "Chat key"
+#~ msgstr "Phím trò chuyện"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Phím chuyển đổi trò chuyện"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Phím chế độ điện ảnh"
+
+#~ msgid "Command key"
+#~ msgstr "Phím lệnh"
+
 #~ msgid "Connect"
 #~ msgstr "Kết nối"
+
+#~ msgid "Debug info toggle key"
+#~ msgstr "Phím chuyển đổi thông tin gỡ lỗi"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Phím giảm âm lượng"
+
+#~ msgid "Dig key"
+#~ msgstr "Phím đào"
 
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr ""
@@ -6972,11 +6391,26 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Download one from minetest.net"
 #~ msgstr "Tải xuống một trò chơi từ minetest.net"
 
+#~ msgid "Drop item key"
+#~ msgstr "Phím thả vật phẩm"
+
 #~ msgid "Game"
 #~ msgstr "Trò chơi"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "Phím tăng âm lượng"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Cài đặt mod: Không thể tìm thấy tên mod thật cho: $1"
+
 #~ msgid "Ok"
 #~ msgstr "Được"
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Không thể cài đặt trò chơi dưới dạng $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Không thể cài đặt modpack dưới dạng $1"
 
 #, fuzzy
 #~ msgid "You died."

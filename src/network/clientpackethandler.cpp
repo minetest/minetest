@@ -673,7 +673,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_thread.isRunning());
+	sanity_check(!m_mesh_update_manager.isRunning());
 
 	for (u16 i = 0; i < num_files; i++) {
 		std::string name, sha1_base64;
@@ -733,7 +733,7 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	if (init_phase) {
 		// Mesh update thread must be stopped while
 		// updating content definitions
-		sanity_check(!m_mesh_update_thread.isRunning());
+		sanity_check(!m_mesh_update_manager.isRunning());
 	}
 
 	for (u32 i = 0; i < num_files; i++) {
@@ -770,7 +770,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_thread.isRunning());
+	sanity_check(!m_mesh_update_manager.isRunning());
 
 	// Decompress node definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
@@ -789,7 +789,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_thread.isRunning());
+	sanity_check(!m_mesh_update_manager.isRunning());
 
 	// Decompress item definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
@@ -1764,4 +1764,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_intensity;
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.saturation;
 }

@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-05-19 18:13+0000\n"
-"Last-Translator: GT-610 <myddz1005@163.com>\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"PO-Revision-Date: 2022-11-05 12:08+0000\n"
+"Last-Translator: Tianshu Feng <admin@theaceblock.space>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -28,15 +28,15 @@ msgstr "退出至主菜单"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "无效命令 "
+msgstr "无效命令： "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "发送的命令 "
+msgstr "发送的命令： "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "列出联机玩家"
+msgstr "列出在线玩家"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
@@ -113,31 +113,6 @@ msgid "The server has requested a reconnect:"
 msgstr "服务器已请求重新连接："
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "选择Mod"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "协议版本不匹配。 "
 
@@ -150,10 +125,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "服务器支持协议版本为 $1 至 $2。 "
 
 #: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "我们只支持协议版本 $1。"
 
@@ -163,11 +134,11 @@ msgstr "我们支持的协议版本为 $1 至 $2。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "（已启用，出错）"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "（不满足）"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -253,7 +224,7 @@ msgstr "启用"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\"已经存在，你想覆写吗?"
+msgstr "\"$1\"已经存在，你要覆盖它吗？"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -261,7 +232,7 @@ msgstr "$1 和 $2 依赖项将被安装."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr "$1  作者： $2"
+msgstr "$1 作者： $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -308,8 +279,22 @@ msgid "Downloading..."
 msgstr "下载中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "下载 $1 失败"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "下载 $1 失败"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "安装：文件类型不支持或压缩包已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -326,11 +311,6 @@ msgstr "安装$1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "安装缺失的依赖项"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Install: Unsupported file type or broken archive"
-msgstr "安装：文件类型不支持或档案已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -425,9 +405,8 @@ msgid "Decorations"
 msgstr "装饰"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "警告：开发测试是为开发者提供的。"
+msgstr "开发测试版适用于开发者。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -462,13 +441,12 @@ msgid "Increases humidity around rivers"
 msgstr "增加河流周边湿度"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "安装$1"
+msgstr "安装子游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "安装另一个子游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -605,12 +583,11 @@ msgstr "确认密码"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "加入 $1"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Missing name"
-msgstr "地图生成器名称"
+msgstr "缺失名称"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -623,14 +600,12 @@ msgid "Password"
 msgstr "密码"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "密码不匹配！"
+msgstr "密码不匹配"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "注册并加入"
+msgstr "注册"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -664,14 +639,16 @@ msgid "Browse"
 msgstr "浏览"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Games"
-msgstr "内容"
+msgid "Client Mods"
+msgstr "客户端 Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
+msgid "Content: Games"
+msgstr "内容：子游戏"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr "内容"
+msgstr "内容：模组"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -789,6 +766,33 @@ msgstr "默认值"
 msgid "eased"
 msgstr "缓解"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "新的 $1 版本可用"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"已安装的版本：$1\n"
+"新版本：$2\n"
+"访问 $3 以了解如何获取最新版本并及时跟进功能和错误修复。"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "稍后"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "从不"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "访问网站"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 已启用"
@@ -802,32 +806,23 @@ msgid "Failed to install $1 to $2"
 msgstr "无法把$1安装到$2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "安装mod：无法找到$1的真实mod名称"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr "安装mod：无法找到mod包$1的合适文件夹名"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "无法找到mod或mod包"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "无法将$1安装为mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "无法将$1安装为材质包"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "无法将$1安装为子游戏"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "无法将$1安装为mod"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "无法将$1安装为mod包"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -858,6 +853,10 @@ msgid "Core Developers"
 msgstr "核心开发者"
 
 #: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
 msgstr "打开用户数据目录"
 
@@ -878,9 +877,8 @@ msgid "Previous Core Developers"
 msgstr "前核心开发者"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Share debug log"
-msgstr "显示调试信息"
+msgstr "分享调试日志"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1013,7 +1011,7 @@ msgstr "加入游戏"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "登录"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1028,9 +1026,8 @@ msgid "Refresh"
 msgstr "刷新"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "远程端口"
+msgstr "移除收藏"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1038,7 +1035,7 @@ msgstr "服务器描述"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "（需要子游戏支持）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1085,9 +1082,8 @@ msgid "Dynamic shadows"
 msgstr "动态阴影"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "动态阴影: "
+msgstr "动态阴影："
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1182,22 +1178,20 @@ msgid "Tone Mapping"
 msgstr "色调映射"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "触控阈值:（px）"
+msgstr "触控阈值（像素）："
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "三线性过滤"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Very High"
-msgstr "超出高度限制"
+msgstr "极高"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr "过于低"
+msgstr "极低"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -1212,9 +1206,8 @@ msgid "Waving Plants"
 msgstr "摇摆植物"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "连接出错（超时？）"
+msgstr "连接中断（协议错误？）。"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1482,9 +1475,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "启用无限视野"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "正在建立客户端..."
+msgstr "创建客户端出错：%s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1983,6 +1976,28 @@ msgstr "地表模式小地图, 放大至%d倍"
 msgid "Minimap in texture mode"
 msgstr "材质模式小地图"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "无依赖项"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "网页打不开"
@@ -2077,7 +2092,7 @@ msgstr "按键已被占用"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "按键绑定。"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2099,7 +2114,7 @@ msgstr "上一个物品"
 msgid "Range select"
 msgstr "选择范围"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "截图"
 
@@ -2182,12 +2197,11 @@ msgstr "zh_CN"
 #: src/network/clientpackethandler.cpp
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
-msgstr ""
+msgstr "名称未注册。如想要在当前服务器创建一个账户，请点击“注册”"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "请选择名称！"
+msgstr "名称已被占用。请选择其他名称"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2350,7 +2364,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2430,6 +2444,17 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "调整检测到的显示密度，用来缩放 UI 元素。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2445,9 +2470,8 @@ msgstr ""
 "创建一个密实的悬空岛层。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "添加物品名称"
+msgstr "管理员名称"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2468,9 +2492,8 @@ msgstr ""
 "在夜晚的自然光照下作用很小。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "保持飞行和快速模式"
+msgstr "保持快速飞行"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2549,11 +2572,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "自动前进键"
+msgstr "声音"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2572,16 +2591,8 @@ msgid "Autoscaling mode"
 msgstr "自动缩放模式"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Aux1键"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "用于攀登/降落的Aux1键"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "后退键"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2625,8 +2636,25 @@ msgid "Block send optimize distance"
 msgstr "最优方块发送距离"
 
 #: src/settings_translation_file.cpp
-msgid "Bobbing"
+msgid "Bloom"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "云半径"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bobbing"
+msgstr "摆动"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2653,9 +2681,8 @@ msgid "Builtin"
 msgstr "内置"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "改变相机"
+msgstr "相机"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2676,10 +2703,6 @@ msgstr "镜头平滑"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "电影模式下镜头平滑"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "镜头更新启用/禁用键"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2746,10 +2769,6 @@ msgid "Chat font size"
 msgstr "聊天字体大小"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "聊天键"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "聊天日志级别"
 
@@ -2770,10 +2789,6 @@ msgid "Chat message max length"
 msgstr "聊天消息最大长度"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "聊天启用/禁用键"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "聊天网页链接"
 
@@ -2784,10 +2799,6 @@ msgstr "块大小"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "电影模式"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "电影模式键"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2814,16 +2825,15 @@ msgstr "客户端mod"
 
 #: src/settings_translation_file.cpp
 msgid "Client side modding restrictions"
-msgstr "客户端mod限制"
+msgstr "客户端模组限制"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
 msgstr "客户端方块查询范围限制"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
-msgstr "客户端mod"
+msgstr "客户端修改"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2887,10 +2897,6 @@ msgstr ""
 "函数，即便 mod 安全性已启用（经由 request_insecure_environment()）。"
 
 #: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "命令键"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
@@ -2909,6 +2915,10 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"向客户端发送地图块时使用的压缩级别。\n"
+"-1 - 使用默认压缩级别\n"
+"0 - 最小压缩，最快\n"
+"9 - 最佳压缩，最慢"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2935,9 +2945,8 @@ msgid "Console height"
 msgstr "控制台高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Content Repository"
-msgstr "在线内容仓库（ContentDB）"
+msgstr "内容仓库"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -2982,6 +2991,8 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"控制静止时在液体中的下沉速度。\n"
+"负值会导致你上升。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -3043,10 +3054,6 @@ msgid "Damage"
 msgstr "伤害"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "调试信息启用/禁用键"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "沙漠噪声阈值"
 
@@ -3056,11 +3063,7 @@ msgstr "调试日志级别"
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "音量减小键"
+msgstr "调试"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3081,6 +3084,13 @@ msgid ""
 msgstr ""
 "创建新世界时的默认游戏。\n"
 "从主菜单创建一个新世界时这将被覆盖。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "强制载入地图块最大数量。"
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3129,6 +3139,13 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr "定义大型洞穴的尺寸，数值越小洞穴越大。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "定义大尺寸的河道结构。"
 
@@ -3143,6 +3160,12 @@ msgstr "定义基准地面高度."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "定义水道深度."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3211,13 +3234,8 @@ msgid "Desynchronize block animation"
 msgstr "去同步块动画"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "装饰"
-
-#: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "挖掘键"
+msgstr "开发者选项"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3254,10 +3272,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "连按两次“跳跃”键启用/禁用飞行模式。"
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "丢弃物品键"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "转储地图生成器调试信息。"
 
@@ -3272,6 +3286,15 @@ msgstr "地窖最小Y坐标"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "地窖噪声"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "全部启用"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3299,13 +3322,12 @@ msgstr ""
 "使用泊松盘算法来产生“软阴影”。不启用的话就会使用 PCF 滤镜。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
 "启用彩色阴影。\n"
-"在半透明节点上投射彩色阴影。会消耗超多的资源。"
+"在半透明节点上投射彩色阴影。会消耗很多的资源。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3321,7 +3343,7 @@ msgstr "启用摇杆"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "启用操纵杆。 需要重启才能生效"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3443,9 +3465,8 @@ msgid ""
 msgstr "允许不影响可玩性的轻微视觉错误，以此减少 CPU 负载，或提高渲染性能。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine profiler"
-msgstr "山谷轮廓"
+msgstr "引擎性能分析"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3456,8 +3477,9 @@ msgid "Entity methods"
 msgstr "实体方法"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3471,8 +3493,12 @@ msgstr ""
 "适用于固体悬空岛层。"
 
 #: src/settings_translation_file.cpp
-msgid "FPS"
+msgid "Exposure Factor"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "FPS"
+msgstr "FPS"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3493,10 +3519,6 @@ msgstr "坠落上下摆动系数"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "后备字体路径"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "快速键"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3560,9 +3582,8 @@ msgstr ""
 "该过滤器将在启用mipmapping的时候被自动应用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering and Antialiasing"
-msgstr "抗锯齿："
+msgstr "过滤和抗锯齿"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3609,10 +3630,6 @@ msgid "Floatland water level"
 msgstr "悬空岛水位"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "飞行键"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "飞行"
 
@@ -3625,13 +3642,8 @@ msgid "Fog start"
 msgstr "雾开始"
 
 #: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "雾启用/禁用键"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font"
-msgstr "字体大小"
+msgstr "字体"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -3658,14 +3670,12 @@ msgid "Font size divisible by"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the default font where 1 unit = 1 pixel at 96 DPI"
-msgstr "默认字体大小，单位pt。"
+msgstr "在 96 DPI 下默认字体大小 1 unit = 1 pixel"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size of the monospace font where 1 unit = 1 pixel at 96 DPI"
-msgstr "等宽字体大小，单位pt。"
+msgstr "在 96 DPI 下等宽字体大小 1 unit = 1 pixel"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3732,10 +3742,6 @@ msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr "窗口全屏背景不透明度(0~255)。"
 
 #: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "前进键"
-
-#: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr "定义决定丘陵/山地范围高度的4个2D噪声的第四项。"
 
@@ -3794,30 +3800,28 @@ msgstr "GUI缩放过滤器 txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "界面"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Gamepads"
-msgstr "子游戏"
+msgstr "游戏手柄"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "通用"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
 msgstr "全局回调"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and jungle grass, in all other mapgens this flag controls all decorations."
 msgstr ""
 "全局地图生成属性。\n"
-"在地图生成器 v6 中‘decorations’标签控制除树木和丛林草外所有装饰物。\n"
+"在地图生成器 v6 中 “decorations” 标签控制除树木和丛林草外所有装饰物。\n"
 "在其他地图生成器中此标签控制所有装饰物。"
 
 #: src/settings_translation_file.cpp
@@ -3841,14 +3845,12 @@ msgid "Graphics"
 msgstr "图形"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics Effects"
-msgstr "图形"
+msgstr "图形效果"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Graphics and Audio"
-msgstr "图形"
+msgstr "图形和音频"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -3868,16 +3870,11 @@ msgstr "HTTP Mods"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "GUI缩放"
-
-#: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "HUD启用/禁用键"
+msgstr "HUD 缩放"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3978,142 +3975,6 @@ msgstr ""
 "单位为方块每二次方秒。"
 
 #: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "快捷栏下一个键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "快捷栏上一个键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "快捷栏1键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "快捷栏10键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "快捷栏11键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "快捷栏12键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "快捷栏13键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "快捷栏14键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "快捷栏15键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "快捷栏16键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "快捷栏17键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "快捷栏18键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "快捷栏19键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "快捷栏2键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "快捷栏20键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "快捷栏21键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "快捷栏22键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "快捷栏23键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "快捷栏24键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "快捷栏25键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "快捷栏26键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "快捷栏27键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "快捷栏28键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "快捷栏29键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "快捷栏3键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "快捷栏30键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "快捷栏31键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "快捷栏32键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "快捷栏4键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "快捷栏5键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "快捷栏6键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "快捷栏7键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "快捷栏8键"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "快捷栏9键"
-
-#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr "生成河流多深。"
 
@@ -4128,21 +3989,21 @@ msgstr ""
 "需要波动液体启用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"在卸载不使用的地图区块前，服务器要等待多少时间。\n"
+"在卸载不使用的地图区块前，服务器要等待多少秒。\n"
 "值越高越平滑，但是会使用更多内存。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
-msgstr "减小此值以增加液体对运动的阻力。"
+msgstr ""
+"在液体中移动时你的速度减慢了多少。\n"
+"减小此值以增加液体对运动的阻力。"
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers."
@@ -4214,13 +4075,12 @@ msgstr ""
 "下降。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"在连接到服务器时启用注册确认。\n"
-"如果禁用，新账号会自动注册。"
+"如果启用，帐户注册与 UI 中的登录是分开的。\n"
+"如果禁用，新帐户将在登录时自动注册。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4249,11 +4109,10 @@ msgid ""
 msgstr "如果启用，则在飞行或游泳时相对于玩家的仰角来移动方向。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
-msgstr "如果启用，新玩家将无法使用空密码加入。"
+msgstr "如果启用，玩家将无法在没有密码的情况下加入或修改密码为空密码。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4314,10 +4173,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr "游戏内聊天控制台高度，0.1(10%)~1.0(100%)。"
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "音量增大键"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "初始垂直速度，单位为方块每二次方秒。"
 
@@ -4361,17 +4216,12 @@ msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr "保存世界重要变化的时间间隔，以秒为单位。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Interval of sending time of day to clients, stated in seconds."
-msgstr "向客户端发送时间的间隔。"
+msgstr "一天中向客户端发送时间的间隔，以秒为单位。"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "物品清单物品动画"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "物品清单键"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4418,9 +4268,8 @@ msgid "Joystick button repetition interval"
 msgstr "摇杆按钮重复间隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
-msgstr "摇杆无效区"
+msgstr "摇杆死区"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4497,733 +4346,12 @@ msgid "Julia z"
 msgstr "朱莉亚z"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "跳跃键"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "跳跃速度"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"视野缩小键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"音量减小键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"跳跃键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"丢弃所选物品键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"视野扩大键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"音量增大键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"跳跃键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"快速模式快速移动键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"后退键。\n"
-"在按下时也会取消自动前进。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"前进键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"左方向键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"右方向键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"静音键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"打开聊天窗口输入命令键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"打开聊天窗口输入本地命令键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"打开聊天窗口键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"打开物品清单键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"跳跃键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第11个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第12个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第13个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第14个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第15个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第16个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第17个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第18个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第19个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第20个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第21个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第22个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第23个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第24个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第25个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第26个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第27个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第28个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第29个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第30个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第31个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第32个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第8个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第5个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第1个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第4个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏下一个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第9个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏上一个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第2个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第7个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第6个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第10个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"选择快捷栏第3个位置键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"下蹲键。\n"
-"若aux1_descends禁用，也可用于向下攀爬、在水中向下游。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"第一人称第三人称镜头切换键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"截屏键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用自动前进键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用电影模式键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用小地图键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用快速移动键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用飞行键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用穿墙模式键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用俯仰移动模式键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用相机更新键。仅用于开发。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用聊天显示键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用调试信息键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用雾显示键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用HUD显示键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用大型聊天控制台显示键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用性能分析图显示键。仅用于开发。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用无限视野键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"启用/禁用缩放（如有可能）键。\n"
-"见http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "键盘和鼠标"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -5258,8 +4386,13 @@ msgid "Large cave proportion flooded"
 msgstr "大型洞穴淹没比"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "大型聊天控制台键"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "液体更新时钟间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5276,10 +4409,6 @@ msgstr ""
 "-   华丽：  所有面可见\n"
 "-   简单：  若special_tiles已定义，仅外表面可见\n"
 "-   不透明：  取消树叶透明度"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "左方向键"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5364,9 +4493,8 @@ msgid "Light curve low gradient"
 msgstr "亮度曲线低梯度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lighting"
-msgstr "平滑光照"
+msgstr "光照"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5437,6 +4565,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "加载时区块修改间隔"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5726,10 +4861,6 @@ msgstr ""
 "曲平行限制）。"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "强制载入地图块最大数量。"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5788,11 +4919,10 @@ msgstr ""
 "0取消队列，-1使队列大小无限。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum time a file download (e.g. a mod download) may take, stated in "
 "milliseconds."
-msgstr "单个文件下载（如mod下载）的最大时间。"
+msgstr "下载单个文件（如下载模组）的最大时间，单位毫秒。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5829,10 +4959,6 @@ msgid "Minimap"
 msgstr "小地图"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "小地图键"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "小地图扫描高度"
 
@@ -5854,26 +4980,23 @@ msgstr "Mip 贴图"
 
 #: src/settings_translation_file.cpp
 msgid "Misc"
-msgstr ""
+msgstr "杂项"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Profiler"
-msgstr "性能分析"
+msgstr "模组性能分析器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Security"
-msgstr "安全"
+msgstr "模组安全"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
 msgstr "mod频道"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Modifies the size of the HUD elements."
-msgstr "更改hud栏元素大小。"
+msgstr "更改 HUD 栏元素大小。"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -5925,10 +5048,6 @@ msgstr ""
 "例如：设为0则不摇动；1.0则正常；2.0则两倍。"
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "静音按键"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "静音"
 
@@ -5972,7 +5091,6 @@ msgstr ""
 "从主菜单开始时此值将被覆盖。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Networking"
 msgstr "网络"
 
@@ -5985,13 +5103,8 @@ msgid "Noclip"
 msgstr "穿墙"
 
 #: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "穿墙键"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node and Entity Highlighting"
-msgstr "方块高亮"
+msgstr "方块和实体高亮"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -6067,16 +5180,13 @@ msgid "Optional override for chat weblink color."
 msgstr "替换聊天网页链接的颜色，可用可不用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path of the fallback font. Must be a TrueType font.\n"
 "This font will be used for certain languages or if the default font is "
 "unavailable."
 msgstr ""
-"后备字体路径。\n"
-"如果“freetype”设置启用：必须为TrueType字体。\n"
-"如果“freetype”设置禁用：必须为位图或XML矢量字体。\n"
-"此字体用于不可用默认字体的语言。"
+"备用字体路径。必须为TrueType字体。\n"
+"此字体用于默认字体中不可用的语言。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6097,26 +5207,20 @@ msgid "Path to texture directory. All textures are first searched from here."
 msgstr "材质目录路径。所有材质都首先从此路径搜索。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"默认字体路径。\n"
-"如果“freetype”设置启用：必须为TrueType字体。\n"
-"如果“freetype”设置禁用：必须为位图或XML矢量字体。\n"
-"后备字体用于不可用默认字体的语言。"
+"默认字体路径。必须为TrueType字体。\n"
+"该字体不可用时将会使用备用字体。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"等宽字体路径。\n"
-"如果“freetype”设置启用：必须为TrueType字体。\n"
-"如果“freetype”设置禁用：必须为位图或XML矢量字体。\n"
-"此字体用于控制台、性能分析图界面等。"
+"等宽字体路径。必须为TrueType字体。\n"
+"此字体用于控制台、性能分析界面等。"
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
@@ -6135,17 +5239,8 @@ msgid "Physics"
 msgstr "物理"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "俯仰移动键"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "俯仰移动模式"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Place key"
-msgstr "飞行键"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6181,6 +5276,10 @@ msgstr ""
 "请注意，主菜单中的端口字段将覆盖此设置。"
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6209,15 +5308,10 @@ msgid "Profiler"
 msgstr "性能分析"
 
 #: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "性能分析启用/禁用键"
-
-#: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
 msgstr "Prometheus 监听器地址"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Prometheus listener address.\n"
 "If Minetest is compiled with ENABLE_PROMETHEUS option enabled,\n"
@@ -6225,7 +5319,7 @@ msgid ""
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
 "Prometheus 监听器地址。\n"
-"如果minetest是在启用ENABLE_PROMETHEUS选项的情况下编译的，\n"
+"如果Minetest在编译时启用了ENABLE_PROMETHEUS选项，\n"
 "在该地址上为 Prometheus 启用指标侦听器。\n"
 "可以从 http://127.0.0.1:30000/metrics 获取指标"
 
@@ -6249,10 +5343,6 @@ msgstr "抬高地形使河流周围形成山谷。"
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "随机输入"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "范围选择键"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6327,10 +5417,6 @@ msgid "Ridged mountain size noise"
 msgstr "山脊大小噪声"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "右方向键"
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr "河道深度"
 
@@ -6379,6 +5465,11 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "当 np_beach 超过这个值时会出现沙滩。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "迭代"
+
+#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "将客户端接收到的地图保存在磁盘上。"
 
@@ -6405,9 +5496,8 @@ msgstr ""
 "为代价混合像素。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screen"
-msgstr "屏幕："
+msgstr "屏幕"
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -6440,9 +5530,8 @@ msgstr ""
 "使用 0 来使用预设品质。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "截图"
+msgstr "屏幕截图"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -6515,9 +5604,8 @@ msgstr ""
 "18 = 4D \"Mandelbulb\" 朱利亚集."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server"
-msgstr "服务器 URL"
+msgstr "服务器"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6525,9 +5613,8 @@ msgid "Server Gameplay"
 msgstr "服务器名称"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Security"
-msgstr "服务器描述"
+msgstr "服务器安全"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -6570,6 +5657,15 @@ msgstr "服务器列表 URL"
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
 msgstr "服务器列表文件"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6628,6 +5724,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6649,6 +5751,14 @@ msgid ""
 msgstr ""
 "设置为真以启用摆动植物。\n"
 "需要启用着色器。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6809,10 +5919,6 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr "让旋转摄影机时较流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "潜行键"
-
-#: src/settings_translation_file.cpp
 msgid "Sneaking speed"
 msgstr "潜行速度"
 
@@ -6943,9 +6049,8 @@ msgid "Temperature variation for biomes."
 msgstr "生物群系的温度变化。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Temporary Settings"
-msgstr "设置"
+msgstr "临时设置"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
@@ -7184,10 +6289,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "启用/禁用拍照模式键"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "工具提示延迟"
 
@@ -7231,6 +6332,11 @@ msgid "Trusted mods"
 msgstr "可信 mod"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "显示在“多人游戏”选项卡中的服务器列表的URL。"
 
@@ -7248,12 +6354,22 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "无限的玩家转移距离"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "卸载未用服务器数据"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7278,6 +6394,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "缩放材质时使用双线过滤。"
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7364,6 +6490,14 @@ msgid "Varies steepness of cliffs."
 msgstr "控制山丘的坡度/高度。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
@@ -7382,18 +6516,6 @@ msgstr "视野晃动系数"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "可视距离（以节点方块为单位）。"
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "可视范围减小键"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "可视范围增加键"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "检视缩放键"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7694,8 +6816,17 @@ msgstr "cURL 并发限制"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "你确定要重置你的单人世界吗？"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "自动前进键"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Aux1键"
+
 #~ msgid "Back"
 #~ msgstr "后退"
+
+#~ msgid "Backward key"
+#~ msgstr "后退键"
 
 #~ msgid "Basic"
 #~ msgstr "基础"
@@ -7709,6 +6840,9 @@ msgstr "cURL 并发限制"
 #~ msgid "Bumpmapping"
 #~ msgstr "凹凸贴图"
 
+#~ msgid "Camera update toggle key"
+#~ msgstr "镜头更新启用/禁用键"
+
 #~ msgid ""
 #~ "Changes the main menu UI:\n"
 #~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
@@ -7721,6 +6855,18 @@ msgstr "cURL 并发限制"
 #~ "-   完整  多个单人世界，子游戏选择，材质包选择器等。\n"
 #~ "-   简单：单个单人世界，无子游戏材质包选择器。可能\n"
 #~ "需要用于小屏幕。"
+
+#~ msgid "Chat key"
+#~ msgstr "聊天键"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "聊天启用/禁用键"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "电影模式键"
+
+#~ msgid "Command key"
+#~ msgstr "命令键"
 
 #~ msgid "Config mods"
 #~ msgstr "配置 mod"
@@ -7758,6 +6904,12 @@ msgstr "cURL 并发限制"
 #~ msgid "Darkness sharpness"
 #~ msgstr "地图生成器平面湖坡度"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "调试信息启用/禁用键"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "音量减小键"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -7782,6 +6934,9 @@ msgstr "cURL 并发限制"
 #~ msgid "Del. Favorite"
 #~ msgstr "删除收藏项"
 
+#~ msgid "Dig key"
+#~ msgstr "挖掘键"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "从 minetest.net 下载一个子游戏，例如 minetest_game"
 
@@ -7790,6 +6945,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "正在下载和安装 $1，请稍等..."
+
+#~ msgid "Drop item key"
+#~ msgstr "丢弃物品键"
 
 #~ msgid "Enable VBO"
 #~ msgstr "启用 VBO"
@@ -7846,14 +7004,26 @@ msgstr "cURL 并发限制"
 #~ msgid "Fallback font size"
 #~ msgstr "后备字体大小"
 
+#~ msgid "Fast key"
+#~ msgstr "快速键"
+
 #~ msgid "Filtering"
 #~ msgstr "过滤"
+
+#~ msgid "Fly key"
+#~ msgstr "飞行键"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "雾启用/禁用键"
 
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "字体阴影不透明度（0-255）。"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "后备字体大小，单位pt。"
+
+#~ msgid "Forward key"
+#~ msgstr "前进键"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "FreeType 字体"
@@ -7876,8 +7046,113 @@ msgstr "cURL 并发限制"
 #~ msgid "HUD scale factor"
 #~ msgstr "HUD 缩放比例系数"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "HUD启用/禁用键"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "高精度 FPU"
+
+#~ msgid "Hotbar next key"
+#~ msgstr "快捷栏下一个键"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "快捷栏上一个键"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "快捷栏1键"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "快捷栏10键"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "快捷栏11键"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "快捷栏12键"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "快捷栏13键"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "快捷栏14键"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "快捷栏15键"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "快捷栏16键"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "快捷栏17键"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "快捷栏18键"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "快捷栏19键"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "快捷栏2键"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "快捷栏20键"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "快捷栏21键"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "快捷栏22键"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "快捷栏23键"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "快捷栏24键"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "快捷栏25键"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "快捷栏26键"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "快捷栏27键"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "快捷栏28键"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "快捷栏29键"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "快捷栏3键"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "快捷栏30键"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "快捷栏31键"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "快捷栏32键"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "快捷栏4键"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "快捷栏5键"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "快捷栏6键"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "快捷栏7键"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "快捷栏8键"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "快捷栏9键"
 
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 支持。"
@@ -7885,19 +7160,681 @@ msgstr "cURL 并发限制"
 #~ msgid "In-Game"
 #~ msgstr "游戏中"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "音量增大键"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "安装mod：无法找到$1的真实mod名称"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "安装：文件：”$1“"
 
 #~ msgid "Instrumentation"
 #~ msgstr "计数器"
 
+#~ msgid "Inventory key"
+#~ msgstr "物品清单键"
+
+#~ msgid "Jump key"
+#~ msgstr "跳跃键"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "视野缩小键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "音量减小键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "挖掘键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "丢弃所选物品键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "视野扩大键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "音量增大键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "跳跃键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "快速模式快速移动键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "后退键。\n"
+#~ "在按下时也会取消自动前进。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "前进键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "左方向键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "右方向键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "静音键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "打开聊天窗口输入命令键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "打开聊天窗口输入本地命令键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "打开聊天窗口键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "打开物品清单键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "放置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第11个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第12个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第13个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第14个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第15个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第16个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第17个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第18个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第19个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第20个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第21个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第22个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第23个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第24个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第25个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第26个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第27个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第28个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第29个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第30个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第31个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第32个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第8个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第5个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第1个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第4个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏下一个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第9个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏上一个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第2个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第7个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第6个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第10个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "选择快捷栏第3个位置键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "下蹲键。\n"
+#~ "若aux1_descends禁用，也可用于向下攀爬、在水中向下游。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "第一人称第三人称镜头切换键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "截屏键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用自动前进键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用电影模式键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用小地图键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用快速移动键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用飞行键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用穿墙模式键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用俯仰移动模式键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用相机更新键。仅用于开发。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用聊天显示键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用调试信息键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用雾显示键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用HUD显示键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用大型聊天控制台显示键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用性能分析图显示键。仅用于开发。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用无限视野键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "启用/禁用缩放（如有可能）键。\n"
+#~ "见http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 #~ msgstr "键位配置。（如果这个菜单被弄乱，从 minetest.conf 中删掉点东西）"
 
+#~ msgid "Large chat console key"
+#~ msgstr "大型聊天控制台键"
+
 #, fuzzy
 #~ msgid "Lava depth"
 #~ msgstr "巨大洞穴深度"
+
+#~ msgid "Left key"
+#~ msgstr "左方向键"
 
 #~ msgid "Limit of emerge queues on disk"
 #~ msgstr "磁盘上的生产队列限制"
@@ -7926,6 +7863,12 @@ msgstr "cURL 并发限制"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "地表模式小地图, 放大至四倍"
 
+#~ msgid "Minimap key"
+#~ msgstr "小地图键"
+
+#~ msgid "Mute key"
+#~ msgstr "静音按键"
+
 #~ msgid "Name / Password"
 #~ msgstr "用户名/密码"
 
@@ -7934,6 +7877,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "No"
 #~ msgstr "否"
+
+#~ msgid "Noclip key"
+#~ msgstr "穿墙键"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "法线贴图采样"
@@ -7985,8 +7931,17 @@ msgstr "cURL 并发限制"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "屏幕截图保存路径。"
 
+#~ msgid "Pitch move key"
+#~ msgstr "俯仰移动键"
+
+#~ msgid "Place key"
+#~ msgstr "放置键"
+
 #~ msgid "Player name"
 #~ msgstr "玩家名称"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "性能分析启用/禁用键"
 
 #~ msgid "Profiling"
 #~ msgstr "性能分析"
@@ -7994,8 +7949,14 @@ msgstr "cURL 并发限制"
 #~ msgid "PvP enabled"
 #~ msgstr "启用玩家对战"
 
+#~ msgid "Range select key"
+#~ msgstr "范围选择键"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "重置单人世界"
+
+#~ msgid "Right key"
+#~ msgstr "右方向键"
 
 #~ msgid "Select Package File:"
 #~ msgstr "选择包文件："
@@ -8022,6 +7983,9 @@ msgstr "cURL 并发限制"
 #~ "not be drawn."
 #~ msgstr "后备字体阴影偏移（单位为像素），0 表示不绘制阴影。"
 
+#~ msgid "Sneak key"
+#~ msgstr "潜行键"
+
 #~ msgid "Special"
 #~ msgstr "特殊"
 
@@ -8043,8 +8007,26 @@ msgstr "cURL 并发限制"
 #~ msgid "Toggle Cinematic"
 #~ msgstr "切换电影模式"
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "启用/禁用拍照模式键"
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "无法将$1安装为子游戏"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "无法将$1安装为mod包"
+
 #~ msgid "View"
 #~ msgstr "视野"
+
+#~ msgid "View range decrease key"
+#~ msgstr "可视范围减小键"
+
+#~ msgid "View range increase key"
+#~ msgstr "可视范围增加键"
+
+#~ msgid "View zoom key"
+#~ msgstr "检视缩放键"
 
 #~ msgid "Waving Water"
 #~ msgstr "流动的水面"

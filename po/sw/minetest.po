@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -121,31 +121,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Seva imeomba na Unganisha upya:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "Teua ulimwengu:"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Itifaki ya toleo haifanani."
 
@@ -156,10 +131,6 @@ msgstr "Seva anahimiza itifaki toleo $1."
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Seva inasaidia matoleo ya itifaki kati ya $1 na $2."
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -326,9 +297,25 @@ msgid "Downloading..."
 msgstr "Inapakia..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
 msgid "Failed to download $1"
 msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr ""
+"\n"
+"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -347,13 +334,6 @@ msgstr "Sakinisha"
 #, fuzzy
 msgid "Install missing dependencies"
 msgstr "Inaanzilisha fundo"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Install: Unsupported file type or broken archive"
-msgstr ""
-"\n"
-"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -709,6 +689,11 @@ msgstr "Vinjari"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
+msgid "Client Mods"
+msgstr "Teua ulimwengu:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Content: Games"
 msgstr "Kuendelea"
 
@@ -839,6 +824,30 @@ msgstr "Chaguo-msingi mchezo"
 msgid "eased"
 msgstr ""
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr ""
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr ""
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr ""
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr ""
+
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "$1 (Enabled)"
@@ -855,39 +864,24 @@ msgstr "Imeshindwa kusakinisha $1 hadi $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Sakinisha Moduli: haiwezi kupata modname halisi kwa: $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
-msgid "Unable to find a valid mod or modpack"
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr ""
 "Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a game as a $1"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a mod as a $1"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a modpack as a $1"
 msgstr "Imeshindwa kusakinisha $1 hadi $2"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
@@ -918,6 +912,10 @@ msgstr "Kiolwa amilifu Tuma masafa"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Watengenezaji wa msingi"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 #, fuzzy
@@ -2101,6 +2099,28 @@ msgstr ""
 msgid "Minimap in texture mode"
 msgstr "Unamu wa kima cha chini cha ukubwa wa Vichujio"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Mategemezi:"
+
 #: src/gui/guiChatConsole.cpp
 #, fuzzy
 msgid "Failed to open webpage"
@@ -2226,7 +2246,7 @@ msgstr ""
 msgid "Range select"
 msgstr "Teua masafa"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Screenshot"
 
@@ -2549,6 +2569,17 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2653,11 +2684,6 @@ msgid "Audio"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Automatic forward key"
-msgstr "Ufunguo wa mbele"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
@@ -2676,17 +2702,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Aux1 key"
-msgstr "Ufunguo wa kuruka"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
 msgstr "Matumizi muhimu kwa ajili ya kupanda/kushuka"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Ufunguo wa nyuma"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2733,6 +2750,23 @@ msgstr "Kelele za mto"
 #, fuzzy
 msgid "Block send optimize distance"
 msgstr "Umbo la Max Tuma umbali"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Wingu eneo"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2786,10 +2820,6 @@ msgstr "Kamera unyooshaji"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Kamera unyooshaji hali cinematic"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Kibonye guro Usasishaji wa kamera"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2864,10 +2894,6 @@ msgid "Chat font size"
 msgstr "Ukubwa wa fonti"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Ufunguo wa mazungumzo"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Chat log level"
 msgstr "Rekebisha kiwango cha logi"
@@ -2891,10 +2917,6 @@ msgid "Chat message max length"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Kibonye guro wa mazungumzo"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr ""
 
@@ -2905,10 +2927,6 @@ msgstr "Ukubwa wa fungu"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Hali ya cinematic"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Hali ya cinematic ufunguo"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -3003,10 +3021,6 @@ msgstr ""
 "Iliyotenganishwa orodha ya mods kuaminika kwamba wanaruhusiwa kufikia kazi "
 "zisizo hata wakati usalama Moduli ni juu (kupitia "
 "request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Ufunguo wa amri"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3151,10 +3165,6 @@ msgid "Damage"
 msgstr "Uharibifu"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Rekebisha taarifa kibonye"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Debug log file size threshold"
 msgstr "Rekebisha kiwango cha logi"
@@ -3166,11 +3176,6 @@ msgstr "Rekebisha kiwango cha logi"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Dec. volume key"
-msgstr "HUD kibonye"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3192,6 +3197,13 @@ msgstr ""
 "Chaguo-msingi mchezo wakati wa kuunda dunia mpya.\n"
 "Hii itakuwa kuwa kuuharibu wakati kutengeneza ulimwengu kutoka kwenye menyu "
 "kuu."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Namba ya juu ya forceloaded mapblocks."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3238,6 +3250,13 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr ""
 
@@ -3251,6 +3270,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3326,11 +3351,6 @@ msgstr "Instrumentation"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Dig key"
-msgstr "Ufunguo sahihi"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Digging particles"
 msgstr "Chembe"
 
@@ -3365,10 +3385,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Mbili-tapping ufunguo wa kuruka Inatogoa hali ya kuruka."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Tone kipengee muhimu"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Dump the mapgen debug information."
 msgstr "Bwaga mwandishi ramani rekebishi infos."
@@ -3385,6 +3401,15 @@ msgstr ""
 #, fuzzy
 msgid "Dungeon noise"
 msgstr "Kelele za mto"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Wezesha yote"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3556,12 +3581,16 @@ msgstr "Mbinu ya chombo"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3590,10 +3619,6 @@ msgstr "Kuanguka bobbing"
 #, fuzzy
 msgid "Fallback font path"
 msgstr "Fonti amebadilisha"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Ufunguo kasi"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3716,10 +3741,6 @@ msgid "Floatland water level"
 msgstr "Kiwango cha maji"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Kuruka ufunguo"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Kuruka"
 
@@ -3730,10 +3751,6 @@ msgstr "Ukungu"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Kibonye guro wa ukungu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3839,10 +3856,6 @@ msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
 "Mazungumzo katika mchezo console mandharinyuma Alfa (opaqueness kati ya 0 na "
 "255)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Ufunguo wa mbele"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3987,10 +4000,6 @@ msgid "HUD scaling"
 msgstr "GUI kurekebisha"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "HUD kibonye"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Handling for deprecated Lua API calls:\n"
@@ -4094,142 +4103,6 @@ msgstr ""
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4427,11 +4300,6 @@ msgstr ""
 "255)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Inc. volume key"
-msgstr "Muhimu ya Kiweko"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr ""
 
@@ -4483,10 +4351,6 @@ msgstr "Muda wa kutuma wakati wa siku kwa wateja."
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Hesabu vitu uhuishaji"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Ufunguo wa hesabu"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4606,775 +4470,8 @@ msgid "Julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Ufunguo wa kuruka"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Kuruka kasi"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuacha kipengee kilichoteuliwa kwa sasa.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuongeza kiwango cha kuonyesha.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuongeza kiwango cha kuonyesha.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kusonga haraka katika hali ya haraka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuhamia mchezaji nyuma.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuhamia mchezaji mbele.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuhamia mchezaji kushoto.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kusonga mchezaji haki.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua dirisha la soga kuchapa amri.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua dirisha la soga kuchapa amri.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua dirisha la soga.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kufungua hesabu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya sneaking.\n"
-"Pia kutumika kwa ajili ya kupanda na kushuka katika maji kama aux1_descends "
-"imelemazwa.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kubadili kati ya kamera ya kwanza - na -mtu wa tatu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuchukua viwambo.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling autorun.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling hali ya cinematic.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la minimap.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling hali ya haraka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling hali ya noclip.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling hali ya noclip.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling sasaishi ya kamera. Tu kutumika kwa ajili ya "
-"maendeleo ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la kuzungumza.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la maelezo kuhusu marekebisho.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la ukungu.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la ya HUD.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la kuzungumza.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling onyesho la profiler ya. Kutumika kwa ajili ya "
-"maendeleo.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya toggling masafa ya Mwoneko ukomo.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Muhimu kwa ajili ya kuruka.\n"
-"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5415,9 +4512,13 @@ msgid "Large cave proportion flooded"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Large chat console key"
-msgstr "Muhimu ya Kiweko"
+msgid "Last update check"
+msgstr "Pata sasishi kioevu"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5432,10 +4533,6 @@ msgid ""
 msgstr ""
 "Majani mtindo: - dhana: nyuso zote kuonekana - rahisi: tu nyuso nje, kama "
 "inavyoelezwa special_tiles ni kutumika - Opaque: Lemaza uwazi"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Ufunguo wa kushoto"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5587,6 +4684,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Inapakiza umbo Modifiers"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5898,10 +5002,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Namba ya juu ya forceloaded mapblocks."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -6003,10 +5103,6 @@ msgid "Minimap"
 msgstr "Ramani"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Ufunguo wa minimap"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Ramani tambazo urefu"
 
@@ -6103,11 +5199,6 @@ msgstr ""
 "2.0 kwa mara mbili."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Mute key"
-msgstr "Ufunguo wa matumizi"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr ""
 
@@ -6159,10 +5250,6 @@ msgstr "Watumiaji wapya haja Ingiza nywila hii."
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Noclip"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Ufunguo wa Noclip"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6283,18 +5370,8 @@ msgid "Physics"
 msgstr "Fizikia"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Pitch move key"
-msgstr "Kuruka ufunguo"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Place key"
-msgstr "Kuruka ufunguo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6332,6 +5409,10 @@ msgstr ""
 "Kumbuka kwamba uwanja wa bandari katika Menyu kuu Puuza kipimo hiki."
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6357,10 +5438,6 @@ msgstr "Marupurupu ya wachezaji na basic_privs unaweza ruzuku"
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Profiler"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Profiler kibonye"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6396,10 +5473,6 @@ msgstr "Huwafufua ardhi kufanya mabonde kuzunguka mito"
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Ingizo la nasibu"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Kibonye Teua masafa"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6466,10 +5539,6 @@ msgid "Ridged mountain size noise"
 msgstr "Mwandishi ramani v7 mlima urefu kelele vigezo"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Ufunguo sahihi"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "River channel depth"
 msgstr "Kina wa mto"
@@ -6522,6 +5591,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Instrumentation"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6722,6 +5796,15 @@ msgstr "Faili ya Serverlist"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6764,6 +5847,12 @@ msgstr ""
 "Inahitaji shaders kwa kuwezeshwa."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Set to true to enable waving leaves.\n"
@@ -6789,6 +5878,14 @@ msgid ""
 msgstr ""
 "Kuweka huwezesha kweli waving mimea.\n"
 "Inahitaji shaders kwa kuwezeshwa."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6938,10 +6035,6 @@ msgstr "Smooths mzunguko wa kamera katika hali-tumizi cinematic. 0 kulemaza."
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Smooths mzunguko wa kamera. 0 kulemaza."
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Zawadi muhimu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7316,10 +6409,6 @@ msgstr ""
 "Hii huamua lini wao ni sjunkit baada ya kuweka au kuondoa fundo."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Togoa kamera hali muhimu"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Kidokezozana kuchelewa"
 
@@ -7364,6 +6453,11 @@ msgid "Trusted mods"
 msgstr "Mods aminifu"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 "URL kwenye orodha ya seva iliyoonyeshwa katika kichupo cha Multiplayer."
@@ -7382,12 +6476,22 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Umbali wa uhamisho wa mchezaji ukomo"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Wakipakua zisizotumika seva ya data"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7413,6 +6517,16 @@ msgstr "Tumia uchujaji anisotropic wakati unatazama katika unamu kutoka pembe."
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Tumia uchujaji bilinear wakati upimaji unamu."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7503,6 +6617,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Udhibiti mwinuko/urefu wa milima."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
@@ -7525,18 +6647,6 @@ msgid "View distance in nodes."
 msgstr ""
 "Onyesha umbali katika fundo.\n"
 "Min = 20"
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Mwoneko masafa Punguza ufunguo"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Mwoneko masafa ongezeko muhimu"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7867,8 +6977,19 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Je, una hakika upya ulimwengu wako singleplayer?"
 
+#, fuzzy
+#~ msgid "Automatic forward key"
+#~ msgstr "Ufunguo wa mbele"
+
+#, fuzzy
+#~ msgid "Aux1 key"
+#~ msgstr "Ufunguo wa kuruka"
+
 #~ msgid "Back"
 #~ msgstr "Nyuma"
+
+#~ msgid "Backward key"
+#~ msgstr "Ufunguo wa nyuma"
 
 #~ msgid "Basic"
 #~ msgstr "Msingi"
@@ -7882,6 +7003,21 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Bumpmapping"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Kibonye guro Usasishaji wa kamera"
+
+#~ msgid "Chat key"
+#~ msgstr "Ufunguo wa mazungumzo"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Kibonye guro wa mazungumzo"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Hali ya cinematic ufunguo"
+
+#~ msgid "Command key"
+#~ msgstr "Ufunguo wa amri"
 
 #~ msgid "Config mods"
 #~ msgstr "Mods Now"
@@ -7909,6 +7045,13 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Darkness sharpness"
 #~ msgstr "Mwandishi ramani ziwa gorofa mwinuko"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Rekebisha taarifa kibonye"
+
+#, fuzzy
+#~ msgid "Dec. volume key"
+#~ msgstr "HUD kibonye"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -7927,6 +7070,10 @@ msgstr "cURL kikomo sambamba"
 #~ msgstr "Del. kipendwa"
 
 #, fuzzy
+#~ msgid "Dig key"
+#~ msgstr "Ufunguo sahihi"
+
+#, fuzzy
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Pakua subgame, kama vile minetest_game, kutoka minetest.net"
 
@@ -7936,6 +7083,9 @@ msgstr "cURL kikomo sambamba"
 #, fuzzy
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Inapakua $1, Tafadhali subiri..."
+
+#~ msgid "Drop item key"
+#~ msgstr "Tone kipengee muhimu"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Wezesha VBO"
@@ -7989,11 +7139,23 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Fallback font size"
 #~ msgstr "Ukubwa fonti amebadilisha"
 
+#~ msgid "Fast key"
+#~ msgstr "Ufunguo kasi"
+
 #~ msgid "Filtering"
 #~ msgstr "Uchujaji"
 
+#~ msgid "Fly key"
+#~ msgstr "Kuruka ufunguo"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Kibonye guro wa ukungu"
+
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Fonti kivuli Alfa (opaqueness kati ya 0 na 255)."
+
+#~ msgid "Forward key"
+#~ msgstr "Ufunguo wa mbele"
 
 #, fuzzy
 #~ msgid "FreeType fonts"
@@ -8015,6 +7177,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Generate normalmaps"
 #~ msgstr "Kuzalisha normalmaps"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "HUD kibonye"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "FPU kuu-usahihi"
 
@@ -8025,11 +7190,717 @@ msgstr "cURL kikomo sambamba"
 #~ msgstr "Katika mchezo"
 
 #, fuzzy
+#~ msgid "Inc. volume key"
+#~ msgstr "Muhimu ya Kiweko"
+
+#, fuzzy
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Sakinisha Moduli: haiwezi kupata modname halisi kwa: $1"
+
+#, fuzzy
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Sakinisha Moduli: faili: \"$1\""
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentation"
+
+#~ msgid "Inventory key"
+#~ msgstr "Ufunguo wa hesabu"
+
+#~ msgid "Jump key"
+#~ msgstr "Ufunguo wa kuruka"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuacha kipengee kilichoteuliwa kwa sasa.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuongeza kiwango cha kuonyesha.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuongeza kiwango cha kuonyesha.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kusonga haraka katika hali ya haraka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuhamia mchezaji nyuma.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuhamia mchezaji mbele.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuhamia mchezaji kushoto.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kusonga mchezaji haki.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua dirisha la soga kuchapa amri.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua dirisha la soga kuchapa amri.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua dirisha la soga.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kufungua hesabu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya sneaking.\n"
+#~ "Pia kutumika kwa ajili ya kupanda na kushuka katika maji kama "
+#~ "aux1_descends imelemazwa.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kubadili kati ya kamera ya kwanza - na -mtu wa tatu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuchukua viwambo.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling autorun.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling hali ya cinematic.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la minimap.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling hali ya haraka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling hali ya noclip.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling hali ya noclip.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling sasaishi ya kamera. Tu kutumika kwa ajili ya "
+#~ "maendeleo ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la kuzungumza.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la maelezo kuhusu marekebisho.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la ukungu.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la ya HUD.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la kuzungumza.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling onyesho la profiler ya. Kutumika kwa ajili "
+#~ "ya maendeleo.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya toggling masafa ya Mwoneko ukomo.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Muhimu kwa ajili ya kuruka.\n"
+#~ "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -8037,8 +7908,15 @@ msgstr "cURL kikomo sambamba"
 #~ "Keybindings. (Kama Menyu hii screws, Ondoa vitu kutoka minetest.conf)"
 
 #, fuzzy
+#~ msgid "Large chat console key"
+#~ msgstr "Muhimu ya Kiweko"
+
+#, fuzzy
 #~ msgid "Lava depth"
 #~ msgstr "Kina ya pango kubwa"
+
+#~ msgid "Left key"
+#~ msgstr "Ufunguo wa kushoto"
 
 #~ msgid "Limit of emerge queues on disk"
 #~ msgstr "Kikomo ya foleni emerge kwenye diski"
@@ -8056,6 +7934,13 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Menus"
 #~ msgstr "Menyu"
 
+#~ msgid "Minimap key"
+#~ msgstr "Ufunguo wa minimap"
+
+#, fuzzy
+#~ msgid "Mute key"
+#~ msgstr "Ufunguo wa matumizi"
+
 #~ msgid "Name / Password"
 #~ msgstr "Jina / nenosiri"
 
@@ -8064,6 +7949,9 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "No"
 #~ msgstr "La"
+
+#~ msgid "Noclip key"
+#~ msgstr "Ufunguo wa Noclip"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Sampuli ya Normalmaps"
@@ -8111,8 +7999,19 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Njia ya kuokoa viwambo katika."
 
+#, fuzzy
+#~ msgid "Pitch move key"
+#~ msgstr "Kuruka ufunguo"
+
+#, fuzzy
+#~ msgid "Place key"
+#~ msgstr "Kuruka ufunguo"
+
 #~ msgid "Player name"
 #~ msgstr "Jina la mchezaji"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Profiler kibonye"
 
 #~ msgid "Profiling"
 #~ msgstr "Ubainishaji wa"
@@ -8120,8 +8019,14 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "PvP enabled"
 #~ msgstr "PvP kuwezeshwa"
 
+#~ msgid "Range select key"
+#~ msgstr "Kibonye Teua masafa"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Weka upya singleplayer ulimwengu"
+
+#~ msgid "Right key"
+#~ msgstr "Ufunguo sahihi"
 
 #, fuzzy
 #~ msgid "Select Package File:"
@@ -8139,6 +8044,9 @@ msgstr "cURL kikomo sambamba"
 #~ "Shadow offset (in pixels) of the fallback font. If 0, then shadow will "
 #~ "not be drawn."
 #~ msgstr "Fonti kivuli Sawazisha, kama 0 basi kivuli itakuwa kuchukuliwa."
+
+#~ msgid "Sneak key"
+#~ msgstr "Zawadi muhimu"
 
 #, fuzzy
 #~ msgid "Special key"
@@ -8158,6 +8066,23 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Togoa Cinematic"
+
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Togoa kamera hali muhimu"
+
+#, fuzzy
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#, fuzzy
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Mwoneko masafa Punguza ufunguo"
+
+#~ msgid "View range increase key"
+#~ msgstr "Mwoneko masafa ongezeko muhimu"
 
 #~ msgid "Waving Water"
 #~ msgstr "Waving maji"

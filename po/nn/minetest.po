@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Norwegian Nynorsk (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-16 23:20+0000\n"
-"Last-Translator: Tor Egil Hoftun Kvæstad <toregilhk@hotmail.com>\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"PO-Revision-Date: 2022-09-27 17:21+0000\n"
+"Last-Translator: tryvseu <tryvseu@tuta.io>\n"
 "Language-Team: Norwegian Nynorsk <https://hosted.weblate.org/projects/"
 "minetest/minetest/nn/>\n"
 "Language: nn\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Fjern ventande meldingar"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -36,11 +36,11 @@ msgstr "Gitt kommando: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "List opp spelarar som er online"
+msgstr "List opp samanbundne spelarar"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Spelarar som er online: "
+msgstr "Samanbundne spelarar: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -48,11 +48,11 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Dette påbodet er avslege av tenaren."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Du har kome at"
+msgstr "Kom opp att"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -83,7 +83,7 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all [ <føresegn>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -114,31 +114,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Tenaren har førespurt å kople til igjen:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "Vel modifikasjonar"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Protkoll versjon bommert. "
 
@@ -151,10 +126,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Tenaren støtter protokollversjonar mellom $1 og $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Me støtter berre protokoll versjon $1."
 
@@ -164,11 +135,11 @@ msgstr "Me støtter protokollversjonar mellom $1 og $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Slege på, har mistak)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Misnøgd)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -311,8 +282,22 @@ msgid "Downloading..."
 msgstr "Lastar ned …"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Klarte ikkje å laste ned $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Klarte ikkje å laste ned $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Installasjon: Filtypen er ikkje støtta, eller arkivet er korrupt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -329,10 +314,6 @@ msgstr "Installer $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Installer manglande avhengigheiter"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Installasjon: Filtypen er ikkje støtta, eller arkivet er korrupt"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -396,11 +377,11 @@ msgstr "Ytterlegare terreng"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
-msgstr ""
+msgstr "Høgdkjøling"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Altitude dry"
-msgstr ""
+msgstr "Høgdturke"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -427,13 +408,12 @@ msgid "Decorations"
 msgstr "Dekorasjonar"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Åtvaring: Utviklingstesten er meint for utviklarar."
+msgstr "Skaparrøynet er meint for skaparar."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Fangehól"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
@@ -457,20 +437,19 @@ msgstr "Haugar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Våte elvar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
 msgstr "Aukar fuktigheita rundt elver"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Installer $1"
+msgstr "legg inn eit spel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "legg inn eit anna spel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -478,19 +457,19 @@ msgstr "Sjøar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr "Låg fuktigheit og høg temperatur fører til grunne eller tørre elver"
+msgstr "Låg luftråme og hete fører til grunne eller turre elvar"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Kart generator"
+msgstr "Kartskapar"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Kartskaparflagg"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr ""
+msgstr "Særeigne kartskaparflagg"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -510,11 +489,11 @@ msgstr "Ikkje noko spel valgt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Minkar varmen med høgda"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Minkar luftråmen med høgda"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
@@ -531,17 +510,19 @@ msgstr "Frø"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Jamn biotopskifting"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Byggverk som kjem opp på lendet (ingen utslag på tre og jungelgras skapa av "
+"v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Byggverk som kjem opp på lendet, særleg tre og planter"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -557,7 +538,7 @@ msgstr "Temperert, Ørken, Jungel, Tundra, Taiga"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "Overflateerosjon på terreng"
+msgstr "Nedbryting av lendeyta"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -577,7 +558,7 @@ msgstr "Verdsnamn"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr "Du har ikkje installert noko spel."
+msgstr "Du har ikkje lagt inn noko spel."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -603,7 +584,7 @@ msgstr "Slett verd «$1»?"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Bekreft passord"
+msgstr "Stadfest passord"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
@@ -611,7 +592,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Saknar namn"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -626,16 +607,15 @@ msgstr "Passord"
 #: builtin/mainmenu/dlg_register.lua
 #, fuzzy
 msgid "Passwords do not match"
-msgstr "Passorda passar ikkje!"
+msgstr "Passorda høver ikkje"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Registrer og bli med"
+msgstr "Lag ein konto"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr "Aksepter"
+msgstr "Godtak"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -666,14 +646,16 @@ msgid "Browse"
 msgstr "Bla gjennom"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Games"
-msgstr "Innhald"
+msgid "Client Mods"
+msgstr "Klienttillegg"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
+msgid "Content: Games"
+msgstr "Innhald: Spel"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr "Innhald"
+msgstr "Innhald: Speltillegg"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -681,7 +663,7 @@ msgstr "Deaktivert"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Redigér"
+msgstr "Brigd"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -700,21 +682,20 @@ msgid "Offset"
 msgstr "Forskyvning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Persistens"
+msgstr "Brigdingsmotstand"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Vennligst putt inn heiltal."
+msgstr "Venlegast skriv inn eit lovleg heiltal."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "Vennligst putt eit fungerande tal."
+msgstr "Venlegast skriv inn eit lovleg tal."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Reetabler det normale"
+msgstr "Sett opphavsverdien att"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -726,7 +707,7 @@ msgstr "Søk"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select directory"
-msgstr "Vel katalog"
+msgstr "Vel mappe"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
@@ -791,49 +772,66 @@ msgstr "standardar"
 msgid "eased"
 msgstr "letta"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "Ein ny $1 versjon er tilgjengeleg"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Innlagt brigde: $1\n"
+"Nytt brigde: $2\n"
+"Vitja $3 for å finna ut korleis ein kan få det nyaste brigdet med dei nyaste "
+"funksjonane og rettingane."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Seinare"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Aldri"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Vitja nettstad"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Aktivert)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr "$1 modifikasjonar"
+msgstr "$1 speltillegg"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr "Klarte ikkje å installere $1 til $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
-"Installer modifikasjon: Klarte ikkje å finne det reelle modifikasjonsnamnet "
-"for: $1"
+"Legg inn tillegg: Kan ikkje finna eit sømeleg mappenamn for tilleggssamling "
+"$1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
-msgstr ""
-"Installer modifikasjon: Klarte ikkje å finne ein passande katalog for "
-"modifikasjonspakke $1"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr "Kan ikkje finna eit lovleg tillegg eller tilleggssamling"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
-msgstr "Klarte ikkje å finne ein gyldig modifikasjon eller modifikasjonspakke"
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Kan ikkje leggja til eit tillegg som $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "Funka ikkje å installere $1 som ein tekstur pakke"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Funka ikkje å installere $1 som eit spel"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Funka ikkje å installere modifikasjon som ein $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Funka ikkje å installere mod-pakka som ein $1"
+msgstr "Kan ikkje leggja til $1 som ein tekstursamling"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -866,9 +864,12 @@ msgid "Core Developers"
 msgstr "Kjerne-utviklarar"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
+msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
-msgstr "Velje ein mappe"
+msgstr "Opna brukardatamappa"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
@@ -945,14 +946,12 @@ msgid "Enable Damage"
 msgstr "Aktivér skading"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "Bli husvert"
+msgstr "Gjestgjeva spel"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Server"
-msgstr "Bli tenarmaskin's vert"
+msgstr "Gjestgjev tenar"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -1073,9 +1072,8 @@ msgid "Antialiasing:"
 msgstr "Kantutjemning:"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Autosave Screen Size"
-msgstr "Automatisk sjerm størrelse"
+msgstr "Sjølvhugsa framvisingsstorleik"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -1094,9 +1092,8 @@ msgid "Dynamic shadows"
 msgstr "Dynamiske skuggar"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dynamiske skuggar: "
+msgstr "Sjølvrørande skuggar:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1133,7 +1130,7 @@ msgstr "Ingen Mipkart"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Node Highlighting"
-msgstr "Knute-fremheving"
+msgstr "Knutepunktsframheving"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -1165,19 +1162,17 @@ msgid "Settings"
 msgstr "Innstillingar"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shaders"
-msgstr "Dybdeskaper"
+msgstr "Skuggeleggjarar"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Dybdeskaper (ikkje tilgjengelig)"
+msgstr "Skuggeleggjarar ()"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (unavailable)"
-msgstr "Dybdeskaper (ikkje tilgjengelig)"
+msgstr "Skuggeleggjarar (ikkje tilgjengelege)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -1197,18 +1192,16 @@ msgid "Tone Mapping"
 msgstr "Tone kartlegging"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Berøringsterskel: (px)"
+msgstr "Fingerrøringsterskel (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Tri-lineær filtréring"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Very High"
-msgstr "Svært høg"
+msgstr "Særs høg"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
@@ -1252,9 +1245,8 @@ msgid "Loading textures..."
 msgstr "Lastar teksturar …"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Gjennbygger dybdeskaper..."
+msgstr "Gjenoppbyggjer skuggeleggjarar..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -1273,9 +1265,8 @@ msgid "Main Menu"
 msgstr "Hovudmeny"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Inga verd er vald og ikkje nokon adresse valg. Ikkje noko å gjere."
+msgstr "Inga verd er vald og inga stadsopplysing gjeven. Ikkje noko å gjere."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
@@ -1286,14 +1277,12 @@ msgid "Please choose a name!"
 msgstr "Ver venleg å velje eit namn!"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Provided password file failed to open: "
-msgstr "Passord dokumentet du ga går ikkje an å åpne: "
+msgstr "Greidde ikkje å opne passordfila du gav: "
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Provided world path doesn't exist: "
-msgstr "Verds-ruta du ga finnes ikkje: "
+msgstr "Verdsruta du gav finst ikkje: "
 
 #: src/client/game.cpp
 msgid ""
@@ -1500,9 +1489,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Ubergensa utsiktsrekkjevidd er i gang"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Skapar klient..."
+msgstr "Kunne ikkje skapa klient: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -2003,6 +1992,28 @@ msgstr "Minikart i overflatemodus, Zoom x%d"
 msgid "Minimap in texture mode"
 msgstr "Minikart i overflate modus, Zoom x1"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Ingen obligatoriske avhengigheiter"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Klarte ikkje å opne nettside"
@@ -2016,9 +2027,8 @@ msgid "Proceed"
 msgstr "Fortset"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Spesiell\" = klatre ned"
+msgstr "\"Aux1\" = kliva ned"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -2120,7 +2130,7 @@ msgstr "Forrige gjenstand"
 msgid "Range select"
 msgstr "Velj rekkevidde"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Skjermbilde"
 
@@ -2207,9 +2217,8 @@ msgid ""
 msgstr ""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Ver venleg å velje eit namn!"
+msgstr "Namn er teke. Ver venleg og vel eit anna namn"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2421,6 +2430,17 @@ msgstr ""
 "brukargrensesnittelement."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2524,10 +2544,6 @@ msgid "Audio"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Automatisk framoverknapp"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr ""
 
@@ -2544,16 +2560,8 @@ msgid "Autoscaling mode"
 msgstr "Autoskaleringsmodus"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Bakoverknapp"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2596,6 +2604,23 @@ msgid "Block send optimize distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Skyradius"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Bobbing"
 msgstr ""
 
@@ -2624,9 +2649,8 @@ msgid "Builtin"
 msgstr "Innebygd"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "Byt kamera"
+msgstr "Biletetakar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2642,10 +2666,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2711,10 +2731,6 @@ msgid "Chat font size"
 msgstr "Tekststørrelse for nettprat"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Nettpratstast"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Loggnivå for chat"
 
@@ -2735,10 +2751,6 @@ msgid "Chat message max length"
 msgstr "Maksimal lengde på chattemeldingar"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Knapp for å slå chatten av/på"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "Nettlenker i chatten"
 
@@ -2748,10 +2760,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2838,10 +2846,6 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Kommandoknapp"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2981,10 +2985,6 @@ msgid "Damage"
 msgstr "Skade"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Knapp for å slå debuggingsinformasjon av/på"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr ""
 
@@ -2994,10 +2994,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3019,6 +3015,12 @@ msgid ""
 msgstr ""
 "Standard spel når du lagar ei ny verd.\n"
 "Dette vil verte overstyrt når du lagar ei verd frå hovudmenyen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3064,6 +3066,13 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr ""
 
@@ -3078,6 +3087,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Definerer djupna til elvekanalen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3147,10 +3162,6 @@ msgid "Developer Options"
 msgstr "Dekorasjonar"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr ""
 
@@ -3185,10 +3196,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr ""
 
@@ -3202,6 +3209,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Aktiver alt"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3355,12 +3371,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3385,10 +3405,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3494,10 +3510,6 @@ msgid "Floatland water level"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr ""
 
@@ -3507,10 +3519,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3610,10 +3618,6 @@ msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr ""
 
@@ -3667,7 +3671,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "Grafiske brukargrensesnitt"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3737,10 +3741,6 @@ msgstr ""
 #, fuzzy
 msgid "HUD scaling"
 msgstr "HUD er vist"
-
-#: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3824,142 +3824,6 @@ msgstr ""
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4128,10 +3992,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr ""
 
@@ -4175,10 +4035,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4283,511 +4139,7 @@ msgid "Julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4827,7 +4179,11 @@ msgid "Large cave proportion flooded"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Last update check"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4840,10 +4196,6 @@ msgid ""
 "-   Fancy:  all faces visible\n"
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4973,6 +4325,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5232,10 +4591,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5325,10 +4680,6 @@ msgid "Minimap"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr ""
 
@@ -5415,10 +4766,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr ""
 
@@ -5462,10 +4809,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5582,15 +4925,7 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5622,6 +4957,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -5643,10 +4982,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5678,10 +5013,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5745,10 +5076,6 @@ msgid "Ridged mountain size noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr ""
 
@@ -5794,6 +5121,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Saturation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5963,6 +5294,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6001,6 +5341,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6015,6 +5361,14 @@ msgstr ""
 msgid ""
 "Set to true to enable waving plants.\n"
 "Requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6149,10 +5503,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6479,10 +5829,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
@@ -6522,6 +5868,11 @@ msgid "Trusted mods"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 
@@ -6539,11 +5890,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6568,6 +5929,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6653,6 +6024,14 @@ msgid "Varies steepness of cliffs."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
@@ -6670,18 +6049,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6960,14 +6327,29 @@ msgstr ""
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Er du sikker på at du vill tilbakestille enkel-spelar verd?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Automatisk framoverknapp"
+
 #~ msgid "Back"
 #~ msgstr "Attende"
+
+#~ msgid "Backward key"
+#~ msgstr "Bakoverknapp"
 
 #~ msgid "Basic"
 #~ msgstr "Basis"
 
 #~ msgid "Bump Mapping"
 #~ msgstr "Dunke kartlegging"
+
+#~ msgid "Chat key"
+#~ msgstr "Nettpratstast"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Knapp for å slå chatten av/på"
+
+#~ msgid "Command key"
+#~ msgstr "Kommandoknapp"
 
 #~ msgid "Config mods"
 #~ msgstr "Konfigurer modifikasjoner"
@@ -6987,6 +6369,9 @@ msgstr ""
 #~ msgid "Damage enabled"
 #~ msgstr "Skade aktivert"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Knapp for å slå debuggingsinformasjon av/på"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Last ned eit spel, slik som Minetest-spelet, frå minetest.net"
 
@@ -7004,6 +6389,9 @@ msgstr ""
 
 #~ msgid "Generate Normal Maps"
 #~ msgstr "Generér normale kart"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Legg inn tillegg: Kan ikkje finna det sanne tilleggsnamnet for: $1"
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Installer: fil: «$1»"
@@ -7065,6 +6453,12 @@ msgstr ""
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Slå på/av kameramodus"
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Kan ikkje leggja til eit spel som $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Funka ikkje å installere mod-pakka som ein $1"
 
 #~ msgid "Yes"
 #~ msgstr "Ja"

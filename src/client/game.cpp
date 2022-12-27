@@ -436,7 +436,6 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	float m_bloom_strength;
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
 	float m_bloom_radius;
-	float m_saturation;
 	CachedPixelShaderSetting<float> m_saturation_pixel;
 
 public:
@@ -452,8 +451,6 @@ public:
 			m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		if (name == "bloom_radius")
 			m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		if (name == "saturation")
-			m_saturation = g_settings->getFloat("saturation", 0.0f, 5.0f);
 	}
 
 	static void settingsCallback(const std::string &name, void *userdata)
@@ -503,7 +500,6 @@ public:
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
-		m_saturation = g_settings->getFloat("saturation", 0.0f, 5.0f);
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -591,7 +587,8 @@ public:
 			m_bloom_radius_pixel.set(&m_bloom_radius, services);
 			m_bloom_strength_pixel.set(&m_bloom_strength, services);
 		}
-		m_saturation_pixel.set(&m_saturation, services);
+		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
+		m_saturation_pixel.set(&saturation, services);
 	}
 
 	void onSetMaterial(const video::SMaterial &material)
@@ -1258,11 +1255,7 @@ void Game::run()
 void Game::shutdown()
 {
 	m_rendering_engine->finalize();
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8
-	if (g_settings->get("3d_mode") == "pageflip") {
-		driver->setRenderTarget(irr::video::ERT_STEREO_BOTH_BUFFERS);
-	}
-#endif
+
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
@@ -2520,6 +2513,12 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
+#if IRRLICHT_VERSION_MT_REVISION >= 9
+	if (isMenuActive())
+		device->getCursorControl()->setRelativeMode(false);
+	else
+		device->getCursorControl()->setRelativeMode(true);
+#endif
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 
@@ -3556,24 +3555,23 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 	const ContentFeatures &predicted_f = nodedef->get(id);
 
-	// Predict param2 for facedir and wallmounted nodes
-	// Compare core.item_place_node() for what the server does
-	u8 param2 = 0;
+	// Compare core.item_place_node() for what the server does with param2
+	MapNode predicted_node(id, 0, 0);
 
 	const u8 place_param2 = selected_def.place_param2;
 
 	if (place_param2) {
-		param2 = place_param2;
+		predicted_node.setParam2(place_param2);
 	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		v3s16 dir = nodepos - neighborpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-			param2 = dir.Y < 0 ? 1 : 0;
+			predicted_node.setParam2(dir.Y < 0 ? 1 : 0);
 		} else if (abs(dir.X) > abs(dir.Z)) {
-			param2 = dir.X < 0 ? 3 : 2;
+			predicted_node.setParam2(dir.X < 0 ? 3 : 2);
 		} else {
-			param2 = dir.Z < 0 ? 5 : 4;
+			predicted_node.setParam2(dir.Z < 0 ? 5 : 4);
 		}
 	} else if (predicted_f.param_type_2 == CPT2_FACEDIR ||
 			predicted_f.param_type_2 == CPT2_COLORED_FACEDIR ||
@@ -3582,9 +3580,9 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		v3s16 dir = nodepos - floatToInt(client->getEnv().getLocalPlayer()->getPosition(), BS);
 
 		if (abs(dir.X) > abs(dir.Z)) {
-			param2 = dir.X < 0 ? 3 : 1;
+			predicted_node.setParam2(dir.X < 0 ? 3 : 1);
 		} else {
-			param2 = dir.Z < 0 ? 2 : 0;
+			predicted_node.setParam2(dir.Z < 0 ? 2 : 0);
 		}
 	}
 
@@ -3599,17 +3597,16 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			pp = p + v3s16(0, 1, 0);
 		} else if (an == 2) {
 			if (predicted_f.param_type_2 == CPT2_FACEDIR ||
-					predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
-				pp = p + facedir_dirs[param2];
-			} else if (predicted_f.param_type_2 == CPT2_4DIR ||
-					predicted_f.param_type_2 == CPT2_COLORED_4DIR ) {
-				pp = p + fourdir_dirs[param2];
+					predicted_f.param_type_2 == CPT2_COLORED_FACEDIR ||
+					predicted_f.param_type_2 == CPT2_4DIR ||
+					predicted_f.param_type_2 == CPT2_COLORED_4DIR) {
+				pp = p + facedir_dirs[predicted_node.getFaceDir(nodedef)];
 			} else {
 				pp = p;
 			}
 		} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-			pp = p + wallmounted_dirs[param2];
+			pp = p + predicted_node.getWallMountedDir(nodedef);
 		} else {
 			pp = p + v3s16(0, -1, 0);
 		}
@@ -3632,36 +3629,34 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		if (!indexstr.empty()) {
 			s32 index = mystoi(indexstr);
 			if (predicted_f.param_type_2 == CPT2_COLOR) {
-				param2 = index;
+				predicted_node.setParam2(index);
 			} else if (predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 				// param2 = pure palette index + other
-				param2 = (index & 0xf8) | (param2 & 0x07);
+				predicted_node.setParam2((index & 0xf8) | (predicted_node.getParam2() & 0x07));
 			} else if (predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
 				// param2 = pure palette index + other
-				param2 = (index & 0xe0) | (param2 & 0x1f);
+				predicted_node.setParam2((index & 0xe0) | (predicted_node.getParam2() & 0x1f));
 			} else if (predicted_f.param_type_2 == CPT2_COLORED_4DIR) {
 				// param2 = pure palette index + other
-				param2 = (index & 0xfc) | (param2 & 0x03);
+				predicted_node.setParam2((index & 0xfc) | (predicted_node.getParam2() & 0x03));
 			}
 		}
 	}
 
 	// Add node to client map
-	MapNode n(id, 0, param2);
-
 	try {
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 		// Don't place node when player would be inside new node
 		// NOTE: This is to be eventually implemented by a mod as client-side Lua
-		if (!nodedef->get(n).walkable ||
+		if (!predicted_f.walkable ||
 				g_settings->getBool("enable_build_where_you_stand") ||
 				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
-				(nodedef->get(n).walkable &&
+				(predicted_f.walkable &&
 					neighborpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
 					neighborpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
 			// This triggers the required mesh update too
-			client->addNode(p, n);
+			client->addNode(p, predicted_node);
 			// Report to server
 			client->interact(INTERACT_PLACE, pointed);
 			// A node is predicted, also play a sound

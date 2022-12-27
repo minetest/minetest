@@ -485,6 +485,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_can_jump = false;
 	}
 
+	// Prevent sliding on the ground when jump speed is 0
+	m_can_jump = m_can_jump && jumpspeed != 0.0f;
+
 	// Autojump
 	handleAutojump(dtime, env, result, initial_position, initial_speed, pos_max_d);
 }

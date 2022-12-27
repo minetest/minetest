@@ -439,9 +439,6 @@ private:
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
 
-	/* mark blocks not sent for all clients */
-	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
-
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
 	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);

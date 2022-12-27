@@ -137,8 +137,7 @@ treegen::error spawn_ltree(ServerMap *map, v3s16 p0,
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (auto &modified_block : modified_blocks)
-		event.modified_blocks.insert(modified_block.first);
+	event.setModifiedBlocks(modified_blocks);
 	map->dispatchEvent(event);
 	return SUCCESS;
 }

@@ -146,14 +146,24 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
 			i != m_queue.end(); ++i) {
 		QueuedMeshUpdate *q = *i;
-		if(must_be_urgent && m_urgents.count(q->p) == 0)
+		if (must_be_urgent && m_urgents.count(q->p) == 0)
+			continue;
+		// Make sure no two threads are processing the same mapblock, as that causes racing conditions
+		if (m_inflight_blocks.find(q->p) != m_inflight_blocks.end())
 			continue;
 		m_queue.erase(i);
 		m_urgents.erase(q->p);
+		m_inflight_blocks.insert(q->p);
 		fillDataFromMapBlockCache(q);
 		return q;
 	}
 	return NULL;
+}
+
+void MeshUpdateQueue::done(v3s16 pos)
+{
+	MutexAutoLock lock(m_mutex);
+	m_inflight_blocks.erase(pos);
 }
 
 CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mode,
@@ -264,18 +274,62 @@ void MeshUpdateQueue::cleanupCache()
 }
 
 /*
-	MeshUpdateThread
+	MeshUpdateWorkerThread
 */
 
-MeshUpdateThread::MeshUpdateThread(Client *client):
-	UpdateThread("Mesh"),
-	m_queue_in(client)
+MeshUpdateWorkerThread::MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MeshUpdateManager *manager, v3s16 *camera_offset) :
+		UpdateThread("Mesh"), m_queue_in(queue_in), m_manager(manager), m_camera_offset(camera_offset)
 {
 	m_generation_interval = g_settings->getU16("mesh_generation_interval");
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
 }
 
-void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
+void MeshUpdateWorkerThread::doUpdate()
+{
+	QueuedMeshUpdate *q;
+	while ((q = m_queue_in->pop())) {
+		if (m_generation_interval)
+			sleep_ms(m_generation_interval);
+		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
+
+		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, *m_camera_offset);
+
+		
+
+		MeshUpdateResult r;
+		r.p = q->p;
+		r.mesh = mesh_new;
+		r.ack_block_to_server = q->ack_block_to_server;
+		r.urgent = q->urgent;
+
+		m_manager->putResult(r);
+		m_queue_in->done(q->p);
+		delete q;
+	}
+}
+
+/*
+	MeshUpdateManager
+*/
+
+MeshUpdateManager::MeshUpdateManager(Client *client):
+	m_queue_in(client)
+{
+	int number_of_threads = rangelim(g_settings->getS32("mesh_generation_threads"), 0, 8);
+
+	// Automatically use 33% of the system cores for mesh generation, max 4
+	if (number_of_threads == 0)
+		number_of_threads = MYMIN(4, Thread::getNumberOfProcessors() / 3);
+	
+	// use at least one thread
+	number_of_threads = MYMAX(1, number_of_threads);
+	infostream << "MeshUpdateManager: using " << number_of_threads << " threads" << std::endl;
+
+	for (int i = 0; i < number_of_threads; i++)
+		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, this, &m_camera_offset));
+}
+
+void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 		bool urgent, bool update_neighbors)
 {
 	static thread_local const bool many_neighbors =
@@ -298,24 +352,57 @@ void MeshUpdateThread::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,
 	deferUpdate();
 }
 
-void MeshUpdateThread::doUpdate()
+void MeshUpdateManager::putResult(const MeshUpdateResult &result)
 {
-	QueuedMeshUpdate *q;
-	while ((q = m_queue_in.pop())) {
-		if (m_generation_interval)
-			sleep_ms(m_generation_interval);
-		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
+	if (result.urgent)
+		m_queue_out_urgent.push_back(result);
+	else
+		m_queue_out.push_back(result);
+}
 
-		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
-
-		MeshUpdateResult r;
-		r.p = q->p;
-		r.mesh = mesh_new;
-		r.ack_block_to_server = q->ack_block_to_server;
-		r.urgent = q->urgent;
-
-		m_queue_out.push_back(r);
-
-		delete q;
+bool MeshUpdateManager::getNextResult(MeshUpdateResult &r)
+{
+	if (!m_queue_out_urgent.empty()) {
+		r = m_queue_out_urgent.pop_frontNoEx();
+		return true;
 	}
+
+	if (!m_queue_out.empty()) {
+		r = m_queue_out.pop_frontNoEx();
+		return true;
+	}
+
+	return false;
+}
+
+void MeshUpdateManager::deferUpdate()
+{
+	for (auto &thread : m_workers)
+		thread->deferUpdate();
+}
+
+void MeshUpdateManager::start()
+{
+	for (auto &thread: m_workers)
+		thread->start();
+}
+
+void MeshUpdateManager::stop()
+{
+	for (auto &thread: m_workers)
+		thread->stop();
+}
+
+void MeshUpdateManager::wait()
+{
+	for (auto &thread: m_workers)
+		thread->wait();
+}
+
+bool MeshUpdateManager::isRunning()
+{
+	for (auto &thread: m_workers)
+		if (thread->isRunning())
+			return true;
+	return false;
 }

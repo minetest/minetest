@@ -147,3 +147,33 @@ local function test_mapgen_edges(cb)
 	minetest.emerge_area(max_edge, max_edge:add(1), emerge_block, max_finished)
 end
 unittests.register("test_mapgen_edges", test_mapgen_edges, {map=true, async=true})
+
+local finish_test_on_mapblocks_changed
+minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_count)
+	if finish_test_on_mapblocks_changed then
+		finish_test_on_mapblocks_changed(modified_blocks, modified_block_count)
+		finish_test_on_mapblocks_changed = nil
+	end
+end)
+local function test_on_mapblocks_changed(cb, player, pos)
+	local bp1 = (pos / minetest.MAP_BLOCKSIZE):floor()
+	local bp2 = bp1:add(1)
+	for _, bp in ipairs({bp1, bp2}) do
+		-- Make a modification in the block.
+		local p = bp * minetest.MAP_BLOCKSIZE
+		minetest.load_area(p)
+		local meta = minetest.get_meta(p)
+		meta:set_int("test_on_mapblocks_changed", meta:get_int("test_on_mapblocks_changed") + 1)
+	end
+	finish_test_on_mapblocks_changed = function(modified_blocks, modified_block_count)
+		if modified_block_count < 2 then
+			return cb("Expected at least two mapblocks to be recorded as modified")
+		end
+		if not modified_blocks[minetest.hash_node_position(bp1)] or
+				not modified_blocks[minetest.hash_node_position(bp2)] then
+			return cb("The expected mapblocks were not recorded as modified")
+		end
+		cb()
+	end
+end
+unittests.register("test_on_mapblocks_changed", test_on_mapblocks_changed, {map=true, async=true})

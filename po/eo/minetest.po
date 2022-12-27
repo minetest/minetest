@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2021-10-05 08:09+0000\n"
-"Last-Translator: phlostically <phlostically@mailinator.com>\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"PO-Revision-Date: 2022-11-23 07:47+0000\n"
+"Last-Translator: Emmily <Emmilyrose779@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -79,6 +79,8 @@ msgstr "Trovu helpon pri komandoj"
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Uzu '.help <komando>' por akiri pliajn informojn, aŭ '.help all' por listigi "
+"ĉion."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
@@ -114,31 +116,6 @@ msgid "The server has requested a reconnect:"
 msgstr "La servilo petis rekonekton:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "Elektu Modifaĵojn"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Protokola versia miskongruo. "
 
@@ -151,10 +128,6 @@ msgid "Server supports protocol versions between $1 and $2. "
 msgstr "La servilo subtenas protokolajn versiojn inter $1 kaj $2. "
 
 #: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr ""
-
-#: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
 msgstr "Ni nur subtenas protokolan version $1."
 
@@ -164,11 +137,12 @@ msgstr "Ni subtenas protokolajn versiojn inter versioj $1 kaj $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Ebligita, havas eraron)"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Malkontenta)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -311,8 +285,22 @@ msgid "Downloading..."
 msgstr "Elŝutante…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Malsukcesis elŝuti $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Malsukcesis elŝuti $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Instalo: Nesubtenata dosierspeco «$1» aŭ rompita arĥivo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -329,11 +317,6 @@ msgstr "Instali $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Instali mankantajn dependaĵojn"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Instalo: Nesubtenata dosierspeco «$1» aŭ rompita arĥivo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -470,8 +453,9 @@ msgid "Install a game"
 msgstr "Instali $1"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Install another game"
-msgstr ""
+msgstr "Instalu alian ludon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -611,7 +595,7 @@ msgstr "Konfirmi pasvorton"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Aliĝu al $1"
 
 #: builtin/mainmenu/dlg_register.lua
 #, fuzzy
@@ -669,6 +653,11 @@ msgstr "< Reiri al agorda paĝo"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Foliumi"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Client Mods"
+msgstr "Elektu Modifaĵojn"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -796,6 +785,31 @@ msgstr "normoj"
 msgid "eased"
 msgstr "faciligita"
 
+#: builtin/mainmenu/dlg_version_info.lua
+#, fuzzy
+msgid "A new $1 version is available"
+msgstr "Nova versio $1 disponeblas"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Poste"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Neniam"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Vizitu retejon"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Ŝaltita)"
@@ -809,33 +823,24 @@ msgid "Failed to install $1 to $2"
 msgstr "Malsukcesis instali $1 al $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Instali modifaĵon: Ne povas trovi veran nomon de modifaĵo por: $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Instali modifaĵon: Ne povas trovi ĝustan dosierujan nomon por modifaĵaro $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Ne povas trovi validan modifaĵon aŭ modifaĵaron"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Malsukcesis instali modifaĵon kiel $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Malsukcesis instali $1 kiel teksturaron"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Malsukcesis instali ludon kiel $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Malsukcesis instali modifaĵon kiel $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Malsukcesis instali modifaĵaron kiel $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -865,6 +870,10 @@ msgstr "Aktiva bildigilo:"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Kernprogramistoj"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1024,7 +1033,7 @@ msgstr "Aliĝi al ludo"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Ensaluti"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1048,8 +1057,9 @@ msgid "Server Description"
 msgstr "Priskribo pri servilo"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "(game support required)"
-msgstr ""
+msgstr "(ludsubteno bezonata)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1327,9 +1337,9 @@ msgid "A serialization error occurred:"
 msgstr "Eraro okazis:"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Aliro malakceptita. Kialo: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1996,6 +2006,28 @@ msgstr "Mapeto en supraĵa reĝimo, zomo ×%d"
 msgid "Minimap in texture mode"
 msgstr "Mapeto en tekstura reĝimo"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Sen dependaĵoj"
+
 #: src/gui/guiChatConsole.cpp
 #, fuzzy
 msgid "Failed to open webpage"
@@ -2079,8 +2111,9 @@ msgid "Inc. volume"
 msgstr "Plilaŭtigi"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Inventory"
-msgstr "Portaĵujo"
+msgstr "Inventaro"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
@@ -2114,7 +2147,7 @@ msgstr "Antaŭa portaĵo"
 msgid "Range select"
 msgstr "Ŝanĝi vidodistancon"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Ekrankopio"
 
@@ -2451,6 +2484,17 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2573,10 +2617,6 @@ msgid "Audio"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Memage antaŭen"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr "Memage salti unumonderajn barojn."
 
@@ -2594,17 +2634,8 @@ msgstr "Reĝimo de memaga skalado"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Aux1 key"
-msgstr "Salta klavo"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
 msgstr "Speciala klavo por supreniri/malsupreniri"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Malantaŭen"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2646,6 +2677,23 @@ msgstr "Klimata bruo"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Optimuma distanco de monder-sendado"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Nuba duondiametro"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2700,10 +2748,6 @@ msgstr "Glatigo de vidpunkto"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Glatigo de vidpunkto por glita vidpunkto"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Baskula klavo de ĝisdatigo de vidpunkto"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2772,10 +2816,6 @@ msgid "Chat font size"
 msgstr "Grandeco de babiluja tiparo"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Babila klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Babileja protokola nivelo"
 
@@ -2796,10 +2836,6 @@ msgid "Chat message max length"
 msgstr "Plejlongo de babilaj mesaĝoj"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Babila baskula klavo"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Chat weblinks"
 msgstr "Babilo montrita"
@@ -2811,10 +2847,6 @@ msgstr "Grando de peco"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Glita vidpunkto"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Klavo de glita vidpunkto"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2915,10 +2947,6 @@ msgstr ""
 "funkciojn\n"
 "eĉ kiam modifaĵa sekureco estas ŝaltita (per "
 "«request_insecure_environment()»)."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Komanda klavo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3085,10 +3113,6 @@ msgid "Damage"
 msgstr "Difekto"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Baskula klavo de erarserĉaj informoj"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Sojlo de grandeco de protokola dosiero"
 
@@ -3099,10 +3123,6 @@ msgstr "Erarserĉa protokola nivelo"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Mallaŭtiga klavo"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3123,6 +3143,13 @@ msgid ""
 msgstr ""
 "Implicita ludo kreante novajn mondojn.\n"
 "Ĝi estos transpasita kreante mondon de la ĉefmenuo."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Maksimuma nombro de perforte enlegitaj mondopecoj."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3170,6 +3197,13 @@ msgstr ""
 "grandajn kavernojn."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Difinas vastan sturkturon de akvovojo."
 
@@ -3184,6 +3218,12 @@ msgstr "Difinas la bazan ternivelon."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Difinas la profundecon de la rivera akvovojo."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3262,10 +3302,6 @@ msgid "Developer Options"
 msgstr "Ornamoj"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Klavo por fosi"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Fosaj partikloj"
 
@@ -3300,10 +3336,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Duobla premo de salto-klavo baskulas flugan reĝimon."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Demeta klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "Ŝuti la erarserĉajn informojn de «mapgen»."
 
@@ -3318,6 +3350,15 @@ msgstr "Minimuma Y de forgeskeloj"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Bruo de forgeskeloj"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Ŝalti ĉiujn"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3498,8 +3539,9 @@ msgid "Entity methods"
 msgstr "Metodoj de estoj"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3513,6 +3555,10 @@ msgstr ""
 "fluginsuloj.\n"
 "Valoroj < 1.0 (ekzemple 0.25) kreas pli difinitan ternivelon kun\n"
 "pli plataj malaltejoj, taŭgaj por solida tavolo de fluginsulaĵo."
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3537,10 +3583,6 @@ msgstr "Koeficiento de balancado dum falo"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "Dosierindiko al reenpaŝa tiparo"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Rapida klavo"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3658,10 +3700,6 @@ msgid "Floatland water level"
 msgstr "Akvonivelo de fluginsuloj"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Fluga klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Flugado"
 
@@ -3672,10 +3710,6 @@ msgstr "Nebulo"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr "Komenco de nebulo"
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Nebula baskula klavo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3779,10 +3813,6 @@ msgstr "Fonkoloro de tutekranaj fenestroj (R,V,B)."
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr "Fona netravidebleco de tutekranaj fenestroj (inter 0 kaj 255)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Antaŭen"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3930,10 +3960,6 @@ msgid "HUD scaling"
 msgstr "Skalo de grafika fasado"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "Baskula klavo por travida fasado"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4031,142 +4057,6 @@ msgid ""
 msgstr ""
 "Horizontala kaj vertikala akcelo sur tero aŭ dum grimpado,\n"
 "en monderoj sekunde sekunde."
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "Sekva portaĵo en fulmobreto"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "Antaŭa portaĵo en fulmobreto"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "Klavo de fulmobreta portaĵingo 1"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "Klavo de fulmobreta portaĵingo 10"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "Klavo de fulmobreta portaĵingo 11"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "Klavo de fulmobreta portaĵingo 12"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "Klavo de fulmobreta portaĵingo 13"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "Klavo de fulmobreta portaĵingo 14"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "Klavo de fulmobreta portaĵingo 15"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "Klavo de fulmobreta portaĵingo 16"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "Klavo de fulmobreta portaĵingo 17"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "Klavo de fulmobreta portaĵingo 18"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "Klavo de fulmobreta portaĵingo 19"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "Klavo de fulmobreta portaĵingo 2"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "Klavo de fulmobreta portaĵingo 20"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "Klavo de fulmobreta portaĵingo 21"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "Klavo de fulmobreta portaĵingo 22"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "Klavo de fulmobreta portaĵingo 23"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "Klavo de fulmobreta portaĵingo 24"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "Klavo de fulmobreta portaĵingo 25"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "Klavo de fulmobreta portaĵingo 26"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "Klavo de fulmobreta portaĵingo 27"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "Klavo de fulmobreta portaĵingo 28"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "Klavo de fulmobreta portaĵingo 29"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "Klavo de fulmobreta portaĵingo 3"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "Klavo de fulmobreta portaĵingo 30"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "Klavo de fulmobreta portaĵingo 31"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "Klavo de fulmobreta portaĵingo 32"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "Klavo de fulmobreta portaĵingo 4"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "Klavo de fulmobreta portaĵingo 5"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "Klavo de fulmobreta portaĵingo 6"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "Klavo de fulmobreta portaĵingo 7"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "Klavo de fulmobreta portaĵingo 8"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "Klavo de fulmobreta portaĵingo 9"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4374,10 +4264,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr "(Alteco de la enluda babila konzolo, inter 0.1 (10%) kaj 1.0 (100%)."
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Plilaŭtiga klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "Unuaeca vertikala rapido dum salto, en monderoj sekunde."
 
@@ -4430,10 +4316,6 @@ msgstr "Periodo inter sendoj de tagtempo al klientoj."
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Bildmovado de portaĵoj en portaĵujo"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Klavo de portaĵujo"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4560,728 +4442,8 @@ msgid "Julia z"
 msgstr "Julia z"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Salta klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Salta rapido"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malkreskigi la vidan distancon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malkreskigi la laŭtecon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por fosi.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por demeti la elektitan portaĵon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por kreskigi la vidan distancon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por kreskigi la laŭtecon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por salti.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por moviĝi rapide en rapida reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por movi la ludanton reen.\n"
-"Aktivigo ankaŭ malŝaltos memiradon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por movi la ludanton pluen.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por movi la ludanton maldekstren.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por movi la ludantan dekstren.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por silentigi la ludon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malfermi la babilan fenestron por entajpi komandojn.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malfermi la babilan fenestron por entajpi lokajn komandojn.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malfermi la babilan fenestron.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por malfermi la portaĵujon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por meti.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 11-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 12-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 13-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 14-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 15-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 16-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 17-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 18-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 19-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 20-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 21-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 22-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 23-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 24-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 25-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 26-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 27-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 28-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 29-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 30-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 31-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti 32-an portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti okan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti kvinan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti unuan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti kvaran portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti sekvan portaĵon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti naŭan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti antaŭan portaĵon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti duan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti sepan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti sesan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti dekan portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por elekti trian portaĵingon en la fulmobreto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por kaŝirado.\n"
-"Ankaŭ uzata por malsupreniro kaj malsuprennaĝo se ‹aux1_descends› estas "
-"malŝaltita.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por unua kaj tria vidpunktoj.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por ekrankopiado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por memirado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por glita vidpunkto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por mapeto.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por rapida reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por flugado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por trapasa reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por celilsekva reĝimo.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por vidpunkta ĝisdatigo. Nur uzata por evoluigado.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri babilon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri erarserĉajn informojn.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri nebulon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri la travidan fasadon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri grandan babilan konzolon.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por montri la profililon. Uzu programante.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Baskula klavo por senlima vido.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Klavo por zomi vidon kiam tio eblas.\n"
-"Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5320,8 +4482,13 @@ msgid "Large cave proportion flooded"
 msgstr "Subakva parto de granda kaverno"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "Klavo de granda konzolo"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "Longeco de fluaĵa agociklo"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5338,10 +4505,6 @@ msgstr ""
 "–   Fajna: Ĉiuj facoj videblas\n"
 "–   Simpla: nur eksteraj facoj, se difinitaj special_tiles uzatas\n"
 "–   Maltravidebla: malŝalti travideblecon"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Maldekstra klavo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5500,6 +4663,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Ŝargaj Modifiloj de Monderoj"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5796,10 +4966,6 @@ msgstr ""
 "Tiu nombro devas esti malpli granda ol curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Maksimuma nombro de perforte enlegitaj mondopecoj."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5901,10 +5067,6 @@ msgid "Minimap"
 msgstr "Mapeto"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Mapeta klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Alteco de mapeta skanado"
 
@@ -5997,10 +5159,6 @@ msgstr ""
 "Ekzemple: 0 por neniu balancado; 1.0 por normala; 2.0 por duobla."
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "Silentiga klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "Silentigi sonon"
 
@@ -6056,10 +5214,6 @@ msgstr "Novaj uzantoj devas enigi ĉi tiun pasvorton."
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Trapasado"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Trapasa klavo"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6219,16 +5373,8 @@ msgid "Physics"
 msgstr "Fiziko"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "Celilsekva klavo"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Celilsekva reĝimo"
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr "Klavo por meti"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6263,6 +5409,10 @@ msgstr ""
 "Rimarku, ke la porda kampo en la ĉefmenuo transpasas ĉi tiun agordon."
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6291,10 +5441,6 @@ msgstr "Rajtoj, kiujn ludantoj kun «basic_privs» povas doni"
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Profililo"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Profilila baskula klavo"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6333,10 +5479,6 @@ msgstr "Levas terenon por krei valojn ĉirkaŭ la riveroj."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Hazarda enigo"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Klavo por ŝanĝi vidodistancon"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6411,10 +5553,6 @@ msgid "Ridged mountain size noise"
 msgstr "Bruo de grandeco de krestaj montoj"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Dekstren-klavo"
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr "Profundeco de rivera akvovojo"
 
@@ -6461,6 +5599,11 @@ msgstr "Sekuraj fosado kaj metado"
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Sablaj bordoj okazas kiam «np_beach» superas ĉi tiun valoron."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Ripetoj"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6658,6 +5801,15 @@ msgstr "Dosiero kun listo de serviloj"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6703,6 +5855,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6724,6 +5882,14 @@ msgid ""
 msgstr ""
 "Verigo ŝaltas ondantajn kreskaĵojn.\n"
 "Bezonas ŝalton de ombrigiloj."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6879,10 +6045,6 @@ msgstr "Glatigas la turnadon de vidpunkto en glita reĝimo. 0 por malŝalti."
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Glitigas turnadon de la vidpunkto. 0 por malŝalti."
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Kaŝira klavo"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -7297,10 +6459,6 @@ msgstr ""
 "mondero."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Baskula klavo de vidpunkta reĝimo"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Prokrasto de ŝpruchelpilo"
 
@@ -7344,6 +6502,11 @@ msgid "Trusted mods"
 msgstr "Fidataj modifaĵoj"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "URL al la listo de serviloj, montrota en la langeto «Ludo por pluraj»."
 
@@ -7364,12 +6527,22 @@ msgstr ""
 "Ĝi grave helpu la efikecon kontraŭ malpli detala filmo."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Senlima distanco por transsendo de ludantoj"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Mallegi neuzatajn servilajn datenojn"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7394,6 +6567,16 @@ msgstr "Uzi neizotropan filtradon vidante teksturojn deflanke."
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Uzi dulinearan filtradon skalante teksturojn."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -7495,6 +6678,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Variigas la krutecon de krutaĵoj."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr "Vertikala rapido de grimpado, en monderoj sekunde."
 
@@ -7513,18 +6704,6 @@ msgstr "Koeficiento de balancado de vido"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "Vidodistanco mondere."
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Klavo por malgrandigi vidodistancon"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Klavo por pligrandigi vidodistancon"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "Vidpunkta zoma klavo"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7873,8 +7052,18 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Ĉu vi certas, ke vi volas rekomenci vian mondon por unu ludanto?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Memage antaŭen"
+
+#, fuzzy
+#~ msgid "Aux1 key"
+#~ msgstr "Salta klavo"
+
 #~ msgid "Back"
 #~ msgstr "Reeniri"
+
+#~ msgid "Backward key"
+#~ msgstr "Malantaŭen"
 
 #~ msgid "Basic"
 #~ msgstr "Baza"
@@ -7887,6 +7076,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Mapado de elstaraĵoj"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Baskula klavo de ĝisdatigo de vidpunkto"
 
 #~ msgid ""
 #~ "Changes the main menu UI:\n"
@@ -7902,6 +7094,18 @@ msgstr "Samtempa limo de cURL"
 #~ "-   simple (simpla): Unu mondo por unu ludanto, neniuj elektiloj de ludo "
 #~ "aŭ teksturaro.\n"
 #~ "Povus esti bezona por malgrandaj ekranoj."
+
+#~ msgid "Chat key"
+#~ msgstr "Babila klavo"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Babila baskula klavo"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Klavo de glita vidpunkto"
+
+#~ msgid "Command key"
+#~ msgstr "Komanda klavo"
 
 #~ msgid "Config mods"
 #~ msgstr "Agordi modifaĵojn"
@@ -7939,6 +7143,12 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Darkness sharpness"
 #~ msgstr "Akreco de mallumo"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Baskula klavo de erarserĉaj informoj"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Mallaŭtiga klavo"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -7972,6 +7182,9 @@ msgstr "Samtempa limo de cURL"
 #~ "difinoj\n"
 #~ "Y de supra limo de lafo en grandaj kavernoj."
 
+#~ msgid "Dig key"
+#~ msgstr "Klavo por fosi"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Elŝuti ludon, ekzemple minetest_game, el minetest.net"
 
@@ -7980,6 +7193,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Elŝutante kaj instalante $1, bonvolu atendi…"
+
+#~ msgid "Drop item key"
+#~ msgstr "Demeta klavo"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Ŝalti VBO(Vertex Buffer Object)"
@@ -8034,6 +7250,9 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Fallback font size"
 #~ msgstr "Grando de reenpaŝa tiparo"
 
+#~ msgid "Fast key"
+#~ msgstr "Rapida klavo"
+
 #~ msgid "Filtering"
 #~ msgstr "Filtrado"
 
@@ -8043,11 +7262,20 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Floatland mountain height"
 #~ msgstr "Alteco de fluginsulaj montoj"
 
+#~ msgid "Fly key"
+#~ msgstr "Fluga klavo"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Nebula baskula klavo"
+
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Maltravidebleco de tipara ombro (inter 0 kaj 255)."
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Grandeco de la reenpaŝa tiparo, punkte (pt)."
+
+#~ msgid "Forward key"
+#~ msgstr "Antaŭen"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "Tiparoj «FreeType»"
@@ -8070,8 +7298,113 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "HUD scale factor"
 #~ msgstr "Skala koeficiento por travida fasado"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "Baskula klavo por travida fasado"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "Preciza glitkoma datentraktilo (FPU)"
+
+#~ msgid "Hotbar next key"
+#~ msgstr "Sekva portaĵo en fulmobreto"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "Antaŭa portaĵo en fulmobreto"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 1"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 10"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 11"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 12"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 13"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 14"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 15"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 16"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 17"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 18"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 19"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 2"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 20"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 21"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 22"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 23"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 24"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 25"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 26"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 27"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 28"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 29"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 3"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 30"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 31"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 32"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 4"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 5"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 6"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 7"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 8"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "Klavo de fulmobreta portaĵingo 9"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Subteno de IPv6."
@@ -8079,19 +7412,682 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "In-Game"
 #~ msgstr "Lude"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "Plilaŭtiga klavo"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Instali modifaĵon: Ne povas trovi veran nomon de modifaĵo por: $1"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Instali: dosiero: «$1»"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Ekzamenado"
 
+#~ msgid "Inventory key"
+#~ msgstr "Klavo de portaĵujo"
+
+#~ msgid "Jump key"
+#~ msgstr "Salta klavo"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malkreskigi la vidan distancon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malkreskigi la laŭtecon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por fosi.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por demeti la elektitan portaĵon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por kreskigi la vidan distancon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por kreskigi la laŭtecon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por salti.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por moviĝi rapide en rapida reĝimo.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por movi la ludanton reen.\n"
+#~ "Aktivigo ankaŭ malŝaltos memiradon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por movi la ludanton pluen.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por movi la ludanton maldekstren.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por movi la ludantan dekstren.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por silentigi la ludon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la babilan fenestron por entajpi komandojn.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la babilan fenestron por entajpi lokajn komandojn.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la babilan fenestron.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por malfermi la portaĵujon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por meti.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 11-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 12-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 13-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 14-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 15-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 16-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 17-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 18-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 19-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 20-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 21-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 22-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 23-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 24-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 25-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 26-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 27-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 28-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 29-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 30-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 31-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti 32-an portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti okan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti kvinan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti unuan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti kvaran portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti sekvan portaĵon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti naŭan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti antaŭan portaĵon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti duan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti sepan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti sesan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti dekan portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por elekti trian portaĵingon en la fulmobreto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por kaŝirado.\n"
+#~ "Ankaŭ uzata por malsupreniro kaj malsuprennaĝo se ‹aux1_descends› estas "
+#~ "malŝaltita.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por unua kaj tria vidpunktoj.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por ekrankopiado.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por memirado.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por glita vidpunkto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por mapeto.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por rapida reĝimo.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por flugado.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por trapasa reĝimo.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por celilsekva reĝimo.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por vidpunkta ĝisdatigo. Nur uzata por evoluigado.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri babilon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri erarserĉajn informojn.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri nebulon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri la travidan fasadon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri grandan babilan konzolon.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por montri la profililon. Uzu programante.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Baskula klavo por senlima vido.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Klavo por zomi vidon kiam tio eblas.\n"
+#~ "Vidu http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 #~ msgstr ""
 #~ "Klavagordoj. (Se tiu menuo misfunkcias, forigu agordojn el minetest.conf)"
 
+#~ msgid "Large chat console key"
+#~ msgstr "Klavo de granda konzolo"
+
 #~ msgid "Lava depth"
 #~ msgstr "Lafo-profundeco"
+
+#~ msgid "Left key"
+#~ msgstr "Maldekstra klavo"
 
 #~ msgid "Lightness sharpness"
 #~ msgstr "Akreco de heleco"
@@ -8125,6 +8121,12 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "Mapeto en supraĵa reĝimo, zomo ×4"
 
+#~ msgid "Minimap key"
+#~ msgstr "Mapeta klavo"
+
+#~ msgid "Mute key"
+#~ msgstr "Silentiga klavo"
+
 #~ msgid "Name / Password"
 #~ msgstr "Nomo / Pasvorto"
 
@@ -8133,6 +8135,9 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "No"
 #~ msgstr "Ne"
+
+#~ msgid "Noclip key"
+#~ msgstr "Trapasa klavo"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Normalmapa specimenado"
@@ -8186,8 +8191,17 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Dosierindiko por konservi ekrankopiojn."
 
+#~ msgid "Pitch move key"
+#~ msgstr "Celilsekva klavo"
+
+#~ msgid "Place key"
+#~ msgstr "Klavo por meti"
+
 #~ msgid "Player name"
 #~ msgstr "Nomo de ludanto"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Profilila baskula klavo"
 
 #~ msgid "Profiling"
 #~ msgstr "Profilado"
@@ -8198,8 +8212,14 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "PvP enabled"
 #~ msgstr "Dueloj ŝaltitas"
 
+#~ msgid "Range select key"
+#~ msgstr "Klavo por ŝanĝi vidodistancon"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Rekomenci mondon por unu ludanto"
+
+#~ msgid "Right key"
+#~ msgstr "Dekstren-klavo"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Elekti pakaĵan dosieron:"
@@ -8216,6 +8236,9 @@ msgstr "Samtempa limo de cURL"
 #~ msgstr ""
 #~ "Deŝovo de tipara ombro (en bilderoj); se ĝi estas 0, la ombro ne "
 #~ "desegniĝos."
+
+#~ msgid "Sneak key"
+#~ msgstr "Kaŝira klavo"
 
 #~ msgid "Special"
 #~ msgstr "Speciala"
@@ -8238,10 +8261,19 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Baskuligi glitan vidpunkton"
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Baskula klavo de vidpunkta reĝimo"
+
 #~ msgid ""
 #~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
 #~ "Ordinara plejalto, super kaj sub la mezpunkto, de fluginsulaj montoj."
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Malsukcesis instali ludon kiel $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Malsukcesis instali modifaĵaron kiel $1"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8250,6 +8282,15 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "View"
 #~ msgstr "Vido"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Klavo por malgrandigi vidodistancon"
+
+#~ msgid "View range increase key"
+#~ msgstr "Klavo por pligrandigi vidodistancon"
+
+#~ msgid "View zoom key"
+#~ msgstr "Vidpunkta zoma klavo"
 
 #~ msgid "Waving Water"
 #~ msgstr "Ondanta akvo"

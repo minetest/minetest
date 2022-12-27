@@ -8,10 +8,9 @@
 -- Misc. API functions
 --
 
+-- This must match the implementation in src/script/common/c_converter.h
 function core.hash_node_position(pos)
-	return (pos.z + 32768) * 65536 * 65536
-		 + (pos.y + 32768) * 65536
-		 +  pos.x + 32768
+	return (pos.z + 0x8000) * 0x100000000 + (pos.y + 0x8000) * 0x10000 + (pos.x + 0x8000)
 end
 
 

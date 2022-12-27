@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
-"PO-Revision-Date: 2022-07-24 18:04+0000\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"PO-Revision-Date: 2022-10-20 11:57+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -114,34 +114,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Le serveur souhaite rétablir une connexion :"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr "Une nouvelle $1 version est disponible"
-
-#: builtin/mainmenu/common.lua
-msgid "Client Mods"
-msgstr "Mods client"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-"Version installée : $1\n"
-"Nouvelle version : $2\n"
-"Visiter $3 pour savoir comment obtenir la nouvelle version et rester à jour "
-"des fonctionnalités et des corrections de bogues."
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr "Plus tard"
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr "Jamais"
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "La version du protocole ne correspond pas. "
 
@@ -152,10 +124,6 @@ msgstr "Le serveur impose la version $1 du protocole. "
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Le serveur supporte les versions de protocole entre $1 et $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr "Visiter le site web"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -315,8 +283,22 @@ msgid "Downloading..."
 msgstr "Téléchargement…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Échec du téléchargement de $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Échec du téléchargement de $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Installation : type de fichier non supporté ou archive endommagée"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -333,10 +315,6 @@ msgstr "Installer $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Installer les dépendances manquantes"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Installation : type de fichier non supporté ou archive endommagée"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -671,6 +649,10 @@ msgid "Browse"
 msgstr "Parcourir"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Client Mods"
+msgstr "Mods client"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
 msgstr "Contenu : Jeux"
 
@@ -793,6 +775,34 @@ msgstr "Paramètres par défaut"
 msgid "eased"
 msgstr "Lissé"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "Une nouvelle version de $1 est disponible"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Version installée : $1\n"
+"Nouvelle version : $2\n"
+"Visiter $3 pour savoir comment obtenir la nouvelle version et rester à jour "
+"des fonctionnalités et des corrections de bogues."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Plus tard"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Jamais"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Visiter le site web"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Activé)"
@@ -806,34 +816,25 @@ msgid "Failed to install $1 to $2"
 msgstr "Échec de l'installation de $1 vers $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr "Installer mod : impossible de trouver le nom réel du mod pour : $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Installer mod : impossible de trouver un nom de dossier valide pour le pack "
 "de mods $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Impossible de trouver un mod ou un pack de mods valide"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Impossible d'installer un mod comme un $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Impossible d'installer un $1 comme un pack de textures"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Impossible d'installer un jeu comme un $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Impossible d'installer un mod comme un $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Impossible d'installer un pack de mods comme un $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -866,6 +867,10 @@ msgid "Core Developers"
 msgstr "Développeurs principaux"
 
 #: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
 msgstr "Répertoire de données utilisateur"
 
@@ -876,7 +881,7 @@ msgid ""
 msgstr ""
 "Ouvre le répertoire qui contient les mondes, les jeux, les mods et les packs "
 "de textures\n"
-"fournis par l'utilisateur dans un gestionnaire de fichiers/explorateur."
+"fournis par l'utilisateur dans un gestionnaire de fichiers / explorateur."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -928,7 +933,7 @@ msgstr "Désinstaller le paquet"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr "Utiliser un pack de texture"
+msgstr "Utiliser le pack de textures"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1983,6 +1988,28 @@ msgstr "Mini-carte en mode surface, zoom ×%d"
 msgid "Minimap in texture mode"
 msgstr "Mini-carte en mode texture"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Pas de dépendances"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Échec de l'ouverture de la page Web"
@@ -2099,7 +2126,7 @@ msgstr "Objet précédent"
 msgid "Range select"
 msgstr "Distance de vue"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Capture d'écran"
 
@@ -2442,6 +2469,17 @@ msgstr ""
 "des éléments de l'interface utilisateur."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2565,10 +2603,6 @@ msgid "Audio"
 msgstr "Audio"
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Touche marche automatique"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr "Saute automatiquement sur les obstacles d'un bloc de haut."
 
@@ -2585,16 +2619,8 @@ msgid "Autoscaling mode"
 msgstr "Mode d'agrandissement automatique"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Touche Aux1"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "Touche Aux1 pour monter/descendre"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Touche reculer"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2635,6 +2661,23 @@ msgstr "Bruit des biomes"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Distance d'optimisation d'envoi des blocs"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Niveau de détails des nuages"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2689,10 +2732,6 @@ msgstr "Lissage du mouvement de la caméra"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Lissage du mouvement de la caméra en mode cinématique"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Touche mise à jour de la caméra"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2760,10 +2799,6 @@ msgid "Chat font size"
 msgstr "Taille de la police du tchat"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Touche tchat"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Niveau du journal du tchat"
 
@@ -2784,10 +2819,6 @@ msgid "Chat message max length"
 msgstr "Longueur maximale d'un message de tchat"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Touche afficher le tchat"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "Liens web de tchat"
 
@@ -2798,10 +2829,6 @@ msgstr "Taille des tranches"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Mode cinématique"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Touche mode cinématique"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2902,10 +2929,6 @@ msgstr ""
 "Liste séparée par des virgules des mods de confiance qui sont autorisés à "
 "accéder aux fonctions non sécurisées même lorsque l'option de sécurisation "
 "des mods est activée (via « request_insecure_environment() »)."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Touche commande"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3069,10 +3092,6 @@ msgid "Damage"
 msgstr "Dégâts"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Touche infos de débogage"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Seuil de la taille du fichier journal de débogage"
 
@@ -3083,10 +3102,6 @@ msgstr "Niveau du journal de débogage"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr "Débogage"
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Touche réduire le volume"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3107,6 +3122,13 @@ msgid ""
 msgstr ""
 "Jeu par défaut lors de la création d'un nouveau monde.\n"
 "Sera annulé lors de la création d'un nouveau monde dans le menu."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Nombre maximal de blocs de carte chargés de force."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3157,6 +3179,13 @@ msgstr ""
 "cavernes plus larges."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Définit la structure des canaux fluviaux à grande échelle."
 
@@ -3172,6 +3201,12 @@ msgstr "Définit le niveau du sol de base."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Définit la profondeur du court de la rivière."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3250,10 +3285,6 @@ msgid "Developer Options"
 msgstr "Options de développeur"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Touche creuser"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Particules au minage"
 
@@ -3292,10 +3323,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Double-appui sur la touche « saut » pour voler."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Touche lâcher un objet"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "Afficher les informations de débogage de la génération de terrain."
 
@@ -3310,6 +3337,15 @@ msgstr "Minimum Y des donjons"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Bruit de donjons"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Tout activer"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3502,8 +3538,9 @@ msgid "Entity methods"
 msgstr "Systèmes d'entité"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3518,6 +3555,10 @@ msgstr ""
 "Une valeur inférieure à 1 (par exemple 0,25) créée une surface plus définie "
 "avec des terrains bas plus plats, adaptée pour une couche solide de terrain "
 "flottant."
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3542,10 +3583,6 @@ msgstr "Facteur de balancement de chute"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "Chemin de la police alternative"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Touche mode rapide"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3661,10 +3698,6 @@ msgid "Floatland water level"
 msgstr "Niveau d'eau des terrains flottants"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Touche voler"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Voler"
 
@@ -3675,10 +3708,6 @@ msgstr "Brouillard"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr "Début du brouillard"
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Touche brouillard"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
@@ -3787,10 +3816,6 @@ msgstr "Couleur de l'arrière-plan en plein écran des formspec (R,V,B)."
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
 "Opacité de l'arrière-plan en plein écran des formspec (entre 0 et 255)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Touche avancer"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3941,10 +3966,6 @@ msgid "HUD scaling"
 msgstr "Taille du HUD"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "Touche HUD"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4046,142 +4067,6 @@ msgid ""
 msgstr ""
 "Accélération horizontale et verticale au sol ou en montée, en nœuds par "
 "seconde."
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "Touche suivant sur la barre d'actions"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "Touche précédent sur la barre d'actions"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "Touche emplacement 1 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "Touche emplacement 10 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "Touche emplacement 11 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "Touche emplacement 12 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "Touche emplacement 13 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "Touche emplacement 14 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "Touche emplacement 15 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "Touche emplacement 16 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "Touche emplacement 17 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "Touche emplacement 18 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "Touche emplacement 19 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "Touche emplacement 2 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "Touche emplacement 20 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "Touche emplacement 21 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "Touche emplacement 22 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "Touche emplacement 23 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "Touche emplacement 24 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "Touche emplacement 25 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "Touche emplacement 26 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "Touche emplacement 27 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "Touche emplacement 28 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "Touche emplacement 29 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "Touche emplacement 3 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "Touche emplacement 30 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "Touche emplacement 31 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "Touche emplacement 32 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "Touche emplacement 4 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "Touche emplacement 5 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "Touche emplacement 6 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "Touche emplacement 7 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "Touche emplacement 8 de la barre d'action"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "Touche emplacement 9 de la barre d'action"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4401,10 +4286,6 @@ msgstr ""
 "Hauteur de la console de tchat dans le jeu, entre 0,1 (10 %) et 1,0 (100 %)."
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Touche augmenter le volume"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "Vitesse verticale initiale lors du saut, en nœuds par seconde."
 
@@ -4460,10 +4341,6 @@ msgstr "Intervalle d'envoi de l'heure aux clients, établi en secondes."
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Animation des items d'inventaire"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Touche inventaire"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4589,729 +4466,8 @@ msgid "Julia z"
 msgstr "Julia z"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Touche sauter"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Vitesse de saut du joueur"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour réduire la distance d'affichage.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour réduire le volume.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour creuser.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour lâcher l'objet sélectionné.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour augmenter la distance d'affichage.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour augmenter le volume.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sauter.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour se déplacer rapidement en mode rapide.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour déplacer le joueur en arrière.\n"
-"Désactive également l’avance automatique, lorsqu’elle est active.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour déplacer le joueur en avant.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour déplacer le joueur à gauche.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour déplacer le joueur à droite.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour rendre le jeu muet.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour ouvrir la fenêtre de tchat pour entrer des commandes.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour ouvrir la fenêtre de tchat pour entrer des commandes locales.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour ouvrir la fenêtre de tchat.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour ouvrir l'inventaire.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour placer.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 11ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 12ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 13ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 14ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 15ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 16ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 17ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 18ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 19ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 20ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 21ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 22ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 23ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 24ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 25ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 26ᵉ case des la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 27ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 28ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 29ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 30ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 31ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la 32ᵉ case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la huitième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la cinquième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la première case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la quatrième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner l'objet suivant dans la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la neuvième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner l'objet précédent dans la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la deuxième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la septième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la sixième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la dixième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour sélectionner la troisième case de la barre d'action.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour se déplacer lentement.\n"
-"Également utilisée pour descendre et plonger dans l'eau si « aux1_descends » "
-"est désactivé.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour changer de vue entre la première et troisième personne.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour prendre des captures d'écran.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche d'avance automatique.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour passer en mode cinématique.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher la mini-carte.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour passer en mode rapide.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour voler.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour passer en mode sans collision.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour passer en mode mouvement de tangage.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche de mise à jour de la caméra. Seulement utilisé pour le "
-"développement.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher la zone de tchat.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher les infos de débogage.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher le brouillard.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/masquer le HUD (affichage tête haute).\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher la grande console de tchat.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour afficher/cacher le profileur. Utilisé pour le développement.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour activer/désactiver la distance de vue illimitée.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Touche pour zoomer si possible.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5351,8 +4507,13 @@ msgid "Large cave proportion flooded"
 msgstr "Proportion de grandes grottes inondées"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "Touche grande console de tchat"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "Intervalle de mise à jour des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5370,10 +4531,6 @@ msgstr ""
 "– Simple : seulement les faces externes, si des « special_tiles » sont "
 "définies\n"
 "– Opaque : désactive la transparence"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Touche gauche"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5531,6 +4688,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Chargement des modificateurs de blocs"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5832,10 +4996,6 @@ msgstr ""
 "Ce nombre doit être inférieur à la limite de « curl_parallel_limit »."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Nombre maximal de blocs de carte chargés de force."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5940,10 +5100,6 @@ msgid "Minimap"
 msgstr "Mini-carte"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Touche mini-carte"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Hauteur de balayage de la mini-carte"
 
@@ -6035,10 +5191,6 @@ msgstr ""
 "double."
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "Touche muet"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "Couper le son"
 
@@ -6096,10 +5248,6 @@ msgstr "Les nouveaux joueurs ont besoin d'entrer ce mot de passe."
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Sans collision"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Touche mode sans collision"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -6249,16 +5397,8 @@ msgid "Physics"
 msgstr "Physique"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "Touche mouvement de tangage"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Mode mouvement de tangage"
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr "Touche placer"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6291,6 +5431,10 @@ msgid ""
 msgstr ""
 "Port où se connecter (UDP).\n"
 "Noter que le champ de port dans le menu principal passe outre ce paramètre."
+
+#: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6326,10 +5470,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Profileur"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Touche profilage"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6368,10 +5508,6 @@ msgstr "Élève le terrain pour former des vallées autour des rivières."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Entrée aléatoire"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Touche distance d'affichage illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6426,8 +5562,8 @@ msgstr ""
 "CHAT_MESSAGES : 2 (désactive l'appel « send_chat_message côté » client)\n"
 "READ_ITEMDEFS : 4 (désactive l'appel « get_item_def côté » client)\n"
 "READ_NODEDEFS : 8 (désactive l'appel « get_node_def » côté client)\n"
-"LOOKUP_NODES_LIMIT : 16 (limite l'appel « get_node » côté client à « "
-"csm_restriction_noderange »)\n"
+"LOOKUP_NODES_LIMIT : 16 (limite l'appel « get_node » côté client à "
+"« csm_restriction_noderange »)\n"
 "READ_PLAYERINFO : 32 (désactive l'appel « get_player_names » côté client)"
 
 #: src/settings_translation_file.cpp
@@ -6445,10 +5581,6 @@ msgstr "Bruit des crêtes sous l'eau"
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
 msgstr "Bruit de la taille des crêtes de montagnes"
-
-#: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Touche droite"
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -6498,6 +5630,11 @@ msgstr "Minage et placement sécurisés"
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
 "Des plages de sables apparaissent lorsque « np_beach » dépasse cette valeur."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Itérations"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6690,6 +5827,15 @@ msgstr "Fichier de la liste des serveurs"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6745,6 +5891,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6766,6 +5918,14 @@ msgid ""
 msgstr ""
 "Mettre sur « Activé » active le mouvement des végétaux.\n"
 "Nécessite les shaders pour être activé."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6929,10 +6089,6 @@ msgstr "Lisse la rotation de la caméra en mode cinématique. 0 pour désactiver
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Lisse la rotation de la caméra. 0 pour désactiver."
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Touche déplacement lent"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -7369,10 +6525,6 @@ msgstr ""
 "d'un nœud."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Touche basculer en mode caméra"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Délai d'apparition des infobulles"
 
@@ -7416,6 +6568,11 @@ msgid "Trusted mods"
 msgstr "Mods de confiance"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 "URL de la liste des serveurs affichée dans l'onglet « Rejoindre une partie »."
@@ -7440,12 +6597,22 @@ msgstr ""
 "Les valeurs plus élevées réduisent la qualité du détail des images."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Distance de transfert du joueur illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Décharger les données de serveur inutilisées"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7473,6 +6640,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Utilisation du filtrage bilinéaire."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7575,6 +6752,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Contrôle l'élévation/hauteur des falaises."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr "Vitesse d’escalade verticale, en nœuds par seconde."
 
@@ -7593,18 +6778,6 @@ msgstr "Facteur de balancement de la vue"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "Distance d'affichage en blocs."
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Touche réduire la distance d'affichage"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Touche augmenter la distance d'affichage"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "Touche zoomer"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7798,8 +6971,8 @@ msgid ""
 "Controlled by the checkbox in the \"All settings\" menu."
 msgstr ""
 "Détermine si les noms techniques doivent être affichés.\n"
-"Affecte les mods et les packs de textures dans les menus « Contenu » et « "
-"Sélectionner les mods », ainsi que les noms de paramètres dans « Tous les "
+"Affecte les mods et les packs de textures dans les menus « Contenu » et "
+"« Sélectionner les mods », ainsi que les noms de paramètres dans « Tous les "
 "paramètres ».\n"
 "Contrôlé par la case à cocher dans le menu « Tous les paramètres »."
 
@@ -7928,7 +7101,7 @@ msgstr "Délai d'interruption de cURL lors d'un téléchargement de fichier"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
-msgstr "Délai d'interruption interactive de cURL"
+msgstr "Délai d'interruption interactif de cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
@@ -7966,8 +7139,17 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Êtes-vous sûr de vouloir réinitialiser votre monde ?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Touche marche automatique"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Touche Aux1"
+
 #~ msgid "Back"
 #~ msgstr "Retour"
+
+#~ msgid "Backward key"
+#~ msgstr "Touche reculer"
 
 #~ msgid "Basic"
 #~ msgstr "Principal"
@@ -7980,6 +7162,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Bump mapping"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Touche mise à jour de la caméra"
 
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Milieu de la courbe de lumière mi-boost."
@@ -7998,6 +7183,18 @@ msgstr "Limite parallèle de cURL"
 #~ "-   Simple : un monde solo, pas de sélecteurs de jeu ou de pack de "
 #~ "textures. Peut être\n"
 #~ "nécessaire pour les plus petits écrans."
+
+#~ msgid "Chat key"
+#~ msgstr "Touche tchat"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Touche afficher le tchat"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Touche mode cinématique"
+
+#~ msgid "Command key"
+#~ msgstr "Touche commande"
 
 #~ msgid "Config mods"
 #~ msgstr "Configurer les mods"
@@ -8035,6 +7232,12 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Darkness sharpness"
 #~ msgstr "Démarcation de l'obscurité"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Touche infos de débogage"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Touche réduire le volume"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -8059,6 +7262,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Del. Favorite"
 #~ msgstr "Supprimer favori"
 
+#~ msgid "Dig key"
+#~ msgstr "Touche creuser"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Télécharger un jeu comme Minetest Game depuis minetest.net"
 
@@ -8067,6 +7273,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Téléchargement et installation de $1, veuillez patienter..."
+
+#~ msgid "Drop item key"
+#~ msgstr "Touche lâcher un objet"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Activer Vertex Buffer Object: objet tampon de vertex"
@@ -8125,6 +7334,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Fallback font size"
 #~ msgstr "Taille de la police alternative"
 
+#~ msgid "Fast key"
+#~ msgstr "Touche mode rapide"
+
 #~ msgid "Filtering"
 #~ msgstr "Filtrage"
 
@@ -8134,11 +7346,20 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Floatland mountain height"
 #~ msgstr "Hauteur des montagnes flottantes"
 
+#~ msgid "Fly key"
+#~ msgstr "Touche voler"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Touche brouillard"
+
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "Niveau d'opacité de l'ombre de la police (entre 0 et 255)."
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Taille de police secondaire au point (pt)."
+
+#~ msgid "Forward key"
+#~ msgstr "Touche avancer"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "Polices Freetype"
@@ -8161,8 +7382,113 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "HUD scale factor"
 #~ msgstr "Facteur de mise à l'échelle de l'interface"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "Touche HUD"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "FPU de haute précision"
+
+#~ msgid "Hotbar next key"
+#~ msgstr "Touche suivant sur la barre d'actions"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "Touche précédent sur la barre d'actions"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "Touche emplacement 1 de la barre d'action"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "Touche emplacement 10 de la barre d'action"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "Touche emplacement 11 de la barre d'action"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "Touche emplacement 12 de la barre d'action"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "Touche emplacement 13 de la barre d'action"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "Touche emplacement 14 de la barre d'action"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "Touche emplacement 15 de la barre d'action"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "Touche emplacement 16 de la barre d'action"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "Touche emplacement 17 de la barre d'action"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "Touche emplacement 18 de la barre d'action"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "Touche emplacement 19 de la barre d'action"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "Touche emplacement 2 de la barre d'action"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "Touche emplacement 20 de la barre d'action"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "Touche emplacement 21 de la barre d'action"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "Touche emplacement 22 de la barre d'action"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "Touche emplacement 23 de la barre d'action"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "Touche emplacement 24 de la barre d'action"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "Touche emplacement 25 de la barre d'action"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "Touche emplacement 26 de la barre d'action"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "Touche emplacement 27 de la barre d'action"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "Touche emplacement 28 de la barre d'action"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "Touche emplacement 29 de la barre d'action"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "Touche emplacement 3 de la barre d'action"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "Touche emplacement 30 de la barre d'action"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "Touche emplacement 31 de la barre d'action"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "Touche emplacement 32 de la barre d'action"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "Touche emplacement 4 de la barre d'action"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "Touche emplacement 5 de la barre d'action"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "Touche emplacement 6 de la barre d'action"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "Touche emplacement 7 de la barre d'action"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "Touche emplacement 8 de la barre d'action"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "Touche emplacement 9 de la barre d'action"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Support IPv6."
@@ -8170,18 +7496,683 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "In-Game"
 #~ msgstr "Dans le jeu"
 
+#~ msgid "Inc. volume key"
+#~ msgstr "Touche augmenter le volume"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr "Installer mod : impossible de trouver le nom réel du mod pour : $1"
+
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Installation : fichier : « $1 »"
 
 #~ msgid "Instrumentation"
 #~ msgstr "Instrumentalisation"
 
+#~ msgid "Inventory key"
+#~ msgstr "Touche inventaire"
+
+#~ msgid "Jump key"
+#~ msgstr "Touche sauter"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour réduire la distance d'affichage.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour réduire le volume.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour creuser.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour lâcher l'objet sélectionné.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour augmenter la distance d'affichage.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour augmenter le volume.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sauter.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour se déplacer rapidement en mode rapide.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour déplacer le joueur en arrière.\n"
+#~ "Désactive également l’avance automatique, lorsqu’elle est active.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour déplacer le joueur en avant.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour déplacer le joueur à gauche.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour déplacer le joueur à droite.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour rendre le jeu muet.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour ouvrir la fenêtre de tchat pour entrer des commandes.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour ouvrir la fenêtre de tchat pour entrer des commandes "
+#~ "locales.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour ouvrir la fenêtre de tchat.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour ouvrir l'inventaire.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour placer.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 11ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 12ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 13ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 14ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 15ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 16ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 17ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 18ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 19ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 20ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 21ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 22ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 23ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 24ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 25ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 26ᵉ case des la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 27ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 28ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 29ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 30ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 31ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la 32ᵉ case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la huitième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la cinquième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la première case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la quatrième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner l'objet suivant dans la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la neuvième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner l'objet précédent dans la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la deuxième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la septième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la sixième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la dixième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour sélectionner la troisième case de la barre d'action.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour se déplacer lentement.\n"
+#~ "Également utilisée pour descendre et plonger dans l'eau si "
+#~ "« aux1_descends » est désactivé.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour changer de vue entre la première et troisième personne.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour prendre des captures d'écran.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche d'avance automatique.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour passer en mode cinématique.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher la mini-carte.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour passer en mode rapide.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour voler.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour passer en mode sans collision.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour passer en mode mouvement de tangage.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche de mise à jour de la caméra. Seulement utilisé pour le "
+#~ "développement.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher la zone de tchat.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher les infos de débogage.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher le brouillard.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/masquer le HUD (affichage tête haute).\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher la grande console de tchat.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour afficher/cacher le profileur. Utilisé pour le développement.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour activer/désactiver la distance de vue illimitée.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Touche pour zoomer si possible.\n"
+#~ "Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 #~ msgstr "Raccourcis clavier"
 
+#~ msgid "Large chat console key"
+#~ msgstr "Touche grande console de tchat"
+
 #~ msgid "Lava depth"
 #~ msgstr "Profondeur de lave"
+
+#~ msgid "Left key"
+#~ msgstr "Touche gauche"
 
 #~ msgid "Lightness sharpness"
 #~ msgstr "Démarcation de la luminosité"
@@ -8215,6 +8206,12 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "Mini-carte en mode surface, zoom x4"
 
+#~ msgid "Minimap key"
+#~ msgstr "Touche mini-carte"
+
+#~ msgid "Mute key"
+#~ msgstr "Touche muet"
+
 #~ msgid "Name / Password"
 #~ msgstr "Nom / Mot de passe"
 
@@ -8223,6 +8220,9 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "No"
 #~ msgstr "Non"
+
+#~ msgid "Noclip key"
+#~ msgstr "Touche mode sans collision"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Échantillonnage de normalmaps"
@@ -8275,8 +8275,17 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Chemin où les captures d'écran sont sauvegardées."
 
+#~ msgid "Pitch move key"
+#~ msgstr "Touche mouvement de tangage"
+
+#~ msgid "Place key"
+#~ msgstr "Touche placer"
+
 #~ msgid "Player name"
 #~ msgstr "Nom du joueur"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Touche profilage"
 
 #~ msgid "Profiling"
 #~ msgstr "Profilage"
@@ -8287,8 +8296,14 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "PvP enabled"
 #~ msgstr "JcJ activé"
 
+#~ msgid "Range select key"
+#~ msgstr "Touche distance d'affichage illimitée"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Réinitialiser le monde"
+
+#~ msgid "Right key"
+#~ msgstr "Touche droite"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Sélectionner le fichier du mod :"
@@ -8317,6 +8332,9 @@ msgstr "Limite parallèle de cURL"
 #~ "Décalage de l'ombre de la police de secours (en pixel). Aucune ombre si "
 #~ "la valeur est 0."
 
+#~ msgid "Sneak key"
+#~ msgstr "Touche déplacement lent"
+
 #~ msgid "Special"
 #~ msgstr "Spécial"
 
@@ -8341,11 +8359,20 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Mode cinématique"
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Touche mode caméra"
+
 #~ msgid ""
 #~ "Typical maximum height, above and below midpoint, of floatland mountains."
 #~ msgstr ""
 #~ "Hauteur maximum typique, au-dessus et au-dessous du point médian, du "
 #~ "terrain de montagne flottantes."
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Impossible d'installer un jeu comme un $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Impossible d'installer un pack de mods comme un $1"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8354,6 +8381,15 @@ msgstr "Limite parallèle de cURL"
 
 #~ msgid "View"
 #~ msgstr "Voir"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Touche réduire la distance d'affichage"
+
+#~ msgid "View range increase key"
+#~ msgstr "Touche augmenter la distance d'affichage"
+
+#~ msgid "View zoom key"
+#~ msgstr "Touche zoomer"
 
 #~ msgid "Waving Water"
 #~ msgstr "Eau ondulante"

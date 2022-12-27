@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-20 21:43+0200\n"
+"POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2022-07-24 09:25+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -119,34 +119,6 @@ msgid "The server has requested a reconnect:"
 msgstr "Server požiadal o obnovu spojenia:"
 
 #: builtin/mainmenu/common.lua
-msgid "A new $1 version is available"
-msgstr "K dispozícií je nová verzia $1"
-
-#: builtin/mainmenu/common.lua
-msgid "Client Mods"
-msgstr "Užívateľské módy"
-
-#: builtin/mainmenu/common.lua
-msgid ""
-"Installed version: $1\n"
-"New version: $2\n"
-"Visit $3 to find out how to get the newest version and stay up to date with "
-"features and bugfixes."
-msgstr ""
-"Nainštalovaná verzia: $1\n"
-"Nová verzia: $2\n"
-"Navštív $3 pre informácie ako získať najnovšiu verziu a maj prehľad o "
-"funkciách a opravách chýb."
-
-#: builtin/mainmenu/common.lua
-msgid "Later"
-msgstr "Neskôr"
-
-#: builtin/mainmenu/common.lua
-msgid "Never"
-msgstr "Nikdy"
-
-#: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
 msgstr "Verzie protokolov sa nezhodujú. "
 
@@ -157,10 +129,6 @@ msgstr "Server vyžaduje protokol verzie $1. "
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
 msgstr "Server podporuje verzie protokolov medzi $1 a $2. "
-
-#: builtin/mainmenu/common.lua
-msgid "Visit website"
-msgstr "Navštív webovú stránku"
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -319,8 +287,22 @@ msgid "Downloading..."
 msgstr "Sťahujem..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Nepodarilo sa stiahnuť $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Nepodarilo sa stiahnuť $1"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Inštalácia: Nepodporovaný typ súboru, alebo poškodený archív"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -337,10 +319,6 @@ msgstr "Nainštalovať $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
 msgstr "Nainštalovať chýbajúce nevyhnutné doplnky (závislosti)"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install: Unsupported file type or broken archive"
-msgstr "Inštalácia: Nepodporovaný typ súboru, alebo poškodený archív"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -674,6 +652,10 @@ msgid "Browse"
 msgstr "Prehliadaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Client Mods"
+msgstr "Užívateľské módy"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
 msgstr "Doplnky: Hry"
 
@@ -796,6 +778,34 @@ msgstr "štandardné hodnoty (defaults)"
 msgid "eased"
 msgstr "zjemnené (eased)"
 
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "A new $1 version is available"
+msgstr "K dispozícií je nová verzia $1"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid ""
+"Installed version: $1\n"
+"New version: $2\n"
+"Visit $3 to find out how to get the newest version and stay up to date with "
+"features and bugfixes."
+msgstr ""
+"Nainštalovaná verzia: $1\n"
+"Nová verzia: $2\n"
+"Navštív $3 pre informácie ako získať najnovšiu verziu a maj prehľad o "
+"funkciách a opravách chýb."
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Later"
+msgstr "Neskôr"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Never"
+msgstr "Nikdy"
+
+#: builtin/mainmenu/dlg_version_info.lua
+msgid "Visit website"
+msgstr "Navštív webovú stránku"
+
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
 msgstr "$1 (Aktivované)"
@@ -809,35 +819,25 @@ msgid "Failed to install $1 to $2"
 msgstr "Zlyhala inštalácia $1 na $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find real mod name for: $1"
-msgstr ""
-"Inštalácia rozšírenia: Nie je možné nájsť skutočné meno rozšírenia pre: $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install Mod: Unable to find suitable folder name for modpack $1"
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Inštalácia rozšírenia: Nie je možné nájsť vhodný adresár pre balíček "
 "rozšírení $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod or modpack"
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Nie je možné nájsť platné rozšírenie, alebo balíček rozšírení"
+
+#: builtin/mainmenu/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Nie je možné nainštalovať rozšírenie $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Nie je možné nainštalovať $1 ako balíček textúr"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a game as a $1"
-msgstr "Nie je možné nainštalovať hru $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a mod as a $1"
-msgstr "Nie je možné nainštalovať rozšírenie $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a modpack as a $1"
-msgstr "Nie je možné nainštalovať balíček rozšírení $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -868,6 +868,10 @@ msgstr "Aktívny renderer:"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
 msgstr "Hlavný vývojari"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Core Team"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1989,6 +1993,28 @@ msgstr "Minimapa v povrchovom režime, priblíženie x%d"
 msgid "Minimap in texture mode"
 msgstr "Minimapa v móde textúry"
 
+#. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
+#: src/content/mod_configuration.cpp
+#, c-format
+msgid "%s is missing:"
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Install and enable the required mods, or disable the mods causing errors."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+msgid ""
+"Note: this may be caused by a dependency cycle, in which case try updating "
+"the mods."
+msgstr ""
+
+#: src/content/mod_configuration.cpp
+#, fuzzy
+msgid "Some mods have unsatisfied dependencies:"
+msgstr "Bez povinných nevyhnutných doplnkov"
+
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
 msgstr "Nepodarilo sa otvoriť web stránku"
@@ -2105,7 +2131,7 @@ msgstr "Pred. vec"
 msgid "Range select"
 msgstr "Zmena dohľadu"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
 msgstr "Fotka obrazovky"
 
@@ -2443,6 +2469,17 @@ msgstr ""
 "grafického rozhrania."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Adjust the saturation (or vividness) of the scene\n"
+"Values\n"
+"< 1.0 decrease saturation\n"
+"> 1.0 increase saturation\n"
+"1.0 = unchanged saturation\n"
+"0.0 = black and white\n"
+"(Tone mapping needs to be enabled.)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2565,10 +2602,6 @@ msgid "Audio"
 msgstr "Zvuk"
 
 #: src/settings_translation_file.cpp
-msgid "Automatic forward key"
-msgstr "Tlačidlo Automatický pohyb vpred"
-
-#: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
 msgstr "Automaticky vyskočí na prekážku vysokú jedna kocka."
 
@@ -2585,16 +2618,8 @@ msgid "Autoscaling mode"
 msgstr "Režim automatickej zmeny mierky"
 
 #: src/settings_translation_file.cpp
-msgid "Aux1 key"
-msgstr "Tlačidlo Aux1"
-
-#: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
 msgstr "Klávesa Aux1 pre šplhanie hore/dole"
-
-#: src/settings_translation_file.cpp
-msgid "Backward key"
-msgstr "Tlačidlo Vzad"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2635,6 +2660,23 @@ msgstr "Šum biómu"
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
 msgstr "Vzdialenosť pre optimalizáciu posielania blokov"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Intensity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bloom Radius"
+msgstr "Polomer mrakov"
+
+#: src/settings_translation_file.cpp
+msgid "Bloom Strength Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2687,10 +2729,6 @@ msgstr "Plynulý pohyb kamery"
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
 msgstr "Plynulý pohyb kamery vo filmovom režime"
-
-#: src/settings_translation_file.cpp
-msgid "Camera update toggle key"
-msgstr "Tlačidlo Aktualizácia pohľadu"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
@@ -2757,10 +2795,6 @@ msgid "Chat font size"
 msgstr "Veľkosť komunikačného písma"
 
 #: src/settings_translation_file.cpp
-msgid "Chat key"
-msgstr "Tlačidlo Komunikácia"
-
-#: src/settings_translation_file.cpp
 msgid "Chat log level"
 msgstr "Úroveň komunikačného logu"
 
@@ -2781,10 +2815,6 @@ msgid "Chat message max length"
 msgstr "Max dĺžka správy"
 
 #: src/settings_translation_file.cpp
-msgid "Chat toggle key"
-msgstr "Tlačidlo Prepnutie komunikácie"
-
-#: src/settings_translation_file.cpp
 msgid "Chat weblinks"
 msgstr "Komunikačná webové odkazy"
 
@@ -2795,10 +2825,6 @@ msgstr "Veľkosť časti (chunk)"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Filmový mód"
-
-#: src/settings_translation_file.cpp
-msgid "Cinematic mode key"
-msgstr "Tlačidlo Filmový režim"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -2898,10 +2924,6 @@ msgstr ""
 "Čiarkou oddelený zoznam dôveryhodných rozšírení, ktoré majú povolené\n"
 "nebezpečné funkcie aj keď je bezpečnosť rozšírení aktívna (cez "
 "request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid "Command key"
-msgstr "Tlačidlo Príkaz"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3061,10 +3083,6 @@ msgid "Damage"
 msgstr "Zranenie"
 
 #: src/settings_translation_file.cpp
-msgid "Debug info toggle key"
-msgstr "Tlačidlo Ladiace informácie"
-
-#: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
 msgstr "Hraničná veľkosť ladiaceho log súboru"
 
@@ -3075,10 +3093,6 @@ msgstr "Úroveň ladiacich info"
 #: src/settings_translation_file.cpp
 msgid "Debugging"
 msgstr "Ladenie"
-
-#: src/settings_translation_file.cpp
-msgid "Dec. volume key"
-msgstr "Tlačidlo Zníž hlasitosť"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3099,6 +3113,13 @@ msgid ""
 msgstr ""
 "Štandardná hra pri vytváraní nového sveta.\n"
 "Toto bude prepísané pri vytvorení nového sveta z hlavného menu."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Default maximum number of forceloaded mapblocks.\n"
+"Set this to -1 to disable the limit."
+msgstr "Maximálny počet vynútene nahraných blokov mapy."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3147,6 +3168,13 @@ msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr "Definuje plnú šírku dutín, menšie hodnoty vytvoria väčšie dutiny."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Defines how much bloom is applied to the rendered image\n"
+"Smaller values make bloom more subtle\n"
+"Range: from 0.01 to 1.0, default: 0.05"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
 msgstr "Vo veľkom merítku definuje štruktúru kanálov riek."
 
@@ -3161,6 +3189,12 @@ msgstr "Definuje úroveň dna."
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
 msgstr "Definuje hĺbku koryta rieky."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the magnitude of bloom overexposure.\n"
+"Range: from 0.1 to 10.0, default: 1.0"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3237,10 +3271,6 @@ msgid "Developer Options"
 msgstr "Nastavenia pre vývojárov"
 
 #: src/settings_translation_file.cpp
-msgid "Dig key"
-msgstr "Tlačidlo Kopanie"
-
-#: src/settings_translation_file.cpp
 msgid "Digging particles"
 msgstr "Časticové efekty pri kopaní"
 
@@ -3277,10 +3307,6 @@ msgid "Double-tapping the jump key toggles fly mode."
 msgstr "Dvojnásobné stlačenie klávesy pre skok prepne režim lietania."
 
 #: src/settings_translation_file.cpp
-msgid "Drop item key"
-msgstr "Tlačidlo Zahoď vec"
-
-#: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug information."
 msgstr "Získaj ladiace informácie generátora máp."
 
@@ -3295,6 +3321,15 @@ msgstr "Minimálne Y kobky"
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
 msgstr "Šum kobky"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable Bloom"
+msgstr "Povoliť všetko"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Bloom Debug"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3481,8 +3516,9 @@ msgid "Entity methods"
 msgstr "Metódy bytostí"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Exponent of the floatland tapering. Alters the tapering behaviour.\n"
+"Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
 "Values > 1.0 create a smooth tapering suitable for the default separated\n"
 "floatlands.\n"
@@ -3496,6 +3532,10 @@ msgstr ""
 "lietajúce pevniny.\n"
 "Hodnoty < 1.0 (napríklad 0.25) vytvoria viac vymedzený povrch s\n"
 "rovnejšími nížinami, vhodné ako pevná základná vrstva lietajúcej pevniny."
+
+#: src/settings_translation_file.cpp
+msgid "Exposure Factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3520,10 +3560,6 @@ msgstr "Faktor pohupovania sa pri pádu"
 #: src/settings_translation_file.cpp
 msgid "Fallback font path"
 msgstr "Cesta k záložnému písmu"
-
-#: src/settings_translation_file.cpp
-msgid "Fast key"
-msgstr "Tlačidlo Rýchlosť"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -3639,10 +3675,6 @@ msgid "Floatland water level"
 msgstr "Úroveň vody lietajúcich pevnín"
 
 #: src/settings_translation_file.cpp
-msgid "Fly key"
-msgstr "Tlačidlo Lietanie"
-
-#: src/settings_translation_file.cpp
 msgid "Flying"
 msgstr "Lietanie"
 
@@ -3653,10 +3685,6 @@ msgstr "Hmla"
 #: src/settings_translation_file.cpp
 msgid "Fog start"
 msgstr "Začiatok hmly"
-
-#: src/settings_translation_file.cpp
-msgid "Fog toggle key"
-msgstr "Tlačidlo Prepnutie hmly"
 
 #: src/settings_translation_file.cpp
 msgid "Font"
@@ -3772,10 +3800,6 @@ msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
 "Nepriehľadnosť pozadia (0-255) v režime celej obrazovky v definícii "
 "formulára (Formspec)."
-
-#: src/settings_translation_file.cpp
-msgid "Forward key"
-msgstr "Tlačidlo Vpred"
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3919,10 +3943,6 @@ msgid "HUD scaling"
 msgstr "Mierka HUD"
 
 #: src/settings_translation_file.cpp
-msgid "HUD toggle key"
-msgstr "Tlačidlo Prepínanie HUD"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Handling for deprecated Lua API calls:\n"
 "-    none: Do not log deprecated calls\n"
@@ -4021,142 +4041,6 @@ msgid ""
 msgstr ""
 "Horizontálne a vertikálne zrýchlenie na zemi, alebo pri šplhaní,\n"
 "v kockách za sekundu na druhú."
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar next key"
-msgstr "Tlačidlo Nasledujúca vec na opasku"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar previous key"
-msgstr "Tlačidlo Predchádzajúcu vec na opasku"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 1 key"
-msgstr "Tlačidlo Opasok pozícia 1"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 10 key"
-msgstr "Tlačidlo Opasok pozícia 10"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 11 key"
-msgstr "Tlačidlo Opasok pozícia 11"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 12 key"
-msgstr "Tlačidlo Opasok pozícia 12"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 13 key"
-msgstr "Tlačidlo Opasok pozícia 13"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 14 key"
-msgstr "Tlačidlo Opasok pozícia 14"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 15 key"
-msgstr "Tlačidlo Opasok pozícia 15"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 16 key"
-msgstr "Tlačidlo Opasok pozícia 16"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 17 key"
-msgstr "Tlačidlo Opasok pozícia 17"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 18 key"
-msgstr "Tlačidlo Opasok pozícia 18"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 19 key"
-msgstr "Tlačidlo Opasok pozícia 19"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 2 key"
-msgstr "Tlačidlo Opasok pozícia 2"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 20 key"
-msgstr "Tlačidlo Opasok pozícia 20"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 21 key"
-msgstr "Tlačidlo Opasok pozícia 21"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 22 key"
-msgstr "Tlačidlo Opasok pozícia 22"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 23 key"
-msgstr "Tlačidlo Opasok pozícia 23"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 24 key"
-msgstr "Tlačidlo Opasok pozícia 24"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 25 key"
-msgstr "Tlačidlo Opasok pozícia 25"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 26 key"
-msgstr "Tlačidlo Opasok pozícia 26"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 27 key"
-msgstr "Tlačidlo Opasok pozícia 27"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 28 key"
-msgstr "Tlačidlo Opasok pozícia 28"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 29 key"
-msgstr "Tlačidlo Opasok pozícia 29"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 3 key"
-msgstr "Tlačidlo Opasok pozícia 3"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 30 key"
-msgstr "Tlačidlo Opasok pozícia 30"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 31 key"
-msgstr "Tlačidlo Opasok pozícia 31"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 32 key"
-msgstr "Tlačidlo Opasok pozícia 32"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 4 key"
-msgstr "Tlačidlo Opasok pozícia 4"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 5 key"
-msgstr "Tlačidlo Opasok pozícia 5"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 6 key"
-msgstr "Tlačidlo Opasok pozícia 6"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 7 key"
-msgstr "Tlačidlo Opasok pozícia 7"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 8 key"
-msgstr "Tlačidlo Opasok pozícia 8"
-
-#: src/settings_translation_file.cpp
-msgid "Hotbar slot 9 key"
-msgstr "Tlačidlo Opasok pozícia 9"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4369,10 +4253,6 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr "Výška komunikačnej konzoly v hre, medzi 0.1 (10%) a 1.0 (100%)."
 
 #: src/settings_translation_file.cpp
-msgid "Inc. volume key"
-msgstr "Tlačidlo Zvýš hlasitosť"
-
-#: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
 msgstr "Počiatočná vertikálna rýchlosť pri skákaní, v kockách za sekundu."
 
@@ -4421,10 +4301,6 @@ msgstr "Interval v akom sa posiela denný čas klientom, v sekundách."
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Animácia vecí v inventári"
-
-#: src/settings_translation_file.cpp
-msgid "Inventory key"
-msgstr "Tlačidlo Inventár"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4549,729 +4425,8 @@ msgid "Julia z"
 msgstr "Julia z"
 
 #: src/settings_translation_file.cpp
-msgid "Jump key"
-msgstr "Tlačidlo Skok"
-
-#: src/settings_translation_file.cpp
 msgid "Jumping speed"
 msgstr "Rýchlosť skákania"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre zníženie dohľadu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for decreasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre zníženie hlasitosti.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for digging.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre kopanie.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for dropping the currently selected item.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre zahodenie aktuálne vybranej veci.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the viewing range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre zvýšenie dohľadu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for increasing the volume.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre zvýšenie hlasitosti.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for jumping.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre skákanie.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving fast in fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre rýchly pohyb hráča v rýchlom móde.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player backward.\n"
-"Will also disable autoforward, when active.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre pohyb hráča vzad.\n"
-"Zároveň vypne automatický pohyb hráča dopredu, ak je aktívny.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player forward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre pohyb hráča vpred.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player left.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre pohyb hráča vľavo.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for moving the player right.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre pohyb hráča vpravo.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for muting the game.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre vypnutie hlasitosti v hre.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre otvorenie komunikačného okna pre zadávanie príkazov.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window to type local commands.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre otvorenie komunikačného okna pre zadávanie lokálnych príkazov.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the chat window.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre otvorenie komunikačného okna.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for opening the inventory.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre otvorenie inventára.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for placing.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre pokladanie.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 11th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber jedenástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 12th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber dvanástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 13th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber trinástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 14th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber štrnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 15th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber pätnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 16th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber šestnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 17th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber sedemnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 18th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber osemnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 19th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber devätnástej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 20th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 20. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 21st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 21. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 22nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 22. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 23rd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 23. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 24th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 24. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 25th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 25. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 26th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 26. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 27th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 27. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 28th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 28. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 29th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 29. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 30th hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 30. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 31st hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 31. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the 32nd hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber 32. pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the eighth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber ôsmej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fifth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber piatej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the first hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber prvej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the fourth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber štvrtej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the next item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber ďalšej veci na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the ninth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber deviatej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the previous item in the hotbar.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber predchádzajúcej veci na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the second hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber druhej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the seventh hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber siedmej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the sixth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber šiestej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the tenth hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber desiatej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for selecting the third hotbar slot.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre výber tretej pozície na opasku.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for sneaking.\n"
-"Also used for climbing down and descending in water if aux1_descends is "
-"disabled.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre utajený pohyb (zakrádanie) hráča.\n"
-"Tiež sa používa pre zliezanie a ponáranie vo vode ak aux1_descends je "
-"vypnutý.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for switching between first- and third-person camera.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepínanie medzi pohľadom z prvej a tretej osoby.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for taking screenshots.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre snímanie obrazovky.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling autoforward.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie režimu automatického pohybu vpred.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling cinematic mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie filmového režimu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling display of minimap.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia minimapy.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling fast mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie režimu rýchlosť.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling flying.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie lietania.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling noclip mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie režimu prechádzania stenami.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling pitch move mode.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie režimu pohyb podľa sklonu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the camera update. Only used for development\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie aktualizácie pohľadu. Používa sa len pre vývoj.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of chat.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia komunikácie.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of debug info.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia ladiacich informácií.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of fog.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia hmly.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the HUD.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia HUD (Head-Up Display - výhľadový "
-"displej).\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the large chat console.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia veľkej konzoly na komunikáciu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling the display of the profiler. Used for development.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie zobrazenia profileru. Používa sa pri vývoji.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key for toggling unlimited view range.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre prepnutie neobmedzeného dohľadu.\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Key to use view zoom when possible.\n"
-"See http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
-msgstr ""
-"Tlačidlo pre použitie priblíženia pokiaľ je to možné .\n"
-"Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -5310,8 +4465,13 @@ msgid "Large cave proportion flooded"
 msgstr "Pomer zaplavených častí veľkých jaskýň"
 
 #: src/settings_translation_file.cpp
-msgid "Large chat console key"
-msgstr "Tlačidlo Veľká komunikačná konzola"
+msgid "Last known version update"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Last update check"
+msgstr "Aktualizačný interval tekutín"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5329,10 +4489,6 @@ msgstr ""
 "-   Jednoduché: sú použité len vonkajšie plochy, ak sú použité definované "
 "\"special_tiles\"\n"
 "-   Nepriehľadné: vypne priehliadnosť"
-
-#: src/settings_translation_file.cpp
-msgid "Left key"
-msgstr "Tlačidlo Vľavo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5492,6 +4648,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
 msgstr "Nahrávam modifikátory blokov"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Logical value that controls how far the bloom effect spreads\n"
+"from the bright objects.\n"
+"Range: from 0.1 to 8, default: 1"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5785,10 +4948,6 @@ msgstr ""
 "Mal by byť nižší ako curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum number of forceloaded mapblocks."
-msgstr "Maximálny počet vynútene nahraných blokov mapy."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
@@ -5891,10 +5050,6 @@ msgid "Minimap"
 msgstr "Minimapa"
 
 #: src/settings_translation_file.cpp
-msgid "Minimap key"
-msgstr "Tlačidlo Minimapa"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Minimapa výška skenovania"
 
@@ -5985,10 +5140,6 @@ msgstr ""
 "Napr.: 0 pre žiadne pohupovanie; 1.0 pre normálne; 2.0 pre dvojnásobné."
 
 #: src/settings_translation_file.cpp
-msgid "Mute key"
-msgstr "Tlačidlo Ticho"
-
-#: src/settings_translation_file.cpp
 msgid "Mute sound"
 msgstr "Stíš hlasitosť"
 
@@ -6043,10 +5194,6 @@ msgstr "Noví hráči musia zadať toto heslo."
 #: src/settings_translation_file.cpp
 msgid "Noclip"
 msgstr "Prechádzanie stenami"
-
-#: src/settings_translation_file.cpp
-msgid "Noclip key"
-msgstr "Tlačidlo Prechádzanie stenami"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -6188,16 +5335,8 @@ msgid "Physics"
 msgstr "Fyzika"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move key"
-msgstr "Tlačidlo Pohyb podľa sklonu"
-
-#: src/settings_translation_file.cpp
 msgid "Pitch move mode"
 msgstr "Režim pohybu podľa sklonu"
-
-#: src/settings_translation_file.cpp
-msgid "Place key"
-msgstr "Tlačidlo na pokladanie"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -6232,6 +5371,10 @@ msgstr ""
 "Políčko pre nastavenie Portu v hlavnom menu prepíše toto nastavenie."
 
 #: src/settings_translation_file.cpp
+msgid "Post processing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Prevent digging and placing from repeating when holding the mouse buttons.\n"
 "Enable this when you dig or place too often by accident."
@@ -6260,10 +5403,6 @@ msgstr "Oprávnenia, ktoré môže udeliť hráč s basic_privs"
 #: src/settings_translation_file.cpp
 msgid "Profiler"
 msgstr "Profilátor"
-
-#: src/settings_translation_file.cpp
-msgid "Profiler toggle key"
-msgstr "Tlačidlo Prepínanie profileru"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6301,10 +5440,6 @@ msgstr "Zvýši terén aby vznikli údolia okolo riek."
 #: src/settings_translation_file.cpp
 msgid "Random input"
 msgstr "Náhodný vstup"
-
-#: src/settings_translation_file.cpp
-msgid "Range select key"
-msgstr "Tlačidlo Dohľad"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -6379,10 +5514,6 @@ msgid "Ridged mountain size noise"
 msgstr "Veľkosť šumu hrebeňa hôr"
 
 #: src/settings_translation_file.cpp
-msgid "Right key"
-msgstr "Tlačidlo Vpravo"
-
-#: src/settings_translation_file.cpp
 msgid "River channel depth"
 msgstr "Hĺbka riečneho kanála"
 
@@ -6429,6 +5560,11 @@ msgstr "Bezpečné kopanie a ukladanie"
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Pieskové pláže sa objavia keď np_beach presiahne túto hodnotu."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Saturation"
+msgstr "Iterácie"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -6618,6 +5754,15 @@ msgstr "Súbor so zoznamom serverov"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the exposure compensation factor.\n"
+"This factor is applied to linear color value \n"
+"before all other post-processing effects.\n"
+"Value of 1.0 (default) means no exposure compensation.\n"
+"Range: from 0.1 to 10.0"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
@@ -6670,6 +5815,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set to true to enable bloom effect.\n"
+"Bright colors will bleed over the neighboring objects."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set to true to enable waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6691,6 +5842,14 @@ msgid ""
 msgstr ""
 "Nastav true pre aktivovanie vlniacich sa rastlín.\n"
 "Požaduje aby boli aktivované shadery."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Set to true to render debugging breakdown of the bloom effect.\n"
+"In debug mode, the screen is split into 4 quadrants: \n"
+"top-left - processed base image, top-right - final image\n"
+"bottom-left - raw base image, bottom-right - bloom texture."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6850,10 +6009,6 @@ msgstr "Zjemní rotáciu kamery vo filmovom režime. 0 je pre vypnuté."
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Zjemní rotáciu kamery. 0 je pre vypnuté."
-
-#: src/settings_translation_file.cpp
-msgid "Sneak key"
-msgstr "Tlačidlo zakrádania sa"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -7270,10 +6425,6 @@ msgstr ""
 "Toto určuje ako dlho je spomalený po vložení, alebo zmazaní kocky."
 
 #: src/settings_translation_file.cpp
-msgid "Toggle camera mode key"
-msgstr "Tlačidlo Prepnutie režimu zobrazenia"
-
-#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Oneskorenie popisku"
 
@@ -7316,6 +6467,11 @@ msgid "Trusted mods"
 msgstr "Dôveryhodné rozšírenia"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"URL to JSON file which provides information about the newest Minetest release"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 "Adresa (URL) k zoznamu serverov, ktorý sa zobrazuje v záložke Multiplayer."
@@ -7338,12 +6494,22 @@ msgstr ""
 "Vyššie hodnotu vedú k menej detailnému obrazu."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Unix timestamp (integer) of when the client last checked for an update\n"
+"Set this value to \"disabled\" to never check for updates."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Neobmedzená vzdialenosť zobrazenia hráča"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
 msgstr "Uvoľni nepoužívané serverové dáta"
+
+#: src/settings_translation_file.cpp
+msgid "Update information URL"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -7368,6 +6534,16 @@ msgstr "Použi anisotropné filtrovanie pri pohľade na textúry zo strany."
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Použi bilineárne filtrovanie pri zmene mierky textúr."
+
+#: src/settings_translation_file.cpp
+msgid "Use crosshair for touch screen"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use crosshair to select object instead of whole screen.\n"
+"If enabled, a crosshair will be shown and will be used for selecting object."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7466,6 +6642,14 @@ msgid "Varies steepness of cliffs."
 msgstr "Pozmeňuje strmosť útesov."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Version number which was last seen during an update check.\n"
+"\n"
+"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+"Ex: 5.5.0 is 005005000"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
 msgstr "Vertikálna rýchlosť šplhania, v kockách za sekundu."
 
@@ -7484,18 +6668,6 @@ msgstr "Faktor pohupovania sa"
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
 msgstr "Vzdialenosť dohľadu v kockách."
-
-#: src/settings_translation_file.cpp
-msgid "View range decrease key"
-msgstr "Tlačidlo Zníž dohľad"
-
-#: src/settings_translation_file.cpp
-msgid "View range increase key"
-msgstr "Tlačidlo Zvýš dohľad"
-
-#: src/settings_translation_file.cpp
-msgid "View zoom key"
-msgstr "Tlačidlo Priblíženie pohľadu"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -7833,6 +7005,15 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Si si istý, že chceš vynulovať svoj svet jedného hráča?"
 
+#~ msgid "Automatic forward key"
+#~ msgstr "Tlačidlo Automatický pohyb vpred"
+
+#~ msgid "Aux1 key"
+#~ msgstr "Tlačidlo Aux1"
+
+#~ msgid "Backward key"
+#~ msgstr "Tlačidlo Vzad"
+
 #~ msgid "Basic"
 #~ msgstr "Základné"
 
@@ -7844,6 +7025,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "Bumpmapping"
+
+#~ msgid "Camera update toggle key"
+#~ msgstr "Tlačidlo Aktualizácia pohľadu"
 
 #~ msgid ""
 #~ "Changes the main menu UI:\n"
@@ -7858,6 +7042,18 @@ msgstr "Paralelný limit cURL"
 #~ "-   Jednoduché: Jeden svet, bez herných volieb, alebo voľby textúr. Môže "
 #~ "byť\n"
 #~ "nevyhnutné pre malé obrazovky."
+
+#~ msgid "Chat key"
+#~ msgstr "Tlačidlo Komunikácia"
+
+#~ msgid "Chat toggle key"
+#~ msgstr "Tlačidlo Prepnutie komunikácie"
+
+#~ msgid "Cinematic mode key"
+#~ msgstr "Tlačidlo Filmový režim"
+
+#~ msgid "Command key"
+#~ msgstr "Tlačidlo Príkaz"
 
 #~ msgid "Config mods"
 #~ msgstr "Nastav rozšírenia"
@@ -7880,6 +7076,12 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Damage enabled"
 #~ msgstr "Poškodenie je aktivované"
 
+#~ msgid "Debug info toggle key"
+#~ msgstr "Tlačidlo Ladiace informácie"
+
+#~ msgid "Dec. volume key"
+#~ msgstr "Tlačidlo Zníž hlasitosť"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -7897,11 +7099,17 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Del. Favorite"
 #~ msgstr "Zmaž obľúbené"
 
+#~ msgid "Dig key"
+#~ msgstr "Tlačidlo Kopanie"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Stiahni si hru, ako napr. Minetest Game z minetest.net"
 
 #~ msgid "Download one from minetest.net"
 #~ msgstr "Stiahni jednu z minetest.net"
+
+#~ msgid "Drop item key"
+#~ msgstr "Tlačidlo Zahoď vec"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Aktivuj potvrdenie registrácie"
@@ -7953,11 +7161,23 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Fallback font size"
 #~ msgstr "Veľkosť záložného písma"
 
+#~ msgid "Fast key"
+#~ msgstr "Tlačidlo Rýchlosť"
+
 #~ msgid "Filtering"
 #~ msgstr "Filtrovanie"
 
+#~ msgid "Fly key"
+#~ msgstr "Tlačidlo Lietanie"
+
+#~ msgid "Fog toggle key"
+#~ msgstr "Tlačidlo Prepnutie hmly"
+
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "Veľkosť písma záložného písma v bodoch (pt)."
+
+#~ msgid "Forward key"
+#~ msgstr "Tlačidlo Vpred"
 
 #~ msgid "FreeType fonts"
 #~ msgstr "FreeType písma"
@@ -7977,11 +7197,123 @@ msgstr "Paralelný limit cURL"
 #~ msgid "HUD scale factor"
 #~ msgstr "Mierka HUD"
 
+#~ msgid "HUD toggle key"
+#~ msgstr "Tlačidlo Prepínanie HUD"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "Vysoko-presné FPU"
 
+#~ msgid "Hotbar next key"
+#~ msgstr "Tlačidlo Nasledujúca vec na opasku"
+
+#~ msgid "Hotbar previous key"
+#~ msgstr "Tlačidlo Predchádzajúcu vec na opasku"
+
+#~ msgid "Hotbar slot 1 key"
+#~ msgstr "Tlačidlo Opasok pozícia 1"
+
+#~ msgid "Hotbar slot 10 key"
+#~ msgstr "Tlačidlo Opasok pozícia 10"
+
+#~ msgid "Hotbar slot 11 key"
+#~ msgstr "Tlačidlo Opasok pozícia 11"
+
+#~ msgid "Hotbar slot 12 key"
+#~ msgstr "Tlačidlo Opasok pozícia 12"
+
+#~ msgid "Hotbar slot 13 key"
+#~ msgstr "Tlačidlo Opasok pozícia 13"
+
+#~ msgid "Hotbar slot 14 key"
+#~ msgstr "Tlačidlo Opasok pozícia 14"
+
+#~ msgid "Hotbar slot 15 key"
+#~ msgstr "Tlačidlo Opasok pozícia 15"
+
+#~ msgid "Hotbar slot 16 key"
+#~ msgstr "Tlačidlo Opasok pozícia 16"
+
+#~ msgid "Hotbar slot 17 key"
+#~ msgstr "Tlačidlo Opasok pozícia 17"
+
+#~ msgid "Hotbar slot 18 key"
+#~ msgstr "Tlačidlo Opasok pozícia 18"
+
+#~ msgid "Hotbar slot 19 key"
+#~ msgstr "Tlačidlo Opasok pozícia 19"
+
+#~ msgid "Hotbar slot 2 key"
+#~ msgstr "Tlačidlo Opasok pozícia 2"
+
+#~ msgid "Hotbar slot 20 key"
+#~ msgstr "Tlačidlo Opasok pozícia 20"
+
+#~ msgid "Hotbar slot 21 key"
+#~ msgstr "Tlačidlo Opasok pozícia 21"
+
+#~ msgid "Hotbar slot 22 key"
+#~ msgstr "Tlačidlo Opasok pozícia 22"
+
+#~ msgid "Hotbar slot 23 key"
+#~ msgstr "Tlačidlo Opasok pozícia 23"
+
+#~ msgid "Hotbar slot 24 key"
+#~ msgstr "Tlačidlo Opasok pozícia 24"
+
+#~ msgid "Hotbar slot 25 key"
+#~ msgstr "Tlačidlo Opasok pozícia 25"
+
+#~ msgid "Hotbar slot 26 key"
+#~ msgstr "Tlačidlo Opasok pozícia 26"
+
+#~ msgid "Hotbar slot 27 key"
+#~ msgstr "Tlačidlo Opasok pozícia 27"
+
+#~ msgid "Hotbar slot 28 key"
+#~ msgstr "Tlačidlo Opasok pozícia 28"
+
+#~ msgid "Hotbar slot 29 key"
+#~ msgstr "Tlačidlo Opasok pozícia 29"
+
+#~ msgid "Hotbar slot 3 key"
+#~ msgstr "Tlačidlo Opasok pozícia 3"
+
+#~ msgid "Hotbar slot 30 key"
+#~ msgstr "Tlačidlo Opasok pozícia 30"
+
+#~ msgid "Hotbar slot 31 key"
+#~ msgstr "Tlačidlo Opasok pozícia 31"
+
+#~ msgid "Hotbar slot 32 key"
+#~ msgstr "Tlačidlo Opasok pozícia 32"
+
+#~ msgid "Hotbar slot 4 key"
+#~ msgstr "Tlačidlo Opasok pozícia 4"
+
+#~ msgid "Hotbar slot 5 key"
+#~ msgstr "Tlačidlo Opasok pozícia 5"
+
+#~ msgid "Hotbar slot 6 key"
+#~ msgstr "Tlačidlo Opasok pozícia 6"
+
+#~ msgid "Hotbar slot 7 key"
+#~ msgstr "Tlačidlo Opasok pozícia 7"
+
+#~ msgid "Hotbar slot 8 key"
+#~ msgstr "Tlačidlo Opasok pozícia 8"
+
+#~ msgid "Hotbar slot 9 key"
+#~ msgstr "Tlačidlo Opasok pozícia 9"
+
 #~ msgid "In-Game"
 #~ msgstr "V hre"
+
+#~ msgid "Inc. volume key"
+#~ msgstr "Tlačidlo Zvýš hlasitosť"
+
+#~ msgid "Install Mod: Unable to find real mod name for: $1"
+#~ msgstr ""
+#~ "Inštalácia rozšírenia: Nie je možné nájsť skutočné meno rozšírenia pre: $1"
 
 #~ msgid "Install: file: \"$1\""
 #~ msgstr "Inštalácia: súbor: \"$1\""
@@ -7989,11 +7321,670 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Instrumentation"
 #~ msgstr "Výstroj"
 
+#~ msgid "Inventory key"
+#~ msgstr "Tlačidlo Inventár"
+
+#~ msgid "Jump key"
+#~ msgstr "Tlačidlo Skok"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre zníženie dohľadu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre zníženie hlasitosti.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for digging.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre kopanie.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for dropping the currently selected item.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre zahodenie aktuálne vybranej veci.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre zvýšenie dohľadu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the volume.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre zvýšenie hlasitosti.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for jumping.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre skákanie.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving fast in fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre rýchly pohyb hráča v rýchlom móde.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player backward.\n"
+#~ "Will also disable autoforward, when active.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre pohyb hráča vzad.\n"
+#~ "Zároveň vypne automatický pohyb hráča dopredu, ak je aktívny.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player forward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre pohyb hráča vpred.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player left.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre pohyb hráča vľavo.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for moving the player right.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre pohyb hráča vpravo.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for muting the game.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre vypnutie hlasitosti v hre.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre otvorenie komunikačného okna pre zadávanie príkazov.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window to type local commands.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre otvorenie komunikačného okna pre zadávanie lokálnych "
+#~ "príkazov.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the chat window.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre otvorenie komunikačného okna.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for opening the inventory.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre otvorenie inventára.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for placing.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre pokladanie.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 11th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber jedenástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 12th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber dvanástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 13th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber trinástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 14th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber štrnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 15th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber pätnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 16th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber šestnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 17th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber sedemnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 18th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber osemnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 19th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber devätnástej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 20th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 20. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 21st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 21. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 22nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 22. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 23rd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 23. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 24th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 24. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 25th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 25. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 26th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 26. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 27th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 27. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 28th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 28. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 29th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 29. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 30th hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 30. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 31st hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 31. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the 32nd hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber 32. pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the eighth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber ôsmej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fifth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber piatej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the first hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber prvej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the fourth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber štvrtej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the next item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber ďalšej veci na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the ninth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber deviatej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the previous item in the hotbar.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber predchádzajúcej veci na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the second hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber druhej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the seventh hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber siedmej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the sixth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber šiestej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the tenth hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber desiatej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for selecting the third hotbar slot.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre výber tretej pozície na opasku.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for sneaking.\n"
+#~ "Also used for climbing down and descending in water if aux1_descends is "
+#~ "disabled.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre utajený pohyb (zakrádanie) hráča.\n"
+#~ "Tiež sa používa pre zliezanie a ponáranie vo vode ak aux1_descends je "
+#~ "vypnutý.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for switching between first- and third-person camera.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepínanie medzi pohľadom z prvej a tretej osoby.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for taking screenshots.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre snímanie obrazovky.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling autoforward.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie režimu automatického pohybu vpred.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling cinematic mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie filmového režimu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling display of minimap.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia minimapy.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling fast mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie režimu rýchlosť.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling flying.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie lietania.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling noclip mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie režimu prechádzania stenami.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling pitch move mode.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie režimu pohyb podľa sklonu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the camera update. Only used for development\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie aktualizácie pohľadu. Používa sa len pre vývoj.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of chat.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia komunikácie.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of debug info.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia ladiacich informácií.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of fog.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia hmly.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the HUD.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia HUD (Head-Up Display - výhľadový "
+#~ "displej).\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the large chat console.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia veľkej konzoly na komunikáciu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling the display of the profiler. Used for development.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie zobrazenia profileru. Používa sa pri vývoji.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for toggling unlimited view range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre prepnutie neobmedzeného dohľadu.\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key to use view zoom when possible.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Tlačidlo pre použitie priblíženia pokiaľ je to možné .\n"
+#~ "Viď. http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
 #~ msgid ""
 #~ "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 #~ msgstr ""
 #~ "Priradenie kláves. (ak je toto menu rozbité, zmaž zbytočnosti z minetest."
 #~ "conf)"
+
+#~ msgid "Large chat console key"
+#~ msgstr "Tlačidlo Veľká komunikačná konzola"
+
+#~ msgid "Left key"
+#~ msgstr "Tlačidlo Vľavo"
 
 #~ msgid "Main"
 #~ msgstr "Hlavné"
@@ -8019,6 +8010,12 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Minimap in surface mode, Zoom x4"
 #~ msgstr "Minimapa v povrchovom režime, priblíženie x4"
 
+#~ msgid "Minimap key"
+#~ msgstr "Tlačidlo Minimapa"
+
+#~ msgid "Mute key"
+#~ msgstr "Tlačidlo Ticho"
+
 #~ msgid "Name / Password"
 #~ msgstr "Meno / Heslo"
 
@@ -8027,6 +8024,9 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "No"
 #~ msgstr "Nie"
+
+#~ msgid "Noclip key"
+#~ msgstr "Tlačidlo Prechádzanie stenami"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "Vzorkovanie normálových máp"
@@ -8066,8 +8066,17 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Parallax occlusion scale"
 #~ msgstr "Mierka parallax occlusion"
 
+#~ msgid "Pitch move key"
+#~ msgstr "Tlačidlo Pohyb podľa sklonu"
+
+#~ msgid "Place key"
+#~ msgstr "Tlačidlo na pokladanie"
+
 #~ msgid "Player name"
 #~ msgstr "Meno hráča"
+
+#~ msgid "Profiler toggle key"
+#~ msgstr "Tlačidlo Prepínanie profileru"
 
 #~ msgid "Profiling"
 #~ msgstr "Profilovanie"
@@ -8075,8 +8084,14 @@ msgstr "Paralelný limit cURL"
 #~ msgid "PvP enabled"
 #~ msgstr "PvP je aktívne"
 
+#~ msgid "Range select key"
+#~ msgstr "Tlačidlo Dohľad"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Vynuluj svet jedného hráča"
+
+#~ msgid "Right key"
+#~ msgstr "Tlačidlo Vpravo"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Server / Hra pre jedného hráča"
@@ -8099,6 +8114,9 @@ msgstr "Paralelný limit cURL"
 #~ "Posun tieňa (v pixeloch) záložného písma. Ak je 0, tak tieň nebude "
 #~ "vykreslený."
 
+#~ msgid "Sneak key"
+#~ msgstr "Tlačidlo zakrádania sa"
+
 #~ msgid "Special"
 #~ msgstr "Špeciál"
 
@@ -8114,8 +8132,26 @@ msgstr "Paralelný limit cURL"
 #~ msgid "To enable shaders the OpenGL driver needs to be used."
 #~ msgstr "Aby mohli byť aktivované shadery, musí sa použiť OpenGL."
 
+#~ msgid "Toggle camera mode key"
+#~ msgstr "Tlačidlo Prepnutie režimu zobrazenia"
+
+#~ msgid "Unable to install a game as a $1"
+#~ msgstr "Nie je možné nainštalovať hru $1"
+
+#~ msgid "Unable to install a modpack as a $1"
+#~ msgstr "Nie je možné nainštalovať balíček rozšírení $1"
+
 #~ msgid "View"
 #~ msgstr "Zobraziť"
+
+#~ msgid "View range decrease key"
+#~ msgstr "Tlačidlo Zníž dohľad"
+
+#~ msgid "View range increase key"
+#~ msgstr "Tlačidlo Zvýš dohľad"
+
+#~ msgid "View zoom key"
+#~ msgstr "Tlačidlo Priblíženie pohľadu"
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
