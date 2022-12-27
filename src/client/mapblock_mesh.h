@@ -237,6 +237,8 @@ public:
 		return this->m_transparent_buffers;
 	}
 
+	u8 getSolidSides() const { return m_solid_sides; }
+
 private:
 	struct AnimationInfo {
 		int frame; // last animation frame
@@ -285,6 +287,12 @@ private:
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
+
+	// @brief
+	// Bit set of the sides of the mapblock that consist of solid nodes only
+	// Bits:
+	// 0 0 -Z +Z -X +X -Y +Y
+	u8 m_solid_sides;
 };
 
 /*!

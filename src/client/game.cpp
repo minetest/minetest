@@ -696,6 +696,7 @@ struct GameRunData {
 
 	float damage_flash;
 	float update_draw_list_timer;
+	float touch_blocks_timer;
 
 	f32 fog_range;
 
@@ -4030,6 +4031,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		changed much
 	*/
 	runData.update_draw_list_timer += dtime;
+	runData.touch_blocks_timer += dtime;
+
+	bool draw_list_updated = false;
 
 	float update_draw_list_delta = 0.2f;
 
@@ -4041,6 +4045,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
+		draw_list_updated = true;
+	}
+
+	if (runData.touch_blocks_timer > update_draw_list_delta && !draw_list_updated) {
+		client->getEnv().getClientMap().touchMapBlocks();
+		runData.touch_blocks_timer = 0;
 	}
 
 	if (RenderingEngine::get_shadow_renderer()) {

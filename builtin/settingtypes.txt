@@ -623,6 +623,9 @@ update_last_checked (Last update check) string
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
 
+#    Type of occlusion_culler
+occlusion_culler (Occlusion Culler) enum old old,new
+
 [*Server]
 
 #    Name of the player.
