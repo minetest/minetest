@@ -491,16 +491,16 @@ u32 TextureSource::getTextureId(const std::string &name)
 	infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
 	// We're gonna ask the result to be put into here
-	static ResultQueue<std::string, u32, u8, u8> result_queue;
+	static thread_local ResultQueue<std::string, u32, u8, u8> result_queue;
 
 	// Throw a request in
 	m_get_texture_queue.add(name, 0, 0, &result_queue);
 
 	try {
 		while(true) {
-			// Wait result for a second
+			// Wait for result for up to 4 seconds (empirical value)
 			GetResult<std::string, u32, u8, u8>
-				result = result_queue.pop_front(1000);
+				result = result_queue.pop_front(4000);
 
 			if (result.key == name) {
 				return result.item;
