@@ -249,8 +249,6 @@ endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
 	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/devtest" DESTINATION "${SHAREDIR}/games/"
-	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -319,13 +317,6 @@ cpack_add_component(Docs
 cpack_add_component(SUBGAME_MINETEST_GAME
 	DISPLAY_NAME "Minetest Game"
 	DESCRIPTION "The default game bundled in the Minetest engine. Mainly used as a modding base."
-	GROUP "Games"
-)
-
-cpack_add_component(SUBGAME_MINIMAL
-	DISPLAY_NAME "Development Test"
-	DESCRIPTION "A basic testing environment used for engine development and sometimes for testing mods."
-	DISABLED #DISABLED does not mean it is disabled, and is just not selected by default.
 	GROUP "Games"
 )
 
