@@ -214,6 +214,29 @@ int csm_script_main(int argc, char *argv[])
 				sent_done = true;
 			}
 			break;
+		case CSM_C2S_RUN_MODCHANNEL_MESSAGE:
+			if (size >= sizeof(CSMC2SRunModchannelMessage)) {
+				CSMC2SRunModchannelMessage recv;
+				memcpy(&recv, data, sizeof(recv));
+				std::string channel(data + sizeof(recv), recv.channel_size);
+				std::string sender(data + sizeof(recv) + recv.channel_size,
+						recv.sender_size);
+				std::string message(
+						data + sizeof(recv) + recv.channel_size + recv.sender_size,
+						recv.message_size);
+				g_log_output.startLogging();
+				script.on_modchannel_message(channel, sender, message);
+			}
+			break;
+		case CSM_C2S_RUN_MODCHANNEL_SIGNAL:
+			if (size >= sizeof(CSMC2SRunModchannelSignal)) {
+				CSMC2SRunModchannelSignal recv;
+				memcpy(&recv, data, sizeof(recv));
+				std::string channel(data + sizeof(recv), size - sizeof(recv));
+				g_log_output.startLogging();
+				script.on_modchannel_signal(channel, recv.signal);
+			}
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;

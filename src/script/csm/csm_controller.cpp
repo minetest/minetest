@@ -198,6 +198,34 @@ bool CSMController::runHPModification(u16 hp)
 	return recv.value;
 }
 
+void CSMController::runModchannelMessage(const std::string &channel, const std::string &sender,
+		const std::string &message)
+{
+	std::vector<u8> send;
+	CSMC2SRunModchannelMessage header;
+	header.channel_size = channel.size();
+	header.sender_size = sender.size();
+	header.message_size = message.size();
+	send.resize(sizeof(header) + channel.size() + sender.size() + message.size());
+	memcpy(send.data(), &header, sizeof(header));
+	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
+	memcpy(send.data() + sizeof(header) + channel.size(), sender.data(), sender.size());
+	memcpy(send.data() + sizeof(header) + channel.size() + sender.size(),
+			message.data(), message.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
+void CSMController::runModchannelSignal(const std::string &channel, int signal)
+{
+	std::vector<u8> send;
+	CSMC2SRunModchannelSignal header;
+	header.signal = signal;
+	send.resize(sizeof(header) + channel.size());
+	memcpy(send.data(), &header, sizeof(header));
+	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
 void CSMController::runStep(float dtime)
 {
 	if (!isStarted())

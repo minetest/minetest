@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "log.h"
 #include "mapnode.h"
+#include <stddef.h>
 
 // controller -> script
 
@@ -35,12 +36,26 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_SENDING_MESSAGE,
 	CSM_C2S_RUN_RECEIVING_MESSAGE,
 	CSM_C2S_RUN_HP_MODIFICATION,
+	CSM_C2S_RUN_MODCHANNEL_MESSAGE,
+	CSM_C2S_RUN_MODCHANNEL_SIGNAL,
 	CSM_C2S_RUN_STEP,
 };
 
 struct CSMC2SRunHPModification {
 	CSMC2SMsgType type = CSM_C2S_RUN_HP_MODIFICATION;
 	u16 hp;
+};
+
+struct CSMC2SRunModchannelMessage {
+	CSMC2SMsgType type = CSM_C2S_RUN_MODCHANNEL_MESSAGE;
+	size_t channel_size, sender_size, message_size;
+	// string channel, sender, and message follow
+};
+
+struct CSMC2SRunModchannelSignal {
+	CSMC2SMsgType type = CSM_C2S_RUN_MODCHANNEL_SIGNAL;
+	int signal;
+	// string channel follows
 };
 
 struct CSMC2SRunStep {
