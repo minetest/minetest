@@ -182,10 +182,7 @@ void ServerScripting::InitializeAsync(lua_State *L, int top)
 	LuaSettings::Register(L);
 
 	// globals data
-	lua_getglobal(L, "core");
-	luaL_checktype(L, -1, LUA_TTABLE);
 	auto *data = ModApiBase::getServer(L)->m_async_globals_data.get();
 	script_unpack(L, data);
-	lua_setfield(L, -2, "transferred_globals");
-	lua_pop(L, 1); // pop 'core'
+	lua_setfield(L, top, "transferred_globals");
 }
