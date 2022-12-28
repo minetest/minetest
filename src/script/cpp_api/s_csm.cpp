@@ -93,6 +93,25 @@ bool ScriptApiCSM::on_receiving_message(const std::string &message)
 	return lua_toboolean(L, -1);
 }
 
+bool ScriptApiCSM::on_formspec_input(const std::string &formname, const StringMap &fields)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_formspec_input
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_formspec_input");
+	// Call callbacks
+	lua_pushstring(L, formname.c_str());
+	lua_createtable(L, 0, fields.size());
+	for (const auto &pair : fields) {
+		lua_pushlstring(L, pair.first.data(), pair.first.size());
+		lua_pushlstring(L, pair.second.data(), pair.second.size());
+		lua_settable(L, -3);
+	}
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
 bool ScriptApiCSM::on_inventory_open(const Inventory *inventory)
 {
 	SCRIPTAPI_PRECHECKHEADER

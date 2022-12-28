@@ -59,7 +59,7 @@ public:
 	void runModchannelMessage(const std::string &channel, const std::string &sender,
 			const std::string &message);
 	void runModchannelSignal(const std::string &channel, ModChannelSignal signal);
-	bool runFormspecInput(const std::string &formname, const StringMap &fields) {return false;}
+	bool runFormspecInput(const std::string &formname, const StringMap &fields);
 	bool runInventoryOpen(const Inventory *inventory);
 	bool runItemUse(const ItemStack &selected_item, const PointedThing &pointed) {return false;}
 	void runPlacenode(const PointedThing &pointed, const ItemDefinition &def) {}

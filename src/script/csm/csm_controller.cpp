@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "util/serialize.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -225,6 +226,26 @@ void CSMController::runModchannelSignal(const std::string &channel, ModChannelSi
 	memcpy(send.data(), &header, sizeof(header));
 	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
+bool CSMController::runFormspecInput(const std::string &formname, const StringMap &fields)
+{
+	std::ostringstream os;
+	CSMC2SMsgType type = CSM_C2S_RUN_FORMSPEC_INPUT;
+	os.write((char *)&type, sizeof(type));
+	os << serializeString16(formname);
+	writeU32(os, fields.size());
+	for (const auto &pair : fields) {
+		os << serializeString16(pair.first);
+		os << serializeString16(pair.second);
+	}
+	std::string send = os.str();
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
 }
 
 bool CSMController::runInventoryOpen(const Inventory *inventory)

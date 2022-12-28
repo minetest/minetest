@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "sandbox.h"
 #include "util/string.h"
+#include "util/serialize.h"
 extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
@@ -237,6 +238,24 @@ int csm_script_main(int argc, char *argv[])
 				std::string channel((char *)data + sizeof(recv), size - sizeof(recv));
 				g_log_output.startLogging();
 				script.on_modchannel_signal(channel, recv.signal);
+			}
+			break;
+		case CSM_C2S_RUN_FORMSPEC_INPUT:
+			{
+				std::istringstream is(std::string((char *)data, size), std::ios::binary);
+				g_log_output.startLogging();
+				is.read((char *)&type, sizeof(type));
+				std::string formname = deSerializeString16(is);
+				u32 field_count = readU32(is);
+				StringMap fields(field_count);
+				for (u32 i = 0; i < field_count; i++) {
+					std::string key = deSerializeString16(is);
+					fields[std::move(key)] = deSerializeString16(is);
+				}
+				CSMS2CDoneBool send;
+				send.value = script.on_formspec_input(formname, fields);
+				CSM_IPC(exchange(send));
+				sent_done = true;
 			}
 			break;
 		case CSM_C2S_RUN_INVENTORY_OPEN:

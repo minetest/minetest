@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irrlichttypes.h"
+#include "util/string.h"
 
 class Inventory;
 
@@ -40,6 +41,8 @@ public:
 	bool on_sending_message(const std::string &message);
 
 	bool on_receiving_message(const std::string &message);
+
+	bool on_formspec_input(const std::string &formname, const StringMap &fields);
 
 	bool on_hp_modification(u16 hp);
 
