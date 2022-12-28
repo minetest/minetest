@@ -44,6 +44,11 @@ public:
 	void runCameraReady();
 	void runMinimapReady();
 	bool runSendingMessage(const std::string &message);
+	bool runReceivingMessage(const std::string &message);`
+	bool runHPModification(u16 hp);
+	bool runModchannelMessage(const std::string &channel, const std::string &sender,
+			const std::string &message);
+	bool runModchannelSignal(const std::string &channel, int signal);
 	void runStep(float dtime);
 
 private:

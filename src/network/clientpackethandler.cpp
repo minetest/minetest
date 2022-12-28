@@ -432,13 +432,16 @@ void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 	chatMessage->type = (ChatMessageType) message_type;
 
 	// @TODO send this to CSM using ChatMessage object
-	if (modsLoaded() && m_script->on_receiving_message(
-			wide_to_utf8(chatMessage->message))) {
-		// Message was consumed by CSM and should not be handled by client
-		delete chatMessage;
-	} else {
-		pushToChatQueue(chatMessage);
+	if (modsLoaded()) {
+		std::string message = wide_to_utf8(chatMessage->message);
+		if (m_csm_controller->runReceivingMessage(message) ||
+				m_script->on_receiving_message(message)) {
+			// Message was consumed by CSM and should not be handled by client
+			delete chatMessage;
+			return;
+		}
 	}
+	pushToChatQueue(chatMessage);
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
@@ -576,8 +579,10 @@ void Client::handleCommand_HP(NetworkPacket *pkt)
 
 	player->hp = hp;
 
-	if (modsLoaded())
-		m_script->on_hp_modification(hp);
+	if (modsLoaded()) {
+		if (!m_csm_controller->runHPModification(hp))
+			m_script->on_hp_modification(hp);
+	}
 
 	if (hp < oldhp) {
 		// Add to ClientEvent queue
@@ -1657,6 +1662,7 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		return;
 	}
 
+	m_csm_controller->runModchannelMessage(channel_name, sender, channel_msg);
 	m_script->on_modchannel_message(channel_name, sender, channel_msg);
 }
 
@@ -1726,8 +1732,10 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	}
 
 	// If signal is valid, forward it to client side mods
-	if (valid_signal)
+	if (valid_signal) {
+		m_csm_controller->runModchannelSignal(channel, signal);
 		m_script->on_modchannel_signal(channel, signal);
+	}
 }
 
 void Client::handleCommand_MinimapModes(NetworkPacket *pkt)

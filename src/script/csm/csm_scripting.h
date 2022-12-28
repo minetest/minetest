@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_csm.h"
+#include "cpp_api/s_modchannels.h"
 #include "cpp_api/s_security.h"
 
 class CSMGameDef;
@@ -28,7 +29,8 @@ class CSMGameDef;
 class CSMScripting:
 		virtual public ScriptApiBase,
 		public ScriptApiSecurity,
-		public ScriptApiCSM
+		public ScriptApiCSM,
+		public ScriptApiModChannels
 {
 public:
 	CSMScripting(CSMGameDef *gamedef);
