@@ -35,6 +35,7 @@ local gamepath = scriptdir .. "game" .. DIR_DELIM
 local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
+local mgpath = scriptdir .. "mapgen" .. DIR_DELIM
 
 dofile(commonpath .. "vector.lua")
 dofile(commonpath .. "strict.lua")
@@ -68,6 +69,8 @@ elseif INIT == "async_game" then
 	dofile(asyncpath .. "game.lua")
 elseif INIT == "client" then
 	dofile(clientpath .. "init.lua")
+elseif INIT == "mapgen" then
+	dofile(mgpath .. "init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end

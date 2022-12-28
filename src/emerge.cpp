@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "profiler.h"
 #include "scripting_server.h"
+#include "scripting_mapgen.h"
 #include "server.h"
 #include "settings.h"
 #include "voxel.h"
@@ -73,6 +74,8 @@ private:
 	ServerMap *m_map;
 	EmergeManager *m_emerge;
 	Mapgen *m_mapgen;
+
+	std::unique_ptr<MapgenScripting> m_script;
 
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
@@ -686,6 +689,8 @@ void *EmergeThread::run()
 	m_mapgen = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 
+	m_script = std::make_unique<MapgenScripting>(m_server);
+
 	try {
 	while (!stopRequested()) {
 		BlockEmergeData bedata;
@@ -711,6 +716,17 @@ void *EmergeThread::run()
 					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
 
 				m_mapgen->makeChunk(&bmdata);
+			}
+
+			{
+				ScopeProfiler sp(g_profiler,
+					"EmergeThread: Lua on_generated", SPT_AVG);
+
+				try {
+					m_script->on_generated(&bmdata);
+				} catch (LuaError &e) {
+					m_server->setAsyncFatalError(e);
+				}
 			}
 
 			block = finishGen(pos, &bmdata, &modified_blocks);

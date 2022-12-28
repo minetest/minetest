@@ -61,7 +61,8 @@ enum class ScriptingType: u8 {
 	Async, // either mainmenu (client) or ingame (server)
 	Client,
 	MainMenu,
-	Server
+	Server,
+	Mapgen
 };
 
 class Server;
