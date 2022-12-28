@@ -32,10 +32,14 @@ file can usually be found at:
 
 * old version (Before 5.4.2): ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
 * new version (After 5.4.2): ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
-* [Learn more about Android directory](https://developer.android.com/training/data-storage/compatibility)
+* [Learn more about Android directory](https://wiki.minetest.net/Accessing_Android_Data_Directory)
 ## Useful settings
 ### gui_scaling
 this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
+### mapblock_limit
+Mobile device generally have less RAM than PC, this setting limit how many mapblock can keep in RAM
+### fps_limit
+this setting limit max FPS (Frame per second). Default value is 60, which lowest Android device screen refresh rate commonly found, but if you're using an device have lower refresh rate, change this
 ## Requirements
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
