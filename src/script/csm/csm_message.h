@@ -33,6 +33,7 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_CAMERA_READY,
 	CSM_C2S_RUN_MINIMAP_READY,
 	CSM_C2S_RUN_SENDING_MESSAGE,
+	CSM_C2S_RUN_RECEIVING_MESSAGE,
 	CSM_C2S_RUN_STEP,
 };
 
@@ -57,6 +58,11 @@ enum CSMS2CMsgType {
 	CSM_S2C_ADD_NODE,
 };
 
+struct CSMS2CDoneBool {
+	CSMS2CMsgType type = CSM_S2C_DONE;
+	bool value;
+};
+
 struct CSMS2CLog {
 	CSMS2CMsgType type = CSM_S2C_LOG;
 	LogLevel level;
@@ -73,9 +79,4 @@ struct CSMS2CAddNode {
 	MapNode n;
 	v3s16 pos;
 	bool remove_metadata = true;
-};
-
-struct CSMS2CDoneSendingMessage {
-	CSMS2CMsgType type = CSM_S2C_DONE;
-	bool handled;
 };

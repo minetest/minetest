@@ -187,8 +187,18 @@ int csm_script_main(int argc, char *argv[])
 			{
 				std::string message(data + sizeof(type), size - sizeof(type));
 				g_log_output.startLogging();
-				CSMS2CDoneSendingMessage send;
-				send.handled = script.on_sending_message(message);
+				CSMS2CDoneBool send;
+				send.value = script.on_sending_message(message);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
+		case CSM_C2S_RUN_RECEIVING_MESSAGE:
+			{
+				std::string message(data + sizeof(type), size - sizeof(type));
+				g_log_output.startLogging();
+				CSMS2CDoneBool send;
+				send.value = script.on_receiving_message(message);
 				CSM_IPC(exchange(send));
 				sent_done = true;
 			}

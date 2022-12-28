@@ -164,11 +164,26 @@ bool CSMController::runSendingMessage(const std::string &message)
 	memcpy(send.data(), &type, sizeof(type));
 	memcpy(send.data() + sizeof(type), message.data(), message.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneSendingMessage recv;
-	recv.handled = false;
+	CSMS2CDoneBool recv;
+	recv.value = false;
 	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
 		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.handled;
+	return recv.value;
+}
+
+bool CSMController::runReceivingMessage(const std::string &message)
+{
+	std::vector<u8> send;
+	CSMC2SMsgType type = CSM_C2S_RUN_RECEIVING_MESSAGE;
+	send.resize(sizeof(type) + message.size());
+	memcpy(send.data(), &type, sizeof(type));
+	memcpy(send.data() + sizeof(type), message.data(), message.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
 }
 
 void CSMController::runStep(float dtime)
