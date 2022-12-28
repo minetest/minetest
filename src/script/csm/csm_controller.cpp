@@ -140,26 +140,41 @@ void CSMController::runLoadMods()
 
 void CSMController::runShutdown()
 {
+	if (!isStarted())
+		return;
+
 	listen(m_ipc.exchange(CSM_C2S_RUN_SHUTDOWN, m_timeout));
 }
 
 void CSMController::runClientReady()
 {
+	if (!isStarted())
+		return;
+
 	listen(m_ipc.exchange(CSM_C2S_RUN_CLIENT_READY, m_timeout));
 }
 
 void CSMController::runCameraReady()
 {
+	if (!isStarted())
+		return;
+
 	listen(m_ipc.exchange(CSM_C2S_RUN_CAMERA_READY, m_timeout));
 }
 
 void CSMController::runMinimapReady()
 {
+	if (!isStarted())
+		return;
+
 	listen(m_ipc.exchange(CSM_C2S_RUN_MINIMAP_READY, m_timeout));
 }
 
 bool CSMController::runSendingMessage(const std::string &message)
 {
+	if (!isStarted())
+		return false;
+
 	std::vector<u8> send;
 	CSMC2SMsgType type = CSM_C2S_RUN_SENDING_MESSAGE;
 	send.resize(sizeof(type) + message.size());
@@ -175,6 +190,9 @@ bool CSMController::runSendingMessage(const std::string &message)
 
 bool CSMController::runReceivingMessage(const std::string &message)
 {
+	if (!isStarted())
+		return false;
+
 	std::vector<u8> send;
 	CSMC2SMsgType type = CSM_C2S_RUN_RECEIVING_MESSAGE;
 	send.resize(sizeof(type) + message.size());
@@ -190,6 +208,9 @@ bool CSMController::runReceivingMessage(const std::string &message)
 
 bool CSMController::runHPModification(u16 hp)
 {
+	if (!isStarted())
+		return false;
+
 	CSMC2SRunHPModification send;
 	send.hp = hp;
 	listen(m_ipc.exchange(send, m_timeout));
@@ -203,6 +224,9 @@ bool CSMController::runHPModification(u16 hp)
 void CSMController::runModchannelMessage(const std::string &channel, const std::string &sender,
 		const std::string &message)
 {
+	if (!isStarted())
+		return;
+
 	std::vector<u8> send;
 	CSMC2SRunModchannelMessage header;
 	header.channel_size = channel.size();
@@ -219,6 +243,9 @@ void CSMController::runModchannelMessage(const std::string &channel, const std::
 
 void CSMController::runModchannelSignal(const std::string &channel, ModChannelSignal signal)
 {
+	if (!isStarted())
+		return;
+
 	std::vector<u8> send;
 	CSMC2SRunModchannelSignal header;
 	header.signal = signal;
@@ -230,6 +257,9 @@ void CSMController::runModchannelSignal(const std::string &channel, ModChannelSi
 
 bool CSMController::runFormspecInput(const std::string &formname, const StringMap &fields)
 {
+	if (!isStarted())
+		return false;
+
 	std::ostringstream os;
 	CSMC2SMsgType type = CSM_C2S_RUN_FORMSPEC_INPUT;
 	os.write((char *)&type, sizeof(type));
@@ -250,6 +280,9 @@ bool CSMController::runFormspecInput(const std::string &formname, const StringMa
 
 bool CSMController::runInventoryOpen(const Inventory *inventory)
 {
+	if (!isStarted())
+		return false;
+
 	std::ostringstream os(std::ios::binary);
 	CSMC2SMsgType type = CSM_C2S_RUN_INVENTORY_OPEN;
 	os.write((char *)&type, sizeof(type));
