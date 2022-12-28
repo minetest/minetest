@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "log.h"
 #include "mapnode.h"
+#include "modchannels.h"
 #include <stddef.h>
 
 // controller -> script
@@ -54,7 +55,7 @@ struct CSMC2SRunModchannelMessage {
 
 struct CSMC2SRunModchannelSignal {
 	CSMC2SMsgType type = CSM_C2S_RUN_MODCHANNEL_SIGNAL;
-	int signal;
+	ModChannelSignal signal;
 	// string channel follows
 };
 

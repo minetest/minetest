@@ -20,9 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unistd.h>
-#include "irrlichttypes.h"
+#include "inventory.h"
+#include "irr_v3d.h"
+#include "mapnode.h"
+#include "modchannels.h"
 #include "threading/ipc_channel.h"
 #include "util/basic_macros.h"
+#include "util/pointedthing.h"
+#include "util/string.h"
 
 class Client;
 
@@ -46,10 +51,18 @@ public:
 	void runMinimapReady();
 	bool runSendingMessage(const std::string &message);
 	bool runReceivingMessage(const std::string &message);
+	bool runDamageTaken(u16 damage) {return false;}
 	bool runHPModification(u16 hp);
+	void runDeath() {}
 	void runModchannelMessage(const std::string &channel, const std::string &sender,
 			const std::string &message);
-	void runModchannelSignal(const std::string &channel, int signal);
+	void runModchannelSignal(const std::string &channel, ModChannelSignal signal);
+	bool runFormspecInput(const std::string &formname, const StringMap &fields) {return false;}
+	bool runInventoryOpen(const Inventory *inventory) {return false;}
+	bool runItemUse(const ItemStack &selected_item, const PointedThing &pointed) {return false;}
+	void runPlacenode(const PointedThing &pointed, const ItemDefinition &def) {}
+	bool runPunchnode(v3s16 pos, MapNode n) {return false;}
+	bool runDignode(v3s16 pos, MapNode n) {return false;}
 	void runStep(float dtime);
 
 private:

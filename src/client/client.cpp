@@ -254,11 +254,11 @@ void Client::loadMods()
 		m_script->on_client_ready(m_env.getLocalPlayer());
 	}
 	if (m_camera) {
-		m_csm_controller->runCameraReady(m_camera);
+		m_csm_controller->runCameraReady();
 		m_script->on_camera_ready(m_camera);
 	}
 	if (m_minimap) {
-		m_csm_controller->runMinimapReady(m_minimap);
+		m_csm_controller->runMinimapReady();
 		m_script->on_minimap_ready(m_minimap);
 	}
 }

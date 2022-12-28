@@ -215,7 +215,7 @@ void CSMController::runModchannelMessage(const std::string &channel, const std::
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
 }
 
-void CSMController::runModchannelSignal(const std::string &channel, int signal)
+void CSMController::runModchannelSignal(const std::string &channel, ModChannelSignal signal)
 {
 	std::vector<u8> send;
 	CSMC2SRunModchannelSignal header;

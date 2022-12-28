@@ -185,7 +185,7 @@ int csm_script_main(int argc, char *argv[])
 			break;
 		case CSM_C2S_RUN_SENDING_MESSAGE:
 			{
-				std::string message(data + sizeof(type), size - sizeof(type));
+				std::string message((char *)data + sizeof(type), size - sizeof(type));
 				g_log_output.startLogging();
 				CSMS2CDoneBool send;
 				send.value = script.on_sending_message(message);
@@ -195,7 +195,7 @@ int csm_script_main(int argc, char *argv[])
 			break;
 		case CSM_C2S_RUN_RECEIVING_MESSAGE:
 			{
-				std::string message(data + sizeof(type), size - sizeof(type));
+				std::string message((char *)data + sizeof(type), size - sizeof(type));
 				g_log_output.startLogging();
 				CSMS2CDoneBool send;
 				send.value = script.on_receiving_message(message);
@@ -217,12 +217,12 @@ int csm_script_main(int argc, char *argv[])
 		case CSM_C2S_RUN_MODCHANNEL_MESSAGE:
 			if (size >= sizeof(CSMC2SRunModchannelMessage)) {
 				CSMC2SRunModchannelMessage recv;
-				memcpy(&recv, data, sizeof(recv));
-				std::string channel(data + sizeof(recv), recv.channel_size);
-				std::string sender(data + sizeof(recv) + recv.channel_size,
+				memcpy(&recv, (char *)data, sizeof(recv));
+				std::string channel((char *)data + sizeof(recv), recv.channel_size);
+				std::string sender((char *)data + sizeof(recv) + recv.channel_size,
 						recv.sender_size);
 				std::string message(
-						data + sizeof(recv) + recv.channel_size + recv.sender_size,
+						(char *)data + sizeof(recv) + recv.channel_size + recv.sender_size,
 						recv.message_size);
 				g_log_output.startLogging();
 				script.on_modchannel_message(channel, sender, message);
@@ -232,7 +232,7 @@ int csm_script_main(int argc, char *argv[])
 			if (size >= sizeof(CSMC2SRunModchannelSignal)) {
 				CSMC2SRunModchannelSignal recv;
 				memcpy(&recv, data, sizeof(recv));
-				std::string channel(data + sizeof(recv), size - sizeof(recv));
+				std::string channel((char *)data + sizeof(recv), size - sizeof(recv));
 				g_log_output.startLogging();
 				script.on_modchannel_signal(channel, recv.signal);
 			}
