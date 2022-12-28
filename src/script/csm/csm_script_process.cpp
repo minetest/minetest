@@ -162,7 +162,7 @@ int csm_script_main(int argc, char *argv[])
 	while (true) {
 		size_t size = csm_recv_size();
 		const void *data = csm_recv_data();
-		CSMMsgType type = CSM_INVALID_MSG_TYPE;
+		CSMC2SMsgType type = CSM_C2S_INVALID;
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
 		bool sent_done = false;

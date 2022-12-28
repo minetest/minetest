@@ -23,28 +23,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mapnode.h"
 
-enum CSMMsgType {
-	CSM_INVALID_MSG_TYPE = -1,
+// controller -> script
 
-	// controller -> script
+enum CSMC2SMsgType {
+	CSM_C2S_INVALID = -1,
+
 	CSM_C2S_RUN_SHUTDOWN,
 	CSM_C2S_RUN_CLIENT_READY,
 	CSM_C2S_RUN_CAMERA_READY,
 	CSM_C2S_RUN_MINIMAP_READY,
 	CSM_C2S_RUN_SENDING_MESSAGE,
 	CSM_C2S_RUN_STEP,
-
-	// script -> controller
-	CSM_S2C_DONE,
-	CSM_S2C_LOG,
-	CSM_S2C_GET_NODE,
-	CSM_S2C_ADD_NODE,
 };
 
-// controller -> script
-
 struct CSMC2SRunStep {
-	CSMMsgType type = CSM_C2S_RUN_STEP;
+	CSMC2SMsgType type = CSM_C2S_RUN_STEP;
 	float dtime;
 };
 
@@ -55,25 +48,34 @@ struct CSMC2SGetNode {
 
 // script -> controller
 
+enum CSMS2CMsgType {
+	CSM_S2C_INVALID = -1,
+
+	CSM_S2C_DONE,
+	CSM_S2C_LOG,
+	CSM_S2C_GET_NODE,
+	CSM_S2C_ADD_NODE,
+};
+
 struct CSMS2CLog {
-	CSMMsgType type = CSM_S2C_LOG;
+	CSMS2CMsgType type = CSM_S2C_LOG;
 	LogLevel level;
 	// message string follows
 };
 
 struct CSMS2CGetNode {
-	CSMMsgType type = CSM_S2C_GET_NODE;
+	CSMS2CMsgType type = CSM_S2C_GET_NODE;
 	v3s16 pos;
 };
 
 struct CSMS2CAddNode {
-	CSMMsgType type = CSM_S2C_ADD_NODE;
+	CSMS2CMsgType type = CSM_S2C_ADD_NODE;
 	MapNode n;
 	v3s16 pos;
 	bool remove_metadata = true;
 };
 
 struct CSMS2CDoneSendingMessage {
-	CSMMsgType type = CSM_S2C_DONE;
+	CSMS2CMsgType type = CSM_S2C_DONE;
 	bool handled;
 };

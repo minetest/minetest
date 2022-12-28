@@ -159,7 +159,7 @@ void CSMController::runMinimapReady()
 bool CSMController::runSendingMessage(const std::string &message)
 {
 	std::vector<u8> send;
-	CSMMsgType type = CSM_C2S_RUN_SENDING_MESSAGE;
+	CSMC2SMsgType type = CSM_C2S_RUN_SENDING_MESSAGE;
 	send.resize(sizeof(type) + message.size());
 	memcpy(send.data(), &type, sizeof(type));
 	memcpy(send.data() + sizeof(type), message.data(), message.size());
@@ -186,7 +186,7 @@ void CSMController::listen(bool succeeded)
 	while (succeeded) {
 		size_t size = m_ipc.getRecvSize();
 		const void *data = m_ipc.getRecvData();
-		CSMMsgType type = CSM_INVALID_MSG_TYPE;
+		CSMS2CMsgType type = CSM_S2C_INVALID;
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
 		switch (type) {
