@@ -92,6 +92,19 @@ bool ScriptApiCSM::on_receiving_message(const std::string &message)
 	return lua_toboolean(L, -1);
 }
 
+bool ScriptApiCSM::on_hp_modification(u16 hp)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_hp_modification
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_hp_modification");
+	// Call callbacks
+	lua_pushinteger(L, hp);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
 void ScriptApiCSM::environment_Step(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER

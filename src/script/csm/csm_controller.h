@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <unistd.h>
+#include "irrlichttypes.h"
 #include "threading/ipc_channel.h"
 #include "util/basic_macros.h"
 

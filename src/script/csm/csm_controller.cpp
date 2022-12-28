@@ -186,6 +186,18 @@ bool CSMController::runReceivingMessage(const std::string &message)
 	return recv.value;
 }
 
+bool CSMController::runHPModification(u16 hp)
+{
+	CSMC2SRunHPModification send;
+	send.hp = hp;
+	listen(m_ipc.exchange(send, m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
+}
+
 void CSMController::runStep(float dtime)
 {
 	if (!isStarted())

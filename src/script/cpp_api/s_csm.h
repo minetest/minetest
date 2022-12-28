@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "cpp_api/s_base.h"
+#include "irrlichttypes.h"
 
 class ScriptApiCSM : public virtual ScriptApiBase
 {
@@ -37,6 +38,8 @@ public:
 	bool on_sending_message(const std::string &message);
 
 	bool on_receiving_message(const std::string &message);
+
+	bool on_hp_modification(u16 hp);
 
 	// Called on environment step
 	void environment_Step(float dtime);
