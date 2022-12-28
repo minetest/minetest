@@ -111,12 +111,14 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 
 int LuaVoxelManip::l_write_to_map(lua_State *L)
 {
-	MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
 
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	bool update_light = !lua_isboolean(L, 2) || readParam<bool>(L, 2);
 
-	GET_ENV_PTR;
+	if (o->vm->isOrphan())
+		return 0;
+
 	ServerMap *map = &(env->getServerMap());
 
 	std::map<v3s16, MapBlock*> modified_blocks;
@@ -420,6 +422,14 @@ int LuaVoxelManip::create_object(lua_State *L)
 	return 1;
 }
 
+void LuaVoxelManip::create(lua_State *L, MMVManip *mmvm, bool is_mapgen_vm)
+{
+	LuaVoxelManip *o = new LuaVoxelManip(mmvm, is_mapgen_vm);
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+}
+
 void *LuaVoxelManip::packIn(lua_State *L, int idx)
 {
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, idx);
@@ -442,10 +452,7 @@ void LuaVoxelManip::packOut(lua_State *L, void *ptr)
 	if (env)
 		vm->reparent(&(env->getMap()));
 
-	LuaVoxelManip *o = new LuaVoxelManip(vm, false);
-	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
-	luaL_getmetatable(L, className);
-	lua_setmetatable(L, -2);
+	create(L, vm, false);
 }
 
 void LuaVoxelManip::Register(lua_State *L)

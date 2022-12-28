@@ -413,7 +413,7 @@ void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
+	assert(getType() == ScriptingType::Server);
 
 	// Create object on stack
 	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
@@ -434,7 +434,7 @@ void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
 void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
+	assert(getType() == ScriptingType::Server);
 
 	// Get core.object_refs table
 	lua_getglobal(L, "core");
@@ -459,6 +459,7 @@ void ScriptApiBase::removeObjectReference(ServerActiveObject *cobj)
 void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 		ServerActiveObject *cobj)
 {
+	assert(getType() == ScriptingType::Server);
 	if (cobj == NULL || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
 	} else {
@@ -472,6 +473,7 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 
 void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
+	assert(getType() == ScriptingType::Server);
 	if (reason.hasLuaReference())
 		lua_rawgeti(L, LUA_REGISTRYINDEX, reason.lua_reference);
 	else
@@ -503,8 +505,13 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 
 Server* ScriptApiBase::getServer()
 {
+	// Since the gamedef is the server it's still possible to retrieve it in
+	// e.g. the async environment, but this isn't meant to happen.
+	// TODO: still needs work
+	//assert(getType() == ScriptingType::Server);
 	return dynamic_cast<Server *>(m_gamedef);
 }
+
 #ifndef SERVER
 Client* ScriptApiBase::getClient()
 {

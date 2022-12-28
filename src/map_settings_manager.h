@@ -50,10 +50,10 @@ public:
 	// Finalized map generation parameters
 	MapgenParams *mapgen_params = nullptr;
 
-	bool getMapSetting(const std::string &name, std::string *value_out);
+	bool getMapSetting(const std::string &name, std::string *value_out) const;
 
-	bool getMapSettingNoiseParams(
-		const std::string &name, NoiseParams *value_out);
+	bool getMapSettingNoiseParams(const std::string &name,
+		NoiseParams *value_out) const;
 
 	// Note: Map config becomes read-only after makeMapgenParams() gets called
 	// (i.e. mapgen_params is non-NULL).  Attempts to set map config after

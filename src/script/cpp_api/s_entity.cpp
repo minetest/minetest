@@ -59,8 +59,7 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 	// This should be userdata with metatable ObjectRef
 	push_objectRef(L, id);
 	luaL_checktype(L, -1, LUA_TUSERDATA);
-	if (!luaL_checkudata(L, -1, "ObjectRef"))
-		luaL_typerror(L, -1, "ObjectRef");
+	luaL_checkudata(L, -1, "ObjectRef");
 	lua_setfield(L, -2, "object");
 
 	// core.luaentities[id] = object
