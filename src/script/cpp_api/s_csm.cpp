@@ -66,6 +66,19 @@ void ScriptApiCSM::on_minimap_ready()
 	LuaCSMMinimap::create(L);
 }
 
+bool ScriptApiCSM::on_sending_message(const std::string &message)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_sending_chat_message
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_sending_chat_message");
+	// Call callbacks
+	lua_pushlstring(L, message.data(), message.size());
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
 void ScriptApiCSM::environment_Step(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER

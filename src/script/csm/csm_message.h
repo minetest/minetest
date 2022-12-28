@@ -31,6 +31,7 @@ enum CSMMsgType {
 	CSM_C2S_RUN_CLIENT_READY,
 	CSM_C2S_RUN_CAMERA_READY,
 	CSM_C2S_RUN_MINIMAP_READY,
+	CSM_C2S_RUN_SENDING_MESSAGE,
 	CSM_C2S_RUN_STEP,
 
 	// script -> controller
@@ -70,4 +71,9 @@ struct CSMS2CAddNode {
 	MapNode n;
 	v3s16 pos;
 	bool remove_metadata = true;
+};
+
+struct CSMS2CDoneSendingMessage {
+	CSMMsgType type = CSM_S2C_DONE;
+	bool handled;
 };

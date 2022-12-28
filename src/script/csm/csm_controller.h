@@ -43,6 +43,7 @@ public:
 	void runClientReady();
 	void runCameraReady();
 	void runMinimapReady();
+	bool runSendingMessage(const std::string &message);
 	void runStep(float dtime);
 
 private:

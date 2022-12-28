@@ -138,22 +138,37 @@ void CSMController::runLoadMods()
 
 void CSMController::runShutdown()
 {
-	listen(m_ipc.exchange(C2S_RUN_SHUTDOWN, m_timeout));
+	listen(m_ipc.exchange(CSM_C2S_RUN_SHUTDOWN, m_timeout));
 }
 
 void CSMController::runClientReady()
 {
-	listen(m_ipc.exchange(C2S_RUN_CLIENT_READY, m_timeout));
+	listen(m_ipc.exchange(CSM_C2S_RUN_CLIENT_READY, m_timeout));
 }
 
 void CSMController::runCameraReady()
 {
-	listen(m_ipc.exchange(C2S_RUN_CAMERA_READY, m_timeout));
+	listen(m_ipc.exchange(CSM_C2S_RUN_CAMERA_READY, m_timeout));
 }
 
 void CSMController::runMinimapReady()
 {
-	listen(m_ipc.exchange(C2S_RUN_MINIMAP_READY, m_timeout));
+	listen(m_ipc.exchange(CSM_C2S_RUN_MINIMAP_READY, m_timeout));
+}
+
+bool CSMController::runSendingMessage(const std::string &message)
+{
+	std::vector<u8> send;
+	CSMMsgType type = CSM_C2S_RUN_SENDING_MESSAGE;
+	send.resize(sizeof(type) + message.size());
+	memcpy(send.data(), &type, sizeof(type));
+	memcpy(send.data() + sizeof(type), message.data(), message.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMS2CDoneSendingMessage recv;
+	recv.handled = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.handled;
 }
 
 void CSMController::runStep(float dtime)

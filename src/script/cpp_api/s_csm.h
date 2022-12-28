@@ -34,6 +34,8 @@ public:
 
 	void on_minimap_ready();
 
+	bool on_sending_message(const std::string &message);
+
 	// Called on environment step
 	void environment_Step(float dtime);
 };

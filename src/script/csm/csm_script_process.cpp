@@ -165,6 +165,7 @@ int csm_script_main(int argc, char *argv[])
 		CSMMsgType type = CSM_INVALID_MSG_TYPE;
 		if (size >= sizeof(type))
 			memcpy(&type, data, sizeof(type));
+		bool sent_done = false;
 		switch (type) {
 		case CSM_C2S_RUN_SHUTDOWN:
 			g_log_output.startLogging();
@@ -182,6 +183,16 @@ int csm_script_main(int argc, char *argv[])
 			g_log_output.startLogging();
 			script.on_minimap_ready();
 			break;
+		case CSM_C2S_RUN_SENDING_MESSAGE:
+			{
+				std::string message(data + sizeof(type), size - sizeof(type));
+				g_log_output.startLogging();
+				CSMS2CDoneSendingMessage send;
+				send.handled = script.on_sending_message(message);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;
@@ -194,7 +205,8 @@ int csm_script_main(int argc, char *argv[])
 			break;
 		}
 		g_log_output.stopLogging();
-		CSM_IPC(exchange(CSM_S2C_DONE));
+		if (!sent_done)
+			CSM_IPC(exchange(CSM_S2C_DONE));
 	}
 
 	return 0;
