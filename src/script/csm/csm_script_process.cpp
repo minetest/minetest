@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "debug.h"
 #include "filesys.h"
+#include "inventory.h"
 #include "itemdef.h"
 #include "log.h"
 #include "network/networkprotocol.h"
@@ -37,6 +38,7 @@ extern "C" {
 #include "lauxlib.h"
 }
 #include <fcntl.h>
+#include <memory>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -235,6 +237,20 @@ int csm_script_main(int argc, char *argv[])
 				std::string channel((char *)data + sizeof(recv), size - sizeof(recv));
 				g_log_output.startLogging();
 				script.on_modchannel_signal(channel, recv.signal);
+			}
+			break;
+		case CSM_C2S_RUN_INVENTORY_OPEN:
+			{
+				std::istringstream is(std::string((char *)data, size), std::ios::binary);
+				g_log_output.startLogging();
+				is.read((char *)&type, sizeof(type));
+				std::unique_ptr<Inventory> inv =
+						std::make_unique<Inventory>(gamedef.idef());
+				inv->deSerialize(is);
+				CSMS2CDoneBool send;
+				send.value = script.on_inventory_open(inv.get());
+				CSM_IPC(exchange(send));
+				sent_done = true;
 			}
 			break;
 		case CSM_C2S_RUN_STEP:

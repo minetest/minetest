@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "csm_message.h"
 #include "client/client.h"
 #include "filesys.h"
+#include "inventory.h"
 #include "log.h"
 #include "map.h"
 #include "network/networkprotocol.h"
@@ -224,6 +225,21 @@ void CSMController::runModchannelSignal(const std::string &channel, ModChannelSi
 	memcpy(send.data(), &header, sizeof(header));
 	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
+bool CSMController::runInventoryOpen(const Inventory *inventory)
+{
+	std::ostringstream os(std::ios::binary);
+	CSMC2SMsgType type = CSM_C2S_RUN_INVENTORY_OPEN;
+	os.write((char *)&type, sizeof(type));
+	inventory->serialize(os);
+	std::string send = os.str();
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
 }
 
 void CSMController::runStep(float dtime)

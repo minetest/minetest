@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irrlichttypes.h"
 
+class Inventory;
+
 class ScriptApiCSM : public virtual ScriptApiBase
 {
 public:
@@ -40,6 +42,8 @@ public:
 	bool on_receiving_message(const std::string &message);
 
 	bool on_hp_modification(u16 hp);
+
+	bool on_inventory_open(const Inventory *inventory);
 
 	// Called on environment step
 	void environment_Step(float dtime);

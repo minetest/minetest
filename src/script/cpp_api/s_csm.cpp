@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "cpp_api/s_csm.h"
+#include "common/c_content.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_csm_localplayer.h"
 #include "lua_api/l_csm_camera.h"
@@ -89,6 +90,19 @@ bool ScriptApiCSM::on_receiving_message(const std::string &message)
 	// Call callbacks
 	lua_pushlstring(L, message.data(), message.size());
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
+bool ScriptApiCSM::on_inventory_open(const Inventory *inventory)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_open
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_inventory_open");
+	// Call callbacks
+	push_inventory_lists(L, *inventory);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
 	return lua_toboolean(L, -1);
 }
 
