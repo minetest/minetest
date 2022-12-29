@@ -7,7 +7,6 @@ local detached_inventories = {}
 local current_pages = {} -- current page number
 local current_max_pages = {} -- current max. page number
 local current_searches = {} -- current search string
-local current_item_lists = {} -- currently active list of items
 
 local SLOTS_W = 10
 local SLOTS_H = 5
@@ -255,43 +254,44 @@ local show_formspec = function(name)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname == "chest_of_everything:getitem" then
-		local name = player:get_player_name()
-		local page = current_pages[name]
-		local old_page = page
-		-- Next page or previous page
-		if fields.chest_of_everything_next or fields.chest_of_everything_prev then
-			if fields.chest_of_everything_next then
-				page = page + 1
-			elseif fields.chest_of_everything_prev then
-				page = page - 1
-			end
-			-- Handle page change
-			if page < 1 then
-				page = 1
-			end
-			local max_page = current_max_pages[name]
-			if page > max_page then
-				page = max_page
-			end
-			if page ~= old_page then
-				current_pages[name] = page
-				show_formspec(name)
-			end
-			return
-		-- Search
-		elseif (fields.search_button_start or (fields.key_enter and fields.key_enter_field == "search")) and fields.search then
-			current_searches[name] = fields.search
-			update_inventory(name)
-			show_formspec(name, fields.search)
-			return
-		-- Reset search
-		elseif (fields.search_button_reset or fields.search_button_reset_big) then
-			current_searches[name] = ""
-			update_inventory(name)
-			show_formspec(name)
-			return
+	if formname ~= "chest_of_everything:getitem" then
+		return
+	end
+	local name = player:get_player_name()
+	local page = current_pages[name]
+	local old_page = page
+	-- Next page or previous page
+	if fields.chest_of_everything_next or fields.chest_of_everything_prev then
+		if fields.chest_of_everything_next then
+			page = page + 1
+		elseif fields.chest_of_everything_prev then
+			page = page - 1
 		end
+		-- Handle page change
+		if page < 1 then
+			page = 1
+		end
+		local max_page = current_max_pages[name]
+		if page > max_page then
+			page = max_page
+		end
+		if page ~= old_page then
+			current_pages[name] = page
+			show_formspec(name)
+		end
+		return
+	-- Search
+	elseif (fields.search_button_start or (fields.key_enter and fields.key_enter_field == "search")) and fields.search then
+		current_searches[name] = fields.search
+		update_inventory(name)
+		show_formspec(name, fields.search)
+		return
+	-- Reset search
+	elseif (fields.search_button_reset or fields.search_button_reset_big) then
+		current_searches[name] = ""
+		update_inventory(name)
+		show_formspec(name)
+		return
 	end
 end)
 
@@ -349,5 +349,4 @@ minetest.register_on_leaveplayer(function(player)
 	current_pages[name] = nil
 	current_max_pages[name] = nil
 	current_searches[name] = nil
-	current_item_lists[name] = nil
 end)
