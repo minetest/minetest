@@ -50,7 +50,7 @@ struct PlayerControl
 
 	PlayerControl(
 		bool a_up, bool a_down, bool a_left, bool a_right,
-		bool a_jump, bool a_aux1, bool a_sneak,
+		bool a_jump, bool a_aux1, bool a_aux2, bool a_sneak,
 		bool a_zoom,
 		bool a_dig, bool a_place,
 		float a_pitch, float a_yaw,
@@ -63,6 +63,7 @@ struct PlayerControl
 			((a_left&1) << 2) | ((a_right&1) << 3);
 		jump = a_jump;
 		aux1 = a_aux1;
+		aux2 = a_aux2;
 		sneak = a_sneak;
 		zoom = a_zoom;
 		dig = a_dig;
@@ -85,6 +86,7 @@ struct PlayerControl
 	u8 direction_keys = 0;
 	bool jump = false;
 	bool aux1 = false;
+	bool aux2 = false;
 	bool sneak = false;
 	bool zoom = false;
 	bool dig = false;

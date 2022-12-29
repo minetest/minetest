@@ -36,6 +36,7 @@ void KeyCache::populate()
 	key[KeyType::RIGHT] = getKeySetting("keymap_right");
 	key[KeyType::JUMP] = getKeySetting("keymap_jump");
 	key[KeyType::AUX1] = getKeySetting("keymap_aux1");
+	key[KeyType::AUX2] = getKeySetting("keymap_aux2");
 	key[KeyType::SNEAK] = getKeySetting("keymap_sneak");
 	key[KeyType::DIG] = getKeySetting("keymap_dig");
 	key[KeyType::PLACE] = getKeySetting("keymap_place");
@@ -218,6 +219,7 @@ void RandomInputHandler::step(float dtime)
 	static RandomInputHandlerSimData rnd_data[] = {
 		{ "keymap_jump", 0.0f, 40 },
 		{ "keymap_aux1", 0.0f, 40 },
+		{ "keymap_aux2", 0.0f, 40 },
 		{ "keymap_forward", 0.0f, 40 },
 		{ "keymap_left", 0.0f, 40 },
 		{ "keymap_dig", 0.0f, 30 },

@@ -33,6 +33,7 @@ public:
 		RIGHT,
 		JUMP,
 		AUX1,
+		AUX2,
 		SNEAK,
 		AUTOFORWARD,
 		DIG,

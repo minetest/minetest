@@ -170,7 +170,8 @@ u32 PlayerControl::getKeysPressed() const
 		( (u32)(sneak & 1) << 6) |
 		( (u32)(dig   & 1) << 7) |
 		( (u32)(place & 1) << 8) |
-		( (u32)(zoom  & 1) << 9)
+		( (u32)(zoom  & 1) << 9) |
+		( (u32)(aux2  & 1) << 10)
 	;
 
 	// If any direction keys are pressed pass those through
@@ -216,6 +217,7 @@ void PlayerControl::unpackKeysPressed(u32 keypress_bits)
 	dig   = keypress_bits & (1 << 7);
 	place = keypress_bits & (1 << 8);
 	zoom  = keypress_bits & (1 << 9);
+	aux2 = keypress_bits & (1 << 10);
 }
 
 void PlayerSettings::readGlobalSettings()
