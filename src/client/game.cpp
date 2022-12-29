@@ -674,16 +674,17 @@ public:
 const static float object_hit_delay = 0.2;
 
 struct FpsControl {
-	FpsControl() : last_time(0), busy_time(0), sleep_time(0) {}
+	FpsControl() : last_time(0), busy_time(0), sleep_time(0), last_frametime(0) {}
 
 	void reset();
 
-	void limit(IrrlichtDevice *device, f32 *dtime);
+	void limit(IrrlichtDevice *device, f32 *dtime, u32 min_ticks_focused = 0);
+	bool shouldRenderFrame(IrrlichtDevice *device, f32 *dtime);
 
 	u32 getBusyMs() const { return busy_time / 1000; }
 
 	// all values in microseconds (us)
-	u64 last_time, busy_time, sleep_time;
+	u64 last_time, busy_time, sleep_time, last_frametime;
 };
 
 
@@ -1206,8 +1207,8 @@ void Game::run()
 
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
-		//  + Sleep time until the wanted FPS are reached
-		draw_times.limit(device, &dtime);
+		//  + Sleep time until the wanted tick rate are reached
+		draw_times.limit(device, &dtime, 60);
 
 		const auto current_dynamic_info = getCurrentDynamicInfo();
 		if (!current_dynamic_info.equal(client_display_info)) {
@@ -1265,8 +1266,14 @@ void Game::run()
 		updateCamera(dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud);
-		updateFrame(&graph, &stats, dtime, cam_view);
-		updateProfilerGraphs(&graph);
+		f32 frame_dtime;
+		if (draw_times.shouldRenderFrame(device, &frame_dtime)) {
+			updateFrame(&graph, &stats, frame_dtime, cam_view);
+			updateProfilerGraphs(&graph);
+		}
+		else {
+			g_profiler->graphAdd("Draw scene [us]", 0);
+		}
 
 		// Update if minimap has been disabled by the server
 		m_game_ui->m_flags.show_minimap &= client->shouldShowMinimap();
@@ -4223,15 +4230,16 @@ void Game::updateShadows()
 void FpsControl::reset()
 {
 	last_time = porting::getTimeUs();
+	last_frametime = last_time;
 }
 
 /*
  * On some computers framerate doesn't seem to be automatically limited
  */
-void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
+void FpsControl::limit(IrrlichtDevice *device, f32 *dtime, u32 min_ticks_focused)
 {
 	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
-			? g_settings->getFloat("fps_max")
+			? MYMAX(g_settings->getFloat("fps_max"), min_ticks_focused)
 			: g_settings->getFloat("fps_max_unfocused");
 	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
 
@@ -4260,6 +4268,29 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 		*dtime = 0;
 
 	last_time = time;
+}
+
+bool FpsControl::shouldRenderFrame(IrrlichtDevice *device, f32 *dtime)
+{
+	const float fps_limit = (device->isWindowFocused() && !g_menumgr.pausesGame())
+			? g_settings->getFloat("fps_max")
+			: g_settings->getFloat("fps_max_unfocused");
+	const u64 frametime_min = 1000000.0f / std::max(fps_limit, 1.0f);
+
+	u64 time = porting::getTimeUs();
+
+	if (time < last_frametime) { // Make sure time hasn't overflowed
+		last_frametime = time;
+		*dtime = 0;
+		return true;
+	}
+	if (time > last_frametime + frametime_min) {
+		u64 delta = MYMAX(frametime_min, time - frametime_min - last_frametime);
+		*dtime = delta / 1000000.0f;
+		last_frametime += delta;
+		return true;
+	}
+	return false;
 }
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
