@@ -2143,6 +2143,9 @@ keymap_inventory (Inventory key) key KEY_KEY_I
 #    Key for moving fast in fast mode.
 keymap_aux1 (Aux1 key) key KEY_KEY_E
 
+#    Key for additional auxiliary controls for games.
+keymap_aux2 (Aux2 key) key
+
 #    Key for opening the chat window.
 keymap_chat (Chat key) key KEY_KEY_T
 
