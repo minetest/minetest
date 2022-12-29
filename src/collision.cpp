@@ -241,13 +241,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Calculate new velocity
 	*/
-	if (dtime > 0.5f) {
+	if (dtime > DTIME_LIMIT) {
 		if (!time_notification_done) {
 			time_notification_done = true;
-			infostream << "collisionMoveSimple: maximum step interval exceeded,"
+			warningstream << "collisionMoveSimple: maximum step interval exceeded,"
 					" lost movement details!"<<std::endl;
 		}
-		dtime = 0.5f;
+		dtime = DTIME_LIMIT;
 	} else {
 		time_notification_done = false;
 	}

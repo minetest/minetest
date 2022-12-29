@@ -393,8 +393,8 @@ void Client::connect(Address address, bool is_local_server)
 void Client::step(float dtime)
 {
 	// Limit a bit
-	if (dtime > 2.0)
-		dtime = 2.0;
+	if (dtime > DTIME_LIMIT)
+		dtime = DTIME_LIMIT;
 
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
