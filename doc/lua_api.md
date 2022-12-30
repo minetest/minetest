@@ -5554,6 +5554,9 @@ Call these functions only at load time!
 * `minetest.register_on_generated(function(minp, maxp, blockseed))`
     * Called after generating a piece of world. Modifying nodes inside the area
       is a bit faster than usual.
+    * **Avoid using this** whenever possible because the main thread is
+      latency-sensitive and this callback will block it.
+      Read [Mapgen environment] for an alternative.
 * `minetest.register_on_newplayer(function(ObjectRef))`
     * Called when a new player enters the world for the first time
 * `minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
@@ -6497,6 +6500,52 @@ Class instances that can be transferred between environments:
 * `PerlinNoise`
 * `PerlinNoiseMap`
 * `VoxelManip`
+
+Functions:
+* Standalone helpers such as logging, filesystem, encoding,
+  hashing or compression APIs
+* `minetest.request_insecure_environment` (same restrictions apply)
+
+Variables:
+* `minetest.settings`
+* `minetest.registered_items`, `registered_nodes`, `registered_tools`,
+  `registered_craftitems` and `registered_aliases`
+    * with all functions and userdata values replaced by `true`, calling any
+      callbacks here is obviously not possible
+
+Mapgen environment
+------------------
+
+The engine runs the map generator on separate threads, each of these also has
+a Lua environment. Its primary purpose is to allow mods to operate on newly
+generated parts of the map.
+
+Refer to the above section for the usual disclaimer on what environment isolation entails.
+
+* `minetest.register_mapgen_dofile(path)`: TODO
+    * Register a path to a Lua file to be imported when a mapgen environment
+      is initialized. You'd put your mapgen-related code in there.
+
+### List of APIs exclusive to the mapgen env
+
+* `minetest.register_on_generated(function(vmanip, blockseed))`
+    * Called after the engine mapgen finishes a chunk.
+      The chunk data resides in `vmanip`. Other parts of the map are not accessible.
+    * `blockseed`: 64-bit seed number used for this chunk
+
+### List of APIs available in the mapgen env
+
+Classes:
+* `ItemStack`
+* `PerlinNoise`
+* `PerlinNoiseMap`
+* `PseudoRandom`
+* `PcgRandom`
+* `SecureRandom`
+* `VoxelArea`
+* `VoxelManip`
+    * only given by callbacks; no access to rest of map
+* `Settings`
 
 Functions:
 * Standalone helpers such as logging, filesystem, encoding,
