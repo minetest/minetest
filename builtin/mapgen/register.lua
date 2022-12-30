@@ -1,81 +1,47 @@
+local builtin_shared = ...
 
-
--- copying is lame!
+-- Copy all the registration tables over
 do
-	local default = {mod = "??", name = "??"}
-	core.callback_origins = setmetatable({}, {
-		__index = function()
-			return default
-		end
-	})
-end
+	local all = assert(core.transferred_globals)
+	core.transferred_globals = nil
 
-function core.run_callbacks(callbacks, mode, ...)
-	assert(type(callbacks) == "table")
-	local cb_len = #callbacks
-	if cb_len == 0 then
-		if mode == 2 or mode == 3 then
-			return true
-		elseif mode == 4 or mode == 5 then
-			return false
-		end
-	end
-	local ret = nil
-	for i = 1, cb_len do
-		local origin = core.callback_origins[callbacks[i]]
-		core.set_last_run_mod(origin.mod)
-		local cb_ret = callbacks[i](...)
-
-		if mode == 0 and i == 1 then
-			ret = cb_ret
-		elseif mode == 1 and i == cb_len then
-			ret = cb_ret
-		elseif mode == 2 then
-			if not cb_ret or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 3 then
-			if cb_ret then
-				return cb_ret
-			end
-			ret = cb_ret
-		elseif mode == 4 then
-			if (cb_ret and not ret) or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 5 and cb_ret then
-			return cb_ret
+	all.registered_nodes = {}
+	all.registered_craftitems = {}
+	all.registered_tools = {}
+	for k, v in pairs(all.registered_items) do
+		-- Disable further modification
+		setmetatable(v, {__newindex = {}})
+		-- Reassemble the other tables
+		if v.type == "node" then
+			all.registered_nodes[k] = v
+		elseif v.type == "craftitem" then
+			all.registered_craftitems[k] = v
+		elseif v.type == "tool" then
+			all.registered_tools[k] = v
 		end
 	end
-	return ret
+
+	for k, v in pairs(all) do
+		core[k] = v
+	end
 end
 
-local function make_registration()
-	local t = {}
-	local registerfunc = function(func)
-		t[#t + 1] = func
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
+-- For tables that are indexed by item name:
+-- If table[X] does not exist, default to table[core.registered_aliases[X]]
+local alias_metatable = {
+	__index = function(t, name)
+		return rawget(t, core.registered_aliases[name])
 	end
-	return t, registerfunc
-end
+}
+setmetatable(core.registered_items, alias_metatable)
+setmetatable(core.registered_nodes, alias_metatable)
+setmetatable(core.registered_craftitems, alias_metatable)
+setmetatable(core.registered_tools, alias_metatable)
 
-local function make_registration_reverse()
-	local t = {}
-	local registerfunc = function(func)
-		table.insert(t, 1, func)
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
-	end
-	return t, registerfunc
-end
+--
+-- Callbacks
 --
 
---core.registered_on_mods_loaded, core.register_on_mods_loaded = make_registration()
--- ^ we should have this
+local make_registration = builtin_shared.make_registration
 
 core.registered_on_generateds, core.register_on_generated = make_registration()

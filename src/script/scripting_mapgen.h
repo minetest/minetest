@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_mapgen.h"
 #include "cpp_api/s_security.h"
 
-class IGameDef;
+class Server;
 
 class MapgenScripting:
 		virtual public ScriptApiBase,
@@ -30,7 +30,7 @@ class MapgenScripting:
 		public ScriptApiSecurity
 {
 public:
-	MapgenScripting(IGameDef *gamedef);
+	MapgenScripting(Server *server);
 	// ^ maybe take the EmergeThread instead?
 
 private:

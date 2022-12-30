@@ -237,8 +237,8 @@ end
 core.dynamic_media_callbacks = {}
 
 
--- Transfer of certain globals into async environment
--- see builtin/async/game.lua for the other side
+-- Transfer of certain globals into seconday Lua environments
+-- see builtin/async/game.lua or builtin/mapgen/register.lua for the unpacking
 
 local function copy_filtering(t, seen)
 	if type(t) == "userdata" or type(t) == "function" then

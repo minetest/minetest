@@ -44,10 +44,10 @@ extern "C" {
 #include <lualib.h>
 }
 
-MapgenScripting::MapgenScripting(IGameDef *gamedef):
+MapgenScripting::MapgenScripting(Server *server):
 		ScriptApiBase(ScriptingType::Mapgen)
 {
-	setGameDef(gamedef);
+	setGameDef(server);
 
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -58,6 +58,12 @@ MapgenScripting::MapgenScripting(IGameDef *gamedef):
 	int top = lua_gettop(L);
 
 	InitializeModApi(L, top);
+
+	auto *data = ModApiBase::getServer(L)->m_lua_globals_data.get();
+	assert(data);
+	script_unpack(L, data);
+	lua_setfield(L, top, "transferred_globals");
+
 	lua_pop(L, 1);
 
 	// Push builtin initialization type
