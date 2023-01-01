@@ -313,6 +313,7 @@ void ClientMap::updateDrawList()
 
 		// Start breadth-first search with the block the camera is in
 		blocks_to_consider.push(camera_block);
+		blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 
 		// Recursively walk the space and pick mapblocks for drawing
 		while (blocks_to_consider.size() > 0) {
@@ -362,52 +363,36 @@ void ClientMap::updateDrawList()
 					m_control.wanted_range * BS + mesh_sphere_radius)
 				continue; // Out of range, skip.
 
-			bool culled = false;
-
 			// Frustum culling
 			// Only do coarse culling here, to account for fast camera movement.
 			// This is needed because this function is not called every frame.
 			float frustum_cull_extra_radius = 300.0f;
 			if (is_frustum_culled(mesh_sphere_center,
 					mesh_sphere_radius + frustum_cull_extra_radius))
-				culled = true;
+				continue;
 
-			// Calculate the vector from the camera block to the current block
-			// We use it to determine through which sides of the current block we can continue the search
-			v3s16 look = block_coord - camera_block;
-
-			// Occlusion-cull blocks where all relevant sides are occluded by opaque side of the nearer blocks
-
-			// when camera is on the same axis-aligned plane as the block, ignore the visibility test
-			// for the relevant axis because we are looking at both sides from 'inside' of the block.
-			// Match the mask with the flags which are ZYX
-			u8 ignore_outer_sides = occlusion_culling_enabled ?
-					((look.X == 0 ? 1 : 0) | (look.Y == 0 ? 2 : 0) | (look.Z == 0 ? 4 : 0)) :
-					0x07;
-			
-			u8 visible_outer_sides = (flags | ignore_outer_sides) & 0x07;
-
-			// If the block is blocked from ouside on the relevant axes, it's occlusion-culled
-			if (visible_outer_sides == 0) {
-				blocks_occlusion_culled++;
-				culled = true;
-			}
-			
 			// Raytraced occlusion culling - send rays from the camera to the block's corners
-			if (occlusion_culling_enabled && m_enable_raytraced_culling && !culled &&
+			if (occlusion_culling_enabled && m_enable_raytraced_culling &&
 					block && mesh && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
-				culled = true;
+				continue;
 			}
 
 			// The block is visible, add to the draw list
-			if (mesh && !culled) {
+			if (mesh) {
 				// Add to set
 				block->refGrab();
 				m_drawlist[block_coord] = block;
 			}
 
 			// Decide which sides to traverse next or to block away
+
+			// Calculate the vector from the camera block to the current block
+			// We use it to determine through which sides of the current block we can continue the search
+			v3s16 look = block_coord - camera_block;
+
+			// Occluded near sides will further occlude the far sides
+			u8 visible_outer_sides = flags & 0x07;
 
 			// First, find the near sides that would occlude the far sides
 			// * A near side can itself by occluded a nearby block (the test above ^^)
@@ -425,7 +410,7 @@ void ClientMap::updateDrawList()
 					(look.Z > 0 ? 16 : 32);
 			
 			// This bitset is +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
-			u8 transparent_sides = culled ? 0 : (block && occlusion_culling_enabled) ? ~block->solid_sides : 0x3F;
+			u8 transparent_sides = (occlusion_culling_enabled && block) ? ~block->solid_sides : 0x3F;
 
 			// compress block transparent sides to ZYX mask of see-through axes
 			u8 near_transparency = ((transparent_sides & near_inner_sides) | ignore_inner_sides) & 0x3F;
@@ -436,7 +421,7 @@ void ClientMap::updateDrawList()
 					((near_transparency >> 2) & 4);
 
 			// combine with known visible sides that matter
-			near_transparency &= visible_outer_sides | ignore_outer_sides;
+			near_transparency &= visible_outer_sides;
 
 			// The rule for any far side to be visible:
 			// * Any of the adjacent near sides is transparent (different axes)
@@ -465,7 +450,7 @@ void ClientMap::updateDrawList()
 				if (look[axis] <= 0 && block_coord[axis] > p_blocks_min[axis]) {
 					// far side is visible if adjacent near sides are transparent, or if opposite side on dominant axis is transparent
 					bool side_visible = ((near_transparency & adjacent_sides) | (near_transparency & my_side & dominant_axis)) != 0;
-					side_visible = side_visible && (transparency_mask & transparent_sides) != 0;
+					side_visible = side_visible && ((transparency_mask & transparent_sides) != 0);
 
 					v3s16 next_pos = block_coord;
 					next_pos[axis] -= 1;
@@ -486,7 +471,7 @@ void ClientMap::updateDrawList()
 				if (look[axis] >= 0 && block_coord[axis] < p_blocks_max[axis]) {
 					// far side is visible if adjacent near sides are transparent, or if opposite side on dominant axis is transparent
 					bool side_visible = ((near_transparency & adjacent_sides) | (near_transparency & my_side & dominant_axis)) != 0;
-					side_visible = side_visible && (transparency_mask & transparent_sides) != 0;
+					side_visible = side_visible && ((transparency_mask & transparent_sides) != 0);
 
 					v3s16 next_pos = block_coord;
 					next_pos[axis] += 1;
