@@ -371,9 +371,17 @@ void ClientMap::updateDrawList()
 					mesh_sphere_radius + frustum_cull_extra_radius))
 				continue;
 
+			// Calculate the vector from the camera block to the current block
+			// We use it to determine through which sides of the current block we can continue the search
+			v3s16 look = block_coord - camera_block;
+
+			// Occluded near sides will further occlude the far sides
+			u8 visible_outer_sides = flags & 0x07;
+
 			// Raytraced occlusion culling - send rays from the camera to the block's corners
 			if (occlusion_culling_enabled && m_enable_raytraced_culling &&
-					block && mesh && isBlockOccluded(block, cam_pos_nodes)) {
+					block && mesh &&
+					visible_outer_sides != 0x07 && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
@@ -386,13 +394,6 @@ void ClientMap::updateDrawList()
 			}
 
 			// Decide which sides to traverse next or to block away
-
-			// Calculate the vector from the camera block to the current block
-			// We use it to determine through which sides of the current block we can continue the search
-			v3s16 look = block_coord - camera_block;
-
-			// Occluded near sides will further occlude the far sides
-			u8 visible_outer_sides = flags & 0x07;
 
 			// First, find the near sides that would occlude the far sides
 			// * A near side can itself by occluded a nearby block (the test above ^^)
