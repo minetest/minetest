@@ -1266,9 +1266,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	m_solid_sides = 0;
-	s16 full_side = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+	constexpr s16 FULL_SIDE = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 	for (u8 i = 0; i < 6; i++)
-		if (solid_node_counts[i] == full_side)
+		if (solid_node_counts[i] == FULL_SIDE)
 			m_solid_sides |= (1 << i);
 
 	/*
