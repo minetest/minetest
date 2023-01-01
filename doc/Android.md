@@ -1,6 +1,6 @@
-**Document based on Minetest ``5.6.1`` Android build**
+**Document based on Minetest `5.6.1` Android build**
 # Minetest: Android version
-Minetest for Android are the same Minetest on Windows, not seperate version
+Minetest for Android are the same Minetest on Windows but compiled for Android, not seperate version
 ## Controls
 The Android port doesn't support everything you can do on PC due to the
 limited capabilities of common devices. What can be done is described
@@ -49,6 +49,8 @@ Minetest currently support the following CPU architect:
 2. ARM v8
 3. x86
 4. x86_64
+
+CPU architect similar to ARM or x86 can ***probally*** able to play Minetest but are not recommended!
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
 2. Android version: Android 4.1 (API Level 14)
