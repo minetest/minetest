@@ -423,7 +423,6 @@ void ClientMap::updateDrawList()
 
 			u8 visible_sides = 0;
 
-			int descend_count = 0;
 			// Recursive descend in the look direction
 			for (s16 axis = 0; axis < 3; axis++) {
 				// flags are +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
