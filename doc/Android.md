@@ -46,13 +46,17 @@ this setting limit max FPS (Frame per second). Default value is 60, which lowest
 2. Android version: Android 4.1 (API Level 14)
 3. Empty RAM: 500 MB
 4. Empty Storage: 20 MB
-#### Able to play Minetest Game and some games with light weight mod
+* **Able to play Minetest Game and some games with light weight mod**
+* **OpengGL ES 1 user can't use shader!**
 ### Recommended:
 1. Graphic: OpenGL ES 2.0
 2. Android version: No lowest recommended version
 3. Empty RAM: 850 MB
 4. Empty Storage: 480 MB
-#### Able to play to play most of game with most of mod
+* **Able to play to play most of game with most of mod**
+* **OpenGL ES 2 user can use shader!**
+## Rendering
+Unlike on PC, Android device use OpenGL ES which less powerful than OpenGL. Some shader setting can't be used on OpenGL ES. And because of Android device use OpenGL ES, change the graphic driver setting to OpenGL result in **CRASH**
 ## Building Requirements
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
