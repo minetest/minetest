@@ -127,7 +127,7 @@ if(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
 	endif()
 	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 
-	set(TARGET_VER_S 1.9.0mt8)
+	set(TARGET_VER_S 1.9.0mt9)
 	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
 	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
 		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")
