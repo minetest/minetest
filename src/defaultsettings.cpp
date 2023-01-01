@@ -67,6 +67,7 @@ void set_default_settings()
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_split_login_register", "true");
 	settings->setDefault("occlusion_culler", "old");
+	settings->setDefault("enable_raytraced_culling", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
 	// Keymap

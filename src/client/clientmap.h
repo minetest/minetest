@@ -212,4 +212,5 @@ private:
 	u16 m_cache_transparency_sorting_distance;
 
 	bool m_new_occlusion_culler;
+	bool m_enable_raytraced_culling;
 };
