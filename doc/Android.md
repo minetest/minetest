@@ -1,3 +1,4 @@
+**Document based on Minetest ``5.6.1`` Android build**
 # Minetest: Android version
 Minetest for Android are the same Minetest on Windows, not seperate version
 ## Controls
@@ -41,6 +42,13 @@ Mobile device generally have less RAM than PC, this setting limit how many mapbl
 ### fps_limit
 this setting limit max FPS (Frame per second). Default value is 60, which lowest Android device screen refresh rate commonly found, but if you're using an device have lower refresh rate, change this
 ## Requirements
+Read this before try installing Minetest!
+### CPU
+Minetest currently support the following CPU architect:
+1. ARM v7
+2. ARM v8
+3. x86
+4. x86_64
 ### Minimum:
 1. Graphic: OpenGL ES 1.0
 2. Android version: Android 4.1 (API Level 14)
