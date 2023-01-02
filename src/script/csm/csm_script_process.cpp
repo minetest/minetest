@@ -289,6 +289,16 @@ int csm_script_main(int argc, char *argv[])
 				sent_done = true;
 			}
 			break;
+		case CSM_C2S_RUN_PLACENODE:
+			if (size >= sizeof(CSMC2SRunPlacenode)) {
+				CSMC2SRunPlacenode recv_header;
+				memcpy(&recv_header, data, sizeof(recv_header));
+				std::string name((char *)data + sizeof(recv_header),
+						size - sizeof(recv_header));
+				g_log_output.startLogging();
+				script.on_placenode(recv_header.pointed_thing, gamedef.idef()->get(name));
+			}
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;

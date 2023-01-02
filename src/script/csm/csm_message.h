@@ -27,6 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stddef.h>
 #include <type_traits>
 
+static_assert(std::is_trivially_copyable<PointedThing>::value,
+		"PointedThing is not copyable");
+
 // controller -> script
 
 enum CSMC2SMsgType {
@@ -44,6 +47,7 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_FORMSPEC_INPUT,
 	CSM_C2S_RUN_INVENTORY_OPEN,
 	CSM_C2S_RUN_ITEM_USE,
+	CSM_C2S_RUN_PLACENODE,
 	CSM_C2S_RUN_STEP,
 };
 
@@ -74,8 +78,12 @@ struct CSMC2SRunItemUse {
 	PointedThing pointed_thing;
 	// selected item string follows
 };
-static_assert(std::is_trivially_copyable<CSMC2SRunItemUse>::value,
-		"CSMC2SRunItemUse is not copyable");
+
+struct CSMC2SRunPlacenode {
+	CSMC2SMsgType type = CSM_C2S_RUN_PLACENODE;
+	PointedThing pointed_thing;
+	// item name follows
+};
 
 struct CSMC2SGetNode {
 	MapNode n;

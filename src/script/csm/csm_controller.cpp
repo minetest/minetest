@@ -313,6 +313,17 @@ bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThin
 	return recv.value;
 }
 
+void CSMController::runPlacenode(const PointedThing &pointed, const ItemDefinition &def)
+{
+	CSMC2SRunPlacenode header;
+	header.pointed_thing = pointed;
+	std::vector<u8> send;
+	send.resize(sizeof(header) + def.name.size());
+	memcpy(send.data(), &header, sizeof(header));
+	memcpy(send.data() + sizeof(header), def.name.data(), def.name.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
 void CSMController::runStep(float dtime)
 {
 	if (!isStarted())

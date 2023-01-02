@@ -140,6 +140,19 @@ bool ScriptApiCSM::on_item_use(const ItemStack &selected_item, const PointedThin
 	return lua_toboolean(L, -1);
 }
 
+void ScriptApiCSM::on_placenode(const PointedThing &pointed, const ItemDefinition &item)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_placenode
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_placenode");
+	// Call callbacks
+	push_pointed_thing(L, pointed, true);
+	push_item_definition(L, item);
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+}
+
 bool ScriptApiCSM::on_hp_modification(u16 hp)
 {
 	SCRIPTAPI_PRECHECKHEADER

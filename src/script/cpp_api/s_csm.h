@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 
 class Inventory;
+class ItemDefinition;
 class ItemStack;
 
 class ScriptApiCSM : public virtual ScriptApiBase
@@ -51,6 +52,8 @@ public:
 	bool on_inventory_open(const Inventory *inventory);
 
 	bool on_item_use(const ItemStack &selected_item, const PointedThing &pointed);
+
+	void on_placenode(const PointedThing &pointed, const ItemDefinition &item);
 
 	// Called on environment step
 	void environment_Step(float dtime);
