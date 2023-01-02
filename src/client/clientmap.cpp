@@ -418,7 +418,7 @@ void ClientMap::updateDrawList()
 
 			// The rule for any far side to be visible:
 			// * Any of the adjacent near sides is transparent (different axes)
-			// * The opposite near side (same axis) transparent, and is the dominant axis of the look vector
+			// * The opposite near side (same axis) is transparent, if it is the dominant axis of the look vector
 
 			// dominant axis flag
 			u8 dominant_axis = (abs(look.X) > abs(look.Y) && abs(look.X) > abs(look.Z)) |
