@@ -408,7 +408,7 @@ void ClientMap::updateDrawList()
 			// compress block transparent sides to ZYX mask of see-through axes
 			u8 near_transparency = ((transparent_sides & near_inner_sides) | ignore_inner_sides) & 0x3F;
 
-			near_transparency = (near_transparency | (near_transparency >> 1)) & 0x15;
+			near_transparency |= (near_transparency >> 1);
 			near_transparency = (near_transparency & 1) |
 					((near_transparency >> 1) & 2) |
 					((near_transparency >> 2) & 4);
@@ -422,7 +422,7 @@ void ClientMap::updateDrawList()
 
 			// dominant axis flag
 			u8 dominant_axis = (abs(look.X) > abs(look.Y) && abs(look.X) > abs(look.Z)) |
-						((abs(look.Y) > abs(look.Z) && abs(look.Y) > abs(look.Z)) << 1) |
+						((abs(look.Y) > abs(look.Z) && abs(look.Y) > abs(look.X)) << 1) |
 						((abs(look.Z) > abs(look.X) && abs(look.Z) > abs(look.Y)) << 2);
 
 			// Queue next blocks for processing:
