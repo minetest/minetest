@@ -396,7 +396,7 @@ void ClientMap::updateDrawList()
 			// Decide which sides to traverse next or to block away
 
 			// First, find the near sides that would occlude the far sides
-			// * A near side can itself by occluded a nearby block (the test above ^^)
+			// * A near side can itself be occluded by a nearby block (the test above ^^)
 			// * A near side can be visible but fully opaque by itself (e.g. ground at the 0 level)
 
 			// mesh solid sides are +Z-Z+Y-Y+X-X
