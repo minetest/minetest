@@ -30,9 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "client/renderingengine.h"
 
-#include <algorithm>
 #include <queue>
-#include <bitset>
 
 // struct MeshBufListList
 void MeshBufListList::clear()
