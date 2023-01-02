@@ -296,6 +296,23 @@ bool CSMController::runInventoryOpen(const Inventory *inventory)
 	return recv.value;
 }
 
+bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThing &pointed)
+{
+	CSMC2SRunItemUse header;
+	header.pointed_thing = pointed;
+	std::string itemstring = selected_item.getItemString();
+	std::vector<u8> send;
+	send.resize(sizeof(header) + itemstring.size());
+	memcpy(send.data(), &header, sizeof(header));
+	memcpy(send.data() + sizeof(header), itemstring.data(), itemstring.size());
+	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
+}
+
 void CSMController::runStep(float dtime)
 {
 	if (!isStarted())

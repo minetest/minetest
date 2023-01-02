@@ -61,7 +61,7 @@ public:
 	void runModchannelSignal(const std::string &channel, ModChannelSignal signal);
 	bool runFormspecInput(const std::string &formname, const StringMap &fields);
 	bool runInventoryOpen(const Inventory *inventory);
-	bool runItemUse(const ItemStack &selected_item, const PointedThing &pointed) {return false;}
+	bool runItemUse(const ItemStack &selected_item, const PointedThing &pointed);
 	void runPlacenode(const PointedThing &pointed, const ItemDefinition &def) {}
 	bool runPunchnode(v3s16 pos, MapNode n) {return false;}
 	bool runDignode(v3s16 pos, MapNode n) {return false;}

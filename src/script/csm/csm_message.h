@@ -23,7 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mapnode.h"
 #include "modchannels.h"
+#include "util/pointedthing.h"
 #include <stddef.h>
+#include <type_traits>
 
 // controller -> script
 
@@ -41,6 +43,7 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_MODCHANNEL_SIGNAL,
 	CSM_C2S_RUN_FORMSPEC_INPUT,
 	CSM_C2S_RUN_INVENTORY_OPEN,
+	CSM_C2S_RUN_ITEM_USE,
 	CSM_C2S_RUN_STEP,
 };
 
@@ -65,6 +68,14 @@ struct CSMC2SRunStep {
 	CSMC2SMsgType type = CSM_C2S_RUN_STEP;
 	float dtime;
 };
+
+struct CSMC2SRunItemUse {
+	CSMC2SMsgType type = CSM_C2S_RUN_ITEM_USE;
+	PointedThing pointed_thing;
+	// selected item string follows
+};
+static_assert(std::is_trivially_copyable<CSMC2SRunItemUse>::value,
+		"CSMC2SRunItemUse is not copyable");
 
 struct CSMC2SGetNode {
 	MapNode n;

@@ -22,8 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irrlichttypes.h"
 #include "util/string.h"
+#include "util/pointedthing.h"
 
 class Inventory;
+class ItemStack;
 
 class ScriptApiCSM : public virtual ScriptApiBase
 {
@@ -47,6 +49,8 @@ public:
 	bool on_hp_modification(u16 hp);
 
 	bool on_inventory_open(const Inventory *inventory);
+
+	bool on_item_use(const ItemStack &selected_item, const PointedThing &pointed);
 
 	// Called on environment step
 	void environment_Step(float dtime);

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_csm_localplayer.h"
 #include "lua_api/l_csm_camera.h"
 #include "lua_api/l_csm_minimap.h"
+#include "lua_api/l_item.h"
 
 void ScriptApiCSM::on_mods_loaded()
 {
@@ -122,6 +123,20 @@ bool ScriptApiCSM::on_inventory_open(const Inventory *inventory)
 	// Call callbacks
 	push_inventory_lists(L, *inventory);
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
+	return lua_toboolean(L, -1);
+}
+
+bool ScriptApiCSM::on_item_use(const ItemStack &selected_item, const PointedThing &pointed)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_item_use
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_item_use");
+	// Call callbacks
+	LuaItemStack::create(L, selected_item);
+	push_pointed_thing(L, pointed, true);
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
 	return lua_toboolean(L, -1);
 }
 

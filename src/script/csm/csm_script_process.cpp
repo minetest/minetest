@@ -272,6 +272,23 @@ int csm_script_main(int argc, char *argv[])
 				sent_done = true;
 			}
 			break;
+		case CSM_C2S_RUN_ITEM_USE:
+			if (size >= sizeof(CSMC2SRunItemUse)) {
+				CSMC2SRunItemUse recv_header;
+				memcpy(&recv_header, data, sizeof(recv_header));
+				std::istringstream itemstring_is(
+						std::string((char *)data + sizeof(recv_header),
+								size - sizeof(recv_header)),
+						std::ios::binary);
+				g_log_output.startLogging();
+				ItemStack selected_item;
+				selected_item.deSerialize(itemstring_is);
+				CSMS2CDoneBool send;
+				send.value = script.on_item_use(selected_item, recv_header.pointed_thing);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;
