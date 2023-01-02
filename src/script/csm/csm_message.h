@@ -48,6 +48,8 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_INVENTORY_OPEN,
 	CSM_C2S_RUN_ITEM_USE,
 	CSM_C2S_RUN_PLACENODE,
+	CSM_C2S_RUN_PUNCHNODE,
+	CSM_C2S_RUN_DIGNODE,
 	CSM_C2S_RUN_STEP,
 };
 
@@ -68,11 +70,6 @@ struct CSMC2SRunModchannelSignal {
 	// string channel follows
 };
 
-struct CSMC2SRunStep {
-	CSMC2SMsgType type = CSM_C2S_RUN_STEP;
-	float dtime;
-};
-
 struct CSMC2SRunItemUse {
 	CSMC2SMsgType type = CSM_C2S_RUN_ITEM_USE;
 	PointedThing pointed_thing;
@@ -83,6 +80,23 @@ struct CSMC2SRunPlacenode {
 	CSMC2SMsgType type = CSM_C2S_RUN_PLACENODE;
 	PointedThing pointed_thing;
 	// item name follows
+};
+
+struct CSMC2SRunPunchnode {
+	CSMC2SMsgType type = CSM_C2S_RUN_PUNCHNODE;
+	v3s16 pos;
+	MapNode n;
+};
+
+struct CSMC2SRunDignode {
+	CSMC2SMsgType type = CSM_C2S_RUN_DIGNODE;
+	v3s16 pos;
+	MapNode n;
+};
+
+struct CSMC2SRunStep {
+	CSMC2SMsgType type = CSM_C2S_RUN_STEP;
+	float dtime;
 };
 
 struct CSMC2SGetNode {

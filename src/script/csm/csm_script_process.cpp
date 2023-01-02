@@ -299,6 +299,28 @@ int csm_script_main(int argc, char *argv[])
 				script.on_placenode(recv_header.pointed_thing, gamedef.idef()->get(name));
 			}
 			break;
+		case CSM_C2S_RUN_PUNCHNODE:
+			if (size >= sizeof(CSMC2SRunPunchnode)) {
+				CSMC2SRunPunchnode recv;
+				memcpy(&recv, data, sizeof(recv));
+				g_log_output.startLogging();
+				CSMS2CDoneBool send;
+				send.value = script.on_punchnode(recv.pos, recv.n);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
+		case CSM_C2S_RUN_DIGNODE:
+			if (size >= sizeof(CSMC2SRunDignode)) {
+				CSMC2SRunDignode recv;
+				memcpy(&recv, data, sizeof(recv));
+				g_log_output.startLogging();
+				CSMS2CDoneBool send;
+				send.value = script.on_dignode(recv.pos, recv.n);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
 		case CSM_C2S_RUN_STEP:
 			if (size >= sizeof(CSMC2SRunStep)) {
 				CSMC2SRunStep msg;

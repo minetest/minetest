@@ -63,8 +63,8 @@ public:
 	bool runInventoryOpen(const Inventory *inventory);
 	bool runItemUse(const ItemStack &selected_item, const PointedThing &pointed);
 	void runPlacenode(const PointedThing &pointed, const ItemDefinition &def);
-	bool runPunchnode(v3s16 pos, MapNode n) {return false;}
-	bool runDignode(v3s16 pos, MapNode n) {return false;}
+	bool runPunchnode(v3s16 pos, MapNode n);
+	bool runDignode(v3s16 pos, MapNode n);
 	void runStep(float dtime);
 
 private:

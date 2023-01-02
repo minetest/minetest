@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "cpp_api/s_base.h"
-#include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include "mapnode.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
 
@@ -54,6 +55,10 @@ public:
 	bool on_item_use(const ItemStack &selected_item, const PointedThing &pointed);
 
 	void on_placenode(const PointedThing &pointed, const ItemDefinition &item);
+
+	bool on_punchnode(v3s16 pos, MapNode n);
+
+	bool on_dignode(v3s16 pos, MapNode n);
 
 	// Called on environment step
 	void environment_Step(float dtime);

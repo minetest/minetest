@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_csm.h"
 #include "common/c_content.h"
+#include "common/c_converter.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_csm_localplayer.h"
 #include "lua_api/l_csm_camera.h"
@@ -113,6 +114,19 @@ bool ScriptApiCSM::on_formspec_input(const std::string &formname, const StringMa
 	return lua_toboolean(L, -1);
 }
 
+bool ScriptApiCSM::on_hp_modification(u16 hp)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_hp_modification
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_hp_modification");
+	// Call callbacks
+	lua_pushinteger(L, hp);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
 bool ScriptApiCSM::on_inventory_open(const Inventory *inventory)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -153,16 +167,31 @@ void ScriptApiCSM::on_placenode(const PointedThing &pointed, const ItemDefinitio
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
-bool ScriptApiCSM::on_hp_modification(u16 hp)
+bool ScriptApiCSM::on_punchnode(v3s16 pos, MapNode n)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_hp_modification
+	// Get core.registered_on_punchnode
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_hp_modification");
+	lua_getfield(L, -1, "registered_on_punchnode");
 	// Call callbacks
-	lua_pushinteger(L, hp);
-	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	push_v3s16(L, pos);
+	pushnode(L, n);
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	return lua_toboolean(L, -1);
+}
+
+bool ScriptApiCSM::on_dignode(v3s16 pos, MapNode n)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_dignode
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_dignode");
+	// Call callbacks
+	push_v3s16(L, pos);
+	pushnode(L, n);
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
 	return lua_toboolean(L, -1);
 }
 

@@ -298,6 +298,9 @@ bool CSMController::runInventoryOpen(const Inventory *inventory)
 
 bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThing &pointed)
 {
+	if (!isStarted())
+		return false;
+
 	CSMC2SRunItemUse header;
 	header.pointed_thing = pointed;
 	std::string itemstring = selected_item.getItemString();
@@ -315,6 +318,9 @@ bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThin
 
 void CSMController::runPlacenode(const PointedThing &pointed, const ItemDefinition &def)
 {
+	if (!isStarted())
+		return;
+
 	CSMC2SRunPlacenode header;
 	header.pointed_thing = pointed;
 	std::vector<u8> send;
@@ -322,6 +328,38 @@ void CSMController::runPlacenode(const PointedThing &pointed, const ItemDefiniti
 	memcpy(send.data(), &header, sizeof(header));
 	memcpy(send.data() + sizeof(header), def.name.data(), def.name.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+}
+
+bool CSMController::runPunchnode(v3s16 pos, MapNode n)
+{
+	if (!isStarted())
+		return false;
+
+	CSMC2SRunPunchnode send;
+	send.pos = pos;
+	send.n = n;
+	listen(m_ipc.exchange(send, m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
+}
+
+bool CSMController::runDignode(v3s16 pos, MapNode n)
+{
+	if (!isStarted())
+		return false;
+
+	CSMC2SRunDignode send;
+	send.pos = pos;
+	send.n = n;
+	listen(m_ipc.exchange(send, m_timeout));
+	CSMS2CDoneBool recv;
+	recv.value = false;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value;
 }
 
 void CSMController::runStep(float dtime)
