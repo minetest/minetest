@@ -346,7 +346,7 @@ void ClientMap::updateDrawList()
 			}
 			else {
 				mesh_sphere_center = intToFloat(block_pos_nodes, BS) + v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
-				mesh_sphere_radius = std::sqrt(3.) * MAP_BLOCKSIZE * BS / 2;
+				mesh_sphere_radius = 0.0f;
 			}
 
 			// First, perform a simple distance check.
