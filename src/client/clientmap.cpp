@@ -205,15 +205,16 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 class MapBlockFlags
 {
 public:
-	static constexpr u16 CHUNK_INNER_BITS  = 4; // number of bits to address inside a chunk
-	static constexpr u16 CHUNK_EDGE = 16; // 2 ^ CHUNK_SHIFT
-	static constexpr u16 CHUNK_MASK = 0x000Fu; // CHUNK_EDGE-1
+	static constexpr u16 CHUNK_INNER_BITS  = 3; // number of bits to address inside a chunk
+	static constexpr u16 CHUNK_EDGE = 8; // 2 ^ CHUNK_SHIFT
+	static constexpr u16 CHUNK_MASK = 0x0007u; // CHUNK_EDGE-1
 	static constexpr u16 CHUNK_MASK_INV = ~CHUNK_MASK;
 	static constexpr std::size_t CHUNK_VOLUME = CHUNK_EDGE * CHUNK_EDGE * CHUNK_EDGE; // volume of a chunk
 
 	MapBlockFlags(v3s16 min_pos, v3s16 max_pos)
-			: min_pos(min_pos), volume(getAddress(min_pos, max_pos) + 1)
+			: min_pos(min_pos), volume(max_pos - min_pos)
 	{
+		volume = v3s16(volume.X >> CHUNK_INNER_BITS, volume.Y >> CHUNK_INNER_BITS, volume.Z >> CHUNK_INNER_BITS) + 1;
 		chunks.resize(volume.X * volume.Y * volume.Z);
 	}
 
@@ -237,8 +238,8 @@ public:
 
 	Chunk &getChunk(v3s16 pos)
 	{
-		v3s16 delta = getAddress(min_pos, pos);
-		std::size_t address = delta.X + delta.Y * volume.X + delta.Z * volume.X * volume.Y;
+		v3s16 delta = pos - min_pos;
+		std::size_t address = (delta.X + delta.Y * volume.X + delta.Z * volume.X * volume.Y) >> CHUNK_INNER_BITS;
 		Chunk *chunk = chunks[address].get();
 		if (!chunk) {
 			chunk = new Chunk();
@@ -246,14 +247,7 @@ public:
 		}
 		return *chunk;
 	}
-
 private:
-	// returns the dimensions of an area in chunks, given minimum and maximum edges
-	static inline v3s16 getAddress(v3s16 base, v3s16 pos)
-	{
-		return v3s16((pos .X - base.X) >> CHUNK_INNER_BITS, (pos.Y - base.Y) >> CHUNK_INNER_BITS, (pos.Z - base.Z) >> CHUNK_INNER_BITS);
-	}
-
 	std::vector<std::unique_ptr<Chunk>> chunks;
 	v3s16 min_pos;
 	v3s16 volume;
