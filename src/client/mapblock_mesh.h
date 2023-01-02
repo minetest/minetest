@@ -237,8 +237,6 @@ public:
 		return this->m_transparent_buffers;
 	}
 
-	u8 getSolidSides() const { return m_solid_sides; }
-
 private:
 	struct AnimationInfo {
 		int frame; // last animation frame
@@ -287,12 +285,6 @@ private:
 	MapBlockBspTree m_bsp_tree;
 	// Ordered list of references to parts of transparent buffers to draw
 	std::vector<PartialMeshBuffer> m_transparent_buffers;
-
-	// @brief
-	// Bit set of the sides of the mapblock that consist of solid nodes only
-	// Bits:
-	// 0 0 -Z +Z -X +X -Y +Y
-	u8 m_solid_sides;
 };
 
 /*!
@@ -348,3 +340,8 @@ void final_color_blend(video::SColor *result,
 // TileFrame vector copy cost very much to client
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
+
+/// Return bitset of the sides of the mapblock that consist of solid nodes only
+/// Bits:
+/// 0 0 -Z +Z -X +X -Y +Y
+u8 get_solid_sides(MeshMakeData *data);
