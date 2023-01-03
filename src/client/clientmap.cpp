@@ -420,10 +420,12 @@ void ClientMap::updateDrawList()
 			// * Any of the adjacent near sides is transparent (different axes)
 			// * The opposite near side (same axis) is transparent, if it is the dominant axis of the look vector
 
+			v3s16 precise_look = block_pos_nodes + MAP_BLOCKSIZE / 2 - cam_pos_nodes;
+
 			// dominant axis flag
-			u8 dominant_axis = (abs(look.X) > abs(look.Y) && abs(look.X) > abs(look.Z)) |
-						((abs(look.Y) > abs(look.Z) && abs(look.Y) > abs(look.X)) << 1) |
-						((abs(look.Z) > abs(look.X) && abs(look.Z) > abs(look.Y)) << 2);
+			u8 dominant_axis = (abs(precise_look.X) > abs(precise_look.Y) && abs(precise_look.X) > abs(precise_look.Z)) |
+						((abs(precise_look.Y) > abs(precise_look.Z) && abs(precise_look.Y) > abs(precise_look.X)) << 1) |
+						((abs(precise_look.Z) > abs(precise_look.X) && abs(precise_look.Z) > abs(precise_look.Y)) << 2);
 
 			// Queue next blocks for processing:
 			// - Examine "far" sides of the current blocks, i.e. never move towards the camera
