@@ -142,5 +142,5 @@ struct CSMS2CAddNode {
 	CSMS2CMsgType type = CSM_S2C_ADD_NODE;
 	MapNode n;
 	v3s16 pos;
-	bool remove_metadata = true;
+	char remove_metadata = true;
 };
