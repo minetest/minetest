@@ -20,6 +20,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v4
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}
+
     - name: Install deps
       run: |
         source ./util/ci/common.sh
@@ -44,6 +49,10 @@ jobs:
     steps:
 
     - uses: actions/checkout@v4
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}
     - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: "5.1.5"
@@ -51,6 +60,7 @@ jobs:
 
     - name: Install LuaJIT
       run: |
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         cd $HOME
         git clone https://github.com/LuaJIT/LuaJIT/
         cd LuaJIT
