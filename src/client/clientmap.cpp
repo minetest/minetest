@@ -207,7 +207,6 @@ class MapBlockFlags
 public:
 	static constexpr u16 CHUNK_EDGE = 8;
 	static constexpr u16 CHUNK_MASK = CHUNK_EDGE - 1;
-	static constexpr u16 CHUNK_MASK_INV = ~CHUNK_MASK;
 	static constexpr std::size_t CHUNK_VOLUME = CHUNK_EDGE * CHUNK_EDGE * CHUNK_EDGE; // volume of a chunk
 
 	MapBlockFlags(v3s16 min_pos, v3s16 max_pos)
