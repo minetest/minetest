@@ -1604,7 +1604,7 @@ u8 get_solid_sides(MeshMakeData *data)
 		for (u8 k = 0; k < 6; k++) {
 			const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
 			if (ndef->get(top).solidness != 2)
-				result &= ~(1 << i);
+				result &= ~(1 << k);
 		}
 	}
 
