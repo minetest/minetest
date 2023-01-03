@@ -434,21 +434,20 @@ void ClientMap::updateDrawList()
 			// When queueing, mark the relevant side on the next block as 'visible'
 			for (s16 axis = 0; axis < 3; axis++) {
 
-				// Select a bit from transparent_sides
-				u8 transparency_mask = 1 << (2 * axis);
+				// Select a bit from transparent_sides for the side
+				u8 far_side_mask = 1 << (2 * axis);
 
 				// axis flag
 				u8 my_side = 1 << axis;
 				u8 adjacent_sides = my_side ^ 0x07;
 
-				// Test the '-' direction of the axis
-				if (look[axis] <= 0 && block_coord[axis] > p_blocks_min[axis]) {
+				auto traverse_far_side = [&](s8 next_pos_offset) {
 					// far side is visible if adjacent near sides are transparent, or if opposite side on dominant axis is transparent
 					bool side_visible = ((near_transparency & adjacent_sides) | (near_transparency & my_side & dominant_axis)) != 0;
-					side_visible = side_visible && ((transparency_mask & transparent_sides) != 0);
+					side_visible = side_visible && ((far_side_mask & transparent_sides) != 0);
 
 					v3s16 next_pos = block_coord;
-					next_pos[axis] -= 1;
+					next_pos[axis] += next_pos_offset;
 
 					// If a side is a see-through, mark the next block's side as visible, and queue
 					if (side_visible) {
@@ -459,28 +458,18 @@ void ClientMap::updateDrawList()
 					else {
 						sides_skipped++;
 					}
-				}
+				};
+
+
+				// Test the '-' direction of the axis
+				if (look[axis] <= 0 && block_coord[axis] > p_blocks_min[axis])
+					traverse_far_side(-1);
 
 				// Test the '+' direction of the axis
-				transparency_mask <<= 1;
-				if (look[axis] >= 0 && block_coord[axis] < p_blocks_max[axis]) {
-					// far side is visible if adjacent near sides are transparent, or if opposite side on dominant axis is transparent
-					bool side_visible = ((near_transparency & adjacent_sides) | (near_transparency & my_side & dominant_axis)) != 0;
-					side_visible = side_visible && ((transparency_mask & transparent_sides) != 0);
+				far_side_mask <<= 1;
 
-					v3s16 next_pos = block_coord;
-					next_pos[axis] += 1;
-
-					// If a side is a see-through, mark the next block's side as visible, and queue
-					if (side_visible) {
-						auto &next_flags = blocks_seen.getChunk(next_pos).getBits(next_pos);
-						next_flags |= my_side;
-						blocks_to_consider.push(next_pos);
-					}
-					else {
-						sides_skipped++;
-					}
-				}
+				if (look[axis] >= 0 && block_coord[axis] < p_blocks_max[axis])
+					traverse_far_side(+1);
 			}
 		}
 
