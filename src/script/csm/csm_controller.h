@@ -55,7 +55,7 @@ public:
 	bool runReceivingMessage(const std::string &message);
 	bool runDamageTaken(u16 damage);
 	bool runHPModification(u16 hp);
-	void runDeath() {}
+	void runDeath();
 	void runModchannelMessage(const std::string &channel, const std::string &sender,
 			const std::string &message);
 	void runModchannelSignal(const std::string &channel, ModChannelSignal signal);

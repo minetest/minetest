@@ -52,6 +52,8 @@ public:
 
 	bool on_hp_modification(u16 hp);
 
+	void on_death();
+
 	bool on_inventory_open(const Inventory *inventory);
 
 	bool on_item_use(const ItemStack &selected_item, const PointedThing &pointed);

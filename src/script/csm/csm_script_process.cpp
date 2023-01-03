@@ -228,6 +228,10 @@ int csm_script_main(int argc, char *argv[])
 				sent_done = true;
 			}
 			break;
+		case CSM_C2S_RUN_DEATH:
+			g_log_output.startLogging();
+			script.on_death();
+			break;
 		case CSM_C2S_RUN_MODCHANNEL_MESSAGE:
 			if (size >= sizeof(CSMC2SRunModchannelMessage)) {
 				CSMC2SRunModchannelMessage recv;

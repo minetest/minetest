@@ -220,6 +220,14 @@ bool CSMController::runHPModification(u16 hp)
 	return getDoneBool();
 }
 
+void CSMController::runDeath()
+{
+	if (!isStarted())
+		return;
+
+	listen(m_ipc.exchange(CSM_C2S_RUN_DEATH, m_timeout));
+}
+
 void CSMController::runModchannelMessage(const std::string &channel, const std::string &sender,
 		const std::string &message)
 {

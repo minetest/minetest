@@ -140,6 +140,17 @@ bool ScriptApiCSM::on_hp_modification(u16 hp)
 	return lua_toboolean(L, -1);
 }
 
+void ScriptApiCSM::on_death()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_death
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_death");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 bool ScriptApiCSM::on_inventory_open(const Inventory *inventory)
 {
 	SCRIPTAPI_PRECHECKHEADER
