@@ -114,6 +114,19 @@ bool ScriptApiCSM::on_formspec_input(const std::string &formname, const StringMa
 	return lua_toboolean(L, -1);
 }
 
+bool ScriptApiCSM::on_damage_taken(u16 damage)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_damage_taken
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_damage_taken");
+	// Call callbacks
+	lua_pushinteger(L, damage);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	return lua_toboolean(L, -1);
+}
+
 bool ScriptApiCSM::on_hp_modification(u16 hp)
 {
 	SCRIPTAPI_PRECHECKHEADER

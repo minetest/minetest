@@ -206,6 +206,17 @@ int csm_script_main(int argc, char *argv[])
 				sent_done = true;
 			}
 			break;
+		case CSM_C2S_RUN_DAMAGE_TAKEN:
+			if (size >= sizeof(CSMC2SRunDamageTaken)) {
+				CSMC2SRunDamageTaken recv;
+				memcpy(&recv, data, sizeof(recv));
+				g_log_output.startLogging();
+				CSMS2CDoneBool send;
+				send.value = script.on_damage_taken(recv.damage);
+				CSM_IPC(exchange(send));
+				sent_done = true;
+			}
+			break;
 		case CSM_C2S_RUN_HP_MODIFICATION:
 			if (size >= sizeof(CSMC2SRunHPModification)) {
 				CSMC2SRunHPModification recv;

@@ -53,7 +53,7 @@ public:
 	void runMinimapReady();
 	bool runSendingMessage(const std::string &message);
 	bool runReceivingMessage(const std::string &message);
-	bool runDamageTaken(u16 damage) {return false;}
+	bool runDamageTaken(u16 damage);
 	bool runHPModification(u16 hp);
 	void runDeath() {}
 	void runModchannelMessage(const std::string &channel, const std::string &sender,

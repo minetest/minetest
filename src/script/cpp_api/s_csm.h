@@ -48,6 +48,8 @@ public:
 
 	bool on_formspec_input(const std::string &formname, const StringMap &fields);
 
+	bool on_damage_taken(u16 damage);
+
 	bool on_hp_modification(u16 hp);
 
 	bool on_inventory_open(const Inventory *inventory);

@@ -198,6 +198,17 @@ bool CSMController::runReceivingMessage(const std::string &message)
 	return getDoneBool();
 }
 
+bool CSMController::runDamageTaken(u16 damage)
+{
+	if (!isStarted())
+		return false;
+
+	CSMC2SRunDamageTaken send;
+	send.damage = damage;
+	listen(m_ipc.exchange(send, m_timeout));
+	return getDoneBool();
+}
+
 bool CSMController::runHPModification(u16 hp)
 {
 	if (!isStarted())
