@@ -69,6 +69,7 @@ public:
 
 private:
 	void listen(bool succeeded);
+	bool getDoneBool();
 
 	Client *const m_client;
 	int m_timeout = 1000;

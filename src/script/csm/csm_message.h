@@ -117,7 +117,7 @@ enum CSMS2CMsgType {
 
 struct CSMS2CDoneBool {
 	CSMS2CMsgType type = CSM_S2C_DONE;
-	bool value;
+	char value;
 };
 
 struct CSMS2CLog {

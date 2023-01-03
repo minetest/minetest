@@ -181,11 +181,7 @@ bool CSMController::runSendingMessage(const std::string &message)
 	memcpy(send.data(), &type, sizeof(type));
 	memcpy(send.data() + sizeof(type), message.data(), message.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 bool CSMController::runReceivingMessage(const std::string &message)
@@ -199,11 +195,7 @@ bool CSMController::runReceivingMessage(const std::string &message)
 	memcpy(send.data(), &type, sizeof(type));
 	memcpy(send.data() + sizeof(type), message.data(), message.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 bool CSMController::runHPModification(u16 hp)
@@ -214,11 +206,7 @@ bool CSMController::runHPModification(u16 hp)
 	CSMC2SRunHPModification send;
 	send.hp = hp;
 	listen(m_ipc.exchange(send, m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 void CSMController::runModchannelMessage(const std::string &channel, const std::string &sender,
@@ -271,11 +259,7 @@ bool CSMController::runFormspecInput(const std::string &formname, const StringMa
 	}
 	std::string send = os.str();
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 bool CSMController::runInventoryOpen(const Inventory *inventory)
@@ -289,11 +273,7 @@ bool CSMController::runInventoryOpen(const Inventory *inventory)
 	inventory->serialize(os);
 	std::string send = os.str();
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThing &pointed)
@@ -309,11 +289,7 @@ bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThin
 	memcpy(send.data(), &header, sizeof(header));
 	memcpy(send.data() + sizeof(header), itemstring.data(), itemstring.size());
 	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 void CSMController::runPlacenode(const PointedThing &pointed, const ItemDefinition &def)
@@ -339,11 +315,7 @@ bool CSMController::runPunchnode(v3s16 pos, MapNode n)
 	send.pos = pos;
 	send.n = n;
 	listen(m_ipc.exchange(send, m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 bool CSMController::runDignode(v3s16 pos, MapNode n)
@@ -355,11 +327,7 @@ bool CSMController::runDignode(v3s16 pos, MapNode n)
 	send.pos = pos;
 	send.n = n;
 	listen(m_ipc.exchange(send, m_timeout));
-	CSMS2CDoneBool recv;
-	recv.value = false;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value;
+	return getDoneBool();
 }
 
 void CSMController::runStep(float dtime)
@@ -420,4 +388,13 @@ void CSMController::listen(bool succeeded)
 	}
 	stop();
 	errorstream << "Error executing CSM" << std::endl;
+}
+
+bool CSMController::getDoneBool()
+{
+	CSMS2CDoneBool recv;
+	recv.value = 0;
+	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
+		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
+	return recv.value != 0;
 }
