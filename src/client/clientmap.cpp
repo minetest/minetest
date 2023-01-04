@@ -389,8 +389,9 @@ void ClientMap::updateDrawList()
 			// * A near side can be visible but fully opaque by itself (e.g. ground at the 0 level)
 
 			// mesh solid sides are +Z-Z+Y-Y+X-X
-			// do not test sides where we are 'inside' the block's coordinates
-			u8 ignore_inner_sides = (look.X == 0 ? 3 : 0) |
+			// if we are inside the block's coordinates on an axis, 
+			// treat these sides as opaque, as they should not allow to reach the far sides
+			u8 block_inner_sides = (look.X == 0 ? 3 : 0) |
 				(look.Y == 0 ? 12 : 0) |
 				(look.Z == 0 ? 48 : 0);
 
@@ -400,10 +401,15 @@ void ClientMap::updateDrawList()
 					(look.Z > 0 ? 16 : 32);
 			
 			// This bitset is +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
-			u8 transparent_sides = (occlusion_culling_enabled && block) ? ~block->solid_sides : 0x3F;
+			// Get he block's transparent sides
+			u8 transparent_sides = (occlusion_culling_enabled && block && block_inner_sides != 0x3F) ? ~block->solid_sides : 0x3F;
+
+			// when we are inside the camera block, do not block any sides
+			if (block_inner_sides == 0x3F)
+				block_inner_sides = 0;
 
 			// compress block transparent sides to ZYX mask of see-through axes
-			u8 near_transparency = ((transparent_sides & near_inner_sides) | ignore_inner_sides) & 0x3F;
+			u8 near_transparency = ((transparent_sides & near_inner_sides) & ~block_inner_sides) & 0x3F;
 
 			near_transparency |= (near_transparency >> 1);
 			near_transparency = (near_transparency & 1) |
