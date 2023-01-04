@@ -417,7 +417,9 @@ void ClientMap::updateDrawList()
 			// * Any of the adjacent near sides is transparent (different axes)
 			// * The opposite near side (same axis) is transparent, if it is the dominant axis of the look vector
 
-			v3s16 precise_look = block_pos_nodes + MAP_BLOCKSIZE / 2 - cam_pos_nodes;
+			// Calculate vector from camera to mapblock center. Because we only need relation between
+			// coordinates we scale by 2 to avoid precision loss.
+			v3s16 precise_look = 2 * (block_pos_nodes - cam_pos_nodes) + MAP_BLOCKSIZE - 1;
 
 			// dominant axis flag
 			u8 dominant_axis = (abs(precise_look.X) > abs(precise_look.Y) && abs(precise_look.X) > abs(precise_look.Z)) |
