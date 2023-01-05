@@ -2011,7 +2011,7 @@ static void push_clouds(lua_State *L, const CloudParams &cloud_params)
 	lua_setfield(L, -2, "speed");
 }
 
-//set_celestial_vault(self)
+// set_celestial_vault(self, parameter table)
 int ObjectRef::l_set_celestial_vault(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
