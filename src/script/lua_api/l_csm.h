@@ -56,6 +56,9 @@ private:
 	// swap_node(pos, node)
 	static int l_swap_node(lua_State *L);
 
+	// get_meta(pos)
+	static int l_get_meta(lua_State *L);
+
 	// get_item_def(itemstring)
 	static int l_get_item_def(lua_State *L);
 

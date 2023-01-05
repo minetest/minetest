@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_csm_localplayer.h"
 #include "lua_api/l_csm_camera.h"
 #include "lua_api/l_csm_minimap.h"
+#include "lua_api/l_csm_nodemeta.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_util.h"
@@ -54,6 +55,7 @@ void CSMScripting::InitializeModApi(lua_State *L, int top)
 	ModApiCSM::Initialize(L, top);
 	ModApiItemMod::InitializeCSM(L, top);
 	ModApiUtil::InitializeCSM(L, top);
+	CSMNodeMetaRef::Register(L);
 	LuaCSMLocalPlayer::Register(L);
 	LuaCSMCamera::Register(L);
 	LuaCSMMinimap::Register(L);

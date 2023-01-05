@@ -120,6 +120,12 @@ enum CSMS2CMsgType {
 	CSM_S2C_LOG,
 	CSM_S2C_GET_NODE,
 	CSM_S2C_ADD_NODE,
+	CSM_S2C_NODE_META_CLEAR,
+	CSM_S2C_NODE_META_CONTAINS,
+	CSM_S2C_NODE_META_SET_STRING,
+	CSM_S2C_NODE_META_GET_STRINGS,
+	CSM_S2C_NODE_META_GET_KEYS,
+	CSM_S2C_NODE_META_GET_STRING,
 };
 
 struct CSMS2CDoneBool {
@@ -143,4 +149,34 @@ struct CSMS2CAddNode {
 	MapNode n;
 	v3s16 pos;
 	char remove_metadata = true;
+};
+
+struct CSMS2CNodeMetaClear {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_CLEAR;
+	v3s16 pos;
+};
+
+struct CSMS2CNodeMetaContains {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_CONTAINS;
+	v3s16 pos;
+};
+
+struct CSMS2CNodeMetaSetString {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_SET_STRING;
+	v3s16 pos;
+};
+
+struct CSMS2CNodeMetaGetStrings {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_STRINGS;
+	v3s16 pos;
+};
+
+struct CSMS2CNodeMetaGetKeys {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_KEYS;
+	v3s16 pos;
+};
+
+struct CSMS2CNodeMetaGetString {
+	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_STRING;
+	v3s16 pos;
 };

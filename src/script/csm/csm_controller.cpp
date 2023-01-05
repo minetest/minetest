@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "network/networkprotocol.h"
 #include "nodedef.h"
+#include "nodemetadata.h"
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
@@ -34,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fcntl.h>
 #include <signal.h>
 #include <spawn.h>
+#include <sstream>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -267,7 +269,7 @@ bool CSMController::runFormspecInput(const std::string &formname, const StringMa
 	if (!isStarted())
 		return false;
 
-	std::ostringstream os;
+	std::ostringstream os(std::ios::binary);
 	CSMC2SMsgType type = CSM_C2S_RUN_FORMSPEC_INPUT;
 	os.write((char *)&type, sizeof(type));
 	os << serializeString16(formname);
@@ -396,6 +398,100 @@ void CSMController::listen(bool succeeded)
 				m_client->addNode(recv.pos, recv.n, recv.remove_metadata);
 				int dummy;
 				succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_CLEAR:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaClear))) {
+				CSMS2CNodeMetaClear recv;
+				memcpy(&recv, data, sizeof(recv));
+				m_client->getEnv().getMap().removeNodeMetadata(recv.pos);
+				int dummy;
+				succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_CONTAINS:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaContains))) {
+				CSMS2CNodeMetaContains recv_header;
+				memcpy(&recv_header, data, sizeof(recv_header));
+				std::string name((char *)data + sizeof(recv_header),
+						size - sizeof(recv_header));
+				NodeMetadata *meta =
+						m_client->getEnv().getMap().getNodeMetadata(recv_header.pos);
+				bool contains = meta && meta->contains(name);
+				succeeded = m_ipc.exchange(contains, m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_SET_STRING:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaSetString))) {
+				std::istringstream is(std::string((char *)data, size), std::ios::binary);
+				CSMS2CNodeMetaSetString recv_header;
+				is.read((char *)&recv_header, sizeof(recv_header));
+				std::string name = deSerializeString16(is);
+				std::string var = deSerializeString16(is);
+				Map &map = m_client->getEnv().getMap();
+				NodeMetadata *meta = map.getNodeMetadata(recv_header.pos);
+				if (!meta && !var.empty()) {
+					meta = new NodeMetadata(m_client->idef());
+					if (!map.setNodeMetadata(recv_header.pos, meta)) {
+						delete meta;
+						meta = nullptr;
+					}
+				}
+				bool modified = meta && meta->setString(name, var);
+				succeeded = m_ipc.exchange(modified, m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_GET_STRINGS:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetStrings))) {
+				CSMS2CNodeMetaGetStrings recv;
+				memcpy(&recv, data, sizeof(recv));
+				NodeMetadata *meta = m_client->getEnv().getMap().getNodeMetadata(recv.pos);
+				std::ostringstream os(std::ios::binary);
+				if (meta) {
+					const StringMap &strings = meta->getStrings();
+					writeU32(os, strings.size());
+					for (const auto &pair : strings)
+						os << serializeString16(pair.first) << serializeString16(pair.second);
+				} else {
+					writeU32(os, 0);
+				}
+				std::string send = os.str();
+				succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_GET_KEYS:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetKeys))) {
+				CSMS2CNodeMetaGetKeys recv;
+				memcpy(&recv, data, sizeof(recv));
+				NodeMetadata *meta = m_client->getEnv().getMap().getNodeMetadata(recv.pos);
+				std::ostringstream os(std::ios::binary);
+				if (meta) {
+					const StringMap &strings = meta->getStrings();
+					writeU32(os, strings.size());
+					for (const auto &pair : strings)
+						os << serializeString16(pair.first);
+				} else {
+					writeU32(os, 0);
+				}
+				std::string send = os.str();
+				succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
+			}
+			break;
+		case CSM_S2C_NODE_META_GET_STRING:
+			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetString))) {
+				CSMS2CNodeMetaGetString recv_header;
+				memcpy(&recv_header, data, sizeof(recv_header));
+				std::string name((char *)data + sizeof(recv_header),
+						size - sizeof(recv_header));
+				NodeMetadata *meta =
+						m_client->getEnv().getMap().getNodeMetadata(recv_header.pos);
+				if (meta) {
+					const std::string &send = meta->getString(name, 2);
+					succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
+				} else {
+					int dummy;
+					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+				}
 			}
 			break;
 		case CSM_S2C_DONE:

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_csm.h"
+#include "l_csm_nodemeta.h"
 #include "l_internal.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -138,6 +139,13 @@ int ModApiCSM::l_swap_node(lua_State *L)
 	return 1;
 }
 
+// get_meta(pos)
+int ModApiCSM::l_get_meta(lua_State *L)
+{
+	CSMNodeMetaRef::create(L, read_v3s16(L, 1));
+	return 1;
+}
+
 // get_item_def(itemstring)
 int ModApiCSM::l_get_item_def(lua_State *L)
 {
@@ -201,6 +209,7 @@ void ModApiCSM::Initialize(lua_State *L, int top)
 	API_FCT(set_node);
 	API_FCT(add_node);
 	API_FCT(swap_node);
+	API_FCT(get_meta);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
 	API_FCT(get_builtin_path);

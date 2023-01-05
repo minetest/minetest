@@ -29,6 +29,7 @@ set(client_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_camera.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_client.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_csm.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_csm_nodemeta.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_localplayer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_mainmenu.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_minimap.cpp
