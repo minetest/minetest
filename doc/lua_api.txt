@@ -7267,10 +7267,9 @@ child will follow movement and rotation of that bone.
    * Passing no arguments resets every element of the vault to its default values.
      To reset just a single element, its specific function must be used instead.
 * `get_celestial_vault()`
-    * returns a table containing every celestial vault element of the player, in
-      the format `sky`, `sun`, `moon`, `stars` and `clouds` as tables. See their
-      corrispondent specific functions to know what each one of them contains (`get_sky()`, 
-      `get_sun()` etc).
+    * returns a table containing every celestial vault element of the player, with
+      `sky`, `sun`, `moon`, `stars` and `clouds` as tables. See their correspondent
+       functions to know what each one of them contains (`get_sky()`, `get_sun()` etc).
 * `set_sky(sky_parameters)`
     * The presence of the function `set_sun`, `set_moon` or `set_stars` indicates
       whether `set_sky` accepts this format. Check the legacy format otherwise.
