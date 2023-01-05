@@ -45,7 +45,7 @@ AppImage:
   arch: x86_64
 script: |
     # Remove any existent binaries
-    rm -rf AppDir appimage-build | true
+    rm -rf AppDir appimage-build || true
 
     # Compile and install binaries into AppDir
     # Minetest looks at usr/local/share for some reason
