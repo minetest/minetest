@@ -784,6 +784,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			shaders_header << "#define ENABLE_BLOOM_DEBUG 1\n";
 	}
 
+	if (g_settings->getBool("enable_auto_exposure"))
+		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
+
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();

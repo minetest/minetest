@@ -375,6 +375,7 @@ set(common_SRCS
 	itemdef.cpp
 	itemstackmetadata.cpp
 	light.cpp
+	lighting.cpp
 	log.cpp
 	main.cpp
 	map.cpp
