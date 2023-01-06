@@ -50,7 +50,7 @@ bool CSMNodeMetadata::setString(const std::string &name, const std::string &var)
 	CSMS2CNodeMetaSetString header;
 	header.pos = m_p;
 	os << std::string((char *)&header, sizeof(header))
-			<< serializeString16(name) << serializeString16(var);
+			<< serializeString16(name) << serializeString32(var);
 	std::string send = os.str();
 	CSM_IPC(exchange(send.size(), send.data()));
 	bool modified;
@@ -71,7 +71,7 @@ const StringMap &CSMNodeMetadata::getStrings(StringMap *place) const
 	place->reserve(n_fields);
 	for (u32 i = 0; i < n_fields; i++) {
 		std::string key = deSerializeString16(is);
-		(*place)[std::move(key)] = deSerializeString16(is);
+		(*place)[std::move(key)] = deSerializeString32(is);
 	}
 	return *place;
 }

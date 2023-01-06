@@ -427,7 +427,7 @@ void CSMController::listen(bool succeeded)
 				CSMS2CNodeMetaSetString recv_header;
 				is.read((char *)&recv_header, sizeof(recv_header));
 				std::string name = deSerializeString16(is);
-				std::string var = deSerializeString16(is);
+				std::string var = deSerializeString32(is);
 				Map &map = m_client->getEnv().getMap();
 				NodeMetadata *meta = map.getNodeMetadata(recv_header.pos);
 				if (!meta && !var.empty()) {
@@ -451,7 +451,7 @@ void CSMController::listen(bool succeeded)
 					const StringMap &strings = meta->getStrings();
 					writeU32(os, strings.size());
 					for (const auto &pair : strings)
-						os << serializeString16(pair.first) << serializeString16(pair.second);
+						os << serializeString16(pair.first) << serializeString32(pair.second);
 				} else {
 					writeU32(os, 0);
 				}
