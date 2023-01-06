@@ -299,6 +299,7 @@ void MeshUpdateWorkerThread::doUpdate()
 		MeshUpdateResult r;
 		r.p = q->p;
 		r.mesh = mesh_new;
+		r.solid_sides = get_solid_sides(q->data);
 		r.ack_block_to_server = q->ack_block_to_server;
 		r.urgent = q->urgent;
 
