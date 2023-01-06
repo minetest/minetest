@@ -96,19 +96,9 @@ RollbackManager::RollbackManager(const std::string & world_path,
 	verbosestream << "RollbackManager::RollbackManager(" << world_path
 		<< ")" << std::endl;
 
-	std::string txt_filename = world_path + DIR_DELIM "rollback.txt";
-	std::string migrating_flag = txt_filename + ".migrating";
 	database_path = world_path + DIR_DELIM "rollback.sqlite";
 
-	bool created = initDatabase();
-
-	if (fs::PathExists(txt_filename) && (created ||
-			fs::PathExists(migrating_flag))) {
-		std::ofstream of(migrating_flag.c_str());
-		of.close();
-		migrate(txt_filename);
-		fs::DeleteSingleFileOrEmptyDirectory(migrating_flag);
-	}
+	initDatabase();
 }
 
 
@@ -667,129 +657,6 @@ const std::list<RollbackAction> RollbackManager::getActionsSince(
 		time_t start_time, const std::string & actor)
 {
 	return rollbackActionsFromActionRows(getRowsSince(start_time, actor));
-}
-
-
-void RollbackManager::migrate(const std::string & file_path)
-{
-	std::cout << "Migrating from rollback.txt to rollback.sqlite." << std::endl;
-
-	std::ifstream fh(file_path.c_str(), std::ios::in | std::ios::ate);
-	if (!fh.good()) {
-		throw FileNotGoodException("Unable to open rollback.txt");
-	}
-
-	std::streampos file_size = fh.tellg();
-
-	if (file_size < 10) {
-		errorstream << "Empty rollback log." << std::endl;
-		return;
-	}
-
-	fh.seekg(0);
-
-	sqlite3_stmt *stmt_begin;
-	sqlite3_stmt *stmt_commit;
-	SQLOK(sqlite3_prepare_v2(db, "BEGIN", -1, &stmt_begin, NULL));
-	SQLOK(sqlite3_prepare_v2(db, "COMMIT", -1, &stmt_commit, NULL));
-
-	std::string bit;
-	int i = 0;
-	time_t start = time(0);
-	time_t t = start;
-	SQLRES(sqlite3_step(stmt_begin), SQLITE_DONE);
-	sqlite3_reset(stmt_begin);
-	do {
-		ActionRow row;
-		row.id = 0;
-
-		// Get the timestamp
-		std::getline(fh, bit, ' ');
-		bit = trim(bit);
-		if (!atoi(bit.c_str())) {
-			std::getline(fh, bit);
-			continue;
-		}
-		row.timestamp = atoi(bit.c_str());
-
-		// Get the actor
-		row.actor = getActorId(deSerializeJsonString(fh));
-
-		// Get the action type
-		std::getline(fh, bit, '[');
-		std::getline(fh, bit, ' ');
-
-		if (bit == "modify_inventory_stack") {
-			row.type = RollbackAction::TYPE_MODIFY_INVENTORY_STACK;
-			row.location = trim(deSerializeJsonString(fh));
-			std::getline(fh, bit, ' ');
-			row.list     = trim(deSerializeJsonString(fh));
-			std::getline(fh, bit, ' ');
-			std::getline(fh, bit, ' ');
-			row.index    = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ' ');
-			row.add      = (int)(trim(bit) == "add");
-			row.stack.deSerialize(deSerializeJsonString(fh));
-			row.stack.id = getNodeId(row.stack.name);
-			std::getline(fh, bit);
-		} else if (bit == "set_node") {
-			row.type = RollbackAction::TYPE_SET_NODE;
-			std::getline(fh, bit, '(');
-			std::getline(fh, bit, ',');
-			row.x       = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ',');
-			row.y       = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ')');
-			row.z       = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ' ');
-			row.oldNode = getNodeId(trim(deSerializeJsonString(fh)));
-			std::getline(fh, bit, ' ');
-			std::getline(fh, bit, ' ');
-			row.oldParam1 = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ' ');
-			row.oldParam2 = atoi(trim(bit).c_str());
-			row.oldMeta   = trim(deSerializeJsonString(fh));
-			std::getline(fh, bit, ' ');
-			row.newNode   = getNodeId(trim(deSerializeJsonString(fh)));
-			std::getline(fh, bit, ' ');
-			std::getline(fh, bit, ' ');
-			row.newParam1 = atoi(trim(bit).c_str());
-			std::getline(fh, bit, ' ');
-			row.newParam2 = atoi(trim(bit).c_str());
-			row.newMeta   = trim(deSerializeJsonString(fh));
-			std::getline(fh, bit, ' ');
-			std::getline(fh, bit, ' ');
-			std::getline(fh, bit);
-			row.guessed = (int)(trim(bit) == "actor_is_guess");
-		} else {
-			errorstream << "Unrecognized rollback action type \""
-				<< bit << "\"!" << std::endl;
-			continue;
-		}
-
-		registerRow(row);
-		++i;
-
-		if (time(0) - t >= 1) {
-			SQLRES(sqlite3_step(stmt_commit), SQLITE_DONE);
-			sqlite3_reset(stmt_commit);
-			t = time(0);
-			std::cout
-				<< " Done: " << static_cast<int>((static_cast<float>(fh.tellg()) / static_cast<float>(file_size)) * 100) << "%"
-				<< " Speed: " << i / (t - start) << "/second     \r" << std::flush;
-			SQLRES(sqlite3_step(stmt_begin), SQLITE_DONE);
-			sqlite3_reset(stmt_begin);
-		}
-	} while (fh.good());
-	SQLRES(sqlite3_step(stmt_commit), SQLITE_DONE);
-	sqlite3_reset(stmt_commit);
-
-	SQLOK(sqlite3_finalize(stmt_begin));
-	SQLOK(sqlite3_finalize(stmt_commit));
-
-	std::cout
-		<< " Done: 100%                                  " << std::endl
-		<< "Now you can delete the old rollback.txt file." << std::endl;
 }
 
 
