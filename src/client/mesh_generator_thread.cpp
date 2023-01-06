@@ -25,6 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/directiontables.h"
 
+static class BlockPlaceholder {
+public:
+	MapNode data[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
+
+	BlockPlaceholder()
+	{
+		for (std::size_t i = 0; i < MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE; i++)
+			data[i] = MapNode(CONTENT_IGNORE);
+	}
+
+} block_placeholder;
 /*
 	QueuedMeshUpdate
 */
@@ -66,6 +77,10 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 
 	MutexAutoLock lock(m_mutex);
 
+
+	v3s16 original_block = p;
+	p.X &= ~1; p.Y &= ~1; p.Z &= ~1;
+
 	/*
 		Mark the block as urgent if requested
 	*/
@@ -81,13 +96,13 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 			// NOTE: We are not adding a new position to the queue, thus
 			//       refcount_from_queue stays the same.
 			if(ack_block_to_server)
-				q->ack_block_to_server = true;
+				q->ack_list.push_back(original_block);
 			q->crack_level = m_client->getCrackLevel();
 			q->crack_pos = m_client->getCrackPos();
 			q->urgent |= urgent;
-			for (std::size_t i = 1; i < q->map_blocks.size(); i++) {
+			for (std::size_t i = 0; i < q->map_blocks.size(); i++) {
 				if (!q->map_blocks[i]) {
-					MapBlock *block = map->getBlockNoCreateNoEx(q->p + g_26dirs[i - 1]);
+					MapBlock *block = map->getBlockNoCreateNoEx(q->p + g_64dirs[i]);
 					if (block) {
 						block->refGrab();
 						q->map_blocks[i] = block;
@@ -103,10 +118,9 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		neighbors but get them if they aren't already cached)
 	*/
 	std::vector<MapBlock *> cached_blocks;
-	cached_blocks.reserve(3*3*3);
-	cached_blocks.push_back(main_block);
+	cached_blocks.reserve(4*4*4);
 	main_block->refGrab();
-	for (v3s16 dp : g_26dirs) {
+	for (v3s16 dp : g_64dirs) {
 		MapBlock *block = map->getBlockNoCreateNoEx(p + dp);
 		cached_blocks.push_back(block);
 		if (block)
@@ -118,7 +132,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	*/
 	QueuedMeshUpdate *q = new QueuedMeshUpdate;
 	q->p = p;
-	q->ack_block_to_server = ack_block_to_server;
+	q->ack_list.push_back(original_block);
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
 	q->urgent = urgent;
@@ -170,12 +184,16 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 {
 	MeshMakeData *data = new MeshMakeData(m_client, m_cache_enable_shaders);
 	q->data = data;
+	data->side_length = 2 * MAP_BLOCKSIZE;
 
 	data->fillBlockDataBegin(q->p);
 
-	for (MapBlock *block : q->map_blocks)
-		if (block)
-			data->fillBlockData(block->getPos() - q->p, block->getData());
+	for (std::size_t i = 0; i < 64; i++) {
+		MapBlock *block = q->map_blocks[i];
+		data->fillBlockData(g_64dirs[i], block ? block->getData() : block_placeholder.data);
+	}
+
+	// warningstream << "Pos " << q->p.X << " " << q->p.Y << " " << q->p.Z << " uncached " << uncache_count << std::endl;
 
 	data->setCrack(q->crack_level, q->crack_pos);
 	data->setSmoothLighting(m_cache_smooth_lighting);
@@ -208,7 +226,7 @@ void MeshUpdateWorkerThread::doUpdate()
 		r.p = q->p;
 		r.mesh = mesh_new;
 		r.solid_sides = get_solid_sides(q->data);
-		r.ack_block_to_server = q->ack_block_to_server;
+		r.ack_list = std::move(q->ack_list);
 		r.urgent = q->urgent;
 		r.map_blocks = q->map_blocks;
 

@@ -565,7 +565,6 @@ void Client::step(float dtime)
 				block->mesh = nullptr;
 
 				if (r.mesh) {
-					block->solid_sides = r.solid_sides;
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
 					if (minimap_mapblock == NULL)
 						do_mapper_update = false;
@@ -588,16 +587,22 @@ void Client::step(float dtime)
 				delete r.mesh;
 			}
 
+			for (auto p : r.solid_sides) {
+				auto block = m_env.getMap().getBlockNoCreateNoEx(p.first);
+				if (block)
+					block->solid_sides = p.second;
+			}
+
 			if (m_minimap && do_mapper_update)
 				m_minimap->addBlock(r.p, minimap_mapblock);
 
-			if (r.ack_block_to_server) {
+			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
 					blocks_to_ack.clear();
 				}
 
-				blocks_to_ack.emplace_back(r.p);
+				blocks_to_ack.emplace_back(p);
 			}
 
 			for (auto block : r.map_blocks)
