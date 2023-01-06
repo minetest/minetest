@@ -402,14 +402,16 @@ void ClientMap::updateDrawList()
 			
 			// This bitset is +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
 			// Get he block's transparent sides
-			u8 transparent_sides = (occlusion_culling_enabled && block && block_inner_sides != 0x3F) ? ~block->solid_sides : 0x3F;
+			u8 transparent_sides = (occlusion_culling_enabled && block) ? ~block->solid_sides : 0x3F;
+
+			// compress block transparent sides to ZYX mask of see-through axes
+			u8 near_transparency =  (block_inner_sides == 0x3F) ? near_inner_sides : (transparent_sides & near_inner_sides);
 
 			// when we are inside the camera block, do not block any sides
 			if (block_inner_sides == 0x3F)
 				block_inner_sides = 0;
 
-			// compress block transparent sides to ZYX mask of see-through axes
-			u8 near_transparency = ((transparent_sides & near_inner_sides) & ~block_inner_sides) & 0x3F;
+			near_transparency &= ~block_inner_sides & 0x3F;
 
 			near_transparency |= (near_transparency >> 1);
 			near_transparency = (near_transparency & 1) |
