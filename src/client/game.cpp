@@ -2544,7 +2544,6 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 
-
 #ifndef __ANDROID__
 		if (!input->isRandom()) {
 			// Mac OSX gets upset if this is set every frame
