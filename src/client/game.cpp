@@ -2540,9 +2540,10 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	else
 		device->getCursorControl()->setRelativeMode(true);
 #endif
+#endif
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
-#endif
+
 
 #ifndef __ANDROID__
 		if (!input->isRandom()) {
