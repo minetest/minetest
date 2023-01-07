@@ -53,7 +53,7 @@ struct PipelineContext
 
 /**
  * Base object that can be owned by RenderPipeline
- * 
+ *
  */
 class RenderPipelineObject
 {
@@ -74,7 +74,7 @@ public:
 	virtual u8 getTextureCount() = 0;
 
 	/**
-	 * Get a texture by index. 
+	 * Get a texture by index.
 	 * Returns nullptr is the texture does not exist.
 	 */
 	virtual video::ITexture *getTexture(u8 index) = 0;
@@ -119,7 +119,7 @@ public:
 
 	/**
 	 * Configure fixed-size texture for the specific index
-	 * 
+	 *
 	 * @param index index of the texture
 	 * @param size width and height of the texture in pixels
 	 * @param height height of the texture in pixels
@@ -130,7 +130,7 @@ public:
 
 	/**
 	 * Configure relative-size texture for the specific index
-	 * 
+	 *
 	 * @param index index of the texture
 	 * @param scale_factor relation of the texture dimensions to the screen dimensions
 	 * @param name unique name of the texture
@@ -141,6 +141,7 @@ public:
 	virtual u8 getTextureCount() override { return m_textures.size(); }
 	virtual video::ITexture *getTexture(u8 index) override;
 	virtual void reset(PipelineContext &context) override;
+	void swapTextures(u8 texture_a, u8 texture_b);
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
 
@@ -193,7 +194,7 @@ private:
 
 /**
  * Allows remapping texture indicies in another RenderSource.
- * 
+ *
  * @note all unmapped indexes are passed through to the underlying render source.
  */
 class RemappingSource : RenderSource
@@ -205,7 +206,7 @@ public:
 
 	/**
 	 * Maps texture index to a different index in the dependent source.
-	 * 
+	 *
 	 * @param index texture index as requested by the @see RenderStep.
 	 * @param target_index matching texture index in the underlying @see RenderSource.
 	 */
@@ -250,7 +251,7 @@ public:
 	virtual u8 getTextureCount() override;
 
 	/**
-	 * Get a texture by index. 
+	 * Get a texture by index.
 	 * Returns nullptr is the texture does not exist.
 	 */
 	virtual video::ITexture *getTexture(u8 index) override;
@@ -288,14 +289,14 @@ class RenderStep : virtual public RenderPipelineObject
 public:
 	/**
 	 * Assigns render source to this step.
-	 * 
+	 *
 	 * @param source source of rendering information
 	 */
 	virtual void setRenderSource(RenderSource *source) = 0;
 
 	/**
 	 * Assigned render target to this step.
-	 * 
+	 *
 	 * @param target render target to send output to.
 	 */
 	virtual void setRenderTarget(RenderTarget *target) = 0;
@@ -319,7 +320,7 @@ public:
 
 /**
  * Dynamically changes render target of another step.
- * 
+ *
  * This allows re-running parts of the pipeline with different outputs
  */
 class SetRenderTargetStep : public TrivialRenderStep
@@ -333,8 +334,23 @@ private:
 };
 
 /**
+ * Swaps two textures in the texture buffer.
+ *
+ */
+class SwapTexturesStep : public TrivialRenderStep
+{
+public:
+	SwapTexturesStep(TextureBuffer *buffer, u8 texture_a, u8 texture_b);
+	virtual void run(PipelineContext &context) override;
+private:
+	TextureBuffer *buffer;
+	u8 texture_a;
+	u8 texture_b;
+};
+
+/**
  * Render Pipeline provides a flexible way to execute rendering steps in the engine.
- * 
+ *
  * RenderPipeline also implements @see RenderStep, allowing for nesting of the pipelines.
  */
 class RenderPipeline : public RenderStep
@@ -342,7 +358,7 @@ class RenderPipeline : public RenderStep
 public:
 	/**
 	 * Add a step to the end of the pipeline
-	 * 
+	 *
 	 * @param step reference to a @see RenderStep implementation.
 	 */
 	RenderStep *addStep(RenderStep *step)
@@ -353,9 +369,9 @@ public:
 
 	/**
 	 * Capture ownership of a dynamically created @see RenderStep instance.
-	 * 
+	 *
 	 * RenderPipeline will delete the instance when the pipeline is destroyed.
-	 * 
+	 *
 	 * @param step reference to the instance.
 	 * @return RenderStep* value of the 'step' parameter.
 	 */

@@ -111,6 +111,7 @@ struct MeshUpdateResult
 {
 	v3s16 p = v3s16(-1338, -1338, -1338);
 	MapBlockMesh *mesh = nullptr;
+	u8 solid_sides = 0;
 	bool ack_block_to_server = false;
 	bool urgent = false;
 

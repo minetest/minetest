@@ -1,6 +1,8 @@
 local S = minetest.get_translator("testtools")
 local F = minetest.formspec_escape
 
+testtools = {}
+
 dofile(minetest.get_modpath("testtools") .. "/light.lua")
 dofile(minetest.get_modpath("testtools") .. "/privatizer.lua")
 dofile(minetest.get_modpath("testtools") .. "/particles.lua")
@@ -329,6 +331,51 @@ minetest.register_tool("testtools:entity_scaler", {
 		end
 	end,
 })
+
+
+-- value-weak tables, because we don't want to keep the objrefs of unloaded objects
+local branded_objects = setmetatable({}, {__mode = "v"})
+local next_brand_num = 1
+
+function testtools.get_branded_object(name)
+	if name:sub(1, 7) == "player:" then
+		return minetest.get_player_by_name(name:sub(8))
+	elseif name:sub(1, 4) == "obj:" then
+		return branded_objects[tonumber(name:sub(5)) or 0]
+	end
+	return nil
+end
+
+minetest.register_tool("testtools:branding_iron", {
+	description = S("Branding Iron") .."\n"..
+		S("Give an object a temporary name.") .."\n"..
+		S("Punch object: Brand the object") .."\n"..
+		S("Punch air: Brand yourself") .."\n"..
+		S("The name is valid until the object unloads.") .."\n"..
+		S("Devices that accept the returned name also accept \"player:<playername>\" for players."),
+	inventory_image = "testtools_branding_iron.png",
+	groups = { testtool = 1, disable_repair = 1 },
+	on_use = function(_itemstack, user, pointed_thing)
+		local obj
+		local msg
+		if pointed_thing.type == "object" then
+			obj = pointed_thing.ref
+			msg = "You can now refer to this object with: \"@1\""
+		elseif pointed_thing.type == "nothing" then
+			obj = user
+			msg = "You can now refer to yourself with: \"@1\""
+		else
+			return
+		end
+
+		local brand_num = next_brand_num
+		next_brand_num = next_brand_num + 1
+		branded_objects[brand_num] = obj
+
+		minetest.chat_send_player(user:get_player_name(), S(msg, "obj:"..brand_num))
+	end,
+})
+
 
 local selections = {}
 local entity_list

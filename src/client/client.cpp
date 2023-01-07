@@ -561,6 +561,7 @@ void Client::step(float dtime)
 				block->mesh = nullptr;
 
 				if (r.mesh) {
+					block->solid_sides = r.solid_sides;
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
 					if (minimap_mapblock == NULL)
 						do_mapper_update = false;

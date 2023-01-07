@@ -1,8 +1,12 @@
 #define rendered texture0
 
+struct ExposureParams {
+	float compensationFactor;
+};
+
 uniform sampler2D rendered;
-uniform mediump float exposureFactor;
 uniform mediump float bloomStrength;
+uniform ExposureParams exposureParams;
 
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
@@ -10,6 +14,7 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
+varying float exposure;
 
 void main(void)
 {
@@ -18,10 +23,6 @@ void main(void)
 	// translate to linear colorspace (approximate)
 	color = pow(color, vec3(2.2));
 
-	// Scale colors by luminance to amplify bright colors
-	// in SDR textures.
-	float luminance = dot(color, vec3(0.213, 0.515, 0.072));
-	luminance *= luminance;
-	color *= luminance * exposureFactor * bloomStrength;
+	color *= pow(2., exposure) * exposureParams.compensationFactor * bloomStrength;
 	gl_FragColor = vec4(color, 1.0); // force full alpha to avoid holes in the image.
 }

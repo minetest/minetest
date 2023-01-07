@@ -340,3 +340,8 @@ void final_color_blend(video::SColor *result,
 // TileFrame vector copy cost very much to client
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
+
+/// Return bitset of the sides of the mapblock that consist of solid nodes only
+/// Bits:
+/// 0 0 -Z +Z -X +X -Y +Y
+u8 get_solid_sides(MeshMakeData *data);
