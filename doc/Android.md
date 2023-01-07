@@ -27,6 +27,10 @@ When a menu or inventory is displayed:
 * drag and drop: touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
+### Limitaions
+* Android player have to double tap to place node, this can be annoying in some game/mod
+* Some old Android device only support 2 touch at a time, some game/mod contain button combination that need 3 touch (example: jump + Aux1 + hold)
+* Complicated control like pick up an cart in MTG can be difficult or impossible on Android device
 ## File Path
 There are some settings especially useful for Android users. Minetest's config
 file can usually be found at:
