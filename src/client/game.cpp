@@ -2533,6 +2533,7 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
+#ifndef __ANDROID__
 #if IRRLICHT_VERSION_MT_REVISION >= 9
 	if (isMenuActive())
 		device->getCursorControl()->setRelativeMode(false);
