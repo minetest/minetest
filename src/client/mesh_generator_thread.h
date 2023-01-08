@@ -29,17 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <memory>
 
-struct CachedMapBlockData
-{
-	v3s16 p = v3s16(-1337, -1337, -1337);
-	MapNode *data = nullptr; // A copy of the MapBlock's data member
-	int refcount_from_queue = 0;
-	std::time_t last_used_timestamp = std::time(0);
-
-	CachedMapBlockData() = default;
-	~CachedMapBlockData();
-};
-
 struct QueuedMeshUpdate
 {
 	v3s16 p = v3s16(-1337, -1337, -1337);
@@ -47,6 +36,7 @@ struct QueuedMeshUpdate
 	int crack_level = -1;
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
+	std::vector<MapBlock *> map_blocks;
 	bool urgent = false;
 
 	QueuedMeshUpdate() = default;
@@ -90,9 +80,7 @@ private:
 	Client *m_client;
 	std::vector<QueuedMeshUpdate *> m_queue;
 	std::unordered_set<v3s16> m_urgents;
-	std::unordered_map<v3s16, CachedMapBlockData *> m_cache;
 	std::unordered_set<v3s16> m_inflight_blocks;
-	u64 m_next_cache_cleanup; // milliseconds
 	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
@@ -100,10 +88,7 @@ private:
 	bool m_cache_smooth_lighting;
 	int m_meshgen_block_cache_size;
 
-	CachedMapBlockData *cacheBlock(Map *map, v3s16 p, UpdateMode mode,
-			size_t *cache_hit_counter = NULL);
-	CachedMapBlockData *getCachedBlock(const v3s16 &p);
-	void fillDataFromMapBlockCache(QueuedMeshUpdate *q);
+	void fillDataFromMapBlocks(QueuedMeshUpdate *q);
 	void cleanupCache();
 };
 
@@ -114,6 +99,7 @@ struct MeshUpdateResult
 	u8 solid_sides = 0;
 	bool ack_block_to_server = false;
 	bool urgent = false;
+	std::vector<MapBlock *> map_blocks;
 
 	MeshUpdateResult() = default;
 };

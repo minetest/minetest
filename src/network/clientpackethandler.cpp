@@ -322,10 +322,9 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 		/*
 			Create a new block
 		*/
-		block = new MapBlock(&m_env.getMap(), p, this);
+		block = sector->createBlankBlock(p.Y);
 		block->deSerialize(istr, m_server_ser_ver, false);
 		block->deSerializeNetworkSpecific(istr);
-		sector->insertBlock(block);
 	}
 
 	if (m_localdb) {

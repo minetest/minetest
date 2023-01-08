@@ -339,8 +339,12 @@ Client::~Client()
 	m_mesh_update_manager.wait();
 	
 	MeshUpdateResult r;
-	while (m_mesh_update_manager.getNextResult(r))
+	while (m_mesh_update_manager.getNextResult(r)) {
+		for (auto block : r.map_blocks)
+			if (block)
+				block->refDrop();
 		delete r.mesh;
+	}
 
 	delete m_inventory_from_server;
 
@@ -595,6 +599,10 @@ void Client::step(float dtime)
 
 				blocks_to_ack.emplace_back(r.p);
 			}
+
+			for (auto block : r.map_blocks)
+				if (block)
+					block->refDrop();
 		}
 		if (blocks_to_ack.size() > 0) {
 				// Acknowledge block(s)
