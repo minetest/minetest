@@ -952,6 +952,31 @@ int ModApiMainMenu::l_get_window_info(lua_State *L)
 	return 1;
 }
 
+/******************************************************************************/
+int ModApiMainMenu::l_get_screen_info(lua_State *L)
+{
+	lua_newtable(L);
+	int top = lua_gettop(L);
+	lua_pushstring(L,"density");
+	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
+	lua_settable(L, top);
+
+	const v2u32 &window_size = RenderingEngine::getWindowSize();
+	lua_pushstring(L,"window_width");
+	lua_pushnumber(L, window_size.X);
+	lua_settable(L, top);
+
+	lua_pushstring(L,"window_height");
+	lua_pushnumber(L, window_size.Y);
+	lua_settable(L, top);
+
+	lua_pushstring(L, "render_info");
+	lua_pushstring(L, wide_to_utf8(RenderingEngine::get_video_driver()->getName()).c_str());
+	lua_settable(L, top);
+	return 1;
+}
+/******************************************************************************/
+
 int ModApiMainMenu::l_get_active_renderer(lua_State *L)
 {
 	lua_pushstring(L, wide_to_utf8(RenderingEngine::get_video_driver()->getName()).c_str());
@@ -1099,6 +1124,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
+	API_FCT(get_screen_info);
 	API_FCT(get_window_info);
 	API_FCT(get_active_renderer);
 	API_FCT(get_min_supp_proto);
