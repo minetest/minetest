@@ -2133,7 +2133,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	/* Item selection using mouse wheel
 	 */
 	*new_playeritem = player->getWieldIndex();
-
 	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		    player->hud_hotbar_itemcount - 1);
@@ -2160,6 +2159,9 @@ void Game::processItemSelection(u16 *new_playeritem)
 			break;
 		}
 	}
+
+	// Clamp selection again in case it wasn't changed but max_item was
+	*new_playeritem = MYMIN(*new_playeritem, max_item);
 }
 
 
