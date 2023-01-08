@@ -6522,7 +6522,7 @@ generated parts of the map.
 
 Refer to the above section for the usual disclaimer on what environment isolation entails.
 
-* `minetest.register_mapgen_dofile(path)`: TODO
+* `minetest.register_mapgen_dofile(path)`:
     * Register a path to a Lua file to be imported when a mapgen environment
       is initialized. You'd put your mapgen-related code in there.
 

@@ -1,3 +1,7 @@
+
+core.register_mapgen_dofile(core.get_modpath(core.get_current_modname()) ..
+	DIR_DELIM .. "inside_mapgen_env.lua")
+
 local function test_random()
 	-- Try out PseudoRandom
 	local pseudo = PseudoRandom(13)

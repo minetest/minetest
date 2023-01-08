@@ -23,6 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "emerge.h"
 
+void ScriptApiMapgen::on_mods_loaded()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_mods_loaded");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
 
 void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 {

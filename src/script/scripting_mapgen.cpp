@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_mapgen.h"
 #include "emerge.h"
 #include "server.h"
-#include "filesys.h"
 #include "settings.h"
 #include "cpp_api/s_internal.h"
 #include "common/c_packer.h"
@@ -69,16 +68,6 @@ MapgenScripting::MapgenScripting(Server *server):
 	// Push builtin initialization type
 	lua_pushstring(L, "mapgen");
 	lua_setglobal(L, "INIT");
-
-	try {
-		loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",
-			BUILTIN_MOD_NAME);
-		checkSetByBuiltin();
-	} catch (const ModError &e) {
-		errorstream << "Execution of mapgen base environment failed: "
-			<< e.what() << std::endl;
-		FATAL_ERROR("Execution of mapgen base environment failed");
-	}
 }
 
 void MapgenScripting::InitializeModApi(lua_State *L, int top)
@@ -105,4 +94,5 @@ void MapgenScripting::InitializeModApi(lua_State *L, int top)
 	//ModApiMapgen: we should have part of these
 	ModApiServer::InitializeAsync(L, top);
 	ModApiUtil::InitializeAsync(L, top);
+	// TODO ^ these should also be renamed to InitializeRO or such
 }

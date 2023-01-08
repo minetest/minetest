@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "environment.h"
 #include "irrlicht_changes/printing.h"
+#include "filesys.h"
 #include "log.h"
 #include "map.h"
 #include "mapblock.h"
@@ -79,6 +80,8 @@ private:
 
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
+
+	void initScripting();
 
 	bool popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata);
 
@@ -677,6 +680,33 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 }
 
 
+void EmergeThread::initScripting()
+{
+	m_script = std::make_unique<MapgenScripting>(m_server);
+
+	try {
+		m_script->loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",
+			BUILTIN_MOD_NAME);
+		m_script->checkSetByBuiltin();
+	} catch (const ModError &e) {
+		errorstream << "Execution of mapgen base environment failed: "
+			<< e.what() << std::endl;
+		FATAL_ERROR("Execution of mapgen base environment failed");
+	}
+
+	const auto &list = m_server->m_mapgen_init_files;
+	try {
+		for (auto &it : list)
+			m_script->loadMod(it.second, it.first);
+		
+		m_script->on_mods_loaded();
+	} catch (const ModError &e) {
+		errorstream << "Failed to load mod script inside mapgen environment." << std::endl;
+		m_server->setAsyncFatalError(e.what());
+	}
+}
+
+
 void *EmergeThread::run()
 {
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -689,7 +719,7 @@ void *EmergeThread::run()
 	m_mapgen = m_emerge->m_mapgens[id];
 	enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 
-	m_script = std::make_unique<MapgenScripting>(m_server);
+	initScripting();
 
 	try {
 	while (!stopRequested()) {
@@ -724,7 +754,7 @@ void *EmergeThread::run()
 
 				try {
 					m_script->on_generated(&bmdata);
-				} catch (LuaError &e) {
+				} catch (const LuaError &e) {
 					m_server->setAsyncFatalError(e);
 				}
 			}
