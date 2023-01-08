@@ -73,6 +73,52 @@ minetest.register_chatcommand("bench_content2name", {
 	end,
 })
 
+_G._bench_get_node_data = setmetatable({}, {__mode = "v"})
+
+local get_node = minetest.get_node
+local function bench_get_node_inner(t, pos)
+	local node = get_node(pos)
+	t[node.name] = node
+end
+
+local function bench_get_node(pos)
+	local t = _G._bench_get_node_data
+
+	local start = minetest.get_us_time()
+
+	for i = 1, 1000000 do
+		bench_get_node_inner(t, pos)
+	end
+
+	local finish = minetest.get_us_time()
+
+	return (finish - start) / 1000
+end
+
+if minetest.global_exists("jit") then
+	-- Prevent trace looping for a more realistic benchmark.
+	jit.off(bench_get_node)
+end
+
+minetest.register_chatcommand("bench_get_node", {
+	params = "",
+	description = "Benchmark: Getting nodes",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		local pos = player and player:get_pos()
+		if not pos then
+			return false, "Cannot get player position"
+		end
+
+		minetest.chat_send_player(name, "Benchmarking minetest.get_node with FFI " ..
+			(using_ffi and "enabled" or "disabled"))
+		bench_get_node(pos)
+		minetest.chat_send_player(name, "Warming up finished, now benchmarking ...")
+		local time = bench_get_node(pos)
+		return true, ("Time: %.2f ms"):format(time)
+	end,
+})
+
 minetest.register_chatcommand("bench_bulk_set_node", {
 	params = "",
 	description = "Benchmark: Bulk-set 99×99×99 stone nodes",

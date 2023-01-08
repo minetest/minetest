@@ -36,6 +36,7 @@ extern "C" {
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
+#include "mapnode.h"
 #include "itemgroup.h"
 #include "itemdef.h"
 #include "c_types.h"
@@ -46,7 +47,6 @@ extern "C" {
 
 namespace Json { class Value; }
 
-struct MapNode;
 class NodeDefManager;
 struct PointedThing;
 struct ItemStack;
@@ -205,3 +205,10 @@ bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res);
 
 void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied);
+
+static_assert(sizeof(MapNode) == 4, "Node/bit conversion must be reworked");
+
+inline u32 node_to_bits(MapNode n)
+{
+	return (u32)n.getContent() | ((u32)n.getParam1() << 16) | ((u32)n.getParam2() << 24);
+}

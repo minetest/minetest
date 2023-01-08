@@ -103,6 +103,12 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 #endif
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
+	// Expose script API to LuaJIT for FFI purposes
+	lua_pushinteger(m_luastack, CUSTOM_RIDX_SCRIPTAPI);
+	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "CUSTOM_RIDX_SCRIPTAPI");
+	lua_pushboolean(m_luastack, INDIRECT_SCRIPTAPI_RIDX);
+	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "INDIRECT_SCRIPTAPI_RIDX");
+
 	lua_pushcfunction(m_luastack, script_error_handler);
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
 

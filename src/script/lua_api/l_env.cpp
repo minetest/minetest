@@ -1476,3 +1476,25 @@ void ModApiEnvMod::InitializeClient(lua_State *L, int top)
 	API_FCT(line_of_sight);
 	API_FCT(raycast);
 }
+
+FFI_FCT(int32_t, get_node, void *script, double x, double y, double z)
+{
+	ServerEnvironment &env = ((ScriptApiBase *)script)->getServer()->getEnv();
+	v3s16 pos = doubleToInt(v3d(x, y, z), 1.0);
+
+	return node_to_bits(env.getMap().getNode(pos));
+}
+
+FFI_FCT(int64_t, get_node_or_neg, void *script, double x, double y, double z)
+{
+	ServerEnvironment &env = ((ScriptApiBase *)script)->getServer()->getEnv();
+	v3s16 pos = doubleToInt(v3d(x, y, z), 1.0);
+
+	bool pos_ok;
+	MapNode n = env.getMap().getNode(pos, &pos_ok);
+	if (pos_ok) {
+		return node_to_bits(n);
+	} else {
+		return -1;
+	}
+}
