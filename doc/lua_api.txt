@@ -3686,6 +3686,10 @@ Helper functions
     * `random_func` defaults to `math.random`. This function receives two
       integers as arguments and should return a random integer inclusively
       between them.
+* `table.new(a, h)`: returns a table
+    * Returns an empty table with `a` spaces preallocated in the array part and
+      `h` spaces preallocated in the hash part.
+    * Useful for avoiding unnecessary allocations when filling large tables.
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node

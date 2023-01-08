@@ -128,6 +128,9 @@ private:
 	// set_last_run_mod(modname)
 	static int l_set_last_run_mod(lua_State *L);
 
+	// table.new(a, h) polyfill
+	static int l_table_new(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);

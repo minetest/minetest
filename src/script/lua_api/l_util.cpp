@@ -637,6 +637,18 @@ int ModApiUtil::l_set_last_run_mod(lua_State *L)
 	return 0;
 }
 
+// table.new(a, h) polyfill
+// Moved from core.table_new to table.new in builtin/common/misc_helpers.lua,
+// unless LuaJIT's builtin table.new is available
+int ModApiUtil::l_table_new(lua_State *L)
+{
+	constexpr lua_Integer min = 0, max = INT_MAX;
+	int a = std::max(min, std::min(max, luaL_checkinteger(L, 1)));
+	int h = std::max(min, std::min(max, luaL_checkinteger(L, 2)));
+	lua_createtable(L, a, h);
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(log);
@@ -683,6 +695,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
 
+	API_FCT(table_new);
+
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
 }
@@ -708,6 +722,8 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(sha1);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
+
+	API_FCT(table_new);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
@@ -751,6 +767,8 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
+
+	API_FCT(table_new);
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");

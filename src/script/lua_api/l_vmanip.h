@@ -61,7 +61,7 @@ private:
 	static int l_get_emerged_area(lua_State *L);
 
 public:
-	MMVManip *vm = nullptr;
+	MMVManip *const vm = nullptr;
 
 	LuaVoxelManip(MMVManip *mmvm, bool is_mapgen_vm);
 	LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2);

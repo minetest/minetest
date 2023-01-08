@@ -132,6 +132,9 @@ struct ContentFeatures;
 
 /*
 	This is the stuff what the whole world consists of.
+
+	ATTENTION: There is a duplicate of this struct definition in
+	builtin/ffi_overrides/voxelmanip.lua. Don't let it get out of sync!
 */
 
 

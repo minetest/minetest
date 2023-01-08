@@ -387,10 +387,9 @@ LuaVoxelManip::LuaVoxelManip(Map *map) : vm(new MMVManip(map))
 {
 }
 
-LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2)
+LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2):
+	vm(new MMVManip(map))
 {
-	vm = new MMVManip(map);
-
 	v3s16 bp1 = getNodeBlockPos(p1);
 	v3s16 bp2 = getNodeBlockPos(p2);
 	sortBoxVerticies(bp1, bp2);
@@ -482,3 +481,32 @@ const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, get_emerged_area),
 	{0,0}
 };
+
+// LuaJIT FFI functions that are used in builtin/ffi_overrides/voxelmanip.lua.
+
+FFI_FCT(bool, vm_lock_area, void *ud)
+{
+	MMVManip *vm = (*(LuaVoxelManip**)ud)->vm;
+	if (vm->m_area_locked)
+		return false;
+	vm->m_area_locked = true;
+	return true;
+}
+
+FFI_FCT(void, vm_unlock_area, void *ud)
+{
+	MMVManip *vm = (*(LuaVoxelManip**)ud)->vm;
+	vm->m_area_locked = false;
+}
+
+FFI_FCT(MapNode*, vm_get_data, void *ud)
+{
+	MMVManip *vm = (*(LuaVoxelManip**)ud)->vm;
+	return vm->m_data;
+}
+
+FFI_FCT(int32_t, vm_get_volume, void *ud)
+{
+	MMVManip *vm = (*(LuaVoxelManip**)ud)->vm;
+	return vm->m_area.getVolume();
+}

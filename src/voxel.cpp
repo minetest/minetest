@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "voxel.h"
+#include "debug.h"
 #include "map.h"
 #include "gettime.h"
 #include "nodedef.h"
@@ -40,6 +41,9 @@ VoxelManipulator::~VoxelManipulator()
 
 void VoxelManipulator::clear()
 {
+	if (m_area_locked)
+		throw BaseException("Cannot clear a VoxelManipulator while its area is locked");
+
 	// Reset area to volume=0
 	m_area = VoxelArea();
 	delete[] m_data;
@@ -135,6 +139,9 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	// Cancel if m_area already contains the requested area
 	if(m_area.contains(area))
 		return;
+
+	if (m_area_locked)
+		throw BaseException("Cannot add to a VoxelManipulator's area while it is locked");
 
 	TimeTaker timer("addArea", &addarea_time);
 

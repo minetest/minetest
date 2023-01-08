@@ -79,7 +79,7 @@ public:
 		Modifying methods
 	*/
 
-	void addArea(const VoxelArea &a)
+	void addArea(const VoxelArea &a) noexcept
 	{
 		if (hasEmptyExtent())
 		{
@@ -95,7 +95,7 @@ public:
 		cacheExtent();
 	}
 
-	void addPoint(const v3s16 &p)
+	void addPoint(const v3s16 &p) noexcept
 	{
 		if(hasEmptyExtent())
 		{
@@ -114,7 +114,7 @@ public:
 	}
 
 	// Pad with d nodes
-	void pad(const v3s16 &d)
+	void pad(const v3s16 &d) noexcept
 	{
 		MinEdge -= d;
 		MaxEdge += d;
@@ -124,7 +124,7 @@ public:
 		const methods
 	*/
 
-	const v3s16 &getExtent() const
+	const v3s16 &getExtent() const noexcept
 	{
 		return m_cache_extent;
 	}
@@ -132,17 +132,17 @@ public:
 	/* Because MaxEdge and MinEdge are included in the voxel area an empty extent
 	 * is not represented by (0, 0, 0), but instead (-1, -1, -1)
 	 */
-	bool hasEmptyExtent() const
+	bool hasEmptyExtent() const noexcept
 	{
 		return MaxEdge - MinEdge == v3s16(-1, -1, -1);
 	}
 
-	s32 getVolume() const
+	s32 getVolume() const noexcept
 	{
 		return (s32)m_cache_extent.X * (s32)m_cache_extent.Y * (s32)m_cache_extent.Z;
 	}
 
-	bool contains(const VoxelArea &a) const
+	bool contains(const VoxelArea &a) const noexcept
 	{
 		// No area contains an empty area
 		// NOTE: Algorithms depend on this, so do not change.
@@ -155,7 +155,7 @@ public:
 			a.MinEdge.Z >= MinEdge.Z && a.MaxEdge.Z <= MaxEdge.Z
 		);
 	}
-	bool contains(v3s16 p) const
+	bool contains(v3s16 p) const noexcept
 	{
 		return(
 			p.X >= MinEdge.X && p.X <= MaxEdge.X &&
@@ -163,22 +163,22 @@ public:
 			p.Z >= MinEdge.Z && p.Z <= MaxEdge.Z
 		);
 	}
-	bool contains(s32 i) const
+	bool contains(s32 i) const noexcept
 	{
 		return (i >= 0 && i < getVolume());
 	}
-	bool operator==(const VoxelArea &other) const
+	bool operator==(const VoxelArea &other) const noexcept
 	{
 		return (MinEdge == other.MinEdge
 				&& MaxEdge == other.MaxEdge);
 	}
 
-	VoxelArea operator+(const v3s16 &off) const
+	VoxelArea operator+(const v3s16 &off) const noexcept
 	{
 		return {MinEdge+off, MaxEdge+off};
 	}
 
-	VoxelArea operator-(const v3s16 &off) const
+	VoxelArea operator-(const v3s16 &off) const noexcept
 	{
 		return {MinEdge-off, MaxEdge-off};
 	}
@@ -265,14 +265,14 @@ public:
 	/*
 		Translates position from virtual coordinates to array index
 	*/
-	s32 index(s16 x, s16 y, s16 z) const
+	s32 index(s16 x, s16 y, s16 z) const noexcept
 	{
 		s32 i = (s32)(z - MinEdge.Z) * m_cache_extent.Y * m_cache_extent.X
 			+ (y - MinEdge.Y) * m_cache_extent.X
 			+ (x - MinEdge.X);
 		return i;
 	}
-	s32 index(v3s16 p) const
+	s32 index(v3s16 p) const noexcept
 	{
 		return index(p.X, p.Y, p.Z);
 	}
@@ -280,7 +280,7 @@ public:
 	/**
 	 * Translate index in the X coordinate
 	 */
-	static void add_x(const v3s16 &extent, u32 &i, s16 a)
+	static void add_x(const v3s16 &extent, u32 &i, s16 a) noexcept
 	{
 		i += a;
 	}
@@ -288,7 +288,7 @@ public:
 	/**
 	 * Translate index in the Y coordinate
 	 */
-	static void add_y(const v3s16 &extent, u32 &i, s16 a)
+	static void add_y(const v3s16 &extent, u32 &i, s16 a) noexcept
 	{
 		i += a * extent.X;
 	}
@@ -296,7 +296,7 @@ public:
 	/**
 	 * Translate index in the Z coordinate
 	 */
-	static void add_z(const v3s16 &extent, u32 &i, s16 a)
+	static void add_z(const v3s16 &extent, u32 &i, s16 a) noexcept
 	{
 		i += a * extent.X * extent.Y;
 	}
@@ -304,7 +304,7 @@ public:
 	/**
 	 * Translate index in space
 	 */
-	static void add_p(const v3s16 &extent, u32 &i, v3s16 a)
+	static void add_p(const v3s16 &extent, u32 &i, v3s16 a) noexcept
 	{
 		i += a.Z * extent.X * extent.Y + a.Y * extent.X + a.X;
 	}
@@ -323,7 +323,7 @@ public:
 	v3s16 MinEdge = v3s16(1,1,1);
 	v3s16 MaxEdge;
 private:
-	void cacheExtent()
+	void cacheExtent() noexcept
 	{
 		m_cache_extent = MaxEdge - MinEdge + v3s16(1,1,1);
 	}
@@ -390,7 +390,7 @@ public:
 
 		return m_data[m_area.index(p)];
 	}
-	MapNode getNodeNoExNoEmerge(const v3s16 &p)
+	MapNode getNodeNoExNoEmerge(const v3s16 &p) const noexcept
 	{
 		if (!m_area.contains(p))
 			return {CONTENT_IGNORE};
@@ -400,12 +400,12 @@ public:
 	}
 	// Stuff explodes if non-emerged area is touched with this.
 	// Emerge first, and check VOXELFLAG_NO_DATA if appropriate.
-	MapNode & getNodeRefUnsafe(const v3s16 &p)
+	MapNode & getNodeRefUnsafe(const v3s16 &p) noexcept
 	{
 		return m_data[m_area.index(p)];
 	}
 
-	const MapNode & getNodeRefUnsafeCheckFlags(const v3s16 &p)
+	const MapNode & getNodeRefUnsafeCheckFlags(const v3s16 &p) const noexcept
 	{
 		s32 index = m_area.index(p);
 
@@ -415,15 +415,15 @@ public:
 		return m_data[index];
 	}
 
-	u8 & getFlagsRefUnsafe(const v3s16 &p)
+	u8 & getFlagsRefUnsafe(const v3s16 &p) noexcept
 	{
 		return m_flags[m_area.index(p)];
 	}
 
-	bool exists(const v3s16 &p)
+	bool exists(const v3s16 &p) const noexcept
 	{
 		return m_area.contains(p) &&
-			!(getFlagsRefUnsafe(p) & VOXELFLAG_NO_DATA);
+			!(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA);
 	}
 
 	void setNode(const v3s16 &p, const MapNode &n)
@@ -446,7 +446,7 @@ public:
 		This is convenient but slower than playing around directly
 		with the m_data table with indices.
 	*/
-	bool setNodeNoEmerge(const v3s16 &p, MapNode n)
+	bool setNodeNoEmerge(const v3s16 &p, MapNode n) noexcept
 	{
 		if(!m_area.contains(p))
 			return false;
@@ -492,6 +492,12 @@ public:
 		MaxEdge is 1 higher than maximum allowed position
 	*/
 	VoxelArea m_area;
+
+	/*
+		Lock to prevent addArea() when m_data is being directly accessed
+		This is to prevent invalid memory access
+	*/
+	bool m_area_locked = false;
 
 	/*
 		nullptr if data size is 0 (extent (0,0,0))
