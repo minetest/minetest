@@ -92,7 +92,7 @@ void GameUI::init()
 	m_guitext_profiler = gui::StaticText::add(guienv, L"<Profiler>",
 		core::rect<s32>(0, 0, 0, 0), false, false, guiroot);
 	m_guitext_profiler->setOverrideFont(g_fontengine->getFont(
-		g_fontengine->getDefaultFontSize() * 0.85f, FM_Mono));
+		g_fontengine->getDefaultFontSize() * 0.9f, FM_Mono));
 	m_guitext_profiler->setVisible(false);
 }
 
@@ -276,7 +276,7 @@ void GameUI::updateProfiler()
 
 		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
 				getDimension(str.c_str());
-		core::position2di upper_left(6, 50);
+		core::position2di upper_left(6, m_guitext->getTextHeight() * 2.5f);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
 		lower_right.Y += size.Height;
