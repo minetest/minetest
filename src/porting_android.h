@@ -67,6 +67,13 @@ void openURIAndroid(const std::string &url);
 void shareFileAndroid(const std::string &path);
 
 /**
+ * Shows/hides notification that the player is playing in a world
+ *
+ * @param show whether to show/hide the notification
+ */
+void setPlayingNowNotification(bool show);
+
+/**
  * WORKAROUND for not working callbacks from java -> c++
  * get current state of input dialog
  */
