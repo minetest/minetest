@@ -177,7 +177,7 @@ int MetaDataRef::l_get_float(lua_State *L)
 
 	std::string str_;
 	const std::string &str = meta->getString(name, &str_);
-	lua_pushnumber(L, stof(str));
+	lua_pushnumber(L, atof(str.c_str()));
 	return 1;
 }
 
@@ -188,8 +188,8 @@ int MetaDataRef::l_set_float(lua_State *L)
 
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
-	float a = readParam<float>(L, 3);
-	std::string str = ftos(a);
+	luaL_checknumber(L, 3);
+	std::string str = readParam<std::string>(L, 3);
 
 	IMetadata *meta = ref->getmeta(true);
 	if (meta != NULL && meta->setString(name, str))
