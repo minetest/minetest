@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-09 09:54+0000\n"
-"Last-Translator: Filip <fefflet@gmail.com>\n"
+"PO-Revision-Date: 2023-01-09 09:56+0000\n"
+"Last-Translator: Kristian <macrofag@protonmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -1415,10 +1415,10 @@ msgstr ""
 "- %s: hoppe/klatre\n"
 "- %s: snige/gå nedad\n"
 "- %s: smid genstand\n"
-"- %s: inventar\n"
-"- Mus: vende rundt/kigge\n"
-"- Musehjul: vælge genstand\n"
-"- %s: snakke (chat)\n"
+"- %s: Oppakning\n"
+"- Mus: vend rundt/kig\n"
+"- Musehjul: vælg genstand\n"
+"- %s: skriven (chat)\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1564,16 +1564,15 @@ msgstr "Multiplayer"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr "Noclip-mode deaktiveret"
+msgstr "Nocliptilstand deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "Skade aktiveret"
+msgstr "Nocliptilstand aktiveret"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr "Noclip tilstand er slået til (bemærk: ingen 'noclip' rettighed)"
+msgstr "Noclip tilstand er aktiveret (bemærk: ingen 'noclip' rettighed)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1875,11 +1874,11 @@ msgstr "OEM Ryd"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Side nedad"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Side opad"
 
 #: src/client/keycode.cpp
 msgid "Pause"
