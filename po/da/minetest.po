@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-09 09:56+0000\n"
-"Last-Translator: Filip <fefflet@gmail.com>\n"
+"PO-Revision-Date: 2023-01-09 10:02+0000\n"
+"Last-Translator: Kristian <macrofag@protonmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -874,7 +874,7 @@ msgid ""
 "and texture packs in a file manager / explorer."
 msgstr ""
 "Åbner stien som indeholder brugeroprettede verdener, spil, mods,\n"
-"og teksturoakker i en stifinder."
+"og teksturpakker i en stifinder."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -1973,16 +1973,17 @@ msgstr "Minikorttast"
 #: src/client/minimap.cpp
 #, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr ""
+msgstr "Minikort i radartilstand, zoom x%d"
 
 #: src/client/minimap.cpp
 #, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr ""
+msgstr "Minikort i overfladetilstand, zoom x%d"
 
 #: src/client/minimap.cpp
+#, fuzzy
 msgid "Minimap in texture mode"
-msgstr ""
+msgstr "Minikort i texturtilstand"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
