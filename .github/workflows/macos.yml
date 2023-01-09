@@ -47,7 +47,7 @@ jobs:
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
             -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
-            -INSTALL_DEVTEST=TRUE
+            -DINSTALL_DEVTEST=TRUE
           make -j2
           make install
 
