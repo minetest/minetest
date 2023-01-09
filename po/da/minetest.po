@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-10 19:50+0000\n"
-"Last-Translator: Filip <fefflet@gmail.com>\n"
+"PO-Revision-Date: 2023-01-11 21:48+0000\n"
+"Last-Translator: Kristian <macrofag@protonmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -1697,14 +1697,13 @@ msgid "HUD shown"
 msgstr "HUD vist"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Profiler hidden"
-msgstr "Profilering skjult"
+msgstr "Profiler skjult"
 
 #: src/client/gameui.cpp
-#, c-format, fuzzy
+#, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr "Profilering vist (side %d af %d)"
+msgstr "Profiler vist (side %d af %d)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
@@ -1990,12 +1989,11 @@ msgid "%s is missing:"
 msgstr "%s mangler:"
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
-"Installér og aktivér de påkrævede mods, eller afaktivér de mods som fører "
-"til fejlen."
+"Installér og aktivér de påkrævede mods, eller deaktivér de mods forsager "
+"fejlen."
 
 #: src/content/mod_configuration.cpp
 msgid ""
@@ -2006,7 +2004,7 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Ingen afhængigheder."
+msgstr "Nogen mods har uopfyldte påkrævede grundlag:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2021,9 +2019,8 @@ msgid "Proceed"
 msgstr "Fortsæt"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Brug\" = klatre ned"
+msgstr "\"Aux1\" = klatre ned"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -2043,7 +2040,7 @@ msgstr "Baglæns"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Blokafgrænsninger"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2063,7 +2060,7 @@ msgstr "Konsol"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "Sænk afstand"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -2085,7 +2082,7 @@ msgstr "Fremad"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Øg afstand"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -2104,8 +2101,9 @@ msgid "Key already in use"
 msgstr "Tast allerede i brug"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Keybindings."
-msgstr ""
+msgstr "Tastebindinger."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2136,14 +2134,12 @@ msgid "Sneak"
 msgstr "Snige"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "Omstil flyvning"
+msgstr "Slå HUD til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Omstil hurtig"
+msgstr "Slå chat log til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -2154,14 +2150,12 @@ msgid "Toggle fly"
 msgstr "Omstil flyvning"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Omstil flyvning"
+msgstr "Slå tåge til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Omstil fylde"
+msgstr "Slå minikort til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
@@ -2197,12 +2191,11 @@ msgid "Exit"
 msgstr "Afslut"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "Lydløs"
+msgstr "Sat på lydløs"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
 msgstr "Lydstyrke: %d%%"
 
@@ -2217,6 +2210,8 @@ msgstr "da"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Navnet er ikke registreret. Klik \"Registrer\" for at oprette en konto på "
+"denne server"
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
@@ -2227,6 +2222,9 @@ msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) Fikserer det virtuelle joysticks position. \n"
+"Hvis dette er slået fra vil joysticket vende tilbage til den oprindelige "
+"position."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2234,6 +2232,9 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Brug det virtuelle joystick til at aktivere \"Aux1\" knappen.\n"
+"Hvis dette er slået til, vil joysticket også aktivere \"Aux1\" når det er "
+"udenfor hovedcirklen."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
