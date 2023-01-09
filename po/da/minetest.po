@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-09 09:50+0000\n"
-"Last-Translator: Kristian <macrofag@protonmail.com>\n"
+"PO-Revision-Date: 2023-01-09 09:54+0000\n"
+"Last-Translator: Filip <fefflet@gmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -1390,7 +1390,7 @@ msgid "Continue"
 msgstr "Fortsæt"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1415,10 +1415,8 @@ msgstr ""
 "- %s: hoppe/klatre\n"
 "- %s: snige/gå nedad\n"
 "- %s: smid genstand\n"
-"- %s: medbragt/lager\n"
+"- %s: inventar\n"
 "- Mus: vende rundt/kigge\n"
-"- Mus venstre: grave/slå\n"
-"- Mus højre: placere/bruge\n"
 "- Musehjul: vælge genstand\n"
 "- %s: snakke (chat)\n"
 
@@ -1440,12 +1438,10 @@ msgid "Debug info and profiler graph hidden"
 msgstr "Fejlretningsinfo og profileringsgraf skjult"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info shown"
-msgstr "Tast til aktivering af fejlsøgningsinfo"
+msgstr "Vis fejlsøgningsinformation"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "Fejlretningsinfo, profileringsgraf og wireramme skjult"
 
@@ -1486,9 +1482,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Slog ubegrænset sigtbarhed til"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Opretter klient ..."
+msgstr "Opretter klient: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1499,42 +1495,36 @@ msgid "Exit to OS"
 msgstr "Afslut til operativsystemet"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Hurtig tilstandshastighed deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Hurtig tilstandshastighed slået til"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
 msgstr "Hurtig-modus slået til (bemærk: ingen 'hurtig' rettighed)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Fly-mode deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "Skade aktiveret"
+msgstr "Fly-mode aktiveret"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
 msgstr "Flyvning slået til (bemærk: ingen 'flyvning' rettighed)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Deaktivér alle"
+msgstr "Tåge deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "aktiveret"
+msgstr "Tåge aktiveret"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1545,7 +1535,6 @@ msgid "Game paused"
 msgstr "Spil på pause"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
 msgstr "Hosting server"
 
@@ -1570,14 +1559,12 @@ msgid "Minimap currently disabled by game or mod"
 msgstr "Minikort er i øjeblikket slået fra af spil eller mod"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Enlig spiller"
+msgstr "Multiplayer"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode disabled"
-msgstr "Noclip-mode er slået fra"
+msgstr "Noclip-mode deaktiveret"
 
 #: src/client/game.cpp
 #, fuzzy
@@ -1601,12 +1588,10 @@ msgid "On"
 msgstr "Til"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Pitch move mode disabled"
 msgstr "Pitchbevægelsestilstand slået fra"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Pitch move mode enabled"
 msgstr "Pitchbevægelsestilstand slået til"
 
@@ -1635,9 +1620,8 @@ msgid "Sound Volume"
 msgstr "Lydniveau"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Lydniveau"
+msgstr "Lyd slået fra"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
@@ -1648,9 +1632,8 @@ msgid "Sound system is not supported on this build"
 msgstr "Lydsystem er ikke understøttet i denne udgave"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Lydniveau"
+msgstr "Lyd slået til"
 
 #: src/client/game.cpp
 #, c-format
@@ -1668,9 +1651,9 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Kan ikke lytte på %s fordi IPv6 er slået fra"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d"
-msgstr "Lydstyrke ændret til %d%%"
+msgstr "Synafstand ændret til %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1688,7 +1671,6 @@ msgid "Volume changed to %d%%"
 msgstr "Lydstyrke ændret til %d%%"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Wireframe shown"
 msgstr "Wireramme vist"
 
@@ -1701,9 +1683,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat hidden"
-msgstr "Snakketast"
+msgstr "Chat skjult"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
@@ -1718,20 +1699,20 @@ msgid "HUD shown"
 msgstr "HUD vist"
 
 #: src/client/gameui.cpp
+#, fuzzy
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profilering skjult"
 
 #: src/client/gameui.cpp
-#, c-format
+#, c-format, fuzzy
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profilering vist (side %d af %d)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr "Prg."
+msgstr "Apps"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
 msgstr "Tilbage"
 
