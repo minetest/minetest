@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2023-01-09 09:56+0000\n"
-"Last-Translator: Kristian <macrofag@protonmail.com>\n"
+"Last-Translator: Filip <fefflet@gmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -20,7 +20,7 @@ msgstr "Ryd chatkøen"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr "Tøm kommando"
+msgstr "Tøm kommando,."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -299,8 +299,7 @@ msgstr "Kunne ikke hente $1"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
 msgstr ""
-"Kunne ikke pakke \"$1\" ud (ikke-understøttet filtype eller eller korrupt "
-"arkiv)"
+"Kunne ikke pakke \"$1\" ud (ikke-understøttet filtype eller korrupt arkiv)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
