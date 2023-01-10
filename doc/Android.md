@@ -1,10 +1,12 @@
-**Document based on Minetest `5.6.1` Android build**
+**This document is based on the Minetest 5.6.1 version for Android**
+
 # Minetest Android build
-Minetest for Android are the same Minetest on Windows but compiled for Android, not seperate version
+All Minetest builds, including the Android variant, are based on the same code.
+However, additional Java code is used for proper Android integration.
+
 ## Controls
-The Android port doesn't support everything you can do on PC due to the
-limited capabilities of common devices. What can be done is described
-below:
+Compared to Minetest binaries for PC, the Android port has limited functionality
+due to limited capabilities of common devices. What can be done is described below:
 
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
@@ -29,50 +31,66 @@ When a menu or inventory is displayed:
 * Drag and drop: Touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
-### Limitaions
+
+### Limitations
 * Android player have to double tap to place node, this can be annoying in some game/mod
 * Some old Android device only support 2 touch at a time, some game/mod contain button combination that need 3 touch (example: jump + Aux1 + hold)
 * Complicated control like pick up an cart in MTG can be difficult or impossible on Android device
-## File Path
-There are some settings especially useful for Android users. Minetest's config
-file can usually be found at:
 
-* Before 5.4.2: ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
-* After 5.4.2: ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
+## File Path
+There are some settings especially useful for Android users. The Minetest-wide
+configuration file can usually be found at:
+
+* Before 5.4.2:
+    * `/sdcard/Minetest/` or `/storage/emulated/0/` if stored on the device
+    * `/storage/emulated/(varying folder name)/` if stored on an SD card
+* After 5.4.2:
+    * `/sdcard/Android/data/net.minetest.minetest/` or `/storage/emulated/0/Android/data/net.minetest.minetest/` if stored on the device
+    * `/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/` if stored on the SD card
 * [Learn more about Android directory](https://wiki.minetest.net/Accessing_Android_Data_Directory)
+
 ## Useful settings
+
 ### gui_scaling
 this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
+
 ### mapblock_limit
 Mobile device generally have less RAM than PC, this setting limit how many mapblock can keep in RAM
+
 ### fps_limit
 this setting limit max FPS (Frame per second). Default value is 60, which lowest Android device screen refresh rate commonly found, but if you're using an device have lower refresh rate, change this
+
 ## Requirements
-Read this before try installing Minetest!
+The minimal and recommended system requirements for Minetest are listed below.
+
 ### CPU
-Minetest currently support the following CPU architect:
+Supported architectures:
 1. ARM v7
 2. ARM v8
 3. x86
 4. x86_64
 
-CPU architect similar to ARM or x86 can ***probally*** able to play Minetest but are not recommended!
-### Minimum:
-1. Graphic: OpenGL ES 1.0
-2. Android version: Android 4.1 (API Level 14)
-3. Empty RAM: 500 MB
-4. Empty Storage: 20 MB
-* **Able to play Minetest Game and some games with light weight mod**
-* **No advanced shader on OpengGL ES 1!**
-### Recommended:
-1. Graphic: OpenGL ES 2.0
-2. Android version: No lowest recommended version
+CPU architectures similar to ARM or x86 might run Minetest but are not tested.
+
+### Minimum
+1. Graphics API: OpenGL ES 1.0
+    * Shaders might not work correctly or work at all on OpenGL ES 1.0.
+2. Android version: Android 4.1 (API Level 16)
+3. Free RAM: 500 MB
+4. Free storage: 100 MB
+    * More storage is highly recommended
+
+### Recommended
+1. Graphics API: OpenGL ES 2.0
+2. Android version: Android 4.4 (API Level 19) or newer
 3. Empty RAM: 850 MB
-4. Empty Storage: 480 MB
-* **Able to play to play most of game with most of mod**
-* **OpenGL ES 2 can use advanced shader!**
+4. Free storage: 480 MB
+
 ## Rendering
-Unlike on PC, Android device use OpenGL ES which less powerful than OpenGL. Some shader setting can't be used on OpenGL ES. And because of Android device use OpenGL ES, change the graphic driver setting to OpenGL result in **CRASH**
+Unlike on PC, Android devices use OpenGL ES which less powerful than OpenGL, thus
+some shader settings cannot be used on OpenGL ES.
+Changing the graphic driver setting to OpenGL will result in undesirable behavior.
+
 ## Building Requirements
 In order to build, your PC has to be set up to build Minetest in the usual
 manner (see the regular Minetest documentation for how to get this done).
