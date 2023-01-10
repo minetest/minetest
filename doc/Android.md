@@ -1,5 +1,5 @@
 **Document based on Minetest `5.6.1` Android build**
-# Minetest: Android version
+# Minetest Android build
 Minetest for Android are the same Minetest on Windows but compiled for Android, not seperate version
 ## Controls
 The Android port doesn't support everything you can do on PC due to the
@@ -9,22 +9,24 @@ below:
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
 * Look around: touch screen and slide finger
-* double tap: place a node
-* long tap: dig node or use the holding item
-* touch buttons: press button
+* Double tap: Place a node
+* Long tap: Dig node or use the holding item
+* Press back: Pause menu
+* Touch buttons: Press button
 * Buttons:
 
-1. left upper corner: chat
-2. right lower corner: jump
-3. right lower corner: crouch
-4. left lower corner (Joystick): walk/step...
-5. left lower corner: display inventory
+1. Left upper corner: Chat
+2. Right lower corner: Jump
+3. Right lower corner: Crouch
+4. Left lower corner (Joystick): Walk/step...
+5. Left lower corner: Display inventory
 
 When a menu or inventory is displayed:
-* double tap outside menu area: close menu
-* tap on an item stack: select that stack
-* tap on an empty slot: if you selected a stack already, that stack is placed here
-* drag and drop: touch stack and hold finger down, move the stack to another
+* Double tap outside menu area: Close menu
+* Press back: Close menu
+* Tap on an item stack: Select that stack
+* Tap on an empty slot: If a stack are selected already, that stack is placed here
+* Drag and drop: Touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
 ### Limitaions
@@ -35,8 +37,8 @@ When a menu or inventory is displayed:
 There are some settings especially useful for Android users. Minetest's config
 file can usually be found at:
 
-* old version (Before 5.4.2): ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
-* new version (After 5.4.2): ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
+* Before 5.4.2: ``/sdcard/Minetest/`` or ``/storage/emulated/0/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/``
+* After 5.4.2: ``/sdcard/Android/data/net.minetest.minetest/`` or ``/storage/emulated/0/Android/data/net.minetest.minetest/`` if stored in device, if stored in SD card: ``/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/``
 * [Learn more about Android directory](https://wiki.minetest.net/Accessing_Android_Data_Directory)
 ## Useful settings
 ### gui_scaling
@@ -61,14 +63,14 @@ CPU architect similar to ARM or x86 can ***probally*** able to play Minetest but
 3. Empty RAM: 500 MB
 4. Empty Storage: 20 MB
 * **Able to play Minetest Game and some games with light weight mod**
-* **OpengGL ES 1 user can't use shader!**
+* **No advanced shader on OpengGL ES 1!**
 ### Recommended:
 1. Graphic: OpenGL ES 2.0
 2. Android version: No lowest recommended version
 3. Empty RAM: 850 MB
 4. Empty Storage: 480 MB
 * **Able to play to play most of game with most of mod**
-* **OpenGL ES 2 user can use shader!**
+* **OpenGL ES 2 can use advanced shader!**
 ## Rendering
 Unlike on PC, Android device use OpenGL ES which less powerful than OpenGL. Some shader setting can't be used on OpenGL ES. And because of Android device use OpenGL ES, change the graphic driver setting to OpenGL result in **CRASH**
 ## Building Requirements
