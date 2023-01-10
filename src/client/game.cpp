@@ -2133,7 +2133,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	/* Item selection using mouse wheel
 	 */
 	*new_playeritem = player->getWieldIndex();
-
 	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		    player->hud_hotbar_itemcount - 1);
@@ -2160,6 +2159,9 @@ void Game::processItemSelection(u16 *new_playeritem)
 			break;
 		}
 	}
+
+	// Clamp selection again in case it wasn't changed but max_item was
+	*new_playeritem = MYMIN(*new_playeritem, max_item);
 }
 
 
@@ -2533,12 +2535,13 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-#if IRRLICHT_VERSION_MT_REVISION >= 9
+#if !defined(__ANDROID__) && IRRLICHT_VERSION_MT_REVISION >= 9
 	if (isMenuActive())
 		device->getCursorControl()->setRelativeMode(false);
 	else
 		device->getCursorControl()->setRelativeMode(true);
 #endif
+
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 
