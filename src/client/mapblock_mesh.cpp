@@ -1166,7 +1166,6 @@ void PartialMeshBuffer::afterDraw() const
 */
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
-	m_minimap_mapblock(NULL),
 	m_tsrc(data->m_client->getTextureSource()),
 	m_shdrsrc(data->m_client->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
@@ -1178,10 +1177,21 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
-	if (data->m_client->getMinimap()) {
-		m_minimap_mapblock = new MinimapMapblock;
-		m_minimap_mapblock->getMinimapNodes(
-			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
+	v3s16 bp = data->m_blockpos;
+	// Only generate minimap mapblocks at even coordinates.
+	if (((bp.X | bp.Y | bp.Z) & 1) == 0 && data->m_client->getMinimap()) {
+		m_minimap_mapblocks.resize(8, nullptr);
+		v3s16 ofs;
+		for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
+		for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
+		for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
+			v3s16 p = (bp + ofs) * MAP_BLOCKSIZE;
+			if (data->m_vmanip.getNodeNoEx(p).getContent() != CONTENT_IGNORE) {
+				MinimapMapblock *block = new MinimapMapblock;
+				m_minimap_mapblocks[ofs.Z * 4 + ofs.Y * 2 + ofs.X] = block;
+				block->getMinimapNodes(&data->m_vmanip, p);
+			}
+		}
 	}
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
@@ -1392,7 +1402,8 @@ MapBlockMesh::~MapBlockMesh()
 #endif
 		m->drop();
 	}
-	delete m_minimap_mapblock;
+	for (MinimapMapblock *block : m_minimap_mapblocks)
+		delete block;
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,

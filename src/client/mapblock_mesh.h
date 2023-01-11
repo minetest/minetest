@@ -199,11 +199,11 @@ public:
 		return m_mesh[layer];
 	}
 
-	MinimapMapblock *moveMinimapMapblock()
+	std::vector<MinimapMapblock*> moveMinimapMapblocks()
 	{
-		MinimapMapblock *p = m_minimap_mapblock;
-		m_minimap_mapblock = NULL;
-		return p;
+		std::vector<MinimapMapblock*> minimap_mapblocks;
+		minimap_mapblocks.swap(m_minimap_mapblocks);
+		return minimap_mapblocks;
 	}
 
 	bool isAnimationForced() const
@@ -241,7 +241,7 @@ private:
 	};
 
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
-	MinimapMapblock *m_minimap_mapblock;
+	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 

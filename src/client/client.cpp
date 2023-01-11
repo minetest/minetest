@@ -555,7 +555,7 @@ void Client::step(float dtime)
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
@@ -565,8 +565,8 @@ void Client::step(float dtime)
 				block->mesh = nullptr;
 
 				if (r.mesh) {
-					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
+					if (minimap_mapblocks.empty())
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -593,8 +593,16 @@ void Client::step(float dtime)
 					block->solid_sides = p.second;
 			}
 
-			if (m_minimap && do_mapper_update)
-				m_minimap->addBlock(r.p, minimap_mapblock);
+			if (m_minimap && do_mapper_update) {
+				v3s16 ofs;
+				for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
+				for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
+					size_t i = ofs.Z * 4 + ofs.Y * 2 + ofs.X;
+					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
+						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
+				}
+			}
 
 			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
