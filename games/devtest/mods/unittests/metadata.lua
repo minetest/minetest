@@ -68,7 +68,7 @@ local function test_metadata(meta)
 	meta:set_float("j", -1 / 0)
 	assert(meta:get_float("j") == -1 / 0)
 	meta:set_float("j", 0 / 0)
-	assert(meta:get_float("j") ~= 0)
+	assert(core.is_nan(meta:get_float("j")))
 
 	meta:from_table()
 	assert(next(meta:to_table().fields) == nil)
