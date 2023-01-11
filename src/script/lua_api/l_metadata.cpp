@@ -189,6 +189,7 @@ int MetaDataRef::l_set_float(lua_State *L)
 	MetaDataRef *ref = checkAnyMetadata(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 	luaL_checknumber(L, 3);
+	// Convert number to string with Lua as it gives good precision.
 	std::string str = readParam<std::string>(L, 3);
 
 	IMetadata *meta = ref->getmeta(true);
