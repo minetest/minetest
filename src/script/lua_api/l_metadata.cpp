@@ -177,7 +177,9 @@ int MetaDataRef::l_get_float(lua_State *L)
 
 	std::string str_;
 	const std::string &str = meta->getString(name, &str_);
-	lua_pushnumber(L, atof(str.c_str()));
+	// Convert with Lua, as is done in set_float.
+	lua_pushlstring(L, str.data(), str.size());
+	lua_pushnumber(L, lua_tonumber(L, -1));
 	return 1;
 }
 
