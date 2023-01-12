@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-07-24 09:25+0000\n"
+"PO-Revision-Date: 2023-01-15 19:51+0000\n"
 "Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -283,21 +283,21 @@ msgstr "Laddar ner..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Fel vid installation av \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Misslyckades ladda ner $1"
+msgstr "Misslyckades att ladda ner \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Misslyckades ladda ner $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Installation: Filtyp stöds inte eller trasigt arkiv"
+msgstr ""
+"Misslyckades med att extrahera \"$1\" (filtyp som inte stöds eller trasigt "
+"arkiv)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -812,19 +812,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Misslyckades installera $1 till $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Moddinstallation: lyckas ej hitta lämpligt mappnamn för moddpaket $1"
+msgstr "Installation: Kan inte hitta ett lämpligt mappnamn för $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Lyckades ej hitta lämplig modd eller moddpaket"
+msgstr "Kunde inte hitta en giltig modd, moddpack eller spel"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Misslyckades installera en modd som en $1"
+msgstr "Kunde inte installera en $1 som en $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -861,7 +858,7 @@ msgstr "Huvudutvecklare"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Huvudlaget"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1986,23 +1983,26 @@ msgstr "Minimapp i texturläge"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s saknas:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Installera och aktivera de moddar som krävs eller inaktivera de moddar som "
+"orsakar fel."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Observera: Detta kan bero på en beroendecykel, i så fall försök då att "
+"uppdatera moddarna."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Inga hårda beroenden"
+msgstr "Vissa moddar har otillfredsställda beroenden:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2657,20 +2657,19 @@ msgstr "Distans för optimering av blockskickning"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Bloomintensitet"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Molnradie"
+msgstr "Bloomradie"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Bloomstyrkefaktor"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -3117,6 +3116,8 @@ msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
 msgstr ""
+"Maximalt antal mappblock som tvångsladdas.\n"
+"Ställ in -1 för att inaktivera gränsen."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3172,6 +3173,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Definierar hur mycket bloom som appliceras på den återgivna bilden.\n"
+"Mindre värden gör bloomningen mindre stark.\n"
+"Intervall: från 0,01 till 1,0, standard: 0,05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3194,6 +3198,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Definierar storleken på överexponeringen av bloomningen.\n"
+"Intervall: från 0,1 till 10,0, standard: 1,0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3290,6 +3296,9 @@ msgid ""
 "Distance in nodes at which transparency depth sorting is enabled\n"
 "Use this to limit the performance impact of transparency depth sorting"
 msgstr ""
+"Avstånd i noder vid vilket sortering av transparensdjup aktiveras.\n"
+"Använd detta för att begränsa prestandapåverkan av sortering av "
+"transparensdjup"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3320,13 +3329,12 @@ msgid "Dungeon noise"
 msgstr "Grottbrus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Aktivera allt"
+msgstr "Aktivera bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Aktivera bloomavlusning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3376,7 +3384,7 @@ msgstr "Aktivera joysticks"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "Aktivera joysticks. Kräver en omstart för att fungera"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3404,7 +3412,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr ""
+msgstr "Aktivera splittrad inloggning/registrering"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3504,7 +3512,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiler"
-msgstr ""
+msgstr "Motorprofilerare"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3526,11 +3534,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Exposure Factor"
-msgstr ""
+msgstr "Exponeringsfaktor"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr ""
+msgstr "Bildrutefrekvens"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3608,6 +3616,12 @@ msgid ""
 "light edges to transparent textures. Apply a filter to clean that up\n"
 "at texture load time. This is automatically enabled if mipmapping is enabled."
 msgstr ""
+"Filtrerade texturer kan blanda RGB-värden med helt genomskinliga grannar,\n"
+"som PNG-optimerare vanligtvis kastar bort, vilket ofta resulterar i mörka "
+"eller\n"
+"ljusa kanter på genomskinliga texturer. Använd ett filter för att rensa upp "
+"det\n"
+"vid texturladdning. Detta aktiveras automatiskt om mipmapping är aktiverat."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
@@ -3725,6 +3739,13 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"För pixeltypsnitt som inte skalar särskilt väl, säkerställer detta att de "
+"storlekar som används\n"
+"med det här teckensnittet alltid kommer att vara delbara med det här värdet, "
+"i pixlar. Till exempel,\n"
+"ett pixelteckensnitt med en höjd på 16 pixlar ska ha värdet 16, så att det "
+"alltid bara kommer att vara\n"
+"storlek 16, 32, 48, etc., så att en modd som begär en storlek på 25 får 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3829,7 +3850,7 @@ msgstr "Filter för Gränssnittsskalning txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "GUIs"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -3837,7 +3858,7 @@ msgstr "Gamepads"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Generellt"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3900,7 +3921,7 @@ msgstr "HTTP-moddar"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
@@ -4084,6 +4105,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Om denna är aktiverad tillsammans med flygläge kan spelaren flyga genom "
+"fasta noder.\n"
+"Detta kräver privilegiet \"noclip\" på servern."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6490,7 +6514,7 @@ msgstr "Y-nivå av sjöbotten."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
