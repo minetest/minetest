@@ -72,7 +72,7 @@ const char *TestSettings::config_text_before =
 	"some multiline text\n"
 	"     with leading whitespace!\n"
 	"\"\"\"\n"
-	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.75, 2.25\n"
+	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.700012505, 2.40012503\n"
 	"zoop = true\n"
 	"[dummy_eof_end_tag]\n";
 
@@ -100,10 +100,10 @@ const std::string TestSettings::config_text_after =
 	"\"\"\"\n"
 	"np_terrain = {\n"
 	"	flags = defaults\n"
-	"	lacunarity = 2.25\n"
+	"	lacunarity = 2.40012503\n"
 	"	octaves = 6\n"
 	"	offset = 3.5\n"
-	"	persistence = 0.75\n"
+	"	persistence = 0.700012505\n"
 	"	scale = 40\n"
 	"	seed = 12341\n"
 	"	spread = (250,250,250)\n"
@@ -210,7 +210,7 @@ void TestSettings::testAllSettings()
 	UASSERT(std::fabs(np.spread.Z - 250) < 0.001f);
 	UASSERT(np.seed == 12341);
 	UASSERT(np.octaves == 5);
-	UASSERT(std::fabs(np.persist - 0.75) < 0.001f);
+	UASSERT(std::fabs(np.persist - 0.7) < 0.001f);
 
 	np.offset  = 3.5;
 	np.octaves = 6;
