@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "mapsector.h"
 #include "minimap.h"
 #include "modchannels.h"
 #include "content/mods.h"
@@ -559,6 +560,12 @@ void Client::step(float dtime)
 			bool do_mapper_update = true;
 
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			// The block in question is not visible (perhaps it is culled at the server),
+			// create a blank block just to hold the 2x2x2 mesh.
+			// If when the block becomes visible it will replace the blank block.
+			if (!block && r.mesh) {
+				block = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z))->createBlankBlock(r.p.Y);
+			}
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
