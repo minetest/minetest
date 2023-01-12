@@ -416,6 +416,7 @@ void UniversalCamera::updatePositionState()
 
 void UniversalCamera::step()
 {
+	const v3f current_offset = m_camera_offset;
 	setCameraOffset(m_env->getCameraOffset());
 
 	// Camera not attached to a parent
@@ -432,8 +433,11 @@ void UniversalCamera::step()
 
 	if (m_parent_follow)
 		m_target = pos;
-	else
+	else {
+		if (current_offset != m_camera_offset)
+			m_pos -= m_camera_offset;
 		setTarget(pos);
+	}
 }
 
 void UniversalCamera::attachTo(ClientActiveObject *object, bool follow)
