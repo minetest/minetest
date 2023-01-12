@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <vector>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <iomanip>
@@ -429,14 +430,11 @@ inline std::string itos(s32 i) { return std::to_string(i); }
 /// Returns a string representing the decimal value of the 64-bit value \p i.
 inline std::string i64tos(s64 i) { return std::to_string(i); }
 
-// std::to_string uses the '%.6f' conversion, which is inconsistent with
-// std::ostream::operator<<() and impractical too.  ftos() uses the
-// more generic and std::ostream::operator<<()-compatible '%G' format.
-/// Returns a string representing the decimal value of the float value \p f.
+/// Returns a string representing the exact decimal value of the float value \p f.
 inline std::string ftos(float f)
 {
 	std::ostringstream oss;
-	oss << f;
+	oss << std::setprecision(std::numeric_limits<float>::max_digits10) << f;
 	return oss.str();
 }
 

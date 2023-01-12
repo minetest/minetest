@@ -72,7 +72,7 @@ const char *TestSettings::config_text_before =
 	"some multiline text\n"
 	"     with leading whitespace!\n"
 	"\"\"\"\n"
-	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.7, 2.4\n"
+	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.700012505, 2.40012503\n"
 	"zoop = true\n"
 	"[dummy_eof_end_tag]\n";
 
@@ -100,17 +100,17 @@ const std::string TestSettings::config_text_after =
 	"\"\"\"\n"
 	"np_terrain = {\n"
 	"	flags = defaults\n"
-	"	lacunarity = 2.4\n"
+	"	lacunarity = 2.40012503\n"
 	"	octaves = 6\n"
 	"	offset = 3.5\n"
-	"	persistence = 0.7\n"
+	"	persistence = 0.700012505\n"
 	"	scale = 40\n"
 	"	seed = 12341\n"
 	"	spread = (250,250,250)\n"
 	"}\n"
 	"zoop = true\n"
 	"coord2 = (1,2,3.3)\n"
-	"floaty_thing_2 = 1.2\n"
+	"floaty_thing_2 = 1.25\n"
 	"groupy_thing = {\n"
 	"	animals = cute\n"
 	"	num_apples = 4\n"
@@ -160,10 +160,10 @@ void TestSettings::testAllSettings()
 	UASSERT(fabs(s.getV3F("coord").Z - 4.5) < 0.001);
 
 	// Test the setting of settings too
-	s.setFloat("floaty_thing_2", 1.2);
+	s.setFloat("floaty_thing_2", 1.25);
 	s.setV3F("coord2", v3f(1, 2, 3.3));
-	UASSERT(s.get("floaty_thing_2").substr(0,3) == "1.2");
-	UASSERT(fabs(s.getFloat("floaty_thing_2") - 1.2) < 0.001);
+	UASSERT(s.get("floaty_thing_2").substr(0,4) == "1.25");
+	UASSERT(fabs(s.getFloat("floaty_thing_2") - 1.25) < 0.001);
 	UASSERT(fabs(s.getV3F("coord2").X - 1.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord2").Y - 2.0) < 0.001);
 	UASSERT(fabs(s.getV3F("coord2").Z - 3.3) < 0.001);
