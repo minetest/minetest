@@ -132,7 +132,8 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	*/
 	QueuedMeshUpdate *q = new QueuedMeshUpdate;
 	q->p = p;
-	q->ack_list.push_back(original_block);
+	if(ack_block_to_server)
+		q->ack_list.push_back(original_block);
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
 	q->urgent = urgent;
