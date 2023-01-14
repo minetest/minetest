@@ -175,6 +175,18 @@ struct IMoveAction : public InventoryAction, public MoveAction
 			os << " " << to_i;
 	}
 
+	void onPutAndOnTake(const ItemStack &item, ServerActiveObject *player) const;
+	void onMove(int count, ServerActiveObject *player) const;
+
+	int allowPut(const ItemStack &item, ServerActiveObject *player) const;
+	int allowTake(const ItemStack &item, ServerActiveObject *player) const;
+	int allowMove(int try_take_count, ServerActiveObject *player) const;
+
+	std::pair<s16, bool> move(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef,
+		InventoryList *list_from, InventoryList *list_to, u16 count, bool ignore_rollback) const;
+	bool swap(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef, InventoryList *list_from,
+		InventoryList *list_to, bool ignore_rollback) const;
+
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef) const;
 
 	void clientApply(InventoryManager *mgr, IGameDef *gamedef) const;
