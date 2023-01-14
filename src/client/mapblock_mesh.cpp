@@ -1582,3 +1582,31 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	float b = (day + night) / 2;
 	return video::SColor(r, b, b, b);
 }
+
+u8 get_solid_sides(MeshMakeData *data)
+{
+	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
+	const NodeDefManager *ndef = data->m_client->ndef();
+
+	u8 result = 0x3F; // all sides solid;
+
+	for (s16 i = 0; i < MAP_BLOCKSIZE && result != 0; i++)
+	for (s16 j = 0; j < MAP_BLOCKSIZE && result != 0; j++) {
+		v3s16 positions[6] = {
+			v3s16(0, i, j),
+			v3s16(MAP_BLOCKSIZE - 1, i, j),
+			v3s16(i, 0, j),
+			v3s16(i, MAP_BLOCKSIZE - 1, j),
+			v3s16(i, j, 0),
+			v3s16(i, j, MAP_BLOCKSIZE - 1)
+		};
+
+		for (u8 k = 0; k < 6; k++) {
+			const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
+			if (ndef->get(top).solidness != 2)
+				result &= ~(1 << k);
+		}
+	}
+
+	return result;
+}

@@ -229,10 +229,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		v3f accel_f, ActiveObject *self,
 		bool collideWithObjects)
 {
+	#define PROFILER_NAME(text) (s_env ? ("Server: " text) : ("Client: " text))
 	static bool time_notification_done = false;
 	Map *map = &env->getMap();
+	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 
-	ScopeProfiler sp(g_profiler, "collisionMoveSimple()", SPT_AVG);
+	ScopeProfiler sp(g_profiler, PROFILER_NAME("collisionMoveSimple()"), SPT_AVG);
 
 	collisionMoveResult result;
 
@@ -271,7 +273,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, "collisionMoveSimple(): collect boxes", SPT_AVG);
+	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collisionMoveSimple(): collect boxes"), SPT_AVG);
 
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
@@ -390,7 +392,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		else
 #endif
 		{
-			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
 			if (s_env != NULL) {
 				// Calculate distance by speed, add own extent and 1.5m of tolerance
 				f32 distance = speed_f->getLength() * dtime +

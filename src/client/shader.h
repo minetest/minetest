@@ -121,6 +121,43 @@ public:
 		CachedShaderSetting<T, count, cache>(name, false){}
 };
 
+template <typename T, std::size_t count, bool cache, bool is_pixel>
+class CachedStructShaderSetting {
+	const char *m_name;
+	T m_sent[count];
+	bool has_been_set = false;
+	std::array<const char*, count> m_fields;
+public:
+	CachedStructShaderSetting(const char *name, std::array<const char*, count> &&fields) :
+		m_name(name), m_fields(std::move(fields))
+	{}
+
+	void set(const T value[count], video::IMaterialRendererServices *services)
+	{
+		if (cache && has_been_set && std::equal(m_sent, m_sent + count, value))
+			return;
+
+		for (std::size_t i = 0; i < count; i++) {
+			std::string uniform_name = std::string(m_name) + "." + m_fields[i];
+
+			if (is_pixel)
+				services->setPixelShaderConstant(services->getPixelShaderConstantID(uniform_name.c_str()), value + i, 1);
+			else
+				services->setVertexShaderConstant(services->getVertexShaderConstantID(uniform_name.c_str()), value + i, 1);
+		}
+
+		if (cache) {
+			std::copy(value, value + count, m_sent);
+			has_been_set = true;
+		}
+	}
+};
+
+template<typename T, std::size_t count, bool cache = true>
+using CachedStructVertexShaderSetting = CachedStructShaderSetting<T, count, cache, false>;
+
+template<typename T, std::size_t count, bool cache = true>
+using CachedStructPixelShaderSetting = CachedStructShaderSetting<T, count, cache, true>;
 
 /*
 	ShaderSource creates and caches shaders.

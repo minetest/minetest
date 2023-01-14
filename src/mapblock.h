@@ -469,6 +469,8 @@ public:
 	bool contents_cached = false;
 	// True if we never want to cache content types for this block
 	bool do_not_cache_contents = false;
+	// marks the sides which are opaque: 00+Z-Z+Y-Y+X-X
+	u8 solid_sides {0};
 
 private:
 	/*

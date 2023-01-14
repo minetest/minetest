@@ -414,6 +414,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_fog_distance;
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
+	CachedVertexShaderSetting<float> m_animation_timer_delta_vertex;
+	CachedPixelShaderSetting<float> m_animation_timer_delta_pixel;
 	CachedPixelShaderSetting<float, 3> m_day_light;
 	CachedPixelShaderSetting<float, 4> m_star_color;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
@@ -427,8 +429,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
 	CachedPixelShaderSetting<float, 2> m_texel_size0;
 	std::array<float, 2> m_texel_size0_values;
-	CachedPixelShaderSetting<float> m_exposure_factor_pixel;
-	float m_user_exposure_factor;
+	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel;
+	float m_user_exposure_compensation;
 	bool m_bloom_enabled;
 	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
 	float m_bloom_intensity;
@@ -443,8 +445,8 @@ public:
 	{
 		if (name == "enable_fog")
 			m_fog_enabled = g_settings->getBool("enable_fog");
-		if (name == "exposure_factor")
-			m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		if (name == "exposure_compensation")
+			m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		if (name == "bloom_intensity")
 			m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		if (name == "bloom_strength_factor")
@@ -470,6 +472,8 @@ public:
 		m_fog_distance("fogDistance"),
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
+		m_animation_timer_delta_vertex("animationTimerDelta"),
+		m_animation_timer_delta_pixel("animationTimerDelta"),
 		m_day_light("dayLight"),
 		m_star_color("starColor"),
 		m_eye_position_pixel("eyePosition"),
@@ -482,20 +486,24 @@ public:
 		m_texture2("texture2"),
 		m_texture3("texture3"),
 		m_texel_size0("texelSize0"),
-		m_exposure_factor_pixel("exposureFactor"),
+		m_exposure_params_pixel("exposureParams",
+				std::array<const char*, 7> {
+						"luminanceMin", "luminanceMax", "exposureCorrection",
+						"speedDarkBright", "speedBrightDark", "centerWeightPower", "compensationFactor"
+				}),
 		m_bloom_intensity_pixel("bloomIntensity"),
 		m_bloom_strength_pixel("bloomStrength"),
 		m_bloom_radius_pixel("bloomRadius"),
 		m_saturation_pixel("saturation")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
-		g_settings->registerChangedCallback("exposure_factor", settingsCallback, this);
+		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_intensity", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_strength_factor", settingsCallback, this);
 		g_settings->registerChangedCallback("bloom_radius", settingsCallback, this);
 		g_settings->registerChangedCallback("saturation", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
-		m_user_exposure_factor = g_settings->getFloat("exposure_factor", 0.1f, 10.0f);
+		m_user_exposure_compensation = g_settings->getFloat("exposure_compensation", -1.0f, 1.0f);
 		m_bloom_enabled = g_settings->getBool("enable_bloom");
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
@@ -546,6 +554,10 @@ public:
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
 
+		float animation_timer_delta_f = (float)m_client->getEnv().getFrameTimeDelta() / 100000.f;
+		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
+		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
+
 		float eye_position_array[3];
 		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
 		epos.getAs3Values(eye_position_array);
@@ -577,10 +589,17 @@ public:
 
 		m_texel_size0.set(m_texel_size0_values.data(), services);
 
-		float exposure_factor = m_user_exposure_factor;
-		if (std::isnan(exposure_factor))
-			exposure_factor = 1.0f;
-		m_exposure_factor_pixel.set(&exposure_factor, services);
+		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
+		std::array<float, 7> exposure_buffer = {
+			std::pow(2.0f, exposure_params.luminance_min),
+			std::pow(2.0f, exposure_params.luminance_max),
+			exposure_params.exposure_correction,
+			exposure_params.speed_dark_bright,
+			exposure_params.speed_bright_dark,
+			exposure_params.center_weight_power,
+			powf(2.f, m_user_exposure_compensation)
+		};
+		m_exposure_params_pixel.set(exposure_buffer.data(), services);
 
 		if (m_bloom_enabled) {
 			m_bloom_intensity_pixel.set(&m_bloom_intensity, services);
@@ -696,6 +715,7 @@ struct GameRunData {
 
 	float damage_flash;
 	float update_draw_list_timer;
+	float touch_blocks_timer;
 
 	f32 fog_range;
 
@@ -2113,7 +2133,6 @@ void Game::processItemSelection(u16 *new_playeritem)
 	/* Item selection using mouse wheel
 	 */
 	*new_playeritem = player->getWieldIndex();
-
 	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		    player->hud_hotbar_itemcount - 1);
@@ -2140,6 +2159,9 @@ void Game::processItemSelection(u16 *new_playeritem)
 			break;
 		}
 	}
+
+	// Clamp selection again in case it wasn't changed but max_item was
+	*new_playeritem = MYMIN(*new_playeritem, max_item);
 }
 
 
@@ -2513,12 +2535,13 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-#if IRRLICHT_VERSION_MT_REVISION >= 9
+#if !defined(__ANDROID__) && IRRLICHT_VERSION_MT_REVISION >= 9
 	if (isMenuActive())
 		device->getCursorControl()->setRelativeMode(false);
 	else
 		device->getCursorControl()->setRelativeMode(true);
 #endif
+
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 
@@ -4030,6 +4053,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		changed much
 	*/
 	runData.update_draw_list_timer += dtime;
+	runData.touch_blocks_timer += dtime;
+
+	bool draw_list_updated = false;
 
 	float update_draw_list_delta = 0.2f;
 
@@ -4041,6 +4067,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
+		draw_list_updated = true;
+	}
+
+	if (runData.touch_blocks_timer > update_draw_list_delta && !draw_list_updated) {
+		client->getEnv().getClientMap().touchMapBlocks();
+		runData.touch_blocks_timer = 0;
 	}
 
 	if (RenderingEngine::get_shadow_renderer()) {

@@ -43,6 +43,8 @@ build/.cmake/
 /bin/
 /games/*
 !/games/devtest/
+/games/devtest/mods/soundstuff/sounds/gitignored_sounds/*
+!/games/devtest/mods/soundstuff/sounds/gitignored_sounds/custom_sounds_here.txt
 /cache
 /textures/*
 !/textures/base/

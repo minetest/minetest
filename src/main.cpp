@@ -389,12 +389,14 @@ static void print_help(const OptionList &allowed_options)
 static void print_allowed_options(const OptionList &allowed_options)
 {
 	for (const auto &allowed_option : allowed_options) {
-		std::ostringstream os1(std::ios::binary);
-		os1 << "  --" << allowed_option.first;
+		std::string opt = "  --" + allowed_option.first;
 		if (allowed_option.second.type != VALUETYPE_FLAG)
-			os1 << _(" <value>");
+			opt += _(" <value>");
 
-		std::cout << padStringRight(os1.str(), 30);
+		std::string opt_padded = padStringRight(opt, 30);
+		std::cout << opt_padded;
+		if (opt == opt_padded) // Line is too long to pad
+			std::cout << std::endl << padStringRight("", 30);
 
 		if (allowed_option.second.help)
 			std::cout << allowed_option.second.help;
