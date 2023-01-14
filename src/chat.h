@@ -246,6 +246,7 @@ protected:
 private:
 	struct HistoryEntry {
 		std::wstring line;
+		// If line is edited, saved holds the unedited version.
 		Optional<std::wstring> saved;
 
 		HistoryEntry(const std::wstring &line): line(line) {}
