@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 
 class Inventory;
-class ItemDefinition;
-class ItemStack;
+struct ItemDefinition;
+struct ItemStack;
 
 class ScriptApiCSM : public virtual ScriptApiBase
 {

@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Client;
 class Inventory;
-class ItemDefinition;
-class ItemStack;
+struct ItemDefinition;
+struct ItemStack;
 struct PointedThing;
 
 class CSMController
