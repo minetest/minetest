@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <signal.h>
 #include <spawn.h>
 #include <sstream>
@@ -55,6 +56,8 @@ bool CSMController::start()
 {
 	if (isStarted())
 		return true;
+
+	char exe_path[PATH_MAX];
 
 	std::string shm_name;
 
@@ -91,7 +94,10 @@ bool CSMController::start()
 	close(shm);
 	shm = -1;
 
-	if (posix_spawn(&m_script_pid, "/proc/self/exe",
+	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
+		goto error_exe_path;
+
+	if (posix_spawn(&m_script_pid, exe_path,
 			nullptr, nullptr, (char *const *)argv, nullptr) != 0)
 		goto error_spawn;
 
@@ -99,7 +105,9 @@ bool CSMController::start()
 
 error_spawn:
 	m_script_pid = 0;
+error_exe_path:
 error_make_ipc:
+	m_ipc_shared->~IPCChannelShared();
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 error_mmap:
 error_ftruncate:
@@ -118,6 +126,7 @@ void CSMController::stop()
 	kill(m_script_pid, SIGKILL);
 	waitpid(m_script_pid, nullptr, 0);
 	m_script_pid = 0;
+	m_ipc_shared->~IPCChannelShared();
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 }
 

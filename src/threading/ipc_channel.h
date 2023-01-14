@@ -21,10 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
-#include <atomic>
 #include <string>
 #include <type_traits>
 #include <vector>
+#if defined(__linux__)
+#include <atomic>
+#elif !defined(_WIN32)
+#include <pthread.h>
+#endif
 
 /*
 	An IPC channel is used for synchronous communication between two processes.
@@ -39,9 +43,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct IPCChannelBuffer
 {
+#if defined(__linux__)
 	std::atomic_uint32_t futex = ATOMIC_VAR_INIT(0);
+#elif !defined(_WIN32)
+	pthread_cond_t cond;
+	pthread_mutex_t mutex;
+	// TODO: use atomic?
+	bool posted = false;
+#endif
 	size_t size;
 	u8 data[IPC_CHANNEL_MSG_SIZE];
+
+	IPCChannelBuffer();
+	~IPCChannelBuffer();
 };
 
 struct IPCChannelShared
@@ -66,7 +80,7 @@ public:
 	}
 
 	// If send, recv, or exchange return false, stop using the channel.
-	// Note: timeouts are for receiving any response, not a whole message.
+	// Note: timeouts may be for receiving any response, not a whole message.
 
 	bool send(size_t size, const void *data, int timeout_ms = -1) noexcept
 	{

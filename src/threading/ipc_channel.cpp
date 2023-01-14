@@ -20,15 +20,63 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ipc_channel.h"
 #include "debug.h"
+#include "exceptions.h"
+#include "porting.h"
 #include <errno.h>
+#include <utility>
+#if defined(__linux__)
 #include <immintrin.h>
 #include <linux/futex.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
-#include <utility>
+#endif
 
-static void busy_wait(int n)
+IPCChannelBuffer::IPCChannelBuffer()
+{
+#if !defined(__linux) && !defined(_WIN32)
+	pthread_condattr_t condattr;
+	pthread_mutexattr_t mutexattr;
+	if (pthread_condattr_init(&condattr) != 0)
+		goto error_condattr_init;
+	if (pthread_mutexattr_init(&mutexattr) != 0)
+		goto error_mutexattr_init;
+	if (pthread_condattr_setpshared(&condattr, 1) != 0)
+		goto error_condattr_setpshared;
+	if (pthread_mutexattr_setpshared(&mutexattr, 1) != 0)
+		goto error_mutexattr_setpshared;
+	if (pthread_cond_init(&cond, &condattr) != 0)
+		goto error_cond_init;
+	if (pthread_mutex_init(&mutex, &mutexattr) != 0)
+		goto error_mutex_init;
+	pthread_mutexattr_destroy(&mutexattr);
+	pthread_condattr_destroy(&condattr);
+	return;
+
+error_mutex_init:
+	pthread_cond_destroy(&cond);
+error_cond_init:
+error_mutexattr_setpshared:
+error_condattr_setpshared:
+	pthread_mutexattr_destroy(&mutexattr);
+error_mutexattr_init:
+	pthread_condattr_destroy(&condattr);
+error_condattr_init:
+	throw BaseException("Unable to initialize IPCChannelBuffer");
+#endif // !defined(__linux) && !defined(_WIN32)
+}
+
+IPCChannelBuffer::~IPCChannelBuffer()
+{
+#if !defined(__linux) && !defined(_WIN32)
+	pthread_mutex_destroy(&mutex);
+	pthread_cond_destroy(&cond);
+#endif // !defined(__linux) && !defined(_WIN32)
+}
+
+#if defined(__linux__)
+
+static void busy_wait(int n) noexcept
 {
 	for (int i = 0; i < n; i++)
 		_mm_pause();
@@ -40,8 +88,11 @@ static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 	return syscall(SYS_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
 }
 
+#endif // defined(__linux__)
+
 static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 {
+#if defined(__linux__)
 	// try busy waiting
 	for (int i = 0; i < 100; i++) {
 		// posted?
@@ -61,23 +112,47 @@ static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 		if (s == -1 && errno != EAGAIN)
 			return false;
 	}
+#else
+	bool timed_out = false;
+	pthread_mutex_lock(&buf->mutex);
+	if (!buf->posted) {
+		if (timeout)
+			timed_out = pthread_cond_timedwait(&buf->cond, &buf->mutex, timeout) == ETIMEDOUT;
+		else
+			pthread_cond_wait(&buf->cond, &buf->mutex);
+	}
+	buf->posted = false;
+	pthread_mutex_unlock(&buf->mutex);
+	return !timed_out;
+#endif // !defined(__linux)
 }
 
 static void post(IPCChannelBuffer *buf) noexcept
 {
+#if defined(__linux__)
 	if (buf->futex.exchange(1) == 2) {
 		int s = futex(&buf->futex, FUTEX_WAKE, 1, nullptr, nullptr, 0);
 		if (s == -1)
 			FATAL_ERROR("FUTEX_WAKE failed unexpectedly");
 	}
+#else
+	pthread_mutex_lock(&buf->mutex);
+	buf->posted = true;
+	pthread_cond_broadcast(&buf->cond);
+	pthread_mutex_unlock(&buf->mutex);
+#endif // !defined(__linux)
 }
 
 static struct timespec *set_timespec(struct timespec *ts, int ms)
 {
 	if (ms < 0)
 		return nullptr;
-	ts->tv_sec = ms / 1000;
-	ts->tv_nsec = ms % 1000 * 1000000L;
+	u64 msu = ms;
+#if !defined(__linux__)
+	msu += porting::getTimeMs(); // Absolute time
+#endif
+	ts->tv_sec = msu / 1000;
+	ts->tv_nsec = msu % 1000 * 1000000UL;
 	return ts;
 }
 

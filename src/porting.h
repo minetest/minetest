@@ -173,6 +173,11 @@ void migrateCachePath();
 void initializePaths();
 
 /*
+	Get the path of the running executable.
+*/
+bool getCurrentExecPath(char *buf, size_t len);
+
+/*
 	Return system information
 	e.g. "Linux/3.12.7 x86_64"
 */
