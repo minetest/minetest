@@ -19,9 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sandbox.h"
 #include "util/basic_macros.h"
-
 #if defined(__linux__)
-
 #include <asm/unistd.h>
 #include <endian.h>
 #include <errno.h>
@@ -32,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <unistd.h>
+#endif
+
+#if defined(__linux__)
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define IS_LE 1
