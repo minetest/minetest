@@ -437,6 +437,9 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+
+	bool m_inhibit_inventory_revert = false;
+
 private:
 	void loadMods();
 

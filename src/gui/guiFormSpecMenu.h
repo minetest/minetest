@@ -331,6 +331,13 @@ protected:
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
+	int m_held_button = -1;
+	bool m_shift_craft = false;
+
+	u16 m_left_drag_amount;
+	ItemStack m_left_drag_stack;
+	std::map<GUIInventoryList::ItemSpec *, ItemStack> m_left_drag_stacks;
+	bool m_left_dragging = false;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
@@ -338,8 +345,6 @@ protected:
 	bool m_tooltip_append_itemname;
 	u64 m_hovered_time = 0;
 	s32 m_old_tooltip_id = -1;
-
-	bool m_auto_place = false;
 
 	bool m_allowclose = true;
 	bool m_lock = false;
