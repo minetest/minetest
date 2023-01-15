@@ -396,13 +396,13 @@ set(common_SRCS
 	pathfinder.cpp
 	player.cpp
 	porting.cpp
+	process_sandbox.cpp
 	profiler.cpp
 	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
 	rollback.cpp
 	rollback_interface.cpp
-	sandbox.cpp
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp

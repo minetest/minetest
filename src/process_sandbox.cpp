@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "sandbox.h"
+#include "process_sandbox.h"
 #if defined(__linux__)
 #include "filesys.h"
 #include "util/basic_macros.h"
@@ -32,7 +32,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <unistd.h>
+#elif defined(__APPLE__)
+#include "filesys.h"
+#include "log.h"
+#include "util/string.h"
+#include <sandbox.h>
+#include <unistd.h>
 #endif
+
+#if defined(__linux__) || defined(__APPLE__)
+
+// Closes everything but stdout and stderr.
+static void close_resources()
+{
+#if defined(__linux__)
+	std::vector<fs::DirListNode> fds = fs::GetDirListing("/proc/self/fd");
+#else
+	std::vector<fs::DirListNode> fds = fs::GetDirListing("/dev/fd");
+#endif
+	for (const fs::DirListNode &node : fds) {
+		int fd = stoi(node.name);
+		if (fd != STDOUT_FILENO && fd != STDERR_FILENO)
+			close(fd);
+	}
+}
+
+#endif // defined(__linux__) || defined(__APPLE__)
 
 #if defined(__linux__)
 
@@ -52,15 +77,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool start_sandbox()
 {
-	// Close all file descriptors other than stdout and stderr.
-	{
-		std::vector<fs::DirListNode> fds = fs::GetDirListing("/proc/self/fd");
-		for (const fs::DirListNode &node : fds) {
-			int fd = stoi(node.name);
-			if (fd != STDOUT_FILENO && fd != STDERR_FILENO)
-				close(fd);
-		}
-	}
+	close_resources();
 
 	static const sock_filter filter_instrs[] = {
 		// Load architecture
@@ -123,6 +140,24 @@ bool start_sandbox()
 		return false;
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, (unsigned long)&filter, 0, 0))
 		return false;
+	return true;
+}
+
+#elif defined(__APPLE__)
+
+bool start_sandbox()
+{
+	close_resources();
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations" // The sandbox API is deprecated.
+	char *error;
+	if (sandbox_init(kSBXProfilePureComputation, SANDBOX_NAMED, &error)) {
+		errorstream << "Sandbox error: " << error << std::endl;
+		sandbox_free_error(error);
+		return false;
+	}
+#pragma clang diagnostic pop
 	return true;
 }
 

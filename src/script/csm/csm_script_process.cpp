@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "nodedef.h"
 #include "porting.h"
-#include "sandbox.h"
+#include "process_sandbox.h"
 #include "util/string.h"
 #include "util/serialize.h"
 extern "C" {
