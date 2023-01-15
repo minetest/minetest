@@ -371,6 +371,7 @@ void ClientMap::updateDrawList()
 			continue;
 		}
 
+		shortlist.emplace(block_coord.X, block_coord.Y, block_coord.Z);
 		shortlist.emplace(block_coord.X & ~1, block_coord.Y & ~1, block_coord.Z & ~1);
 
 		// Decide which sides to traverse next or to block away
@@ -475,7 +476,7 @@ void ClientMap::updateDrawList()
 
 	for (auto pos : shortlist) {
 		MapBlock * block = getBlockNoCreateNoEx(pos);
-		if (block && block->mesh) {
+		if (block) {
 			block->refGrab();
 			m_drawlist.emplace(pos, block);
 		}
@@ -1138,6 +1139,12 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+}
+
+void ClientMap::reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks)
+{
+	g_profiler->avg("CM::reportMetrics loaded blocks [#]", all_blocks);
+	g_profiler->avg("CM::reportMetrics cleaned blocks [#]", saved_blocks);
 }
 
 void ClientMap::updateTransparentMeshBuffers()

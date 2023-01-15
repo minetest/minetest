@@ -325,6 +325,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
+	u32 locked_blocks = 0;
 
 	const auto start_time = porting::getTimeUs();
 	beginSave();
@@ -396,8 +397,10 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 
 			MapBlock *block = b.block;
 
-			if (block->refGet() != 0)
+			if (block->refGet() != 0) {
+				locked_blocks++;
 				continue;
+			}
 
 			v3s16 p = block->getPos();
 
@@ -442,7 +445,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 				<<" blocks from memory";
 		if(save_before_unloading)
 			infostream<<", of which "<<saved_blocks_count<<" were written";
-		infostream<<", "<<block_count_all<<" blocks in memory";
+		infostream<<", "<<block_count_all<<" blocks in memory, " << locked_blocks << " locked";
 		infostream<<"."<<std::endl;
 		if(saved_blocks_count != 0){
 			PrintInfo(infostream); // ServerMap/ClientMap:
