@@ -126,13 +126,13 @@ bool start_sandbox()
 		// Allow exit_group
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_exit_group, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
-		// Allow write/writev if fd is stdout or stderr
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_write, 1, 0),
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_writev, 0, 4),
-		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, SYSCALL_ARG(0)),
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, STDOUT_FILENO, 1, 0),
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, STDERR_FILENO, 0, 1),
+		// Allow write
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_write, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow writev
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_writev, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Deny others
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS),
 	};
 	static const sock_fprog filter = { ARRLEN(filter_instrs), (sock_filter *)filter_instrs };
