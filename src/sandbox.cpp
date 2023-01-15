@@ -18,8 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "sandbox.h"
-#include "util/basic_macros.h"
 #if defined(__linux__)
+#include "filesys.h"
+#include "util/basic_macros.h"
+#include "util/string.h"
 #include <asm/unistd.h>
 #include <endian.h>
 #include <errno.h>
@@ -50,6 +52,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool start_sandbox()
 {
+	// Close all file descriptors other than stdout and stderr.
+	{
+		std::vector<fs::DirListNode> fds = fs::GetDirListing("/proc/self/fd");
+		for (const fs::DirListNode &node : fds) {
+			int fd = stoi(node.name);
+			if (fd != STDOUT_FILENO && fd != STDERR_FILENO)
+				close(fd);
+		}
+	}
+
 	static const sock_filter filter_instrs[] = {
 		// Load architecture
 		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, arch)),
