@@ -371,6 +371,8 @@ void ClientMap::updateDrawList()
 			continue;
 		}
 
+		// Block meshes are stored in blocks where all coordinates are even (lowest bit set to 0)
+		// We add both the current block and the block with mesh to the set.
 		shortlist.emplace(block_coord.X, block_coord.Y, block_coord.Z);
 		shortlist.emplace(block_coord.X & ~1, block_coord.Y & ~1, block_coord.Z & ~1);
 
@@ -605,7 +607,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		MapBlock *block = i.second;
 		MapBlockMesh *block_mesh = block->mesh;
 
-		// If the mesh of the block happened to get deleted, ignore it
+		// Meshes are only stored every 8-th block (where all coordinates are even),
+		// but we keep all the visible blocks in the draw list to prevent client
+		// from dropping them.
+		// On top of that, in some cases block mesh can be removed
+		// before the block is removed from the draw list.
 		if (!block_mesh)
 			continue;
 
