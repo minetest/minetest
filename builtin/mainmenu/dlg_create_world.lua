@@ -353,6 +353,8 @@ local function create_world_buttonhandler(this, fields)
 		fields["key_enter"] then
 
 		if fields["key_enter"] then
+			-- HACK: This timestamp prevents double-triggering when pressing Enter on an input box
+			-- and releasing it on a button[] or textlist[] due to instant formspec updates.
 			this.parent.dlg_create_world_closed_at = core.get_us_time()
 		end
 
