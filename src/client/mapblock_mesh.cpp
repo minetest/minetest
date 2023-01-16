@@ -1182,6 +1182,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	if (((bp.X | bp.Y | bp.Z) & 1) == 0 && data->m_client->getMinimap()) {
 		m_minimap_mapblocks.resize(8, nullptr);
 		v3s16 ofs;
+
+		// See also client.cpp for the code that reads the array of minimap blocks.
 		for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
 		for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
 		for (ofs.X = 0; ofs.X <= 1; ofs.X++) {

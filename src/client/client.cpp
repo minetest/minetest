@@ -559,13 +559,16 @@ void Client::step(float dtime)
 			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapSector *sector = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z));
+
+			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
+
 			// The block in question is not visible (perhaps it is culled at the server),
 			// create a blank block just to hold the 2x2x2 mesh.
-			// If when the block becomes visible it will replace the blank block.
-			if (!block && r.mesh) {
-				block = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z))->createBlankBlock(r.p.Y);
-			}
+			// If the block becomes visible later it will replace the blank block.
+			if (!block && r.mesh)
+				block = sector->createBlankBlock(r.p.Y);
+
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
@@ -602,6 +605,8 @@ void Client::step(float dtime)
 
 			if (m_minimap && do_mapper_update) {
 				v3s16 ofs;
+
+				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
 				for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
 				for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
 				for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
