@@ -77,26 +77,25 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 
 	MutexAutoLock lock(m_mutex);
 
-
-	v3s16 original_block = p;
-	p.X &= ~1; p.Y &= ~1; p.Z &= ~1;
-
+	// Mesh is placed at even positions at all coordinates
+	// (every 8-th block) and will cover 8 blocks
+	v3s16 mesh_position(p.X & ~1, p.Y & ~1, p.Z & ~1);
 	/*
 		Mark the block as urgent if requested
 	*/
 	if (urgent)
-		m_urgents.insert(p);
+		m_urgents.insert(mesh_position);
 
 	/*
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
 	for (QueuedMeshUpdate *q : m_queue) {
-		if (q->p == p) {
+		if (q->p == mesh_position) {
 			// NOTE: We are not adding a new position to the queue, thus
 			//       refcount_from_queue stays the same.
 			if(ack_block_to_server)
-				q->ack_list.push_back(original_block);
+				q->ack_list.push_back(p);
 			q->crack_level = m_client->getCrackLevel();
 			q->crack_pos = m_client->getCrackPos();
 			q->urgent |= urgent;
@@ -120,7 +119,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	std::vector<MapBlock *> cached_blocks;
 	cached_blocks.reserve(4*4*4);
 	for (v3s16 dp : g_64dirs) {
-		MapBlock *block = map->getBlockNoCreateNoEx(p + dp);
+		MapBlock *block = map->getBlockNoCreateNoEx(mesh_position + dp);
 		cached_blocks.push_back(block);
 		if (block)
 			block->refGrab();
@@ -130,9 +129,9 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		Add the block
 	*/
 	QueuedMeshUpdate *q = new QueuedMeshUpdate;
-	q->p = p;
+	q->p = mesh_position;
 	if(ack_block_to_server)
-		q->ack_list.push_back(original_block);
+		q->ack_list.push_back(p);
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
 	q->urgent = urgent;
