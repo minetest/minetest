@@ -9193,7 +9193,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
         spawn_by = "default:water",
         -- Node (or list of nodes) that the decoration only spawns next to.
         -- Checks the 8 neighboring nodes on the same Y, and also the ones
-        -- at Y+1, excluding both center nodes.
+        -- at Y-1, excluding both center nodes.
 
         num_spawn_by = 1,
         -- Number of spawn_by nodes that must be surrounding the decoration
