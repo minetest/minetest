@@ -352,6 +352,12 @@ local function create_world_buttonhandler(this, fields)
 	if fields["world_create_confirm"] or
 		fields["key_enter"] then
 
+		if fields["key_enter"] then
+			-- HACK: This timestamp prevents double-triggering when pressing Enter on an input box
+			-- and releasing it on a button[] or textlist[] due to instant formspec updates.
+			this.parent.dlg_create_world_closed_at = core.get_us_time()
+		end
+
 		local worldname = fields["te_world_name"]
 		local game, _ = pkgmgr.find_by_gameid(core.settings:get("menu_last_game"))
 
