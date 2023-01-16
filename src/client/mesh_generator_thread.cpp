@@ -119,7 +119,6 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	*/
 	std::vector<MapBlock *> cached_blocks;
 	cached_blocks.reserve(4*4*4);
-	main_block->refGrab();
 	for (v3s16 dp : g_64dirs) {
 		MapBlock *block = map->getBlockNoCreateNoEx(p + dp);
 		cached_blocks.push_back(block);
