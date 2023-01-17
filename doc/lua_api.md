@@ -9564,8 +9564,13 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
     spawn_by = "default:water",
     -- Node (or list of nodes) that the decoration only spawns next to.
-    -- Checks the 8 neighboring nodes on the same Y, and also the ones
-    -- at Y+1, excluding both center nodes.
+    -- Checks the 8 neighboring nodes on the same height,
+    -- and also the ones at the height plus the check_offset, excluding both center nodes.
+
+    check_offset = -1,
+    -- Specifies the offset that spawn_by should also check
+    -- The default value of -1 is useful to e.g check for water next to the base node.
+    -- 0 disables additional checks, valid values: {-1, 0, 1}
 
     num_spawn_by = 1,
     -- Number of spawn_by nodes that must be surrounding the decoration
