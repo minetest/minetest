@@ -59,11 +59,11 @@ bool CSMController::start()
 	if (isStarted())
 		return true;
 
-	char exe_path[PATH_MAX];
-
 	std::string client_path = porting::path_user + DIR_DELIM "client";
 
 #if defined(_WIN32)
+	char exe_path[MAX_PATH];
+
 	PROCESS_INFORMATION process_info;
 
 	STARTUPINFOA startup_info = {
@@ -144,6 +144,8 @@ error_sem_a:
 	CloseHandle(m_ipc_shm);
 error_shm:
 #else
+	char exe_path[PATH_MAX];
+
 	std::string shm_name;
 
 	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
