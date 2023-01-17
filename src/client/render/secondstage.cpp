@@ -121,8 +121,8 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_BLOOM_UP = 20;
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
-	buffer->setTexture(TEXTURE_EXPOSURE_1, core::dimension2du(1,1), "exposure_1", color_format);
-	buffer->setTexture(TEXTURE_EXPOSURE_2, core::dimension2du(1,1), "exposure_2", color_format);
+	buffer->setTexture(TEXTURE_EXPOSURE_1, core::dimension2du(1,1), "exposure_1", color_format, /*clear:*/ true);
+	buffer->setTexture(TEXTURE_EXPOSURE_2, core::dimension2du(1,1), "exposure_2", color_format, /*clear:*/ true);
 	buffer->setTexture(TEXTURE_DEPTH, scale, "3d_depthmap", depth_format);
 
 	// attach buffer to the previous step
