@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-12-16 13:47+0000\n"
-"Last-Translator: Marian <daretmavi@gmail.com>\n"
+"PO-Revision-Date: 2023-01-18 22:47+0000\n"
+"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -318,7 +318,7 @@ msgstr "Nainštalovať $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
-msgstr "Nainštalovať chýbajúce nevyhnutné doplnky (závislosti)"
+msgstr "Nainštalovať chýbajúce závislosti"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -836,7 +836,7 @@ msgstr "Nie je možné nainštalovať $1 ako balíček textúr"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Nahrávam..."
+msgstr "Načítavam..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
@@ -1023,7 +1023,7 @@ msgstr "Pripoj sa do hry"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr "Prihlásiť sa"
+msgstr "Prihlásenie"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -2498,7 +2498,7 @@ msgstr ""
 "Hodnota = 0.0: 50% objemu je lietajúca pevnina.\n"
 "Hodnota = 2.0 (môže byť vyššie v závislosti od 'mgv7_np_floatland', vždy "
 "otestuj\n"
-"aby si si bol istý) vytvorí pevnú úroveň lietajúcej pevniny."
+"aby si bol istý) vytvorí pevnú úroveň lietajúcej pevniny."
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
@@ -4418,7 +4418,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr "Julia w"
+msgstr "Júlia w"
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
@@ -5868,7 +5868,7 @@ msgid ""
 msgstr ""
 "Nastav na true pre renderovanie ladiacich zlomový efektu žiary.\n"
 "V režime ladenia je obrazovka rozdelená na 4 kvadranty:\n"
-"Horný ľavý - spracúva základný obraz, Horný pravý - výsledný obraz\n"
+"Horný ľavý - spracúva základný obraz, Horný pravý  - výsledný obraz\n"
 "Dolný ľavý - základný raw obraz, Dolný pravý - textúra žiary."
 
 #: src/settings_translation_file.cpp
@@ -6615,7 +6615,7 @@ msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
-msgstr "VSync"
+msgstr "Vertikálna synchronizácia"
 
 #: src/settings_translation_file.cpp
 msgid "Valley depth"
