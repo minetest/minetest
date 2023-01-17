@@ -38,13 +38,17 @@ extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 }
-#include <fcntl.h>
 #include <memory>
 #include <stdlib.h>
 #include <string.h>
+#include <utility>
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <utility>
+#endif
 
 namespace {
 
@@ -97,10 +101,23 @@ CSMLogOutput g_log_output;
 
 int csm_script_main(int argc, char *argv[])
 {
+#if defined(_WIN32)
+	FATAL_ERROR_IF(argc < 6, "Too few arguments to CSM process");
+
+	HANDLE shm = (HANDLE)strtoull(argv[3], nullptr, 10);
+	HANDLE sem_a = (HANDLE)strtoull(argv[4], nullptr, 10);
+	HANDLE sem_b = (HANDLE)strtoull(argv[5], nullptr, 10);
+
+	IPCChannelShared *ipc_shared = (IPCChannelShared *)MapViewOfFile(shm, FILE_MAP_ALL_ACCESS,
+			0, 0, sizeof(IPCChannelShared));
+	FATAL_ERROR_IF(!ipc_shared, "CSM process unable to map shared memory");
+
+	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared, sem_a, sem_b);
+#else
 	FATAL_ERROR_IF(argc < 4, "Too few arguments to CSM process");
 
-	int shm = shm_open(argv[2], O_RDWR, 0);
-	shm_unlink(argv[2]);
+	int shm = shm_open(argv[3], O_RDWR, 0);
+	shm_unlink(argv[3]);
 	FATAL_ERROR_IF(shm == -1, "CSM process unable to open shared memory");
 
 	IPCChannelShared *ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
@@ -108,6 +125,7 @@ int csm_script_main(int argc, char *argv[])
 	FATAL_ERROR_IF(ipc_shared == MAP_FAILED, "CSM process unable to map shared memory");
 
 	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared);
+#endif // !defined(_WIN32)
 
 	// TODO: only send logs if they will actually be recorded.
 	g_logger.addOutput(&g_log_output);
@@ -131,7 +149,7 @@ int csm_script_main(int argc, char *argv[])
 	std::vector<std::string> mods;
 
 	{
-		std::string client_path = argv[3];
+		std::string client_path = argv[2];
 		std::string builtin_path = client_path + DIR_DELIM "csmbuiltin";
 		std::string mods_path = client_path + DIR_DELIM "csm";
 

@@ -31,16 +31,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/string.h"
 #include "util/serialize.h"
+#include <sstream>
+#include <string.h>
+#if !defined(_WIN32)
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <signal.h>
 #include <spawn.h>
-#include <sstream>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#endif // !defined(_WIN32)
 
 CSMController::CSMController(Client *client):
 	m_client(client)
@@ -59,11 +61,92 @@ bool CSMController::start()
 
 	char exe_path[PATH_MAX];
 
-	std::string shm_name;
-
 	std::string client_path = porting::path_user + DIR_DELIM "client";
 
-	const char *argv[] = {"minetest", "--csm", nullptr, client_path.c_str(), nullptr};
+#if defined(_WIN32)
+	PROCESS_INFORMATION process_info;
+
+	STARTUPINFOA startup_info = {
+		sizeof(startup_info), // cb
+		nullptr, // lpReserved
+		nullptr, // lpDesktop
+		nullptr, // lpTitle
+		0, // dwX
+		0, // dwY
+		0, // dwXSize
+		0, // dwYSize
+		0, // dwXCountChars
+		0, // dwYCountChars
+		0, // dwFillAttribute
+		STARTF_USESTDHANDLES, // dwFlags
+		0, // wShowWindow
+		0, // cbReserved2
+		nullptr, // lpReserved2
+		GetStdHandle(STD_INPUT_HANDLE), // hStdInput
+		GetStdHandle(STD_OUTPUT_HANDLE), // hStdOutput
+		GetStdHandle(STD_ERROR_HANDLE), // hStdError
+	};
+
+	char cmd_line[1024];
+
+	SECURITY_ATTRIBUTES inherit_attr = { sizeof(inherit_attr), nullptr, true };
+
+	m_ipc_shm = CreateFileMappingA(INVALID_HANDLE_VALUE, &inherit_attr, PAGE_READWRITE, 0,
+			sizeof(IPCChannelShared), nullptr);
+	if (m_ipc_shm == INVALID_HANDLE_VALUE)
+		goto error_shm;
+
+	m_ipc_sem_a = CreateSemaphoreA(&inherit_attr, 0, 1, nullptr);
+	if (m_ipc_sem_a == INVALID_HANDLE_VALUE)
+		goto error_sem_a;
+
+	m_ipc_sem_b = CreateSemaphoreA(&inherit_attr, 0, 1, nullptr);
+	if (m_ipc_sem_b == INVALID_HANDLE_VALUE)
+		goto error_sem_b;
+
+	m_ipc_shared = (IPCChannelShared *)MapViewOfFile(m_ipc_shm, FILE_MAP_ALL_ACCESS, 0, 0,
+			sizeof(IPCChannelShared));
+	if (!m_ipc_shared)
+		goto error_map_shm;
+
+	try {
+		new (m_ipc_shared) IPCChannelShared;
+		m_ipc = IPCChannelEnd::makeA(m_ipc_shared, m_ipc_sem_a, m_ipc_sem_b);
+	} catch (...) {
+		goto error_make_ipc;
+	}
+
+	porting::mt_snprintf(cmd_line, sizeof(cmd_line), "minetest --csm \"%s\" %llu %llu %llu",
+			client_path.c_str(), (unsigned long long)m_ipc_shm,
+			(unsigned long long)m_ipc_sem_a, (unsigned long long)m_ipc_sem_b);
+
+	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
+		goto error_exe_path;
+
+	if (!CreateProcessA(exe_path, cmd_line, nullptr, nullptr, true, 0, nullptr, nullptr,
+			&startup_info, &process_info))
+		goto error_create_process;
+
+	CloseHandle(process_info.hThread);
+	m_script_handle = process_info.hProcess;
+	return true;
+
+error_create_process:
+error_exe_path:
+	m_ipc_shared->~IPCChannelShared();
+error_make_ipc:
+	UnmapViewOfFile(m_ipc_shared);
+error_map_shm:
+	CloseHandle(m_ipc_sem_b);
+error_sem_b:
+	CloseHandle(m_ipc_sem_a);
+error_sem_a:
+	CloseHandle(m_ipc_shm);
+error_shm:
+#else
+	std::string shm_name;
+
+	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
 
 	int shm = -1;
 	for (int i = 0; i < 100; i++) { // 100 tries
@@ -74,7 +157,7 @@ bool CSMController::start()
 	}
 	if (shm == -1)
 		goto error_shm;
-	argv[2] = shm_name.c_str();
+	argv[3] = shm_name.c_str();
 
 	if (ftruncate(shm, sizeof(IPCChannelShared)) != 0)
 		goto error_ftruncate;
@@ -114,6 +197,7 @@ error_ftruncate:
 	shm_unlink(shm_name.c_str());
 	close(shm);
 error_shm:
+#endif // !defined(_WIN32)
 	errorstream << "Could not start CSM process" << std::endl;
 	return false;
 }
@@ -123,11 +207,22 @@ void CSMController::stop()
 	if (!isStarted())
 		return;
 
+#if defined(_WIN32)
+	TerminateProcess(m_script_handle, 0);
+	CloseHandle(m_script_handle);
+	m_script_handle = INVALID_HANDLE_VALUE;
+	CloseHandle(m_ipc_shm);
+	m_ipc_shared->~IPCChannelShared();
+	UnmapViewOfFile(m_ipc_shared);
+	CloseHandle(m_ipc_sem_a);
+	CloseHandle(m_ipc_sem_b);
+#else
 	kill(m_script_pid, SIGKILL);
 	waitpid(m_script_pid, nullptr, 0);
 	m_script_pid = 0;
 	m_ipc_shared->~IPCChannelShared();
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
+#endif // !defined(_WIN32)
 }
 
 void CSMController::runLoadMods()

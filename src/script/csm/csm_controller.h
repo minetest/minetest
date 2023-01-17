@@ -19,13 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <unistd.h>
 #include "irr_v3d.h"
 #include "mapnode.h"
 #include "modchannels.h"
 #include "threading/ipc_channel.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 class Client;
 class Inventory;
@@ -44,7 +48,11 @@ public:
 	bool start();
 	void stop();
 
-	bool isStarted() { return m_script_pid != 0; }
+#if defined(_WIN32)
+	bool isStarted() const { return m_script_handle != INVALID_HANDLE_VALUE; }
+#else
+	bool isStarted() const { return m_script_pid != 0; }
+#endif
 
 	void runLoadMods();
 	void runShutdown();
@@ -73,7 +81,14 @@ private:
 
 	Client *const m_client;
 	int m_timeout = 1000;
+#if defined(_WIN32)
+	HANDLE m_script_handle = INVALID_HANDLE_VALUE;
+	HANDLE m_ipc_shm;
+	HANDLE m_ipc_sem_a;
+	HANDLE m_ipc_sem_b;
+#else
 	pid_t m_script_pid = 0;
+#endif
 	IPCChannelShared *m_ipc_shared = nullptr;
 	IPCChannelEnd m_ipc;
 };

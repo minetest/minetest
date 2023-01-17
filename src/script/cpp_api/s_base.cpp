@@ -144,7 +144,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	// Finally, put the table into the global environment:
 	lua_setglobal(m_luastack, "core");
 
-	if (m_type == ScriptingType::Client)
+	if (m_type == ScriptingType::CSM || m_type == ScriptingType::Client)
 		lua_pushstring(m_luastack, "/");
 	else
 		lua_pushstring(m_luastack, DIR_DELIM);

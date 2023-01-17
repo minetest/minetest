@@ -74,6 +74,20 @@ IPCChannelBuffer::~IPCChannelBuffer()
 #endif // !defined(__linux) && !defined(_WIN32)
 }
 
+#if defined(_WIN32)
+
+static bool wait(HANDLE sem, DWORD timeout)
+{
+	return WaitForSingleObject(sem, timeout) == WAIT_OBJECT_0;
+}
+
+static void post(HANDLE sem)
+{
+	ReleaseSemaphore(sem, 1, nullptr);
+}
+
+#else
+
 #if defined(__linux__)
 
 static void busy_wait(int n) noexcept
@@ -143,6 +157,14 @@ static void post(IPCChannelBuffer *buf) noexcept
 #endif // !defined(__linux)
 }
 
+#endif // !defined(_WIN32)
+
+#if defined(_WIN32)
+static DWORD get_timeout(int timeout_ms)
+{
+	return timeout_ms < 0 ? INFINITE : (DWORD)timeout_ms;
+}
+#else
 static struct timespec *set_timespec(struct timespec *ts, int ms)
 {
 	if (ms < 0)
@@ -155,23 +177,40 @@ static struct timespec *set_timespec(struct timespec *ts, int ms)
 	ts->tv_nsec = msu % 1000 * 1000000UL;
 	return ts;
 }
+#endif // !defined(_WIN32)
 
 bool IPCChannelEnd::sendSmall(size_t size, const void *data) noexcept
 {
 	m_out->size = size;
 	memcpy(m_out->data, data, size);
+#if defined(_WIN32)
+	post(m_sem_out);
+#else
 	post(m_out);
+#endif
 	return true;
 }
 
 bool IPCChannelEnd::sendLarge(size_t size, const void *data, int timeout_ms) noexcept
 {
+#if defined(_WIN32)
+	DWORD timeout = get_timeout(timeout_ms);
+#else
 	struct timespec timeout, *timeoutp = set_timespec(&timeout, timeout_ms);
+#endif
 	m_out->size = size;
 	do {
 		memcpy(m_out->data, data, IPC_CHANNEL_MSG_SIZE);
+#if defined(_WIN32)
+		post(m_sem_out);
+#else
 		post(m_out);
+#endif
+#if defined(_WIN32)
+		if (!wait(m_sem_in, timeout))
+#else
 		if (!wait(m_in, timeoutp))
+#endif
 			return false;
 		size -= IPC_CHANNEL_MSG_SIZE;
 		data = (u8 *)data + IPC_CHANNEL_MSG_SIZE;
@@ -183,8 +222,16 @@ bool IPCChannelEnd::sendLarge(size_t size, const void *data, int timeout_ms) noe
 
 bool IPCChannelEnd::recv(int timeout_ms) noexcept
 {
+#if defined(_WIN32)
+	DWORD timeout = get_timeout(timeout_ms);
+#else
 	struct timespec timeout, *timeoutp = set_timespec(&timeout, timeout_ms);
+#endif
+#if defined(_WIN32)
+	if (!wait(m_sem_in, timeout))
+#else
 	if (!wait(m_in, timeoutp))
+#endif
 		return false;
 	size_t size = m_in->size;
 	if (size <= IPC_CHANNEL_MSG_SIZE) {
@@ -203,8 +250,16 @@ bool IPCChannelEnd::recv(int timeout_ms) noexcept
 			memcpy(recv_data, m_in->data, IPC_CHANNEL_MSG_SIZE);
 			size -= IPC_CHANNEL_MSG_SIZE;
 			recv_data += IPC_CHANNEL_MSG_SIZE;
+#if defined(_WIN32)
+			post(m_sem_out);
+#else
 			post(m_out);
+#endif
+#if defined(_WIN32)
+			if (!wait(m_sem_in, timeout))
+#else
 			if (!wait(m_in, timeoutp))
+#endif
 				return false;
 		} while (size > IPC_CHANNEL_MSG_SIZE);
 		memcpy(recv_data, m_in->data, size);

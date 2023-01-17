@@ -24,9 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <type_traits>
 #include <vector>
-#if defined(__linux__)
+#if defined(_WIN32)
+#include <windows.h>
+#elif defined(__linux__)
 #include <atomic>
-#elif !defined(_WIN32)
+#else
 #include <pthread.h>
 #endif
 
@@ -43,14 +45,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct IPCChannelBuffer
 {
+#if !defined(_WIN32)
 #if defined(__linux__)
 	std::atomic_uint32_t futex = ATOMIC_VAR_INIT(0);
-#elif !defined(_WIN32)
+#else
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 	// TODO: use atomic?
 	bool posted = false;
 #endif
+#endif // !defined(_WIN32)
 	size_t size;
 	u8 data[IPC_CHANNEL_MSG_SIZE];
 
@@ -69,6 +73,17 @@ class IPCChannelEnd
 public:
 	IPCChannelEnd() = default;
 
+#if defined(_WIN32)
+	static IPCChannelEnd makeA(IPCChannelShared *shared, HANDLE sem_a, HANDLE sem_b)
+	{
+		return IPCChannelEnd(&shared->a, &shared->b, sem_a, sem_b);
+	}
+
+	static IPCChannelEnd makeB(IPCChannelShared *shared, HANDLE sem_a, HANDLE sem_b)
+	{
+		return IPCChannelEnd(&shared->b, &shared->a, sem_b, sem_a);
+	}
+#else
 	static IPCChannelEnd makeA(IPCChannelShared *shared)
 	{
 		return IPCChannelEnd(&shared->a, &shared->b);
@@ -78,6 +93,7 @@ public:
 	{
 		return IPCChannelEnd(&shared->b, &shared->a);
 	}
+#endif // !defined(_WIN32)
 
 	// If send, recv, or exchange return false, stop using the channel.
 	// Note: timeouts may be for receiving any response, not a whole message.
@@ -112,7 +128,13 @@ public:
 	inline const void *getRecvData() const noexcept { return m_recv_data; }
 
 private:
+#if defined(_WIN32)
+	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out, HANDLE sem_in, HANDLE sem_out):
+			m_in(in), m_out(out), m_sem_in(sem_in), m_sem_out(sem_out)
+	{}
+#else
 	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out): m_in(in), m_out(out) {}
+#endif
 
 	bool sendSmall(size_t size, const void *data) noexcept;
 
@@ -120,6 +142,10 @@ private:
 
 	IPCChannelBuffer *m_in = nullptr;
 	IPCChannelBuffer *m_out = nullptr;
+#if defined(_WIN32)
+	HANDLE m_sem_in;
+	HANDLE m_sem_out;
+#endif
 	const void *m_recv_data;
 	size_t m_recv_size;
 	std::vector<u8> m_large_recv;
