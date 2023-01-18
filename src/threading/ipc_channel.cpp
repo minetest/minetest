@@ -83,7 +83,8 @@ static bool wait(HANDLE sem, DWORD timeout)
 
 static void post(HANDLE sem)
 {
-	ReleaseSemaphore(sem, 1, nullptr);
+	if (!ReleaseSemaphore(sem, 1, nullptr))
+		FATAL_ERROR("ReleaseSemaphore failed unexpectedly");
 }
 
 #else
