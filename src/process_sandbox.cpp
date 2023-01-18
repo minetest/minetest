@@ -18,7 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "process_sandbox.h"
-#if defined(__linux__)
+#if defined(_WIN32)
+#include <windows.h>
+#elif defined(__linux__)
 #include "filesys.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
@@ -59,7 +61,26 @@ static void close_resources()
 
 #endif // defined(__linux__) || defined(__APPLE__)
 
-#if defined(__linux__)
+#if defined(_WIN32)
+
+bool start_sandbox()
+{
+	// Set the process to a low integrity level.
+	// This mainly just protects against filesystem writes, I think.
+	char sid[SECURITY_MAX_SID_SIZE] alignas(SID);
+	DWORD sid_size = sizeof(sid);
+	if (!CreateWellKnownSid(WinLowLabelSid, nullptr, (PSID)sid, &sid_size))
+		return false;
+	HANDLE token;
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_DEFAULT, &token))
+		return false;
+	TOKEN_MANDATORY_LABEL label = { { sid, SE_GROUP_INTEGRITY } };
+	bool ok = SetTokenInformation(token, TokenIntegrityLevel, &label, sizeof(label));
+	CloseHandle(token);
+	return ok;
+}
+
+#elif defined(__linux__)
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define IS_LE 1
