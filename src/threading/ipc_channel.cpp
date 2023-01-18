@@ -216,7 +216,11 @@ bool IPCChannelEnd::sendLarge(size_t size, const void *data, int timeout_ms) noe
 		data = (u8 *)data + IPC_CHANNEL_MSG_SIZE;
 	} while (size > IPC_CHANNEL_MSG_SIZE);
 	memcpy(m_out->data, data, size);
+#if defined(_WIN32)
+	post(m_sem_out);
+#else
 	post(m_out);
+#endif
 	return true;
 }
 
