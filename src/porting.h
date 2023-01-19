@@ -156,6 +156,11 @@ extern std::string path_locale;
 extern std::string path_cache;
 
 /*
+	Gets the path of our executable.
+*/
+bool getCurrentExecPath(char *buf, size_t len);
+
+/*
 	Get full path of stuff in data directory.
 	Example: "stone.png" -> "../data/stone.png"
 */
