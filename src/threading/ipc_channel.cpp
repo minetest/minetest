@@ -112,15 +112,17 @@ static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 {
 #if defined(__linux__)
-#if defined(__i386__) || defined(__x86_64__)
 	// try busy waiting
 	for (int i = 0; i < 100; i++) {
 		// posted?
 		if (buf->futex.exchange(0) == 1)
 			return true; // yes
+#if defined(__i386__) || defined(__x86_64__)
 		busy_wait(40);
+#else
+		break; // Busy wait not implemented
+#endif
 	}
-#endif // defined(__i386__) || defined(__x86_64__)
 	// wait with futex
 	while (true) {
 		// write 2 to show that we're futexing
