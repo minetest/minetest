@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fcntl.h>
 #include <limits.h>
 #include <signal.h>
+#include <spawn.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -181,14 +182,9 @@ error_shm:
 	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
 		goto error_exe_path;
 
-	m_script_pid = fork();
-	if (m_script_pid < 0)
+	if (posix_spawn(&m_script_pid, exe_path,
+			nullptr, nullptr, (char *const *)argv, nullptr) != 0)
 		goto error_spawn;
-	if (m_script_pid == 0) {
-		char *const envp[] = {nullptr};
-		execve(exe_path, (char *const *)argv, envp);
-		FATAL_ERROR(strerror(errno)); // Failed to exec
-	}
 
 	return true;
 
