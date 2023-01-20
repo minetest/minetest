@@ -149,6 +149,7 @@ error_shm:
 	std::string shm_name;
 
 	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
+	char *const envp[] = {nullptr};
 
 	int shm = -1;
 	for (int i = 0; i < 100; i++) { // 100 tries
@@ -183,7 +184,7 @@ error_shm:
 		goto error_exe_path;
 
 	if (posix_spawn(&m_script_pid, exe_path,
-			nullptr, nullptr, (char *const *)argv, nullptr) != 0)
+			nullptr, nullptr, (char *const *)argv, envp) != 0)
 		goto error_spawn;
 
 	return true;
