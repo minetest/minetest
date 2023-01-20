@@ -1327,6 +1327,23 @@ bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
 		p.Z >  mapgen_limit_bp;
 }
 
+bool ServerMap::blockpos_should_emerge(v3s16 p)
+{
+	if (m_areas_should_emerge.empty()) return true;
+
+	for (auto &area_it : m_areas_should_emerge) {
+		v3s16 p_min = area_it.first;
+		v3s16 p_max = area_it.second;
+		if (p.X > p_min.X && p.X < p_max.X &&
+				p.Y > p_min.Y && p.Y < p_max.Y &&
+				p.Z > p_min.Z && p.Z < p_max.Z)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 {
 	s16 csize = getMapgenParams()->chunksize;
@@ -1365,7 +1382,6 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 
 		for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
 			v3s16 p(x, y, z);
-
 			MapBlock *block = emergeBlock(p, false);
 			if (block == NULL) {
 				block = createBlock(p);
@@ -1969,9 +1985,10 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 
 		if(block_data_inexistent)
 		{
-
-			if (load_if_inexistent && !blockpos_over_max_limit(p)) {
-				ServerMap *svrmap = (ServerMap *)m_map;
+			ServerMap *svrmap = (ServerMap *)m_map;
+			if (load_if_inexistent && !blockpos_over_max_limit(p)
+				&& svrmap->blockpos_should_emerge(p))
+			{
 				block = svrmap->emergeBlock(p, false);
 				if (block == NULL)
 					block = svrmap->createBlock(p);
@@ -1992,11 +2009,11 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 				}
 			}
 		}
-		/*else if (block->getNode(0, 0, 0).getContent() == CONTENT_IGNORE)
+		else
 		{
 			// Mark that block was loaded as blank
 			flags |= VMANIP_BLOCK_CONTAINS_CIGNORE;
-		}*/
+		}
 
 		m_loaded_blocks[p] = flags;
 	}

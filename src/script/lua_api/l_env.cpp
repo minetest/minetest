@@ -1282,6 +1282,25 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 	return 1;
 }
 
+// add a area to be emerged(p1, p2)
+int ModApiEnvMod::l_selective_emerge_add_area(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 bpmin = getNodeBlockPos(read_v3s16(L, 1));
+	v3s16 bpmax = getNodeBlockPos(read_v3s16(L, 2));
+	sortBoxVerticies(bpmin, bpmax);
+
+	ServerMap &map = env->getServerMap();
+
+	map.m_areas_should_emerge.emplace(bpmin, bpmax);
+	for (auto &area_it : map.m_areas_should_emerge) {
+		infostream << area_it.first.X<< std::endl;
+	}
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // find_path(pos1, pos2, searchdistance,
 //     max_jump, max_drop, algorithm) -> table containing path
 int ModApiEnvMod::l_find_path(lua_State *L)
@@ -1482,6 +1501,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(load_area);
 	API_FCT(emerge_area);
 	API_FCT(delete_area);
+	API_FCT(selective_emerge_add_area);
 	API_FCT(get_perlin);
 	API_FCT(get_perlin_map);
 	API_FCT(get_voxel_manip);

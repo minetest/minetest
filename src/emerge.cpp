@@ -607,7 +607,7 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 	}
 
 	// 3). Attempt to start generation
-	if (allow_gen && m_map->initBlockMake(pos, bmdata))
+	if (allow_gen && m_map->blockpos_should_emerge(pos) && m_map->initBlockMake(pos, bmdata))
 		return EMERGE_GENERATED;
 
 	// All attempts failed; cancel this block emerge
