@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-16 20:51+0000\n"
-"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
+"PO-Revision-Date: 2023-01-22 15:28+0000\n"
+"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.15.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -57,7 +57,7 @@ msgstr "Wróć do gry"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Umarłeś"
+msgstr "Nie żyjesz"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Znajdź Więcej Modów"
+msgstr "Znajdź więcej modyfikacji"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -232,7 +232,7 @@ msgstr "\"$1\" aktualnie istnieje. Czy chcesz go nadpisać?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Zależności $1 i $2 będą zainstalowane."
+msgstr "Zostaną zainstalowane zależności $1 i $2."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -243,7 +243,7 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
-"$1 pobierany,\n"
+"$1 pobieranych,\n"
 "$2 w kolejce"
 
 #: builtin/mainmenu/dlg_contentstore.lua
