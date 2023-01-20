@@ -116,10 +116,7 @@ int csm_script_main(int argc, char *argv[])
 #else
 	FATAL_ERROR_IF(argc < 4, "Too few arguments to CSM process");
 
-	int shm = shm_open(argv[3], O_RDWR, 0);
-	shm_unlink(argv[3]);
-	FATAL_ERROR_IF(shm == -1, "CSM process unable to open shared memory");
-
+	int shm = atoi(argv[3]);
 	IPCChannelShared *ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
 			PROT_READ | PROT_WRITE, MAP_SHARED, shm, 0);
 	FATAL_ERROR_IF(ipc_shared == MAP_FAILED, "CSM process unable to map shared memory");

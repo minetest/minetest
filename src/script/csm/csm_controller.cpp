@@ -42,6 +42,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#if defined(__ANDROID__)
+#include <sys/syscall.h>
+#endif
 #endif // !defined(_WIN32)
 
 CSMController::CSMController(Client *client):
@@ -146,21 +149,35 @@ error_shm:
 #else
 	char exe_path[PATH_MAX];
 
-	std::string shm_name;
+	std::string shm_str;
 
 	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
 	char *const envp[] = {nullptr};
 
 	int shm = -1;
+
+#if defined(__ANDROID__)
+	shm = syscall(SYS_memfd_create, "csm_shm", 0);
+#else
 	for (int i = 0; i < 100; i++) { // 100 tries
-		shm_name = std::string("/minetest") + std::to_string(myrand());
+		std::string shm_name = std::string("/minetest") + std::to_string(myrand());
 		shm = shm_open(shm_name.c_str(), O_RDWR | O_CREAT | O_EXCL, 0600);
+		if (shm != -1)
+			shm_unlink(shm_name.c_str());
 		if (shm != -1 || errno != EEXIST)
 			break;
 	}
+#endif
 	if (shm == -1)
 		goto error_shm;
-	argv[3] = shm_name.c_str();
+	shm_str = std::to_string(shm);
+	argv[3] = shm_str.c_str();
+
+	{
+		int flags = fcntl(shm, F_GETFD);
+		if (flags < 0 || fcntl(shm, F_SETFD, flags & ~FD_CLOEXEC) < 0)
+			goto error_fcntl;
+	}
 
 	if (ftruncate(shm, sizeof(IPCChannelShared)) != 0)
 		goto error_ftruncate;
@@ -177,9 +194,6 @@ error_shm:
 		goto error_make_ipc;
 	}
 
-	close(shm);
-	shm = -1;
-
 	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
 		goto error_exe_path;
 
@@ -187,6 +201,7 @@ error_shm:
 			nullptr, nullptr, (char *const *)argv, envp) != 0)
 		goto error_spawn;
 
+	close(shm);
 	return true;
 
 error_spawn:
@@ -197,7 +212,7 @@ error_make_ipc:
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
 error_mmap:
 error_ftruncate:
-	shm_unlink(shm_name.c_str());
+error_fcntl:
 	close(shm);
 error_shm:
 #endif // !defined(_WIN32)
