@@ -25,11 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <errno.h>
 #include <utility>
 #if defined(__linux__)
-#include <immintrin.h>
 #include <linux/futex.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#if defined(__i386__) || defined(__x86_64__)
+#include <immintrin.h>
+#endif
 #endif
 
 IPCChannelBuffer::IPCChannelBuffer()
@@ -91,11 +93,13 @@ static void post(HANDLE sem)
 
 #if defined(__linux__)
 
+#if defined(__i386__) || defined(__x86_64__)
 static void busy_wait(int n) noexcept
 {
 	for (int i = 0; i < n; i++)
 		_mm_pause();
 }
+#endif // defined(__i386__) || defined(__x86_64__)
 
 static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 		const struct timespec *timeout, u32 *uaddr2, u32 val3) noexcept
@@ -108,6 +112,7 @@ static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
 static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 {
 #if defined(__linux__)
+#if defined(__i386__) || defined(__x86_64__)
 	// try busy waiting
 	for (int i = 0; i < 100; i++) {
 		// posted?
@@ -115,6 +120,7 @@ static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 			return true; // yes
 		busy_wait(40);
 	}
+#endif // defined(__i386__) || defined(__x86_64__)
 	// wait with futex
 	while (true) {
 		// write 2 to show that we're futexing
