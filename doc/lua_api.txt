@@ -9652,7 +9652,9 @@ degradation in older clients).
         -- takes place. currently **only two frames**, the first and the last, are
         -- used, but extra frames are accepted for the sake of forward compatibility.
         -- any of the above definition styles can be used here as well in any combination
-        -- supported by the property type
+        -- supported by the property type.
+		-- you can also use the tween table to set 2 points in 3d space to draw lines with
+		-- particles
 
         pos_tween = {
             style = "fwd",
