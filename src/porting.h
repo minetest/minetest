@@ -335,6 +335,11 @@ bool secure_rand_fill_buf(void *buf, size_t len);
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
 void attachOrCreateConsole();
 
+#ifdef _WIN32
+// Quotes an argument for use in a CreateProcess() commandline (not cmd.exe!!)
+std::string QuoteArgv(const std::string &arg);
+#endif
+
 int mt_snprintf(char *buf, const size_t buf_size, const char *fmt, ...);
 
 /**

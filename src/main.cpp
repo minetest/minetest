@@ -551,17 +551,18 @@ namespace {
 			return "";
 		std::istringstream iss(path_c);
 		std::string checkpath;
-		while (std::getline(iss, checkpath, PATH_DELIM[0])) {
+		while (!iss.eof()) {
+			std::getline(iss, checkpath, PATH_DELIM[0]);
 			if (!checkpath.empty() && checkpath.back() != DIR_DELIM_CHAR)
-				checkpath.append(DIR_DELIM);
+				checkpath.push_back(DIR_DELIM_CHAR);
 			checkpath.append(name);
-			if (access(checkpath.c_str(), X_OK) == 0)
+			if (fs::IsExecutable(checkpath))
 				return checkpath;
 		}
 		return "";
 	}
 
-#if defined(_WIN32)
+#ifdef _WIN32
 	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
 #else
 	const char *debuggerNames[] = {"gdb", "lldb"};
@@ -573,7 +574,7 @@ namespace {
 				"-ex", "run", "-ex", "bt", "--args"})
 				out.push_back(s);
 		} else if (i == 1) {
-			for (auto s : {"-Q", "-b", "-o", "run", "-k", "bt", "--"})
+			for (auto s : {"-Q", "-b", "-o", "run", "-k", "bt\nq", "--"})
 				out.push_back(s);
 		}
 	}
@@ -584,6 +585,13 @@ static bool use_debugger(int argc, char *argv[])
 #if defined(__ANDROID__)
 	return false;
 #else
+#ifdef _WIN32
+	if (IsDebuggerPresent()) {
+		warningstream << "Process is already being debugged." << std::endl;
+		return false;
+	}
+#endif
+
 	char exec_path[1024];
 	if (!porting::getCurrentExecPath(exec_path, sizeof(exec_path)))
 		return false;
@@ -623,10 +631,35 @@ static bool use_debugger(int argc, char *argv[])
 	}
 	new_args.push_back(nullptr);
 
+#ifdef _WIN32
+	// Special treatment for Windows
+	std::string cmdline;
+	for (int i = 1; new_args[i]; i++) {
+		if (i > 1)
+			cmdline += ' ';
+		cmdline += porting::QuoteArgv(new_args[i]);
+	}
+
+	STARTUPINFO startup_info = {};
+	PROCESS_INFORMATION process_info = {};
+	bool ok = CreateProcess(new_args[0], cmdline.empty() ? nullptr : &cmdline[0],
+		nullptr, nullptr, false, CREATE_UNICODE_ENVIRONMENT,
+		nullptr, nullptr, &startup_info, &process_info);
+	if (!ok) {
+		warningstream << "CreateProcess: " << GetLastError() << std::endl;
+		return false;
+	}
+	DWORD exitcode = 0;
+	WaitForSingleObject(process_info.hProcess, INFINITE);
+	GetExitCodeProcess(process_info.hProcess, &exitcode);
+	exit(exitcode);
+	// not reached
+#else
 	errno = 0;
-	execvp(new_args[0], const_cast<char**>(new_args.data()));
-	warningstream << "execvp: " << strerror(errno) << std::endl;
+	execv(new_args[0], const_cast<char**>(new_args.data()));
+	warningstream << "execv: " << strerror(errno) << std::endl;
 	return false;
+#endif
 #endif
 }
 
