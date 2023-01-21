@@ -7941,12 +7941,11 @@ Used by `minetest.register_abm`.
         -- If left out or empty, any neighbor will do.
         -- `group:groupname` can also be used here.
 
-        interval = 1.0,
+        interval = 10.0,
         -- Operation interval in seconds
 
-        chance = 1,
-        -- Chance of triggering `action` per-node per-interval is 1.0 / this
-        -- value
+        chance = 50,
+        -- Chance of triggering `action` per-node per-interval is 1.0 / chance
 
         min_y = -32768,
         max_y = 32767,
