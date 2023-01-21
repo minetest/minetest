@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-10 20:51+0000\n"
+"PO-Revision-Date: 2023-01-22 15:28+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15.1\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -866,7 +866,7 @@ msgstr "چوب اکتيفکن سمولا سناراي ڤلاين عوام فان
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "ڤريحال"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
