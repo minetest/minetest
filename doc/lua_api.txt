@@ -9301,15 +9301,14 @@ Used by `minetest.register_chatcommand`.
 
 Specifies the function to be called and the privileges required when a player
 issues the command.  A help message that is the concatenation of the params and
-description fields is shown when the "/help" chatcommand is issued with the
-command name as its argument, 
+description fields is shown when the "/help" chatcommand is issued.
 
     {
         params = "",
 		-- Short parameter description.  See the below note.
 
         description = "",
-		-- Full description of the command's purpose.
+		-- General description of the command's purpose.
 
         privs = {},
 		-- Required privileges to run. See [Privileges].
@@ -9319,7 +9318,7 @@ command name as its argument,
 		--	* `name` is the name of the player who issued the command.
 		--	* `param` is a string with the full arguments to the command.
 		-- Returns a boolean and a string value.  
-		-- The string is shown to the issuing player upon exit of `funct` or,
+		-- The string is shown to the issuing player upon exit of `func` or,
 		-- if `func` returns `false` and no string, the help message is shown.
     }
 
