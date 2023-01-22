@@ -149,28 +149,25 @@ void init_gettext(const char *path, const std::string &configured_language,
 				"Restarting " PROJECT_NAME_C " in a new environment!" << std::endl;
 
 			std::string parameters;
-
-			for (unsigned int i = 1; i < argc; i++) {
-				if (!parameters.empty())
+			for (int i = 1; i < argc; i++) {
+				if (i > 1)
 					parameters += ' ';
-
-				parameters += argv[i];
+				parameters += porting::QuoteArgv(argv[i]);
 			}
 
-			const char *ptr_parameters = NULL;
-
+			char *ptr_parameters = nullptr;
 			if (!parameters.empty())
-				ptr_parameters = parameters.c_str();
+				ptr_parameters = &parameters[0];
 
 			// Allow calling without an extension
 			std::string app_name = argv[0];
 			if (app_name.compare(app_name.size() - 4, 4, ".exe") != 0)
 				app_name += ".exe";
 
-			STARTUPINFO startup_info = {0};
-			PROCESS_INFORMATION process_info = {0};
+			STARTUPINFO startup_info = {};
+			PROCESS_INFORMATION process_info = {};
 
-			bool success = CreateProcess(app_name.c_str(), (char *)ptr_parameters,
+			bool success = CreateProcess(app_name.c_str(), ptr_parameters,
 				NULL, NULL, false, DETACHED_PROCESS | CREATE_UNICODE_ENVIRONMENT,
 				NULL, NULL, &startup_info, &process_info);
 
