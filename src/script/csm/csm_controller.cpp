@@ -497,8 +497,12 @@ void CSMController::listen(bool succeeded)
 				CSMS2CLog recv;
 				memcpy(&recv, data, sizeof(recv));
 				if ((succeeded = recv.level >= 0 && recv.level < LL_MAX)) {
-					std::string line((char *)data + sizeof(recv), size - sizeof(recv));
-					g_logger.logRaw(recv.level, line);
+					if (g_logger.hasOutput(recv.level)) {
+						std::string line((char *)data + sizeof(recv), size - sizeof(recv));
+						std::ostringstream os(std::ios::binary);
+						safe_print_string(os, line);
+						g_logger.logRaw(recv.level, os.str());
+					}
 					int dummy;
 					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
 				}
