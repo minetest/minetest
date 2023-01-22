@@ -744,7 +744,7 @@ std::string QuoteArgv(const std::string &arg)
 	for (auto it = arg.begin(); it != arg.end(); ++it) {
 		u32 back = 0;
 		while (it != arg.end() && *it == '\\')
-			++it;
+			++back, ++it;
 
 		if (it == arg.end()) {
 			ret.append(2 * back, '\\');

@@ -348,7 +348,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
 			_("Print enormous amounts of information to log and console"))));
 	allowed_options->insert(std::make_pair("debugger", ValueSpec(VALUETYPE_FLAG,
-			_("Try to automatically attach a debugger before starting (convenience option)"))));	
+			_("Try to automatically attach a debugger before starting (convenience option)"))));
 	allowed_options->insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
