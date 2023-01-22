@@ -90,6 +90,8 @@ bool CSMController::start()
 		GetStdHandle(STD_ERROR_HANDLE), // hStdError
 	};
 
+	char env[] = {'\0'};
+
 	char cmd_line[1024];
 
 	SECURITY_ATTRIBUTES inherit_attr = { sizeof(inherit_attr), nullptr, true };
@@ -126,7 +128,7 @@ bool CSMController::start()
 	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
 		goto error_exe_path;
 
-	if (!CreateProcessA(exe_path, cmd_line, nullptr, nullptr, true, 0, nullptr, nullptr,
+	if (!CreateProcessA(exe_path, cmd_line, nullptr, nullptr, true, 0, env, nullptr,
 			&startup_info, &process_info))
 		goto error_create_process;
 
