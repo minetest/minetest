@@ -1583,11 +1583,12 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data)
 {
 	std::unordered_map<v3s16, u8> results;
+	v3s16 ofs;
 
-	for (int x = 0; x < 2; x++)
-	for (int y = 0; y < 2; y++)
-	for (int z = 0; z < 2; z++) {
-		v3s16 blockpos = data->m_blockpos + v3s16(x, y, z);
+	for (ofs.X = 0; ofs.X < 2; ofs.X++)
+	for (ofs.Y = 0; ofs.Y < 2; ofs.Y++)
+	for (ofs.Z = 0; ofs.Z < 2; ofs.Z++) {
+		v3s16 blockpos = data->m_blockpos + ofs;
 		v3s16 blockpos_nodes = blockpos * MAP_BLOCKSIZE;
 		const NodeDefManager *ndef = data->m_client->ndef();
 

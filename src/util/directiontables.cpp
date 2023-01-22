@@ -110,8 +110,6 @@ const v3s16 g_27dirs[27] =
 	v3s16(0,0,0),
 };
 
-// loop over 64 nodes around the current one,
-// sector by sector
 const v3s16 g_64dirs[64] =
 {
 	// +right, +top, +back

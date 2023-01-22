@@ -44,7 +44,8 @@ struct MeshCollector
 	v3f offset;
 
 	// center_pos: pos to use for bounding-sphere, in BS-space
-	MeshCollector(const v3f center_pos, v3f _offset) : m_center_pos(center_pos), offset(_offset) {}
+	// offset: offset added to vertices
+	MeshCollector(const v3f center_pos, v3f offset = v3f()) : m_center_pos(center_pos), offset(offset) {}
 
 	// clang-format off
 	void append(const TileSpec &material,
