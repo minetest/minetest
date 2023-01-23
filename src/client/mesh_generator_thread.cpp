@@ -113,14 +113,13 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	}
 
 	/*
-		Cache the block data (force-update the center block, don't update the
-		neighbors but get them if they aren't already cached)
+		Make a list of blocks necessary for mesh generation and lock the blocks in memory.
 	*/
-	std::vector<MapBlock *> cached_blocks;
-	cached_blocks.reserve(4*4*4);
+	std::vector<MapBlock *> map_blocks;
+	map_blocks.reserve(4*4*4);
 	for (v3s16 dp : g_64dirs) {
 		MapBlock *block = map->getBlockNoCreateNoEx(mesh_position + dp);
-		cached_blocks.push_back(block);
+		map_blocks.push_back(block);
 		if (block)
 			block->refGrab();
 	}
@@ -135,7 +134,7 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	q->crack_level = m_client->getCrackLevel();
 	q->crack_pos = m_client->getCrackPos();
 	q->urgent = urgent;
-	q->map_blocks = std::move(cached_blocks);
+	q->map_blocks = std::move(map_blocks);
 	m_queue.push_back(q);
 
 	return true;
@@ -191,8 +190,6 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 		MapBlock *block = q->map_blocks[i];
 		data->fillBlockData(g_64dirs[i], block ? block->getData() : block_placeholder.data);
 	}
-
-	// warningstream << "Pos " << q->p.X << " " << q->p.Y << " " << q->p.Z << " uncached " << uncache_count << std::endl;
 
 	data->setCrack(q->crack_level, q->crack_pos);
 	data->setSmoothLighting(m_cache_smooth_lighting);
