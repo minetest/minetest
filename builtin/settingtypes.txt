@@ -628,11 +628,6 @@ update_last_checked (Last update check) string
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
 
-#    Type of occlusion_culler
-#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
-#    "bfs" is the new algorithm based on breadth-first-search and side culling
-occlusion_culler (Occlusion Culler) enum bfs bfs,loops
-
 #    Use raytraced occlusion culling in the new culler.
 #	 This flag enables use of raytraced occlusion culling test
 enable_raytraced_culling (Enable Raytraced Culling) bool true
