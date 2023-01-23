@@ -18,5 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "csm_script_ipc.h"
+#include "debug.h"
 
 IPCChannelEnd g_csm_script_ipc;
+
+std::vector<char> g_csm_script_ipc_buf;
+
+void csm_ipc_check(bool succeeded)
+{
+	FATAL_ERROR_IF(!succeeded, "CSM process IPC failed");
+}

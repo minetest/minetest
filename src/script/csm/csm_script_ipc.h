@@ -19,17 +19,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "debug.h"
 #include "threading/ipc_channel.h"
+#include "util/struct_serialize.h"
 
 extern IPCChannelEnd g_csm_script_ipc;
 
-#define CSM_IPC(call) \
-	do { \
-		if (!g_csm_script_ipc.call) \
-			FATAL_ERROR("CSM process IPC failed"); \
-	} while (0)
+extern std::vector<char> g_csm_script_ipc_buf;
+
+void csm_ipc_check(bool succeeded);
+
+template<typename T>
+void csm_exchange_msg(const T &val)
+{
+	bool succeeded = true;
+	try {
+		g_csm_script_ipc_buf.clear();
+		struct_serialize(g_csm_script_ipc_buf, val);
+		succeeded = g_csm_script_ipc.exchange(g_csm_script_ipc_buf.data(),
+				g_csm_script_ipc_buf.size());
+	} catch (...) {
+		succeeded = false;
+	}
+	csm_ipc_check(succeeded);
+}
 
 inline size_t csm_recv_size() { return g_csm_script_ipc.getRecvSize(); }
 
 inline const void *csm_recv_data() { return g_csm_script_ipc.getRecvData(); }
+
+template<typename T>
+T csm_deserialize_msg()
+{
+	return struct_deserialize<T>(csm_recv_data(), csm_recv_size());
+}

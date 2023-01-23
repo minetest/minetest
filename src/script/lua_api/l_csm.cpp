@@ -82,27 +82,21 @@ int ModApiCSM::l_print(lua_State *L)
 // get_node(pos)
 int ModApiCSM::l_get_node(lua_State *L)
 {
-	CSMS2CGetNode send;
-	send.pos = read_v3s16(L, 1);
-	CSM_IPC(exchange(send));
-	CSMC2SGetNode recv;
-	sanity_check(csm_recv_size() >= sizeof(recv));
-	memcpy(&recv, csm_recv_data(), sizeof(recv));
-	pushnode(L, recv.n);
+	CSMS2CGetNode send(CSM_S2C_GET_NODE, read_v3s16(L, 1));
+	csm_exchange_msg(send);
+	auto recv = csm_deserialize_msg<CSMC2SGetNode>();
+	pushnode(L, recv.first);
 	return 1;
 }
 
 // get_node_or_nil(pos)
 int ModApiCSM::l_get_node_or_nil(lua_State *L)
 {
-	CSMS2CGetNode send;
-	send.pos = read_v3s16(L, 1);
-	CSM_IPC(exchange(send));
-	CSMC2SGetNode recv;
-	sanity_check(csm_recv_size() >= sizeof(recv));
-	memcpy(&recv, csm_recv_data(), sizeof(recv));
-	if (recv.pos_ok) {
-		pushnode(L, recv.n);
+	CSMS2CGetNode send(CSM_S2C_GET_NODE, read_v3s16(L, 1));
+	csm_exchange_msg(send);
+	auto recv = csm_deserialize_msg<CSMC2SGetNode>();
+	if (recv.second) {
+		pushnode(L, recv.first);
 	} else {
 		lua_pushnil(L);
 	}
@@ -112,11 +106,8 @@ int ModApiCSM::l_get_node_or_nil(lua_State *L)
 // set_node(pos, node)
 int ModApiCSM::l_set_node(lua_State *L)
 {
-	CSMS2CAddNode send;
-	send.pos = read_v3s16(L, 1);
-	send.n = readnode(L, 2);
-	send.remove_metadata = true;
-	CSM_IPC(exchange(send));
+	CSMS2CAddNode send(CSM_S2C_ADD_NODE, read_v3s16(L, 1), readnode(L, 2), true);
+	csm_exchange_msg(send);
 	lua_pushboolean(L, true); // assume success
 	return 1;
 }
@@ -130,11 +121,8 @@ int ModApiCSM::l_add_node(lua_State *L)
 // swap_node(pos, node)
 int ModApiCSM::l_swap_node(lua_State *L)
 {
-	CSMS2CAddNode send;
-	send.pos = read_v3s16(L, 1);
-	send.n = readnode(L, 2);
-	send.remove_metadata = false;
-	CSM_IPC(exchange(send));
+	CSMS2CAddNode send(CSM_S2C_ADD_NODE, read_v3s16(L, 1), readnode(L, 2), false);
+	csm_exchange_msg(send);
 	lua_pushboolean(L, true); // assume success
 	return 1;
 }

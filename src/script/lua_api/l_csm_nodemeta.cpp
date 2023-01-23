@@ -27,79 +27,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void CSMNodeMetadata::clear()
 {
-	CSMS2CNodeMetaClear send;
-	send.pos = m_p;
-	CSM_IPC(exchange(send));
+	CSMS2CNodeMetaClear send(CSM_S2C_NODE_META_CLEAR, m_p);
+	csm_exchange_msg(send);
 }
 
 bool CSMNodeMetadata::contains(const std::string &name) const
 {
-	CSMS2CNodeMetaContains header;
-	header.pos = m_p;
-	std::string send = std::string((char *)&header, sizeof(header)) + name;
-	CSM_IPC(exchange(send.size(), send.data()));
-	bool contains;
-	sanity_check(csm_recv_size() >= sizeof(contains));
-	memcpy(&contains, csm_recv_data(), sizeof(contains));
-	return contains;
+	CSMS2CNodeMetaContains send(CSM_S2C_NODE_META_CONTAINS, m_p, name);
+	csm_exchange_msg(send);
+	return csm_deserialize_msg<bool>();
 }
 
 bool CSMNodeMetadata::setString(const std::string &name, const std::string &var)
 {
-	std::ostringstream os(std::ios::binary);
-	CSMS2CNodeMetaSetString header;
-	header.pos = m_p;
-	os << std::string((char *)&header, sizeof(header))
-			<< serializeString16(name) << serializeString32(var);
-	std::string send = os.str();
-	CSM_IPC(exchange(send.size(), send.data()));
-	bool modified;
-	sanity_check(csm_recv_size() >= sizeof(modified));
-	memcpy(&modified, csm_recv_data(), sizeof(modified));
-	return modified;
+	CSMS2CNodeMetaSetString send(CSM_S2C_NODE_META_SET_STRING, m_p, name, var);
+	csm_exchange_msg(send);
+	return csm_deserialize_msg<bool>();
 }
 
 const StringMap &CSMNodeMetadata::getStrings(StringMap *place) const
 {
-	CSMS2CNodeMetaGetStrings send;
-	send.pos = m_p;
-	CSM_IPC(exchange(send));
-	std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
-			std::ios::binary);
-	place->clear();
-	u32 n_fields = readU32(is);
-	place->reserve(n_fields);
-	for (u32 i = 0; i < n_fields; i++) {
-		std::string key = deSerializeString16(is);
-		(*place)[std::move(key)] = deSerializeString32(is);
-	}
-	return *place;
+	CSMS2CNodeMetaClear send(CSM_S2C_NODE_META_GET_STRINGS, m_p);
+	csm_exchange_msg(send);
+	return *place = csm_deserialize_msg<StringMap>();
 }
 
 const std::vector<std::string> &CSMNodeMetadata::getKeys(std::vector<std::string> *place) const
 {
-	CSMS2CNodeMetaGetKeys send;
-	send.pos = m_p;
-	CSM_IPC(exchange(send));
-	std::istringstream is(std::string((char *)csm_recv_data(), csm_recv_size()),
-			std::ios::binary);
-	place->clear();
-	u32 n_keys = readU32(is);
-	place->reserve(n_keys);
-	for (u32 i = 0; i < n_keys; i++)
-		place->push_back(deSerializeString16(is));
-	return *place;
+	CSMS2CNodeMetaClear send(CSM_S2C_NODE_META_GET_STRINGS, m_p);
+	csm_exchange_msg(send);
+	return *place = csm_deserialize_msg<std::vector<std::string> >();
 }
 
 const std::string *CSMNodeMetadata::getStringRaw(const std::string &name,
 		std::string *place) const
 {
-	CSMS2CNodeMetaGetString header;
-	header.pos = m_p;
-	std::string send = std::string((char *)&header, sizeof(header)) + name;
-	CSM_IPC(exchange(send.size(), send.data()));
-	if (csm_recv_size() > 0) {
-		place->assign((char *)csm_recv_data(), csm_recv_size());
+	CSMS2CNodeMetaContains send(CSM_S2C_NODE_META_GET_STRING, m_p, name);
+	csm_exchange_msg(send);
+	auto recv = csm_deserialize_msg<std::string>();
+	if (recv.size() > 0) {
+		*place = std::move(recv);
 		return place;
 	} else {
 		return nullptr;

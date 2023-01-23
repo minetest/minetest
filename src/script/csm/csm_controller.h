@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/ipc_channel.h"
 #include "util/basic_macros.h"
 #include "util/string.h"
+#include <vector>
 #if defined(_WIN32)
 #include <windows.h>
 #else
@@ -76,11 +77,19 @@ public:
 	void runStep(float dtime);
 
 private:
+	template<typename T>
+	bool exchange(const T &send) noexcept;
+
+	template<typename T>
+	bool deserializeMsg(T &recv) noexcept;
+
 	void listen(bool succeeded);
+
 	bool getDoneBool();
 
 	Client *const m_client;
 	int m_timeout = 1000;
+	std::vector<char> m_send_buf;
 #if defined(_WIN32)
 	HANDLE m_script_handle = INVALID_HANDLE_VALUE;
 	HANDLE m_ipc_shm;

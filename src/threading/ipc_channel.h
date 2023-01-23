@@ -98,34 +98,25 @@ public:
 	// If send, recv, or exchange return false, stop using the channel.
 	// Note: timeouts may be for receiving any response, not a whole message.
 
-	bool send(size_t size, const void *data, int timeout_ms = -1) noexcept
+	bool send(const void *data, size_t size, int timeout_ms = -1) noexcept
 	{
 		if (size <= IPC_CHANNEL_MSG_SIZE) {
-			return sendSmall(size, data);
+			return sendSmall(data, size);
 		} else {
-			return sendLarge(size, data, timeout_ms);
+			return sendLarge(data, size, timeout_ms);
 		}
 	}
 
 	bool recv(int timeout_ms = -1) noexcept;
 
-	bool exchange(size_t size, const void *data, int timeout_ms = -1) noexcept
+	bool exchange(const void *data, size_t size, int timeout_ms = -1) noexcept
 	{
-		return send(size, data, timeout_ms) && recv(timeout_ms);
-	}
-
-	template<typename T>
-	bool exchange(T msg, int timeout_ms = -1) noexcept
-	{
-		using U = typename std::remove_reference<T>::type;
-		static_assert(std::is_trivially_copyable<U>::value,
-				"Cannot send value that is not trivially copyable");
-		return exchange(sizeof(U), &msg, timeout_ms);
+		return send(data, size, timeout_ms) && recv(timeout_ms);
 	}
 
 	// Get information about the last received message
-	inline size_t getRecvSize() const noexcept { return m_recv_size; }
 	inline const void *getRecvData() const noexcept { return m_recv_data; }
+	inline size_t getRecvSize() const noexcept { return m_recv_size; }
 
 private:
 #if defined(_WIN32)
@@ -136,9 +127,9 @@ private:
 	IPCChannelEnd(IPCChannelBuffer *in, IPCChannelBuffer *out): m_in(in), m_out(out) {}
 #endif
 
-	bool sendSmall(size_t size, const void *data) noexcept;
+	bool sendSmall(const void *data, size_t size) noexcept;
 
-	bool sendLarge(size_t size, const void *data, int timeout_ms) noexcept;
+	bool sendLarge(const void *data, size_t size, int timeout_ms) noexcept;
 
 	IPCChannelBuffer *m_in = nullptr;
 	IPCChannelBuffer *m_out = nullptr;

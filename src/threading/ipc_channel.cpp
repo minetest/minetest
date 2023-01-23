@@ -188,7 +188,7 @@ static struct timespec *set_timespec(struct timespec *ts, int ms)
 }
 #endif // !defined(_WIN32)
 
-bool IPCChannelEnd::sendSmall(size_t size, const void *data) noexcept
+bool IPCChannelEnd::sendSmall(const void *data, size_t size) noexcept
 {
 	m_out->size = size;
 	memcpy(m_out->data, data, size);
@@ -200,7 +200,7 @@ bool IPCChannelEnd::sendSmall(size_t size, const void *data) noexcept
 	return true;
 }
 
-bool IPCChannelEnd::sendLarge(size_t size, const void *data, int timeout_ms) noexcept
+bool IPCChannelEnd::sendLarge(const void *data, size_t size, int timeout_ms) noexcept
 {
 #if defined(_WIN32)
 	DWORD timeout = get_timeout(timeout_ms);

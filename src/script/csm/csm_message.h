@@ -24,8 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "modchannels.h"
 #include "util/pointedthing.h"
+#include "util/string.h"
 #include <stddef.h>
 #include <type_traits>
+#include <tuple>
+#include <utility>
 
 static_assert(std::is_trivially_copyable<PointedThing>::value,
 		"PointedThing is not copyable");
@@ -55,61 +58,34 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_STEP,
 };
 
-struct CSMC2SRunDamageTaken {
-	CSMC2SMsgType type = CSM_C2S_RUN_DAMAGE_TAKEN;
-	u16 damage;
-};
+using CSMC2SRunSendingMessage = std::pair<CSMC2SMsgType, std::string>;
 
-struct CSMC2SRunHPModification {
-	CSMC2SMsgType type = CSM_C2S_RUN_HP_MODIFICATION;
-	u16 hp;
-};
+using CSMC2SRunReceivingMessage = std::pair<CSMC2SMsgType, std::string>;
 
-struct CSMC2SRunModchannelMessage {
-	CSMC2SMsgType type = CSM_C2S_RUN_MODCHANNEL_MESSAGE;
-	size_t channel_size, sender_size, message_size;
-	// string channel, sender, and message follow
-};
+using CSMC2SRunDamageTaken = std::pair<CSMC2SMsgType, u16>;
 
-struct CSMC2SRunModchannelSignal {
-	CSMC2SMsgType type = CSM_C2S_RUN_MODCHANNEL_SIGNAL;
-	ModChannelSignal signal;
-	// string channel follows
-};
+using CSMC2SRunHPModification = std::pair<CSMC2SMsgType, u16>;
 
-struct CSMC2SRunItemUse {
-	CSMC2SMsgType type = CSM_C2S_RUN_ITEM_USE;
-	PointedThing pointed_thing;
-	// selected item string follows
-};
+using CSMC2SRunModchannelMessage = std::tuple<CSMC2SMsgType,
+		std::string, std::string, std::string>;
 
-struct CSMC2SRunPlacenode {
-	CSMC2SMsgType type = CSM_C2S_RUN_PLACENODE;
-	PointedThing pointed_thing;
-	// item name follows
-};
+using CSMC2SRunModchannelSignal = std::tuple<CSMC2SMsgType, std::string, ModChannelSignal>;
 
-struct CSMC2SRunPunchnode {
-	CSMC2SMsgType type = CSM_C2S_RUN_PUNCHNODE;
-	v3s16 pos;
-	MapNode n;
-};
+using CSMC2SRunFormspecInput = std::tuple<CSMC2SMsgType, std::string, StringMap>;
 
-struct CSMC2SRunDignode {
-	CSMC2SMsgType type = CSM_C2S_RUN_DIGNODE;
-	v3s16 pos;
-	MapNode n;
-};
+using CSMC2SRunInventoryOpen = std::pair<CSMC2SMsgType, std::string>;
 
-struct CSMC2SRunStep {
-	CSMC2SMsgType type = CSM_C2S_RUN_STEP;
-	float dtime;
-};
+using CSMC2SRunItemUse = std::tuple<CSMC2SMsgType, std::string, PointedThing>;
 
-struct CSMC2SGetNode {
-	MapNode n;
-	bool pos_ok;
-};
+using CSMC2SRunPlacenode = std::tuple<CSMC2SMsgType, PointedThing, std::string>;
+
+using CSMC2SRunPunchnode = std::tuple<CSMC2SMsgType, v3s16, MapNode>;
+
+using CSMC2SRunDignode = std::tuple<CSMC2SMsgType, v3s16, MapNode>;
+
+using CSMC2SRunStep = std::pair<CSMC2SMsgType, float>;
+
+using CSMC2SGetNode = std::pair<MapNode, bool>;
 
 // script -> controller
 
@@ -129,55 +105,22 @@ enum CSMS2CMsgType {
 	CSM_S2C_NODE_META_GET_STRING,
 };
 
-struct CSMS2CDoneBool {
-	CSMS2CMsgType type = CSM_S2C_DONE;
-	char value;
-};
+using CSMS2CDoneBool = std::pair<CSMS2CMsgType, char>;
 
-struct CSMS2CLog {
-	CSMS2CMsgType type = CSM_S2C_LOG;
-	LogLevel level;
-	// message string follows
-};
+using CSMS2CLog = std::tuple<CSMS2CMsgType, LogLevel, std::string>;
 
-struct CSMS2CGetNode {
-	CSMS2CMsgType type = CSM_S2C_GET_NODE;
-	v3s16 pos;
-};
+using CSMS2CGetNode = std::pair<CSMS2CMsgType, v3s16>;
 
-struct CSMS2CAddNode {
-	CSMS2CMsgType type = CSM_S2C_ADD_NODE;
-	MapNode n;
-	v3s16 pos;
-	char remove_metadata = true;
-};
+using CSMS2CAddNode = std::tuple<CSMS2CMsgType, v3s16, MapNode, char>;
 
-struct CSMS2CNodeMetaClear {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_CLEAR;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaClear = std::pair<CSMS2CMsgType, v3s16>;
 
-struct CSMS2CNodeMetaContains {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_CONTAINS;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaContains = std::tuple<CSMS2CMsgType, v3s16, std::string>;
 
-struct CSMS2CNodeMetaSetString {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_SET_STRING;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaSetString = std::tuple<CSMS2CMsgType, v3s16, std::string, std::string>;
 
-struct CSMS2CNodeMetaGetStrings {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_STRINGS;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaGetStrings = std::pair<CSMS2CMsgType, v3s16>;
 
-struct CSMS2CNodeMetaGetKeys {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_KEYS;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaGetKeys = std::pair<CSMS2CMsgType, v3s16>;
 
-struct CSMS2CNodeMetaGetString {
-	CSMS2CMsgType type = CSM_S2C_NODE_META_GET_STRING;
-	v3s16 pos;
-};
+using CSMS2CNodeMetaGetString = std::tuple<CSMS2CMsgType, v3s16, std::string>;

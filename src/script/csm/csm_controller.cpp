@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
-#include "util/serialize.h"
+#include "util/struct_serialize.h"
 #include <sstream>
 #include <string.h>
 #if !defined(_WIN32)
@@ -259,7 +259,7 @@ void CSMController::runLoadMods()
 			m_client->ndef()->serialize(os, LATEST_PROTOCOL_VERSION);
 			defs = os.str();
 		}
-		succeeded = m_ipc.exchange(defs.size(), defs.data(), m_timeout);
+		succeeded = exchange(defs);
 	}
 	listen(succeeded);
 }
@@ -269,7 +269,7 @@ void CSMController::runShutdown()
 	if (!isStarted())
 		return;
 
-	listen(m_ipc.exchange(CSM_C2S_RUN_SHUTDOWN, m_timeout));
+	listen(exchange(CSM_C2S_RUN_SHUTDOWN));
 }
 
 void CSMController::runClientReady()
@@ -277,7 +277,7 @@ void CSMController::runClientReady()
 	if (!isStarted())
 		return;
 
-	listen(m_ipc.exchange(CSM_C2S_RUN_CLIENT_READY, m_timeout));
+	listen(exchange(CSM_C2S_RUN_CLIENT_READY));
 }
 
 void CSMController::runCameraReady()
@@ -285,7 +285,7 @@ void CSMController::runCameraReady()
 	if (!isStarted())
 		return;
 
-	listen(m_ipc.exchange(CSM_C2S_RUN_CAMERA_READY, m_timeout));
+	listen(exchange(CSM_C2S_RUN_CAMERA_READY));
 }
 
 void CSMController::runMinimapReady()
@@ -293,7 +293,7 @@ void CSMController::runMinimapReady()
 	if (!isStarted())
 		return;
 
-	listen(m_ipc.exchange(CSM_C2S_RUN_MINIMAP_READY, m_timeout));
+	listen(exchange(CSM_C2S_RUN_MINIMAP_READY));
 }
 
 bool CSMController::runSendingMessage(const std::string &message)
@@ -301,12 +301,8 @@ bool CSMController::runSendingMessage(const std::string &message)
 	if (!isStarted())
 		return false;
 
-	std::vector<u8> send;
-	CSMC2SMsgType type = CSM_C2S_RUN_SENDING_MESSAGE;
-	send.resize(sizeof(type) + message.size());
-	memcpy(send.data(), &type, sizeof(type));
-	memcpy(send.data() + sizeof(type), message.data(), message.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunSendingMessage send(CSM_C2S_RUN_SENDING_MESSAGE, message);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -315,12 +311,8 @@ bool CSMController::runReceivingMessage(const std::string &message)
 	if (!isStarted())
 		return false;
 
-	std::vector<u8> send;
-	CSMC2SMsgType type = CSM_C2S_RUN_RECEIVING_MESSAGE;
-	send.resize(sizeof(type) + message.size());
-	memcpy(send.data(), &type, sizeof(type));
-	memcpy(send.data() + sizeof(type), message.data(), message.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunReceivingMessage send(CSM_C2S_RUN_RECEIVING_MESSAGE, message);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -329,9 +321,8 @@ bool CSMController::runDamageTaken(u16 damage)
 	if (!isStarted())
 		return false;
 
-	CSMC2SRunDamageTaken send;
-	send.damage = damage;
-	listen(m_ipc.exchange(send, m_timeout));
+	CSMC2SRunDamageTaken send(CSM_C2S_RUN_DAMAGE_TAKEN, damage);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -340,9 +331,8 @@ bool CSMController::runHPModification(u16 hp)
 	if (!isStarted())
 		return false;
 
-	CSMC2SRunHPModification send;
-	send.hp = hp;
-	listen(m_ipc.exchange(send, m_timeout));
+	CSMC2SRunHPModification send(CSM_C2S_RUN_HP_MODIFICATION, hp);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -351,7 +341,7 @@ void CSMController::runDeath()
 	if (!isStarted())
 		return;
 
-	listen(m_ipc.exchange(CSM_C2S_RUN_DEATH, m_timeout));
+	listen(exchange(CSM_C2S_RUN_DEATH));
 }
 
 void CSMController::runModchannelMessage(const std::string &channel, const std::string &sender,
@@ -360,18 +350,8 @@ void CSMController::runModchannelMessage(const std::string &channel, const std::
 	if (!isStarted())
 		return;
 
-	std::vector<u8> send;
-	CSMC2SRunModchannelMessage header;
-	header.channel_size = channel.size();
-	header.sender_size = sender.size();
-	header.message_size = message.size();
-	send.resize(sizeof(header) + channel.size() + sender.size() + message.size());
-	memcpy(send.data(), &header, sizeof(header));
-	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
-	memcpy(send.data() + sizeof(header) + channel.size(), sender.data(), sender.size());
-	memcpy(send.data() + sizeof(header) + channel.size() + sender.size(),
-			message.data(), message.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunModchannelMessage send(CSM_C2S_RUN_MODCHANNEL_MESSAGE, channel, sender, message);
+	listen(exchange(send));
 }
 
 void CSMController::runModchannelSignal(const std::string &channel, ModChannelSignal signal)
@@ -379,13 +359,8 @@ void CSMController::runModchannelSignal(const std::string &channel, ModChannelSi
 	if (!isStarted())
 		return;
 
-	std::vector<u8> send;
-	CSMC2SRunModchannelSignal header;
-	header.signal = signal;
-	send.resize(sizeof(header) + channel.size());
-	memcpy(send.data(), &header, sizeof(header));
-	memcpy(send.data() + sizeof(header), channel.data(), channel.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunModchannelSignal send(CSM_C2S_RUN_MODCHANNEL_SIGNAL, channel, signal);
+	listen(exchange(send));
 }
 
 bool CSMController::runFormspecInput(const std::string &formname, const StringMap &fields)
@@ -393,17 +368,8 @@ bool CSMController::runFormspecInput(const std::string &formname, const StringMa
 	if (!isStarted())
 		return false;
 
-	std::ostringstream os(std::ios::binary);
-	CSMC2SMsgType type = CSM_C2S_RUN_FORMSPEC_INPUT;
-	os.write((char *)&type, sizeof(type));
-	os << serializeString16(formname);
-	writeU32(os, fields.size());
-	for (const auto &pair : fields) {
-		os << serializeString16(pair.first);
-		os << serializeString16(pair.second);
-	}
-	std::string send = os.str();
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunFormspecInput send(CSM_C2S_RUN_FORMSPEC_INPUT, formname, fields);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -413,11 +379,9 @@ bool CSMController::runInventoryOpen(const Inventory *inventory)
 		return false;
 
 	std::ostringstream os(std::ios::binary);
-	CSMC2SMsgType type = CSM_C2S_RUN_INVENTORY_OPEN;
-	os.write((char *)&type, sizeof(type));
 	inventory->serialize(os);
-	std::string send = os.str();
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunInventoryOpen send(CSM_C2S_RUN_INVENTORY_OPEN, os.str());
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -426,14 +390,8 @@ bool CSMController::runItemUse(const ItemStack &selected_item, const PointedThin
 	if (!isStarted())
 		return false;
 
-	CSMC2SRunItemUse header;
-	header.pointed_thing = pointed;
-	std::string itemstring = selected_item.getItemString();
-	std::vector<u8> send;
-	send.resize(sizeof(header) + itemstring.size());
-	memcpy(send.data(), &header, sizeof(header));
-	memcpy(send.data() + sizeof(header), itemstring.data(), itemstring.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunItemUse send(CSM_C2S_RUN_ITEM_USE, selected_item.getItemString(), pointed);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -442,13 +400,8 @@ void CSMController::runPlacenode(const PointedThing &pointed, const ItemDefiniti
 	if (!isStarted())
 		return;
 
-	CSMC2SRunPlacenode header;
-	header.pointed_thing = pointed;
-	std::vector<u8> send;
-	send.resize(sizeof(header) + def.name.size());
-	memcpy(send.data(), &header, sizeof(header));
-	memcpy(send.data() + sizeof(header), def.name.data(), def.name.size());
-	listen(m_ipc.exchange(send.size(), send.data(), m_timeout));
+	CSMC2SRunPlacenode send(CSM_C2S_RUN_PLACENODE, pointed, def.name);
+	listen(exchange(send));
 }
 
 bool CSMController::runPunchnode(v3s16 pos, MapNode n)
@@ -456,10 +409,8 @@ bool CSMController::runPunchnode(v3s16 pos, MapNode n)
 	if (!isStarted())
 		return false;
 
-	CSMC2SRunPunchnode send;
-	send.pos = pos;
-	send.n = n;
-	listen(m_ipc.exchange(send, m_timeout));
+	CSMC2SRunPunchnode send(CSM_C2S_RUN_PUNCHNODE, pos, n);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -468,10 +419,8 @@ bool CSMController::runDignode(v3s16 pos, MapNode n)
 	if (!isStarted())
 		return false;
 
-	CSMC2SRunDignode send;
-	send.pos = pos;
-	send.n = n;
-	listen(m_ipc.exchange(send, m_timeout));
+	CSMC2SRunDignode send(CSM_C2S_RUN_DIGNODE, pos, n);
+	listen(exchange(send));
 	return getDoneBool();
 }
 
@@ -480,9 +429,33 @@ void CSMController::runStep(float dtime)
 	if (!isStarted())
 		return;
 
-	CSMC2SRunStep msg;
-	msg.dtime = dtime;
-	listen(m_ipc.exchange(msg, m_timeout));
+	CSMC2SRunStep send(CSM_C2S_RUN_STEP, dtime);
+	listen(exchange(send));
+}
+
+template<typename T>
+bool CSMController::exchange(const T &send) noexcept
+{
+	bool succeeded = true;
+	try {
+		m_send_buf.clear();
+		struct_serialize(m_send_buf, send);
+		succeeded = m_ipc.exchange(m_send_buf.data(), m_send_buf.size(), m_timeout);
+	} catch (...) {
+		succeeded = false;
+	}
+	return succeeded;
+}
+
+template<typename T>
+bool CSMController::deserializeMsg(T &recv) noexcept
+{
+	try {
+		recv = struct_deserialize<T>(m_ipc.getRecvData(), m_ipc.getRecvSize());
+	} catch (...) {
+		return false;
+	}
+	return true;
 }
 
 void CSMController::listen(bool succeeded)
@@ -495,135 +468,129 @@ void CSMController::listen(bool succeeded)
 			memcpy(&type, data, sizeof(type));
 		switch (type) {
 		case CSM_S2C_LOG:
-			if ((succeeded = size >= sizeof(CSMS2CLog))) {
+			{
 				CSMS2CLog recv;
-				memcpy(&recv, data, sizeof(recv));
-				if ((succeeded = recv.level >= 0 && recv.level < LL_MAX)) {
-					if (g_logger.hasOutput(recv.level)) {
-						std::string line((char *)data + sizeof(recv), size - sizeof(recv));
+				if ((succeeded = deserializeMsg(recv)
+						&& std::get<1>(recv) >= 0 && std::get<1>(recv) < LL_MAX)) {
+					if (g_logger.hasOutput(std::get<1>(recv))) {
 						std::ostringstream os(std::ios::binary);
-						safe_print_string(os, line);
-						g_logger.logRaw(recv.level, os.str());
+						safe_print_string(os, std::get<2>(recv));
+						g_logger.logRaw(std::get<1>(recv), os.str());
 					}
-					int dummy;
-					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+					succeeded = exchange(std::make_tuple<>());
 				}
 			}
 			break;
 		case CSM_S2C_GET_NODE:
-			if ((succeeded = size >= sizeof(CSMS2CGetNode))) {
+			{
 				CSMS2CGetNode recv;
-				memcpy(&recv, data, sizeof(recv));
-				CSMC2SGetNode send;
-				send.n = m_client->getEnv().getMap().getNode(recv.pos, &send.pos_ok);
-				succeeded = m_ipc.exchange(send, m_timeout);
+				if ((succeeded = deserializeMsg(recv))) {
+					bool pos_ok;
+					MapNode n = m_client->getEnv().getMap().getNode(std::get<1>(recv), &pos_ok);
+					CSMC2SGetNode send(n, pos_ok);
+					succeeded = exchange(send);
+				}
 			}
 			break;
 		case CSM_S2C_ADD_NODE:
-			if ((succeeded = size >= sizeof(CSMS2CAddNode))) {
+			{
 				CSMS2CAddNode recv;
-				memcpy(&recv, data, sizeof(recv));
-				m_client->addNode(recv.pos, recv.n, recv.remove_metadata);
-				int dummy;
-				succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+				if ((succeeded = deserializeMsg(recv))) {
+					m_client->addNode(std::get<1>(recv), std::get<2>(recv), std::get<3>(recv));
+					succeeded = exchange(std::make_tuple<>());
+				}
 			}
 			break;
 		case CSM_S2C_NODE_META_CLEAR:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaClear))) {
+			{
 				CSMS2CNodeMetaClear recv;
-				memcpy(&recv, data, sizeof(recv));
-				m_client->getEnv().getMap().removeNodeMetadata(recv.pos);
-				int dummy;
-				succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+				if ((succeeded = deserializeMsg(recv))) {
+					m_client->getEnv().getMap().removeNodeMetadata(recv.second);
+					succeeded = exchange(std::make_tuple<>());
+				}
 			}
 			break;
 		case CSM_S2C_NODE_META_CONTAINS:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaContains))) {
-				CSMS2CNodeMetaContains recv_header;
-				memcpy(&recv_header, data, sizeof(recv_header));
-				std::string name((char *)data + sizeof(recv_header),
-						size - sizeof(recv_header));
-				NodeMetadata *meta =
-						m_client->getEnv().getMap().getNodeMetadata(recv_header.pos);
-				bool contains = meta && meta->contains(name);
-				succeeded = m_ipc.exchange(contains, m_timeout);
+			{
+				CSMS2CNodeMetaContains recv;
+				if ((succeeded = deserializeMsg(recv))) {
+					NodeMetadata *meta =
+							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
+					bool contains = meta && meta->contains(std::get<2>(recv));
+					succeeded = exchange(contains);
+				}
 			}
 			break;
 		case CSM_S2C_NODE_META_SET_STRING:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaSetString))) {
-				std::istringstream is(std::string((char *)data, size), std::ios::binary);
-				CSMS2CNodeMetaSetString recv_header;
-				is.read((char *)&recv_header, sizeof(recv_header));
-				std::string name = deSerializeString16(is);
-				std::string var = deSerializeString32(is);
-				Map &map = m_client->getEnv().getMap();
-				NodeMetadata *meta = map.getNodeMetadata(recv_header.pos);
-				if (!meta && !var.empty()) {
-					meta = new NodeMetadata(m_client->idef());
-					if (!map.setNodeMetadata(recv_header.pos, meta)) {
-						delete meta;
-						meta = nullptr;
+			{
+				CSMS2CNodeMetaSetString recv;
+				if ((succeeded = deserializeMsg(recv))) {
+					Map &map = m_client->getEnv().getMap();
+					NodeMetadata *meta = map.getNodeMetadata(std::get<1>(recv));
+					if (!meta && !std::get<3>(recv).empty()) {
+						meta = new NodeMetadata(m_client->idef());
+						if (!map.setNodeMetadata(std::get<1>(recv), meta)) {
+							delete meta;
+							meta = nullptr;
+						}
 					}
+					bool modified = meta
+							&& meta->setString(std::get<2>(recv), std::get<3>(recv));
+					succeeded = exchange(modified);
 				}
-				bool modified = meta && meta->setString(name, var);
-				succeeded = m_ipc.exchange(modified, m_timeout);
 			}
 			break;
 		case CSM_S2C_NODE_META_GET_STRINGS:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetStrings))) {
+			{
 				CSMS2CNodeMetaGetStrings recv;
-				memcpy(&recv, data, sizeof(recv));
-				NodeMetadata *meta = m_client->getEnv().getMap().getNodeMetadata(recv.pos);
-				std::ostringstream os(std::ios::binary);
-				if (meta) {
-					const StringMap &strings = meta->getStrings();
-					writeU32(os, strings.size());
-					for (const auto &pair : strings)
-						os << serializeString16(pair.first) << serializeString32(pair.second);
-				} else {
-					writeU32(os, 0);
+				if ((succeeded = deserializeMsg(recv))) {
+					NodeMetadata *meta =
+							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
+					if (meta) {
+						succeeded = exchange(meta->getStrings());
+					} else {
+						StringMap strings;
+						succeeded = exchange(strings);
+					}
 				}
-				std::string send = os.str();
-				succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
 			}
 			break;
 		case CSM_S2C_NODE_META_GET_KEYS:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetKeys))) {
+			{
 				CSMS2CNodeMetaGetKeys recv;
-				memcpy(&recv, data, sizeof(recv));
-				NodeMetadata *meta = m_client->getEnv().getMap().getNodeMetadata(recv.pos);
-				std::ostringstream os(std::ios::binary);
-				if (meta) {
-					const StringMap &strings = meta->getStrings();
-					writeU32(os, strings.size());
-					for (const auto &pair : strings)
-						os << serializeString16(pair.first);
-				} else {
-					writeU32(os, 0);
+				if ((succeeded = deserializeMsg(recv))) {
+					NodeMetadata *meta =
+							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
+					std::ostringstream os(std::ios::binary);
+					if (meta) {
+						std::vector<std::string> keys_;
+						const std::vector<std::string> &keys = meta->getKeys(&keys_);
+						succeeded = exchange(keys);
+					} else {
+						std::vector<std::string> keys;
+						succeeded = exchange(keys);
+					}
 				}
-				std::string send = os.str();
-				succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
 			}
 			break;
 		case CSM_S2C_NODE_META_GET_STRING:
-			if ((succeeded = size >= sizeof(CSMS2CNodeMetaGetString))) {
-				CSMS2CNodeMetaGetString recv_header;
-				memcpy(&recv_header, data, sizeof(recv_header));
-				std::string name((char *)data + sizeof(recv_header),
-						size - sizeof(recv_header));
-				NodeMetadata *meta =
-						m_client->getEnv().getMap().getNodeMetadata(recv_header.pos);
-				if (meta) {
-					const std::string &send = meta->getString(name, 2);
-					succeeded = m_ipc.exchange(send.size(), send.data(), m_timeout);
-				} else {
-					int dummy;
-					succeeded = m_ipc.exchange(0, &dummy, m_timeout);
+			{
+				CSMS2CNodeMetaGetString recv;
+				if ((succeeded = deserializeMsg(recv))) {
+					NodeMetadata *meta =
+							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
+					if (meta) {
+						const std::string &var = meta->getString(std::get<2>(recv), 2);
+						succeeded = exchange(var);
+					} else {
+						const std::string var;
+						succeeded = exchange(var);
+					}
 				}
 			}
 			break;
 		case CSM_S2C_DONE:
-			return;
+			goto end;
 		default:
 			succeeded = false;
 			break;
@@ -631,13 +598,15 @@ void CSMController::listen(bool succeeded)
 	}
 	stop();
 	errorstream << "Error executing CSM" << std::endl;
+end:
+	m_send_buf.clear();
+	m_send_buf.shrink_to_fit();
 }
 
 bool CSMController::getDoneBool()
 {
+	if (!isStarted())
+		return false;
 	CSMS2CDoneBool recv;
-	recv.value = 0;
-	if (isStarted() && m_ipc.getRecvSize() >= sizeof(recv))
-		memcpy(&recv, m_ipc.getRecvData(), sizeof(recv));
-	return recv.value != 0;
+	return deserializeMsg(recv) && recv.second != 0;
 }

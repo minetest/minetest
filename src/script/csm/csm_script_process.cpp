@@ -82,17 +82,12 @@ public:
 private:
 	void sendLog(LogLevel level, const std::string &line)
 	{
-		CSMS2CLog log;
-		log.level = level;
-		m_send_data.resize(sizeof(log) + line.size());
-		memcpy(m_send_data.data(), &log, sizeof(log));
-		memcpy(m_send_data.data() + sizeof(log), line.data(), line.size());
-		CSM_IPC(exchange(m_send_data.size(), m_send_data.data()));
+		CSMS2CLog log(CSM_S2C_LOG, level, line);
+		csm_exchange_msg(log);
 	}
 
 	bool m_can_log;
 	std::vector<std::pair<LogLevel, std::string>> m_waiting_logs;
-	std::vector<u8> m_send_data;
 };
 
 CSMLogOutput g_log_output;
@@ -128,8 +123,8 @@ int csm_script_main(int argc, char *argv[])
 	g_logger.addOutput(&g_log_output);
 	g_logger.registerThread("CSM");
 
-	CSM_IPC(recv());
-	std::string initial_recv((const char *)csm_recv_data(), csm_recv_size());
+	csm_ipc_check(g_csm_script_ipc.recv());
+	auto initial_recv = csm_deserialize_msg<std::string>();
 
 	g_log_output.startLogging();
 
@@ -177,13 +172,13 @@ int csm_script_main(int argc, char *argv[])
 		script.on_mods_loaded();
 	} catch (const std::exception &e) {
 		errorstream << e.what() << std::endl;
-		CSM_IPC(exchange(CSM_S2C_TERMINATED));
+		csm_exchange_msg(CSM_S2C_TERMINATED);
 		return 0;
 	}
 
 	g_log_output.stopLogging();
 
-	CSM_IPC(exchange(CSM_S2C_DONE));
+	csm_exchange_msg(CSM_S2C_DONE);
 
 	while (true) {
 		size_t size = csm_recv_size();
@@ -212,43 +207,37 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_SENDING_MESSAGE:
 				{
-					std::string message((char *)data + sizeof(type), size - sizeof(type));
+					auto recv = struct_deserialize<CSMC2SRunSendingMessage>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_sending_message(message);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_sending_message(recv.second));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_RECEIVING_MESSAGE:
 				{
-					std::string message((char *)data + sizeof(type), size - sizeof(type));
+					auto recv = struct_deserialize<CSMC2SRunReceivingMessage>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_receiving_message(message);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_receiving_message(recv.second));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_DAMAGE_TAKEN:
-				if (size >= sizeof(CSMC2SRunDamageTaken)) {
-					CSMC2SRunDamageTaken recv;
-					memcpy(&recv, data, sizeof(recv));
+				{
+					auto recv = struct_deserialize<CSMC2SRunDamageTaken>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_damage_taken(recv.damage);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_damage_taken(recv.second));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_HP_MODIFICATION:
-				if (size >= sizeof(CSMC2SRunHPModification)) {
-					CSMC2SRunHPModification recv;
-					memcpy(&recv, data, sizeof(recv));
+				{
+					auto recv = struct_deserialize<CSMC2SRunHPModification>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_hp_modification(recv.hp);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_hp_modification(recv.second));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
@@ -257,115 +246,88 @@ int csm_script_main(int argc, char *argv[])
 				script.on_death();
 				break;
 			case CSM_C2S_RUN_MODCHANNEL_MESSAGE:
-				if (size >= sizeof(CSMC2SRunModchannelMessage)) {
-					CSMC2SRunModchannelMessage recv;
-					memcpy(&recv, (char *)data, sizeof(recv));
-					std::string channel((char *)data + sizeof(recv), recv.channel_size);
-					std::string sender((char *)data + sizeof(recv) + recv.channel_size,
-							recv.sender_size);
-					std::string message(
-							(char *)data + sizeof(recv) + recv.channel_size + recv.sender_size,
-							recv.message_size);
+				{
+					auto recv = struct_deserialize<CSMC2SRunModchannelMessage>(data, size);
 					g_log_output.startLogging();
-					script.on_modchannel_message(channel, sender, message);
+					script.on_modchannel_message(std::get<1>(recv), std::get<2>(recv),
+							std::get<3>(recv));
 				}
 				break;
 			case CSM_C2S_RUN_MODCHANNEL_SIGNAL:
-				if (size >= sizeof(CSMC2SRunModchannelSignal)) {
-					CSMC2SRunModchannelSignal recv;
-					memcpy(&recv, data, sizeof(recv));
-					std::string channel((char *)data + sizeof(recv), size - sizeof(recv));
+				{
+					auto recv = struct_deserialize<CSMC2SRunModchannelSignal>(data, size);
 					g_log_output.startLogging();
-					script.on_modchannel_signal(channel, recv.signal);
+					script.on_modchannel_signal(std::get<1>(recv), std::get<2>(recv));
 				}
 				break;
 			case CSM_C2S_RUN_FORMSPEC_INPUT:
 				{
-					std::istringstream is(std::string((char *)data, size), std::ios::binary);
+					auto recv = struct_deserialize<CSMC2SRunFormspecInput>(data, size);
 					g_log_output.startLogging();
-					is.read((char *)&type, sizeof(type));
-					std::string formname = deSerializeString16(is);
-					u32 field_count = readU32(is);
-					StringMap fields(field_count);
-					for (u32 i = 0; i < field_count; i++) {
-						std::string key = deSerializeString16(is);
-						fields[std::move(key)] = deSerializeString16(is);
-					}
-					CSMS2CDoneBool send;
-					send.value = script.on_formspec_input(formname, fields);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_formspec_input(
+							std::get<1>(recv), std::get<2>(recv)));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_INVENTORY_OPEN:
 				{
-					std::istringstream is(std::string((char *)data, size), std::ios::binary);
+					auto recv = struct_deserialize<CSMC2SRunInventoryOpen>(data, size);
 					g_log_output.startLogging();
-					is.read((char *)&type, sizeof(type));
-					std::unique_ptr<Inventory> inv =
-							std::make_unique<Inventory>(gamedef.idef());
-					inv->deSerialize(is);
-					CSMS2CDoneBool send;
-					send.value = script.on_inventory_open(inv.get());
-					CSM_IPC(exchange(send));
+					std::istringstream is(recv.second, std::ios::binary);
+					Inventory inv(gamedef.idef());
+					inv.deSerialize(is);
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_inventory_open(&inv));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_ITEM_USE:
-				if (size >= sizeof(CSMC2SRunItemUse)) {
-					CSMC2SRunItemUse recv_header;
-					memcpy(&recv_header, data, sizeof(recv_header));
-					std::istringstream itemstring_is(
-							std::string((char *)data + sizeof(recv_header),
-									size - sizeof(recv_header)),
-							std::ios::binary);
+				{
+					auto recv = struct_deserialize<CSMC2SRunItemUse>(data, size);
 					g_log_output.startLogging();
+					std::istringstream itemstring_is(std::get<1>(recv), std::ios::binary);
 					ItemStack selected_item;
 					selected_item.deSerialize(itemstring_is);
-					CSMS2CDoneBool send;
-					send.value = script.on_item_use(selected_item, recv_header.pointed_thing);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_item_use(selected_item,
+							std::get<2>(recv)));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_PLACENODE:
-				if (size >= sizeof(CSMC2SRunPlacenode)) {
-					CSMC2SRunPlacenode recv_header;
-					memcpy(&recv_header, data, sizeof(recv_header));
-					std::string name((char *)data + sizeof(recv_header),
-							size - sizeof(recv_header));
+				{
+					auto recv = struct_deserialize<CSMC2SRunPlacenode>(data, size);
 					g_log_output.startLogging();
-					script.on_placenode(recv_header.pointed_thing, gamedef.idef()->get(name));
+					script.on_placenode(std::get<1>(recv),
+							gamedef.idef()->get(std::get<2>(recv)));
 				}
 				break;
 			case CSM_C2S_RUN_PUNCHNODE:
-				if (size >= sizeof(CSMC2SRunPunchnode)) {
-					CSMC2SRunPunchnode recv;
-					memcpy(&recv, data, sizeof(recv));
+				{
+					auto recv = struct_deserialize<CSMC2SRunPunchnode>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_punchnode(recv.pos, recv.n);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_punchnode(std::get<1>(recv),
+							std::get<2>(recv)));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_DIGNODE:
-				if (size >= sizeof(CSMC2SRunDignode)) {
-					CSMC2SRunDignode recv;
-					memcpy(&recv, data, sizeof(recv));
+				{
+					auto recv = struct_deserialize<CSMC2SRunDignode>(data, size);
 					g_log_output.startLogging();
-					CSMS2CDoneBool send;
-					send.value = script.on_dignode(recv.pos, recv.n);
-					CSM_IPC(exchange(send));
+					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_dignode(std::get<1>(recv),
+							std::get<2>(recv)));
+					csm_exchange_msg(send);
 					sent_done = true;
 				}
 				break;
 			case CSM_C2S_RUN_STEP:
-				if (size >= sizeof(CSMC2SRunStep)) {
-					CSMC2SRunStep msg;
-					memcpy(&msg, data, sizeof(msg));
+				{
+					auto recv = struct_deserialize<CSMC2SRunStep>(data, size);
 					g_log_output.startLogging();
-					script.environment_Step(msg.dtime);
+					script.environment_Step(recv.second);
 				}
 				break;
 			default:
@@ -376,11 +338,11 @@ int csm_script_main(int argc, char *argv[])
 			if (!g_log_output.isLogging())
 				throw;
 			errorstream << e.what() << std::endl;
-			CSM_IPC(exchange(CSM_S2C_TERMINATED));
+			csm_exchange_msg(CSM_S2C_TERMINATED);
 			return 0;
 		}
 		if (!sent_done)
-			CSM_IPC(exchange(CSM_S2C_DONE));
+			csm_exchange_msg(CSM_S2C_DONE);
 	}
 
 	return 0;
