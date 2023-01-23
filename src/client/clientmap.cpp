@@ -1150,7 +1150,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 void ClientMap::reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks)
 {
 	g_profiler->avg("CM::reportMetrics loaded blocks [#]", all_blocks);
-	g_profiler->avg("CM::reportMetrics cleaned blocks [#]", saved_blocks);
 }
 
 void ClientMap::updateTransparentMeshBuffers()
