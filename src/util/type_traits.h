@@ -33,10 +33,10 @@ struct is_basic_string
 	static constexpr bool value = false;
 };
 
-template<template<typename...> typename T, typename U>
-struct is_basic_string<T<U> >
+template<template<typename...> typename T, typename U, typename V, typename W>
+struct is_basic_string<T<U, V, W> >
 {
-	static constexpr bool value = std::is_same<T<U>, std::basic_string<U> >::value;
+	static constexpr bool value = std::is_same<T<U, V, W>, std::basic_string<U, V, W> >::value;
 };
 
 
@@ -46,10 +46,10 @@ struct is_map
 	static constexpr bool value = false;
 };
 
-template<template<typename...> typename T, typename U, typename V>
-struct is_map<T<U, V> >
+template<template<typename...> typename T, typename U, typename V, typename W, typename X>
+struct is_map<T<U, V, W, X> >
 {
-	static constexpr bool value = std::is_same<T<U, V>, std::map<U, V> >::value;
+	static constexpr bool value = std::is_same<T<U, V, W, X>, std::map<U, V, W, X> >::value;
 };
 
 
@@ -85,10 +85,12 @@ struct is_unordered_map
 	static constexpr bool value = false;
 };
 
-template<template<typename...> typename T, typename U, typename V>
-struct is_unordered_map<T<U, V> >
+template<template<typename...> typename T, typename U, typename V, typename W, typename X,
+		typename Y>
+struct is_unordered_map<T<U, V, W, X, Y> >
 {
-	static constexpr bool value = std::is_same<T<U, V>, std::unordered_map<U, V> >::value;
+	static constexpr bool value =
+			std::is_same<T<U, V, W, X, Y>, std::unordered_map<U, V, W, X, Y> >::value;
 };
 
 
@@ -98,8 +100,8 @@ struct is_vector
 	static constexpr bool value = false;
 };
 
-template<template<typename...> typename T, typename U>
-struct is_vector<T<U> >
+template<template<typename...> typename T, typename U, typename V>
+struct is_vector<T<U, V> >
 {
-	static constexpr bool value = std::is_same<T<U>, std::vector<U> >::value;
+	static constexpr bool value = std::is_same<T<U, V>, std::vector<U, V> >::value;
 };
