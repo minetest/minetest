@@ -22,16 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_mapgen.h"
 #include "cpp_api/s_security.h"
 
-class Server;
+class EmergeThread;
 
 class MapgenScripting:
+// ^ this should be renamed EmergeScripting
 		virtual public ScriptApiBase,
 		public ScriptApiMapgen,
 		public ScriptApiSecurity
 {
 public:
-	MapgenScripting(Server *server);
-	// ^ maybe take the EmergeThread instead?
+	MapgenScripting(EmergeThread *parent);
 
 private:
 	void InitializeModApi(lua_State *L, int top);

@@ -6519,6 +6519,7 @@ Mapgen environment
 The engine runs the map generator on separate threads, each of these also has
 a Lua environment. Its primary purpose is to allow mods to operate on newly
 generated parts of the map.
+Internally it may be referred to as "emerge environment".
 
 Refer to the above section for the usual disclaimer on what environment isolation entails.
 
@@ -6551,6 +6552,9 @@ Functions:
 * Standalone helpers such as logging, filesystem, encoding,
   hashing or compression APIs
 * `minetest.request_insecure_environment` (same restrictions apply)
+* `minetest.get_biome_id`, `get_biome_name`, `get_heat`, `get_humidity`,
+  `get_biome_data`, `get_mapgen_object`, `get_mapgen_params`, `get_mapgen_edges`,
+  `get_mapgen_setting`, `get_noiseparams`, `get_decoration_id` and more
 
 Variables:
 * `minetest.settings`

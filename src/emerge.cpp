@@ -19,15 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
-#include "emerge.h"
+#include "emerge_internal.h"
 
 #include <iostream>
-#include <queue>
 
 #include "util/container.h"
-#include "util/thread.h"
-#include "threading/event.h"
-
 #include "config.h"
 #include "constants.h"
 #include "environment.h"
@@ -47,76 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "settings.h"
 #include "voxel.h"
-
-class EmergeThread : public Thread {
-public:
-	bool enable_mapgen_debug_info;
-	int id;
-
-	EmergeThread(Server *server, int ethreadid);
-	~EmergeThread() = default;
-
-	void *run();
-	void signal();
-
-	// Requires queue mutex held
-	bool pushBlock(const v3s16 &pos);
-
-	void cancelPendingItems();
-
-protected:
-
-	void runCompletionCallbacks(
-		const v3s16 &pos, EmergeAction action,
-		const EmergeCallbackList &callbacks);
-
-private:
-	Server *m_server;
-	ServerMap *m_map;
-	EmergeManager *m_emerge;
-	Mapgen *m_mapgen;
-
-	std::unique_ptr<MapgenScripting> m_script;
-
-	Event m_queue_event;
-	std::queue<v3s16> m_block_queue;
-
-	void initScripting();
-
-	bool popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata);
-
-	EmergeAction getBlockOrStartGen(
-		const v3s16 &pos, bool allow_gen, MapBlock **block, BlockMakeData *data);
-	MapBlock *finishGen(v3s16 pos, BlockMakeData *bmdata,
-		std::map<v3s16, MapBlock *> *modified_blocks);
-
-	friend class EmergeManager;
-};
-
-class MapEditEventAreaIgnorer
-{
-public:
-	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
-		m_ignorevariable(ignorevariable)
-	{
-		if(m_ignorevariable->getVolume() == 0)
-			*m_ignorevariable = a;
-		else
-			m_ignorevariable = NULL;
-	}
-
-	~MapEditEventAreaIgnorer()
-	{
-		if(m_ignorevariable)
-		{
-			assert(m_ignorevariable->getVolume() != 0);
-			*m_ignorevariable = VoxelArea();
-		}
-	}
-
-private:
-	VoxelArea *m_ignorevariable;
-};
 
 EmergeParams::~EmergeParams()
 {
@@ -682,7 +608,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 
 void EmergeThread::initScripting()
 {
-	m_script = std::make_unique<MapgenScripting>(m_server);
+	m_script = std::make_unique<MapgenScripting>(this);
 
 	try {
 		m_script->loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",
@@ -698,7 +624,7 @@ void EmergeThread::initScripting()
 	try {
 		for (auto &it : list)
 			m_script->loadMod(it.second, it.first);
-		
+
 		m_script->on_mods_loaded();
 	} catch (const ModError &e) {
 		errorstream << "Failed to load mod script inside mapgen environment." << std::endl;

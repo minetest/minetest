@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class MMVManip;
+class BiomeManager;
+class BiomeGen;
+class Mapgen;
 
 class ModApiMapgen : public ModApiBase
 {
@@ -158,8 +161,18 @@ private:
 	static int set_lighting(lua_State *L, MMVManip *vm,
 			v3s16 pmin, v3s16 pmax, u8 light);
 
+	// Helpers
+
+	// get a read-only(!) EmergeManager
+	static const EmergeManager *getEmergeManager(lua_State *L);
+	// get the thread-local or global BiomeGen (still read-only)
+	static const BiomeGen *getBiomeGen(lua_State *L);
+	// get the thread-local mapgen
+	static Mapgen *getMapgen(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeEmerge(lua_State *L, int top);
 
 	static struct EnumString es_BiomeTerrainType[];
 	static struct EnumString es_DecorationType[];

@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "scripting_mapgen.h"
-#include "emerge.h"
+#include "emerge_internal.h"
 #include "server.h"
 #include "settings.h"
 #include "cpp_api/s_internal.h"
@@ -43,10 +43,11 @@ extern "C" {
 #include <lualib.h>
 }
 
-MapgenScripting::MapgenScripting(Server *server):
+MapgenScripting::MapgenScripting(EmergeThread *parent):
 		ScriptApiBase(ScriptingType::Mapgen)
 {
-	setGameDef(server);
+	setGameDef(parent->m_server);
+	setEmergeThread(parent);
 
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -91,7 +92,7 @@ void MapgenScripting::InitializeModApi(lua_State *L, int top)
 	ModApiCraft::InitializeAsync(L, top);
 	//ModApiEnv: should have Lua replacements
 	ModApiItemMod::InitializeAsync(L, top);
-	//ModApiMapgen: we should have part of these
+	ModApiMapgen::InitializeEmerge(L, top);
 	ModApiServer::InitializeAsync(L, top);
 	ModApiUtil::InitializeAsync(L, top);
 	// TODO ^ these should also be renamed to InitializeRO or such

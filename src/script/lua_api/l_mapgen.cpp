@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "server.h"
 #include "environment.h"
-#include "emerge.h"
+#include "emerge_internal.h"
 #include "mapgen/mg_biome.h"
 #include "mapgen/mg_ore.h"
 #include "mapgen/mg_decoration.h"
@@ -482,7 +482,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 
 	const char *biome_str = luaL_checkstring(L, 1);
 
-	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
+	const BiomeManager *bmgr = getEmergeManager(L)->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -504,7 +504,7 @@ int ModApiMapgen::l_get_biome_name(lua_State *L)
 
 	int biome_id = luaL_checkinteger(L, 1);
 
-	const BiomeManager *bmgr = getServer(L)->getEmergeManager()->getBiomeManager();
+	const BiomeManager *bmgr = getEmergeManager(L)->getBiomeManager();
 	if (!bmgr)
 		return 0;
 
@@ -523,8 +523,7 @@ int ModApiMapgen::l_get_heat(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
-
+	const BiomeGen *biomegen = getBiomeGen(L);
 	if (!biomegen || biomegen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
@@ -544,8 +543,7 @@ int ModApiMapgen::l_get_humidity(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
-
+	const BiomeGen *biomegen = getBiomeGen(L);
 	if (!biomegen || biomegen->getType() != BIOMEGEN_ORIGINAL)
 		return 0;
 
@@ -565,7 +563,7 @@ int ModApiMapgen::l_get_biome_data(lua_State *L)
 
 	v3s16 pos = read_v3s16(L, 1);
 
-	const BiomeGen *biomegen = getServer(L)->getEmergeManager()->getBiomeGen();
+	const BiomeGen *biomegen = getBiomeGen(L);
 	if (!biomegen)
 		return 0;
 
@@ -607,8 +605,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 	enum MapgenObject mgobj = (MapgenObject)mgobjint;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	Mapgen *mg = emerge->getCurrentMapgen();
+	Mapgen *mg = getMapgen(L);
 	if (!mg)
 		throw LuaError("Must only be called in a mapgen thread!");
 
@@ -810,7 +807,8 @@ int ModApiMapgen::l_get_mapgen_edges(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	MapSettingsManager *settingsmgr = getServer(L)->getEmergeManager()->map_settings_mgr;
+	const MapSettingsManager *settingsmgr =
+		getEmergeManager(L)->map_settings_mgr;
 
 	// MapSettingsManager::makeMapgenParams cannot be used here because it would
 	// make mapgen settings immutable from then on. Mapgen settings should stay
@@ -846,8 +844,8 @@ int ModApiMapgen::l_get_mapgen_setting(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	std::string value;
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
+	const MapSettingsManager *settingsmgr =
+		getEmergeManager(L)->map_settings_mgr;
 
 	const char *name = luaL_checkstring(L, 1);
 	if (!settingsmgr->getMapSetting(name, &value))
@@ -863,8 +861,8 @@ int ModApiMapgen::l_get_mapgen_setting_noiseparams(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	NoiseParams np;
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
+	const MapSettingsManager *settingsmgr =
+		getEmergeManager(L)->map_settings_mgr;
 
 	const char *name = luaL_checkstring(L, 1);
 	if (!settingsmgr->getMapSettingNoiseParams(name, &np))
@@ -1020,8 +1018,7 @@ int ModApiMapgen::l_get_decoration_id(lua_State *L)
 		return 0;
 
 	const DecorationManager *dmgr =
-		getServer(L)->getEmergeManager()->getDecorationManager();
-
+		getEmergeManager(L)->getDecorationManager();
 	if (!dmgr)
 		return 0;
 
@@ -1677,7 +1674,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const SchematicManager *schemmgr = getServer(L)->getEmergeManager()->getSchematicManager();
+	const SchematicManager *schemmgr = getEmergeManager(L)->getSchematicManager();
 
 	//// Read options
 	bool use_comments = getboolfield_default(L, 3, "lua_use_comments", false);
@@ -1727,8 +1724,7 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	const SchematicManager *schemmgr =
-		getServer(L)->getEmergeManager()->getSchematicManager();
+	const SchematicManager *schemmgr = getEmergeManager(L)->getSchematicManager();
 	const NodeDefManager *ndef = getGameDef(L)->ndef();
 
 	//// Read options
@@ -1850,6 +1846,37 @@ int ModApiMapgen::set_lighting(lua_State *L, MMVManip *vm,
 	return 0;
 }
 
+const EmergeManager *ModApiMapgen::getEmergeManager(lua_State *L)
+{
+	auto emerge = getEmergeThread(L);
+	if (emerge)
+		return emerge->getEmergeManager();
+	return getServer(L)->getEmergeManager();
+}
+
+const BiomeGen *ModApiMapgen::getBiomeGen(lua_State *L)
+{
+	// path 1: we're in the emerge environment
+	auto emerge = getEmergeThread(L);
+	if (emerge)
+		return emerge->getMapgen()->biomegen;
+	// path 2: we're in the server environment
+	auto manager = getServer(L)->getEmergeManager();
+	if (auto mg = manager->getCurrentMapgen())
+		return mg->biomegen;
+	return manager->getBiomeGen();
+}
+
+Mapgen *ModApiMapgen::getMapgen(lua_State *L)
+{
+	// path 1
+	auto emerge = getEmergeThread(L);
+	if (emerge)
+		return emerge->getMapgen();
+	// path 2
+	return getServer(L)->getEmergeManager()->getCurrentMapgen();
+}
+
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_biome_id);
@@ -1888,6 +1915,28 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
 	API_FCT(place_schematic_on_vmanip);
+	API_FCT(serialize_schematic);
+	API_FCT(read_schematic);
+}
+
+void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
+{
+	API_FCT(get_biome_id);
+	API_FCT(get_biome_name);
+	API_FCT(get_heat);
+	API_FCT(get_humidity);
+	API_FCT(get_biome_data);
+	API_FCT(get_mapgen_object);
+
+	API_FCT(get_mapgen_params);
+	API_FCT(get_mapgen_edges);
+	API_FCT(get_mapgen_setting);
+	API_FCT(get_noiseparams);
+	API_FCT(get_decoration_id);
+
+	//API_FCT(generate_ores); TODO
+	//API_FCT(generate_decorations); TODO
+	//API_FCT(place_schematic_on_vmanip); TODO
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }
