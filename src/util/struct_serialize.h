@@ -31,11 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <utility>
 #include <vector>
 
-template<typename T>
-std::enable_if_t<
-		is_map<T>::value || is_unordered_map<T>::value
-> struct_serialize(std::vector<char> &buf, const T &val);
-
 
 template<typename T>
 std::enable_if_t<
@@ -99,7 +94,10 @@ std::enable_if_t<
 
 template<typename T>
 std::enable_if_t<
-		is_basic_string<T>::value || is_vector<T>::value
+		is_basic_string<T>::value
+				|| is_map<T>::value
+				|| is_unordered_map<T>::value
+				|| is_vector<T>::value
 > struct_serialize(std::vector<char> &buf, const T &val)
 {
 	struct_serialize(buf, val.size());
@@ -130,19 +128,6 @@ std::enable_if_t<
 	if (use)
 		*use = size - size_elems;
 	return val;
-}
-
-
-template<typename T>
-std::enable_if_t<
-		is_map<T>::value || is_unordered_map<T>::value
-> struct_serialize(std::vector<char> &buf, const T &val)
-{
-	struct_serialize(buf, val.size());
-	for (const auto &elem : val) {
-		struct_serialize(buf, elem.first);
-		struct_serialize(buf, elem.second);
-	}
 }
 
 
@@ -183,7 +168,7 @@ std::enable_if_t<
 		INDEX < std::tuple_size<T>::value
 > struct_serialize_tuple(std::vector<char> &buf, const T &val)
 {
-	struct_serialize<typename std::tuple_element<INDEX, T>::type>(buf, std::get<INDEX>(val));
+	struct_serialize(buf, std::get<INDEX>(val));
 	struct_serialize_tuple<T, INDEX + 1>(buf, val);
 }
 
