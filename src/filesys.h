@@ -60,6 +60,8 @@ bool IsPathAbsolute(const std::string &path);
 
 bool IsDir(const std::string &path);
 
+bool IsExecutable(const std::string &path);
+
 inline bool IsFile(const std::string &path)
 {
 	return PathExists(path) && !IsDir(path);

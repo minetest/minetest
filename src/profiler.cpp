@@ -154,8 +154,8 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 			o << buffer;
 		}
 
-		porting::mt_snprintf(buffer, sizeof(buffer), "% 5ix % 4.4g",
-				getAvgCount(i.first), i.second);
+		porting::mt_snprintf(buffer, sizeof(buffer), "% 5ix % 7g",
+				getAvgCount(i.first), floor(i.second * 1000.0) / 1000.0);
 		o << buffer << std::endl;
 	}
 	return values.size();

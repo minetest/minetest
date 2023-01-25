@@ -95,7 +95,7 @@ always_fly_fast (Always fly fast) bool true
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
-repeat_place_time (Place repetition interval) float 0.25 0.25 2
+repeat_place_time (Place repetition interval) float 0.25 0.16 2
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
@@ -469,7 +469,7 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 enable_bloom (Enable Bloom) bool false
 
 #    Set to true to render debugging breakdown of the bloom effect.
-#    In debug mode, the screen is split into 4 quadrants: 
+#    In debug mode, the screen is split into 4 quadrants:
 #    top-left - processed base image, top-right - final image
 #    bottom-left - raw base image, bottom-right - bloom texture.
 enable_bloom_debug (Enable Bloom Debug) bool false
@@ -627,11 +627,6 @@ update_last_checked (Last update check) string
 #    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
-
-#    Type of occlusion_culler
-#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
-#    "bfs" is the new algorithm based on breadth-first-search and side culling
-occlusion_culler (Occlusion Culler) enum bfs bfs,loops
 
 #    Use raytraced occlusion culling in the new culler.
 #	 This flag enables use of raytraced occlusion culling test
