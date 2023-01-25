@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "csm_message.h"
 #include "threading/ipc_channel.h"
 #include "util/struct_serialize.h"
 
@@ -47,8 +48,8 @@ inline size_t csm_recv_size() { return g_csm_script_ipc.getRecvSize(); }
 
 inline const void *csm_recv_data() { return g_csm_script_ipc.getRecvData(); }
 
-template<typename T>
-T csm_deserialize_msg()
+template<typename T, typename U = csm_msg_owned_t<T> >
+U csm_deserialize_msg()
 {
-	return struct_deserialize<T>(csm_recv_data(), csm_recv_size());
+	return struct_deserialize<U>(csm_recv_data(), csm_recv_size());
 }

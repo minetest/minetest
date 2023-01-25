@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "util/pointedthing.h"
 #include "util/string.h"
+#include "util/type_traits.h"
 #include <stddef.h>
 #include <type_traits>
 #include <tuple>
@@ -58,26 +59,27 @@ enum CSMC2SMsgType {
 	CSM_C2S_RUN_STEP,
 };
 
-using CSMC2SRunSendingMessage = std::pair<CSMC2SMsgType, std::string>;
+using CSMC2SRunSendingMessage = std::pair<CSMC2SMsgType, const std::string&>;
 
-using CSMC2SRunReceivingMessage = std::pair<CSMC2SMsgType, std::string>;
+using CSMC2SRunReceivingMessage = std::pair<CSMC2SMsgType, const std::string&>;
 
 using CSMC2SRunDamageTaken = std::pair<CSMC2SMsgType, u16>;
 
 using CSMC2SRunHPModification = std::pair<CSMC2SMsgType, u16>;
 
 using CSMC2SRunModchannelMessage = std::tuple<CSMC2SMsgType,
-		std::string, std::string, std::string>;
+		const std::string&, const std::string&, const std::string&>;
 
-using CSMC2SRunModchannelSignal = std::tuple<CSMC2SMsgType, std::string, ModChannelSignal>;
+using CSMC2SRunModchannelSignal = std::tuple<CSMC2SMsgType,
+		const std::string&, ModChannelSignal>;
 
-using CSMC2SRunFormspecInput = std::tuple<CSMC2SMsgType, std::string, StringMap>;
+using CSMC2SRunFormspecInput = std::tuple<CSMC2SMsgType, const std::string&, const StringMap&>;
 
-using CSMC2SRunInventoryOpen = std::pair<CSMC2SMsgType, std::string>;
+using CSMC2SRunInventoryOpen = std::pair<CSMC2SMsgType, const std::string&>;
 
-using CSMC2SRunItemUse = std::tuple<CSMC2SMsgType, std::string, PointedThing>;
+using CSMC2SRunItemUse = std::tuple<CSMC2SMsgType, const std::string&, const PointedThing&>;
 
-using CSMC2SRunPlacenode = std::tuple<CSMC2SMsgType, PointedThing, std::string>;
+using CSMC2SRunPlacenode = std::tuple<CSMC2SMsgType, const PointedThing&, const std::string&>;
 
 using CSMC2SRunPunchnode = std::tuple<CSMC2SMsgType, v3s16, MapNode>;
 
@@ -107,7 +109,7 @@ enum CSMS2CMsgType {
 
 using CSMS2CDoneBool = std::pair<CSMS2CMsgType, char>;
 
-using CSMS2CLog = std::tuple<CSMS2CMsgType, LogLevel, std::string>;
+using CSMS2CLog = std::tuple<CSMS2CMsgType, LogLevel, const std::string&>;
 
 using CSMS2CGetNode = std::pair<CSMS2CMsgType, v3s16>;
 
@@ -115,12 +117,31 @@ using CSMS2CAddNode = std::tuple<CSMS2CMsgType, v3s16, MapNode, char>;
 
 using CSMS2CNodeMetaClear = std::pair<CSMS2CMsgType, v3s16>;
 
-using CSMS2CNodeMetaContains = std::tuple<CSMS2CMsgType, v3s16, std::string>;
+using CSMS2CNodeMetaContains = std::tuple<CSMS2CMsgType, v3s16, const std::string&>;
 
-using CSMS2CNodeMetaSetString = std::tuple<CSMS2CMsgType, v3s16, std::string, std::string>;
+using CSMS2CNodeMetaSetString = std::tuple<CSMS2CMsgType, v3s16, const std::string&,
+		const std::string&>;
 
 using CSMS2CNodeMetaGetStrings = std::pair<CSMS2CMsgType, v3s16>;
 
 using CSMS2CNodeMetaGetKeys = std::pair<CSMS2CMsgType, v3s16>;
 
-using CSMS2CNodeMetaGetString = std::tuple<CSMS2CMsgType, v3s16, std::string>;
+using CSMS2CNodeMetaGetString = std::tuple<CSMS2CMsgType, v3s16, const std::string&>;
+
+// csm_msg_owned_t<T> is a version of message type T that owns its resources.
+
+template<typename T, typename = void>
+struct csm_msg_owned
+{
+	using type = T;
+};
+
+template<template<typename...> class T, typename... U>
+struct csm_msg_owned<T<U...>,
+		std::enable_if_t<is_tuple<T<U...> >::value || is_pair<T<U...> >::value> >
+{
+	using type = T<std::remove_cv_t<std::remove_reference_t<U> >...>;
+};
+
+template<typename T>
+using csm_msg_owned_t = typename csm_msg_owned<T>::type;

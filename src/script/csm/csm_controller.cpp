@@ -469,7 +469,7 @@ void CSMController::listen(bool succeeded)
 		switch (type) {
 		case CSM_S2C_LOG:
 			{
-				CSMS2CLog recv;
+				csm_msg_owned_t<CSMS2CLog> recv;
 				if ((succeeded = deserializeMsg(recv)
 						&& std::get<1>(recv) >= 0 && std::get<1>(recv) < LL_MAX)) {
 					if (g_logger.hasOutput(std::get<1>(recv))) {
@@ -483,7 +483,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_GET_NODE:
 			{
-				CSMS2CGetNode recv;
+				csm_msg_owned_t<CSMS2CGetNode> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					bool pos_ok;
 					MapNode n = m_client->getEnv().getMap().getNode(std::get<1>(recv), &pos_ok);
@@ -494,7 +494,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_ADD_NODE:
 			{
-				CSMS2CAddNode recv;
+				csm_msg_owned_t<CSMS2CAddNode> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					m_client->addNode(std::get<1>(recv), std::get<2>(recv), std::get<3>(recv));
 					succeeded = exchange(std::make_tuple<>());
@@ -503,7 +503,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_CLEAR:
 			{
-				CSMS2CNodeMetaClear recv;
+				csm_msg_owned_t<CSMS2CNodeMetaClear> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					m_client->getEnv().getMap().removeNodeMetadata(recv.second);
 					succeeded = exchange(std::make_tuple<>());
@@ -512,7 +512,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_CONTAINS:
 			{
-				CSMS2CNodeMetaContains recv;
+				csm_msg_owned_t<CSMS2CNodeMetaContains> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					NodeMetadata *meta =
 							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
@@ -523,7 +523,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_SET_STRING:
 			{
-				CSMS2CNodeMetaSetString recv;
+				csm_msg_owned_t<CSMS2CNodeMetaSetString> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					Map &map = m_client->getEnv().getMap();
 					NodeMetadata *meta = map.getNodeMetadata(std::get<1>(recv));
@@ -542,7 +542,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_GET_STRINGS:
 			{
-				CSMS2CNodeMetaGetStrings recv;
+				csm_msg_owned_t<CSMS2CNodeMetaGetStrings> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					NodeMetadata *meta =
 							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
@@ -557,7 +557,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_GET_KEYS:
 			{
-				CSMS2CNodeMetaGetKeys recv;
+				csm_msg_owned_t<CSMS2CNodeMetaGetKeys> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					NodeMetadata *meta =
 							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
@@ -575,7 +575,7 @@ void CSMController::listen(bool succeeded)
 			break;
 		case CSM_S2C_NODE_META_GET_STRING:
 			{
-				CSMS2CNodeMetaGetString recv;
+				csm_msg_owned_t<CSMS2CNodeMetaGetString> recv;
 				if ((succeeded = deserializeMsg(recv))) {
 					NodeMetadata *meta =
 							m_client->getEnv().getMap().getNodeMetadata(std::get<1>(recv));
@@ -607,6 +607,6 @@ bool CSMController::getDoneBool()
 {
 	if (!isStarted())
 		return false;
-	CSMS2CDoneBool recv;
+	csm_msg_owned_t<CSMS2CDoneBool> recv;
 	return deserializeMsg(recv) && recv.second != 0;
 }

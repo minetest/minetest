@@ -207,7 +207,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_SENDING_MESSAGE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunSendingMessage>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunSendingMessage>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_sending_message(recv.second));
 					csm_exchange_msg(send);
@@ -216,7 +216,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_RECEIVING_MESSAGE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunReceivingMessage>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunReceivingMessage>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_receiving_message(recv.second));
 					csm_exchange_msg(send);
@@ -225,7 +225,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_DAMAGE_TAKEN:
 				{
-					auto recv = struct_deserialize<CSMC2SRunDamageTaken>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunDamageTaken>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_damage_taken(recv.second));
 					csm_exchange_msg(send);
@@ -234,7 +234,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_HP_MODIFICATION:
 				{
-					auto recv = struct_deserialize<CSMC2SRunHPModification>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunHPModification>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_hp_modification(recv.second));
 					csm_exchange_msg(send);
@@ -247,7 +247,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_MODCHANNEL_MESSAGE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunModchannelMessage>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunModchannelMessage>();
 					g_log_output.startLogging();
 					script.on_modchannel_message(std::get<1>(recv), std::get<2>(recv),
 							std::get<3>(recv));
@@ -255,14 +255,14 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_MODCHANNEL_SIGNAL:
 				{
-					auto recv = struct_deserialize<CSMC2SRunModchannelSignal>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunModchannelSignal>();
 					g_log_output.startLogging();
 					script.on_modchannel_signal(std::get<1>(recv), std::get<2>(recv));
 				}
 				break;
 			case CSM_C2S_RUN_FORMSPEC_INPUT:
 				{
-					auto recv = struct_deserialize<CSMC2SRunFormspecInput>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunFormspecInput>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_formspec_input(
 							std::get<1>(recv), std::get<2>(recv)));
@@ -272,7 +272,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_INVENTORY_OPEN:
 				{
-					auto recv = struct_deserialize<CSMC2SRunInventoryOpen>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunInventoryOpen>();
 					g_log_output.startLogging();
 					std::istringstream is(recv.second, std::ios::binary);
 					Inventory inv(gamedef.idef());
@@ -284,7 +284,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_ITEM_USE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunItemUse>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunItemUse>();
 					g_log_output.startLogging();
 					std::istringstream itemstring_is(std::get<1>(recv), std::ios::binary);
 					ItemStack selected_item;
@@ -297,7 +297,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_PLACENODE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunPlacenode>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunPlacenode>();
 					g_log_output.startLogging();
 					script.on_placenode(std::get<1>(recv),
 							gamedef.idef()->get(std::get<2>(recv)));
@@ -305,7 +305,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_PUNCHNODE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunPunchnode>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunPunchnode>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_punchnode(std::get<1>(recv),
 							std::get<2>(recv)));
@@ -315,7 +315,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_DIGNODE:
 				{
-					auto recv = struct_deserialize<CSMC2SRunDignode>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunDignode>();
 					g_log_output.startLogging();
 					CSMS2CDoneBool send(CSM_S2C_DONE, script.on_dignode(std::get<1>(recv),
 							std::get<2>(recv)));
@@ -325,7 +325,7 @@ int csm_script_main(int argc, char *argv[])
 				break;
 			case CSM_C2S_RUN_STEP:
 				{
-					auto recv = struct_deserialize<CSMC2SRunStep>(data, size);
+					auto recv = csm_deserialize_msg<CSMC2SRunStep>();
 					g_log_output.startLogging();
 					script.environment_Step(recv.second);
 				}
