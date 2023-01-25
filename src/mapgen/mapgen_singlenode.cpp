@@ -32,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 MapgenSinglenode::MapgenSinglenode(MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(MAPGEN_SINGLENODE, params, emerge)
 {
-	const NodeDefManager *ndef = emerge->ndef;
-
 	c_node = ndef->getId("mapgen_singlenode");
 	if (c_node == CONTENT_IGNORE)
 		c_node = CONTENT_AIR;
