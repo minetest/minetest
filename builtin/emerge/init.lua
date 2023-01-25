@@ -1,6 +1,6 @@
 local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
 local commonpath = core.get_builtin_path() .. "common" .. DIR_DELIM
-local mgpath = core.get_builtin_path() .. "mapgen" .. DIR_DELIM
+local epath = core.get_builtin_path() .. "emerge" .. DIR_DELIM
 
 local builtin_shared = {}
 
@@ -13,8 +13,8 @@ dofile(gamepath .. "voxelarea.lua")
 
 -- Now for our own stuff
 assert(loadfile(commonpath .. "register.lua"))(builtin_shared)
-assert(loadfile(mgpath .. "register.lua"))(builtin_shared)
+assert(loadfile(epath .. "register.lua"))(builtin_shared)
 
 builtin_shared.cache_content_ids()
 
-core.log("info", "Initialized mapgen Lua environment")
+core.log("info", "Initialized emerge Lua environment")

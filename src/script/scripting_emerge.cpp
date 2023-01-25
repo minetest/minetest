@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scripting_mapgen.h"
+#include "scripting_emerge.h"
 #include "emerge_internal.h"
 #include "server.h"
 #include "settings.h"
@@ -43,8 +43,8 @@ extern "C" {
 #include <lualib.h>
 }
 
-MapgenScripting::MapgenScripting(EmergeThread *parent):
-		ScriptApiBase(ScriptingType::Mapgen)
+EmergeScripting::EmergeScripting(EmergeThread *parent):
+		ScriptApiBase(ScriptingType::Emerge)
 {
 	setGameDef(parent->m_server);
 	setEmergeThread(parent);
@@ -67,11 +67,11 @@ MapgenScripting::MapgenScripting(EmergeThread *parent):
 	lua_pop(L, 1);
 
 	// Push builtin initialization type
-	lua_pushstring(L, "mapgen");
+	lua_pushstring(L, "emerge");
 	lua_setglobal(L, "INIT");
 }
 
-void MapgenScripting::InitializeModApi(lua_State *L, int top)
+void EmergeScripting::InitializeModApi(lua_State *L, int top)
 {
 	// Register reference classes (userdata)
 	InvRef::Register(L);

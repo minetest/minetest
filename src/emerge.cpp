@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "profiler.h"
 #include "scripting_server.h"
-#include "scripting_mapgen.h"
+#include "scripting_emerge.h"
 #include "server.h"
 #include "settings.h"
 #include "voxel.h"
@@ -608,7 +608,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 
 void EmergeThread::initScripting()
 {
-	m_script = std::make_unique<MapgenScripting>(this);
+	m_script = std::make_unique<EmergeScripting>(this);
 
 	try {
 		m_script->loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",

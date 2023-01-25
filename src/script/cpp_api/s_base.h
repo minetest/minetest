@@ -62,7 +62,7 @@ enum class ScriptingType: u8 {
 	Client,
 	MainMenu,
 	Server,
-	Mapgen
+	Emerge
 };
 
 class Server;

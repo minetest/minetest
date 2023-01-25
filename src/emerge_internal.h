@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 /******************************************************************/
-/* may only be included by emerge.cpp or mapgen scripting related */
+/* may only be included by emerge.cpp or emerge scripting related */
 /******************************************************************/
 
 #include "emerge.h"
@@ -35,7 +35,7 @@ class ServerMap;
 class Mapgen;
 
 class EmergeManager;
-class MapgenScripting;
+class EmergeScripting;
 
 class EmergeThread : public Thread {
 public:
@@ -68,7 +68,7 @@ private:
 	EmergeManager *m_emerge;
 	Mapgen *m_mapgen;
 
-	std::unique_ptr<MapgenScripting> m_script;
+	std::unique_ptr<EmergeScripting> m_script;
 
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
@@ -83,7 +83,7 @@ private:
 		std::map<v3s16, MapBlock *> *modified_blocks);
 
 	friend class EmergeManager;
-	friend class MapgenScripting;
+	friend class EmergeScripting;
 	friend class ModApiMapgen;
 };
 

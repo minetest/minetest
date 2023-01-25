@@ -24,14 +24,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class EmergeThread;
 
-class MapgenScripting:
-// ^ this should be renamed EmergeScripting
+class EmergeScripting:
 		virtual public ScriptApiBase,
 		public ScriptApiMapgen,
 		public ScriptApiSecurity
 {
 public:
-	MapgenScripting(EmergeThread *parent);
+	EmergeScripting(EmergeThread *parent);
 
 private:
 	void InitializeModApi(lua_State *L, int top);
