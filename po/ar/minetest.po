@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-07 13:27+0000\n"
-"Last-Translator: Abdou-31 <abdou31.coding@gmail.com>\n"
+"PO-Revision-Date: 2023-01-26 12:51+0000\n"
+"Last-Translator: Ghurir <tamimzain@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/minetest/minetest/"
 "ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -30,7 +30,7 @@ msgstr "أمر فارغ."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "اخرج للقائمة الرئيسة"
+msgstr "عد للقائمة الرئيسية"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -73,6 +73,7 @@ msgid "Available commands: "
 msgstr "الأوامر المتاحة: "
 
 #: builtin/common/chatcommands.lua
+#, fuzzy
 msgid "Command not available: "
 msgstr "الأوامر غير المتاحة: "
 
@@ -595,7 +596,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "الاسم مفقود"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -1019,7 +1020,7 @@ msgstr "انضم للعبة"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "تسجيل الدخول"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1108,7 +1109,7 @@ msgstr "منخفضة"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr "متوسط"
+msgstr "واسطة"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -1187,9 +1188,8 @@ msgid "Tone Mapping"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "حساسية اللمس: (بكسل)"
+msgstr "حساسية اللمس (بكسل):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1218,7 +1218,7 @@ msgstr "نباتات متموجة"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "قُطِع الاتصال (خطأ في البرتوكول؟)"
+msgstr "قُطِع الاتصال (خطأ في البرتوكول؟)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1675,7 +1675,7 @@ msgstr "غُير الحجم الى %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "تم إظهار الإطار السلكي"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
@@ -1732,7 +1732,7 @@ msgstr "أسفل"
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
