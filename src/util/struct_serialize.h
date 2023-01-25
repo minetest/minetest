@@ -94,7 +94,40 @@ std::enable_if_t<
 
 template<typename T>
 std::enable_if_t<
-		is_basic_string<T>::value
+		is_basic_string<T>::value && sizeof(typename T::value_type) == 1
+> struct_serialize(std::vector<char> &buf, const T &val)
+{
+	struct_serialize(buf, val.size());
+	size_t len = val.size();
+	size_t old_size = buf.size();
+	size_t new_size = old_size + len;
+	if (new_size < old_size)
+		throw SerializationError("Output buffer size overflow");
+	buf.resize(new_size);
+	memcpy(buf.data() + old_size, val.data(), len);
+}
+
+
+template<typename T>
+std::enable_if_t<
+		is_basic_string<T>::value && sizeof(typename T::value_type) == 1, T
+> struct_deserialize(const void *buf, size_t size, size_t *use = nullptr)
+{
+	size_t use_len;
+	size_t len = struct_deserialize<size_t>(buf, size, &use_len);
+	if (size - use_len < len)
+		throw SerializationError("Buffer is too short");
+	const void *data_buf = (const char *)buf + use_len;
+	T val((const typename T::value_type *)data_buf, len);
+	if (use)
+		*use = use_len + len;
+	return val;
+}
+
+
+template<typename T>
+std::enable_if_t<
+		(is_basic_string<T>::value && sizeof(typename T::value_type) > 1)
 				|| is_map<T>::value
 				|| is_unordered_map<T>::value
 				|| is_vector<T>::value
@@ -108,17 +141,19 @@ std::enable_if_t<
 
 template<typename T>
 std::enable_if_t<
-		is_basic_string<T>::value || is_vector<T>::value, T
+		(is_basic_string<T>::value && sizeof(typename T::value_type) > 1)
+				|| is_vector<T>::value,
+		T
 > struct_deserialize(const void *buf, size_t size,
 		size_t *use = nullptr)
 {
-	size_t use_val_len;
-	size_t val_len = struct_deserialize<size_t>(buf, size, &use_val_len);
+	size_t use_len;
+	size_t len = struct_deserialize<size_t>(buf, size, &use_len);
 	T val;
-	val.reserve(val_len);
-	const char *buf_elems = (const char *)buf + use_val_len;
-	size_t size_elems = size - use_val_len;
-	for (size_t i = 0; i < val_len; i++) {
+	val.reserve(len);
+	const char *buf_elems = (const char *)buf + use_len;
+	size_t size_elems = size - use_len;
+	for (size_t i = 0; i < len; i++) {
 		size_t use_elem;
 		val.push_back(struct_deserialize<typename T::value_type>(buf_elems, size_elems,
 				&use_elem));
@@ -136,12 +171,12 @@ std::enable_if_t<
 		is_map<T>::value || is_unordered_map<T>::value, T
 > struct_deserialize(const void *buf, size_t size, size_t *use)
 {
-	size_t use_val_len;
-	size_t val_len = struct_deserialize<size_t>(buf, size, &use_val_len);
+	size_t use_len;
+	size_t len = struct_deserialize<size_t>(buf, size, &use_len);
 	T val;
-	const char *buf_elems = (const char *)buf + use_val_len;
-	size_t size_elems = size - use_val_len;
-	for (size_t i = 0; i < val_len; i++) {
+	const char *buf_elems = (const char *)buf + use_len;
+	size_t size_elems = size - use_len;
+	for (size_t i = 0; i < len; i++) {
 		using K = typename T::key_type;
 		using V = typename T::mapped_type;
 		size_t use_elem;
