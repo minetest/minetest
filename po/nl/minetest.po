@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-12-25 15:51+0000\n"
-"Last-Translator: CouldBeMathijs <mathijs.pittoors@gmail.com>\n"
+"PO-Revision-Date: 2023-01-26 12:51+0000\n"
+"Last-Translator: Ghurir <tamimzain@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -613,9 +613,8 @@ msgid "Password"
 msgstr "Wachtwoord"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "De wachtwoorden zijn niet gelijk!"
+msgstr "De wachtwoorden zijn niet gelijk"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -1102,9 +1101,8 @@ msgid "Dynamic shadows"
 msgstr "Dynamische schaduwen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dynamische schaduwen: "
+msgstr "Dynamische schaduwen:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1199,9 +1197,8 @@ msgid "Tone Mapping"
 msgstr "Tone-mapping"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Toetsgrenswaarde: (px)"
+msgstr "Toetsgrenswaarde (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1231,7 +1228,7 @@ msgstr "Bewegende planten"
 #: src/client/client.cpp
 #, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Fout bij verbinden (time out?)"
+msgstr "Fout bij verbinden (time out?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1501,7 +1498,7 @@ msgstr "Oneindige kijkafstand aangezet"
 #: src/client/game.cpp
 #, fuzzy, c-format
 msgid "Error creating client: %s"
-msgstr "Gebruiker aanmaken..."
+msgstr "Fout bij aanmaken van client: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -2020,7 +2017,7 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Geen afhankelijkheden"
+msgstr "Er zijn mods met afhankelijkheden die niet zijn voldaan :"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2224,9 +2221,8 @@ msgid ""
 msgstr ""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Kies alsjeblieft een naam!"
+msgstr "De naam is al in gebruik. Kies alsjeblieft een andere naam"
 
 #: src/settings_translation_file.cpp
 msgid ""
