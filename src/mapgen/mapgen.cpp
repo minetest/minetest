@@ -131,7 +131,13 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
 	*/
 	seed = (s32)params->seed;
 
+	m_emerge  = emerge;
 	ndef      = emerge->ndef;
+}
+
+Mapgen::~Mapgen()
+{
+	delete m_emerge; // this is our responsibility
 }
 
 
@@ -566,7 +572,6 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	this->m_emerge = emerge;
 	this->m_bmgr   = emerge->biomemgr;
 
 	//// Here, 'stride' refers to the number of elements needed to skip to index
@@ -620,8 +625,6 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 MapgenBasic::~MapgenBasic()
 {
 	delete []heightmap;
-
-	delete m_emerge; // destroying EmergeParams is our responsibility
 }
 
 
