@@ -47,14 +47,14 @@ bool CSMNodeMetadata::setString(const std::string &name, const std::string &var)
 
 const StringMap &CSMNodeMetadata::getStrings(StringMap *place) const
 {
-	CSMS2CNodeMetaClear send(CSM_S2C_NODE_META_GET_STRINGS, m_p);
+	CSMS2CNodeMetaGetStrings send(CSM_S2C_NODE_META_GET_STRINGS, m_p);
 	csm_exchange_msg(send);
 	return *place = csm_deserialize_msg<StringMap>();
 }
 
 const std::vector<std::string> &CSMNodeMetadata::getKeys(std::vector<std::string> *place) const
 {
-	CSMS2CNodeMetaClear send(CSM_S2C_NODE_META_GET_STRINGS, m_p);
+	CSMS2CNodeMetaGetKeys send(CSM_S2C_NODE_META_GET_KEYS, m_p);
 	csm_exchange_msg(send);
 	return *place = csm_deserialize_msg<std::vector<std::string> >();
 }
@@ -62,7 +62,7 @@ const std::vector<std::string> &CSMNodeMetadata::getKeys(std::vector<std::string
 const std::string *CSMNodeMetadata::getStringRaw(const std::string &name,
 		std::string *place) const
 {
-	CSMS2CNodeMetaContains send(CSM_S2C_NODE_META_GET_STRING, m_p, name);
+	CSMS2CNodeMetaGetString send(CSM_S2C_NODE_META_GET_STRING, m_p, name);
 	csm_exchange_msg(send);
 	auto recv = csm_deserialize_msg<std::string>();
 	if (recv.size() > 0) {
