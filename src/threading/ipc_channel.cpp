@@ -101,7 +101,7 @@ static void busy_wait(int n) noexcept
 }
 #endif // defined(__i386__) || defined(__x86_64__)
 
-static int futex(std::atomic_uint32_t *uaddr, int futex_op, u32 val,
+static int futex(std::atomic<u32> *uaddr, int futex_op, u32 val,
 		const struct timespec *timeout, u32 *uaddr2, u32 val3) noexcept
 {
 	return syscall(SYS_futex, uaddr, futex_op, val, timeout, uaddr2, val3);

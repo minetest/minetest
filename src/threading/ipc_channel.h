@@ -47,7 +47,7 @@ struct IPCChannelBuffer
 {
 #if !defined(_WIN32)
 #if defined(__linux__)
-	std::atomic_uint32_t futex = ATOMIC_VAR_INIT(0);
+	std::atomic<u32> futex = ATOMIC_VAR_INIT(0U);
 #else
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
