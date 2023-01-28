@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 IPCChannelBuffer::IPCChannelBuffer()
 {
-#if !defined(__linux) && !defined(_WIN32)
+#if !defined(__linux__) && !defined(_WIN32)
 	pthread_condattr_t condattr;
 	pthread_mutexattr_t mutexattr;
 	if (pthread_condattr_init(&condattr) != 0)
@@ -65,15 +65,15 @@ error_mutexattr_init:
 	pthread_condattr_destroy(&condattr);
 error_condattr_init:
 	throw BaseException("Unable to initialize IPCChannelBuffer");
-#endif // !defined(__linux) && !defined(_WIN32)
+#endif // !defined(__linux__) && !defined(_WIN32)
 }
 
 IPCChannelBuffer::~IPCChannelBuffer()
 {
-#if !defined(__linux) && !defined(_WIN32)
+#if !defined(__linux__) && !defined(_WIN32)
 	pthread_mutex_destroy(&mutex);
 	pthread_cond_destroy(&cond);
-#endif // !defined(__linux) && !defined(_WIN32)
+#endif // !defined(__linux__) && !defined(_WIN32)
 }
 
 #if defined(_WIN32)
@@ -147,7 +147,7 @@ static bool wait(IPCChannelBuffer *buf, const struct timespec *timeout) noexcept
 	buf->posted = false;
 	pthread_mutex_unlock(&buf->mutex);
 	return !timed_out;
-#endif // !defined(__linux)
+#endif // !defined(__linux__)
 }
 
 static void post(IPCChannelBuffer *buf) noexcept
@@ -163,7 +163,7 @@ static void post(IPCChannelBuffer *buf) noexcept
 	buf->posted = true;
 	pthread_cond_broadcast(&buf->cond);
 	pthread_mutex_unlock(&buf->mutex);
-#endif // !defined(__linux)
+#endif // !defined(__linux__)
 }
 
 #endif // !defined(_WIN32)
