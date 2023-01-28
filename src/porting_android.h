@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <android/log.h>
 
 #include <string>
+#include <unistd.h>
 
 namespace porting {
 // java app
@@ -40,6 +41,19 @@ extern JNIEnv *jnienv;
 void initAndroid();
 
 void cleanupAndroid();
+
+// A special subsystem is needed to simulate self-exec-ing since an executable
+// is not present on Android.
+
+bool selfExecInit() noexcept;
+
+bool selfExecDestroy() noexcept;
+
+#define SELF_EXEC_SPAWN_FD 3
+
+pid_t selfExecSpawn(const char *const argv[], int fd) noexcept;
+
+bool selfExecKill(pid_t pid) noexcept;
 
 /**
  * Initializes path_* variables for Android

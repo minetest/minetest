@@ -38,12 +38,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fcntl.h>
 #include <limits.h>
 #include <signal.h>
-#include <spawn.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #if defined(__ANDROID__)
+#include "porting_android.h"
 #include <sys/syscall.h>
+#else
+#include <spawn.h>
 #endif
 #endif // !defined(_WIN32)
 
@@ -149,12 +151,16 @@ error_sem_a:
 	CloseHandle(m_ipc_shm);
 error_shm:
 #else
+#if !defined(__ANDROID__)
 	char exe_path[PATH_MAX];
+#endif
 
 	std::string shm_str;
 
 	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
+#if !defined(__ANDROID__)
 	char *const envp[] = {nullptr};
+#endif
 
 	int shm = -1;
 
@@ -172,7 +178,11 @@ error_shm:
 #endif
 	if (shm == -1)
 		goto error_shm;
+#if defined(__ANDROID__)
+	shm_str = std::to_string(SELF_EXEC_SPAWN_FD);
+#else
 	shm_str = std::to_string(shm);
+#endif
 	argv[3] = shm_str.c_str();
 
 	{
@@ -196,19 +206,29 @@ error_shm:
 		goto error_make_ipc;
 	}
 
+#if !defined(__ANDROID__)
 	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
 		goto error_exe_path;
+#endif
 
+#if defined(__ANDROID__)
+	m_script_pid = porting::selfExecSpawn(argv, shm);
+	if (m_script_pid < 0)
+		goto error_spawn;
+#else
 	if (posix_spawn(&m_script_pid, exe_path,
 			nullptr, nullptr, (char *const *)argv, envp) != 0)
 		goto error_spawn;
+#endif
 
 	close(shm);
 	return true;
 
 error_spawn:
 	m_script_pid = 0;
+#if !defined(__ANDROID__)
 error_exe_path:
+#endif
 error_make_ipc:
 	m_ipc_shared->~IPCChannelShared();
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));
@@ -237,8 +257,12 @@ void CSMController::stop()
 	CloseHandle(m_ipc_sem_a);
 	CloseHandle(m_ipc_sem_b);
 #else
+#if defined(__ANDROID__)
+	porting::selfExecKill(m_script_pid);
+#else
 	kill(m_script_pid, SIGKILL);
 	waitpid(m_script_pid, nullptr, 0);
+#endif
 	m_script_pid = 0;
 	m_ipc_shared->~IPCChannelShared();
 	munmap(m_ipc_shared, sizeof(IPCChannelShared));

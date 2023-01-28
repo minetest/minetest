@@ -32,6 +32,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <exception>
 #include <cstdlib>
+#include <signal.h>
+#include <set>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+#include <vector>
 
 #ifdef GPROF
 #include "prof.h"
@@ -43,6 +51,8 @@ void android_main(android_app *app)
 {
 	int retval = 0;
 	porting::app_global = app;
+
+	porting::selfExecInit();
 
 	Thread::setName("Main");
 
@@ -136,6 +146,8 @@ void cleanupAndroid()
 	moncleanup();
 #endif
 
+	porting::selfExecDestroy();
+
 	JavaVM *jvm = app_global->activity->vm;
 	jvm->DetachCurrentThread();
 }
@@ -182,6 +194,150 @@ void initializePathsAndroid()
 		migrateCachePath();
 	}
 }
+
+static int self_exec_socket = -1;
+static pid_t self_exec_pid = 0;
+
+int self_exec_spawned_proc(char *args, size_t args_size, int fd) noexcept
+{
+	int argc = 0;
+	std::vector<char *> argv;
+	for (size_t i = 0; i < args_size; i++) {
+		void *next = memchr(args + i, 0, args_size - i);
+		if (next) {
+			argc++;
+			argv.push_back(args + i);
+			i = (char *)next - args;
+		} else {
+			break;
+		}
+	}
+	argv.push_back(nullptr);
+	if (fd >= 0 && fd != SELF_EXEC_SPAWN_FD && dup2(fd, SELF_EXEC_SPAWN_FD) < 0)
+		return EXIT_FAILURE;
+	return main(argc, argv.data());
+}
+
+void self_exec_spawner_proc(int socket) noexcept
+{
+	porting::app_global = nullptr;
+	porting::jnienv = nullptr;
+
+	std::set<pid_t> children;
+	try {
+		for (;;) {
+			char buf[1024] = {};
+			struct iovec iov = {buf, sizeof(buf)};
+			char cmsg_buf alignas(cmsghdr) [CMSG_SPACE(sizeof(int))] = {};
+			msghdr msg = {};
+			msg.msg_iov = &iov;
+			msg.msg_iovlen = 1;
+			msg.msg_control = cmsg_buf;
+			msg.msg_controllen = CMSG_SPACE(sizeof(int));
+			ssize_t recv_size = recvmsg(socket, &msg, 0);
+			if (recv_size <= 0)
+				break;
+			if (recv_size == sizeof(pid_t) + 1 && buf[sizeof(pid_t)] == 'k') {
+				pid_t pid;
+				memcpy(&pid, buf, sizeof(pid));
+				if (children.find(pid) != children.end()) {
+					children.erase(pid);
+					kill(pid, SIGKILL);
+					waitpid(pid, nullptr, 0);
+				}
+			} else {
+				int fd = -1;
+				if (CMSG_FIRSTHDR(&msg))
+					memcpy(&fd, CMSG_DATA(CMSG_FIRSTHDR(&msg)), sizeof(fd));
+				pid_t pid = fork();
+				if (pid == 0) {
+					exit(self_exec_spawned_proc(buf, recv_size, fd));
+				} else if (pid > 0) {
+					children.insert(pid);
+					send(socket, &pid, sizeof(pid), MSG_EOR);
+				}
+				close(fd);
+			}
+		}
+	} catch (...) {
+	}
+	for (pid_t pid : children)
+		kill(pid, SIGKILL);
+	for (pid_t pid : children)
+		waitpid(pid, nullptr, 0);
+}
+
+bool selfExecInit() noexcept
+{
+	int sockets[2];
+	if (socketpair(AF_UNIX, SOCK_SEQPACKET, 0, sockets) == 0) {
+		pid_t pid = fork();
+		if (pid == 0) {
+			close(sockets[0]);
+			self_exec_spawner_proc(sockets[1]);
+			exit(EXIT_SUCCESS);
+		} else if (pid > 0) {
+			close(sockets[1]);
+			self_exec_socket = sockets[0];
+			self_exec_pid = pid;
+			return true;
+		}
+		close(sockets[0]);
+		close(sockets[1]);
+	}
+	return false;
+}
+
+bool selfExecDestroy() noexcept
+{
+	shutdown(self_exec_socket, SHUT_RDWR);
+	close(self_exec_socket);
+	bool ok = waitpid(self_exec_pid, nullptr, 0) < 0;
+	self_exec_socket = -1;
+	self_exec_pid = 0;
+	return ok;
+}
+
+pid_t selfExecSpawn(const char *const argv[], int fd) noexcept
+{
+	msghdr msg = {};
+	size_t argc;
+	for (argc = 0; argv[argc]; argc++)
+		;
+	if (argc < 1)
+		return -1;
+	std::unique_ptr<iovec[]> iov(new iovec[argc]);
+	for (size_t i = 0; i < argc; i++) {
+		iov[i].iov_base = (void *)argv[i];
+		iov[i].iov_len = strlen(argv[i]) + 1;
+	}
+	msg.msg_iov = iov.get();
+	msg.msg_iovlen = argc;
+	char cmsg_buf alignas(cmsghdr) [CMSG_SPACE(sizeof(fd))] = {};
+	if (fd >= 0) {
+		msg.msg_control = cmsg_buf;
+		msg.msg_controllen = CMSG_SPACE(sizeof(fd));
+		CMSG_FIRSTHDR(&msg)->cmsg_level = SOL_SOCKET;
+		CMSG_FIRSTHDR(&msg)->cmsg_type = SCM_RIGHTS;
+		CMSG_FIRSTHDR(&msg)->cmsg_len = CMSG_LEN(sizeof(fd));
+		memcpy(CMSG_DATA(CMSG_FIRSTHDR(&msg)), &fd, sizeof(fd));
+	}
+	if (sendmsg(self_exec_socket, &msg, MSG_EOR) < 0)
+		return -1;
+	pid_t pid = 0;
+	if (recv(self_exec_socket, &pid, sizeof(pid), 0) <= 0)
+		return -1;
+	return pid;
+}
+
+bool selfExecKill(pid_t pid) noexcept
+{
+	char buf[sizeof(pid) + 1];
+	memcpy(buf, &pid, sizeof(pid));
+	buf[sizeof(pid)] = 'k';
+	return send(self_exec_socket, buf, sizeof(buf), MSG_EOR) >= 0;
+}
+
 
 void showInputDialog(const std::string &acceptButton, const std::string &hint,
 		const std::string &current, int editType)

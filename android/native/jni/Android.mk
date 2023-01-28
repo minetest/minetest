@@ -216,6 +216,7 @@ LOCAL_SRC_FILES := \
 	../../src/player.cpp                         \
 	../../src/porting.cpp                        \
 	../../src/porting_android.cpp                \
+	../../src/process_sandbox.cpp                \
 	../../src/profiler.cpp                       \
 	../../src/raycast.cpp                        \
 	../../src/reflowscan.cpp                     \

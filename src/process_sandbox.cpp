@@ -96,6 +96,20 @@ bool start_sandbox()
 #define SYSCALL_ARG(n) (offsetof(seccomp_data, args) + (n) * 8 + 4)
 #endif
 
+#if defined(__NR_mmap) || defined(__NR_mmap2)
+#	define HAS_MMAP 1
+#	if defined(__NR_mmap)
+#		define NR_MMAP_1 __NR_mmap
+#		if defined(__NR_mmap2)
+#			define NR_MMAP_2 __NR_mmap2
+#		endif
+#	else
+#		define NR_MMAP_1 __NR_mmap2
+#	endif
+#else
+#	define HAS_MMAP 0
+#endif
+
 bool start_sandbox()
 {
 	close_resources();
@@ -117,15 +131,17 @@ bool start_sandbox()
 		// Allow clock_getres
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_clock_getres, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+#if HAS_MMAP
 		// Allow mmap/mmap2 with MAP_ANONYMOUS
-#if defined(__NR_mmap2)
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap2, 1, 0),
+#if defined(NR_MMAP_2)
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, NR_MMAP_2, 1, 0),
 #endif
-		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mmap, 0, 4),
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, NR_MMAP_1, 0, 4),
 		BPF_STMT(BPF_LD | BPF_W | BPF_ABS, SYSCALL_ARG(3)),
 		BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, MAP_ANONYMOUS, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS),
+#endif
 		// Allow mprotect
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_mprotect, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
