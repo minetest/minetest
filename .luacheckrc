@@ -36,6 +36,12 @@ files["builtin/client/register.lua"] = {
 	}
 }
 
+files["builtin/csm/register.lua"] = {
+	globals = {
+		debug = {fields={"getinfo"}},
+	}
+}
+
 files["builtin/common/misc_helpers.lua"] = {
 	globals = {
 		"dump", "dump2", "table", "math", "string",
