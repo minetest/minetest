@@ -492,6 +492,7 @@ bool CSMController::deserializeMsg(T &recv) noexcept
 
 void CSMController::listen(bool succeeded)
 {
+	u64 time_limit = porting::getTimeMs() + m_timeout;
 	while (succeeded) {
 		size_t size = m_ipc.getRecvSize();
 		const void *data = m_ipc.getRecvData();
@@ -627,6 +628,7 @@ void CSMController::listen(bool succeeded)
 			succeeded = false;
 			break;
 		}
+		succeeded = succeeded && porting::getTimeMs() < time_limit;
 	}
 	stop();
 	errorstream << "Error executing CSM" << std::endl;
