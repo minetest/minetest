@@ -216,6 +216,7 @@ int self_exec_spawned_proc(char *args, size_t args_size, int fd) noexcept
 	argv.push_back(nullptr);
 	if (fd >= 0 && fd != SELF_EXEC_SPAWN_FD && dup2(fd, SELF_EXEC_SPAWN_FD) < 0)
 		return EXIT_FAILURE;
+	clearenv();
 	return main(argc, argv.data());
 }
 
