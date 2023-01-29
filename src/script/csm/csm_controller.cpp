@@ -616,8 +616,7 @@ void CSMController::listen(bool succeeded)
 						const std::string &var = meta->getString(std::get<2>(recv), 2);
 						succeeded = exchange(var);
 					} else {
-						const std::string var;
-						succeeded = exchange(var);
+						succeeded = exchange(std::string());
 					}
 				}
 			}
