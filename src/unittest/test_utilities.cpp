@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/enriched_string.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "util/struct_serialize.h"
 #include "util/base64.h"
 
 class TestUtilities : public TestBase {
@@ -58,6 +59,11 @@ public:
 	void testEulerConversion();
 	void testBase64();
 	void testSanitizeDirName();
+	void testStructSerializeMap();
+	void testStructSerializePair();
+	void testStructSerializeTuple();
+	void testStructSerializeUnorderedMap();
+	void testStructSerializeVector();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +96,11 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testEulerConversion);
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
+	TEST(testStructSerializeMap);
+	TEST(testStructSerializePair);
+	TEST(testStructSerializeTuple);
+	TEST(testStructSerializeUnorderedMap);
+	TEST(testStructSerializeVector);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -635,4 +646,69 @@ void TestUtilities::testSanitizeDirName()
 	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
 	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
 	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
+}
+
+
+void TestUtilities::testStructSerializeMap()
+{
+	std::vector<char> buf;
+	std::map<int, int> in;
+	in[1] = 2;
+	in[3] = 4;
+	struct_serialize(buf, in);
+	auto out = struct_deserialize<decltype(in)>(buf.data(), buf.size());
+	UASSERTEQ(size_t, out.size(), 2);
+	UASSERTEQ(int, out.at(1), 2);
+	UASSERTEQ(int, out.at(3), 4);
+}
+
+
+void TestUtilities::testStructSerializePair()
+{
+	std::vector<char> buf;
+	std::string foo = "foo";
+	std::pair<int, const std::string &> in(1, foo);
+	struct_serialize(buf, in);
+	auto out = struct_deserialize<std::pair<int, std::string> >(buf.data(), buf.size());
+	UASSERTEQ(int, out.first, 1);
+	UASSERTEQ(std::string, out.second, foo);
+}
+
+
+void TestUtilities::testStructSerializeTuple()
+{
+	std::vector<char> buf;
+	std::tuple<int, std::string, int> in(1, "foo", 2);
+	struct_serialize(buf, in);
+	auto out = struct_deserialize<decltype(in)>(buf.data(), buf.size());
+	UASSERTEQ(int, std::get<0>(out), 1);
+	UASSERTEQ(std::string, std::get<1>(out), "foo");
+	UASSERTEQ(int, std::get<2>(out), 2);
+}
+
+
+void TestUtilities::testStructSerializeUnorderedMap()
+{
+	std::vector<char> buf;
+	std::unordered_map<int, int> in;
+	in[1] = 2;
+	in[3] = 4;
+	struct_serialize(buf, in);
+	auto out = struct_deserialize<decltype(in)>(buf.data(), buf.size());
+	UASSERTEQ(size_t, out.size(), 2);
+	UASSERTEQ(int, out.at(1), 2);
+	UASSERTEQ(int, out.at(3), 4);
+}
+
+
+void TestUtilities::testStructSerializeVector()
+{
+	std::vector<char> buf;
+	std::vector<int> in;
+	in.push_back(1);
+	in.push_back(2);
+	struct_serialize(buf, in);
+	auto out = struct_deserialize<decltype(in)>(buf.data(), buf.size());
+	UASSERTEQ(int, out.at(0), 1);
+	UASSERTEQ(int, out.at(1), 2);
 }
