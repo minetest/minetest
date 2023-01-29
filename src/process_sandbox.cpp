@@ -154,6 +154,12 @@ bool start_sandbox()
 		// Allow brk
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_brk, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow time
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_time, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+		// Allow gettimeofday
+		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_gettimeofday, 0, 1),
+		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
 		// Allow sigreturn
 		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, __NR_rt_sigreturn, 0, 1),
 		BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
