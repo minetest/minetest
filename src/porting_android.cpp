@@ -197,6 +197,7 @@ void initializePathsAndroid()
 
 static int self_exec_socket = -1;
 static pid_t self_exec_pid = 0;
+static std::mutex self_exec_mutex;
 
 int self_exec_spawned_proc(char *args, size_t args_size, int fd) noexcept
 {
@@ -269,6 +270,8 @@ void self_exec_spawner_proc(int socket) noexcept
 
 bool selfExecInit() noexcept
 {
+	MutexAutoLock lock(self_exec_mutex);
+
 	int sockets[2];
 	if (socketpair(AF_UNIX, SOCK_SEQPACKET, 0, sockets) == 0) {
 		pid_t pid = fork();
@@ -290,6 +293,8 @@ bool selfExecInit() noexcept
 
 bool selfExecDestroy() noexcept
 {
+	MutexAutoLock lock(self_exec_mutex);
+
 	shutdown(self_exec_socket, SHUT_RDWR);
 	close(self_exec_socket);
 	bool ok = waitpid(self_exec_pid, nullptr, 0) < 0;
@@ -300,6 +305,8 @@ bool selfExecDestroy() noexcept
 
 pid_t selfExecSpawn(const char *const argv[], int fd) noexcept
 {
+	MutexAutoLock lock(self_exec_mutex);
+
 	msghdr msg = {};
 	size_t argc;
 	for (argc = 0; argv[argc]; argc++)
@@ -332,6 +339,8 @@ pid_t selfExecSpawn(const char *const argv[], int fd) noexcept
 
 bool selfExecKill(pid_t pid) noexcept
 {
+	MutexAutoLock lock(self_exec_mutex);
+
 	char buf[sizeof(pid) + 1];
 	memcpy(buf, &pid, sizeof(pid));
 	buf[sizeof(pid)] = 'k';
