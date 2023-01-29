@@ -226,7 +226,7 @@ void self_exec_spawner_proc(int socket) noexcept
 	std::set<pid_t> children;
 	try {
 		for (;;) {
-			char buf[1024] = {};
+			char buf[2048] = {};
 			struct iovec iov = {buf, sizeof(buf)};
 			char cmsg_buf alignas(cmsghdr) [CMSG_SPACE(sizeof(int))] = {};
 			msghdr msg = {};
