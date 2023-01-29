@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "debug.h"
 #include "filesys.h"
+#include "gettime.h"
 #include "inventory.h"
 #include "itemdef.h"
 #include "log.h"
@@ -97,27 +98,40 @@ CSMLogOutput g_log_output;
 int csm_script_main(int argc, char *argv[])
 {
 #if defined(_WIN32)
-	FATAL_ERROR_IF(argc < 6, "Too few arguments to CSM process");
+	FATAL_ERROR_IF(argc < 7, "Too few arguments to CSM process");
 
-	HANDLE shm = (HANDLE)strtoull(argv[3], nullptr, 10);
-	HANDLE sem_a = (HANDLE)strtoull(argv[4], nullptr, 10);
-	HANDLE sem_b = (HANDLE)strtoull(argv[5], nullptr, 10);
+	HANDLE shm = (HANDLE)strtoull(argv[4], nullptr, 10);
+	HANDLE sem_a = (HANDLE)strtoull(argv[5], nullptr, 10);
+	HANDLE sem_b = (HANDLE)strtoull(argv[6], nullptr, 10);
 
 	IPCChannelShared *ipc_shared = (IPCChannelShared *)MapViewOfFile(shm, FILE_MAP_ALL_ACCESS,
 			0, 0, sizeof(IPCChannelShared));
 	FATAL_ERROR_IF(!ipc_shared, "CSM process unable to map shared memory");
 
 	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared, sem_a, sem_b);
-#else
-	FATAL_ERROR_IF(argc < 4, "Too few arguments to CSM process");
 
-	int shm = atoi(argv[3]);
+	{
+		std::string env_tz = std::string("TZ=") + argv[3];
+		_putenv(env_tz.c_str());
+	}
+#else
+	FATAL_ERROR_IF(argc < 6, "Too few arguments to CSM process");
+
+	int shm = atoi(argv[5]);
 	IPCChannelShared *ipc_shared = (IPCChannelShared *)mmap(nullptr, sizeof(IPCChannelShared),
 			PROT_READ | PROT_WRITE, MAP_SHARED, shm, 0);
 	FATAL_ERROR_IF(ipc_shared == MAP_FAILED, "CSM process unable to map shared memory");
 
 	g_csm_script_ipc = IPCChannelEnd::makeB(ipc_shared);
+
+	if (argv[3][0])
+		setenv("TZ", argv[3], true);
+	if (argv[4][0])
+		setenv("TZDIR", argv[4], true);
 #endif // !defined(_WIN32)
+
+	// Set up the timezone before entering the sandbox.
+	mt_localtime();
 
 	// TODO: only send logs if they will actually be recorded.
 	g_logger.addOutput(&g_log_output);

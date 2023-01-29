@@ -94,7 +94,9 @@ bool CSMController::start()
 
 	char env[] = {'\0'};
 
-	char cmd_line[1024];
+	char cmd_line[2048];
+
+	const char *env_tz = getenv("TZ");
 
 	SECURITY_ATTRIBUTES inherit_attr = { sizeof(inherit_attr), nullptr, true };
 
@@ -123,8 +125,9 @@ bool CSMController::start()
 		goto error_make_ipc;
 	}
 
-	porting::mt_snprintf(cmd_line, sizeof(cmd_line), "minetest --csm \"%s\" %llu %llu %llu",
-			client_path.c_str(), (unsigned long long)m_ipc_shm,
+	porting::mt_snprintf(cmd_line, sizeof(cmd_line),
+			"minetest --csm \"%s\" \"%s\" %llu %llu %llu",
+			client_path.c_str(), env_tz ? env_tz : "", (unsigned long long)m_ipc_shm,
 			(unsigned long long)m_ipc_sem_a, (unsigned long long)m_ipc_sem_b);
 
 	if (!porting::getCurrentExecPath(exe_path, sizeof(exe_path)))
@@ -157,7 +160,12 @@ error_shm:
 
 	std::string shm_str;
 
-	const char *argv[] = {"minetest", "--csm", client_path.c_str(), nullptr, nullptr};
+	const char *env_tz = getenv("TZ");
+	const char *env_tzdir = getenv("TZDIR");
+	const char *argv[] = {
+		"minetest", "--csm", client_path.c_str(), env_tz ? env_tz : "",
+		env_tzdir ? env_tzdir : "", nullptr, nullptr
+	};
 #if !defined(__ANDROID__)
 	char *const envp[] = {nullptr};
 #endif
@@ -183,7 +191,7 @@ error_shm:
 #else
 	shm_str = std::to_string(shm);
 #endif
-	argv[3] = shm_str.c_str();
+	argv[5] = shm_str.c_str();
 
 	{
 		int flags = fcntl(shm, F_GETFD);
