@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "porting.h"
 #include "porting_android.h"
+#include "threading/mutex_auto_lock.h"
 #include "threading/thread.h"
 #include "config.h"
 #include "filesys.h"
