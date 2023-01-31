@@ -9305,22 +9305,22 @@ description fields is shown when the "/help" chatcommand is issued.
 
     {
         params = "",
-		-- Short parameter description.  See the below note.
+        -- Short parameter description.  See the below note.
 
         description = "",
-		-- General description of the command's purpose.
+        -- General description of the command's purpose.
 
         privs = {},
-		-- Required privileges to run. See `minetest.check_player_privs()` for
-		-- the format and see [Privileges] for an overview of privileges.
+        -- Required privileges to run. See `minetest.check_player_privs()` for
+        -- the format and see [Privileges] for an overview of privileges.
 
         func = function(name, param),
         -- Called when command is run.  
-		--	* `name` is the name of the player who issued the command.
-		--	* `param` is a string with the full arguments to the command.
-		-- Returns a boolean for success and a string value.  
-		-- The string is shown to the issuing player upon exit of `func` or,
-		-- if `func` returns `false` and no string, the help message is shown.
+        -- * `name` is the name of the player who issued the command.
+        -- * `param` is a string with the full arguments to the command.
+        -- Returns a boolean for success and a string value.  
+        -- The string is shown to the issuing player upon exit of `func` or,
+        -- if `func` returns `false` and no string, the help message is shown.
     }
 
 Note that in params, the conventional use of symbols is as follows:
