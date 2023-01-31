@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "mapsector.h"
 #include "minimap.h"
 #include "modchannels.h"
 #include "content/mods.h"
@@ -555,19 +556,27 @@ void Client::step(float dtime)
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapSector *sector = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z));
+
+			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
+
+			// The block in question is not visible (perhaps it is culled at the server),
+			// create a blank block just to hold the 2x2x2 mesh.
+			// If the block becomes visible later it will replace the blank block.
+			if (!block && r.mesh)
+				block = sector->createBlankBlock(r.p.Y);
+
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
 				block->mesh = nullptr;
 
 				if (r.mesh) {
-					block->solid_sides = r.solid_sides;
-					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
+					if (minimap_mapblocks.empty())
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -588,16 +597,32 @@ void Client::step(float dtime)
 				delete r.mesh;
 			}
 
-			if (m_minimap && do_mapper_update)
-				m_minimap->addBlock(r.p, minimap_mapblock);
+			for (auto p : r.solid_sides) {
+				auto block = m_env.getMap().getBlockNoCreateNoEx(p.first);
+				if (block)
+					block->solid_sides = p.second;
+			}
 
-			if (r.ack_block_to_server) {
+			if (m_minimap && do_mapper_update) {
+				v3s16 ofs;
+
+				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
+				for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
+				for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
+					size_t i = ofs.Z * 4 + ofs.Y * 2 + ofs.X;
+					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
+						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
+				}
+			}
+
+			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
 					blocks_to_ack.clear();
 				}
 
-				blocks_to_ack.emplace_back(r.p);
+				blocks_to_ack.emplace_back(p);
 			}
 
 			for (auto block : r.map_blocks)

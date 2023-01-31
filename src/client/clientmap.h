@@ -140,6 +140,8 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
+protected:
+	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
 
 	// update the vertex order in transparent mesh buffers
