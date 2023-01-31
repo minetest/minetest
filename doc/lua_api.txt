@@ -9311,7 +9311,8 @@ description fields is shown when the "/help" chatcommand is issued.
 		-- General description of the command's purpose.
 
         privs = {},
-		-- Required privileges to run. See [Privileges].
+		-- Required privileges to run. See `minetest.check_player_privs()` for
+		-- the format and see [Privileges] for an overview of privileges.
 
         func = function(name, param),
         -- Called when command is run.  
