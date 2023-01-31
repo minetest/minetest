@@ -126,7 +126,7 @@ public:
 	 * @param name unique name of the texture
 	 * @param format color format
 	 */
-	void setTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format);
+	void setTexture(u8 index, core::dimension2du size, const std::string& name, video::ECOLOR_FORMAT format, bool clear = false);
 
 	/**
 	 * Configure relative-size texture for the specific index
@@ -136,7 +136,7 @@ public:
 	 * @param name unique name of the texture
 	 * @param format color format
 	 */
-	void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format);
+	void setTexture(u8 index, v2f scale_factor, const std::string& name, video::ECOLOR_FORMAT format, bool clear = false);
 
 	virtual u8 getTextureCount() override { return m_textures.size(); }
 	virtual video::ITexture *getTexture(u8 index) override;
@@ -150,6 +150,7 @@ private:
 		bool valid { false };
 		bool fixed_size { false };
 		bool dirty { false };
+		bool clear { false };
 		v2f scale_factor;
 		core::dimension2du size;
 		std::string name;

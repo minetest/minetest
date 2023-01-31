@@ -40,7 +40,7 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 }
 
 
-void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
+void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format, bool clear)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 
@@ -54,9 +54,10 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 	definition.size = size;
 	definition.name = name;
 	definition.format = format;
+	definition.clear = clear;
 }
 
-void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
+void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format, bool clear)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 
@@ -70,6 +71,7 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 	definition.scale_factor = scale_factor;
 	definition.name = name;
 	definition.format = format;
+	definition.clear = clear;
 }
 
 void TextureBuffer::reset(PipelineContext &context)
@@ -135,10 +137,20 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 	if (*texture)
 		m_driver->removeTexture(*texture);
 
-	if (definition.valid)
-		*texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
-	else
+	if (definition.valid) {
+		if (definition.clear) {
+			video::IImage *image = m_driver->createImage(definition.format, size);
+			image->fill(0u);
+			*texture = m_driver->addTexture(definition.name.c_str(), image);
+			image->drop();
+		}
+		else {
+			*texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
+		}
+	}
+	else {
 		*texture = nullptr;
+	}
 
 	return true;
 }
