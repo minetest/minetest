@@ -9317,7 +9317,7 @@ description fields is shown when the "/help" chatcommand is issued.
         -- Called when command is run.  
 		--	* `name` is the name of the player who issued the command.
 		--	* `param` is a string with the full arguments to the command.
-		-- Returns a boolean and a string value.  
+		-- Returns a boolean for success and a string value.  
 		-- The string is shown to the issuing player upon exit of `func` or,
 		-- if `func` returns `false` and no string, the help message is shown.
     }
