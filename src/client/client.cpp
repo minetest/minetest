@@ -564,7 +564,7 @@ void Client::step(float dtime)
 			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
 
 			// The block in question is not visible (perhaps it is culled at the server),
-			// create a blank block just to hold the 2x2x2 mesh.
+			// create a blank block just to hold the chunk's mesh.
 			// If the block becomes visible later it will replace the blank block.
 			if (!block && r.mesh)
 				block = sector->createBlankBlock(r.p.Y);
@@ -607,10 +607,10 @@ void Client::step(float dtime)
 				v3s16 ofs;
 
 				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
-				for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
-				for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
-				for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
-					size_t i = ofs.Z * 4 + ofs.Y * 2 + ofs.X;
+				for (ofs.Z = 0; ofs.Z < CLIENT_CHUNK_SIZE; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y < CLIENT_CHUNK_SIZE; ofs.Y++)
+				for (ofs.X = 0; ofs.X < CLIENT_CHUNK_SIZE; ofs.X++) {
+					size_t i = ofs.Z * CLIENT_CHUNK_SIZE * CLIENT_CHUNK_SIZE + ofs.Y * CLIENT_CHUNK_SIZE + ofs.X;
 					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
 						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
 				}
