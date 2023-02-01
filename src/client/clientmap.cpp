@@ -257,6 +257,11 @@ void ClientMap::updateDrawList()
 	}
 	m_drawlist.clear();
 
+	for (auto &block : m_keeplist) {
+		block->refDrop();
+	}
+	m_keeplist.clear();
+
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
@@ -374,9 +379,9 @@ void ClientMap::updateDrawList()
 		// Block meshes are stored in blocks where all coordinates are even (lowest bit set to 0)
 		// Add them to the de-dup set.
 		shortlist.emplace(block_coord.X & ~1, block_coord.Y & ~1, block_coord.Z & ~1);
-		// All other blocks we can grab and add to the drawlist right away.
-		if (block && m_drawlist.emplace(block_coord, block).second) {
-			// only grab the ref if the block exists and was not in the list
+		// All other blocks we can grab and add to the keeplist right away.
+		if (block) {
+			m_keeplist.push_back(block);
 			block->refGrab();
 		}
 
@@ -480,11 +485,12 @@ void ClientMap::updateDrawList()
 
 	g_profiler->avg("MapBlocks shortlist [#]", shortlist.size());
 
+	assert(m_drawlist.empty());
 	for (auto pos : shortlist) {
 		MapBlock * block = getBlockNoCreateNoEx(pos);
-		if (block && m_drawlist.emplace(pos, block).second) {
-			// only grab the ref if the block exists and was not in the list
+		if (block) {
 			block->refGrab();
+			m_drawlist.emplace(pos, block);
 		}
 	}
 
@@ -611,11 +617,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		MapBlock *block = i.second;
 		MapBlockMesh *block_mesh = block->mesh;
 
-		// Meshes are only stored every 8-th block (where all coordinates are even),
-		// but we keep all the visible blocks in the draw list to prevent client
-		// from dropping them.
-		// On top of that, in some cases block mesh can be removed
-		// before the block is removed from the draw list.
+		// If the mesh of the block happened to get deleted, ignore it
 		if (!block_mesh)
 			continue;
 
@@ -1138,9 +1140,8 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			block->resetUsageTimer();
 
 			// Add to set
-			if (m_drawlist_shadow.find(block->getPos()) == m_drawlist_shadow.end()) {
+			if (m_drawlist_shadow.emplace(block->getPos(), block).second) {
 				block->refGrab();
-				m_drawlist_shadow[block->getPos()] = block;
 			}
 		}
 	}
