@@ -31,6 +31,9 @@ extern const v3s16 g_26dirs[26];
 // 26th is (0,0,0)
 extern const v3s16 g_27dirs[27];
 
+// all positions around an octablock in sector-first order
+extern const v3s16 g_64dirs[64];
+
 extern const u8 wallmounted_to_facedir[6];
 
 extern const v3s16 wallmounted_dirs[8];

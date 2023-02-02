@@ -3623,7 +3623,7 @@ Helper functions
 * `math.round(x)`: Returns `x` rounded to the nearest integer.
     * At a multiple of 0.5, rounds away from zero.
 * `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
-    * `separator`: string, default: `","`
+    * `separator`: string, cannot be empty, default: `","`
     * `include_empty`: boolean, default: `false`
     * `max_splits`: number, if it's negative, splits aren't limited,
       default: `-1`
@@ -7941,12 +7941,11 @@ Used by `minetest.register_abm`.
         -- If left out or empty, any neighbor will do.
         -- `group:groupname` can also be used here.
 
-        interval = 1.0,
+        interval = 10.0,
         -- Operation interval in seconds
 
-        chance = 1,
-        -- Chance of triggering `action` per-node per-interval is 1.0 / this
-        -- value
+        chance = 50,
+        -- Chance of triggering `action` per-node per-interval is 1.0 / chance
 
         min_y = -32768,
         max_y = 32767,
@@ -9300,20 +9299,31 @@ Chat command definition
 
 Used by `minetest.register_chatcommand`.
 
+Specifies the function to be called and the privileges required when a player
+issues the command.  A help message that is the concatenation of the params and
+description fields is shown when the "/help" chatcommand is issued.
+
     {
-        params = "<name> <privilege>",  -- Short parameter description
+        params = "",
+        -- Short parameter description.  See the below note.
 
-        description = "Remove privilege from player",  -- Full description
+        description = "",
+        -- General description of the command's purpose.
 
-        privs = {privs=true},  -- Require the "privs" privilege to run
+        privs = {},
+        -- Required privileges to run. See `minetest.check_player_privs()` for
+        -- the format and see [Privileges] for an overview of privileges.
 
         func = function(name, param),
-        -- Called when command is run. Returns boolean success and text output.
-        -- Special case: The help message is shown to the player if `func`
-        -- returns false without a text output.
+        -- Called when command is run.  
+        -- * `name` is the name of the player who issued the command.
+        -- * `param` is a string with the full arguments to the command.
+        -- Returns a boolean for success and a string value.  
+        -- The string is shown to the issuing player upon exit of `func` or,
+        -- if `func` returns `false` and no string, the help message is shown.
     }
 
-Note that in params, use of symbols is as follows:
+Note that in params, the conventional use of symbols is as follows:
 
 * `<>` signifies a placeholder to be replaced when the command is used. For
   example, when a player name is needed: `<name>`
@@ -9324,6 +9334,18 @@ Note that in params, use of symbols is as follows:
   provided. For example: `<param1> | <param2>`
 * `()` signifies grouping. For example, when param1 and param2 are both
   required, or only param3 is required: `(<param1> <param2>) | <param3>`
+
+Example:
+
+    {
+        params = "<name> <privilege>",
+
+        description = "Remove privilege from player",
+
+        privs = {privs=true},  -- Require the "privs" privilege to run
+
+        func = function(name, param),
+    }
 
 Privilege definition
 --------------------

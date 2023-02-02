@@ -1619,9 +1619,9 @@ void MapblockMeshGenerator::drawNode()
 */
 void MapblockMeshGenerator::generate()
 {
-	for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
-	for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)
-	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++) {
+	for (p.Z = 0; p.Z < data->side_length; p.Z++)
+	for (p.Y = 0; p.Y < data->side_length; p.Y++)
+	for (p.X = 0; p.X < data->side_length; p.X++) {
 		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		f = &nodedef->get(n);
 		drawNode();

@@ -49,7 +49,7 @@ void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 
 	m_vmanip.clear();
 	VoxelArea voxel_area(blockpos_nodes - v3s16(1,1,1) * MAP_BLOCKSIZE,
-			blockpos_nodes + v3s16(1,1,1) * MAP_BLOCKSIZE*2-v3s16(1,1,1));
+			blockpos_nodes + v3s16(1,1,1) * (side_length + MAP_BLOCKSIZE /* extra layer of blocks around the mesh */) - v3s16(1,1,1));
 	m_vmanip.addArea(voxel_area);
 }
 
@@ -61,23 +61,6 @@ void MeshMakeData::fillBlockData(const v3s16 &block_offset, MapNode *data)
 	v3s16 bp = m_blockpos + block_offset;
 	v3s16 blockpos_nodes = bp * MAP_BLOCKSIZE;
 	m_vmanip.copyFrom(data, data_area, v3s16(0,0,0), blockpos_nodes, data_size);
-}
-
-void MeshMakeData::fill(MapBlock *block)
-{
-	fillBlockDataBegin(block->getPos());
-
-	fillBlockData(v3s16(0,0,0), block->getData());
-
-	// Get map for reading neighbor blocks
-	Map *map = block->getParent();
-
-	for (const v3s16 &dir : g_26dirs) {
-		v3s16 bp = m_blockpos + dir;
-		MapBlock *b = map->getBlockNoCreateNoEx(bp);
-		if(b)
-			fillBlockData(dir, b->getData());
-	}
 }
 
 void MeshMakeData::setCrack(int crack_level, v3s16 crack_pos)
@@ -883,7 +866,7 @@ static void updateFastFaceRow(
 
 	// Unroll this variable which has a significant build cost
 	TileSpec next_tile;
-	for (u16 j = 0; j < MAP_BLOCKSIZE; j++) {
+	for (u16 j = 0; j < data->side_length; j++) {
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
 
@@ -894,7 +877,7 @@ static void updateFastFaceRow(
 
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
-		if (j != MAP_BLOCKSIZE - 1) {
+		if (j != data->side_length - 1) {
 			p += translate_dir;
 
 			getTileInfo(data, p, face_dir,
@@ -957,8 +940,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get top(y+) faces in rows of x+
 	*/
-	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
-	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 y = 0; y < data->side_length; y++)
+	for (s16 z = 0; z < data->side_length; z++)
 		updateFastFaceRow(data,
 				v3s16(0, y, z),
 				v3s16(1, 0, 0), //dir
@@ -969,8 +952,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every x,y and get right(x+) faces in rows of z+
 	*/
-	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
-	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 x = 0; x < data->side_length; x++)
+	for (s16 y = 0; y < data->side_length; y++)
 		updateFastFaceRow(data,
 				v3s16(x, y, 0),
 				v3s16(0, 0, 1), //dir
@@ -981,8 +964,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get back(z+) faces in rows of x+
 	*/
-	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
-	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 z = 0; z < data->side_length; z++)
+	for (s16 y = 0; y < data->side_length; y++)
 		updateFastFaceRow(data,
 				v3s16(0, y, z),
 				v3s16(1, 0, 0), //dir
@@ -1009,7 +992,7 @@ static void applyTileColor(PreMeshBuffer &pmb)
 	MapBlockBspTree
 */
 
-void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
+void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles, u16 side_length)
 {
 	this->triangles = triangles;
 
@@ -1024,7 +1007,7 @@ void MapBlockBspTree::buildTree(const std::vector<MeshTriangle> *triangles)
 
 	if (!indexes.empty()) {
 		// Start in the center of the block with increment of one quarter in each direction
-		root = buildTree(v3f(1, 0, 0), v3f((MAP_BLOCKSIZE + 1) * 0.5f * BS), MAP_BLOCKSIZE * 0.25f * BS, indexes, 0);
+		root = buildTree(v3f(1, 0, 0), v3f((side_length + 1) * 0.5f * BS), side_length * 0.25f * BS, indexes, 0);
 	} else {
 		root = -1;
 	}
@@ -1183,7 +1166,6 @@ void PartialMeshBuffer::afterDraw() const
 */
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
-	m_minimap_mapblock(NULL),
 	m_tsrc(data->m_client->getTextureSource()),
 	m_shdrsrc(data->m_client->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
@@ -1195,10 +1177,23 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
-	if (data->m_client->getMinimap()) {
-		m_minimap_mapblock = new MinimapMapblock;
-		m_minimap_mapblock->getMinimapNodes(
-			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
+	v3s16 bp = data->m_blockpos;
+	// Only generate minimap mapblocks at even coordinates.
+	if (((bp.X | bp.Y | bp.Z) & 1) == 0 && data->m_client->getMinimap()) {
+		m_minimap_mapblocks.resize(8, nullptr);
+		v3s16 ofs;
+
+		// See also client.cpp for the code that reads the array of minimap blocks.
+		for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
+		for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
+		for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
+			v3s16 p = (bp + ofs) * MAP_BLOCKSIZE;
+			if (data->m_vmanip.getNodeNoEx(p).getContent() != CONTENT_IGNORE) {
+				MinimapMapblock *block = new MinimapMapblock;
+				m_minimap_mapblocks[ofs.Z * 4 + ofs.Y * 2 + ofs.X] = block;
+				block->getMinimapNodes(&data->m_vmanip, p);
+			}
+		}
 	}
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
@@ -1226,7 +1221,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	MeshCollector collector(m_bounding_sphere_center);
+	v3f offset = intToFloat((data->m_blockpos - data->m_blockpos / 8 * 8) * MAP_BLOCKSIZE, BS);
+	MeshCollector collector(m_bounding_sphere_center, offset);
 
 	{
 		// avg 0ms (100ms spikes when loading textures the first time)
@@ -1386,7 +1382,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
-	m_bsp_tree.buildTree(&m_transparent_triangles);
+	m_bsp_tree.buildTree(&m_transparent_triangles, data->side_length);
 
 	// Check if animation is required for this mesh
 	m_has_animation =
@@ -1408,7 +1404,8 @@ MapBlockMesh::~MapBlockMesh()
 #endif
 		m->drop();
 	}
-	delete m_minimap_mapblock;
+	for (MinimapMapblock *block : m_minimap_mapblocks)
+		delete block;
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack,
@@ -1583,30 +1580,39 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	return video::SColor(r, b, b, b);
 }
 
-u8 get_solid_sides(MeshMakeData *data)
+std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data)
 {
-	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
-	const NodeDefManager *ndef = data->m_client->ndef();
+	std::unordered_map<v3s16, u8> results;
+	v3s16 ofs;
 
-	u8 result = 0x3F; // all sides solid;
+	for (ofs.X = 0; ofs.X < 2; ofs.X++)
+	for (ofs.Y = 0; ofs.Y < 2; ofs.Y++)
+	for (ofs.Z = 0; ofs.Z < 2; ofs.Z++) {
+		v3s16 blockpos = data->m_blockpos + ofs;
+		v3s16 blockpos_nodes = blockpos * MAP_BLOCKSIZE;
+		const NodeDefManager *ndef = data->m_client->ndef();
 
-	for (s16 i = 0; i < MAP_BLOCKSIZE && result != 0; i++)
-	for (s16 j = 0; j < MAP_BLOCKSIZE && result != 0; j++) {
-		v3s16 positions[6] = {
-			v3s16(0, i, j),
-			v3s16(MAP_BLOCKSIZE - 1, i, j),
-			v3s16(i, 0, j),
-			v3s16(i, MAP_BLOCKSIZE - 1, j),
-			v3s16(i, j, 0),
-			v3s16(i, j, MAP_BLOCKSIZE - 1)
-		};
+		u8 result = 0x3F; // all sides solid;
 
-		for (u8 k = 0; k < 6; k++) {
-			const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
-			if (ndef->get(top).solidness != 2)
-				result &= ~(1 << k);
+		for (s16 i = 0; i < MAP_BLOCKSIZE && result != 0; i++)
+		for (s16 j = 0; j < MAP_BLOCKSIZE && result != 0; j++) {
+			v3s16 positions[6] = {
+				v3s16(0, i, j),
+				v3s16(MAP_BLOCKSIZE - 1, i, j),
+				v3s16(i, 0, j),
+				v3s16(i, MAP_BLOCKSIZE - 1, j),
+				v3s16(i, j, 0),
+				v3s16(i, j, MAP_BLOCKSIZE - 1)
+			};
+
+			for (u8 k = 0; k < 6; k++) {
+				const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
+				if (ndef->get(top).solidness != 2)
+					result &= ~(1 << k);
+			}
 		}
-	}
 
-	return result;
+		results[blockpos] = result;
+	}
+	return results;
 }

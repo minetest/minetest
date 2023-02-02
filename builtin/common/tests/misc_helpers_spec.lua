@@ -38,6 +38,12 @@ describe("string", function()
 			assert.same({ "one", "two" }, string.split("one,two", ",", false, -1, true))
 			assert.same({ "one", "two", "three" }, string.split("one2two3three", "%d", false, -1, true))
 		end)
+
+		it("rejects empty separator", function()
+			assert.has.errors(function()
+				string.split("", "")
+			end)
+		end)
 	end)
 end)
 
