@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-12-26 15:32+0000\n"
-"Last-Translator: Apika Luca <bjqf0724@gmail.com>\n"
+"PO-Revision-Date: 2023-02-08 21:39+0000\n"
+"Last-Translator: Jynweythek Vordhosbn <jynweythek.nmk5s@simplelogin.fr>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2488,6 +2488,13 @@ msgid ""
 "0.0 = black and white\n"
 "(Tone mapping needs to be enabled.)"
 msgstr ""
+"Ajustar la saturación (o intensidad) de la imagen\n"
+"Valores\n"
+"< 1.0 disminuir la saturación\n"
+"> 1.0 aumentar la saturación\n"
+"1.0 = saturación sin cambios\n"
+"0.0 = negro y blanco\n"
+"(Es necesario activar la asignación de tonos.)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2663,9 +2670,8 @@ msgid "Bind address"
 msgstr "Dirección BIND"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API noise parameters"
-msgstr "Parámetros de ruido y humedad en la API de temperatura de biomas"
+msgstr "Parámetros de ruido en la API de de biomas"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2852,6 +2858,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Enlaces web cliqueables (clic central o Ctrl+clic-izquierdo) habilitados en "
+"la salida de la consola de chat."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2943,20 +2951,18 @@ msgstr ""
 "request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Nivel de compresión a usar para guardar bloques del mapa al disco.\n"
-"-1 - usar compresión por defecto\n"
+"Nivel de compresión para usar al guardar bloques del mapa al disco.\n"
+"-1 - usar el nivel de compresión por defecto\n"
 "0 - menor compresión, más rápido\n"
 "9 - mejor compresión, más lento"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
@@ -2964,7 +2970,7 @@ msgid ""
 "9 - best compression, slowest"
 msgstr ""
 "Nivel de compresión a usar cuando se envían bloques del mapa al cliente.\n"
-"-1 - usar nivel de compresión por defecto\n"
+"-1 - usar el nivel de compresión por defecto\n"
 "0 - menor compresión, más rápido\n"
 "9 - mejor compresión, más lento"
 
@@ -3040,6 +3046,9 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"Controla la velocidad de hundimiento en líquidos mientras se está en reposo. "
+"Los valores negativos harán que\n"
+"se eleve en vez de eso."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -3320,6 +3329,10 @@ msgid ""
 "Distance in nodes at which transparency depth sorting is enabled\n"
 "Use this to limit the performance impact of transparency depth sorting"
 msgstr ""
+"Distancia en nodos a la que se activa la clasificación por profundidad de "
+"transparencia\n"
+"Utilice esto para limitar el impacto en el rendimiento de la clasificación "
+"por profundidad de transparencia"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3386,14 +3399,13 @@ msgstr ""
 "suaves. De otro modo utiliza filtrado PCF."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
-"Habilitar las sombras a color.\n"
-"Si el valor es verdadero los nodos traslúcidos proyectarán sombras a color. "
-"Esta opción usa muchos recursos."
+"Habilitar las sombras coloreadas.\n"
+"Si el valor es verdadero los nodos traslúcidos proyectarán sombras "
+"coloreadas. Esta opción usa muchos recursos."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3409,7 +3421,7 @@ msgstr "Activar joysticks"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "Habilitar los joysticks. Requiere un reinicio para surtir efecto"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3437,7 +3449,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr ""
+msgstr "Activar el inicio de sesión/registro dividido"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3538,9 +3550,8 @@ msgstr ""
 "juego."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine profiler"
-msgstr "Perfilador"
+msgstr "Perfilador del motor"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3551,7 +3562,6 @@ msgid "Entity methods"
 msgstr "Métodos de entidad"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3560,19 +3570,19 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
-"Exponente de la estrechez de tierra flotante. Altera el comportamiento de la "
-"estrechez.\n"
+"Exponente del estrechamiento de tierra flotante. Altera el funcionamiento de "
+"la estrechez.\n"
 "Valor = 1.0 crea una estrechez uniforme y lineal.\n"
-"Valores > 1.0 crea una estrechez suave apropiada para las tierras flotantes "
-"separadas\n"
+"Valores > 1.0 crean un estrechamiento suave apropiado para las tierras "
+"flotantes separadas\n"
 "por defecto.\n"
-"Valores < 1.0 (0.25, por ejemplo) crea un nivel de superficie más definida "
+"Valores < 1.0 (0.25, por ejemplo) crean un nivel de superficie más definida "
 "con \n"
 "tierras bajas más planas, apropiada para una capa de tierra flotante sólida."
 
 #: src/settings_translation_file.cpp
 msgid "Exposure Factor"
-msgstr ""
+msgstr "Factor de exposición"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3902,9 +3912,8 @@ msgid "GUIs"
 msgstr "GUIs"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Gamepads"
-msgstr "Juegos"
+msgstr "Mando de juego"
 
 #: src/settings_translation_file.cpp
 msgid "General"
@@ -3975,9 +3984,8 @@ msgid "HUD"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "Escala de IGU"
+msgstr "Escala de HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4098,15 +4106,14 @@ msgstr ""
 "Requiere que se habiliten los líquidos de agitación."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Cuanto espera el servidor antes de descargar los bloques de mapa no "
-"utilizados.\n"
-"Con valores mayores es mas fluido, pero se utiliza mas RAM."
+"El tiempo que el servidor esperará antes de descargar los bloques de mapa no "
+"utilizados, expresado en segundos.\n"
+"Con valores más altos es más fluido, pero utilizará más RAM."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4193,13 +4200,14 @@ msgstr ""
 "descender."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"Habilitar confirmación de registro al conectar al servidor\n"
-"Si esta deshabilitado, se registrará una nueva cuenta automáticamente."
+"Si está activado, el registro de la cuenta es independiente del inicio de "
+"sesión en la interfaz de usuario.\n"
+"Si está deshabilitado, las cuentas nuevas se registrarán automáticamente al "
+"iniciar sesión."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4232,13 +4240,12 @@ msgstr ""
 "lanzamiento del jugador cuando vuela o nada."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr ""
-"Si esta activado, los nuevos jugadores no pueden unirse con contraseñas "
-"vacías."
+"Si esta activado, los jugadores no podrán unirse sin contraseña ni cambiar "
+"la suya por una contraseña vacía."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4317,9 +4324,8 @@ msgstr ""
 "Esto solo suele ser necesario para los colaboradores principales o integrados"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Instrument chat commands on registration."
-msgstr "Instrumento de comandos del chat en el registro."
+msgstr "Instrumento de comandos del chat al registrarse."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4406,7 +4412,6 @@ msgid "Joystick button repetition interval"
 msgstr "Intervalo de repetición del botón del Joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick dead zone"
 msgstr "Zona muerta del joystick"
 
@@ -4527,12 +4532,11 @@ msgstr "Proporción de cuevas grandes inundadas"
 
 #: src/settings_translation_file.cpp
 msgid "Last known version update"
-msgstr ""
+msgstr "Última actualización de versión conocida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Last update check"
-msgstr "Tick de actualización de los líquidos"
+msgstr "Última comprobación de actualización"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -5290,7 +5294,7 @@ msgstr "Ruidos"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "Número de hilos emergentes"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5305,16 +5309,28 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
+"Número de hilos emergentes a utilizar.\n"
+"Valor 0:\n"
+"-    Selección automática. El número de hilos emergentes será\n"
+"-    'número de procesadores -2', con un límite inferior de 1.\n"
+"Cualquier otro valor:\n"
+"-    Especifica el número de hilos emergentes, con un límite inferior de 1.\n"
+"ADVERTENCIA: Aumentar el número de hilos emergentes incrementa la velocidad\n"
+"del generador de mapas, pero esto podría perjudicar el rendimiento del juego "
+"al interferir con otros\n"
+"procesos, especialmente en el modo de un solo jugador y/o al ejecutar código "
+"Lua en\n"
+"'on_generated'. Para muchos usuarios el ajuste óptimo podría ser '1'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Number of extra blocks that can be loaded by /clearobjects at once.\n"
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Número de bloques extra que pueden ser cargados por /clearobjects a la vez.\n"
-"Esto es un intercambio entre una sobrecarga de transacciones SQLite y\n"
+"Número de bloques adicionales que pueden ser cargados por /clearobjects a la "
+"vez.\n"
+"Esto es un sacrificio entre una sobrecarga de transacciones SQLite y\n"
 "consumo de memoria (4096=100MB, como regla general)."
 
 #: src/settings_translation_file.cpp
@@ -5362,13 +5378,12 @@ msgstr ""
 "La carpeta será creada si no existe."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
 msgstr ""
-"Ruta al directorio de los shaders. Si no es especificada, se usará la "
-"ubicación por defecto."
+"Ruta al directorio de los sombreadores. Si no se ha definido ninguna ruta, "
+"se usará la ubicación predeterminada."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -5448,7 +5463,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post processing"
-msgstr ""
+msgstr "Posprocesamiento"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5595,9 +5610,8 @@ msgid "Ridged mountain size noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River channel depth"
-msgstr "Profundidad del relleno"
+msgstr "Profundidad del canal fluvial"
 
 #: src/settings_translation_file.cpp
 msgid "River channel width"
@@ -5621,7 +5635,7 @@ msgstr "Anchura de los valles con ríos"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr ""
+msgstr "Grabación de reversión"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
@@ -5637,16 +5651,15 @@ msgstr "Minimapa redondo"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr ""
+msgstr "Excavación y colocación seguras"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Las playas de arena se producen cuando np_beach supera este valor."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Saturation"
-msgstr "Iteraciones"
+msgstr "Saturación"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -5661,7 +5674,6 @@ msgid "Saving map received from server"
 msgstr "Guardando el mapa recibido del servidor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Scale GUI by a user specified value.\n"
 "Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
@@ -5669,8 +5681,9 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
-"Escala la interfaz por un valor epecificado por el usuario.\n"
-"Utilice el filtro anti-alias mas cercano para escalar la interfaz.\n"
+"Escala la interfaz por un valor especificado por el usuario.\n"
+"Utilice un filtro de suavizado de vecinos más próximos para escalar la "
+"interfaz.\n"
 "Esto suavizará algunos de los bordes ásperos y mezclará\n"
 "píxeles al reducir el tamaño, a costa de difuminar algunos\n"
 "píxeles en los bordes cuando las imágenes son escaladas por tamaños que no "
@@ -5744,7 +5757,6 @@ msgid "Selection box width"
 msgstr "Ancho de la caja de selección"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Selects one of 18 fractal types.\n"
 "1 = 4D \"Roundy\" Mandelbrot set.\n"
@@ -5766,15 +5778,15 @@ msgid ""
 "17 = 4D \"Mandelbulb\" Mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" Julia set."
 msgstr ""
-"Elección de 18 fractales desde 9 fórmulas.\n"
+"Elige uno de entre 18 tipos de fractales.\n"
 "1 = Conjunto de Mandelbrot 4D \"Redondo\".\n"
 "2 = Conjunto de Julia 4D \"Redondo\".\n"
 "3 = Conjunto de Mandelbrot 4D \"Cuadrado\".\n"
 "4 = Conjunto de Julia 4D \"Cuadrado\".\n"
 "5 = Conjunto de Mandelbrot 4D \"Mandy Cousin\".\n"
 "6 = Conjunto de Julia 4D \"Mandy Cousin\".\n"
-"7 = Conjunto de Mandelbrot 4D \"Variado\".\n"
-"8 = Conjunto de Julia 4D \"Variado\".\n"
+"7 = Conjunto de Mandelbrot 4D \"Variante\".\n"
+"8 = Conjunto de Julia 4D \"Variante\".\n"
 "9 = Conjunto de Mandelbrot 3D \"Mandelbrot/Mandelbar\".\n"
 "10 = Conjunto de Julia 3D \"Mandelbrot/Mandelbar\".\n"
 "11 = Conjunto de Mandelbrot 3D \"Árbol de Navidad\".\n"
@@ -5791,9 +5803,8 @@ msgid "Server"
 msgstr "Servidor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server Gameplay"
-msgstr "Nombre del servidor"
+msgstr "Jugabilidad del servidor"
 
 #: src/settings_translation_file.cpp
 msgid "Server Security"
@@ -5821,21 +5832,19 @@ msgstr "Puerto del servidor"
 
 #: src/settings_translation_file.cpp
 msgid "Server side occlusion culling"
-msgstr ""
+msgstr "Sacrificio de oclusión del lado del servidor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server/Env Performance"
-msgstr "Puerto del servidor"
+msgstr "Rendimiento del Servidor/Entorno"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
 msgstr "Lista de las URLs de servidores"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist and MOTD"
-msgstr "Lista de las URLs de servidores"
+msgstr "Lista de servidores y mensaje de bienvenida"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
@@ -5849,6 +5858,12 @@ msgid ""
 "Value of 1.0 (default) means no exposure compensation.\n"
 "Range: from 0.1 to 10.0"
 msgstr ""
+"Establecer el factor de compensación de la exposición.\n"
+"Este factor se aplica al valor de color lineal \n"
+"antes de cualquier otro efecto de posprocesamiento.\n"
+"Un valor de 1.0 (predeterminado) significa que no hay compensación de "
+"exposición.\n"
+"Rango: de 0.1 a 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
