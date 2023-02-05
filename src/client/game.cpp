@@ -2089,7 +2089,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		m_game_ui->toggleChat();
+		m_game_ui->toggleChat(client);
 	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
