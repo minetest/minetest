@@ -76,6 +76,10 @@ SmallJoker:
   textures/base/pack/cdb_clear.png
   textures/base/pack/server_favorite_delete.png (based on server_favorite.png)
 
+DS:
+  games/devtest/mods/soundstuff/textures/soundstuff_jukebox.png
+  games/devtest/mods/testtools/textures/testtools_branding_iron.png
+
 License of Minetest source code
 -------------------------------
 

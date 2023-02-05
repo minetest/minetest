@@ -175,7 +175,7 @@ Download source (this is the URL to the latest of source repository, which might
     git clone --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
-Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
@@ -189,7 +189,7 @@ Download source, without using Git:
     tar xf master.tar.gz
     cd minetest-master
 
-Download minetest_game, without using Git:
+Download Minetest Game, without using Git:
 
     cd games/
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
@@ -262,6 +262,7 @@ General options and their default values:
     ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
     RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
     ENABLE_UPDATE_CHECKER=TRUE - Whether to enable update checks by default
+    INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
     USE_GPROF=FALSE            - Enable profiling using GProf
     VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
     ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
@@ -293,7 +294,7 @@ Library specific options:
     REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
     REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
     SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
-    SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex_c.so/spatialindex-32.lib
+    SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex.so/spatialindex-32.lib
     LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
     LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
     OGG_DLL                         - Only if building with sound on Windows; path to libogg.dll
@@ -405,7 +406,7 @@ git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
-Download minetest_game (otherwise only the "Development Test" game is available) using Git:
+Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
 
 ```
 git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game

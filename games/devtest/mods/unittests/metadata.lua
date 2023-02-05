@@ -63,6 +63,13 @@ local function test_metadata(meta)
 	assert(meta:get_float("h") > 1)
 	assert(meta:get_string("i") == "${f}")
 
+	meta:set_float("j", 1.23456789)
+	assert(meta:get_float("j") == 1.23456789)
+	meta:set_float("j", -1 / 0)
+	assert(meta:get_float("j") == -1 / 0)
+	meta:set_float("j", 0 / 0)
+	assert(core.is_nan(meta:get_float("j")))
+
 	meta:from_table()
 	assert(next(meta:to_table().fields) == nil)
 	assert(#meta:get_keys() == 0)

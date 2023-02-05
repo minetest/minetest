@@ -40,7 +40,7 @@ video::ITexture *TextureBuffer::getTexture(u8 index)
 }
 
 
-void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format)
+void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::string &name, video::ECOLOR_FORMAT format, bool clear)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 
@@ -54,9 +54,10 @@ void TextureBuffer::setTexture(u8 index, core::dimension2du size, const std::str
 	definition.size = size;
 	definition.name = name;
 	definition.format = format;
+	definition.clear = clear;
 }
 
-void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format)
+void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &name, video::ECOLOR_FORMAT format, bool clear)
 {
 	assert(index != NO_DEPTH_TEXTURE);
 
@@ -70,6 +71,7 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 	definition.scale_factor = scale_factor;
 	definition.name = name;
 	definition.format = format;
+	definition.clear = clear;
 }
 
 void TextureBuffer::reset(PipelineContext &context)
@@ -101,6 +103,16 @@ void TextureBuffer::reset(PipelineContext &context)
 	RenderSource::reset(context);
 }
 
+void TextureBuffer::swapTextures(u8 texture_a, u8 texture_b)
+{
+	assert(m_definitions[texture_a].valid && m_definitions[texture_b].valid);
+
+	video::ITexture *temp = m_textures[texture_a];
+	m_textures[texture_a] = m_textures[texture_b];
+	m_textures[texture_b] = temp;
+}
+
+
 bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefinition& definition, PipelineContext &context)
 {
 	bool modify;
@@ -125,10 +137,20 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 	if (*texture)
 		m_driver->removeTexture(*texture);
 
-	if (definition.valid)
-		*texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
-	else
+	if (definition.valid) {
+		if (definition.clear) {
+			video::IImage *image = m_driver->createImage(definition.format, size);
+			image->fill(0u);
+			*texture = m_driver->addTexture(definition.name.c_str(), image);
+			image->drop();
+		}
+		else {
+			*texture = m_driver->addRenderTargetTexture(size, definition.name.c_str(), definition.format);
+		}
+	}
+	else {
 		*texture = nullptr;
+	}
 
 	return true;
 }
@@ -228,6 +250,16 @@ SetRenderTargetStep::SetRenderTargetStep(RenderStep *_step, RenderTarget *_targe
 void SetRenderTargetStep::run(PipelineContext &context)
 {
 	step->setRenderTarget(target);
+}
+
+SwapTexturesStep::SwapTexturesStep(TextureBuffer *_buffer, u8 _texture_a, u8 _texture_b)
+		: buffer(_buffer), texture_a(_texture_a), texture_b(_texture_b)
+{
+}
+
+void SwapTexturesStep::run(PipelineContext &context)
+{
+	buffer->swapTextures(texture_a, texture_b);
 }
 
 RenderSource *RenderPipeline::getInput()

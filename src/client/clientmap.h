@@ -76,7 +76,7 @@ public:
 			s32 id
 	);
 
-	virtual ~ClientMap() = default;
+	virtual ~ClientMap();
 
 	bool maySaveBlocks() override
 	{
@@ -116,6 +116,8 @@ public:
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
 	void updateDrawList();
+	// @brief Calculate statistics about the map and keep the blocks alive
+	void touchMapBlocks();
 	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
 	// Returns true if draw list needs updating before drawing the next frame.
 	bool needsUpdateDrawList() { return m_needs_update_drawlist; }
@@ -136,10 +138,15 @@ public:
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
 
+	void onSettingChanged(const std::string &name);
+
+protected:
+	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
 
 	// update the vertex order in transparent mesh buffers
 	void updateTransparentMeshBuffers();
+
 
 	// Orders blocks by distance to the camera
 	class MapBlockComparer
@@ -196,6 +203,7 @@ private:
 	bool m_needs_update_transparent_meshes = true;
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
+	std::vector<MapBlock*> m_keeplist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
 	bool m_needs_update_drawlist;
 
@@ -205,4 +213,7 @@ private:
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
 	u16 m_cache_transparency_sorting_distance;
+
+	bool m_new_occlusion_culler;
+	bool m_enable_raytraced_culling;
 };

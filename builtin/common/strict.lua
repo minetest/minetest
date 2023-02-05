@@ -14,6 +14,7 @@ local declared = {}
 local warned = {}
 
 function meta:__newindex(name, value)
+	rawset(self, name, value)
 	if declared[name] then
 		return
 	end
@@ -25,7 +26,6 @@ function meta:__newindex(name, value)
 				:format(name, desc))
 		warned[warn_key] = true
 	end
-	rawset(self, name, value)
 	declared[name] = true
 end
 
