@@ -692,9 +692,8 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 			}
 			m_receiver->OnEvent(*translated);
 			delete translated;
-		} else {
-			// do double tap detection
-			doubleTapDetection();
+		} else if (!m_move_has_really_moved) {
+			doRightClick();
 		}
 	}
 
@@ -999,29 +998,9 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 				event.TouchInput.ID, true);
 }
 
-bool TouchScreenGUI::doubleTapDetection()
+bool TouchScreenGUI::doRightClick()
 {
-	m_key_events[0].down_time = m_key_events[1].down_time;
-	m_key_events[0].x         = m_key_events[1].x;
-	m_key_events[0].y         = m_key_events[1].y;
-	m_key_events[1].down_time = m_move_downtime;
-	m_key_events[1].x         = m_move_downlocation.X;
-	m_key_events[1].y         = m_move_downlocation.Y;
-
-	u64 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
-	if (delta > 400)
-		return false;
-
-	double distance = sqrt(
-			(m_key_events[0].x - m_key_events[1].x) *
-			(m_key_events[0].x - m_key_events[1].x) +
-			(m_key_events[0].y - m_key_events[1].y) *
-			(m_key_events[0].y - m_key_events[1].y));
-
-	if (distance > (20 + m_touchscreen_threshold))
-		return false;
-
-	v2s32 mPos = v2s32(m_key_events[0].x, m_key_events[0].y);
+	v2s32 mPos = v2s32(m_move_downlocation.X, m_move_downlocation.Y);
 	if (m_draw_crosshair) {
 		mPos.X = m_screensize.X / 2;
 		mPos.Y = m_screensize.Y / 2;
