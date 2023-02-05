@@ -772,8 +772,14 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			// already handled in isSettingsBarButton()
 		} else {
 			// handle non button events
-			m_settingsbar.deactivate();
-			m_rarecontrolsbar.deactivate();
+			if (m_settingsbar.active()) {
+				m_settingsbar.deactivate();
+				return;
+			}
+			if (m_rarecontrolsbar.active()) {
+				m_rarecontrolsbar.deactivate();
+				return;
+			}
 
 			s32 dxj = event.TouchInput.X - button_size * 5.0f / 2.0f;
 			s32 dyj = event.TouchInput.Y - (s32)m_screensize.Y + button_size * 5.0f / 2.0f;
