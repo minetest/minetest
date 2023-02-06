@@ -375,11 +375,11 @@ void ClientMap::updateDrawList()
 			continue;
 		}
 
-		if (CLIENT_CHUNK_SIZE > 1) {
+		if (m_client->getMeshChunk() > 1) {
 			// Block meshes are stored in the corner block of a chunk
 			// (where all coordinate are divisible by the chunk size)
 			// Add them to the de-dup set.
-			shortlist.emplace(GET_MESH_POS(block_coord.X), GET_MESH_POS(block_coord.Y), GET_MESH_POS(block_coord.Z));
+			shortlist.emplace(m_client->getMeshPos(block_coord.X), m_client->getMeshPos(block_coord.Y), m_client->getMeshPos(block_coord.Z));
 			// All other blocks we can grab and add to the keeplist right away.
 			if (block) {
 				m_keeplist.push_back(block);
@@ -619,6 +619,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
+	const u16 mesh_chunk = m_client->getMeshChunk();
+	const u16 mesh_chunk_vol = mesh_chunk * mesh_chunk * mesh_chunk;
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
@@ -747,7 +749,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
-		v3f block_wpos = intToFloat(descriptor.m_pos / CLIENT_CHUNK_VOLUME * CLIENT_CHUNK_VOLUME * MAP_BLOCKSIZE, BS);
+		v3f block_wpos = intToFloat(descriptor.m_pos / mesh_chunk_vol * mesh_chunk_vol * MAP_BLOCKSIZE, BS);
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
@@ -985,6 +987,8 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		return;
 	}
 
+	const u16 mesh_chunk = m_client->getMeshChunk();
+	const u16 mesh_chunk_vol = mesh_chunk * mesh_chunk * mesh_chunk;
 	for (const auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
 		++count;
@@ -1073,7 +1077,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 			++material_swaps;
 		}
 
-		v3f block_wpos = intToFloat(descriptor.m_pos / CLIENT_CHUNK_VOLUME * CLIENT_CHUNK_VOLUME * MAP_BLOCKSIZE, BS);
+		v3f block_wpos = intToFloat(descriptor.m_pos / mesh_chunk_vol * mesh_chunk_vol * MAP_BLOCKSIZE, BS);
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);

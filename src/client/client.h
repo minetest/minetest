@@ -42,16 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
-// The number of blocks the client will combine for mesh generation.
-#define CLIENT_CHUNK_SIZE 3
-#define CLIENT_CHUNK_VOLUME (CLIENT_CHUNK_SIZE * CLIENT_CHUNK_SIZE * CLIENT_CHUNK_SIZE)
-#define GET_MESH_POS(p) ((p - (p < 0) * (CLIENT_CHUNK_SIZE - 1)) / CLIENT_CHUNK_SIZE * CLIENT_CHUNK_SIZE)
-#define CHECK_MESH_POS(x, y, z) (((x + y + z) % CLIENT_CHUNK_SIZE) == 0)
-
-// if we only allow powers of 2
-//#define GET_MESH_POS(p) (p & ~(CLIENT_CHUNK_SIZE - 1))
-//#define CHECK_MESH_POS(x, y, z) (((x | y | z) & (CLIENT_CHUNK_SIZE -1)) == 0)
-
 struct ClientEvent;
 struct MeshMakeData;
 struct ChatMessage;
@@ -447,6 +437,15 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+	inline u16 getMeshChunk() {
+		return m_mesh_chunk;
+	}
+	inline s16 getMeshPos(s16 p) {
+		return ((p - (p < 0) * (m_mesh_chunk - 1)) / m_mesh_chunk * m_mesh_chunk);
+	}
+	inline bool checkMeshPos(v3s16 &p) {
+		return ((p.X + p.Y + p.Z) % m_mesh_chunk) == 0;
+	}
 private:
 	void loadMods();
 
@@ -612,4 +611,7 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// The number of blocks the client will combine for mesh generation.
+	u16 m_mesh_chunk;
 };

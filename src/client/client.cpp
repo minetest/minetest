@@ -143,6 +143,7 @@ Client::Client(
 	}
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_mesh_chunk = g_settings->getU16("client_mesh_chunk");
 }
 
 void Client::migrateModStorage()
@@ -607,10 +608,10 @@ void Client::step(float dtime)
 				v3s16 ofs;
 
 				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
-				for (ofs.Z = 0; ofs.Z < CLIENT_CHUNK_SIZE; ofs.Z++)
-				for (ofs.Y = 0; ofs.Y < CLIENT_CHUNK_SIZE; ofs.Y++)
-				for (ofs.X = 0; ofs.X < CLIENT_CHUNK_SIZE; ofs.X++) {
-					size_t i = ofs.Z * CLIENT_CHUNK_SIZE * CLIENT_CHUNK_SIZE + ofs.Y * CLIENT_CHUNK_SIZE + ofs.X;
+				for (ofs.Z = 0; ofs.Z < m_mesh_chunk; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y < m_mesh_chunk; ofs.Y++)
+				for (ofs.X = 0; ofs.X < m_mesh_chunk; ofs.X++) {
+					size_t i = ofs.Z * m_mesh_chunk * m_mesh_chunk + ofs.Y * m_mesh_chunk + ofs.X;
 					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
 						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
 				}
