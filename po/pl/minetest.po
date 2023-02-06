@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2023-01-22 15:28+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2023-02-08 21:39+0000\n"
+"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.1\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -287,18 +287,18 @@ msgid "Error installing \"$1\": $2"
 msgstr "Błąd instalowania \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Pobieranie $1 do $2 nie powiodło się :("
+msgstr "Nie udało się pobrać \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Pobieranie $1 do $2 nie powiodło się :("
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Instalacja: nieznany typ pliku lub uszkodzone archiwum"
+msgstr ""
+"Nie udało się wypakować \"$1\" (niewspierany typ pliku lub uszkodzone "
+"archiwum)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -815,20 +815,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Instalacja $1 do $2 nie powiodła się"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instalacja moda: nie można znaleźć odpowiedniego folderu dla paczki modów $1"
+msgstr "Instalacja: Nie można znaleźć odpowiedniej nazwy folderu dla $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Nie można znaleźć prawidłowego moda lub paczki modów"
+msgstr "Nie można znaleźć prawidłowej modyfikacji, paczki modyfikacji lub gry"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Nie moźna zainstalować moda jako $1"
+msgstr "Nie można zainstalować $1 jako $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -2010,9 +2006,8 @@ msgstr ""
 "spróbuj zaktualizować modyfikacje."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Brak wymaganych zależności"
+msgstr "Niektóre modyfikacje mają niespełnione zależności:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2682,9 +2677,8 @@ msgid "Bloom Intensity"
 msgstr "Intensywność efektu bloom"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Zasięg chmur"
+msgstr "Zasięg efektu bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
@@ -3001,7 +2995,6 @@ msgid "ContentDB Max Concurrent Downloads"
 msgstr "Maksymalna liczba jednoczesnych pobrań ContentDB"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
 msgstr "Adres URL ContentDB"
 
@@ -3010,13 +3003,12 @@ msgid "Continuous forward"
 msgstr "Ciągle na przód"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
-"Ciągły ruch naprzód, włączany przez klawisz automatycznego chodzenia w "
-"przód.\n"
+"Ciągły ruch naprzód, włączany przez klawisz automatycznego chodzenia w przód."
+"\n"
 "Aby go wyłączyć wciśnij klawisz jeszcze raz, albo klawisz w tył."
 
 #: src/settings_translation_file.cpp
@@ -3051,7 +3043,6 @@ msgid "Controls steepness/height of hills."
 msgstr "Kontroluje stromość/wysokość gór."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls width of tunnels, a smaller value creates wider tunnels.\n"
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
@@ -3059,7 +3050,7 @@ msgid ""
 msgstr ""
 "Wpływa na szerokość tuneli, mniejsza wartość tworzy szersze tunele.\n"
 "Wartość >= 10,0 całkowicie wyłącza tworzenie tuneli i pozwala na uniknięcie\n"
-"intensywnych obliczeń hałasu."
+"intensywnych obliczeń szumu."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -3086,7 +3077,6 @@ msgid "Crosshair color"
 msgstr "Kolor celownika"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
@@ -3135,11 +3125,12 @@ msgstr ""
 "To zostanie nadpisane jeżeli tworzysz świat z menu głównego."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Maksymalna ilość, wczytanych wymuszeniem, bloków mapy."
+msgstr ""
+"Domyślna maksymalna ilość wymuszonych wczytanych bloków map.\n"
+"Ustaw na -1 aby wyłączyć limit."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3177,12 +3168,10 @@ msgid "Defines areas with sandy beaches."
 msgstr "Określa obszary z piaszczystymi plażami."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain and steepness of cliffs."
 msgstr "Określa rozmieszczenie wyższego terenu i stromość klifów."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain."
 msgstr "Określa rozmieszczenie wyższych terenów."
 
@@ -3209,9 +3198,8 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Określa położenie oraz teren z dodatkowymi górami i jeziorami."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Określa podstawowy poziom podłoża."
+msgstr "Określa poziom podstawowego podłoża."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
@@ -3313,7 +3301,6 @@ msgid "Disallow empty passwords"
 msgstr "Nie zezwalaj na puste hasła"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Display Density Scaling Factor"
 msgstr "Wyświetl współczynnik skalowania gęstości"
 
@@ -3351,14 +3338,12 @@ msgid "Dungeon minimum Y"
 msgstr "Minimalna wartość Y lochu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Hałas lochu"
+msgstr "Szum generowania lochów"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Włącz wszystkie"
+msgstr "Włącz efekt bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
@@ -3381,14 +3366,13 @@ msgstr ""
 "To wsparcie jest eksperymentalne i API może ulec zmianie."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
-"Włącz filtrowanie dysku poisson.\n"
-"Jeśli włączone, to używa dysku poisson do \"miękkich cieni\". W przeciwnym "
+"Włącz filtrowanie dysku Poisson.\n"
+"Jeśli włączone, używa dysku Poisson do \"miękkich cieni\", w przeciwnym "
 "razie używa filtrowania PCF."
 
 #: src/settings_translation_file.cpp
@@ -3405,7 +3389,6 @@ msgid "Enable console window"
 msgstr "Odblokuj okno konsoli"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
 msgstr "Zezwól na tryb kreatywny dla wszystkich graczy"
 
@@ -3488,7 +3471,6 @@ msgstr ""
 "Dla przykładu: 0 dla braku drgań; 1.0 dla normalnych; 2.0 dla podwójnych."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set.\n"
@@ -3557,7 +3539,6 @@ msgid "Entity methods"
 msgstr "Metody bytów"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3583,9 +3564,8 @@ msgid "FPS"
 msgstr "FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maksymalny FPS gdy gra spauzowana"
+msgstr "Maksymalna ilość klatek na sekundę gdy gra zapauzowana bądź nieaktywna"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3600,7 +3580,6 @@ msgid "Fall bobbing factor"
 msgstr "Skala drgań głowy podczas upadania"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
 msgstr "Ścieżka czcionki zastępczej"
 
@@ -3691,39 +3670,32 @@ msgid "Fixed virtual joystick"
 msgstr "Ustaw wirtualny joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland density"
 msgstr "Gęstość latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland maximum Y"
 msgstr "Maksymalna wartość Y latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland minimum Y"
 msgstr "Minimalna wartość Y latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Szum latających wysp"
+msgstr "Szum generowania latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
 msgstr "Wykładnik zbieżności latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland tapering distance"
 msgstr "Odległość zwężania latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Poziom wody pływającej wyspy"
+msgstr "Poziom wody na pływających wyspach"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -3762,7 +3734,6 @@ msgid "Font size"
 msgstr "Rozmiar czcionki"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size divisible by"
 msgstr "Rozmiar czcionki podzielny przez"
 
@@ -3778,12 +3749,11 @@ msgstr ""
 "DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
-"Rozmiar czcionki tekstu ostatniej rozmowy i monitu rozmowy w punktach (pt).\n"
+"Rozmiar czcionki tekstu ostatniego czatu i monitu czatu w punktach (pt).\n"
 "Wartość 0 spowoduje użycie domyślnego rozmiaru czcionki."
 
 #: src/settings_translation_file.cpp
@@ -3818,22 +3788,18 @@ msgid "Format of screenshots."
 msgstr "Format zrzutu ekranu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Default Background Color"
 msgstr "Domyślny kolor tła formspec"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Default Background Opacity"
 msgstr "Domyślna nieprzezroczystość tła formspec"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Full-Screen Background Color"
 msgstr "Kolor formspec tła pełnoekranowego"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Full-Screen Background Opacity"
 msgstr "Pełnoekranowa nieprzezroczystość tła formspec"
 
@@ -3846,14 +3812,14 @@ msgid "Formspec default background opacity (between 0 and 255)."
 msgstr "Kanał alfa konsoli w grze (od 0 do 255)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Kolor tła konsoli czatu w grze (R,G,B)."
+msgstr ""
+"Kolor pełnoekranowego tła formspec (kanał czerwony, kanał zielony, kanał "
+"niebieski)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background opacity (between 0 and 255)."
-msgstr "Kanał alfa konsoli w grze (od 0 do 255)."
+msgstr "Nieprzezroczystość pełnoekranowego tła formspec (pomiędzy 0 i 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3948,7 +3914,6 @@ msgstr ""
 "we wszystkich innych generatorach flaga ta kontroluje wszystkie dekoracje."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
@@ -3957,7 +3922,6 @@ msgstr ""
 "Wpływa na kontrast najwyższych poziomów jasności."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
@@ -3986,9 +3950,8 @@ msgid "Ground level"
 msgstr "Poziom ziemi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "Szum ziemi"
+msgstr "Szum generowania podłoża"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
@@ -3999,9 +3962,8 @@ msgid "HUD"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "Skalowanie GUI"
+msgstr "Skalowanie HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4039,7 +4001,6 @@ msgid "Heat noise"
 msgstr "Szum gorąca"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
@@ -4062,24 +4023,20 @@ msgid "Hill threshold"
 msgstr "Granica zbocza"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
-msgstr "Hałas górzystości1"
+msgstr "Szum górzystości1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "Hałas górzystości2"
+msgstr "Szum górzystości2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "Hałas górzystości3"
+msgstr "Szum górzystości3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "Hałas górzystości4"
+msgstr "Szum górzystości4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -4094,7 +4051,6 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
@@ -4103,7 +4059,6 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
@@ -4112,7 +4067,6 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How deep to make rivers."
 msgstr "Jak głębokie tworzyć rzeki."
 
