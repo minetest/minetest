@@ -6,7 +6,7 @@ AppDir:
     id: net.minetest.minetest
     name: Minetest
     icon: minetest
-    version: !ENV ${VERSION}
+    version: 5.6.2
     exec: usr/local/bin/minetest
     exec_args: $@
   files:
@@ -27,16 +27,17 @@ AppDir:
     include:
       - libc6
       - libcrypt1
-      - libcurl3-gnutls
+      - libcurl4
       - libfreetype6
       - libgl1
+      - libhiredis0.14
       - libjpeg-turbo8
       - libjsoncpp1
       - libleveldb1d
       - libluajit-5.1-2
       - libopenal1
       - libpng16-16
-      - libsqlite3-0
+      - libpq5
       - libstdc++6
       - libvorbisfile3
       - libx11-6
@@ -47,8 +48,7 @@ AppImage:
   sign-key: None
   arch: x86_64
 script: |
-    # Remove any existent binaries
-    rm -rf AppDir appimage-build || true
+    git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt || true
 
     # Compile and install binaries into AppDir
     # Minetest looks at usr/local/share for some reason
@@ -61,6 +61,7 @@ script: |
     tar -xaf appimage-build/irrlicht-ubuntu.tar.gz -C AppDir/usr
 
     #mkdir AppDir/usr/local
+    cp -fr AppDir/usr/local/* AppDir/usr
     #cd AppDir
     #ln -s ../share usr/local/share
     #cd ../
