@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2023-02-08 21:39+0000\n"
-"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
+"Last-Translator: W K <wojciech_kowalczyk@icloud.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -846,7 +846,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "O Minetest"
+msgstr "Informacje"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -4071,7 +4071,6 @@ msgid "How deep to make rivers."
 msgstr "Jak głębokie tworzyć rzeki."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
 "If negative, liquid waves will move backwards.\n"
@@ -4082,7 +4081,6 @@ msgstr ""
 "Wymaga włączenia falowania cieczy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
