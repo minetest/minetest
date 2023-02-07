@@ -772,11 +772,8 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			// already handled in isSettingsBarButton()
 		} else {
 			// handle non button events
-			if (m_settingsbar.active()) {
+			if (m_settingsbar.active() || m_rarecontrolsbar.active()) {
 				m_settingsbar.deactivate();
-				return;
-			}
-			if (m_rarecontrolsbar.active()) {
 				m_rarecontrolsbar.deactivate();
 				return;
 			}
@@ -1095,10 +1092,6 @@ void TouchScreenGUI::step(float dtime)
 	for (auto &button : m_buttons) {
 		if (!button.ids.empty()) {
 			button.repeatcounter += dtime;
-
-			// in case we're moving around digging does not happen
-			if (m_has_move_id)
-				m_move_has_really_moved = true;
 
 			if (button.repeatcounter < button.repeatdelay)
 				continue;
