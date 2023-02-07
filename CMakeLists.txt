@@ -394,3 +394,15 @@ if(DOXYGEN_FOUND)
 		COMMENT "Generating API documentation with Doxygen" VERBATIM
 	)
 endif()
+
+# enable LTO / IPO
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+	include(CheckIPOSupported)
+	check_ipo_supported(RESULT result OUTPUT error)
+	if( result )
+	    message(STATUS "LTO / IPO enabled")
+	    set(INTERPROCEDURAL_OPTIMIZATION TRUE)
+	else()
+	    message(STATUS "LTO / IPO not supported: <${error}>")
+	endif()
+endif()
