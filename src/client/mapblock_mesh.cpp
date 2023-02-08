@@ -38,7 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
 	m_client(client),
-	m_use_shaders(use_shaders)
+	m_use_shaders(use_shaders),
+	m_mesh_grid(client->getMeshGrid()),
+	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -53,12 +55,11 @@ void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 	m_vmanip.addArea(voxel_area);
 }
 
-void MeshMakeData::fillBlockData(const v3s16 &block_offset, MapNode *data)
+void MeshMakeData::fillBlockData(const v3s16 &bp, MapNode *data)
 {
 	v3s16 data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
 	VoxelArea data_area(v3s16(0,0,0), data_size - v3s16(1,1,1));
 
-	v3s16 bp = m_blockpos + block_offset;
 	v3s16 blockpos_nodes = bp * MAP_BLOCKSIZE;
 	m_vmanip.copyFrom(data, data_area, v3s16(0,0,0), blockpos_nodes, data_size);
 }
@@ -1179,18 +1180,18 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	v3s16 bp = data->m_blockpos;
 	// Only generate minimap mapblocks at even coordinates.
-	if (((bp.X | bp.Y | bp.Z) & 1) == 0 && data->m_client->getMinimap()) {
-		m_minimap_mapblocks.resize(8, nullptr);
+	if (data->m_mesh_grid.isMeshPos(bp) && data->m_client->getMinimap()) {
+		m_minimap_mapblocks.resize(data->m_mesh_grid.getCellVolume(), nullptr);
 		v3s16 ofs;
 
 		// See also client.cpp for the code that reads the array of minimap blocks.
-		for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
-		for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
-		for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
+		for (ofs.Z = 0; ofs.Z < data->m_mesh_grid.cell_size; ofs.Z++)
+		for (ofs.Y = 0; ofs.Y < data->m_mesh_grid.cell_size; ofs.Y++)
+		for (ofs.X = 0; ofs.X < data->m_mesh_grid.cell_size; ofs.X++) {
 			v3s16 p = (bp + ofs) * MAP_BLOCKSIZE;
 			if (data->m_vmanip.getNodeNoEx(p).getContent() != CONTENT_IGNORE) {
 				MinimapMapblock *block = new MinimapMapblock;
-				m_minimap_mapblocks[ofs.Z * 4 + ofs.Y * 2 + ofs.X] = block;
+				m_minimap_mapblocks[data->m_mesh_grid.getOffsetIndex(ofs)] = block;
 				block->getMinimapNodes(&data->m_vmanip, p);
 			}
 		}
@@ -1221,7 +1222,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	v3f offset = intToFloat((data->m_blockpos - data->m_blockpos / 8 * 8) * MAP_BLOCKSIZE, BS);
+	v3f offset = intToFloat((data->m_blockpos - data->m_mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
 	MeshCollector collector(m_bounding_sphere_center, offset);
 
 	{
@@ -1584,10 +1585,11 @@ std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data)
 {
 	std::unordered_map<v3s16, u8> results;
 	v3s16 ofs;
+	const u16 mesh_chunk = data->side_length / MAP_BLOCKSIZE;
 
-	for (ofs.X = 0; ofs.X < 2; ofs.X++)
-	for (ofs.Y = 0; ofs.Y < 2; ofs.Y++)
-	for (ofs.Z = 0; ofs.Z < 2; ofs.Z++) {
+	for (ofs.X = 0; ofs.X < mesh_chunk; ofs.X++)
+	for (ofs.Y = 0; ofs.Y < mesh_chunk; ofs.Y++)
+	for (ofs.Z = 0; ofs.Z < mesh_chunk; ofs.Z++) {
 		v3s16 blockpos = data->m_blockpos + ofs;
 		v3s16 blockpos_nodes = blockpos * MAP_BLOCKSIZE;
 		const NodeDefManager *ndef = data->m_client->ndef();

@@ -143,6 +143,7 @@ Client::Client(
 	}
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_mesh_grid = { g_settings->getU16("client_mesh_chunk") };
 }
 
 void Client::migrateModStorage()
@@ -564,7 +565,7 @@ void Client::step(float dtime)
 			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
 
 			// The block in question is not visible (perhaps it is culled at the server),
-			// create a blank block just to hold the 2x2x2 mesh.
+			// create a blank block just to hold the chunk's mesh.
 			// If the block becomes visible later it will replace the blank block.
 			if (!block && r.mesh)
 				block = sector->createBlankBlock(r.p.Y);
@@ -607,10 +608,10 @@ void Client::step(float dtime)
 				v3s16 ofs;
 
 				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
-				for (ofs.Z = 0; ofs.Z <= 1; ofs.Z++)
-				for (ofs.Y = 0; ofs.Y <= 1; ofs.Y++)
-				for (ofs.X = 0; ofs.X <= 1; ofs.X++) {
-					size_t i = ofs.Z * 4 + ofs.Y * 2 + ofs.X;
+				for (ofs.Z = 0; ofs.Z < m_mesh_grid.cell_size; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y < m_mesh_grid.cell_size; ofs.Y++)
+				for (ofs.X = 0; ofs.X < m_mesh_grid.cell_size; ofs.X++) {
+					size_t i = m_mesh_grid.getOffsetIndex(ofs);
 					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
 						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
 				}

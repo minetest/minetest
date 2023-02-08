@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include <fstream>
+#include "util/numeric.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -437,6 +438,11 @@ public:
 	{
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
+	inline MeshGrid getMeshGrid()
+	{
+		return m_mesh_grid;
+	}
+
 private:
 	void loadMods();
 
@@ -602,4 +608,7 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// The number of blocks the client will combine for mesh generation.
+	MeshGrid m_mesh_grid;
 };

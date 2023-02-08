@@ -43,6 +43,7 @@ struct MeshMakeData
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
+	MeshGrid m_mesh_grid;
 	u16 side_length = MAP_BLOCKSIZE;
 
 	Client *m_client;
@@ -54,7 +55,7 @@ struct MeshMakeData
 		Copy block data manually (to allow optimizations by the caller)
 	*/
 	void fillBlockDataBegin(const v3s16 &blockpos);
-	void fillBlockData(const v3s16 &block_offset, MapNode *data);
+	void fillBlockData(const v3s16 &bp, MapNode *data);
 
 	/*
 		Set the (node) position of a crack
