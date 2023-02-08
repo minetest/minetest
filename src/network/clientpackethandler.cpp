@@ -1548,15 +1548,12 @@ void Client::handleCommand_MediaPush(NetworkPacket *pkt)
 
 		// Actually load media
 		loadMedia(filedata, filename, true);
-		m_media_pushed_files.insert(filename);
 
 		// Cache file for the next time when this client joins the same server
 		if (cached)
 			clientMediaUpdateCache(raw_hash, filedata);
 		return;
 	}
-
-	m_media_pushed_files.insert(filename);
 
 	// create a downloader for this file
 	auto downloader(std::make_shared<SingleMediaDownloader>(cached));

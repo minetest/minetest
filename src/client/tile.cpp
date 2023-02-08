@@ -779,18 +779,18 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	sanity_check(driver);
 
 	// Recreate affected textures
-	int affected = 0;
+	u32 affected = 0;
 	for (TextureInfo &ti : m_textureinfo_cache) {
 		if (ti.name.empty())
 			continue; // Skip dummy entry
-		// if the source image is used, we need to rebuild this texture
+		// If the source image was used, we need to rebuild this texture
 		if (ti.sourceImages.find(name) != ti.sourceImages.end()) {
 			rebuildTexture(driver, ti);
 			affected++;
 		}
 	}
 	if (affected > 0)
-		verbosestream << "TextureSource: insertSourceImage \"" << name << "\" caused rebuild of " << affected << " textures." << std::endl;
+		verbosestream << "TextureSource: inserting \"" << name << "\" caused rebuild of " << affected << " textures." << std::endl;
 }
 
 void TextureSource::rebuildImagesAndTextures()
@@ -811,7 +811,7 @@ void TextureSource::rebuildImagesAndTextures()
 	}
 }
 
-void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo & ti)
+void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 {
 	if (ti.name.empty())
 		return; // this shouldn't happen, just a precaution

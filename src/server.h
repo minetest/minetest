@@ -505,10 +505,6 @@ private:
 	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
 	void stepPendingDynMediaCallbacks(float dtime);
-	// This assumes you hold m_env_mutex.
-	// And that you'll remove the callback from the table yourself.
-	// Used by stepPendingDynMediaCallbacks & dynamicAddMedia.
-	void closePendingDynMediaCallback(u32 token, PendingDynamicMediaCallback &callback);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
 	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
