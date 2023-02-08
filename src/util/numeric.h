@@ -145,6 +145,37 @@ inline v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
 	return v3s16(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
 }
 
+/// @brief Describes a grid with given step, oirginating at (0,0,0)
+struct MeshGrid {
+	u16 cell_size;
+
+	u32 getCellVolume() const { return cell_size * cell_size * cell_size; }
+
+	/// @brief returns closest step of the grid smaller than p
+	s16 getMeshPos(s16 p) const
+	{
+		return ((p - (p < 0) * (cell_size - 1)) / cell_size * cell_size);
+	}
+
+	/// @brief Returns coordinates of the origin of the grid cell containing p
+	v3s16 getMeshPos(v3s16 p) const
+	{
+		return v3s16(getMeshPos(p.X), getMeshPos(p.Y), getMeshPos(p.Z));
+	}
+	
+	/// @brief Returns true if p is an origin of a cell in the grid.
+	bool isMeshPos(v3s16 &p) const
+	{
+		return ((p.X + p.Y + p.Z) % cell_size) == 0;
+	}
+
+	/// @brief Returns index of the given offset in a grid cell
+	/// All offset coordinates must be smaller than the size of the cell
+	u16 getOffsetIndex(v3s16 offset) const
+	{
+		return (offset.Z * cell_size + offset.Y) * cell_size + offset.X;
+	}
+};
 
 /** Returns \p f wrapped to the range [-360, 360]
  *

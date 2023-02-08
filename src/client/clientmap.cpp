@@ -304,6 +304,7 @@ void ClientMap::updateDrawList()
 	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 
 	std::set<v3s16> shortlist;
+	MeshGrid mesh_grid = m_client->getMeshGrid();
 
 	// Recursively walk the space and pick mapblocks for drawing
 	while (blocks_to_consider.size() > 0) {
@@ -375,11 +376,11 @@ void ClientMap::updateDrawList()
 			continue;
 		}
 
-		if (m_client->getMeshChunk() > 1) {
+		if (mesh_grid.cell_size > 1) {
 			// Block meshes are stored in the corner block of a chunk
 			// (where all coordinate are divisible by the chunk size)
 			// Add them to the de-dup set.
-			shortlist.emplace(m_client->getMeshPos(block_coord.X), m_client->getMeshPos(block_coord.Y), m_client->getMeshPos(block_coord.Z));
+			shortlist.emplace(mesh_grid.getMeshPos(block_coord.X), mesh_grid.getMeshPos(block_coord.Y), mesh_grid.getMeshPos(block_coord.Z));
 			// All other blocks we can grab and add to the keeplist right away.
 			if (block) {
 				m_keeplist.push_back(block);
@@ -619,8 +620,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
-	const u16 mesh_chunk = m_client->getMeshChunk();
-	const u16 mesh_chunk_vol = mesh_chunk * mesh_chunk * mesh_chunk;
+	const MeshGrid mesh_grid = m_client->getMeshGrid();
 	for (auto &i : m_drawlist) {
 		v3s16 block_pos = i.first;
 		MapBlock *block = i.second;
@@ -749,7 +749,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
-		v3f block_wpos = intToFloat(descriptor.m_pos / mesh_chunk_vol * mesh_chunk_vol * MAP_BLOCKSIZE, BS);
+		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
@@ -987,8 +987,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		return;
 	}
 
-	const u16 mesh_chunk = m_client->getMeshChunk();
-	const u16 mesh_chunk_vol = mesh_chunk * mesh_chunk * mesh_chunk;
+	const MeshGrid mesh_grid = m_client->getMeshGrid();
 	for (const auto &i : m_drawlist_shadow) {
 		// only process specific part of the list & break early
 		++count;
@@ -1077,7 +1076,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 			++material_swaps;
 		}
 
-		v3f block_wpos = intToFloat(descriptor.m_pos / mesh_chunk_vol * mesh_chunk_vol * MAP_BLOCKSIZE, BS);
+		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);
 		m.setTranslation(block_wpos - offset);
 
 		driver->setTransform(video::ETS_WORLD, m);
