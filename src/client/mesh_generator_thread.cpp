@@ -77,9 +77,11 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 
 	MutexAutoLock lock(m_mutex);
 
+	MeshGrid mesh_grid = m_client->getMeshGrid();
+
 	// Mesh is placed at the corner block of a chunk
 	// (where all coordinate are divisible by the chunk size)
-	v3s16 mesh_position(m_client->getMeshPos(p.X), m_client->getMeshPos(p.Y), m_client->getMeshPos(p.Z));
+	v3s16 mesh_position(mesh_grid.getMeshPos(p));
 	/*
 		Mark the block as urgent if requested
 	*/
@@ -90,7 +92,6 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	const u16 mesh_chunk = m_client->getMeshChunk();
 	for (QueuedMeshUpdate *q : m_queue) {
 		if (q->p == mesh_position) {
 			// NOTE: We are not adding a new position to the queue, thus
@@ -102,9 +103,9 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 			q->urgent |= urgent;
 			v3s16 pos;
 			int i = 0;
-			for (pos.X = q->p.X - 1; pos.X <= q->p.X + mesh_chunk; pos.X++)
-			for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + mesh_chunk; pos.Z++)
-			for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + mesh_chunk; pos.Y++) {
+			for (pos.X = q->p.X - 1; pos.X <= q->p.X + mesh_grid.cell_size; pos.X++)
+			for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + mesh_grid.cell_size; pos.Z++)
+			for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + mesh_grid.cell_size; pos.Y++) {
 				if (!q->map_blocks[i]) {
 					MapBlock *block = map->getBlockNoCreateNoEx(pos);
 					if (block) {
@@ -122,11 +123,11 @@ bool MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		Make a list of blocks necessary for mesh generation and lock the blocks in memory.
 	*/
 	std::vector<MapBlock *> map_blocks;
-	map_blocks.reserve((mesh_chunk+2)*(mesh_chunk+2)*(mesh_chunk+2));
+	map_blocks.reserve((mesh_grid.cell_size+2)*(mesh_grid.cell_size+2)*(mesh_grid.cell_size+2));
 	v3s16 pos;
-	for (pos.X = mesh_position.X - 1; pos.X <= mesh_position.X + mesh_chunk; pos.X++)
-	for (pos.Z = mesh_position.Z - 1; pos.Z <= mesh_position.Z + mesh_chunk; pos.Z++)
-	for (pos.Y = mesh_position.Y - 1; pos.Y <= mesh_position.Y + mesh_chunk; pos.Y++) {
+	for (pos.X = mesh_position.X - 1; pos.X <= mesh_position.X + mesh_grid.cell_size; pos.X++)
+	for (pos.Z = mesh_position.Z - 1; pos.Z <= mesh_position.Z + mesh_grid.cell_size; pos.Z++)
+	for (pos.Y = mesh_position.Y - 1; pos.Y <= mesh_position.Y + mesh_grid.cell_size; pos.Y++) {
 		MapBlock *block = map->getBlockNoCreateNoEx(pos);
 		map_blocks.push_back(block);
 		if (block)
@@ -189,18 +190,16 @@ void MeshUpdateQueue::done(v3s16 pos)
 
 void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 {
-	const u16 mesh_chunk = m_client->getMeshChunk();
 	MeshMakeData *data = new MeshMakeData(m_client, m_cache_enable_shaders);
 	q->data = data;
-	data->side_length = mesh_chunk * MAP_BLOCKSIZE;
 
 	data->fillBlockDataBegin(q->p);
 
 	v3s16 pos;
 	int i = 0;
-	for (pos.X = q->p.X - 1; pos.X <= q->p.X + mesh_chunk; pos.X++)
-	for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + mesh_chunk; pos.Z++)
-	for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + mesh_chunk; pos.Y++) {
+	for (pos.X = q->p.X - 1; pos.X <= q->p.X + data->m_mesh_grid.cell_size; pos.X++)
+	for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + data->m_mesh_grid.cell_size; pos.Z++)
+	for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + data->m_mesh_grid.cell_size; pos.Y++) {
 		MapBlock *block = q->map_blocks[i++];
 		data->fillBlockData(pos, block ? block->getData() : block_placeholder.data);
 	}

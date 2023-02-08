@@ -38,7 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
 	m_client(client),
-	m_use_shaders(use_shaders)
+	m_use_shaders(use_shaders),
+	m_mesh_grid(client->getMeshGrid()),
+	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -1176,22 +1178,20 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
-	const u16 mesh_chunk = data->side_length / MAP_BLOCKSIZE;
-	const u16 mesh_chunk_vol = mesh_chunk * mesh_chunk * mesh_chunk;
 	v3s16 bp = data->m_blockpos;
 	// Only generate minimap mapblocks at even coordinates.
-	if (data->m_client->checkMeshPos(bp) && data->m_client->getMinimap()) {
-		m_minimap_mapblocks.resize(mesh_chunk_vol, nullptr);
+	if (data->m_mesh_grid.isMeshPos(bp) && data->m_client->getMinimap()) {
+		m_minimap_mapblocks.resize(data->m_mesh_grid.getCellVolume(), nullptr);
 		v3s16 ofs;
 
 		// See also client.cpp for the code that reads the array of minimap blocks.
-		for (ofs.Z = 0; ofs.Z < mesh_chunk; ofs.Z++)
-		for (ofs.Y = 0; ofs.Y < mesh_chunk; ofs.Y++)
-		for (ofs.X = 0; ofs.X < mesh_chunk; ofs.X++) {
+		for (ofs.Z = 0; ofs.Z < data->m_mesh_grid.cell_size; ofs.Z++)
+		for (ofs.Y = 0; ofs.Y < data->m_mesh_grid.cell_size; ofs.Y++)
+		for (ofs.X = 0; ofs.X < data->m_mesh_grid.cell_size; ofs.X++) {
 			v3s16 p = (bp + ofs) * MAP_BLOCKSIZE;
 			if (data->m_vmanip.getNodeNoEx(p).getContent() != CONTENT_IGNORE) {
 				MinimapMapblock *block = new MinimapMapblock;
-				m_minimap_mapblocks[ofs.Z * mesh_chunk * mesh_chunk + ofs.Y * mesh_chunk + ofs.X] = block;
+				m_minimap_mapblocks[data->m_mesh_grid.getOffsetIndex(ofs)] = block;
 				block->getMinimapNodes(&data->m_vmanip, p);
 			}
 		}
@@ -1222,7 +1222,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	v3f offset = intToFloat((data->m_blockpos - data->m_blockpos / mesh_chunk_vol * mesh_chunk_vol ) * MAP_BLOCKSIZE, BS);
+	v3f offset = intToFloat((data->m_blockpos - data->m_mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
 	MeshCollector collector(m_bounding_sphere_center, offset);
 
 	{
