@@ -1718,7 +1718,7 @@ autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 #    Larger values increase the utilization of the GPU by reducing the number of
 #    draw calls, benefiting especially high-end GPUs.
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
-client_mesh_chunk (Client Mesh Chunksize) int 4 1 16
+client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 [**Font]
 
