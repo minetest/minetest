@@ -213,7 +213,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename);
+
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, ptop);
 			setHP(newhp, reason);
 		}
 	}
