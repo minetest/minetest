@@ -216,8 +216,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-            // TODO Need to get the block that the player fell on... Not super sure how I am going to do this
-            // Assuming ptop which is how they get the ntop for dps and nodename is fine
+
+            // TODO Remove this print
             warningstream << "Collided with " << node_pos.X << ", " << node_pos.Y << ", " << node_pos.Z << std::endl;
 			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
 			setHP(newhp, reason);
