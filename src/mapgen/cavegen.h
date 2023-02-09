@@ -169,7 +169,6 @@ public:
 	void makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax, PseudoRandom *ps,
 			bool is_large_cave, int max_stone_height, s16 *heightmap);
 			
-	COZ_PROGRESS_NAMED("Test")
 
 private:
 	void makeTunnel(bool dirswitch);
