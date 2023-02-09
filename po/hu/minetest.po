@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-25 20:07+0000\n"
-"Last-Translator: Kisjuhász Attila <kj.attil@gmail.com>\n"
+"PO-Revision-Date: 2023-02-10 22:35+0000\n"
+"Last-Translator: Guih48 <guih48@gmail.hu>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -295,9 +295,8 @@ msgid "Failed to download $1"
 msgstr "$1 letöltése nem sikerült"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Telepítés: nem támogatott fájltípus vagy sérült archívum"
+msgstr "$1 kibontása sikertelen (nem támogatott fájltípus vagy sérült archívum)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -814,15 +813,12 @@ msgid "Failed to install $1 to $2"
 msgstr "$1 telepítése meghiúsult ide: $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Mod telepítése: nem található megfelelő mappanév ehhez a modcsomaghoz: $1"
+msgstr "Telepítés: nem található megfelelő mappanév ehhez: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Nem található érvényes mod vagy modcsomag"
+msgstr "Nem található érvényes mod, modcsomag vagy játék"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -2006,9 +2002,8 @@ msgid ""
 msgstr ""
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Nincsenek kötelező függőségek"
+msgstr "Néhány mod kielégítetlen függőségekkel rendelkezik:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -3123,11 +3118,12 @@ msgstr ""
 "A főmenüből történő világ létrehozása ezt felülírja."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Az erőltetetten betöltött térképblokkok maximális száma."
+msgstr ""
+"Az erőltetetten betöltött térképblokkok maximális száma.\n"
+"Állítsd -1-re, hogy megszűntesd a limitet."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
