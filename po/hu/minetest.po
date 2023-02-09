@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-10 15:37+0100\n"
 "PO-Revision-Date: 2023-02-10 22:35+0000\n"
-"Last-Translator: Guih48 <guih48@gmail.hu>\n"
+"Last-Translator: unacceptium core <kolonics20132a@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -316,7 +316,7 @@ msgstr "hiányzó függőségek telepitése"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
-msgstr "Modok"
+msgstr "Modifikációk \"Modok\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
