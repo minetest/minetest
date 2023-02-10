@@ -216,9 +216,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s32 newhp = (s32)m_hp - (s32)damage_per_second;
-
-            // TODO Remove this print
-            warningstream << "Collided with " << node_pos.X << ", " << node_pos.Y << ", " << node_pos.Z << std::endl;
 			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE, nodename, node_pos);
 			setHP(newhp, reason);
 		}

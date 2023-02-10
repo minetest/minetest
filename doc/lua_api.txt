@@ -5216,6 +5216,7 @@ Call these functions only at load time!
             * `fall`
             * `node_damage`: `damage_per_second` from a neighboring node.
                              `reason.node` will hold the node name or nil.
+                             `reason.node_pos` will hold the position of the node
             * `drown`
             * `respawn`
         * Any of the above types may have additional fields from mods.

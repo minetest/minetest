@@ -246,6 +246,7 @@ struct PlayerHPChangeReason
 	// For NODE_DAMAGE
 	std::string node;
     v3s16 node_pos;
+    bool node_pos_set = false;
 
 	inline bool hasLuaReference() const { return lua_reference >= 0; }
 
@@ -297,5 +298,8 @@ struct PlayerHPChangeReason
 	{
 	}
 
-	PlayerHPChangeReason(Type type, std::string node, v3s16 node_pos) : type(type), node(node), node_pos(node_pos) {}
+	PlayerHPChangeReason(Type type, std::string node, v3s16 node_pos) : type(type), node(node), node_pos(node_pos) {
+        // Need to inform lua this field will be set
+        node_pos_set = true;
+    }
 };
