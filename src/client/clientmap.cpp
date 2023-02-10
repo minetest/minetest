@@ -321,15 +321,13 @@ void ClientMap::updateDrawList()
 
 		blocks_visited++;
 
-		// Get the sector, block and mesh
-		MapSector *sector = this->getSectorNoGenerate(v2s16(block_coord.X, block_coord.Z));
+		// Get the block and mesh
+		MapBlock *block = getBlockNoCreateNoEx(block_coord);
 
-		if (!sector)
+		if (!block)
 			continue;
 
-		MapBlock *block = sector->getBlockNoCreateNoEx(block_coord.Y);
-
-		MapBlockMesh *mesh = block ? block->mesh : nullptr;
+		MapBlockMesh *mesh = block->mesh;
 
 		// Calculate the coordinates for range and frutum culling
 		v3f mesh_sphere_center;
@@ -370,7 +368,7 @@ void ClientMap::updateDrawList()
 
 		// Raytraced occlusion culling - send rays from the camera to the block's corners
 		if (occlusion_culling_enabled && m_enable_raytraced_culling &&
-				block && mesh &&
+				mesh &&
 				visible_outer_sides != 0x07 && isBlockOccluded(block, cam_pos_nodes)) {
 			blocks_occlusion_culled++;
 			continue;
@@ -382,10 +380,8 @@ void ClientMap::updateDrawList()
 			// Add them to the de-dup set.
 			shortlist.emplace(mesh_grid.getMeshPos(block_coord.X), mesh_grid.getMeshPos(block_coord.Y), mesh_grid.getMeshPos(block_coord.Z));
 			// All other blocks we can grab and add to the keeplist right away.
-			if (block) {
-				m_keeplist.push_back(block);
-				block->refGrab();
-			}
+			m_keeplist.push_back(block);
+			block->refGrab();
 		}
 		else if (mesh) {
 			// without mesh chunking we can add the block to the drawlist
@@ -413,7 +409,7 @@ void ClientMap::updateDrawList()
 		
 		// This bitset is +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
 		// Get he block's transparent sides
-		u8 transparent_sides = (occlusion_culling_enabled && block) ? ~block->solid_sides : 0x3F;
+		u8 transparent_sides = (occlusion_culling_enabled) ? ~block->solid_sides : 0x3F;
 
 		// compress block transparent sides to ZYX mask of see-through axes
 		u8 near_transparency =  (block_inner_sides == 0x3F) ? near_inner_sides : (transparent_sides & near_inner_sides);
