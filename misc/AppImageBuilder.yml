@@ -6,8 +6,8 @@ AppDir:
     id: net.minetest.minetest
     name: Minetest
     icon: minetest
-    version: 5.6.2
-    exec: usr/local/bin/minetest
+    version: !ENV ${VERSION}
+    exec: usr/bin/minetest
     exec_args: $@
   files:
     include: []
@@ -27,7 +27,7 @@ AppDir:
     include:
       - libc6
       - libcrypt1
-      - libcurl4
+      - libcurl3-gnutls
       - libfreetype6
       - libgl1
       - libhiredis0.14
@@ -37,7 +37,6 @@ AppDir:
       - libluajit-5.1-2
       - libopenal1
       - libpng16-16
-      - libpq5
       - libstdc++6
       - libvorbisfile3
       - libx11-6
@@ -51,8 +50,7 @@ script: |
     git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt || true
 
     # Compile and install binaries into AppDir
-    # Minetest looks at usr/local/share for some reason
-    cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/local -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release
+    cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
     cmake --build appimage-build --parallel $(nproc) --config Release
     cmake --install appimage-build
 
@@ -60,20 +58,16 @@ script: |
     wget -q "https://github.com/minetest/irrlicht/releases/download/$(cat misc/irrlichtmt_tag.txt)/ubuntu-bionic.tar.gz" -O appimage-build/irrlicht-ubuntu.tar.gz
     tar -xaf appimage-build/irrlicht-ubuntu.tar.gz -C AppDir/usr
 
-    #mkdir AppDir/usr/local
-    cp -fr AppDir/usr/local/* AppDir/usr
-    #cd AppDir
-    #ln -s ../share usr/local/share
-    #cd ../
-
     # Install the Minetest Game
     wget -q https://github.com/minetest/minetest_game/archive/refs/heads/master.tar.gz -O appimage-build/minetest_game.tar.gz
     cd appimage-build
     tar -xaf minetest_game.tar.gz
     cd ../
-    mkdir -p AppDir/usr/local/share/minetest/games/minetest_game
-    cp -r appimage-build/minetest_game-master/* AppDir/usr/local/share/minetest/games/minetest_game
+    mkdir -p AppDir/usr/share/minetest/games/minetest_game
+    cp -r appimage-build/minetest_game-master/* AppDir/usr/share/minetest/games/minetest_game
 
-    # Is a backup icon location instead of usr/share/local
-    mkdir -p AppDir/usr/local/share/minetest/misc
-    cp AppDir/usr/local/share/icons/hicolor/128x128/apps/minetest.png AppDir/usr/local/share/minetest/misc/minetest-xorg-icon-128.png
+    # Is a backup icon location
+    mkdir -p AppDir/usr/share/minetest/misc
+    cp AppDir/usr/share/icons/hicolor/128x128/apps/minetest.png AppDir/usr/share/minetest/misc/minetest-xorg-icon-128.png
+    # Validation issues
+    sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/net.minetest.minetest.desktop
