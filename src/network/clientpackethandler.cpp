@@ -982,6 +982,22 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
+/* this function should not exist. alas, i managed to leave out critical fields
+ * in the original tween serialization/deserialization code and now the protocol
+ * is fixed, so now we all have to suffer for my abject stupidity. j o y */
+template <typename T>
+inline bool readMissingTweenParamsFor(std::istringstream& is, ParticleParamTypes::TweenedParameter<T>& t) {
+	u8 tmp;
+	tmp = readU8(is);
+	if (is.eof())
+		return false;
+
+	t.style = (decltype(t.style))tmp;
+	t.reps = readU16(is);
+	t.beginning = readF32(is);
+	return true;
+}
+
 void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 {
 	std::string datastring(pkt->getString(0), pkt->getSize());
@@ -1079,6 +1095,16 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		}
 
 		legacy_format = false;
+
+		/* account for velartrill's brain geniousity */
+		if (readMissingTweenParamsFor(is, p.pos)) {
+			/* conditional serves to skip this block if we've reached
+			 * the end of the stream */
+			readMissingTweenParamsFor(is, p.vel);
+			readMissingTweenParamsFor(is, p.acc);
+			readMissingTweenParamsFor(is, p.exptime);
+			readMissingTweenParamsFor(is, p.size);
+		}
 	} while(0);
 
 	if (legacy_format) {

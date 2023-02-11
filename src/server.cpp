@@ -1587,6 +1587,17 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 	Send(&pkt);
 }
 
+
+/* this function should not exist. alas, i managed to leave out critical fields
+ * in the original tween serialization/deserialization code and now the protocol
+ * is fixed, so now we all have to suffer for my abject stupidity. j o y */
+template <typename T>
+inline void writeMissingTweenParamsFor(std::ostringstream& os, const ParticleParamTypes::TweenedParameter<T>& t) {
+	writeU8(os, (u8)t.style);
+	writeU16(os, t.reps);
+	writeF32(os, t.beginning);
+}
+
 // Adds a ParticleSpawner on peer with peer_id
 void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	const ParticleSpawnerParameters &p, u16 attached_id, u32 id)
@@ -1693,6 +1704,13 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		for (const auto& tex : p.texpool) {
 			tex.serialize(os, protocol_version);
 		}
+
+		// compensate for velartrill's l33t sk1llz0rz
+		writeMissingTweenParamsFor(os, p.pos);
+		writeMissingTweenParamsFor(os, p.vel);
+		writeMissingTweenParamsFor(os, p.acc);
+		writeMissingTweenParamsFor(os, p.exptime);
+		writeMissingTweenParamsFor(os, p.size);
 
 		pkt.putRawString(os.str());
 	}
