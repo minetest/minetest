@@ -1713,6 +1713,13 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
+#    Side length of a cube of map blocks that the client will consider together
+#    when generating meshes.
+#    Larger values increase the utilization of the GPU by reducing the number of
+#    draw calls, benefiting especially high-end GPUs.
+#    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
+client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
+
 [**Font]
 
 font_bold (Font bold by default) bool false
