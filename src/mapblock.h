@@ -325,6 +325,19 @@ public:
 		return m_day_night_differs;
 	}
 
+	inline bool isOnlyAir()
+	{
+		bool only_air = true;
+		for (u32 i = 0; i < nodecount; i++) {
+			MapNode &n = data[i];
+			if (n.getContent() != CONTENT_AIR) {
+				only_air = false;
+				break;
+			}
+		}
+		return only_air;
+	}
+
 	bool onObjectsActivation();
 	bool saveStaticObject(u16 id, const StaticObject &obj, u32 reason);
 

@@ -314,6 +314,9 @@ void RemoteClient::GetNextBlocks (
 				if (!block->isGenerated())
 					block_not_found = true;
 
+				if (d >= 3 && block->isOnlyAir())
+					continue;
+
 				/*
 					If block is not close, don't send it unless it is near
 					ground level.
