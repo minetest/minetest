@@ -100,10 +100,10 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const LightInfo *lights , const f32 *txc, u8 mask = 0);
+		const LightInfo *lights , const f32 *txc, u8 mask = 0, const bool *faces = nullptr);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
-		TileSpec *tiles = NULL, int tile_count = 0, u8 mask = 0);
+		TileSpec *tiles = NULL, int tile_count = 0, u8 mask = 0, const bool *faces = nullptr);
 	u8 getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const;
 
 // liquid-specific
@@ -154,6 +154,7 @@ public:
 		float offset_h, float offset_v = 0.0);
 
 // drawtypes
+	void drawSolidNode();
 	void drawLiquidNode();
 	void drawGlasslikeNode();
 	void drawGlasslikeFramedNode();

@@ -153,7 +153,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 //  mask      - a bit mask that suppresses drawing of tiles.
 //              tile i will not be drawn if mask & (1 << i) is 1
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
+	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask, const bool *faces)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -367,8 +367,12 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 }
 
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
-	TileSpec *tiles, int tile_count, u8 mask)
+	TileSpec *tiles, int tile_count, u8 mask, const bool *faces)
 {
+	static const bool all_faces[6] = {1, 1, 1, 1, 1, 1};
+	if (!faces)
+		faces = all_faces;
+
 	bool scale = std::fabs(f->visual_scale - 1.0f) > 1e-3f;
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
@@ -404,10 +408,66 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, tiles, tile_count, lights, txc, mask);
+		drawCuboid(box, tiles, tile_count, lights, txc, mask, faces);
 	} else {
-		drawCuboid(box, tiles, tile_count, nullptr, txc, mask);
+		drawCuboid(box, tiles, tile_count, nullptr, txc, mask, faces);
 	}
+}
+
+void MapblockMeshGenerator::drawSolidNode()
+{
+	bool draw = false;
+	bool faces[6] = {0, 0, 0, 0, 0, 0};
+	static const v3s16 tile_dirs[6] = {
+		v3s16(0, 1, 0),
+		v3s16(0, -1, 0),
+		v3s16(1, 0, 0),
+		v3s16(-1, 0, 0),
+		v3s16(0, 0, 1),
+		v3s16(0, 0, -1)
+	};
+	TileSpec tiles[6];
+	content_t n1 = n.getContent();
+	for (int face = 0; face < 6; face++) {
+		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
+		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
+		bool backface_culling = f->drawtype == NDT_NORMAL;
+		if (n2 == n1)
+			continue;
+		if (n2 == CONTENT_IGNORE)
+			continue;
+		if (n2 != CONTENT_AIR) {
+			const ContentFeatures &f2 = nodedef->get(n2);
+			if (f2.solidness == 2)
+				continue;
+			if (f->drawtype == NDT_LIQUID) {
+				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+					continue;
+				if (n2 == nodedef->getId(f->liquid_alternative_source))
+					continue;
+				backface_culling = f2.solidness >= 1;
+			}
+		}
+		draw = true;
+		faces[face] = true;
+		getTile(tile_dirs[face], &tiles[face]);
+		for (auto &layer : tiles[face].layers) {
+			if (backface_culling)
+				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+			else
+				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+		}
+	}
+	if (!draw)
+		return;
+	origin = intToFloat(p, BS);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	else
+		light = LightPair(getInteriorLight(n, 1, nodedef));
+	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, 0, faces);
 }
 
 u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const
@@ -1583,9 +1643,11 @@ void MapblockMeshGenerator::drawNode()
 {
 	// skip some drawtypes early
 	switch (f->drawtype) {
-		case NDT_NORMAL:   // Drawn by MapBlockMesh
 		case NDT_AIRLIKE:  // Not drawn at all
-		case NDT_LIQUID:   // Drawn by MapBlockMesh
+			return;
+		case NDT_LIQUID:
+		case NDT_NORMAL:
+			drawSolidNode();
 			return;
 		default:
 			break;
