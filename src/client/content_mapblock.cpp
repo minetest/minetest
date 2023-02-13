@@ -408,6 +408,61 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	}
 }
 
+void MapblockMeshGenerator::drawSolidNode()
+{
+	int faces = 0; // k-th bit will be set if k-th face is to be drawn.
+	static const v3s16 tile_dirs[6] = {
+		v3s16(0, 1, 0),
+		v3s16(0, -1, 0),
+		v3s16(1, 0, 0),
+		v3s16(-1, 0, 0),
+		v3s16(0, 0, 1),
+		v3s16(0, 0, -1)
+	};
+	TileSpec tiles[6];
+	content_t n1 = n.getContent();
+	for (int face = 0; face < 6; face++) {
+		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
+		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
+		bool backface_culling = f->drawtype == NDT_NORMAL;
+		if (n2 == n1)
+			continue;
+		if (n2 == CONTENT_IGNORE)
+			continue;
+		if (n2 != CONTENT_AIR) {
+			const ContentFeatures &f2 = nodedef->get(n2);
+			if (f2.solidness == 2)
+				continue;
+			if (f->drawtype == NDT_LIQUID) {
+				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+					continue;
+				if (n2 == nodedef->getId(f->liquid_alternative_source))
+					continue;
+				backface_culling = f2.solidness >= 1;
+			}
+		}
+		faces |= 1 << face;
+		getTile(tile_dirs[face], &tiles[face]);
+		for (auto &layer : tiles[face].layers) {
+			if (backface_culling)
+				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+			else
+				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+		}
+	}
+	if (!faces)
+		return;
+	u8 mask = faces ^ 0b0011'1111; // k-th bit is set if k-th face is to be *omitted*, as expected by cuboid drawing functions.
+	origin = intToFloat(p, BS);
+	if (data->m_smooth_lighting)
+		getSmoothLightFrame();
+	else
+		light = LightPair(getInteriorLight(n, 1, nodedef));
+	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, mask);
+}
+
 u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const
 {
 	const f32 NODE_BOUNDARY = 0.5 * BS;
@@ -1581,9 +1636,11 @@ void MapblockMeshGenerator::drawNode()
 {
 	// skip some drawtypes early
 	switch (f->drawtype) {
-		case NDT_NORMAL:   // Drawn by MapBlockMesh
 		case NDT_AIRLIKE:  // Not drawn at all
-		case NDT_LIQUID:   // Drawn by MapBlockMesh
+			return;
+		case NDT_LIQUID:
+		case NDT_NORMAL:
+			drawSolidNode();
 			return;
 		default:
 			break;
