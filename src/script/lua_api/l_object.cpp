@@ -1439,6 +1439,8 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		modified |= getboolfield(L, 2, "liquid_fluidity", phys.liquid_fluidity);
 		modified |= getboolfield(L, 2, "liquid_fluidity_smooth", phys.liquid_fluidity_smooth);
 		modified |= getboolfield(L, 2, "liquid_sink", phys.liquid_sink);
+		modified |= getboolfield(L, 2, "acceleration_default", phys.acceleration_default);
+		modified |= getboolfield(L, 2, "acceleration_air", phys.acceleration_air);
 		if (modified)
 			playersao->m_physics_override_sent = false;
 	} else {
@@ -1493,6 +1495,10 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "liquid_fluidity_smooth");
 	lua_pushnumber(L, phys.liquid_sink);
 	lua_setfield(L, -2, "liquid_sink");
+	lua_pushnumber(L, phys.acceleration_default);
+	lua_setfield(L, -2, "acceleration_default");
+	lua_pushnumber(L, phys.acceleration_air);
+	lua_setfield(L, -2, "acceleration_air");
 	return 1;
 }
 

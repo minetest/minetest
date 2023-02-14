@@ -330,6 +330,8 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeF32(os, phys.liquid_fluidity);
 	writeF32(os, phys.liquid_fluidity_smooth);
 	writeF32(os, phys.liquid_sink);
+	writeF32(os, phys.acceleration_default);
+	writeF32(os, phys.acceleration_air);
 	return os.str();
 }
 

@@ -189,6 +189,12 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushnumber(L, player->physics_override_liquid_sink);
 	lua_setfield(L, -2, "liquid_sink");
 
+	lua_pushnumber(L, player->physics_override_acceleration_default);
+	lua_setfield(L, -2, "acceleration_default");
+
+	lua_pushnumber(L, player->physics_override_acceleration_air);
+	lua_setfield(L, -2, "acceleration_air");
+
 	return 1;
 }
 

@@ -671,13 +671,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		if (superspeed || (fast_move && control.aux1))
 			incH = movement_acceleration_fast * BS * dtime;
 		else
-			incH = movement_acceleration_air * BS * dtime;
+			incH = movement_acceleration_air * physics_override_acceleration_air * BS * dtime;
 		incV = 0.0f; // No vertical acceleration in air
 	} else if (superspeed || (is_climbing && fast_climb) ||
 			((in_liquid || in_liquid_stable) && fast_climb)) {
 		incH = incV = movement_acceleration_fast * BS * dtime;
 	} else {
-		incH = incV = movement_acceleration_default * BS * dtime;
+		incH = incV = movement_acceleration_default * physics_override_acceleration_default * BS * dtime;
 	}
 
 	float slip_factor = 1.0f;
