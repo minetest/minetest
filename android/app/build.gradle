@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+
 android {
-	compileSdkVersion 32
-	buildToolsVersion '32.0.0'
+	compileSdkVersion 33
+	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
-		minSdkVersion 16
-		targetSdkVersion 32
+		minSdkVersion 21
+		targetSdkVersion 33
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
 	}
@@ -112,5 +113,5 @@ android.applicationVariants.all { variant ->
 
 dependencies {
 	implementation project(':native')
-	implementation 'androidx.appcompat:appcompat:1.5.1'
+	implementation 'androidx.appcompat:appcompat:1.6.0'
 }
