@@ -67,6 +67,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiScrollContainer.h"
 #include "guiHyperText.h"
 #include "guiScene.h"
+#include "guiVideo.h"
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
@@ -2791,6 +2792,54 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	m_fields.push_back(spec);
 }
 
+void GUIFormSpecMenu::parseVideo(parserData *data, const std::string &element)
+{
+	MY_CHECKCLIENT("video");
+
+	std::vector<std::string> parts;
+	if (!precheckElement("video", element, 3, 3, parts))
+		return;
+
+	std::vector<std::string> v_pos   = split(parts[0], ',');
+	std::vector<std::string> v_geom  = split(parts[1], ',');
+	std::string name = unescape_string(parts[2]);
+
+	MY_CHECKPOS("video", 0);
+	MY_CHECKGEOM("video", 1);
+
+	v2s32 pos;
+	v2s32 geom;
+
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		geom = getRealCoordinateGeometry(v_geom);
+	} else {
+		pos = getElementBasePos(&v_pos);
+		geom.X = stof(v_geom[0]) * (float)imgsize.X;
+		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+	}
+
+	if (!data->explicit_size)
+		warningstream << "invalid use of video without a size[] element" << std::endl;
+
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size()
+	);
+
+	auto rect = core::recti(pos, pos + geom);
+
+	IGUIElement *e = new GUIVideo(Environment, this, spec.fid, rect, name);
+
+//	auto style = getStyleForElement("video", spec.fname);
+//	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->drop();
+
+	m_fields.push_back(spec);
+}
+
 void GUIFormSpecMenu::removeAll()
 {
 	// Remove children
@@ -3011,6 +3060,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 
 	if (type == "model") {
 		parseModel(data, description);
+		return;
+	}
+
+	if (type == "video") {
+		parseVideo(data, description);
 		return;
 	}
 

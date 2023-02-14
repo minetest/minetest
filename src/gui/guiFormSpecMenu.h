@@ -459,6 +459,7 @@ private:
 	bool parseStyle(parserData *data, const std::string &element, bool style_type);
 	void parseSetFocus(const std::string &element);
 	void parseModel(parserData *data, const std::string &element);
+	void parseVideo(parserData *data, const std::string &element);
 
 	bool parseMiddleRect(const std::string &value, core::rect<s32> *parsed_rect);
 

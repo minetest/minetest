@@ -397,6 +397,7 @@ Number]
 			animated_image[5.5,0.5;5,2;;testformspec_animation.png;4;100]
 			animated_image[5.5,2.75;5,2;;testformspec_animation.jpg;4;100]
 
+			video[0.5,7;6,4;test_video.ogv]
 		]],
 
 	-- Model

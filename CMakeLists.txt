@@ -293,6 +293,8 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+find_package(Theora REQUIRED)
+
 if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()

@@ -1,0 +1,8 @@
+mark_as_advanced(THEORA_LIBRARY THEORA_INCLUDE_DIR)
+
+find_path(THEORA_INCLUDE_DIR theora.h)
+
+find_library(THEORA_LIBRARY NAMES theora)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Theora DEFAULT_MSG THEORA_LIBRARY THEORA_INCLUDE_DIR)
