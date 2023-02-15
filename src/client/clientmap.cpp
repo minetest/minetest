@@ -105,6 +105,7 @@ ClientMap::ClientMap(
 	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 	m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 	g_settings->registerChangedCallback("enable_raytraced_culling", on_settings_changed, this);
+	m_calculator.init(this);
 }
 
 void ClientMap::onSettingChanged(const std::string &name)
@@ -197,117 +198,66 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-class MapBlockFlags
+ClientMap::VisbleBlockCalculator::VisbleBlockCalculator() :
+		blocks_seen(v3s16(0,0,0), v3s16(0,0,0)),
+		m_drawlist(MapBlockComparer(v3s16(0,0,0)))
 {
-public:
-	static constexpr u16 CHUNK_EDGE = 8;
-	static constexpr u16 CHUNK_MASK = CHUNK_EDGE - 1;
-	static constexpr std::size_t CHUNK_VOLUME = CHUNK_EDGE * CHUNK_EDGE * CHUNK_EDGE; // volume of a chunk
+}
 
-	MapBlockFlags(v3s16 min_pos, v3s16 max_pos)
-			: min_pos(min_pos), volume((max_pos - min_pos) / CHUNK_EDGE + 1)
-	{
-		chunks.resize(volume.X * volume.Y * volume.Z);
-	}
-
-	class Chunk
-	{
-	public:
-		inline u8 &getBits(v3s16 pos)
-		{
-			std::size_t address = getAddress(pos);
-			return bits[address];
-		}
-
-	private:
-		inline std::size_t getAddress(v3s16 pos) {
-			std::size_t address = (pos.X & CHUNK_MASK) + (pos.Y & CHUNK_MASK) * CHUNK_EDGE + (pos.Z & CHUNK_MASK) * (CHUNK_EDGE * CHUNK_EDGE);
-			return address;
-		}
-
-		std::array<u8, CHUNK_VOLUME> bits;
-	};
-
-	Chunk &getChunk(v3s16 pos)
-	{
-		v3s16 delta = (pos - min_pos) / CHUNK_EDGE;
-		std::size_t address = delta.X + delta.Y * volume.X + delta.Z * volume.X * volume.Y;
-		Chunk *chunk = chunks[address].get();
-		if (!chunk) {
-			chunk = new Chunk();
-			chunks[address].reset(chunk);
-		}
-		return *chunk;
-	}
-private:
-	std::vector<std::unique_ptr<Chunk>> chunks;
-	v3s16 min_pos;
-	v3s16 volume;
-};
-
-void ClientMap::updateDrawList()
+void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
 {
-	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
+	blocks_occlusion_culled = 0;
+	blocks_visited = 0;
+	sides_skipped = 0;
+	assert(m_drawlist.empty() && m_keeplist.empty());
 
-	m_needs_update_drawlist = false;
-
-	for (auto &i : m_drawlist) {
-		MapBlock *block = i.second;
-		block->refDrop();
-	}
-	m_drawlist.clear();
-
-	for (auto &block : m_keeplist) {
-		block->refDrop();
-	}
-	m_keeplist.clear();
-
-	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
-
-	v3s16 p_blocks_min;
-	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
-
-	// Number of blocks occlusion culled
-	u32 blocks_occlusion_culled = 0;
-	// Blocks visited by the algorithm
-	u32 blocks_visited = 0;
-	// Block sides that were not traversed
-	u32 sides_skipped = 0;
-
-	// No occlusion culling when free_move is on and camera is inside ground
-	bool occlusion_culling_enabled = true;
-	if (m_control.allow_noclip) {
-		MapNode n = getNode(cam_pos_nodes);
-		if (n.getContent() == CONTENT_IGNORE || m_nodedef->get(n).solidness == 2)
-			occlusion_culling_enabled = false;
-	}
-
+	cam_pos_nodes = floatToInt(m_camera_position, BS);
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
+
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+	m_keeplist.clear();
+	shortlist.clear();
 
-	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
-
-	// Uncomment to debug occluded blocks in the wireframe mode
-	// TODO: Include this as a flag for an extended debugging setting
-	// if (occlusion_culling_enabled && m_control.show_wireframe)
-	// 	occlusion_culling_enabled = porting::getTimeS() & 1;
-
-	std::queue<v3s16> blocks_to_consider;
-
-	// Bits per block:
-	// [ visited | 0 | 0 | 0 | 0 | Z visible | Y visible | X visible ]
-	MapBlockFlags blocks_seen(p_blocks_min, p_blocks_max);
+	m_map->getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
+	blocks_seen = MapBlockFlags(p_blocks_min, p_blocks_max);
 
 	// Start breadth-first search with the block the camera is in
 	blocks_to_consider.push(camera_block);
 	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
+}
 
-	std::set<v3s16> shortlist;
-	MeshGrid mesh_grid = m_client->getMeshGrid();
+void ClientMap::VisbleBlockCalculator::swap(std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist, std::vector<MapBlock*> &other_keeplist)
+{
+	m_keeplist.swap(other_keeplist);
+	m_drawlist.swap(other_drawlist);
+}
+
+bool ClientMap::VisbleBlockCalculator::isFinished()
+{
+	return blocks_to_consider.empty();
+}
+
+bool ClientMap::VisbleBlockCalculator::step(int limit_ms)
+{
+	TimeTaker timer("clientmap");
+
+	// No occlusion culling when free_move is on and camera is inside ground
+	bool occlusion_culling_enabled = true;
+	if (m_map->m_control.allow_noclip) {
+		MapNode n = m_map->getNode(cam_pos_nodes);
+		if (n.getContent() == CONTENT_IGNORE || m_map->m_nodedef->get(n).solidness == 2)
+			occlusion_culling_enabled = false;
+	}
+
+	auto is_frustum_culled = m_map->m_client->getCamera()->getFrustumCuller();
+
+	MeshGrid mesh_grid = m_map->m_client->getMeshGrid();
+	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 
 	// Recursively walk the space and pick mapblocks for drawing
 	while (blocks_to_consider.size() > 0) {
+		if (limit_ms > 0 && timer.getTimerTime() > (u64)limit_ms)
+			return false;
 
 		v3s16 block_coord = blocks_to_consider.front();
 		blocks_to_consider.pop();
@@ -322,7 +272,7 @@ void ClientMap::updateDrawList()
 		blocks_visited++;
 
 		// Get the sector, block and mesh
-		MapSector *sector = this->getSectorNoGenerate(v2s16(block_coord.X, block_coord.Z));
+		MapSector *sector = m_map->getSectorNoGenerate(v2s16(block_coord.X, block_coord.Z));
 
 		if (!sector)
 			continue;
@@ -348,9 +298,9 @@ void ClientMap::updateDrawList()
 		}
 
 		// First, perform a simple distance check.
-		if (!m_control.range_all &&
+		if (!m_map->m_control.range_all &&
 			mesh_sphere_center.getDistanceFrom(intToFloat(cam_pos_nodes, BS)) >
-				m_control.wanted_range * BS + mesh_sphere_radius)
+				m_map->m_control.wanted_range * BS + mesh_sphere_radius)
 			continue; // Out of range, skip.
 
 		// Frustum culling
@@ -369,9 +319,9 @@ void ClientMap::updateDrawList()
 		u8 visible_outer_sides = flags & 0x07;
 
 		// Raytraced occlusion culling - send rays from the camera to the block's corners
-		if (occlusion_culling_enabled && m_enable_raytraced_culling &&
+		if (occlusion_culling_enabled && m_map->m_enable_raytraced_culling &&
 				block && mesh &&
-				visible_outer_sides != 0x07 && isBlockOccluded(block, cam_pos_nodes)) {
+				visible_outer_sides != 0x07 && m_map->isBlockOccluded(block, cam_pos_nodes)) {
 			blocks_occlusion_culled++;
 			continue;
 		}
@@ -400,7 +350,7 @@ void ClientMap::updateDrawList()
 		// * A near side can be visible but fully opaque by itself (e.g. ground at the 0 level)
 
 		// mesh solid sides are +Z-Z+Y-Y+X-X
-		// if we are inside the block's coordinates on an axis, 
+		// if we are inside the block's coordinates on an axis,
 		// treat these sides as opaque, as they should not allow to reach the far sides
 		u8 block_inner_sides = (look.X == 0 ? 3 : 0) |
 			(look.Y == 0 ? 12 : 0) |
@@ -410,7 +360,7 @@ void ClientMap::updateDrawList()
 		u8 near_inner_sides = (look.X > 0 ? 1 : 2) |
 				(look.Y > 0 ? 4 : 8) |
 				(look.Z > 0 ? 16 : 32);
-		
+
 		// This bitset is +Z-Z+Y-Y+X-X (See MapBlockMesh), and axis is XYZ.
 		// Get he block's transparent sides
 		u8 transparent_sides = (occlusion_culling_enabled && block) ? ~block->solid_sides : 0x3F;
@@ -495,7 +445,7 @@ void ClientMap::updateDrawList()
 
 	assert(m_drawlist.empty() || shortlist.empty());
 	for (auto pos : shortlist) {
-		MapBlock * block = getBlockNoCreateNoEx(pos);
+		MapBlock * block = m_map->getBlockNoCreateNoEx(pos);
 		if (block) {
 			block->refGrab();
 			m_drawlist.emplace(pos, block);
@@ -506,6 +456,36 @@ void ClientMap::updateDrawList()
 	g_profiler->avg("MapBlocks sides skipped [#]", sides_skipped);
 	g_profiler->avg("MapBlocks examined [#]", blocks_visited);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
+
+	return true;
+}
+
+void ClientMap::updateDrawList(bool force_reset)
+{
+	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
+
+	if (m_calculator.isFinished() || force_reset) {
+		// so it gets called again until done:
+		m_needs_update_drawlist = true;
+		m_calculator.start(m_camera_position);
+	}
+
+	if (m_calculator.step(5)) {
+		m_needs_update_drawlist = false;
+
+		for (auto &i : m_drawlist) {
+			MapBlock *block = i.second;
+			block->refDrop();
+		}
+		m_drawlist.clear();
+
+		for (auto &block : m_keeplist) {
+			block->refDrop();
+		}
+		m_keeplist.clear();
+
+		m_calculator.swap(m_drawlist, m_keeplist);
+	}
 }
 
 void ClientMap::touchMapBlocks()

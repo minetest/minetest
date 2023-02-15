@@ -115,7 +115,7 @@ public:
 
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
-	void updateDrawList();
+	void updateDrawList(bool force_reset);
 	// @brief Calculate statistics about the map and keep the blocks alive
 	void touchMapBlocks();
 	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
@@ -188,6 +188,91 @@ private:
 		void draw(video::IVideoDriver* driver);
 	};
 
+	class MapBlockFlags
+	{
+	public:
+		static constexpr u16 CHUNK_EDGE = 8;
+		static constexpr u16 CHUNK_MASK = CHUNK_EDGE - 1;
+		static constexpr std::size_t CHUNK_VOLUME = CHUNK_EDGE * CHUNK_EDGE * CHUNK_EDGE; // volume of a chunk
+
+		MapBlockFlags(v3s16 min_pos, v3s16 max_pos)
+				: min_pos(min_pos), volume((max_pos - min_pos) / CHUNK_EDGE + 1)
+		{
+			chunks.resize(volume.X * volume.Y * volume.Z);
+		}
+
+		class Chunk
+		{
+		public:
+			inline u8 &getBits(v3s16 pos)
+			{
+				std::size_t address = getAddress(pos);
+				return bits[address];
+			}
+
+		private:
+			inline std::size_t getAddress(v3s16 pos) {
+				std::size_t address = (pos.X & CHUNK_MASK) + (pos.Y & CHUNK_MASK) * CHUNK_EDGE + (pos.Z & CHUNK_MASK) * (CHUNK_EDGE * CHUNK_EDGE);
+				return address;
+			}
+
+			std::array<u8, CHUNK_VOLUME> bits;
+		};
+
+		Chunk &getChunk(v3s16 pos)
+		{
+			v3s16 delta = (pos - min_pos) / CHUNK_EDGE;
+			std::size_t address = delta.X + delta.Y * volume.X + delta.Z * volume.X * volume.Y;
+			Chunk *chunk = chunks[address].get();
+			if (!chunk) {
+				chunk = new Chunk();
+				chunks[address].reset(chunk);
+			}
+			return *chunk;
+		}
+	private:
+		std::vector<std::unique_ptr<Chunk>> chunks;
+		v3s16 min_pos;
+		v3s16 volume;
+	};
+
+	class VisbleBlockCalculator
+	{
+	public:
+		VisbleBlockCalculator();
+		void start(v3f m_camera_position);
+		void init(ClientMap *map)
+		{
+			this->m_map = map;
+		}
+		bool step(int limit_ms);
+		void swap(std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist, std::vector<MapBlock*> &other_keeplist);
+		bool isFinished();
+	private:
+		ClientMap *m_map = nullptr;
+		std::queue<v3s16> blocks_to_consider;
+
+		// Bits per block:
+		// [ visited | 0 | 0 | 0 | 0 | Z visible | Y visible | X visible ]
+		MapBlockFlags blocks_seen;
+
+		std::set<v3s16> shortlist;
+		v3s16 cam_pos_nodes;
+		v3s16 p_blocks_min;
+		v3s16 p_blocks_max;
+
+		std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
+		std::vector<MapBlock*> m_keeplist;
+
+		// Number of blocks occlusion culled
+		u32 blocks_occlusion_culled = 0;
+		// Blocks visited by the algorithm
+		u32 blocks_visited = 0;
+		// Block sides that were not traversed
+		u32 sides_skipped = 0;
+
+	};
+
 	Client *m_client;
 	RenderingEngine *m_rendering_engine;
 
@@ -214,6 +299,6 @@ private:
 	bool m_cache_anistropic_filter;
 	u16 m_cache_transparency_sorting_distance;
 
-	bool m_new_occlusion_culler;
 	bool m_enable_raytraced_culling;
+	VisbleBlockCalculator m_calculator;
 };

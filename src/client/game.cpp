@@ -4060,12 +4060,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	float update_draw_list_delta = 0.2f;
 
 	v3f camera_direction = camera->getDirection();
+	bool force_drawlist_reset = runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2 || m_camera_offset_changed;
 	if (runData.update_draw_list_timer >= update_draw_list_delta
-			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| m_camera_offset_changed
+			|| force_drawlist_reset
 			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
-		client->getEnv().getClientMap().updateDrawList();
+		client->getEnv().getClientMap().updateDrawList(force_drawlist_reset);
 		runData.update_draw_list_last_cam_dir = camera_direction;
 		draw_list_updated = true;
 	}
