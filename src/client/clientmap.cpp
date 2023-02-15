@@ -198,13 +198,13 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-ClientMap::VisbleBlockCalculator::VisbleBlockCalculator() :
+ClientMap::VisibleBlockCalculator::VisibleBlockCalculator() :
 		blocks_seen(v3s16(0,0,0), v3s16(0,0,0)),
 		m_drawlist(MapBlockComparer(v3s16(0,0,0)))
 {
 }
 
-ClientMap::VisbleBlockCalculator::~VisbleBlockCalculator()
+ClientMap::VisibleBlockCalculator::~VisibleBlockCalculator()
 {
 	for (auto &i : m_drawlist) {
 		MapBlock *block = i.second;
@@ -218,7 +218,7 @@ ClientMap::VisbleBlockCalculator::~VisbleBlockCalculator()
 	m_keeplist.clear();
 }
 
-void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
+void ClientMap::VisibleBlockCalculator::start(v3f m_camera_position)
 {
 	blocks_occlusion_culled = 0;
 	blocks_visited = 0;
@@ -249,7 +249,7 @@ void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
 	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 }
 
-void ClientMap::VisbleBlockCalculator::swap(
+void ClientMap::VisibleBlockCalculator::swap(
 		std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist,
 		std::vector<MapBlock*> &other_keeplist)
 {
@@ -257,12 +257,12 @@ void ClientMap::VisbleBlockCalculator::swap(
 	m_drawlist.swap(other_drawlist);
 }
 
-bool ClientMap::VisbleBlockCalculator::isFinished()
+bool ClientMap::VisibleBlockCalculator::isFinished()
 {
 	return blocks_to_consider.empty();
 }
 
-bool ClientMap::VisbleBlockCalculator::step(int limit_ms)
+bool ClientMap::VisibleBlockCalculator::step(int limit_ms)
 {
 	TimeTaker timer("Visible Block Calculator");
 

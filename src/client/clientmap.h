@@ -236,11 +236,11 @@ private:
 		v3s16 volume;
 	};
 
-	class VisbleBlockCalculator
+	class VisibleBlockCalculator
 	{
 	public:
-		VisbleBlockCalculator();
-		~VisbleBlockCalculator();
+		VisibleBlockCalculator();
+		~VisibleBlockCalculator();
 		void start(v3f m_camera_position);
 		void init(ClientMap *map)
 		{
@@ -301,5 +301,5 @@ private:
 	u16 m_cache_transparency_sorting_distance;
 
 	bool m_enable_raytraced_culling;
-	VisbleBlockCalculator m_calculator;
+	VisibleBlockCalculator m_calculator;
 };
