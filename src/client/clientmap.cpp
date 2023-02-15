@@ -204,6 +204,20 @@ ClientMap::VisbleBlockCalculator::VisbleBlockCalculator() :
 {
 }
 
+ClientMap::VisbleBlockCalculator::~VisbleBlockCalculator()
+{
+	for (auto &i : m_drawlist) {
+		MapBlock *block = i.second;
+		block->refDrop();
+	}
+	m_drawlist.clear();
+
+	for (auto &block : m_keeplist) {
+		block->refDrop();
+	}
+	m_keeplist.clear();
+}
+
 void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
 {
 	blocks_occlusion_culled = 0;
@@ -235,22 +249,12 @@ void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
 	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 }
 
-void ClientMap::VisbleBlockCalculator::swap(std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist, std::vector<MapBlock*> &other_keeplist)
+void ClientMap::VisbleBlockCalculator::swap(
+		std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist,
+		std::vector<MapBlock*> &other_keeplist)
 {
 	m_keeplist.swap(other_keeplist);
 	m_drawlist.swap(other_drawlist);
-
-	for (auto &i : m_drawlist) {
-		MapBlock *block = i.second;
-		block->refDrop();
-	}
-	m_drawlist.clear();
-
-	for (auto &block : m_keeplist) {
-		block->refDrop();
-	}
-	m_keeplist.clear();
-
 }
 
 bool ClientMap::VisbleBlockCalculator::isFinished()
@@ -260,7 +264,7 @@ bool ClientMap::VisbleBlockCalculator::isFinished()
 
 bool ClientMap::VisbleBlockCalculator::step(int limit_ms)
 {
-	TimeTaker timer("clientmap");
+	TimeTaker timer("Visible Block Calculator");
 
 	// No occlusion culling when free_move is on and camera is inside ground
 	bool occlusion_culling_enabled = true;

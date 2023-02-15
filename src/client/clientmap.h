@@ -240,6 +240,7 @@ private:
 	{
 	public:
 		VisbleBlockCalculator();
+		~VisbleBlockCalculator();
 		void start(v3f m_camera_position);
 		void init(ClientMap *map)
 		{

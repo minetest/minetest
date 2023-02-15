@@ -301,46 +301,48 @@ public:
 
 		// Set uniforms for Shadow shader
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
-			const auto &light = shadow->getDirectionalLight();
+			if (shadow->getDirectionalLightCount() > 0) {
+				const auto &light = shadow->getDirectionalLight();
 
-			core::matrix4 shadowViewProj = light.getProjectionMatrix();
-			shadowViewProj *= light.getViewMatrix();
-			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
+				core::matrix4 shadowViewProj = light.getProjectionMatrix();
+				shadowViewProj *= light.getViewMatrix();
+				m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
-			f32 v_LightDirection[3];
-			light.getDirection().getAs3Values(v_LightDirection);
-			m_light_direction.set(v_LightDirection, services);
+				f32 v_LightDirection[3];
+				light.getDirection().getAs3Values(v_LightDirection);
+				m_light_direction.set(v_LightDirection, services);
 
-			f32 TextureResolution = light.getMapResolution();
-			m_texture_res.set(&TextureResolution, services);
+				f32 TextureResolution = light.getMapResolution();
+				m_texture_res.set(&TextureResolution, services);
 
-			f32 ShadowStrength = shadow->getShadowStrength();
-			m_shadow_strength.set(&ShadowStrength, services);
+				f32 ShadowStrength = shadow->getShadowStrength();
+				m_shadow_strength.set(&ShadowStrength, services);
 
-			f32 timeOfDay = shadow->getTimeOfDay();
-			m_time_of_day.set(&timeOfDay, services);
+				f32 timeOfDay = shadow->getTimeOfDay();
+				m_time_of_day.set(&timeOfDay, services);
 
-			f32 shadowFar = shadow->getMaxShadowFar();
-			m_shadowfar.set(&shadowFar, services);
+				f32 shadowFar = shadow->getMaxShadowFar();
+				m_shadowfar.set(&shadowFar, services);
 
-			f32 cam_pos[4];
-			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
-			m_camera_pos.set(cam_pos, services);
+				f32 cam_pos[4];
+				shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
+				m_camera_pos.set(cam_pos, services);
 
-			// I don't like using this hardcoded value. maybe something like
-			// MAX_TEXTURE - 1 or somthing like that??
-			s32 TextureLayerID = 3;
-			m_shadow_texture.set(&TextureLayerID, services);
+				// I don't like using this hardcoded value. maybe something like
+				// MAX_TEXTURE - 1 or somthing like that??
+				s32 TextureLayerID = 3;
+				m_shadow_texture.set(&TextureLayerID, services);
 
-			f32 bias0 = shadow->getPerspectiveBiasXY();
-			m_perspective_bias0_vertex.set(&bias0, services);
-			m_perspective_bias0_pixel.set(&bias0, services);
-			f32 bias1 = 1.0f - bias0 + 1e-5f;
-			m_perspective_bias1_vertex.set(&bias1, services);
-			m_perspective_bias1_pixel.set(&bias1, services);
-			f32 zbias = shadow->getPerspectiveBiasZ();
-			m_perspective_zbias_vertex.set(&zbias, services);
-			m_perspective_zbias_pixel.set(&zbias, services);
+				f32 bias0 = shadow->getPerspectiveBiasXY();
+				m_perspective_bias0_vertex.set(&bias0, services);
+				m_perspective_bias0_pixel.set(&bias0, services);
+				f32 bias1 = 1.0f - bias0 + 1e-5f;
+				m_perspective_bias1_vertex.set(&bias1, services);
+				m_perspective_bias1_pixel.set(&bias1, services);
+				f32 zbias = shadow->getPerspectiveBiasZ();
+				m_perspective_zbias_vertex.set(&zbias, services);
+				m_perspective_zbias_pixel.set(&zbias, services);
+			}
 		}
 	}
 };

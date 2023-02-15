@@ -4075,7 +4075,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.touch_blocks_timer = 0;
 	}
 
-	if (RenderingEngine::get_shadow_renderer()) {
+	if (!draw_list_updated && RenderingEngine::get_shadow_renderer()) {
 		updateShadows();
 	}
 
