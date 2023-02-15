@@ -79,7 +79,8 @@ ClientMap::ClientMap(
 	m_client(client),
 	m_rendering_engine(rendering_engine),
 	m_control(control),
-	m_drawlist(MapBlockComparer(v3s16(0,0,0)))
+	m_drawlist(MapBlockComparer(v3s16(0,0,0))),
+	m_visible_block_tracker(this)
 {
 
 	/*
@@ -105,7 +106,6 @@ ClientMap::ClientMap(
 	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
 	m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 	g_settings->registerChangedCallback("enable_raytraced_culling", on_settings_changed, this);
-	m_calculator.init(this);
 }
 
 void ClientMap::onSettingChanged(const std::string &name)
@@ -198,46 +198,47 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-ClientMap::VisibleBlockCalculator::VisibleBlockCalculator() :
+ClientMap::VisibleBlockTracker::VisibleBlockTracker(ClientMap *map) :
+		m_map(map),
 		blocks_seen(v3s16(0,0,0), v3s16(0,0,0)),
-		m_drawlist(MapBlockComparer(v3s16(0,0,0)))
+		drawlist(MapBlockComparer(v3s16(0,0,0)))
 {
 }
 
-ClientMap::VisibleBlockCalculator::~VisibleBlockCalculator()
+ClientMap::VisibleBlockTracker::~VisibleBlockTracker()
 {
-	for (auto &i : m_drawlist) {
+	for (auto &i : drawlist) {
 		MapBlock *block = i.second;
 		block->refDrop();
 	}
-	m_drawlist.clear();
+	drawlist.clear();
 
-	for (auto &block : m_keeplist) {
+	for (auto &block : keeplist) {
 		block->refDrop();
 	}
-	m_keeplist.clear();
+	keeplist.clear();
 }
 
-void ClientMap::VisibleBlockCalculator::start(v3f m_camera_position)
+void ClientMap::VisibleBlockTracker::start(v3f m_camera_position)
 {
 	blocks_occlusion_culled = 0;
 	blocks_visited = 0;
 	sides_skipped = 0;
-	assert(m_drawlist.empty() && m_keeplist.empty());
+	assert(drawlist.empty() && keeplist.empty());
 
 	cam_pos_nodes = floatToInt(m_camera_position, BS);
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 
-	for (auto &i : m_drawlist) {
+	for (auto &i : drawlist) {
 		MapBlock *block = i.second;
 		block->refDrop();
 	}
-	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+	drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	for (auto &block : m_keeplist) {
+	for (auto &block : keeplist) {
 		block->refDrop();
 	}
-	m_keeplist.clear();
+	keeplist.clear();
 
 	shortlist.clear();
 
@@ -249,20 +250,20 @@ void ClientMap::VisibleBlockCalculator::start(v3f m_camera_position)
 	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 }
 
-void ClientMap::VisibleBlockCalculator::swap(
+void ClientMap::VisibleBlockTracker::swap(
 		std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist,
 		std::vector<MapBlock*> &other_keeplist)
 {
-	m_keeplist.swap(other_keeplist);
-	m_drawlist.swap(other_drawlist);
+	keeplist.swap(other_keeplist);
+	drawlist.swap(other_drawlist);
 }
 
-bool ClientMap::VisibleBlockCalculator::isFinished()
+bool ClientMap::VisibleBlockTracker::isFinished()
 {
 	return blocks_to_consider.empty();
 }
 
-bool ClientMap::VisibleBlockCalculator::step(int limit_ms)
+bool ClientMap::VisibleBlockTracker::step(int limit_ms)
 {
 	TimeTaker timer("Visible Block Calculator");
 
@@ -358,14 +359,14 @@ bool ClientMap::VisibleBlockCalculator::step(int limit_ms)
 			shortlist.emplace(mesh_grid.getMeshPos(block_coord.X), mesh_grid.getMeshPos(block_coord.Y), mesh_grid.getMeshPos(block_coord.Z));
 			// All other blocks we can grab and add to the keeplist right away.
 			if (block) {
-				m_keeplist.push_back(block);
+				keeplist.push_back(block);
 				block->refGrab();
 			}
 		}
 		else if (mesh) {
 			// without mesh chunking we can add the block to the drawlist
 			block->refGrab();
-			m_drawlist.emplace(block_coord, block);
+			drawlist.emplace(block_coord, block);
 		}
 
 		// Decide which sides to traverse next or to block away
@@ -468,19 +469,19 @@ bool ClientMap::VisibleBlockCalculator::step(int limit_ms)
 
 	g_profiler->avg("MapBlocks shortlist [#]", shortlist.size());
 
-	assert(m_drawlist.empty() || shortlist.empty());
+	assert(drawlist.empty() || shortlist.empty());
 	for (auto pos : shortlist) {
 		MapBlock * block = m_map->getBlockNoCreateNoEx(pos);
 		if (block) {
 			block->refGrab();
-			m_drawlist.emplace(pos, block);
+			drawlist.emplace(pos, block);
 		}
 	}
 
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks sides skipped [#]", sides_skipped);
 	g_profiler->avg("MapBlocks examined [#]", blocks_visited);
-	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
+	g_profiler->avg("MapBlocks drawn [#]", drawlist.size());
 
 	return true;
 }
@@ -489,19 +490,19 @@ void ClientMap::updateDrawList(bool force_reset)
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 
-	if (m_calculator.isFinished() || force_reset) {
+	if (m_visible_block_tracker.isFinished() || force_reset) {
 		// so it gets called again until done:
 		m_needs_update_drawlist = true;
-		m_calculator.start(m_camera_position);
+		m_visible_block_tracker.start(m_camera_position);
 	}
 
 	// If a reset is force, then calculate the whole
 	// drawlist in one step to avoid "flashing" in the
 	// following frame(s).
-	if (m_calculator.step(force_reset ? 0 : 5)) {
+	if (m_visible_block_tracker.step(force_reset ? 0 : 5)) {
 		m_needs_update_drawlist = false;
 
-		m_calculator.swap(m_drawlist, m_keeplist);
+		m_visible_block_tracker.swap(m_drawlist, m_keeplist);
 	}
 }
 

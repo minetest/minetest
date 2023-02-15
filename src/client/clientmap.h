@@ -236,21 +236,19 @@ private:
 		v3s16 volume;
 	};
 
-	class VisibleBlockCalculator
+	class VisibleBlockTracker
 	{
 	public:
-		VisibleBlockCalculator();
-		~VisibleBlockCalculator();
+		VisibleBlockTracker(ClientMap *map);
+		~VisibleBlockTracker();
 		void start(v3f m_camera_position);
-		void init(ClientMap *map)
-		{
-			this->m_map = map;
-		}
 		bool step(int limit_ms);
 		void swap(std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist, std::vector<MapBlock*> &other_keeplist);
 		bool isFinished();
 	private:
-		ClientMap *m_map = nullptr;
+		ClientMap *m_map;
+
+		/// The following are updated/reset by the start() method ///
 		std::queue<v3s16> blocks_to_consider;
 
 		// Bits per block:
@@ -262,8 +260,8 @@ private:
 		v3s16 p_blocks_min;
 		v3s16 p_blocks_max;
 
-		std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
-		std::vector<MapBlock*> m_keeplist;
+		std::map<v3s16, MapBlock*, MapBlockComparer> drawlist;
+		std::vector<MapBlock*> keeplist;
 
 		// Number of blocks occlusion culled
 		u32 blocks_occlusion_culled = 0;
@@ -271,7 +269,6 @@ private:
 		u32 blocks_visited = 0;
 		// Block sides that were not traversed
 		u32 sides_skipped = 0;
-
 	};
 
 	Client *m_client;
@@ -291,7 +288,7 @@ private:
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::vector<MapBlock*> m_keeplist;
 	std::map<v3s16, MapBlock*> m_drawlist_shadow;
-	bool m_needs_update_drawlist;
+	bool m_needs_update_drawlist = false;
 
 	std::set<v2s16> m_last_drawn_sectors;
 
@@ -301,5 +298,5 @@ private:
 	u16 m_cache_transparency_sorting_distance;
 
 	bool m_enable_raytraced_culling;
-	VisibleBlockCalculator m_calculator;
+	VisibleBlockTracker m_visible_block_tracker;
 };
