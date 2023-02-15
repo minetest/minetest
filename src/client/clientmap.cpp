@@ -214,8 +214,17 @@ void ClientMap::VisbleBlockCalculator::start(v3f m_camera_position)
 	cam_pos_nodes = floatToInt(m_camera_position, BS);
 	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 
+	for (auto &i : m_drawlist) {
+		MapBlock *block = i.second;
+		block->refDrop();
+	}
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
+
+	for (auto &block : m_keeplist) {
+		block->refDrop();
+	}
 	m_keeplist.clear();
+
 	shortlist.clear();
 
 	m_map->getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
@@ -230,6 +239,18 @@ void ClientMap::VisbleBlockCalculator::swap(std::map<v3s16, MapBlock*, MapBlockC
 {
 	m_keeplist.swap(other_keeplist);
 	m_drawlist.swap(other_drawlist);
+
+	for (auto &i : m_drawlist) {
+		MapBlock *block = i.second;
+		block->refDrop();
+	}
+	m_drawlist.clear();
+
+	for (auto &block : m_keeplist) {
+		block->refDrop();
+	}
+	m_keeplist.clear();
+
 }
 
 bool ClientMap::VisbleBlockCalculator::isFinished()
@@ -470,19 +491,11 @@ void ClientMap::updateDrawList(bool force_reset)
 		m_calculator.start(m_camera_position);
 	}
 
-	if (m_calculator.step(5)) {
+	// If a reset is force, then calculate the whole
+	// drawlist in one step to avoid "flashing" in the
+	// following frame(s).
+	if (m_calculator.step(force_reset ? 0 : 5)) {
 		m_needs_update_drawlist = false;
-
-		for (auto &i : m_drawlist) {
-			MapBlock *block = i.second;
-			block->refDrop();
-		}
-		m_drawlist.clear();
-
-		for (auto &block : m_keeplist) {
-			block->refDrop();
-		}
-		m_keeplist.clear();
 
 		m_calculator.swap(m_drawlist, m_keeplist);
 	}
