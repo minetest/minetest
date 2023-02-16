@@ -4065,7 +4065,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			|| force_drawlist_reset
 			|| client->getEnv().getClientMap().needsUpdateDrawList()) {
 		runData.update_draw_list_timer = 0;
-		client->getEnv().getClientMap().updateDrawList(force_drawlist_reset);
+		client->getEnv().getClientMap().updateDrawList(force_drawlist_reset, stats->drawtime_avg);
 		runData.update_draw_list_last_cam_dir = camera_direction;
 		draw_list_updated = true;
 	}
@@ -4180,6 +4180,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);
+	stats->drawtime_avg *= 0.99f;
+	stats->drawtime_avg += stats->drawtime * 0.01f;
 	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }

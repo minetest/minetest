@@ -115,7 +115,7 @@ public:
 
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max, float range=-1.0f);
-	void updateDrawList(bool force_reset);
+	void updateDrawList(bool force_reset, float drawtime_avg);
 	// @brief Calculate statistics about the map and keep the blocks alive
 	void touchMapBlocks();
 	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
@@ -242,7 +242,7 @@ private:
 		VisibleBlockTracker(ClientMap *map);
 		~VisibleBlockTracker();
 		void start(v3f m_camera_position);
-		bool step(int limit_ms);
+		bool step(u64 limit_us);
 		void swap(std::map<v3s16, MapBlock*, MapBlockComparer> &other_drawlist, std::vector<MapBlock*> &other_keeplist);
 		bool isFinished();
 	private:

@@ -34,6 +34,7 @@ struct Jitter {
 
 struct RunStats {
 	u64 drawtime; // (us)
+	float drawtime_avg; // (us)
 
 	Jitter dtime_jitter, busy_time_jitter;
 };

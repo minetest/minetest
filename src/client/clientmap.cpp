@@ -263,9 +263,9 @@ bool ClientMap::VisibleBlockTracker::isFinished()
 	return blocks_to_consider.empty();
 }
 
-bool ClientMap::VisibleBlockTracker::step(int limit_ms)
+bool ClientMap::VisibleBlockTracker::step(u64 limit_us)
 {
-	TimeTaker timer("Visible Block Calculator");
+	TimeTaker timer("Visible Block Calculator", nullptr, PRECISION_MICRO);
 
 	// No occlusion culling when free_move is on and camera is inside ground
 	bool occlusion_culling_enabled = true;
@@ -282,7 +282,7 @@ bool ClientMap::VisibleBlockTracker::step(int limit_ms)
 
 	// Recursively walk the space and pick mapblocks for drawing
 	while (blocks_to_consider.size() > 0) {
-		if (limit_ms > 0 && timer.getTimerTime() > (u64)limit_ms)
+		if (limit_us > 0 && timer.getTimerTime() > limit_us)
 			return false;
 
 		v3s16 block_coord = blocks_to_consider.front();
@@ -486,7 +486,7 @@ bool ClientMap::VisibleBlockTracker::step(int limit_ms)
 	return true;
 }
 
-void ClientMap::updateDrawList(bool force_reset)
+void ClientMap::updateDrawList(bool force_reset, float drawtime_avg)
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 
@@ -499,7 +499,8 @@ void ClientMap::updateDrawList(bool force_reset)
 	// If a reset is force, then calculate the whole
 	// drawlist in one step to avoid "flashing" in the
 	// following frame(s).
-	if (m_visible_block_tracker.step(force_reset ? 0 : 5)) {
+	// Allow 25% of average drawtime for making progress on the block tracker
+	if (m_visible_block_tracker.step(force_reset ? 0 : std::ceil(drawtime_avg * 0.25f))) {
 		m_needs_update_drawlist = false;
 
 		m_visible_block_tracker.swap(m_drawlist, m_keeplist);
