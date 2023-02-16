@@ -401,16 +401,16 @@ private:
 
 	// Generate image based on a string like "stone.png" or "[crack:1:0".
 	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
-	// usedSourceImages is important to determine when to flush the image from a cache (dynamic media)
-	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg, std::set<std::string> &usedSourceImages);
+	// source_image_names is important to determine when to flush the image from a cache (dynamic media)
+	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg, std::set<std::string> &source_image_names);
 
 	/*! Generates an image from a full string like
 	 * "stone.png^mineral_coal.png^[crack:1:0".
 	 * Shall be called from the main thread.
 	 * The returned Image should be dropped.
-	 * usedSourceImages is important to determine when to flush the image from a cache (dynamic media)
+	 * source_image_names is important to determine when to flush the image from a cache (dynamic media)
 	 */
-	video::IImage* generateImage(const std::string &name, std::set<std::string> &usedSourceImages);
+	video::IImage* generateImage(const std::string &name, std::set<std::string> &source_image_names);
 
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
@@ -612,8 +612,8 @@ u32 TextureSource::generateTexture(const std::string &name)
 	sanity_check(driver);
 
 	// passed into texture info for dynamic media tracking
-	std::set<std::string> sourceImageNames;
-	video::IImage *img = generateImage(name, sourceImageNames);
+	std::set<std::string> source_image_names;
+	video::IImage *img = generateImage(name, source_image_names);
 
 	video::ITexture *tex = NULL;
 
@@ -634,7 +634,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	u32 id = m_textureinfo_cache.size();
-	TextureInfo ti(name, tex, sourceImageNames);
+	TextureInfo ti(name, tex, source_image_names);
 	m_textureinfo_cache.push_back(ti);
 	m_name_to_id[name] = id;
 
@@ -698,8 +698,8 @@ Palette* TextureSource::getPalette(const std::string &name)
 	auto it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
 		// Create palette
-		std::set<std::string> sourceImageNames; // unused, sadly.
-		video::IImage *img = generateImage(name, sourceImageNames);
+		std::set<std::string> source_image_names; // unused, sadly.
+		video::IImage *img = generateImage(name, source_image_names);
 		if (!img) {
 			warningstream << "TextureSource::getPalette(): palette \"" << name
 				<< "\" could not be loaded." << std::endl;
@@ -818,8 +818,8 @@ void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 
 	// replaces the previous sourceImages
 	// shouldn't really need to be done, but can't hurt
-	std::set<std::string> sourceImageNames;
-	video::IImage *img = generateImage(ti.name, sourceImageNames);
+	std::set<std::string> source_image_names;
+	video::IImage *img = generateImage(ti.name, source_image_names);
 #if ENABLE_GLES
 	img = Align2Npot2(img, driver);
 #endif
@@ -833,7 +833,7 @@ void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 	video::ITexture *t_old = ti.texture;
 	// Replace texture
 	ti.texture = t;
-	ti.sourceImages = sourceImageNames;
+	ti.sourceImages = source_image_names;
 
 	if (t_old)
 		m_texture_trash.push_back(t_old);
@@ -954,7 +954,7 @@ static video::IImage *createInventoryCubeImage(
 	return result;
 }
 
-video::IImage* TextureSource::generateImage(const std::string &name, std::set<std::string> &sourceImageNames)
+video::IImage* TextureSource::generateImage(const std::string &name, std::set<std::string> &source_image_names)
 {
 	// Get the base image
 
@@ -1007,7 +1007,7 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 		using a recursive call.
 	*/
 	if (last_separator_pos != -1) {
-		baseimg = generateImage(name.substr(0, last_separator_pos), sourceImageNames);
+		baseimg = generateImage(name.substr(0, last_separator_pos), source_image_names);
 	}
 
 	/*
@@ -1025,7 +1025,7 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 			&& last_part_of_name[last_part_of_name.size() - 1] == paren_close) {
 		std::string name2 = last_part_of_name.substr(1,
 				last_part_of_name.size() - 2);
-		video::IImage *tmp = generateImage(name2, sourceImageNames);
+		video::IImage *tmp = generateImage(name2, source_image_names);
 		if (!tmp) {
 			errorstream << "generateImage(): "
 				"Failed to generate \"" << name2 << "\""
@@ -1039,7 +1039,7 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 		} else {
 			baseimg = tmp;
 		}
-	} else if (!generateImagePart(last_part_of_name, baseimg, sourceImageNames)) {
+	} else if (!generateImagePart(last_part_of_name, baseimg, source_image_names)) {
 		// Generate image according to part of name
 		errorstream << "generateImage(): "
 				"Failed to generate \"" << last_part_of_name << "\""
@@ -1153,7 +1153,7 @@ void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 }
 
 bool TextureSource::generateImagePart(std::string part_of_name,
-		video::IImage *& baseimg, std::set<std::string> &sourceImageNames)
+		video::IImage *& baseimg, std::set<std::string> &source_image_names)
 {
 	const char escape = '\\'; // same as in generateImage()
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
@@ -1161,7 +1161,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 	// Stuff starting with [ are special commands
 	if (part_of_name.empty() || part_of_name[0] != '[') {
-		sourceImageNames.insert(part_of_name);
+		source_image_names.insert(part_of_name);
 		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
 		if (image == NULL) {
 			if (!part_of_name.empty()) {
@@ -1299,7 +1299,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
-				video::IImage *img = generateImage(filename, sourceImageNames);
+				video::IImage *img = generateImage(filename, source_image_names);
 				if (img) {
 					core::dimension2d<u32> dim = img->getDimension();
 					core::position2d<s32> pos_base(x, y);
@@ -1463,15 +1463,15 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			std::string imagename_right = sf.next("{");
 
 			// Generate images for the faces of the cube
-			video::IImage *img_top = generateImage(imagename_top, sourceImageNames);
-			video::IImage *img_left = generateImage(imagename_left, sourceImageNames);
-			video::IImage *img_right = generateImage(imagename_right, sourceImageNames);
+			video::IImage *img_top = generateImage(imagename_top, source_image_names);
+			video::IImage *img_left = generateImage(imagename_left, source_image_names);
+			video::IImage *img_right = generateImage(imagename_right, source_image_names);
 
 			if (img_top == NULL || img_left == NULL || img_right == NULL) {
 				errorstream << "generateImagePart(): Failed to create textures"
 						<< " for inventorycube \"" << part_of_name << "\""
 						<< std::endl;
-				baseimg = generateImage(imagename_top, sourceImageNames);
+				baseimg = generateImage(imagename_top, source_image_names);
 				return true;
 			}
 
@@ -1497,7 +1497,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			if (baseimg == NULL)
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
-			video::IImage *img = generateImage(filename, sourceImageNames);
+			video::IImage *img = generateImage(filename, source_image_names);
 			if (img)
 			{
 				core::dimension2d<u32> dim = img->getDimension();
@@ -1579,7 +1579,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-			video::IImage *img = generateImage(filename, sourceImageNames);
+			video::IImage *img = generateImage(filename, source_image_names);
 			if (img) {
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
