@@ -1137,6 +1137,11 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			Loop through blocks in sector
 		*/
 		for (MapBlock *block : sectorblocks) {
+			if (mesh_grid.cell_size == 1 && !block->mesh) {
+				// fast out in the case of no mesh chunking
+				continue;
+			}
+
 			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS);
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
 			if (projection.getDistanceFrom(block_pos) > radius)
@@ -1166,7 +1171,7 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	}
 	for (auto pos : shortlist) {
 		MapBlock * block = getBlockNoCreateNoEx(pos);
-		if (block && m_drawlist_shadow.emplace(pos, block).second) {
+		if (block && block->mesh && m_drawlist_shadow.emplace(pos, block).second) {
 			block->refGrab();
 		}
 	}
