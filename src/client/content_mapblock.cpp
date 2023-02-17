@@ -420,10 +420,12 @@ void MapblockMeshGenerator::drawSolidNode()
 		v3s16(0, 0, -1)
 	};
 	TileSpec tiles[6];
+	u16 lights[6];
 	content_t n1 = n.getContent();
 	for (int face = 0; face < 6; face++) {
 		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
-		content_t n2 = data->m_vmanip.getNodeNoEx(p2).getContent();
+		MapNode neighbor = data->m_vmanip.getNodeNoEx(p2);
+		content_t n2 = neighbor.getContent();
 		bool backface_culling = f->drawtype == NDT_NORMAL;
 		if (n2 == n1)
 			continue;
@@ -451,6 +453,9 @@ void MapblockMeshGenerator::drawSolidNode()
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 		}
+		if (!data->m_smooth_lighting) {
+			lights[face] = getFaceLight(n, neighbor, nodedef);
+		}
 	}
 	if (!faces)
 		return;
@@ -466,10 +471,7 @@ void MapblockMeshGenerator::drawSolidNode()
 		box.MaxEdge += origin;
 		generateCuboidTextureCoords(box, texture_coord_buf);
 		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
-			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
-			u16 light = getFaceLight(n, n2, nodedef);
-			video::SColor color = encode_light(light, f->light_source);
+			video::SColor color = encode_light(lights[face], f->light_source);
 			if (!f->light_source)
 				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
