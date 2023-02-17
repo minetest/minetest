@@ -140,41 +140,41 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 	collector->append(tile, vertices, 4, quad_indices, 6);
 }
 
-static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, const video::SColor *colors, const f32 *txc, TileSpec *tiles, int tilecount) {
+static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, const f32 *txc, TileSpec *tiles, int tilecount) {
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
 
 	std::array<video::S3DVertex, 24> vertices = {{
 		// top
-		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[0], txc[1]),
-		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[2], txc[1]),
-		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[2], txc[3]),
-		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[0], txc[3]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, {}, txc[0], txc[1]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, {}, txc[2], txc[1]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, {}, txc[2], txc[3]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, {}, txc[0], txc[3]),
 		// bottom
-		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[4], txc[5]),
-		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[6], txc[5]),
-		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[6], txc[7]),
-		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[4], txc[7]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, {}, txc[4], txc[5]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, {}, txc[6], txc[5]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, {}, txc[6], txc[7]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, {}, txc[4], txc[7]),
 		// right
-		video::S3DVertex(max.X, max.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[9]),
-		video::S3DVertex(max.X, max.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[9]),
-		video::S3DVertex(max.X, min.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[11]),
-		video::S3DVertex(max.X, min.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[11]),
+		video::S3DVertex(max.X, max.Y, min.Z, 1, 0, 0, {}, txc[ 8], txc[9]),
+		video::S3DVertex(max.X, max.Y, max.Z, 1, 0, 0, {}, txc[10], txc[9]),
+		video::S3DVertex(max.X, min.Y, max.Z, 1, 0, 0, {}, txc[10], txc[11]),
+		video::S3DVertex(max.X, min.Y, min.Z, 1, 0, 0, {}, txc[ 8], txc[11]),
 		// left
-		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[13]),
-		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[13]),
-		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[15]),
-		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[15]),
+		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, {}, txc[12], txc[13]),
+		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, {}, txc[14], txc[13]),
+		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, {}, txc[14], txc[15]),
+		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, {}, txc[12], txc[15]),
 		// back
-		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[17]),
-		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[17]),
-		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[19]),
-		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[19]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, {}, txc[16], txc[17]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, {}, txc[18], txc[17]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, {}, txc[18], txc[19]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, {}, txc[16], txc[19]),
 		// front
-		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[21]),
-		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[21]),
-		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[23]),
-		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[23]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, {}, txc[20], txc[21]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, {}, txc[22], txc[21]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, {}, txc[22], txc[23]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, {}, txc[20], txc[23]),
 	}};
 
 	for (int face = 0; face < 6; face++) {
@@ -241,6 +241,8 @@ void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
+	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
+
 	video::SColor colors[6];
 	for (int face = 0; face != 6; ++face) {
 		colors[face] = encode_light(light, f->light_source);
@@ -254,7 +256,12 @@ void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 		applyFacesShading(colors[5], v3f(0, 0, -1));
 	}
 
-	auto vertices = setupCuboidVertices(box, colors, txc, tiles, tilecount);
+	for (int face = 0; face < 6; face++) {
+		for (int j = 0; j < 4; j++) {
+			video::S3DVertex &vertex = vertices[face * 4 + j];
+			vertex.Color = colors[face];
+		}
+	}
 
 	// Add to mesh collector
 	for (int k = 0; k < 6; ++k) {
@@ -281,9 +288,7 @@ void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
-	video::SColor colors[6];
-
-	auto vertices = setupCuboidVertices(box, colors, txc, tiles, tilecount);
+	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
 
 	static const u8 light_indices[24] = {
 		3, 7, 6, 2,
