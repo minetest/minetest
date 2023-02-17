@@ -456,11 +456,28 @@ void MapblockMeshGenerator::drawSolidNode()
 		return;
 	u8 mask = faces ^ 0b0011'1111; // k-th bit is set if k-th face is to be *omitted*, as expected by cuboid drawing functions.
 	origin = intToFloat(p, BS);
-	if (data->m_smooth_lighting)
+	auto box = aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS));
+	if (data->m_smooth_lighting) {
 		getSmoothLightFrame();
-	else
-		light = LightPair(getInteriorLight(n, 1, nodedef));
-	drawAutoLightedCuboid(aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS)), nullptr, tiles, 6, mask);
+		drawAutoLightedCuboid(box, nullptr, tiles, 6, mask);
+	} else {
+		f32 texture_coord_buf[24];
+		box.MinEdge += origin;
+		box.MaxEdge += origin;
+		generateCuboidTextureCoords(box, texture_coord_buf);
+		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
+			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+			u16 light = getFaceLight(n, n2, nodedef);
+			video::SColor color = encode_light(light, f->light_source);
+			if (!f->light_source)
+				applyFacesShading(color, vertices[0].Normal);
+			for (int j = 0; j < 4; j++) {
+				video::S3DVertex &vertex = vertices[j];
+				vertex.Color = color;
+			}
+		});
+	}
 }
 
 u8 MapblockMeshGenerator::getNodeBoxMask(aabb3f box, u8 solid_neighbors, u8 sametype_neighbors) const
