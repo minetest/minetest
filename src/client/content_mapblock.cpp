@@ -226,6 +226,34 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 	return vertices;
 }
 
+// Create a cuboid with custom lighting.
+//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tilecount - number of entries in tiles, 1<=tilecount<=6
+//  txc       - texture coordinates - this is a list of texture coordinates
+//              for the opposite corners of each face - therefore, there
+//              should be (2+2)*6=24 values in the list. The order of
+//              the faces in the list is up-down-right-left-back-front
+//              (compatible with ContentFeatures).
+//  mask      - a bit mask that suppresses drawing of tiles.
+//              tile i will not be drawn if mask & (1 << i) is 1
+//  face_lighter(int face, video::S3DVertex vertices[4]) - a callback that will be called for each face drawn to setup vertex colors.
+template <typename Fn>
+void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const f32 *txc, u8 mask, Fn &&face_lighter)
+{
+	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
+
+	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
+
+	for (int k = 0; k < 6; ++k) {
+		if (mask & (1 << k))
+			continue;
+		face_lighter(k, &vertices[4 * k]);
+		int tileindex = MYMIN(k, tilecount - 1);
+		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
+	}
+}
+
 // Create a cuboid with flat lighting.
 //  tiles     - the tiles (materials) to use (for all 6 faces)
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
@@ -239,10 +267,6 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 	TileSpec *tiles, int tilecount, const f32 *txc, u8 mask)
 {
-	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
-
-	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
-
 	static const v3f normals[6] = {
 		{0, 1, 0},
 		{0, -1, 0},
@@ -252,23 +276,15 @@ void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 		{0, 0, -1},
 	};
 
-	for (int face = 0; face < 6; face++) {
+	drawCuboid(box, tiles, tilecount, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
 		video::SColor color = encode_light(light, f->light_source);
 		if (!f->light_source)
 			applyFacesShading(color, normals[face]);
 		for (int j = 0; j < 4; j++) {
-			video::S3DVertex &vertex = vertices[face * 4 + j];
+			video::S3DVertex &vertex = vertices[j];
 			vertex.Color = color;
 		}
-	}
-
-	// Add to mesh collector
-	for (int k = 0; k < 6; ++k) {
-		if (mask & (1 << k))
-			continue;
-		int tileindex = MYMIN(k, tilecount - 1);
-		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
-	}
+	});
 }
 
 // Create a cuboid with smooth lighting.
@@ -285,10 +301,6 @@ void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
 	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
 {
-	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
-
-	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
-
 	static const u8 light_indices[24] = {
 		3, 7, 6, 2,
 		0, 4, 5, 1,
@@ -298,24 +310,16 @@ void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
-	for (int face = 0; face < 6; face++) {
+	drawCuboid(box, tiles, tilecount, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
 		for (int j = 0; j < 4; j++) {
-			video::S3DVertex &vertex = vertices[face * 4 + j];
+			video::S3DVertex &vertex = vertices[j];
 			vertex.Color = encode_light(
 				lights[light_indices[face * 4 + j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
 				f->light_source);
 			if (!f->light_source)
 				applyFacesShading(vertex.Color, vertex.Normal);
 		}
-	}
-
-	// Add to mesh collector
-	for (int k = 0; k < 6; ++k) {
-		if (mask & (1 << k))
-			continue;
-		int tileindex = MYMIN(k, tilecount - 1);
-		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
-	}
+	});
 }
 
 // Gets the base lighting values for a node

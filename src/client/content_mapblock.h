@@ -99,6 +99,8 @@ public:
 		float vertical_tiling = 1.0);
 
 // cuboid drawing!
+	template <typename Fn>
+	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount, const f32 *txc, u8 mask, Fn &&face_lighter);
 	void drawCuboidFlat(const aabb3f &box, TileSpec *tiles, int tilecount, const f32 *txc, u8 mask = 0);
 	void drawCuboidSmooth(const aabb3f &box, TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask = 0);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
