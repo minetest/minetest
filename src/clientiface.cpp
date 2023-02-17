@@ -185,6 +185,9 @@ void RemoteClient::GetNextBlocks (
 		m_blocks_occ.clear();
 	}
 	if (m_nearest_unsent_d > 0) {
+		if (!m_blocks_modified.empty()) {
+			m_blocks_occ.clear();
+		}
 		// make sure any blocks modified since the last time we sent blocks are resent
 		for (const v3s16 &p : m_blocks_modified) {
 			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
@@ -302,6 +305,9 @@ void RemoteClient::GetNextBlocks (
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
+			/*
+				Or blocks we already have occlusion culled
+			*/
 			if (m_blocks_occ.find(p) != m_blocks_occ.end())
 				continue;
 
