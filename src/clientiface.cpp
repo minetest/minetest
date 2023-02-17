@@ -400,7 +400,9 @@ queue_full_break:
 
 	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
-		m_blocks_occ.clear();
+		if (num_blocks_selected > 0)
+			// if the distance changes and we sent something, reset the occlusion cache
+			m_blocks_occ.clear();
 	}
 }
 
