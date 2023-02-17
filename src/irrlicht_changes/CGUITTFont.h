@@ -138,10 +138,8 @@ namespace gui
 
 				bool flgmip = driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 				bool flgcpy = driver->getTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY);
 				driver->setTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY, true);
-#endif
 
 				// Set the texture color format.
 				switch (pixel_mode)
@@ -157,9 +155,8 @@ namespace gui
 
 				// Restore our texture creation flags.
 				driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flgmip);
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 				driver->setTextureCreationFlag(video::ETCF_ALLOW_MEMORY_COPY, flgcpy);
-#endif
+
 				return texture ? true : false;
 			}
 

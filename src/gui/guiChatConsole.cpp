@@ -673,13 +673,11 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 		}
 	}
-#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
 		prompt.input(std::wstring(event.StringInput.Str->c_str()));
 		return true;
 	}
-#endif
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
