@@ -175,19 +175,14 @@ void RemoteClient::GetNextBlocks (
 	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
 		m_last_center = center;
-		m_blocks_occ.clear();
 	}
 	// reset the unsent distance if the view angle has changed more that 10% of the fov
 	// (this matches isBlockInSight which allows for an extra 10%)
 	if (camera_dir.dotProduct(m_last_camera_dir) < std::cos(camera_fov * 0.1f)) {
 		m_nearest_unsent_d = 0;
 		m_last_camera_dir = camera_dir;
-		m_blocks_occ.clear();
 	}
 	if (m_nearest_unsent_d > 0) {
-		if (!m_blocks_modified.empty()) {
-			m_blocks_occ.clear();
-		}
 		// make sure any blocks modified since the last time we sent blocks are resent
 		for (const v3s16 &p : m_blocks_modified) {
 			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
@@ -403,8 +398,10 @@ queue_full_break:
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
+		m_blocks_occ.clear();
+	}
 }
 
 void RemoteClient::GotBlock(v3s16 p)

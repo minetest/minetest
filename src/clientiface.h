@@ -376,9 +376,9 @@ private:
 	std::unordered_set<v3s16> m_blocks_sent;
 
 	/*
-		Cache of blocks that have been occlusion culled. Occlusion culling is expensive.
-		Similar to m_blocks_sent, these represent blocks that would have been sent to the client.
-		Reset when the player moves or changes view-direction.
+		Cache of blocks that have been occlusion culled at the current distance.
+		As GetNextBlocks traverses the same distance multiple times, this saves
+		significant CPU time.
 	 */
 	std::unordered_set<v3s16> m_blocks_occ;
 
