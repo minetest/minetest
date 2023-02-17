@@ -17,63 +17,7 @@
 
 using namespace irr;
 
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8)
-	namespace irr { namespace gui {
-
-		//! State of buttons used for drawing texture images.
-		//! Note that only a single state is active at a time
-		//! Also when no image is defined for a state it will use images from another state
-		//! and if that state is not set from the replacement for that,etc.
-		//! So in many cases setting EGBIS_IMAGE_UP and EGBIS_IMAGE_DOWN is sufficient.
-		enum EGUI_BUTTON_IMAGE_STATE {
-			//! When no other states have images they will all use this one.
-					EGBIS_IMAGE_UP,
-			//! When not set EGBIS_IMAGE_UP is used.
-					EGBIS_IMAGE_UP_MOUSEOVER,
-			//! When not set EGBIS_IMAGE_UP_MOUSEOVER is used.
-					EGBIS_IMAGE_UP_FOCUSED,
-			//! When not set EGBIS_IMAGE_UP_FOCUSED is used.
-					EGBIS_IMAGE_UP_FOCUSED_MOUSEOVER,
-			//! When not set EGBIS_IMAGE_UP is used.
-					EGBIS_IMAGE_DOWN,
-			//! When not set EGBIS_IMAGE_DOWN is used.
-					EGBIS_IMAGE_DOWN_MOUSEOVER,
-			//! When not set EGBIS_IMAGE_DOWN_MOUSEOVER is used.
-					EGBIS_IMAGE_DOWN_FOCUSED,
-			//! When not set EGBIS_IMAGE_DOWN_FOCUSED is used.
-					EGBIS_IMAGE_DOWN_FOCUSED_MOUSEOVER,
-			//! When not set EGBIS_IMAGE_UP or EGBIS_IMAGE_DOWN are used (depending on button state).
-					EGBIS_IMAGE_DISABLED,
-			//! not used, counts the number of enumerated items
-					EGBIS_COUNT
-		};
-
-		//! Names for gui button image states
-		const c8 *const GUIButtonImageStateNames[EGBIS_COUNT + 1] =
-				{
-						"Image",    // not "ImageUp" as it otherwise breaks serialization of old files
-						"ImageUpOver",
-						"ImageUpFocused",
-						"ImageUpFocusedOver",
-						"PressedImage",    // not "ImageDown" as it otherwise breaks serialization of old files
-						"ImageDownOver",
-						"ImageDownFocused",
-						"ImageDownFocusedOver",
-						"ImageDisabled",
-						0    // count
-				};
-
-	}}
-
-#endif
-
 class ISimpleTextureSource;
-
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8)
-#define OVERRIDE_19
-#else
-#define OVERRIDE_19 override
-#endif
 
 class GUIButton : public gui::IGUIButton
 {
@@ -103,27 +47,25 @@ public:
 	virtual gui::IGUIFont* getActiveFont() const override;
 
 	//! Sets another color for the button text.
-	virtual void setOverrideColor(video::SColor color) OVERRIDE_19;
+	virtual void setOverrideColor(video::SColor color) override;
 
 	//! Gets the override color
-	virtual video::SColor getOverrideColor(void) const OVERRIDE_19;
+	virtual video::SColor getOverrideColor() const override;
 
-	#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 	//! Gets the currently used text color
 	virtual video::SColor getActiveColor() const override;
-	#endif
 
 	//! Sets if the button text should use the override color or the color in the gui skin.
-	virtual void enableOverrideColor(bool enable) OVERRIDE_19;
+	virtual void enableOverrideColor(bool enable) override;
 
 	//! Checks if an override color is enabled
-	virtual bool isOverrideColorEnabled(void) const OVERRIDE_19;
+	virtual bool isOverrideColorEnabled(void) const override;
 
 	// PATCH
 	//! Sets an image which should be displayed on the button when it is in the given state.
 	virtual void setImage(gui::EGUI_BUTTON_IMAGE_STATE state,
 			video::ITexture* image=nullptr,
-			const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0)) OVERRIDE_19;
+			const core::rect<s32>& sourceRect=core::rect<s32>(0,0,0,0)) override;
 
 	//! Sets an image which should be displayed on the button when it is in normal state.
 	virtual void setImage(video::ITexture* image=nullptr) override;
@@ -152,25 +94,19 @@ public:
 	*/
 	virtual void setSprite(gui::EGUI_BUTTON_STATE state, s32 index,
 						   video::SColor color=video::SColor(255,255,255,255),
-						   bool loop=false, bool scale=false) OVERRIDE_19;
-
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 8)
-	void setSprite(gui::EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop) override {
-		setSprite(state, index, color, loop, false);
-	}
-#endif
+						   bool loop=false, bool scale=false) override;
 
 	//! Get the sprite-index for the given state or -1 when no sprite is set
-	virtual s32 getSpriteIndex(gui::EGUI_BUTTON_STATE state) const OVERRIDE_19;
+	virtual s32 getSpriteIndex(gui::EGUI_BUTTON_STATE state) const override;
 
 	//! Get the sprite color for the given state. Color is only used when a sprite is set.
-	virtual video::SColor getSpriteColor(gui::EGUI_BUTTON_STATE state) const OVERRIDE_19;
+	virtual video::SColor getSpriteColor(gui::EGUI_BUTTON_STATE state) const override;
 
 	//! Returns if the sprite in the given state does loop
-	virtual bool getSpriteLoop(gui::EGUI_BUTTON_STATE state) const OVERRIDE_19;
+	virtual bool getSpriteLoop(gui::EGUI_BUTTON_STATE state) const override;
 
 	//! Returns if the sprite in the given state is scaled
-	virtual bool getSpriteScale(gui::EGUI_BUTTON_STATE state) const OVERRIDE_19;
+	virtual bool getSpriteScale(gui::EGUI_BUTTON_STATE state) const override;
 
 	//! Sets if the button should behave like a push button. Which means it
 	//! can be in two states: Normal or Pressed. With a click on the button,
@@ -210,13 +146,13 @@ public:
 	virtual bool isScalingImage() const override;
 
 	//! Get if the shift key was pressed in last EGET_BUTTON_CLICKED event
-	virtual bool getClickShiftState() const OVERRIDE_19
+	virtual bool getClickShiftState() const override
 	{
 		return ClickShiftState;
 	}
 
 	//! Get if the control key was pressed in last EGET_BUTTON_CLICKED event
-	virtual bool getClickControlState() const OVERRIDE_19
+	virtual bool getClickControlState() const override
 	{
 		return ClickControlState;
 	}

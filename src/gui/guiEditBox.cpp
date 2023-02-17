@@ -200,7 +200,6 @@ void GUIEditBox::sendGuiEvent(EGUI_EVENT_TYPE type)
 bool GUIEditBox::OnEvent(const SEvent &event)
 {
 	if (isEnabled()) {
-
 		switch (event.EventType) {
 		case EET_GUI_EVENT:
 			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST) {
@@ -218,11 +217,9 @@ bool GUIEditBox::OnEvent(const SEvent &event)
 			if (processMouse(event))
 				return true;
 			break;
-#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 		case EET_STRING_INPUT_EVENT:
 			inputString(*event.StringInput.Str);
 			return true;
-#endif
 		default:
 			break;
 		}
