@@ -254,74 +254,6 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	}
 }
 
-// Create a cuboid with flat lighting.
-//  tiles     - the tiles (materials) to use (for all 6 faces)
-//  tilecount - number of entries in tiles, 1<=tilecount<=6
-//  txc       - texture coordinates - this is a list of texture coordinates
-//              for the opposite corners of each face - therefore, there
-//              should be (2+2)*6=24 values in the list. The order of
-//              the faces in the list is up-down-right-left-back-front
-//              (compatible with ContentFeatures).
-//  mask      - a bit mask that suppresses drawing of tiles.
-//              tile i will not be drawn if mask & (1 << i) is 1
-void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const f32 *txc, u8 mask)
-{
-	static const v3f normals[6] = {
-		{0, 1, 0},
-		{0, -1, 0},
-		{1, 0, 0},
-		{-1, 0, 0},
-		{0, 0, 1},
-		{0, 0, -1},
-	};
-
-	drawCuboid(box, tiles, tilecount, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
-		video::SColor color = encode_light(light, f->light_source);
-		if (!f->light_source)
-			applyFacesShading(color, normals[face]);
-		for (int j = 0; j < 4; j++) {
-			video::S3DVertex &vertex = vertices[j];
-			vertex.Color = color;
-		}
-	});
-}
-
-// Create a cuboid with smooth lighting.
-//  tiles     - the tiles (materials) to use (for all 6 faces)
-//  tilecount - number of entries in tiles, 1<=tilecount<=6
-//  lights    - vertex light levels. The order is the same as in light_dirs.
-//  txc       - texture coordinates - this is a list of texture coordinates
-//              for the opposite corners of each face - therefore, there
-//              should be (2+2)*6=24 values in the list. The order of
-//              the faces in the list is up-down-right-left-back-front
-//              (compatible with ContentFeatures).
-//  mask      - a bit mask that suppresses drawing of tiles.
-//              tile i will not be drawn if mask & (1 << i) is 1
-void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
-{
-	static const u8 light_indices[24] = {
-		3, 7, 6, 2,
-		0, 4, 5, 1,
-		6, 7, 5, 4,
-		3, 2, 0, 1,
-		7, 3, 1, 5,
-		2, 6, 4, 0
-	};
-
-	drawCuboid(box, tiles, tilecount, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
-		for (int j = 0; j < 4; j++) {
-			video::S3DVertex &vertex = vertices[j];
-			vertex.Color = encode_light(
-				lights[light_indices[face * 4 + j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
-				f->light_source);
-			if (!f->light_source)
-				applyFacesShading(vertex.Color, vertex.Normal);
-		}
-	});
-}
-
 // Gets the base lighting values for a node
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
@@ -435,6 +367,15 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		tile_count = 1;
 	}
 	if (data->m_smooth_lighting) {
+		static const u8 light_indices[24] = {
+			3, 7, 6, 2,
+			0, 4, 5, 1,
+			6, 7, 5, 4,
+			3, 2, 0, 1,
+			7, 3, 1, 5,
+			2, 6, 4, 0
+		};
+
 		LightInfo lights[8];
 		for (int j = 0; j < 8; ++j) {
 			v3f d;
@@ -443,9 +384,36 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboidSmooth(box, tiles, tile_count, lights, txc, mask);
+
+		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			for (int j = 0; j < 4; j++) {
+				video::S3DVertex &vertex = vertices[j];
+				vertex.Color = encode_light(
+					lights[light_indices[face * 4 + j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
+					f->light_source);
+				if (!f->light_source)
+					applyFacesShading(vertex.Color, vertex.Normal);
+			}
+		});
 	} else {
-		drawCuboidFlat(box, tiles, tile_count, txc, mask);
+		static const v3f normals[6] = {
+			{0, 1, 0},
+			{0, -1, 0},
+			{1, 0, 0},
+			{-1, 0, 0},
+			{0, 0, 1},
+			{0, 0, -1},
+		};
+
+		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			video::SColor color = encode_light(light, f->light_source);
+			if (!f->light_source)
+				applyFacesShading(color, normals[face]);
+			for (int j = 0; j < 4; j++) {
+				video::S3DVertex &vertex = vertices[j];
+				vertex.Color = color;
+			}
+		});
 	}
 }
 
