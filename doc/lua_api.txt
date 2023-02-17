@@ -9722,6 +9722,8 @@ section, along with the datatypes they accept.
 All of the properties in this list can be animated with `*_tween` tables
 unless otherwise specified. For example, `jitter` can be tweened by setting
 a `jitter_tween` table instead of (or in addition to) a `jitter` table/value.
+In this section, a float range is a table defined as so: { min = A, max = B }
+A and B are your supplemented values. For a vec3 range this means they are vectors.
 Types used are defined in the previous section.
 
 * vec3 range `pos`: the position at which particles can appear
