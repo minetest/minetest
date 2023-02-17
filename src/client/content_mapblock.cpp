@@ -243,23 +243,22 @@ void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
 
 	auto vertices = setupCuboidVertices(box, txc, tiles, tilecount);
 
-	video::SColor colors[6];
-	for (int face = 0; face != 6; ++face) {
-		colors[face] = encode_light(light, f->light_source);
-	}
-	if (!f->light_source) {
-		applyFacesShading(colors[0], v3f(0, 1, 0));
-		applyFacesShading(colors[1], v3f(0, -1, 0));
-		applyFacesShading(colors[2], v3f(1, 0, 0));
-		applyFacesShading(colors[3], v3f(-1, 0, 0));
-		applyFacesShading(colors[4], v3f(0, 0, 1));
-		applyFacesShading(colors[5], v3f(0, 0, -1));
-	}
+	static const v3f normals[6] = {
+		{0, 1, 0},
+		{0, -1, 0},
+		{1, 0, 0},
+		{-1, 0, 0},
+		{0, 0, 1},
+		{0, 0, -1},
+	};
 
 	for (int face = 0; face < 6; face++) {
+		video::SColor color = encode_light(light, f->light_source);
+		if (!f->light_source)
+			applyFacesShading(color, normals[face]);
 		for (int j = 0; j < 4; j++) {
 			video::S3DVertex &vertex = vertices[face * 4 + j];
-			vertex.Color = colors[face];
+			vertex.Color = color;
 		}
 	}
 
@@ -299,13 +298,15 @@ void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
-	for (int j = 0; j < 24; ++j) {
-		video::S3DVertex &vertex = vertices[j];
-		vertex.Color = encode_light(
-			lights[light_indices[j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
-			f->light_source);
-		if (!f->light_source)
-			applyFacesShading(vertex.Color, vertex.Normal);
+	for (int face = 0; face < 6; face++) {
+		for (int j = 0; j < 4; j++) {
+			video::S3DVertex &vertex = vertices[face * 4 + j];
+			vertex.Color = encode_light(
+				lights[light_indices[face * 4 + j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
+				f->light_source);
+			if (!f->light_source)
+				applyFacesShading(vertex.Color, vertex.Normal);
+		}
 	}
 
 	// Add to mesh collector
