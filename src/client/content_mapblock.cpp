@@ -367,13 +367,13 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		tile_count = 1;
 	}
 	if (data->m_smooth_lighting) {
-		static const u8 light_indices[24] = {
-			3, 7, 6, 2,
-			0, 4, 5, 1,
-			6, 7, 5, 4,
-			3, 2, 0, 1,
-			7, 3, 1, 5,
-			2, 6, 4, 0
+		static const u8 light_indices[6][4] = {
+			{3, 7, 6, 2},
+			{0, 4, 5, 1},
+			{6, 7, 5, 4},
+			{3, 2, 0, 1},
+			{7, 3, 1, 5},
+			{2, 6, 4, 0},
 		};
 
 		LightInfo lights[8];
@@ -389,26 +389,17 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
 				vertex.Color = encode_light(
-					lights[light_indices[face * 4 + j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
+					lights[light_indices[face][j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
 					f->light_source);
 				if (!f->light_source)
 					applyFacesShading(vertex.Color, vertex.Normal);
 			}
 		});
 	} else {
-		static const v3f normals[6] = {
-			{0, 1, 0},
-			{0, -1, 0},
-			{1, 0, 0},
-			{-1, 0, 0},
-			{0, 0, 1},
-			{0, 0, -1},
-		};
-
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
 			video::SColor color = encode_light(light, f->light_source);
 			if (!f->light_source)
-				applyFacesShading(color, normals[face]);
+				applyFacesShading(color, vertices[0].Normal);
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
 				vertex.Color = color;
