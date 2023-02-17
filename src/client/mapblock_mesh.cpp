@@ -106,8 +106,7 @@ u16 getInteriorLight(MapNode n, s32 increment, const NodeDefManager *ndef)
 	Calculate non-smooth lighting at face of node.
 	Single light bank.
 */
-static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
-	v3s16 face_dir, const NodeDefManager *ndef)
+static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2, const NodeDefManager *ndef)
 {
 	ContentLightingFlags f1 = ndef->getLightingFlags(n);
 	ContentLightingFlags f2 = ndef->getLightingFlags(n2);
@@ -132,11 +131,10 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	Calculate non-smooth lighting at face of node.
 	Both light banks.
 */
-u16 getFaceLight(MapNode n, MapNode n2, const v3s16 &face_dir,
-	const NodeDefManager *ndef)
+u16 getFaceLight(MapNode n, MapNode n2, const NodeDefManager *ndef)
 {
-	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
-	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
+	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, ndef);
+	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, ndef);
 	return day | (night << 8);
 }
 
