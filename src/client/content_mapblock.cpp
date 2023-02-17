@@ -140,42 +140,11 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
 	collector->append(tile, vertices, 4, quad_indices, 6);
 }
 
-// Create a cuboid.
-//  tiles     - the tiles (materials) to use (for all 6 faces)
-//  tilecount - number of entries in tiles, 1<=tilecount<=6
-//  lights    - vertex light levels. The order is the same as in light_dirs.
-//              NULL may be passed if smooth lighting is disabled.
-//  txc       - texture coordinates - this is a list of texture coordinates
-//              for the opposite corners of each face - therefore, there
-//              should be (2+2)*6=24 values in the list. The order of
-//              the faces in the list is up-down-right-left-back-front
-//              (compatible with ContentFeatures).
-//  mask      - a bit mask that suppresses drawing of tiles.
-//              tile i will not be drawn if mask & (1 << i) is 1
-void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
-{
-	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
-
+static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, const video::SColor *colors, const f32 *txc, TileSpec *tiles, int tilecount) {
 	v3f min = box.MinEdge;
 	v3f max = box.MaxEdge;
 
-	video::SColor colors[6];
-	if (!data->m_smooth_lighting) {
-		for (int face = 0; face != 6; ++face) {
-			colors[face] = encode_light(light, f->light_source);
-		}
-		if (!f->light_source) {
-			applyFacesShading(colors[0], v3f(0, 1, 0));
-			applyFacesShading(colors[1], v3f(0, -1, 0));
-			applyFacesShading(colors[2], v3f(1, 0, 0));
-			applyFacesShading(colors[3], v3f(-1, 0, 0));
-			applyFacesShading(colors[4], v3f(0, 0, 1));
-			applyFacesShading(colors[5], v3f(0, 0, -1));
-		}
-	}
-
-	video::S3DVertex vertices[24] = {
+	std::array<video::S3DVertex, 24> vertices = {{
 		// top
 		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[0], txc[1]),
 		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[2], txc[1]),
@@ -206,16 +175,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[21]),
 		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[23]),
 		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[23]),
-	};
-
-	static const u8 light_indices[24] = {
-		3, 7, 6, 2,
-		0, 4, 5, 1,
-		6, 7, 5, 4,
-		3, 2, 0, 1,
-		7, 3, 1, 5,
-		2, 6, 4, 0
-	};
+	}};
 
 	for (int face = 0; face < 6; face++) {
 		int tileindex = MYMIN(face, tilecount - 1);
@@ -263,15 +223,84 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		}
 	}
 
-	if (data->m_smooth_lighting) {
-		for (int j = 0; j < 24; ++j) {
-			video::S3DVertex &vertex = vertices[j];
-			vertex.Color = encode_light(
-				lights[light_indices[j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
-				f->light_source);
-			if (!f->light_source)
-				applyFacesShading(vertex.Color, vertex.Normal);
-		}
+	return vertices;
+}
+
+// Create a cuboid with flat lighting.
+//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tilecount - number of entries in tiles, 1<=tilecount<=6
+//  txc       - texture coordinates - this is a list of texture coordinates
+//              for the opposite corners of each face - therefore, there
+//              should be (2+2)*6=24 values in the list. The order of
+//              the faces in the list is up-down-right-left-back-front
+//              (compatible with ContentFeatures).
+//  mask      - a bit mask that suppresses drawing of tiles.
+//              tile i will not be drawn if mask & (1 << i) is 1
+void MapblockMeshGenerator::drawCuboidFlat(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const f32 *txc, u8 mask)
+{
+	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
+
+	video::SColor colors[6];
+	for (int face = 0; face != 6; ++face) {
+		colors[face] = encode_light(light, f->light_source);
+	}
+	if (!f->light_source) {
+		applyFacesShading(colors[0], v3f(0, 1, 0));
+		applyFacesShading(colors[1], v3f(0, -1, 0));
+		applyFacesShading(colors[2], v3f(1, 0, 0));
+		applyFacesShading(colors[3], v3f(-1, 0, 0));
+		applyFacesShading(colors[4], v3f(0, 0, 1));
+		applyFacesShading(colors[5], v3f(0, 0, -1));
+	}
+
+	auto vertices = setupCuboidVertices(box, colors, txc, tiles, tilecount);
+
+	// Add to mesh collector
+	for (int k = 0; k < 6; ++k) {
+		if (mask & (1 << k))
+			continue;
+		int tileindex = MYMIN(k, tilecount - 1);
+		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
+	}
+}
+
+// Create a cuboid with smooth lighting.
+//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tilecount - number of entries in tiles, 1<=tilecount<=6
+//  lights    - vertex light levels. The order is the same as in light_dirs.
+//  txc       - texture coordinates - this is a list of texture coordinates
+//              for the opposite corners of each face - therefore, there
+//              should be (2+2)*6=24 values in the list. The order of
+//              the faces in the list is up-down-right-left-back-front
+//              (compatible with ContentFeatures).
+//  mask      - a bit mask that suppresses drawing of tiles.
+//              tile i will not be drawn if mask & (1 << i) is 1
+void MapblockMeshGenerator::drawCuboidSmooth(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const LightInfo *lights, const f32 *txc, u8 mask)
+{
+	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
+
+	video::SColor colors[6];
+
+	auto vertices = setupCuboidVertices(box, colors, txc, tiles, tilecount);
+
+	static const u8 light_indices[24] = {
+		3, 7, 6, 2,
+		0, 4, 5, 1,
+		6, 7, 5, 4,
+		3, 2, 0, 1,
+		7, 3, 1, 5,
+		2, 6, 4, 0
+	};
+
+	for (int j = 0; j < 24; ++j) {
+		video::S3DVertex &vertex = vertices[j];
+		vertex.Color = encode_light(
+			lights[light_indices[j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
+			f->light_source);
+		if (!f->light_source)
+			applyFacesShading(vertex.Color, vertex.Normal);
 	}
 
 	// Add to mesh collector
@@ -279,7 +308,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		if (mask & (1 << k))
 			continue;
 		int tileindex = MYMIN(k, tilecount - 1);
-		collector->append(tiles[tileindex], vertices + 4 * k, 4, quad_indices, 6);
+		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
 	}
 }
 
@@ -404,9 +433,9 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, tiles, tile_count, lights, txc, mask);
+		drawCuboidSmooth(box, tiles, tile_count, lights, txc, mask);
 	} else {
-		drawCuboid(box, tiles, tile_count, nullptr, txc, mask);
+		drawCuboidFlat(box, tiles, tile_count, txc, mask);
 	}
 }
 
