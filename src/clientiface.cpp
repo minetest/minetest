@@ -301,12 +301,6 @@ void RemoteClient::GetNextBlocks (
 				continue;
 
 			/*
-				Or blocks we already have occlusion culled
-			*/
-			if (m_blocks_occ.find(p) != m_blocks_occ.end())
-				continue;
-
-			/*
 				Check if map has this block
 			*/
 			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
@@ -331,6 +325,12 @@ void RemoteClient::GetNextBlocks (
 					if (!block->getIsUnderground() && !block->getDayNightDiff())
 						continue;
 				}
+
+				/*
+					Check occlusion cache first
+				*/
+				if (m_blocks_occ.find(p) != m_blocks_occ.end())
+					continue;
 
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
