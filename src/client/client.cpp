@@ -1383,7 +1383,7 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 
 void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 {
-	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*4);
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*2);
 	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
 	pkt << info.real_gui_scaling;
 	pkt << info.real_hud_scaling;

@@ -203,7 +203,6 @@ GUI
         will be added to fieldname value is set to formname itself
   * if `is_file_select` is `true`, a file and not a folder will be selected
   * returns nil or selected file/folder
-* `core.get_screen_info()`: DEPRECATED, use below 2 functions instead.
 * `core.get_active_renderer()`: Ex: "OpenGL 4.6".
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
 
