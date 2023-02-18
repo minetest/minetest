@@ -132,11 +132,11 @@ cmake -S $sourcedir -B build \
 	-DENABLE_GETTEXT=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DPNG_LIBRARY=$libs/libpng/lib/libpng.dll.a \
-	-DPNG_PNG_INCLUDE_DIR=$libs/libpng/include \
+	-DPNG_LIBRARY=$libdir/libpng/lib/libpng.dll.a \
+	-DPNG_PNG_INCLUDE_DIR=$libdir/libpng/include \
 	\
-	-DJPEG_LIBRARY=$libs/libjpeg/lib/libjpeg.dll.a \
-	-DJPEG_INCLUDE_DIR=$libs/libjpeg/include \
+	-DJPEG_LIBRARY=$libdir/libjpeg/lib/libjpeg.dll.a \
+	-DJPEG_INCLUDE_DIR=$libdir/libjpeg/include \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a \
