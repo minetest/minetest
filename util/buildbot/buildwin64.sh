@@ -45,7 +45,8 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
+libjpeg_version=2.1.2
+libpng_version=1.6.37
 ogg_version=1.3.5
 openal_version=1.21.1
 vorbis_version=1.3.7
@@ -80,7 +81,6 @@ download () {
 }
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip"
@@ -92,6 +92,9 @@ download "http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/luajit-$luajit_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip" leveldb-$leveldb_version.zip
 download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win64.zip"
+# Irrlicht dependencies
+download "http://minetest.kitsunemimi.pw/libjpeg-$libjpeg_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/dw/libpng-$libpng_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
@@ -114,7 +117,6 @@ git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 cd $builddir
 [ -d build ] && rm -rf build
 
-irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 
@@ -130,8 +132,11 @@ cmake -S $sourcedir -B build \
 	-DENABLE_GETTEXT=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DCMAKE_PREFIX_PATH=$libdir/irrlicht \
-	-DIRRLICHT_DLL="$irr_dlls" \
+	-DPNG_LIBRARY=$libs/libpng/lib/libpng.dll.a \
+	-DPNG_PNG_INCLUDE_DIR=$libs/libpng/include \
+	\
+	-DJPEG_LIBRARY=$libs/libjpeg/lib/libjpeg.dll.a \
+	-DJPEG_INCLUDE_DIR=$libs/libjpeg/include \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a \
