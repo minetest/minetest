@@ -1,0 +1,63 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["Unconfirmed bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please note the following:
+        1. *ALWAYS update your Minetest Engine* to the latest stable or dev version before submiting any bug reports. Make sure the bug is still reproducable on the latest engine.
+        2. This page is for report the bugs of *the game engine itself*. For bugs in a particular game, please [search in the ContentDB](https://content.minetest.net/packages/?type=game), and submit a bug report in their issue trackers.
+        3. Please provide as many details as possible, for us to spot the problem quicker.
+  - type: textarea
+    attributes:
+      label: Minetest version
+      description: |
+        Paste Minetest version below.
+        If you are on a devel version, please add git commit hash.
+        You can use `minetest --version` to find it.
+      placeholder: |
+        Example: 
+        Minetest 5.7.0-dev-ca13c51 (Linux)
+        Using Irrlicht 1.9.0mt9
+        Using LuaJIT 2.1.0-beta3
+        BUILD_TYPE=Release
+        RUN_IN_PLACE=1
+        USE_CURL=1
+        USE_GETTEXT=1
+        USE_SOUND=1
+        STATIC_SHAREDIR="."
+        STATIC_LOCALEDIR="locale"
+      render: "true"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: OS / Hardware
+      description: |
+        General information about your hardware and operating system.
+        Include GPU model and OpenGL version too if the issue is a graphical issue.
+      value: |
+        Operating system: 
+        CPU: 
+
+        GPU model: 
+        OpenGL version: 
+    validations:
+      required: true
+  - type: textarea
+    attributes: 
+      label: Summary
+      description: Describe your problem here.
+    validations:
+      required: true
+  - type: textarea
+    attributes: 
+      label: Steps to reproduce
+      description: Explain how the problem has happened, providing a minimal test (i.e. a code snippet reduced to the bone) where possible
+    validations:
+      required: true
+
+
+
+  
