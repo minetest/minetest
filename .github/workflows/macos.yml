@@ -31,6 +31,8 @@ jobs:
     runs-on: macos-11
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - name: Install deps
         run: |
           source ./util/ci/common.sh
