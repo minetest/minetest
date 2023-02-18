@@ -33,7 +33,7 @@ body:
       required: true
   - type: input
     attributes:
-      label: Operating system
+      label: Operating system and version
       placeholder: "Example: Ubuntu 22.04"
     validations:
       required: true
