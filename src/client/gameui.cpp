@@ -276,7 +276,7 @@ void GameUI::updateProfiler()
 
 		core::dimension2d<u32> size = m_guitext_profiler->getOverrideFont()->
 				getDimension(str.c_str());
-		core::position2di upper_left(6, 50);
+		core::position2di upper_left(6, m_guitext->getTextHeight() * 2.5f);
 		core::position2di lower_right = upper_left;
 		lower_right.X += size.Width + 10;
 		lower_right.Y += size.Height;

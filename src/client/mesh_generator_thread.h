@@ -28,11 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 struct QueuedMeshUpdate
 {
 	v3s16 p = v3s16(-1337, -1337, -1337);
-	bool ack_block_to_server = false;
+	std::vector<v3s16> ack_list;
 	int crack_level = -1;
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
@@ -96,8 +97,8 @@ struct MeshUpdateResult
 {
 	v3s16 p = v3s16(-1338, -1338, -1338);
 	MapBlockMesh *mesh = nullptr;
-	u8 solid_sides = 0;
-	bool ack_block_to_server = false;
+	std::unordered_map<v3s16, u8> solid_sides;
+	std::vector<v3s16> ack_list;
 	bool urgent = false;
 	std::vector<MapBlock *> map_blocks;
 

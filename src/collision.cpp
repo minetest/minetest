@@ -273,7 +273,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collisionMoveSimple(): collect boxes"), SPT_AVG);
+	ScopeProfiler sp2(g_profiler, PROFILER_NAME("collision collect boxes"), SPT_AVG);
 
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),

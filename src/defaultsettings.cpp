@@ -66,7 +66,6 @@ void set_default_settings()
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_split_login_register", "true");
-	settings->setDefault("occlusion_culler", "bfs");
 	settings->setDefault("enable_raytraced_culling", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
@@ -186,6 +185,7 @@ void set_default_settings()
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "190");
+	settings->setDefault("client_mesh_chunk", "1");
 #if ENABLE_GLES
 	settings->setDefault("near_plane", "0.1");
 #endif

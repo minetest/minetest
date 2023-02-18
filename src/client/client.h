@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/peerhandler.h"
 #include "gameparams.h"
 #include <fstream>
+#include "util/numeric.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -438,7 +439,12 @@ public:
 		return m_env.getLocalPlayer()->formspec_prepend;
 	}
 
-	bool m_inhibit_inventory_revert = false;
+	inline MeshGrid getMeshGrid()
+	{
+		return m_mesh_grid;
+	}
+  
+  bool m_inhibit_inventory_revert = false;
 
 private:
 	void loadMods();
@@ -549,8 +555,6 @@ private:
 	std::vector<std::string> m_remote_media_servers;
 	// Media downloader, only exists during init
 	ClientMediaDownloader *m_media_downloader;
-	// Set of media filenames pushed by server at runtime
-	std::unordered_set<std::string> m_media_pushed_files;
 	// Pending downloads of dynamic media (key: token)
 	std::vector<std::pair<u32, std::shared_ptr<SingleMediaDownloader>>> m_pending_media_downloads;
 
@@ -605,4 +609,7 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	// The number of blocks the client will combine for mesh generation.
+	MeshGrid m_mesh_grid;
 };
