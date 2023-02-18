@@ -16,6 +16,7 @@ body:
         Paste Minetest version below.
         If you are on a devel version, please add git commit hash.
         You can use `minetest --version` to find it.
+        You can also refer to the "about" tab of the menu.
       placeholder: |
         Example: 
         Minetest 5.7.0-dev-ca13c51 (Linux)
@@ -34,21 +35,24 @@ body:
   - type: input
     attributes:
       label: Operating system and version
+      description: It is recommended to upgrade your operating system to see if the problem still exists.
       placeholder: "Example: Ubuntu 22.04"
     validations:
       required: true
   - type: input
     attributes:
       label: CPU model
+      description: Usually found in system settings. 
       placeholder: "Example: Intel i5-2410M (4) @ 2.900GHz"
     validations:
-      required: true
+      required: false
   - type: markdown
     attributes:
       value: For GPU model and OpenGL version, they can be omitted if the bug is not a graphical issue.
   - type: input
     attributes:
       label: GPU model
+      description: Usually found in system settings. 
       placeholder: "Example: NVIDA GeForce RTX 4090"
     validations:
       required: false
