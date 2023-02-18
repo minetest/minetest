@@ -134,7 +134,6 @@ Compiling
 |------------|---------|------------|
 | GCC        | 5.1+    | or Clang 3.5+ |
 | CMake      | 3.5+    |            |
-| IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | Freetype   | 2.0+    |            |
 | SQLite3    | 3+      |            |
 | Zstd       | 1.0+    |            |
@@ -172,22 +171,22 @@ For Fedora users:
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest.git
+    git clone --recursive --depth 1 https://github.com/minetest/minetest.git
     cd minetest
 
 Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
-Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
-
-    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
-
 Download source, without using Git:
 
     wget https://github.com/minetest/minetest/archive/master.tar.gz
     tar xf master.tar.gz
-    cd minetest-master
+    cd minetest-master/lib/
+    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
+    tar xf master.tar.gz
+    mv irrlicht-master irrlichtmt
+    cd ..
 
 Download Minetest Game, without using Git:
 
@@ -195,14 +194,6 @@ Download Minetest Game, without using Git:
     wget https://github.com/minetest/minetest_game/archive/master.tar.gz
     tar xf master.tar.gz
     mv minetest_game-master minetest_game
-    cd ..
-
-Download IrrlichtMt, without using Git:
-
-    cd lib/
-    wget https://github.com/minetest/irrlicht/archive/master.tar.gz
-    tar xf master.tar.gz
-    mv irrlicht-master irrlichtmt
     cd ..
 
 #### Build
@@ -228,7 +219,7 @@ Run it:
 
 - Minetest will use the IrrlichtMt package that is found first, given by the following order:
   1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
-  2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
+  2. Bundled version in `${PROJECT_SOURCE_DIR}/lib/irrlichtmt`
   3. Installation of IrrlichtMt in the system-specific library paths
   4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
   - NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
