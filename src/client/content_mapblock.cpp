@@ -410,7 +410,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 
 void MapblockMeshGenerator::drawSolidNode()
 {
-	int faces = 0; // k-th bit will be set if k-th face is to be drawn.
+	u8 faces = 0; // k-th bit will be set if k-th face is to be drawn.
 	static const v3s16 tile_dirs[6] = {
 		v3s16(0, 1, 0),
 		v3s16(0, -1, 0),
