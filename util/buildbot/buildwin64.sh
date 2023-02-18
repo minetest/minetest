@@ -94,7 +94,7 @@ download "http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip" 
 download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win64.zip"
 # Irrlicht dependencies
 download "http://minetest.kitsunemimi.pw/libjpeg-$libjpeg_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/dw/libpng-$libpng_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/libpng-$libpng_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
 if [ -n "$EXISTING_MINETEST_DIR" ]; then
