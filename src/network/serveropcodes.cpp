@@ -219,7 +219,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory, // 0x5d
 	null_command_factory, // 0x5e
 	null_command_factory, // 0x5f
-	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60
+	{ "TOCLIENT_SRP_BYTES_S_B",            0, true }, // 0x60
 	{ "TOCLIENT_FORMSPEC_PREPEND",         0, true }, // 0x61
 	{ "TOCLIENT_MINIMAP_MODES",            0, true }, // 0x62
+	{ "TOCLIENT_SET_LIGHTING",             0, true }, // 0x63
 };
