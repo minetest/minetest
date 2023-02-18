@@ -45,7 +45,6 @@ done
 	echo "The compiler runtime DLLs could not be found, they might be missing in the final package."
 
 # Get stuff
-irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
 ogg_version=1.3.5
 openal_version=1.21.1
 vorbis_version=1.3.7
@@ -83,7 +82,6 @@ download () {
 # this distinction should be gotten rid of next time
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/dw2/zlib-$zlib_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win32.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
@@ -103,7 +101,7 @@ else
 	cd $builddir
 	sourcedir=$PWD/$CORE_NAME
 	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull; popd; } || \
-		git clone -b $CORE_BRANCH $CORE_GIT $CORE_NAME
+		git clone --recursive -b $CORE_BRANCH $CORE_GIT $CORE_NAME
 	if [ -z "$NO_MINETEST_GAME" ]; then
 		cd $sourcedir
 		[ -d games/$GAME_NAME ] && { pushd games/$GAME_NAME; git pull; popd; } || \
