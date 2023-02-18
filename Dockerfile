@@ -2,7 +2,6 @@ ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS builder
 
 ENV MINETEST_GAME_VERSION master
-ENV IRRLICHT_VERSION master
 ENV SPATIALINDEX_VERSION 1.9.3
 ENV LUAJIT_VERSION v2.1
 
@@ -30,10 +29,7 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
 	cd /usr/src/ && \
 	git clone --recursive https://luajit.org/git/luajit.git -b ${LUAJIT_VERSION} && \
 		cd luajit && \
-		make && make install && \
-	cd /usr/src/ && \
-	git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
-		cp -r irrlicht/include /usr/include/irrlichtmt
+		make && make install
 
 COPY .git /usr/src/minetest/.git
 COPY CMakeLists.txt /usr/src/minetest/CMakeLists.txt
