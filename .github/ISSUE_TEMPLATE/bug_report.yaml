@@ -6,8 +6,8 @@ body:
     attributes:
       value: |
         Please note the following:
-        1. *ALWAYS update your Minetest Engine* to the latest stable or dev version before submiting any bug reports. Make sure the bug is still reproducable on the latest engine.
-        2. This page is for report the bugs of *the game engine itself*. For bugs in a particular game, please [search in the ContentDB](https://content.minetest.net/packages/?type=game), and submit a bug report in their issue trackers.
+        1. **ALWAYS update your Minetest Engine to the latest stable or dev version** before submiting any bug reports. Make sure the bug is still reproducable on the latest engine.
+        2. This page is for report the bugs of **the game engine itself**. For bugs in a particular game, please [search in the ContentDB](https://content.minetest.net/packages/?type=game), and submit a bug report in their issue trackers.
         3. Please provide as many details as possible, for us to spot the problem quicker.
   - type: textarea
     attributes:
@@ -31,20 +31,33 @@ body:
       render: "true"
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
-      label: OS / Hardware
-      description: |
-        General information about your hardware and operating system.
-        Include GPU model and OpenGL version too if the issue is a graphical issue.
-      value: |
-        Operating system: 
-        CPU: 
-
-        GPU model: 
-        OpenGL version: 
+      label: Operating system
+      placeholder: "Example: Ubuntu 22.04"
     validations:
       required: true
+  - type: input
+    attributes:
+      label: CPU model
+      placeholder: "Example: Intel i5-2410M (4) @ 2.900GHz"
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: For GPU model and OpenGL version, they can be omitted if the bug is not a graphical issue.
+  - type: input
+    attributes:
+      label: GPU model
+      placeholder: "Example: NVIDA GeForce RTX 4090"
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: OpenGL version
+      placeholder: "Example: 4.6"
+    validations:
+      required: false
   - type: textarea
     attributes: 
       label: Summary
