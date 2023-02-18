@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Submit issues above Minetest Game
-    url: https://github.com/minetest/minetest_game/issues/new
+  - name: Submit issues about Minetest Game
+    url: https://github.com/minetest/minetest_game/issues/new/choose
     about: Only submit issues of the engine in this repository's issue tracker. Submit those of Minetest Game in its own issue tracker.
   - name: Search for issue trackers of third-party subgames
     url: https://content.minetest.net/packages/?type=game
