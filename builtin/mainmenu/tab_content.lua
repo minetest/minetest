@@ -108,6 +108,12 @@ local function get_formspec(tabview, name, tabdata)
 					"button[8.65,4.65;3.25,1;btn_mod_mgr_rename_modpack;" ..
 					fgettext("Rename") .. "]"
 			else
+				if not info.website == null then
+					desc = desc .. "\nWebsite: " .. info.website
+				end
+				if not info.license == null then
+					desc = desc .. "\nLicense: " .. info.license
+				end
 				--show dependencies
 				desc = desc .. "\n\n"
 				local toadd_hard = table.concat(info.depends or {}, "\n")

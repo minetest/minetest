@@ -104,11 +104,10 @@ bool parseModContents(ModSpec &spec)
 		spec.release = info.getS32("release");
 
 	if (info.exists("license"))
-		spec.license = info.getS32("license");
+		spec.license = info.get("license");
 
 	if (info.exists("website")) {
-		if (info.get("website").substr(0,7) == "http://" || info.get("website").substr(0,8) == "https://")
-			spec.website = info.get("website");
+		spec.website = info.get("website");
 	}
 	// Attempt to load dependencies from mod.conf
 	bool mod_conf_has_depends = false;
