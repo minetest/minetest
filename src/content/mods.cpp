@@ -103,15 +103,6 @@ bool parseModContents(ModSpec &spec)
 	if (info.exists("release"))
 		spec.release = info.getS32("release");
 
-	if (info.exists("license"))
-		spec.license = info.get("license");
-
-	if (info.exists("website")) {
-		std::string possible_website = info.get("website");
-		if (possible_website.substr(0, 8) == "https://" || possible_website.substr(0, 7) == "http://") {
-			spec.website = info.get("website");
-		}
-	}
 	// Attempt to load dependencies from mod.conf
 	bool mod_conf_has_depends = false;
 	if (info.exists("depends")) {
