@@ -108,7 +108,7 @@ bool parseModContents(ModSpec &spec)
 
 	if (info.exists("website")) {
 		std::string possible_website = info.get("website");
-		if ((possible_website.substr(0, 8) == "https://" || possible_website.substr(0, 7) == "http://") && (possible_website.find('.') != std::string::npos) && (possible_website.find(' ') != std::string::npos)) {
+		if (possible_website.substr(0, 8) == "https://" || possible_website.substr(0, 7) == "http://") {
 			spec.website = info.get("website");
 		}
 	}
