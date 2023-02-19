@@ -102,6 +102,10 @@ bool parseModContents(ModSpec &spec)
 
 	if (info.exists("release"))
 		spec.release = info.getS32("release");
+
+	if (info.exists("license"))
+		spec.license = info.getS32("license");
+
 	if (info.exists("website")) {
 		if (info.get("website").substr(0,7) == "http://" || info.get("website").substr(0,8) == "https://")
 			spec.website = info.get("website");
