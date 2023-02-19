@@ -37,6 +37,8 @@ struct ContentSpec
 	/// Short description
 	std::string desc;
 	std::string path;
+	std::string website;
+	std::string license;
 };
 
 void parseContentInfo(ContentSpec &spec);
