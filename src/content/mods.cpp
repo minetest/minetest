@@ -107,7 +107,10 @@ bool parseModContents(ModSpec &spec)
 		spec.license = info.get("license");
 
 	if (info.exists("website")) {
-		spec.website = info.get("website");
+		std::string possible_website = info.get("website");
+		if ((possible_website.substr(0, 8) == "https://" || possible_website.substr(0, 7) == "http://") && (possible_website.find('.') != std::string::npos) && (possible_website.find(' ') != std::string::npos)) {
+			spec.website = info.get("website");
+		}
 	}
 	// Attempt to load dependencies from mod.conf
 	bool mod_conf_has_depends = false;
