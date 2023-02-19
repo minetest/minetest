@@ -212,6 +212,8 @@ A `Settings` file that provides meta information about the mod.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
 * `title`: A human-readable title to address the mod.
+* `website`: The mod's website
+* `license`: The mods license, should be a SPDX identifiers
 
 ### `screenshot.png`
 
