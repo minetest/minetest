@@ -112,6 +112,16 @@ void parseContentInfo(ContentSpec &spec)
 
 		if (conf.exists("release"))
 			spec.release = conf.getS32("release");
+
+		if (conf.exists("license"))
+			spec.license = conf.get("license");
+
+		if (conf.exists("website")) {
+			std::string possible_website = conf.get("website");
+			if (possible_website.substr(0, 8) == "https://" || possible_website.substr(0, 7) == "http://") {
+				spec.website = conf.get("website");
+			}
+		}
 	}
 
 	if (spec.desc.empty()) {

@@ -91,6 +91,8 @@ The game directory can contain the following files:
                 ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
                  an internal ID used to track versions.
+    * `website`: The mod's website
+    * `license`: The mods license, should be a SPDX identifiers
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
