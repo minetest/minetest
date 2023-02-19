@@ -383,18 +383,18 @@ int ModApiMainMenu::l_get_content_info(lua_State *L)
 	lua_pushstring(L, spec.path.c_str());
 	lua_setfield(L, -2, "path");
 
-	// Website
-	lua_pushstring(L, spec.website.c_str());
-	lua_setfield(L, -2, "website");
-
-	// License
-	lua_pushstring(L, spec.license.c_str());
-	lua_setfield(L, -2, "license");
-
 	if (spec.type == "mod") {
 		ModSpec spec;
 		spec.path = path;
 		parseModContents(spec);
+
+		// Website
+		lua_pushstring(L, spec.website.c_str());
+		lua_setfield(L, -2, "website");
+
+		// License
+		lua_pushstring(L, spec.license.c_str());
+		lua_setfield(L, -2, "license");
 
 		// Dependencies
 		lua_newtable(L);

@@ -42,6 +42,8 @@ struct ModSpec
 	std::string author;
 	std::string path;
 	std::string desc;
+	std::string license;
+	std::string website;
 	int release = 0;
 
 	// if normal mod:
