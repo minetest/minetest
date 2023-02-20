@@ -47,26 +47,12 @@ AppImage:
   sign-key: None
   arch: x86_64
 script: |
-    git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt || true
-
     # Compile and install binaries into AppDir
     cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
     cmake --build appimage-build --parallel $(nproc) --config Release
     cmake --install appimage-build
 
-    # Install irrlicht into AppDir
-    wget -q "https://github.com/minetest/irrlicht/releases/download/$(cat misc/irrlichtmt_tag.txt)/ubuntu-bionic.tar.gz" -O appimage-build/irrlicht-ubuntu.tar.gz
-    tar -xaf appimage-build/irrlicht-ubuntu.tar.gz -C AppDir/usr
-
-    # Install the Minetest Game
-    wget -q https://github.com/minetest/minetest_game/archive/refs/heads/master.tar.gz -O appimage-build/minetest_game.tar.gz
-    cd appimage-build
-    tar -xaf minetest_game.tar.gz
-    cd ../
-    mkdir -p AppDir/usr/share/minetest/games/minetest_game
-    cp -r appimage-build/minetest_game-master/* AppDir/usr/share/minetest/games/minetest_game
-
-    # Is a backup icon location
+    # Is a backup icon location in case
     mkdir -p AppDir/usr/share/minetest/misc
     cp AppDir/usr/share/icons/hicolor/128x128/apps/minetest.png AppDir/usr/share/minetest/misc/minetest-xorg-icon-128.png
     # Validation issues
