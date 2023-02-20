@@ -7274,6 +7274,8 @@ child will follow movement and rotation of that bone.
         * `basic_debug`: Allow showing basic debug info that might give a gameplay advantage.
           This includes map seed, player position, look direction, the pointed node and block bounds.
           Does not affect players with the `debug` privilege.
+        * `chat`: Modifies the client's permission to view chat on the HUD.
+          The client may locally elect to not view chat. Does not affect the console.
     * If a flag equals `nil`, the flag is not modified
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
