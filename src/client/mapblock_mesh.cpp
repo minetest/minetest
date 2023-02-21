@@ -37,10 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
-	m_client(client),
-	m_use_shaders(use_shaders),
 	m_mesh_grid(client->getMeshGrid()),
-	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size)
+	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size),
+	m_client(client),
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)

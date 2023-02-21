@@ -44,7 +44,7 @@ struct MeshMakeData
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
 	MeshGrid m_mesh_grid;
-	u16 side_length = MAP_BLOCKSIZE;
+	u16 side_length;
 
 	Client *m_client;
 	bool m_use_shaders;
