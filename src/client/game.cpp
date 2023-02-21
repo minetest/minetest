@@ -3704,7 +3704,35 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		v3s16 dir = nodepos - neighborpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-			predicted_node.setParam2(dir.Y < 0 ? 1 : 0);
+			u8 predicted_param2 = dir.Y < 0 ? 1 : 0;
+			if (selected_def.wallmounted_rotate_vertical) {
+				bool rotate90 = false;
+				v3f fnodepos = v3f(neighbourpos.X, neighbourpos.Y, neighbourpos.Z);
+				v3f ppos = client->getEnv().getLocalPlayer()->getPosition() / BS;
+				v3f pdir = fnodepos - ppos;
+				switch (predicted_f.drawtype) {
+					case NDT_TORCHLIKE: {
+						rotate90 = !((pdir.X < 0 && pdir.Z > 0) ||
+								(pdir.X > 0 && pdir.Z < 0));
+						if (dir.Y > 0) {
+							rotate90 = !rotate90;
+						}
+						break;
+					};
+					case NDT_SIGNLIKE: {
+						rotate90 = abs(pdir.X) < abs(pdir.Z);
+						break;
+					}
+					default: {
+						rotate90 = abs(pdir.X) > abs(pdir.Z);
+						break;
+					}
+				}
+				if (rotate90) {
+					predicted_param2 += 6;
+				}
+			}
+			predicted_node.setParam2(predicted_param2);
 		} else if (abs(dir.X) > abs(dir.Z)) {
 			predicted_node.setParam2(dir.X < 0 ? 3 : 2);
 		} else {
@@ -3726,6 +3754,16 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	// Check attachment if node is in group attached_node
 	int an = itemgroup_get(predicted_f.groups, "attached_node");
 	if (an != 0) {
+		const static v3s16 wallmounted_dirs[8] = {
+			v3s16(0, 1, 0),
+			v3s16(0, -1, 0),
+			v3s16(1, 0, 0),
+			v3s16(-1, 0, 0),
+			v3s16(0, 0, 1),
+			v3s16(0, 0, -1),
+			v3s16(0, 1, 0),
+			v3s16(0, -1, 0),
+		};
 		v3s16 pp;
 
 		if (an == 3) {
