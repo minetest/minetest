@@ -2147,11 +2147,13 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 keymap_sneak (Sneak key) key KEY_LSHIFT
 
-#    Key for digging.
-keymap_dig (Dig key) key KEY_LBUTTON
+#    Key for digging, punching or using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_dig (Dig/punch/use key) key KEY_LBUTTON
 
-#    Key for placing.
-keymap_place (Place key) key KEY_RBUTTON
+#    Key for placing an item/block or for using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_place (Place/use key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 keymap_inventory (Inventory key) key KEY_KEY_I

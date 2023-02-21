@@ -4336,7 +4336,7 @@ void Game::showPauseMenu()
 		"- %s: move left\n"
 		"- %s: move right\n"
 		"- %s: jump/climb up\n"
-		"- %s: dig/punch\n"
+		"- %s: dig/punch/use\n"
 		"- %s: place/use\n"
 		"- %s: sneak/climb down\n"
 		"- %s: drop item\n"
