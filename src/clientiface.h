@@ -376,11 +376,13 @@ private:
 	std::unordered_set<v3s16> m_blocks_sent;
 
 	/*
-		Cache of blocks that have been occlusion culled at the current distance.
-		As GetNextBlocks traverses the same distance multiple times, this saves
-		significant CPU time.
+		Cache of blocks that have been occlusion culled partitioned by distance/layer.
+		Occlusion culling is expensive.
+		Reset when the player moves or changes view-direction.
+		Outer layers are reset when blocks in inner layers that were visible to the client
+		have been changed, as they could have occluded farther blocks.
 	 */
-	std::unordered_set<v3s16> m_blocks_occ;
+	std::vector<std::unordered_set<v3s16>> m_blocks_occ;
 
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
