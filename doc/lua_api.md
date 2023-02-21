@@ -2069,6 +2069,9 @@ to games.
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
   or if their feet are in the node. Note: not supported for `new_move = false`
+* `disable_descend`: Player (and possibly other things) cannot *actively*
+  descend in node using Sneak or Aux1 key (for liquids and climbable nodes
+  only). Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
