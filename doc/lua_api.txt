@@ -460,7 +460,7 @@ texture is overlaid on top of `cobble.png`.
 
 Modifiers that accept texture names (e.g. `[combine`) accept escaping to allow
 passing complex texture names as arguments. Escaping is done with backslash and
-is required for `^` and `:`.
+is required for `^`, `:` and `\`.
 
 Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
 
@@ -648,7 +648,8 @@ don't change very much.
 Embed a base64 encoded PNG image in the texture string.
 You can produce a valid string for this by calling
 `minetest.encode_base64(minetest.encode_png(tex))`,
-refer to the documentation of these functions for details.
+where `tex` is pixel data. Refer to the documentation of these
+functions for details.
 You can use this to send disposable images such as captchas
 to individual clients, or render things that would be too
 expensive to compose with `[combine:`.
@@ -2221,16 +2222,25 @@ Some of the values in the key-value store are handled specially:
 Example:
 
     local meta = minetest.get_meta(pos)
+
+    -- Set node formspec and infotext
     meta:set_string("formspec",
             "size[8,9]"..
             "list[context;main;0,0;8,4;]"..
             "list[current_player;main;0,5;8,4;]")
     meta:set_string("infotext", "Chest");
+
+    -- Set inventory list size of `"main"` list to 32
     local inv = meta:get_inventory()
-    inv:set_size("main", 8*4)
+    inv:set_size("main", 32)
+
+    -- Dump node metadata
     print(dump(meta:to_table()))
+
+    -- Set node metadata from a metadata table
     meta:from_table({
         inventory = {
+            -- Set items of inventory in all 32 slots of the `"main"` list
             main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "",
                     [5] = "", [6] = "", [7] = "", [8] = "", [9] = "",
                     [10] = "", [11] = "", [12] = "", [13] = "",
@@ -2240,6 +2250,7 @@ Example:
                     [27] = "", [28] = "", [29] = "", [30] = "", [31] = "",
                     [32] = ""}
         },
+        -- metadata fields
         fields = {
             formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
             infotext = "Chest"
@@ -5466,6 +5477,7 @@ Authentication
     * The player needs to be online for this to be successful.
 
 * `minetest.get_auth_handler()`: Return the currently active auth handler
+    * Must be called *after* load time, returns `nil` otherwise
     * See the [Authentication handler definition]
     * Use this to e.g. get the authentication data for a player:
       `local auth_data = minetest.get_auth_handler().get_auth(playername)`
@@ -6780,7 +6792,8 @@ An `InvRef` is a reference to an inventory.
 * `set_width(listname, width)`: set width of list; currently used for crafting
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
-* `get_list(listname)`: return full list (list of `ItemStack`s)
+* `get_list(listname)`: returns full list (list of `ItemStack`s)
+                        or `nil` if list doesn't exist (size 0)
 * `set_list(listname, list)`: set full list (size will not change)
 * `get_lists()`: returns table that maps listnames to inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
@@ -6949,15 +6962,64 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `set_float(key, value)`
 * `get_float(key)`: Returns `0` if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
-* `to_table()`: returns `nil` or a table with keys:
-    * `fields`: key-value storage
-    * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)
-* `from_table(nil or {})`
-    * Any non-table value will clear the metadata
-    * See [Node Metadata] for an example
-    * returns `true` on success
+* `to_table()`:
+    * Returns metadata as a metadata table (see below), if possible
+    * Return `nil` on failure
+* `from_table(data)`
+    * Imports metadata from a metadata table
+    * If `data` is a metadata table (see below),
+      the metadata it represents will replace all metadata
+      of this MetaDataRef object
+    * Any non-table value for `data` will clear all metadata
+    * Returns `true` on success
 * `equals(other)`
     * returns `true` if this metadata has the same key-value pairs as `other`
+
+### Metadata tables
+
+A MetaDataRef can be converted to and from a metadata table,
+which is metadata represented in a table form. It is used
+to serialize and deserialize metadata.
+The methods `from_table` and `to_table` use metadata tables, as
+well as a few callback functions.
+
+A metadata table is a table that has the following keys:
+
+* `fields`: key-value storage of metadata fields
+    * all values are stored as strings
+    * numbers must be converted to strings first
+* `inventory` (for NodeMetaRef only): A node inventory in table form
+    * inventory table keys are inventory list names
+    * inventory table values are item tables
+    * item table keys are slot IDs (starting with 1)
+    * item table values are itemstrings
+    * empty item slots *must* be `""`
+
+Example:
+
+    metadata_table = {
+        -- metadata fields (key/value store)
+        fields = {
+            infotest "Container",
+            anoter_key = "Another Value",
+        },
+
+        -- inventory data (for nodes)
+        inventory = {
+            -- inventory list "main" with 4 slots
+            main = {
+                -- list of all item slots
+                [1] = "example:dirt",
+                [2] = "example:stone 25",
+                [3] = "", -- empty slot
+                [4] = "example:pickaxe",
+            },
+            -- inventory list "hidden" with 1 slot
+            hidden = {
+                [1] = "example:diamond",
+            },
+        },
+    }
 
 `ModChannel`
 ------------
@@ -7825,6 +7887,8 @@ Player properties need to be saved manually.
         --   'inventory_image'.
         --   If 'itemname' contains a ColorString or palette index (e.g. from
         --   `minetest.itemstring_with_palette()`), the entity will inherit the color.
+        --   Wielditems are scaled a bit. If you want a wielditem to appear
+        --   to be as large as a node, use `0.667` in `visual_size`
         -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1, z = 1},
@@ -8609,15 +8673,17 @@ Used by `minetest.register_node`.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
         preserve_metadata = function(pos, oldnode, oldmeta, drops),
-        -- Called when oldnode is about be converted to an item, but before the
+        -- Called when `oldnode` is about be converted to an item, but before the
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
-        -- oldmeta are the metadata fields (table) of the node before deletion.
-        -- drops is a table of ItemStacks, so any metadata to be preserved can
-        -- be added directly to one or more of the dropped items. See
-        -- "ItemStackMetaRef".
-        -- default: nil
+        -- * `pos`: node position
+        -- * `oldnode`: node table of node before it was deleted
+        -- * `oldmeta` metadata of node before it was deleted, as a metadata table
+        -- * `drops` is a table of `ItemStack`s, so any metadata to be preserved can
+        --   be added directly to one or more of the dropped items. See
+        --   "ItemStackMetaRef".
+        -- default: `nil`
 
         after_place_node = function(pos, placer, itemstack, pointed_thing),
         -- Called after constructing node when node was placed using
@@ -8627,9 +8693,13 @@ Used by `minetest.register_node`.
         -- default: nil
 
         after_dig_node = function(pos, oldnode, oldmetadata, digger),
-        -- oldmetadata is in table format.
-        -- Called after destructing node when node was dug using
-        -- minetest.node_dig / minetest.dig_node.
+        -- Called after destructing the node when node was dug using
+        -- `minetest.node_dig` / `minetest.dig_node`.
+        -- * `pos`: node position
+        -- * `oldnode`: node table of node before it was dug
+        -- * `oldmetadata`: metadata of node before it was dug,
+        --                  as a metadata table
+        -- * `digger`: ObjectRef of digger
         -- default: nil
 
         can_dig = function(pos, [player]),
