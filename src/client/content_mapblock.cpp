@@ -1196,6 +1196,7 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 
 void MapblockMeshGenerator::drawPlantlikeRootedNode()
 {
+	drawSolidNode();
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
 	p.Y++;
