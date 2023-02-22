@@ -248,7 +248,7 @@ private:
 
 	f32 m_bounding_radius;
 	// MapblockMeshGenerator uses the same as mapblock center
-	v3f m_bounding_sphere_center = v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;

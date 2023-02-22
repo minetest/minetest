@@ -270,6 +270,8 @@ void ClientMap::updateDrawList()
 
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
+	// Number of blocks frustum culled
+	u32 blocks_frustum_culled = 0;
 	// Blocks visited by the algorithm
 	u32 blocks_visited = 0;
 	// Block sides that were not traversed
@@ -343,8 +345,8 @@ void ClientMap::updateDrawList()
 			mesh_sphere_radius = mesh->getBoundingRadius();
 		}
 		else {
-			mesh_sphere_center = intToFloat(block_pos_nodes, BS) + v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
-			mesh_sphere_radius = 0.0f;
+			mesh_sphere_center = intToFloat(block_pos_nodes, BS) + v3f((mesh_grid.cell_size * MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+			mesh_sphere_radius = 0.87f * mesh_grid.cell_size * MAP_BLOCKSIZE * BS;
 		}
 
 		// First, perform a simple distance check.
@@ -358,8 +360,10 @@ void ClientMap::updateDrawList()
 		// This is needed because this function is not called every frame.
 		float frustum_cull_extra_radius = 300.0f;
 		if (is_frustum_culled(mesh_sphere_center,
-				mesh_sphere_radius + frustum_cull_extra_radius))
+				mesh_sphere_radius + frustum_cull_extra_radius)) {
+			blocks_frustum_culled++;
 			continue;
+		}
 
 		// Calculate the vector from the camera block to the current block
 		// We use it to determine through which sides of the current block we can continue the search
@@ -503,6 +507,7 @@ void ClientMap::updateDrawList()
 	}
 
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
+	g_profiler->avg("MapBlocks frustum culled [#]", blocks_frustum_culled);
 	g_profiler->avg("MapBlocks sides skipped [#]", sides_skipped);
 	g_profiler->avg("MapBlocks examined [#]", blocks_visited);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
