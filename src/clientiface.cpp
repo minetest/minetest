@@ -168,9 +168,6 @@ void RemoteClient::GetNextBlocks (
 	// Get view range and camera fov (radians) from the client
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
-	// in case the wanted_range was decreased by the client
-	if (m_blocks_occ.size() > wanted_range)
-		m_blocks_occ.resize(wanted_range);
 
 	/*
 		Get the starting value of the block finder radius.
@@ -178,34 +175,17 @@ void RemoteClient::GetNextBlocks (
 	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
 		m_last_center = center;
-		// clear occlusion cache when we moved
-		m_blocks_occ.clear();
 	}
 	// reset the unsent distance if the view angle has changed more that 10% of the fov
 	// (this matches isBlockInSight which allows for an extra 10%)
 	if (camera_dir.dotProduct(m_last_camera_dir) < std::cos(camera_fov * 0.1f)) {
 		m_nearest_unsent_d = 0;
 		m_last_camera_dir = camera_dir;
-		// clear occlusion cache when we're looking somewhere else
-		m_blocks_occ.clear();
 	}
-
-	if (!m_blocks_modified.empty()) {
+	if (m_nearest_unsent_d > 0) {
 		// make sure any blocks modified since the last time we sent blocks are resent
-		s16 nearest_unsent_d = wanted_range;
 		for (const v3s16 &p : m_blocks_modified) {
-			nearest_unsent_d = std::min(nearest_unsent_d, center.getDistanceFrom(p));
-		}
-		if (nearest_unsent_d < m_nearest_unsent_d) {
-			m_nearest_unsent_d = nearest_unsent_d;
-
-			/*
-				We know that no visible block nearer than nearest_unsent_d has changed,
-				so visibility up to that has to be the same.
-				We already cleared the offending block(s) in SetBlock(s)NotSent
-				So any blocks that might become visible are farther away that this.
-			*/
-			m_blocks_occ.resize(nearest_unsent_d + 1);
+			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
 		}
 	}
 	m_blocks_modified.clear();
@@ -250,10 +230,6 @@ void RemoteClient::GetNextBlocks (
 	//bool queue_is_full = false;
 
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
-
-	// ensure space for this iteration
-	if (m_blocks_occ.size() < d_max + 1)
-		m_blocks_occ.resize(d_max + 1);
 
 	s16 d;
 	for (d = d_start; d <= d_max; d++) {
@@ -325,12 +301,6 @@ void RemoteClient::GetNextBlocks (
 				continue;
 
 			/*
-				Or blocks we already have occlusion culled
-			*/
-			if (m_blocks_occ[d].find(p) != m_blocks_occ[d].end())
-				continue;
-
-			/*
 				Check if map has this block
 			*/
 			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
@@ -356,9 +326,15 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
+				/*
+					Check occlusion cache first.
+				 */
+				if (m_blocks_occ.find(p) != m_blocks_occ.end())
+					continue;
+
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
-					m_blocks_occ[d].insert(p);
+					m_blocks_occ.insert(p);
 					continue;
 				}
 			}
@@ -422,8 +398,11 @@ queue_full_break:
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
+		// if the distance has changed, clear the occlusion cache
+		m_blocks_occ.clear();
+	}
 }
 
 void RemoteClient::GotBlock(v3s16 p)
@@ -453,16 +432,8 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 
 	// remove the block from sending and sent sets,
 	// and mark as modified if found
-	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0) {
+	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
 		m_blocks_modified.insert(p);
-		// if the block was visible it could have occluded other blocks
-		// so clear it from the cache
-		for (auto &occ : m_blocks_occ) {
-			if (occ.erase(p) > 0) {
-				break;
-			}
-		}
-	}
 }
 
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
@@ -473,16 +444,8 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 		v3s16 p = block.first;
 		// remove the block from sending and sent sets,
 		// and mark as modified if found
-		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0) {
+		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
 			m_blocks_modified.insert(p);
-			// if the block was visible it could have occluded other blocks
-			// so clear it from the cache
-			for (auto &occ : m_blocks_occ) {
-				if (occ.erase(p) > 0) {
-					break;
-				}
-			}
-		}
 	}
 }
 
