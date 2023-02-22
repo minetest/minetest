@@ -299,14 +299,15 @@ void ClientMap::updateDrawList()
 	MeshGrid mesh_grid = m_client->getMeshGrid();
 
 	v3s16 camera_mesh = mesh_grid.getMeshPos(camera_block);
+	v3s16 camera_cell = mesh_grid.getCellPos(camera_block);
 
 	// Bits per block:
 	// [ visited | 0 | 0 | 0 | 0 | Z visible | Y visible | X visible ]
-	MapBlockFlags meshes_seen(p_blocks_min, p_blocks_max);
+	MapBlockFlags meshes_seen(mesh_grid.getCellPos(p_blocks_min), mesh_grid.getCellPos(p_blocks_max) + 1);
 
 	// Start breadth-first search with the block the camera is in
 	blocks_to_consider.push(camera_mesh);
-	meshes_seen.getChunk(camera_mesh).getBits(camera_mesh) = 0x07; // mark all sides as visible
+	meshes_seen.getChunk(camera_cell).getBits(camera_cell) = 0x07; // mark all sides as visible
 
 	std::set<v3s16> shortlist;
 
@@ -316,7 +317,8 @@ void ClientMap::updateDrawList()
 		v3s16 block_coord = blocks_to_consider.front();
 		blocks_to_consider.pop();
 
-		auto &flags = meshes_seen.getChunk(block_coord).getBits(block_coord);
+		v3s16 cell_coord = mesh_grid.getCellPos(block_coord);
+		auto &flags = meshes_seen.getChunk(cell_coord).getBits(cell_coord);
 
 		// Only visit each block once (it may have been queued up to three times)
 		if ((flags & 0x80) == 0x80)
@@ -473,9 +475,11 @@ void ClientMap::updateDrawList()
 				v3s16 next_pos = block_coord;
 				next_pos[axis] += next_pos_offset;
 
+				v3s16 next_cell = mesh_grid.getCellPos(next_pos);
+
 				// If a side is a see-through, mark the next block's side as visible, and queue
 				if (side_visible) {
-					auto &next_flags = meshes_seen.getChunk(next_pos).getBits(next_pos);
+					auto &next_flags = meshes_seen.getChunk(next_cell).getBits(next_cell);
 					next_flags |= my_side;
 					blocks_to_consider.push(next_pos);
 				}
