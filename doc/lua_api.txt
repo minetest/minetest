@@ -463,6 +463,7 @@ passing complex texture names as arguments. Escaping is done with backslash and
 is required for `^`, `:` and `\`.
 
 Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
+Or as Lua string: `"cobble.png^[lowpart:50:color.png\\^[mask\\:trans.png"`
 
 The lower 50 percent of `color.png^[mask:trans.png` are overlaid
 on top of `cobble.png`.
@@ -6964,12 +6965,11 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `get_keys()`: returns a list of all keys in the metadata.
 * `to_table()`:
     * Returns metadata as a metadata table (see below), if possible
-    * Return `nil` on failure
+    * Returns `nil` on failure
 * `from_table(data)`
     * Imports metadata from a metadata table
-    * If `data` is a metadata table (see below),
-      the metadata it represents will replace all metadata
-      of this MetaDataRef object
+    * If `data` is a metadata table (see below), the metadata it represents
+      will replace all metadata of this MetaDataRef object
     * Any non-table value for `data` will clear all metadata
     * Returns `true` on success
 * `equals(other)`
@@ -6992,15 +6992,14 @@ A metadata table is a table that has the following keys:
     * inventory table keys are inventory list names
     * inventory table values are item tables
     * item table keys are slot IDs (starting with 1)
-    * item table values are itemstrings
-    * empty item slots *must* be `""`
+    * item table values are ItemStacks or anything convertible to it
 
 Example:
 
     metadata_table = {
         -- metadata fields (key/value store)
         fields = {
-            infotest "Container",
+            infotext = "Container",
             anoter_key = "Another Value",
         },
 
@@ -8679,8 +8678,8 @@ Used by `minetest.register_node`.
         -- becoming detached.
         -- * `pos`: node position
         -- * `oldnode`: node table of node before it was deleted
-        -- * `oldmeta` metadata of node before it was deleted, as a metadata table
-        -- * `drops` is a table of `ItemStack`s, so any metadata to be preserved can
+        -- * `oldmeta`: metadata of node before it was deleted, as a metadata table
+        -- * `drops`: a table of `ItemStack`s, so any metadata to be preserved can
         --   be added directly to one or more of the dropped items. See
         --   "ItemStackMetaRef".
         -- default: `nil`
