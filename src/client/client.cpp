@@ -574,6 +574,7 @@ void Client::step(float dtime)
 				// Delete the old mesh
 				delete block->mesh;
 				block->mesh = nullptr;
+				block->solid_sides = r.solid_sides;
 
 				if (r.mesh) {
 					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
@@ -596,12 +597,6 @@ void Client::step(float dtime)
 				}
 			} else {
 				delete r.mesh;
-			}
-
-			for (auto p : r.solid_sides) {
-				auto block = m_env.getMap().getBlockNoCreateNoEx(p.first);
-				if (block)
-					block->solid_sides = p.second;
 			}
 
 			if (m_minimap && do_mapper_update) {
