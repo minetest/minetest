@@ -296,17 +296,19 @@ void ClientMap::updateDrawList()
 	// 	occlusion_culling_enabled = porting::getTimeS() & 1;
 
 	std::queue<v3s16> blocks_to_consider;
+	MeshGrid mesh_grid = m_client->getMeshGrid();
+
+	v3s16 camera_mesh = mesh_grid.getMeshPos(camera_block);
 
 	// Bits per block:
 	// [ visited | 0 | 0 | 0 | 0 | Z visible | Y visible | X visible ]
 	MapBlockFlags meshes_seen(p_blocks_min, p_blocks_max);
 
 	// Start breadth-first search with the block the camera is in
-	blocks_to_consider.push(camera_block);
-	meshes_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
+	blocks_to_consider.push(camera_mesh);
+	meshes_seen.getChunk(camera_mesh).getBits(camera_mesh) = 0x07; // mark all sides as visible
 
 	std::set<v3s16> shortlist;
-	MeshGrid mesh_grid = m_client->getMeshGrid();
 
 	// Recursively walk the space and pick mapblocks for drawing
 	while (blocks_to_consider.size() > 0) {
@@ -333,7 +335,7 @@ void ClientMap::updateDrawList()
 
 		MapBlockMesh *mesh = block ? block->mesh : nullptr;
 
-		// Calculate the coordinates for range and frutum culling
+		// Calculate the coordinates for range and frustum culling
 		v3f mesh_sphere_center;
 		f32 mesh_sphere_radius;
 
@@ -367,7 +369,7 @@ void ClientMap::updateDrawList()
 
 		// Calculate the vector from the camera block to the current block
 		// We use it to determine through which sides of the current block we can continue the search
-		v3s16 look = block_coord - camera_block;
+		v3s16 look = block_coord - camera_mesh;
 
 		// Occluded near sides will further occlude the far sides
 		u8 visible_outer_sides = flags & 0x07;
@@ -384,7 +386,7 @@ void ClientMap::updateDrawList()
 			// Block meshes are stored in the corner block of a chunk
 			// (where all coordinate are divisible by the chunk size)
 			// Add them to the de-dup set.
-			shortlist.emplace(mesh_grid.getMeshPos(block_coord.X), mesh_grid.getMeshPos(block_coord.Y), mesh_grid.getMeshPos(block_coord.Z));
+			shortlist.emplace(block_coord.X, block_coord.Y, block_coord.Z);
 			// All other blocks we can grab and add to the keeplist right away.
 			if (block) {
 				m_keeplist.push_back(block);
@@ -442,7 +444,7 @@ void ClientMap::updateDrawList()
 
 		// Calculate vector from camera to mapblock center. Because we only need relation between
 		// coordinates we scale by 2 to avoid precision loss.
-		v3s16 precise_look = 2 * (block_pos_nodes - cam_pos_nodes) + MAP_BLOCKSIZE - 1;
+		v3s16 precise_look = 2 * (block_pos_nodes - cam_pos_nodes) + mesh_grid.cell_size * MAP_BLOCKSIZE - 1;
 
 		// dominant axis flag
 		u8 dominant_axis = (abs(precise_look.X) > abs(precise_look.Y) && abs(precise_look.X) > abs(precise_look.Z)) |
@@ -485,13 +487,13 @@ void ClientMap::updateDrawList()
 
 			// Test the '-' direction of the axis
 			if (look[axis] <= 0 && block_coord[axis] > p_blocks_min[axis])
-				traverse_far_side(-1);
+				traverse_far_side(-mesh_grid.cell_size);
 
 			// Test the '+' direction of the axis
 			far_side_mask <<= 1;
 
 			if (look[axis] >= 0 && block_coord[axis] < p_blocks_max[axis])
-				traverse_far_side(+1);
+				traverse_far_side(+mesh_grid.cell_size);
 		}
 	}
 
