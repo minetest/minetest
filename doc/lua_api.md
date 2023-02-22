@@ -7331,13 +7331,14 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
-* `get_pos()`: returns position in form `{x=num, y=num, z=num}`
+* `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
 * `set_pos(pos)`:
-    * sets position in form `{x=num, y=num, z=num}`
-    * no-op if object is attached
+    * Sets the position of the object.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
-    * changes velocity by adding to the current velocity.
+    * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
       set_velocity, add_velocity is supposed to avoid synchronization problems.
@@ -7355,11 +7356,10 @@ child will follow movement and rotation of that bone.
       position before starting the interpolated move.
     * For players this does the same as `set_pos`,`continuous` is ignored.
     * no-op if object is attached
-* `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
+* `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
     * punches the object, triggering all consequences 'normal' punch would do
-    * `puncher`: another `ObjectRef` which 'punched' the object,
-    * `time_from_last_punch`: time since last punch action of the puncher
-    * `direction`: direction the punch came from (as a vector); can be `nil`
+    * `puncher`: another `ObjectRef` which 'punched' the object
+    * Other arguments: See `on_punch` for entities
 * `right_click(clicker)`:
     * simulates using the 'place/use' key on the object
     * triggers all consequences as if a real player had done this
@@ -7373,7 +7373,7 @@ child will follow movement and rotation of that bone.
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
-* `get_wield_index()`: returns the hotbar index of the wielded item (starting with 1)
+* `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
 * `get_wielded_item()`: returns the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
@@ -7501,7 +7501,7 @@ child will follow movement and rotation of that bone.
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
-* `get_luaentity()`: returns the object's associated Lua entity
+* `get_luaentity()`: returns the object's associated luaentity table
 
 #### Player only (no-op for other objects)
 
