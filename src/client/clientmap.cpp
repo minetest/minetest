@@ -297,11 +297,11 @@ void ClientMap::updateDrawList()
 
 	// Bits per block:
 	// [ visited | 0 | 0 | 0 | 0 | Z visible | Y visible | X visible ]
-	MapBlockFlags blocks_seen(p_blocks_min, p_blocks_max);
+	MapBlockFlags meshes_seen(p_blocks_min, p_blocks_max);
 
 	// Start breadth-first search with the block the camera is in
 	blocks_to_consider.push(camera_block);
-	blocks_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
+	meshes_seen.getChunk(camera_block).getBits(camera_block) = 0x07; // mark all sides as visible
 
 	std::set<v3s16> shortlist;
 	MeshGrid mesh_grid = m_client->getMeshGrid();
@@ -312,7 +312,7 @@ void ClientMap::updateDrawList()
 		v3s16 block_coord = blocks_to_consider.front();
 		blocks_to_consider.pop();
 
-		auto &flags = blocks_seen.getChunk(block_coord).getBits(block_coord);
+		auto &flags = meshes_seen.getChunk(block_coord).getBits(block_coord);
 
 		// Only visit each block once (it may have been queued up to three times)
 		if ((flags & 0x80) == 0x80)
@@ -469,7 +469,7 @@ void ClientMap::updateDrawList()
 
 				// If a side is a see-through, mark the next block's side as visible, and queue
 				if (side_visible) {
-					auto &next_flags = blocks_seen.getChunk(next_pos).getBits(next_pos);
+					auto &next_flags = meshes_seen.getChunk(next_pos).getBits(next_pos);
 					next_flags |= my_side;
 					blocks_to_consider.push(next_pos);
 				}
