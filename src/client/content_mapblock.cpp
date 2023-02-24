@@ -56,7 +56,9 @@ static const v3s16 light_dirs[8] = {
 };
 
 // Standard index set to make a quad on 4 vertices
-static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
+static constexpr u16 quad_indices_02[] = {0, 1, 2, 2, 3, 0};
+static constexpr u16 quad_indices_13[] = {0, 1, 3, 3, 1, 2};
+static auto &quad_indices = quad_indices_02;
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
@@ -226,6 +228,11 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 	return vertices;
 }
 
+enum class QuadDiagonal {
+	Diag02,
+	Diag13,
+};
+
 // Create a cuboid with custom lighting.
 //  tiles     - the tiles (materials) to use (for all 6 faces)
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
@@ -236,7 +243,9 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 //              (compatible with ContentFeatures).
 //  mask      - a bit mask that suppresses drawing of tiles.
 //              tile i will not be drawn if mask & (1 << i) is 1
-//  face_lighter(int face, video::S3DVertex vertices[4]) - a callback that will be called for each face drawn to setup vertex colors.
+//  face_lighter(int face, video::S3DVertex vertices[4]) -> QuadDiagonal -
+//              a callback that will be called for each face drawn to setup vertex colors,
+//              and to choose diagonal to split the quad at.
 template <typename Fn>
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	TileSpec *tiles, int tilecount, const f32 *txc, u8 mask, Fn &&face_lighter)
@@ -248,9 +257,10 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	for (int k = 0; k < 6; ++k) {
 		if (mask & (1 << k))
 			continue;
-		face_lighter(k, &vertices[4 * k]);
+		QuadDiagonal diagonal = face_lighter(k, &vertices[4 * k]);
+		const u16 *indices = diagonal == QuadDiagonal::Diag13 ? quad_indices_13 : quad_indices_02;
 		int tileindex = MYMIN(k, tilecount - 1);
-		collector->append(tiles[tileindex], &vertices[4 * k], 4, quad_indices, 6);
+		collector->append(tiles[tileindex], &vertices[4 * k], 4, indices, 6);
 	}
 }
 
@@ -337,6 +347,11 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 		coords[i] = txc[i];
 }
 
+int lightDiff(LightPair a, LightPair b)
+{
+	return abs(a.lightDay - b.lightDay) + abs(a.lightNight - b.lightNight);
+}
+
 void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	TileSpec *tiles, int tile_count, u8 mask)
 {
@@ -386,14 +401,17 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		}
 
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			LightPair final_lights[4];
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
-				vertex.Color = encode_light(
-					lights[light_indices[face][j]].getPair(MYMAX(0.0f, vertex.Normal.Y)),
-					f->light_source);
+				final_lights[j] = lights[light_indices[face][j]].getPair(MYMAX(0.0f, vertex.Normal.Y));
+				vertex.Color = encode_light(final_lights[j], f->light_source);
 				if (!f->light_source)
 					applyFacesShading(vertex.Color, vertex.Normal);
 			}
+			if (lightDiff(final_lights[1], final_lights[3]) < lightDiff(final_lights[0], final_lights[2]))
+				return QuadDiagonal::Diag13;
+			return QuadDiagonal::Diag02;
 		});
 	} else {
 		drawCuboid(box, tiles, tile_count, txc, mask, [&] (int face, video::S3DVertex vertices[4]) {
@@ -404,6 +422,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 				video::S3DVertex &vertex = vertices[j];
 				vertex.Color = color;
 			}
+			return QuadDiagonal::Diag02;
 		});
 	}
 }
@@ -478,6 +497,7 @@ void MapblockMeshGenerator::drawSolidNode()
 				video::S3DVertex &vertex = vertices[j];
 				vertex.Color = color;
 			}
+			return QuadDiagonal::Diag02;
 		});
 	}
 }
