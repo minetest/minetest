@@ -7357,13 +7357,14 @@ child will follow movement and rotation of that bone.
     * For players this does the same as `set_pos`,`continuous` is ignored.
     * no-op if object is attached
 * `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
-    * punches the object, triggering all consequences 'normal' punch would do
-    * `puncher`: another `ObjectRef` which 'punched' the object
+    * punches the object, triggering all consequences a normal punch would have
+    * `puncher`: another `ObjectRef` which punched the object
+    * `dir`: direction vector of punch (can be `nil`)
     * Other arguments: See `on_punch` for entities
 * `right_click(clicker)`:
     * simulates using the 'place/use' key on the object
     * triggers all consequences as if a real player had done this
-    * `clicker` is another `ObjectRef` that has 'clicked'
+    * `clicker` is another `ObjectRef` which has clicked
     * note: this is called `right_click` for historical reasons only
 * `get_hp()`: returns number of health points
 * `set_hp(hp, reason)`: set number of health points
@@ -7425,7 +7426,9 @@ child will follow movement and rotation of that bone.
     * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
 * `get_bone_position(bone)`:
+    * returns bone parameters previously set by `set_bone_position`
     * returns `position, rotation` of the specified bone (as vectors)
+    * note: position is relative to the object
 * `set_properties(object property table)`:
     * set a number of object properties in the given table
     * only properties listed in the table will be changed
