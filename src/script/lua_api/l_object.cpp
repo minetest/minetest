@@ -1726,7 +1726,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 		lua_getfield(L, 2, "body_orbit_tilt");
 		if (!lua_isnil(L, -1)) {
-			sky_params.body_orbit_tilt = rangelim(static_cast<float>(luaL_checknumber(L, -1)), -60.0f, 60.0f);
+			sky_params.body_orbit_tilt = rangelim(readParam<float>(L, -1), -60.0f, 60.0f);
 		}
 		lua_pop(L, 1);
 
