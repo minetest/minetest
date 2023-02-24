@@ -170,6 +170,14 @@ For Fedora users:
 
     sudo dnf install git
 
+For Arch users:
+	
+	sudo pacman -S git
+
+For Alpine users:
+
+	sudo apk add git
+
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
     git clone --depth 1 https://github.com/minetest/minetest.git
