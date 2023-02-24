@@ -58,7 +58,7 @@ static const v3s16 light_dirs[8] = {
 // Standard index set to make a quad on 4 vertices
 static constexpr u16 quad_indices_02[] = {0, 1, 2, 2, 3, 0};
 static constexpr u16 quad_indices_13[] = {0, 1, 3, 3, 1, 2};
-static auto &quad_indices = quad_indices_02;
+static const auto &quad_indices = quad_indices_02;
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
