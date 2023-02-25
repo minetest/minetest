@@ -277,8 +277,12 @@ void ClientMap::updateDrawList()
 	// Block sides that were not traversed
 	u32 sides_skipped = 0;
 
+	MeshGrid mesh_grid = m_client->getMeshGrid();
+
 	// No occlusion culling when free_move is on and camera is inside ground
-	bool occlusion_culling_enabled = true;
+	// No occlusion culling for chunk sizes of 4 and above
+	//   because the current occlusion culling test is highly inefficient at these sizes
+	bool occlusion_culling_enabled = mesh_grid.cell_size < 4;
 	if (m_control.allow_noclip) {
 		MapNode n = getNode(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE || m_nodedef->get(n).solidness == 2)
@@ -296,7 +300,6 @@ void ClientMap::updateDrawList()
 	// 	occlusion_culling_enabled = porting::getTimeS() & 1;
 
 	std::queue<v3s16> blocks_to_consider;
-	MeshGrid mesh_grid = m_client->getMeshGrid();
 
 	v3s16 camera_mesh = mesh_grid.getMeshPos(camera_block);
 	v3s16 camera_cell = mesh_grid.getCellPos(camera_block);
