@@ -6964,8 +6964,7 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `get_float(key)`: Returns `0` if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
 * `to_table()`:
-    * Returns metadata as a metadata table (see below), if possible
-    * Returns `nil` on failure
+    * Returns a metadata table (see below) or `nil` on failure.
 * `from_table(data)`
     * Imports metadata from a metadata table
     * If `data` is a metadata table (see below), the metadata it represents
@@ -6977,11 +6976,7 @@ of the `${k}` syntax in formspecs is not deprecated.
 
 ### Metadata tables
 
-A MetaDataRef can be converted to and from a metadata table,
-which is metadata represented in a table form. It is used
-to serialize and deserialize metadata.
-The methods `from_table` and `to_table` use metadata tables, as
-well as a few callback functions.
+Metadata tables represent MetaDataRef in a Lua table form (see `from_table`/`to_table`).
 
 A metadata table is a table that has the following keys:
 
