@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
+// Maps light index to corner direction
 static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
 	v3s16(-1, -1,  1),
@@ -53,6 +54,16 @@ static const v3s16 light_dirs[8] = {
 	v3s16( 1, -1,  1),
 	v3s16( 1,  1, -1),
 	v3s16( 1,  1,  1),
+};
+
+// Maps cuboid face and vertex indices to the corresponding light index
+static const u8 light_indices[6][4] = {
+	{3, 7, 6, 2},
+	{0, 4, 5, 1},
+	{6, 7, 5, 4},
+	{3, 2, 0, 1},
+	{7, 3, 1, 5},
+	{2, 6, 4, 0},
 };
 
 // Standard index set to make a quad on 4 vertices
@@ -382,15 +393,6 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		tile_count = 1;
 	}
 	if (data->m_smooth_lighting) {
-		static const u8 light_indices[6][4] = {
-			{3, 7, 6, 2},
-			{0, 4, 5, 1},
-			{6, 7, 5, 4},
-			{3, 2, 0, 1},
-			{7, 3, 1, 5},
-			{2, 6, 4, 0},
-		};
-
 		LightInfo lights[8];
 		for (int j = 0; j < 8; ++j) {
 			v3f d;
@@ -486,15 +488,6 @@ void MapblockMeshGenerator::drawSolidNode()
 	box.MaxEdge += origin;
 	generateCuboidTextureCoords(box, texture_coord_buf);
 	if (data->m_smooth_lighting) {
-		static const u8 light_indices[6][4] = {
-			{3, 7, 6, 2},
-			{0, 4, 5, 1},
-			{6, 7, 5, 4},
-			{3, 2, 0, 1},
-			{7, 3, 1, 5},
-			{2, 6, 4, 0},
-		};
-
 		LightPair lights[6][4];
 		for (int face = 0; face < 6; ++face) {
 			for (int k = 0; k < 4; k++) {
