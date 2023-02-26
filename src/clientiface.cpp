@@ -295,12 +295,6 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
-				Don't send already sent blocks
-			*/
-			if (m_blocks_sent.find(p) != m_blocks_sent.end())
-				continue;
-
-			/*
 				Check if map has this block
 			*/
 			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
@@ -309,6 +303,12 @@ void RemoteClient::GetNextBlocks (
 			if (block) {
 				// Reset usage timer, this block will be of use in the future.
 				block->resetUsageTimer();
+
+				/*
+					Don't send already sent blocks
+				*/
+				if (m_blocks_sent.find(p) != m_blocks_sent.end())
+					continue;
 
 				// Check whether the block exists (with data)
 				if (!block->isGenerated())
