@@ -701,6 +701,7 @@ enum ToClientCommand
 		u8[4] fog_sun_tint (ARGB)
 		u8[4] fog_moon_tint (ARGB)
 		std::string fog_tint_type
+		float body_orbit_tilt
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,

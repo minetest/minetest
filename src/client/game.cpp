@@ -2976,6 +2976,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		);
 	}
 
+	// Orbit Tilt:
+	sky->setBodyOrbitTilt(event->set_sky->body_orbit_tilt);
+
 	delete event->set_sky;
 }
 

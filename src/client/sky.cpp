@@ -98,9 +98,6 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
 
-	if (g_settings->getBool("enable_dynamic_shadows"))
-		m_sky_body_orbit_tilt = g_settings->getFloat("shadow_sky_body_orbit_tilt", -60.0f, 60.0f);
-
 	setStarCount(1000);
 }
 
@@ -556,12 +553,12 @@ static v3f getSkyBodyPosition(float horizon_position, float day_position, float 
 
 v3f Sky::getSunDirection()
 {
-	return getSkyBodyPosition(90, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+	return getSkyBodyPosition(90, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_params.body_orbit_tilt);
 }
 
 v3f Sky::getMoonDirection()
 {
-	return getSkyBodyPosition(270, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_body_orbit_tilt);
+	return getSkyBodyPosition(270, getWickedTimeOfDay(m_time_of_day) * 360 - 90, m_sky_params.body_orbit_tilt);
 }
 
 void Sky::draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
@@ -721,7 +718,7 @@ void Sky::place_sky_body(
 	* day_position: turn the body around the Z axis, to place it depending of the time of the day
 	*/
 {
-	v3f centrum = getSkyBodyPosition(horizon_position, day_position, m_sky_body_orbit_tilt);
+	v3f centrum = getSkyBodyPosition(horizon_position, day_position, m_sky_params.body_orbit_tilt);
 	v3f untilted_centrum = getSkyBodyPosition(horizon_position, day_position, 0.f);
 	for (video::S3DVertex &vertex : vertices) {
 		// Body is directed to -Z (south) by default

@@ -96,6 +96,10 @@ public:
 	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
+	void setBodyOrbitTilt(float body_orbit_tilt)
+	{
+		m_sky_params.body_orbit_tilt = body_orbit_tilt;
+	}
 	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
 		m_bgcolor = bgcolor;
@@ -164,7 +168,6 @@ private:
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 	bool m_enable_shaders = false;
-	float m_sky_body_orbit_tilt = 0.0f;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);

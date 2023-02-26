@@ -7316,6 +7316,8 @@ child will follow movement and rotation of that bone.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
           (default: `#ffffff`)
+        * `body_orbit_tilt`: Float, angle of sun/moon orbit in degrees, relative to Y axis.
+           Valid range [-60.0,60.0] (default: 0.0)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.

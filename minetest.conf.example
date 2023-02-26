@@ -484,12 +484,6 @@
 #    type: float min: 1 max: 15
 # shadow_soft_radius = 5.0
 
-#    Set the tilt of Sun/Moon orbit in degrees.
-#    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
-#    type: float min: -60 max: 60
-# shadow_sky_body_orbit_tilt = 0.0
-
 ### Post processing
 
 #    Set the exposure compensation factor.
