@@ -2029,7 +2029,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			sf.next(":");
 			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
 
-			video::IImage *img = generateImage(filename);
+			video::IImage *img = generateImage(filename, source_image_names);
 			if (img) {
 				upscaleImagesToMatchLargest(baseimg, img);
 
