@@ -486,28 +486,6 @@ void MapblockMeshGenerator::drawSolidNode()
 	box.MaxEdge += origin;
 	generateCuboidTextureCoords(box, texture_coord_buf);
 	if (data->m_smooth_lighting) {
-		for (int k = 0; k < 8; ++k)
-			frame.sunlight[k] = false;
-		for (int k = 0; k < 8; ++k) {
-			LightPair light(getSmoothLightTransparent(blockpos_nodes + p, light_dirs[k], data));
-			frame.lightsDay[k] = light.lightDay;
-			frame.lightsNight[k] = light.lightNight;
-			// If there is direct sunlight and no ambient occlusion at some corner,
-			// mark the vertical edge (top and bottom corners) containing it.
-			if (light.lightDay == 255) {
-				frame.sunlight[k] = true;
-				frame.sunlight[k ^ 2] = true;
-			}
-		}
-
-		LightInfo lights[8];
-		for (int j = 0; j < 8; ++j) {
-			f32 light_boosted = frame.sunlight[j] ? 255 : frame.lightsDay[j];
-			lights[j].light_day = frame.lightsDay[j];
-			lights[j].light_night = frame.lightsNight[j];
-			lights[j].light_boosted = light_boosted;
-		}
-
 		static const u8 light_indices[6][4] = {
 			{3, 7, 6, 2},
 			{0, 4, 5, 1},
@@ -517,11 +495,18 @@ void MapblockMeshGenerator::drawSolidNode()
 			{2, 6, 4, 0},
 		};
 
+		LightPair lights[6][4];
+		for (int face = 0; face < 6; ++face) {
+			for (int k = 0; k < 4; k++) {
+				v3s16 corner = light_dirs[light_indices[face][k]];
+				lights[face][k] = LightPair(getSmoothLightSolid(blockpos_nodes + p, tile_dirs[face], corner, data));
+			}
+		}
+
 		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
-			LightPair final_lights[4];
+			auto final_lights = lights[face];
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex &vertex = vertices[j];
-				final_lights[j] = lights[light_indices[face][j]].getPair(MYMAX(0.0f, vertex.Normal.Y));
 				vertex.Color = encode_light(final_lights[j], f->light_source);
 				if (!f->light_source)
 					applyFacesShading(vertex.Color, vertex.Normal);
