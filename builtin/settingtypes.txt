@@ -471,6 +471,11 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 #    Range: from -1 to 1.0
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
+#    Enable FXAA
+#    When enabled, runs the FXAA (Fast Approximate Anti-Aliasing) filter
+#    as part of post-processing pipeline.
+enable_fxaa (Enable FXAA) bool false
+
 [**Bloom]
 
 #    Set to true to enable bloom effect.
