@@ -67,6 +67,12 @@ public:
 
 	void removeMesh(const scene::IMesh* mesh);
 
+	/**
+	 * This takes 3d_mode into account - side-by-side will return a
+	 * halved horizontal size.
+	 *
+	 * @return "window" size
+	 */
 	static v2u32 getWindowSize()
 	{
 		sanity_check(s_singleton);
