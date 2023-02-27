@@ -99,6 +99,7 @@ void RemoteClient::GetNextBlocks (
 {
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
+	m_map_send_completion_timer += dtime;
 
 	if (m_nothing_to_send_pause_timer >= 0)
 		return;
@@ -384,6 +385,8 @@ queue_full_break:
 		if (d > full_d_max) {
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0f;
+			infostream << "Server: Time to send complete map: " << m_map_send_completion_timer << "s" << std::endl;
+			m_map_send_completion_timer = 0.0f;
 		} else {
 			if (nearest_sent_d != -1)
 				new_nearest_unsent_d = nearest_sent_d;

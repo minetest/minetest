@@ -416,6 +416,9 @@ private:
 	// CPU usage optimization
 	float m_nothing_to_send_pause_timer = 0.0f;
 
+	// measure how long it takes the server to send the complete map
+	float m_map_send_completion_timer = 0.0f;
+
 	/*
 		name of player using this client
 	*/
