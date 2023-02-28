@@ -2726,6 +2726,7 @@ Elements
 ### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 
 * `item name` is the registered name of an item/node
+* `name` is non-optional and must be unique, or else tooltips are broken.
 * The item description will be used as the tooltip. This can be overridden with
   a tooltip element.
 
@@ -7762,7 +7763,7 @@ Player properties need to be saved manually.
         -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
         -- If `rotate = true`, it will match the object's rotation and any attachment rotations.
         -- Raycasts use the selection box and object's rotation, but do *not* obey attachment rotations.
-        
+
 
         pointable = true,
         -- Whether the object can be pointed at
@@ -9317,10 +9318,10 @@ description fields is shown when the "/help" chatcommand is issued.
         -- the format and see [Privileges] for an overview of privileges.
 
         func = function(name, param),
-        -- Called when command is run.  
+        -- Called when command is run.
         -- * `name` is the name of the player who issued the command.
         -- * `param` is a string with the full arguments to the command.
-        -- Returns a boolean for success and a string value.  
+        -- Returns a boolean for success and a string value.
         -- The string is shown to the issuing player upon exit of `func` or,
         -- if `func` returns `false` and no string, the help message is shown.
     }
