@@ -2140,9 +2140,8 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &
 	item.deSerialize(item_name, idef);
 
 	m_tooltips[name] =
-		TooltipSpec(utf8_to_wide(item.getDefinition(idef).description),
-					m_default_tooltip_bgcolor,
-					m_default_tooltip_color);
+			TooltipSpec(utf8_to_wide(item.getDefinition(idef).description),
+				m_default_tooltip_bgcolor, m_default_tooltip_color);
 
 	// the spec for the button
 	FieldSpec spec_btn(
@@ -3577,9 +3576,9 @@ void GUIFormSpecMenu::drawMenu()
 	for (const auto &pair : m_tooltip_rects) {
 		const core::rect<s32> &rect = pair.first->getAbsoluteClippingRect();
 		if (rect.getArea() > 0 && rect.isPointInside(m_pointer)) {
-			const std::wstring &text = pair.second.tooltip;
-			if (!text.empty()) {
-				showTooltip(text, pair.second.color, pair.second.bgcolor);
+			const TooltipSpec &tooltip = pair.second;
+			if (!tooltip.tooltip.empty()) {
+				showTooltip(tooltip);
 				break;
 			}
 		}
@@ -3639,8 +3638,9 @@ void GUIFormSpecMenu::drawMenu()
 		}
 
 		// find the formspec-element of the hovered IGUIElement (a parent)
-		s32 id;
-		for (gui::IGUIElement *hovered_fselem = hovered; hovered_fselem;
+		s32 id = -1;
+		gui::IGUIElement *hovered_fselem; // only valid if id != -1
+		for (hovered_fselem = hovered; hovered_fselem;
 				hovered_fselem = hovered_fselem->getParent()) {
 			id = hovered_fselem->getID();
 			if (id != -1)
@@ -3661,16 +3661,24 @@ void GUIFormSpecMenu::drawMenu()
 
 		// Find and update the current tooltip and cursor icon
 		if (id != -1) {
+			// irrlicht's tooltip (tooltip drawing in irrlicht is disabled)
+			const core::stringw &elem_tooltip_text = hovered_fselem->getToolTipText();
+			if (!elem_tooltip_text.empty())
+				showTooltip(std::wstring(elem_tooltip_text.c_str()),
+						m_default_tooltip_color, m_default_tooltip_bgcolor);
+
 			for (const FieldSpec &field : m_fields) {
 
 				if (field.fid != id)
 					continue;
 
 				if (delta >= m_tooltip_show_delay) {
-					const std::wstring &text = m_tooltips[field.fname].tooltip;
-					if (!text.empty())
-						showTooltip(text, m_tooltips[field.fname].color,
-							m_tooltips[field.fname].bgcolor);
+					auto it = m_tooltips.find(field.fname);
+					if (it != m_tooltips.end()) {
+						const TooltipSpec &tooltip = it->second;
+						if (!tooltip.tooltip.empty())
+							showTooltip(tooltip);
+					}
 				}
 
 #ifndef HAVE_TOUCHSCREENGUI

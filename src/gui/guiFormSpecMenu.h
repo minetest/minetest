@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryList.h"
 #include "guiScrollBar.h"
 #include "guiTable.h"
-#include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
 #include "util/Optional.h"
 #include "util/string.h"
@@ -320,7 +319,7 @@ protected:
 	std::vector<FieldSpec> m_fields;
 	std::vector<std::pair<FieldSpec, GUITable *>> m_tables;
 	std::vector<std::pair<FieldSpec, gui::IGUICheckBox *>> m_checkboxes;
-	std::map<std::string, TooltipSpec> m_tooltips;
+	std::unordered_map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<gui::IGUIElement *, TooltipSpec>> m_tooltip_rects;
 	std::vector<std::pair<FieldSpec, GUIScrollBar *>> m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string>>> m_dropdowns;
@@ -466,6 +465,10 @@ private:
 
 	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
 		const irr::video::SColor &bgcolor);
+	void showTooltip(const TooltipSpec &tooltip)
+	{
+		showTooltip(tooltip.tooltip, tooltip.color, tooltip.bgcolor);
+	}
 
 	/**
 	 * In formspec version < 2 the elements were not ordered properly. Some element
