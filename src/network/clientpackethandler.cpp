@@ -992,7 +992,7 @@ inline bool readMissingTweenParamsFor(std::istringstream& is, ParticleParamTypes
 	if (is.eof())
 		return false;
 
-	t.style = (decltype(t.style))tmp;
+	t.style = static_cast<decltype(t.style)>(tmp);
 	t.reps = readU16(is);
 	t.beginning = readF32(is);
 	return true;
