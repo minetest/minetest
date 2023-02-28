@@ -1694,12 +1694,11 @@ void MapblockMeshGenerator::errorUnknownDrawtype()
 
 void MapblockMeshGenerator::drawNode()
 {
-	// skip some drawtypes early
 	switch (f->drawtype) {
 		case NDT_AIRLIKE:  // Not drawn at all
 			return;
 		case NDT_LIQUID:
-		case NDT_NORMAL:
+		case NDT_NORMAL: // solid nodes don’t need the usual setup
 			drawSolidNode();
 			return;
 		default:
