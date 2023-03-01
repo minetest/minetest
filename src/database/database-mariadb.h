@@ -16,7 +16,12 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 #pragma once
+
+#include "config.h"
+
+#if USE_MARIADB
 
 #include <mariadb/conncpp.hpp>
 #include <string>
@@ -164,3 +169,5 @@ class ModStorageDatabaseMariaDB : private Database_MariaDB, public ModStorageDat
 		std::unique_ptr<sql::PreparedStatement> stmtRemoveModEntries;
 		std::unique_ptr<sql::PreparedStatement> stmtSetModEntry;
 };
+
+#endif // USE_MARIADB
