@@ -41,6 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-files.h"
 #include "database/database-sqlite3.h"
+#if USE_MARIADB
+#include "database/database-mariadb.h"
+#endif
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
@@ -475,14 +478,14 @@ void ServerEnvironment::init()
 	if (player_backend_name == "files") {
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
+				<< std::endl << "Switching to SQLite3, MariaDB, or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3 is advised, "
+				<< std::endl << "Switching to SQLite3 or MariaDB is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 

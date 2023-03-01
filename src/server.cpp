@@ -67,6 +67,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/serverinventorymgr.h"
 #include "translation.h"
 #include "database/database-sqlite3.h"
+#if USE_MARIADB
+#include "database/database-mariadb.h"
+#endif
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
@@ -4040,6 +4043,14 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &backend,
 {
 	if (backend == "sqlite3")
 		return new ModStorageDatabaseSQLite3(world_path);
+
+#if USE_MARIADB
+	if (backend == "mariadb") {
+		std::string connect_string;
+		world_mt.getNoEx("mariadb_mod_storage_connection", connect_string);
+		return new ModStorageDatabaseMariaDB(connect_string);
+	}
+#endif // USE_MARIADB
 
 #if USE_POSTGRESQL
 	if (backend == "postgresql") {
