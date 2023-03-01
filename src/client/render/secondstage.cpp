@@ -122,6 +122,17 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	static const u8 TEXTURE_BLOOM_DOWN = 10;
 	static const u8 TEXTURE_BLOOM_UP = 20;
 
+	// Super-sampling is simply rendering into a larger texture.
+	// Downscaling is done by the final step when rendering to the screen.
+	const std::string antialiasing = g_settings->get("antialiasing");
+	const bool enable_bloom = g_settings->getBool("enable_bloom");
+	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
+	const bool enable_ssaa = antialiasing == "ssaa";
+	const bool enable_fxaa = antialiasing == "fxaa";
+
+	if (enable_ssaa)
+		scale *= 2.0;
+
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
 	buffer->setTexture(TEXTURE_EXPOSURE_1, core::dimension2du(1,1), "exposure_1", color_format, /*clear:*/ true);
 	buffer->setTexture(TEXTURE_EXPOSURE_2, core::dimension2du(1,1), "exposure_2", color_format, /*clear:*/ true);
@@ -136,9 +147,6 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	// Number of mipmap levels of the bloom downsampling texture
 	const u8 MIPMAP_LEVELS = 4;
 
-	const bool enable_bloom = g_settings->getBool("enable_bloom");
-	const bool enable_auto_exposure = g_settings->getBool("enable_auto_exposure");
-	const bool enable_fxaa = g_settings->getBool("enable_fxaa");
 
 	// post-processing stage
 
@@ -219,7 +227,9 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	shader_id = client->getShaderSource()->getShader("second_stage", TILE_MATERIAL_PLAIN, NDT_MESH);
 	PostProcessingStep *effect = pipeline->createOwned<PostProcessingStep>(shader_id, std::vector<u8> { final_stage_source, TEXTURE_BLOOM_UP, TEXTURE_EXPOSURE_2 });
 	pipeline->addStep(effect);
-	effect->setBilinearFilter(1, true); // apply filter to the bloom
+	if (enable_ssaa)
+		effect->setBilinearFilter(0, true);
+	effect->setBilinearFilter(1, true);
 	effect->setRenderSource(buffer);
 
 	if (enable_auto_exposure) {

@@ -8,6 +8,8 @@ struct ExposureParams {
 uniform sampler2D rendered;
 uniform sampler2D bloom;
 
+uniform vec2 texelSize0;
+
 uniform ExposureParams exposureParams;
 uniform lowp float bloomIntensity;
 uniform lowp float saturation;
@@ -80,7 +82,15 @@ vec3 applySaturation(vec3 color, float factor)
 void main(void)
 {
 	vec2 uv = varTexCoord.st;
+#ifdef ENABLE_SSAA	
+	vec4 color = 0.25 * (
+			texture2D(rendered, uv + vec2(-1., -1.) * 0.25 * texelSize0).rgba +
+			texture2D(rendered, uv + vec2(1., -1.) * 0.25 * texelSize0).rgba +
+			texture2D(rendered, uv + vec2(-1., 1.) * 0.25 * texelSize0).rgba +
+			texture2D(rendered, uv + vec2(1., 1.) * 0.25 * texelSize0).rgba);
+#else
 	vec4 color = texture2D(rendered, uv).rgba;
+#endif
 
 	// translate to linear colorspace (approximate)
 	color.rgb = pow(color.rgb, vec3(2.2));

@@ -780,6 +780,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
 
+	if (g_settings->get("antialiasing") == "ssaa")
+		shaders_header << "#define ENABLE_SSAA 1\n";
+
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();
