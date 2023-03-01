@@ -41,14 +41,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-files.h"
 #include "database/database-sqlite3.h"
+#if USE_LEVELDB
+#include "database/database-leveldb.h"
+#endif
 #if USE_MARIADB
 #include "database/database-mariadb.h"
 #endif
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
-#endif
-#if USE_LEVELDB
-#include "database/database-leveldb.h"
 #endif
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
@@ -478,14 +478,14 @@ void ServerEnvironment::init()
 	if (player_backend_name == "files") {
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3, MariaDB, or PostgreSQL is advised, "
+				<< std::endl << "Switching to MariaDB, PostgreSQL, or SQLite3 is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
 	if (auth_backend_name == "files") {
 		warningstream << "/!\\ You are using old auth file backend. "
 				<< "This backend is deprecated and will be removed in a future release /!\\"
-				<< std::endl << "Switching to SQLite3 or MariaDB is advised, "
+				<< std::endl << "Switching to MariaDB or SQLite3 is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
 	}
 
@@ -2220,11 +2220,27 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		const std::string &savedir, const Settings &conf)
 {
 
+	if (name == "dummy")
+		return new Database_Dummy();
+
+	if (name == "files")
+		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
+
 	if (name == "sqlite3")
 		return new PlayerDatabaseSQLite3(savedir);
 
-	if (name == "dummy")
-		return new Database_Dummy();
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new PlayerDatabaseLevelDB(savedir);
+#endif
+
+#if USE_MARIADB
+	if (name == "mariadb") {
+		std::string connect_string;
+		conf.getNoEx("mariadb_player_connection", connect_string);
+		return new PlayerDatabaseMariaDB(connect_string);
+	}
+#endif
 
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
@@ -2233,14 +2249,6 @@ PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
-
-#if USE_LEVELDB
-	if (name == "leveldb")
-		return new PlayerDatabaseLevelDB(savedir);
-#endif
-
-	if (name == "files")
-		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");
 }
@@ -2259,7 +2267,7 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 	if (!world_mt.exists("player_backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
-			<< "	player_backend = {files|sqlite3|leveldb|postgresql}"
+			<< "	player_backend = {files|leveldb|mariadb|postgresql|sqlite3}"
 			<< std::endl;
 		return false;
 	}
@@ -2335,8 +2343,25 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 AuthDatabase *ServerEnvironment::openAuthDatabase(
 		const std::string &name, const std::string &savedir, const Settings &conf)
 {
+
+	if (name == "files")
+		return new AuthDatabaseFiles(savedir);
+		
 	if (name == "sqlite3")
 		return new AuthDatabaseSQLite3(savedir);
+
+#if USE_LEVELDB
+	if (name == "leveldb")
+		return new AuthDatabaseLevelDB(savedir);
+#endif
+
+#if USE_MARIADB
+	if (name == "mariadb") {
+		std::string connect_string;
+		conf.getNoEx("mariadb_auth_connection", connect_string);
+		return new AuthDatabaseMariaDB(connect_string);
+	}
+#endif
 
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
@@ -2344,14 +2369,6 @@ AuthDatabase *ServerEnvironment::openAuthDatabase(
 		conf.getNoEx("pgsql_auth_connection", connect_string);
 		return new AuthDatabasePostgreSQL(connect_string);
 	}
-#endif
-
-	if (name == "files")
-		return new AuthDatabaseFiles(savedir);
-
-#if USE_LEVELDB
-	if (name == "leveldb")
-		return new AuthDatabaseLevelDB(savedir);
 #endif
 
 	throw BaseException(std::string("Database backend ") + name + " not supported.");

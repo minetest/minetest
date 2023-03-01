@@ -66,6 +66,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "translation.h"
+#include "database/database-dummy.h"
+#include "database/database-files.h"
 #include "database/database-sqlite3.h"
 #if USE_MARIADB
 #include "database/database-mariadb.h"
@@ -73,8 +75,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
-#include "database/database-files.h"
-#include "database/database-dummy.h"
 #include "gameparams.h"
 
 class ClientNotFoundException : public BaseException
@@ -4041,6 +4041,13 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &world_path
 ModStorageDatabase *Server::openModStorageDatabase(const std::string &backend,
 		const std::string &world_path, const Settings &world_mt)
 {
+
+	if (backend == "dummy")
+		return new Database_Dummy();
+
+	if (backend == "files")
+		return new ModStorageDatabaseFiles(world_path);
+
 	if (backend == "sqlite3")
 		return new ModStorageDatabaseSQLite3(world_path);
 
@@ -4050,7 +4057,7 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &backend,
 		world_mt.getNoEx("mariadb_mod_storage_connection", connect_string);
 		return new ModStorageDatabaseMariaDB(connect_string);
 	}
-#endif // USE_MARIADB
+#endif
 
 #if USE_POSTGRESQL
 	if (backend == "postgresql") {
@@ -4058,13 +4065,7 @@ ModStorageDatabase *Server::openModStorageDatabase(const std::string &backend,
 		world_mt.getNoEx("pgsql_mod_storage_connection", connect_string);
 		return new ModStorageDatabasePostgreSQL(connect_string);
 	}
-#endif // USE_POSTGRESQL
-
-	if (backend == "files")
-		return new ModStorageDatabaseFiles(world_path);
-
-	if (backend == "dummy")
-		return new Database_Dummy();
+#endif
 
 	throw BaseException("Mod storage database backend " + backend + " not supported");
 }

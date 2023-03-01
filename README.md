@@ -252,6 +252,7 @@ General options and their default values:
     ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
     ENABLE_GLES=OFF            - Enable extra support code for OpenGL ES (requires support by IrrlichtMt)
     ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
+    ENABLE_MARIADB=ON          - Build with MariaDB; Enables use of MariaDB map backend (MariaDB 10.3 or greater recommended)
     ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
     ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
     ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
@@ -289,6 +290,8 @@ Library specific options:
     LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
     LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
     LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
+    MARIADB_INCLUDE_DIR             - Only when building with MARIADB; directory that contains conncpp.hpp
+    MARIADB_LIBRARY                 - Only when building with MARIADB; path to libmariadb.a/libmariadb.so/libmariadb.dll.a
     PostgreSQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
     PostgreSQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so/libpq.lib
     REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
