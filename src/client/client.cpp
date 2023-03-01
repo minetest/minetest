@@ -339,7 +339,7 @@ Client::~Client()
 
 	m_mesh_update_manager.stop();
 	m_mesh_update_manager.wait();
-	
+
 	MeshUpdateResult r;
 	while (m_mesh_update_manager.getNextResult(r)) {
 		for (auto block : r.map_blocks)

@@ -126,7 +126,7 @@ Example content (added indentation and - explanations):
   gameid = mesetint             - name of the game
   enable_damage = true          - whether damage is enabled or not
   creative_mode = false         - whether creative mode is enabled or not
-  backend = sqlite3             - which DB backend to use for blocks (sqlite3, mariadb, dummy, leveldb, redis, postgresql)
+  backend = sqlite3             - which DB backend to use for blocks (dummy, leveldb, mariadb, postgresql, redis, or sqlite3)
   player_backend = sqlite3      - which DB backend to use for player data
   readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
   auth_backend = files          - which DB backend to use for authentication data
@@ -368,7 +368,7 @@ if map format version >= 29:
 
   u8 name_id_mapping_version
   - Should be zero for map format version 29.
-  
+
   u16 num_name_id_mappings
   foreach num_name_id_mappings
     u16 id

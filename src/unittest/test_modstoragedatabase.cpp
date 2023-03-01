@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-files.h"
 #include "database/database-sqlite3.h"
+#if USE_MARIADB
+#include "database/database-mariadb.h"
+#endif
 #if USE_POSTGRESQL
 #include "database/database-postgresql.h"
 #endif
@@ -116,6 +119,45 @@ private:
 	std::string m_dir;
 	ModStorageDatabase *m_db = nullptr;
 };
+
+#if USE_MARIADB
+void clearMariaDBDatabase(const std::string &connect_string) {
+	ModStorageDatabaseMariaDB db(connect_string);
+	std::vector<std::string> modnames;
+	db.beginSave();
+	db.listMods(&modnames);
+	for (const std::string &modname : modnames) {
+		db.removeModEntries(modname);
+	}
+	db.endSave();
+}
+
+class MariaDBProvider : public ModStorageDatabaseProvider {
+	public:
+		MariaDBProvider(const std::string &connect_string): m_connect_string(connect_string) {}
+
+		~MariaDBProvider() {
+			if (m_db) {
+				m_db->endSave();
+			}
+			delete m_db;
+		}
+
+		ModStorageDatabase *getModStorageDatabase() override {
+			if (m_db) {
+				m_db->endSave();
+			}
+			delete m_db;
+			m_db = new ModStorageDatabaseMariaDB(m_connect_string);
+			m_db->beginSave();
+			return m_db;
+		};
+
+	private:
+		std::string m_connect_string;
+		ModStorageDatabase *m_db = nullptr;
+};
+#endif // USE_MARIADB
 
 #if USE_POSTGRESQL
 void clearPostgreSQLDatabase(const std::string &connect_string)
