@@ -72,63 +72,53 @@ Database_MariaDB::Database_MariaDB(const std::string &connect_string, const char
 	std::string connect_string_key = "mariadb" + (std::string) type;
 
 	if (0 == params.count("hostname")) {
-		std::string msg = "[MariaDB] Error: required parameter 'hostname' is undefined (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: required parameter 'hostname' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (params.at("hostname").empty()) {
-		std::string msg = "[MariaDB] Error: hostname cannot be empty (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: hostname cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (0 == params.count("port")) {
-		std::string msg = "[MariaDB] Error: required parameter 'port' is undefined (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: required parameter 'port' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (params.at("port").empty()) {
-		std::string msg = "[MariaDB] Error: port cannot be empty (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: port cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (0 == params.count("user")) {
-		std::string msg = "[MariaDB] Error: required parameter 'user' is undefined (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: required parameter 'user' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (params.at("user").empty()) {
-		std::string msg = "[MariaDB] Error: user cannot be empty (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: user cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (0 == params.count("password")) {
-		std::string msg = "[MariaDB] Error: required parameter 'password' is undefined (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: required parameter 'password' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (params.at("password").empty()) {
-		std::string msg = "[MariaDB] Error: password cannot be empty (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: password cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (0 == params.count("dbname")) {
-		std::string msg = "[MariaDB] Error: required parameter 'dbname' is undefined (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: required parameter 'dbname' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 	if (params.at("dbname").empty()) {
-		std::string msg = "[MariaDB] Error: dbname cannot be empty (check " + connect_string_key + " in world.mt)";
-		errorstream << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: dbname cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+		throw DatabaseException("MariaDB error");
 	}
 
 }
@@ -143,22 +133,18 @@ Database_MariaDB::~Database_MariaDB() {
 
 void Database_MariaDB::beginTransaction() {
 	try {
-		std::unique_ptr<sql::Statement> stmt(conn->createStatement());
-		stmt->execute("START TRANSACTION");
-		stmt->close();
+		stmtBeginTransaction->execute();
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
 
 void Database_MariaDB::checkConnection() {
 	if (!conn) {
-		std::string msg = "[MariaDB] Error: no connection";
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: no connection" << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 	if (!conn->isValid()) {
 		conn->reset();
@@ -168,13 +154,10 @@ void Database_MariaDB::checkConnection() {
 
 void Database_MariaDB::commit() {
 	try {
-		std::unique_ptr<sql::Statement> stmt(conn->createStatement());
-		stmt->execute("COMMIT");
-		stmt->close();
+		stmtCommit->execute();
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -195,18 +178,21 @@ void Database_MariaDB::connect() {
 		try {
 			conn = std::unique_ptr<sql::Connection>(driver->connect(url, properties));
 		} catch (sql::SQLException &e) {
-			std::cout << e.what() << std::endl;
-			throw DatabaseException(std::string("[MariaDB] error: ") + e.what());
+			errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+			throw DatabaseException("MariaDB Error");
 		}
 		if (!conn) {
-			std::string msg = "[MariaDB] Error: could not connect to database";
-			std::cout << msg << std::endl;
-			throw DatabaseException(msg);
+			errorstream << "[MariaDB] Error: could not connect to database" << std::endl;
+			throw DatabaseException("MariaDB Error");
 		}
 
 		// prepare statements
-		stmtDatabaseExists.reset(prepareStatement(
-			"SELECT EXISTS(SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?)"
+		stmtBeginTransaction.reset(prepareStatement(
+			"START TRANSACTION"
+		));
+
+		stmtCommit.reset(prepareStatement(
+			"COMMIT"
 		));
 
 		stmtLastInsertId.reset(prepareStatement(
@@ -216,29 +202,21 @@ void Database_MariaDB::connect() {
 		stmtRollback.reset(prepareStatement(
 			"ROLLBACK"
 		));
-		
-		stmtTableExists.reset(prepareStatement(
-			"SELECT EXISTS(SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?)"
-		));
 
-		// make sure database exists
-		if (!this->databaseExists(params.at("dbname"))) {
-			this->createDatabase(params.at("dbname"));
-		}
+		// create database if it does not exist
+		this->createDatabase(params.at("dbname"));
 
 		// select database
 		try {
 			conn->setSchema(params.at("dbname"));
 		} catch (sql::SQLException &e) {
-			std::string msg = std::string("[MariaDB] Error: ") + e.what();
-			std::cout << msg << std::endl;
-			throw DatabaseException(msg);
+			errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+			throw DatabaseException("MariaDB Error");
 		}
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -247,13 +225,12 @@ void Database_MariaDB::createDatabase(std::string db_name) {
 	try {
 
 		std::unique_ptr<sql::Statement> stmt(conn->createStatement());
-		stmt->execute("CREATE DATABASE " + params.at("dbname") + " CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci'");
+		stmt->execute("CREATE DATABASE IF NOT EXISTS " + params.at("dbname") + " CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci'");
 		stmt->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -262,37 +239,15 @@ void Database_MariaDB::createTable(std::string table_name, std::string table_spe
 	try {
 
 		std::unique_ptr<sql::Statement> stmt(conn->createStatement());
-		stmt->executeUpdate("CREATE TABLE " + table_name + " (" + table_spec + ") CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci' ENGINE=InnoDB");
+		stmt->executeUpdate("CREATE TABLE IF NOT EXISTS " + table_name + " (" + table_spec + ") CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci' ENGINE=InnoDB");
 		stmt->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
-
-bool Database_MariaDB::databaseExists(std::string db_name) {
-	try {
-
-		stmtDatabaseExists->setString(1, db_name);
-		std::unique_ptr<sql::ResultSet> resDatabaseExists(stmtDatabaseExists->executeQuery());
-		stmtDatabaseExists->clearParameters();
-		
-		resDatabaseExists->next();
-		bool exists = (resDatabaseExists->getUInt(1) > 0);
-
-		resDatabaseExists->close();
-		
-		return exists;
-
-	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
-	}
-}
 
 std::int32_t Database_MariaDB::lastInsertId() {
 	try {
@@ -307,8 +262,8 @@ std::int32_t Database_MariaDB::lastInsertId() {
 		return id;
 
 	} catch (sql::SQLException &e) {
-		std::cout << e.what() << std::endl;
-		throw DatabaseException(std::string("[MariaDB] error: ") + e.what());
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -346,9 +301,8 @@ sql::PreparedStatement* Database_MariaDB::prepareStatement(const std::string que
 		return stmt;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -359,32 +313,8 @@ void Database_MariaDB::rollback() {
 		stmtRollback->execute();
 	
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
-	}
-}
-
-
-bool Database_MariaDB::tableExists(std::string table_name) {
-	try {
-
-		stmtTableExists->setString(1, params.at("dbname"));
-		stmtTableExists->setString(2, table_name);
-		std::unique_ptr<sql::ResultSet> resTableExists(stmtTableExists->executeQuery());
-		stmtTableExists->clearParameters();
-
-		resTableExists->next();
-		bool exists = (resTableExists->getUInt(1) > 0);
-		
-		resTableExists->close();
-		
-		return exists;
-
-	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -404,16 +334,14 @@ MapDatabaseMariaDB::MapDatabaseMariaDB(const std::string &connect_string) : Data
 	connect();
 
 	// create table if it does not exist
-	if (!tableExists("blocks")) {
-		createTable(
-			"blocks",
-			"x INT NOT NULL, "
-			"y INT NOT NULL, "
-			"z INT NOT NULL, "
-			"data BLOB, "
-			"PRIMARY KEY (x, y, z)"
-		);
-	}
+	createTable(
+		"blocks",
+		"x INT, "
+		"y INT, "
+		"z INT, "
+		"data BLOB, "
+		"PRIMARY KEY (x, y, z)"
+	);
 
 	try {
 
@@ -436,9 +364,8 @@ MapDatabaseMariaDB::MapDatabaseMariaDB(const std::string &connect_string) : Data
 		));
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -460,9 +387,8 @@ bool MapDatabaseMariaDB::deleteBlock(const v3s16 &pos) {
 		return (rows_affected > 0);
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -485,9 +411,8 @@ void MapDatabaseMariaDB::listAllLoadableBlocks(std::vector<v3s16> &dst) {
 		resBlocks->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -521,9 +446,8 @@ void MapDatabaseMariaDB::loadBlock(const v3s16 &pos, std::string *block) {
 		stmtLoadBlock->clearParameters();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -556,9 +480,8 @@ bool MapDatabaseMariaDB::saveBlock(const v3s16 &pos, const std::string &data) {
 		return (rows_affected > 0);
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -576,59 +499,47 @@ PlayerDatabaseMariaDB::PlayerDatabaseMariaDB(const std::string &connect_string)
 	// connect to database
 	connect();
 
-	// create tables if they do not exist
-	if (!tableExists("player")) {
-		createTable(
-			"player",
-			"name VARCHAR(60) NOT NULL,"
-			"pitch DECIMAL(15, 7) NOT NULL,"
-			"yaw DECIMAL(15, 7) NOT NULL,"
-			"posX DECIMAL(15, 7) NOT NULL,"
-			"posY DECIMAL(15, 7) NOT NULL,"
-			"posZ DECIMAL(15, 7) NOT NULL,"
-			"hp INT NOT NULL,"
-			"breath INT NOT NULL,"
-			"creation_date DATETIME NOT NULL DEFAULT NOW(),"
-			"modification_date DATETIME NOT NULL DEFAULT NOW(),"
-			"PRIMARY KEY (name)"
-		);
-	}
+	// create tables if they do n
+	createTable("player",
+		"name VARCHAR(60),"
+		"pitch DECIMAL(15, 7) NOT NULL,"
+		"yaw DECIMAL(15, 7) NOT NULL,"
+		"posX DECIMAL(15, 7) NOT NULL,"
+		"posY DECIMAL(15, 7) NOT NULL,"
+		"posZ DECIMAL(15, 7) NOT NULL,"
+		"hp INT NOT NULL,"
+		"breath INT NOT NULL,"
+		"creation_date DATETIME NOT NULL DEFAULT NOW(),"
+		"modification_date DATETIME NOT NULL DEFAULT NOW(),"
+		"PRIMARY KEY (name)"
+	);
 
-	if (!tableExists("player_inventories")) {
-		createTable(
-			"player_inventories",
-			"player VARCHAR(60) NOT NULL,"
-			"inv_id INT NOT NULL,"
-			"inv_width INT NOT NULL,"
-			"inv_name TEXT NOT NULL DEFAULT '',"
-			"inv_size INT NOT NULL,"
-			"PRIMARY KEY(player, inv_id),"
-			"CONSTRAINT player_inventories_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
-		);
-	}
+	createTable("player_inventories",
+		"player VARCHAR(60),"
+		"inv_id INT NOT NULL,"
+		"inv_width INT NOT NULL,"
+		"inv_name TEXT NOT NULL DEFAULT '',"
+		"inv_size INT NOT NULL,"
+		"PRIMARY KEY(player, inv_id),"
+		"CONSTRAINT player_inventories_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
+	);
 
-	if (!tableExists("player_inventory_items")) {
-		createTable(
-			"player_inventory_items",
-			"player VARCHAR(60) NOT NULL,"
-			"inv_id INT NOT NULL,"
-			"slot_id INT NOT NULL,"
-			"item TEXT NOT NULL DEFAULT '',"
-			"PRIMARY KEY(player, inv_id, slot_id),"
-			"CONSTRAINT player_inventory_items_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
-		);
-	}
+	createTable("player_inventory_items",
+		"player VARCHAR(60),"
+		"inv_id INT NOT NULL,"
+		"slot_id INT NOT NULL,"
+		"item TEXT NOT NULL DEFAULT '',"
+		"PRIMARY KEY(player, inv_id, slot_id),"
+		"CONSTRAINT player_inventory_items_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
+	);
 
-	if (!tableExists("player_metadata")) {
-		createTable(
-			"player_metadata",
-			"player VARCHAR(60) NOT NULL,"
-			"attr VARCHAR(256) NOT NULL,"
-			"value TEXT,"
-			"PRIMARY KEY(player, attr),"
-			"CONSTRAINT player_metadata_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
-		);
-	}
+	createTable("player_metadata",
+		"player VARCHAR(60),"
+		"attr VARCHAR(256) NOT NULL,"
+		"value TEXT,"
+		"PRIMARY KEY(player, attr),"
+		"CONSTRAINT player_metadata_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
+	);
 
 	try {
 
@@ -724,9 +635,8 @@ PlayerDatabaseMariaDB::PlayerDatabaseMariaDB(const std::string &connect_string)
 		));
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -819,9 +729,8 @@ bool PlayerDatabaseMariaDB::loadPlayer(RemotePlayer *player, PlayerSAO *sao) {
 		return true;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -843,9 +752,8 @@ void PlayerDatabaseMariaDB::listPlayers(std::vector<std::string> &list) {
 		playerListResultSet->close();
 	
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -867,9 +775,8 @@ bool PlayerDatabaseMariaDB::playerDataExists(const std::string &player_name) {
 		return exists;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -890,9 +797,8 @@ bool PlayerDatabaseMariaDB::removePlayer(const std::string &player_name) {
 		return true;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -982,9 +888,8 @@ void PlayerDatabaseMariaDB::savePlayer(RemotePlayer *player) {
 		player->onSuccessfulSave();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1003,23 +908,19 @@ AuthDatabaseMariaDB::AuthDatabaseMariaDB(const std::string &connect_string)
 	connect();
 
 	// create tables if they do not exist
-	if (!tableExists("auth")) {
-		createTable("auth",
-			"id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-			"name VARCHAR(32) UNIQUE NOT NULL, "
-			"password VARCHAR(512) UNIQUE NOT NULL, "
-			"last_login INT NOT NULL DEFAULT 0"
-		);
-	}
+	createTable("auth",
+		"id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, "
+		"name VARCHAR(32) UNIQUE NOT NULL, "
+		"password VARCHAR(512) UNIQUE NOT NULL, "
+		"last_login INT NOT NULL DEFAULT 0"
+	);
 	
-	if (!tableExists("user_privileges")) {
-		createTable("user_privileges",
-			"id INT(10) UNSIGNED NOT NULL, "
-			"privilege VARCHAR(255) NOT NULL, "
-			"PRIMARY KEY (id, privilege), "
-			"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
-		);
-	}
+	createTable("user_privileges",
+		"id INT(10) UNSIGNED, "
+		"privilege VARCHAR(255) NOT NULL, "
+		"PRIMARY KEY (id, privilege), "
+		"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
+	);
 
 	try {
 
@@ -1057,9 +958,8 @@ AuthDatabaseMariaDB::AuthDatabaseMariaDB(const std::string &connect_string)
 		));
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1103,9 +1003,8 @@ bool AuthDatabaseMariaDB::getAuth(const std::string &name, AuthEntry &res) {
 		return true;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1132,9 +1031,8 @@ bool AuthDatabaseMariaDB::saveAuth(const AuthEntry &authEntry) {
 		return true;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1162,9 +1060,8 @@ bool AuthDatabaseMariaDB::createAuth(AuthEntry &authEntry) {
 		return true;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1182,9 +1079,8 @@ bool AuthDatabaseMariaDB::deleteAuth(const std::string &name) {
 		return (rows_affected > 0);
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1205,9 +1101,8 @@ void AuthDatabaseMariaDB::listNames(std::vector<std::string> &res) {
 		resNames->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1235,9 +1130,8 @@ void AuthDatabaseMariaDB::writePrivileges(const AuthEntry &authEntry) {
 		}
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1256,14 +1150,12 @@ ModStorageDatabaseMariaDB::ModStorageDatabaseMariaDB(const std::string &connect_
 	connect();
 
 	// create table if it does not exist
-	if (!tableExists("mod_storage")) {
-		createTable("mod_storage",
-			"mod_name VARCHAR(128) NOT NULL, "
-			"mod_key VARCHAR(128) NOT NULL, "
-			"mod_value TEXT NOT NULL, "
-			"PRIMARY KEY (mod_name, mod_key)"
-		);
-	}
+	createTable("mod_storage",
+		"mod_name VARCHAR(128), "
+		"mod_key VARCHAR(128), "
+		"mod_value TEXT NOT NULL, "
+		"PRIMARY KEY (mod_name, mod_key)"
+	);
 
 	try {
 
@@ -1303,9 +1195,8 @@ ModStorageDatabaseMariaDB::ModStorageDatabaseMariaDB(const std::string &connect_
 		));
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1331,9 +1222,8 @@ void ModStorageDatabaseMariaDB::getModEntries(const std::string &modname, String
 		resEntries->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1363,9 +1253,8 @@ bool ModStorageDatabaseMariaDB::getModEntry(const std::string &modname, const st
 		return exists;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1392,9 +1281,8 @@ void ModStorageDatabaseMariaDB::getModKeys(const std::string &modname, std::vect
 		resKeys->close();
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1424,9 +1312,8 @@ bool ModStorageDatabaseMariaDB::hasModEntry(const std::string &modname, const st
 		return exists;
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1449,9 +1336,8 @@ void ModStorageDatabaseMariaDB::listMods(std::vector<std::string> *res) {
 		resMods->close();
 		
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1470,9 +1356,8 @@ bool ModStorageDatabaseMariaDB::removeModEntries(const std::string &modname) {
 		return (rows_affected > 1);
 		
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1492,9 +1377,8 @@ bool ModStorageDatabaseMariaDB::removeModEntry(const std::string &modname, const
 		return (rows_affected > 1);
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 
@@ -1515,9 +1399,8 @@ bool ModStorageDatabaseMariaDB::setModEntry(const std::string &modname, const st
 		return (rows_affected > 1);
 
 	} catch (sql::SQLException &e) {
-		std::string msg = std::string("[MariaDB] Error: ") + e.what();
-		std::cout << msg << std::endl;
-		throw DatabaseException(msg);
+		errorstream << "[MariaDB] Error: " << + e.what() << std::endl;
+		throw DatabaseException("MariaDB Error");
 	}
 }
 

@@ -54,6 +54,8 @@ class Database_MariaDB: public Database {
 	private:
 		std::map<std::string, std::string> parseConnectionString(std::string input);
         std::map<std::string, std::string> params;
+		std::unique_ptr<sql::PreparedStatement> stmtBeginTransaction;
+		std::unique_ptr<sql::PreparedStatement> stmtCommit;
 		std::unique_ptr<sql::PreparedStatement> stmtDatabaseExists;
 		std::unique_ptr<sql::PreparedStatement> stmtLastInsertId;
 		std::unique_ptr<sql::PreparedStatement> stmtRollback;
