@@ -358,7 +358,7 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 		coords[i] = txc[i];
 }
 
-int lightDiff(LightPair a, LightPair b)
+static inline int lightDiff(LightPair a, LightPair b)
 {
 	return abs(a.lightDay - b.lightDay) + abs(a.lightNight - b.lightNight);
 }
