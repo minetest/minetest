@@ -197,37 +197,37 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 			video::S3DVertex &vertex = vertices[face * 4 + j];
 			v2f &tcoords = vertex.TCoords;
 			switch (tile.rotation) {
-			case 0:
+			case TileRotation::None:
 				break;
-			case 1: // R90
+			case TileRotation::R90:
 				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
-			case 2: // R180
+			case TileRotation::R180:
 				tcoords.set(-tcoords.X, -tcoords.Y);
 				break;
-			case 3: // R270
+			case TileRotation::R270:
 				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
-			case 4: // FXR90
+			case TileRotation::FXR90:
 				tcoords.X = 1.0 - tcoords.X;
 				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
-			case 5: // FXR270
+			case TileRotation::FXR270:
 				tcoords.X = 1.0 - tcoords.X;
 				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
-			case 6: // FYR90
+			case TileRotation::FYR90:
 				tcoords.Y = 1.0 - tcoords.Y;
 				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
-			case 7: // FYR270
+			case TileRotation::FYR270:
 				tcoords.Y = 1.0 - tcoords.Y;
 				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
-			case 8: // FX
+			case TileRotation::FX:
 				tcoords.X = 1.0 - tcoords.X;
 				break;
-			case 9: // FY
+			case TileRotation::FY:
 				tcoords.Y = 1.0 - tcoords.Y;
 				break;
 			default:
@@ -1335,7 +1335,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 
 	// Put wood the right way around in the posts
 	TileSpec tile_rot = tile;
-	tile_rot.rotation = 1;
+	tile_rot.rotation = TileRotation::R90;
 
 	static const f32 post_rad = BS / 8;
 	static const f32 bar_rad  = BS / 16;
