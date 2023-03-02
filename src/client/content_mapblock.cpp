@@ -599,7 +599,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		v3s16 p2 = p + v3s16(u, 0, w);
 		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		neighbor.content = n2.getContent();
-		neighbor.level = -0.5 * BS;
+		neighbor.level = -0.5f;
 		neighbor.is_same_liquid = false;
 		neighbor.top_is_same_liquid = false;
 
@@ -608,7 +608,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 
 		if (neighbor.content == c_source) {
 			neighbor.is_same_liquid = true;
-			neighbor.level = 0.5 * BS;
+			neighbor.level = 0.5f;
 		} else if (neighbor.content == c_flowing) {
 			neighbor.is_same_liquid = true;
 			u8 liquid_level = (n2.param2 & LIQUID_LEVEL_MASK);
@@ -616,7 +616,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 				liquid_level = 0;
 			else
 				liquid_level -= (LIQUID_LEVEL_MAX + 1 - range);
-			neighbor.level = (-0.5 + (liquid_level + 0.5) / range) * BS;
+			neighbor.level = (-0.5f + (liquid_level + 0.5f) / range);
 		}
 
 		// Check node above neighbor.
@@ -648,11 +648,11 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 
 		// If top is liquid, draw starting from top of node
 		if (neighbor_data.top_is_same_liquid)
-			return 0.5 * BS;
+			return 0.5f;
 
 		// Source always has the full height
 		if (content == c_source)
-			return 0.5 * BS;
+			return 0.5f;
 
 		// Flowing liquid has level information
 		if (content == c_flowing) {
@@ -663,7 +663,7 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 		}
 	}
 	if (air_count >= 2)
-		return -0.5 * BS + 0.2;
+		return -0.5f + 0.2f / BS;
 	if (count > 0)
 		return sum / count;
 	return 0;
@@ -721,12 +721,12 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.X = (base.X - 0.5f) * BS;
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
-				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
+				pos.Y = (neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f) * BS;
 			} else if (top_is_same_liquid) {
 				pos.Y = 0.5f * BS;
 			} else {
-				pos.Y = corner_levels[base.Z][base.X];
-				v += (0.5f * BS - corner_levels[base.Z][base.X]) / BS;
+				pos.Y = corner_levels[base.Z][base.X] * BS;
+				v += 0.5f - corner_levels[base.Z][base.X];
 			}
 
 			if (data->m_smooth_lighting)
@@ -755,7 +755,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
-		vertices[i].Pos.Y += corner_levels[w][u];
+		vertices[i].Pos.Y += corner_levels[w][u] * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += origin;
