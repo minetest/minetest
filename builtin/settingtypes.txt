@@ -185,7 +185,7 @@ opaque_water (Opaque liquids) bool false
 leaves_style (Leaves style) enum fancy fancy,simple,opaque
 
 #    Connects glass if supported by node.
-connected_glass (Connect glass) bool false
+connected_glass (Connect glass) bool true
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
