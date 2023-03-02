@@ -395,13 +395,14 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	//  5 = (0,0,-1)
 	//  6 = (0,-1,0)
 	//  7 = (-1,0,0)
-	u8 dir_i = ((dir.X + 2 * dir.Y + 3 * dir.Z) & 7) * 2;
+	u8 dir_i = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef, true);
 
-	static const u16 dir_to_tile[24 * 16] =
-	{
+	static const struct {
+		u8 tile, rotation;
+	} dir_to_tile[24][8] = {
 		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
 		   0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
 		   0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
@@ -432,11 +433,9 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
 		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
 		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
-
 	};
-	u16 tile_index = facedir * 16 + dir_i;
-	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
+	getNodeTileN(mn, p, dir_to_tile[facedir][dir_i].tile, data, tile);
+	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[facedir][dir_i].rotation;
 }
 
 static void applyTileColor(PreMeshBuffer &pmb)
