@@ -434,8 +434,6 @@ void MapDatabaseMariaDB::loadBlock(const v3s16 &pos, std::string *block) {
 
 			std::stringstream in;
 			in << resBlock->getBlob("data")->rdbuf();
-			//std::string data = std::move(in).str();
-			//*block = data;
 			*block = std::move(in).str();
 
 		} else {
