@@ -24,13 +24,14 @@
 #include <cstdlib>
 #include <istream>
 #include <netinet/in.h>
+#include "database-mariadb.h"
 #include "debug.h"
 #include "exceptions.h"
-#include "settings.h"
+#include "player.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
+#include "settings.h"
 #include "util/string.h"
-#include "database-mariadb.h"
 
 
 /**
@@ -48,20 +49,20 @@ Database_MariaDB::Database_MariaDB(const std::string &connect_string, const char
 		
 		std::ostringstream oss;
 
-		oss << "[MariaDB] Error: connection string is empty or undefined.\n\n";
-		oss << "Set mariadb" << type << "_connection string in world.mt to use the MariaDB backend.\n\n";
-		oss << "Notes:\n\n";
-		oss << "1. mariadb" << type << "_connection format is as follows:\n\n";
-		oss << "   \"hostname=127.0.0.1 port=3306 user=minetest password=minetest dbname=minetest\n\n";
-		oss << "   Hint: is better to use 127.0.0.1 in place of localhost to avoid unnecessary DNS lookup\n\n";
-		oss << "2. The user must be created using the MariaDB client prior to using it with Minetest. Example:\n\n";
-		oss << "   $ mysql -sse \"CREATE USER 'minetest'@'%' IDENTIFIED BY 'PaSSw0rd';\"\n\n";
-		oss << "3. The database must also be created using the MariaDB client prior to using it with Minetest. Example:\n\n";
-		oss << "   $ mysql -sse \"CREATE DATABASE minetest CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci';\"\n\n";
-		oss << "4. The user must be granted privileges on that database using the MariaDB client prior to using it with Minetest. Example:\n\n";
-		oss << "   $ mysql -sse \"GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE ON minetest.* TO 'minetest'@'%';\"\n\n";
-		oss << "5. To enable automatic database creation, you can skip step 3, and instead of step 4, grant global privileges like so:\n\n";
-		oss << "   mysql -sse \"GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE ON *.* TO 'minetest'@'%';\"\n\n";
+		oss << "[MariaDB] Error: connection string is empty or undefined.\n\n"
+		    << "Set mariadb" << type << "_connection string in world.mt to use the MariaDB backend.\n\n"
+		    << "Notes:\n\n"
+		    << "1. mariadb" << type << "_connection format is as follows:\n\n"
+		    << "   \"hostname=127.0.0.1 port=3306 user=minetest password=minetest dbname=minetest\n\n"
+		    << "   Hint: is better to use 127.0.0.1 in place of localhost to avoid unnecessary DNS lookup\n\n"
+		    << "2. The user must be created using the MariaDB client prior to using it with Minetest. Example:\n\n"
+		    << "   $ mysql -sse \"CREATE USER 'minetest'@'%' IDENTIFIED BY 'PaSSw0rd';\"\n\n"
+		    << "3. The database must also be created using the MariaDB client prior to using it with Minetest. Example:\n\n"
+		    << "   $ mysql -sse \"CREATE DATABASE minetest CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci';\"\n\n"
+		    << "4. The user must be granted privileges on that database using the MariaDB client prior to using it with Minetest. Example:\n\n"
+		    << "   $ mysql -sse \"GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE ON minetest.* TO 'minetest'@'%';\"\n\n"
+		    << "5. To enable automatic database creation, you can skip step 3, and instead of step 4, grant global privileges like so:\n\n"
+		    << "   mysql -sse \"GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE ON *.* TO 'minetest'@'%';\"\n\n";
 
 		throw SettingNotFoundException(oss.str());
 
@@ -336,30 +337,30 @@ MapDatabaseMariaDB::MapDatabaseMariaDB(const std::string &connect_string) : Data
 	// create table if it does not exist
 	createTable(
 		"blocks",
-		"x INT, "
-		"y INT, "
-		"z INT, "
+		"posX INT, "
+		"posY INT, "
+		"posZ INT, "
 		"data BLOB, "
-		"PRIMARY KEY (x, y, z)"
+		"PRIMARY KEY (posX, posY, posZ)"
 	);
 
 	try {
 
 		// prepare statements
 		stmtDeleteBlock.reset(prepareStatement(
-			"DELETE FROM blocks WHERE x = ? and y = ? and z = ?"
+			"DELETE FROM blocks WHERE posX = ? and posY = ? and posZ = ?"
 		));
 
 		stmtLoadBlock.reset(prepareStatement(
-			"SELECT * FROM blocks WHERE x = ? and y = ? and z = ?"
+			"SELECT data FROM blocks WHERE posX = ? and posY = ? and posZ = ?"
 		));
 
 		stmtListAllLoadableBlocks.reset(prepareStatement(
-			"SELECT x, y, z FROM blocks"
+			"SELECT posX, posY, posZ FROM blocks"
 		));
 
 		stmtSaveBlock.reset(prepareStatement(
-			"INSERT INTO blocks (x, y, z, data) VALUES (?, ?, ?, ?) "
+			"INSERT INTO blocks (posX, posY, posZ, data) VALUES (?, ?, ?, ?) "
 			"ON DUPLICATE KEY UPDATE data = VALUE(data)"
 		));
 
@@ -433,8 +434,9 @@ void MapDatabaseMariaDB::loadBlock(const v3s16 &pos, std::string *block) {
 
 			std::stringstream in;
 			in << resBlock->getBlob("data")->rdbuf();
-			std::string data = std::move(in).str();
-			*block = data;
+			//std::string data = std::move(in).str();
+			//*block = data;
+			*block = std::move(in).str();
 
 		} else {
 
@@ -461,16 +463,18 @@ bool MapDatabaseMariaDB::saveBlock(const v3s16 &pos, const std::string &data) {
 		size_t max_size = 4294967295;
 		if (data.size() > max_size) {
 
-			errorstream << "[MariaDB] Error: refusing to save block because data would be truncated: " << data.size() << " > " << max_size << std::endl;
+			errorstream << "[MariaDB] Error: refusing to save block at "
+					    << "(x = " << pos.X << ", y = " << pos.Y << ", z = " << pos.Z << ") "
+						<< "because data would be truncated: " << data.size() << " > " << max_size << std::endl;
 			return false;
 
 		}
 
 		std::istringstream _data(data);
 
-		stmtSaveBlock->setInt(1, htonl(pos.X));
-		stmtSaveBlock->setInt(2, htonl(pos.Y));
-		stmtSaveBlock->setInt(3, htonl(pos.Z));
+		stmtSaveBlock->setInt(1, pos.X);
+		stmtSaveBlock->setInt(2, pos.Y);
+		stmtSaveBlock->setInt(3, pos.Z);
 		stmtSaveBlock->setBlob(4, &_data);
 		stmtSaveBlock->executeUpdate();
 		stmtSaveBlock->clearParameters();
@@ -499,45 +503,51 @@ PlayerDatabaseMariaDB::PlayerDatabaseMariaDB(const std::string &connect_string)
 	// connect to database
 	connect();
 
-	// create tables if they do n
+	// note that size of player/name column is
+	// determined by PLAYERNAME_SIZE from player.h
+
+	// create tables if they do not exist
 	createTable("player",
-		"name VARCHAR(60),"
-		"pitch DECIMAL(15, 7) NOT NULL,"
-		"yaw DECIMAL(15, 7) NOT NULL,"
-		"posX DECIMAL(15, 7) NOT NULL,"
-		"posY DECIMAL(15, 7) NOT NULL,"
-		"posZ DECIMAL(15, 7) NOT NULL,"
-		"hp INT NOT NULL,"
-		"breath INT NOT NULL,"
-		"creation_date DATETIME NOT NULL DEFAULT NOW(),"
-		"modification_date DATETIME NOT NULL DEFAULT NOW(),"
+		"name VARCHAR(" + std::to_string(PLAYERNAME_SIZE) + ") NOT NULL, "
+		"pitch DECIMAL(15, 7) NOT NULL, "
+		"yaw DECIMAL(15, 7) NOT NULL, "
+		"posX DECIMAL(15, 7) NOT NULL, "
+		"posY DECIMAL(15, 7) NOT NULL, "
+		"posZ DECIMAL(15, 7) NOT NULL, "
+		"hp INT NOT NULL, "
+		"breath INT NOT NULL, "
+		"creation_date DATETIME NOT NULL DEFAULT NOW(), "
+		"modification_date DATETIME NOT NULL DEFAULT NOW(), "
 		"PRIMARY KEY (name)"
 	);
 
 	createTable("player_inventories",
-		"player VARCHAR(60),"
-		"inv_id INT NOT NULL,"
-		"inv_width INT NOT NULL,"
-		"inv_name TEXT NOT NULL DEFAULT '',"
-		"inv_size INT NOT NULL,"
-		"PRIMARY KEY(player, inv_id),"
+		"player VARCHAR(" + std::to_string(PLAYERNAME_SIZE) + ") NOT NULL, "
+		"inv_id INT NOT NULL, "
+		"inv_width INT NOT NULL, "
+		"inv_name TEXT NOT NULL DEFAULT '', "
+		"inv_size INT NOT NULL, "
+		"PRIMARY KEY(player, inv_id), "
+		"INDEX idx_player (player), "
 		"CONSTRAINT player_inventories_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
 	);
 
 	createTable("player_inventory_items",
-		"player VARCHAR(60),"
-		"inv_id INT NOT NULL,"
-		"slot_id INT NOT NULL,"
-		"item TEXT NOT NULL DEFAULT '',"
-		"PRIMARY KEY(player, inv_id, slot_id),"
+		"player VARCHAR(" + std::to_string(PLAYERNAME_SIZE) + "), "
+		"inv_id INT NOT NULL, "
+		"slot_id INT NOT NULL, "
+		"item TEXT NOT NULL DEFAULT '', "
+		"PRIMARY KEY(player, inv_id, slot_id), "
+		"INDEX idx_player(player), "
 		"CONSTRAINT player_inventory_items_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
 	);
 
 	createTable("player_metadata",
-		"player VARCHAR(60),"
-		"attr VARCHAR(256) NOT NULL,"
-		"value TEXT,"
-		"PRIMARY KEY(player, attr),"
+		"player VARCHAR(" + std::to_string(PLAYERNAME_SIZE) + ") NOT NULL, "
+		"attr TEXT NOT NULL, "
+		"value TEXT NOT NULL DEFAULT '', "
+		"PRIMARY KEY(player, attr(192)), "
+		"INDEX idx_player (player), "
 		"CONSTRAINT player_metadata_fkey FOREIGN KEY (player) REFERENCES player (name) ON DELETE CASCADE"
 	);
 
@@ -584,7 +594,7 @@ PlayerDatabaseMariaDB::PlayerDatabaseMariaDB(const std::string &connect_string)
 		));
 
 		stmtPlayerExists.reset(prepareStatement(
-			"SELECT EXISTS (SELECT * FROM player WHERE name = ?)"
+			"SELECT EXISTS (SELECT name FROM player WHERE name = ?)"
 		));
 
 		stmtRemovePlayer.reset(prepareStatement(
@@ -909,16 +919,19 @@ AuthDatabaseMariaDB::AuthDatabaseMariaDB(const std::string &connect_string)
 
 	// create tables if they do not exist
 	createTable("auth",
-		"id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY, "
-		"name VARCHAR(32) UNIQUE NOT NULL, "
+		"id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT, "
+		"name VARCHAR(" + std::to_string(PLAYERNAME_SIZE) + ") UNIQUE NOT NULL, "
 		"password VARCHAR(512) UNIQUE NOT NULL, "
-		"last_login INT NOT NULL DEFAULT 0"
+		"last_login INT NOT NULL DEFAULT 0, "
+		"PRIMARY KEY (id), "
+		"INDEX idx_name (name)"
 	);
 	
 	createTable("user_privileges",
-		"id INT(10) UNSIGNED, "
+		"id INT(10) UNSIGNED NOT NULL, "
 		"privilege VARCHAR(255) NOT NULL, "
 		"PRIMARY KEY (id, privilege), "
+		"INDEX idx_id (id), "
 		"CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE"
 	);
 
@@ -1151,10 +1164,13 @@ ModStorageDatabaseMariaDB::ModStorageDatabaseMariaDB(const std::string &connect_
 
 	// create table if it does not exist
 	createTable("mod_storage",
-		"mod_name VARCHAR(128), "
-		"mod_key VARCHAR(128), "
-		"mod_value TEXT NOT NULL, "
-		"PRIMARY KEY (mod_name, mod_key)"
+		"id INT UNSIGNED NOT NULL AUTO_INCREMENT, "
+		"mod_name TEXT NOT NULL, "
+		"mod_key TEXT NOT NULL, "
+		"mod_value TEXT NOT NULL DEFAULT '', "
+		"PRIMARY KEY (id), "
+		"INDEX idx_mod_name (mod_name(192)), "
+		"INDEX idx_mod_name_key (mod_name(192), mod_key(192))"
 	);
 
 	try {
@@ -1173,7 +1189,7 @@ ModStorageDatabaseMariaDB::ModStorageDatabaseMariaDB(const std::string &connect_
 		));
 
 		stmtHasModEntry.reset(prepareStatement(
-			"SELECT EXISTS(SELECT * FROM mod_storage WHERE mod_name = ? AND mod_key = ?)"
+			"SELECT EXISTS(SELECT mod_name FROM mod_storage WHERE mod_name = ? AND mod_key = ?)"
 		));
 
 		stmtListMods.reset(prepareStatement(
