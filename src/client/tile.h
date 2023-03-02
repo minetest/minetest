@@ -300,12 +300,6 @@ enum class TileRotation: u8 {
 	R90,
 	R180,
 	R270,
-	FXR90,
-	FXR270,
-	FYR90,
-	FYR270,
-	FX,
-	FY,
 };
 
 /*!
