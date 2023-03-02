@@ -208,30 +208,6 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 			case TileRotation::R270:
 				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
-			case TileRotation::FXR90:
-				tcoords.X = 1.0 - tcoords.X;
-				tcoords.set(-tcoords.Y, tcoords.X);
-				break;
-			case TileRotation::FXR270:
-				tcoords.X = 1.0 - tcoords.X;
-				tcoords.set(tcoords.Y, -tcoords.X);
-				break;
-			case TileRotation::FYR90:
-				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.set(-tcoords.Y, tcoords.X);
-				break;
-			case TileRotation::FYR270:
-				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.set(tcoords.Y, -tcoords.X);
-				break;
-			case TileRotation::FX:
-				tcoords.X = 1.0 - tcoords.X;
-				break;
-			case TileRotation::FY:
-				tcoords.Y = 1.0 - tcoords.Y;
-				break;
-			default:
-				break;
 			}
 		}
 	}
