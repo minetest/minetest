@@ -770,15 +770,28 @@ void MapblockMeshGenerator::drawLiquidTop()
 	// Positive if liquid moves towards +X
 	f32 dx = (corner_levels[0][0] + corner_levels[1][0]) -
 	         (corner_levels[0][1] + corner_levels[1][1]);
-	f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG;
 	v2f tcoord_center(0.5, 0.5);
 	v2f tcoord_translate(blockpos_nodes.Z + p.Z, blockpos_nodes.X + p.X);
-	tcoord_translate.rotateBy(tcoord_angle);
+	v2f dir = v2f(dx, dz).normalize();
+	if (dir == v2f{0.0f, 0.0f}) // if corners are symmetrical
+		dir = v2f{1.0f, 0.0f};
+
+	// Rotate tcoord_translate around the origin. The X axis turns to dir.
+	tcoord_translate.set(
+		dir.X * tcoord_translate.X - dir.Y * tcoord_translate.Y,
+		dir.Y * tcoord_translate.X + dir.X * tcoord_translate.Y);
+
 	tcoord_translate.X -= floor(tcoord_translate.X);
 	tcoord_translate.Y -= floor(tcoord_translate.Y);
 
 	for (video::S3DVertex &vertex : vertices) {
-		vertex.TCoords.rotateBy(tcoord_angle, tcoord_center);
+		// Rotate vertex.TCoords around tcoord_center. The X axis turns to dir.
+		vertex.TCoords -= tcoord_center;
+		vertex.TCoords.set(
+			dir.X * vertex.TCoords.X - dir.Y * vertex.TCoords.Y,
+			dir.Y * vertex.TCoords.X + dir.X * vertex.TCoords.Y);
+		vertex.TCoords += tcoord_center;
+
 		vertex.TCoords += tcoord_translate;
 	}
 
