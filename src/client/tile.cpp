@@ -1869,6 +1869,11 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			video::IImage* pngimg = vd->createImageFromFile(memfile);
 			memfile->drop();
 
+			if (!pngimg) {
+				errorstream << "generateImagePart(): Invalid PNG data" << std::endl;
+				return false;
+			}
+
 			if (baseimg) {
 				blitBaseImage(pngimg, baseimg);
 			} else {
