@@ -200,29 +200,29 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 			case 0:
 				break;
 			case 1: // R90
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
 			case 2: // R180
-				tcoords.rotateBy(180, irr::core::vector2df(0, 0));
+				tcoords.set(-tcoords.X, -tcoords.Y);
 				break;
 			case 3: // R270
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
 			case 4: // FXR90
 				tcoords.X = 1.0 - tcoords.X;
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
 			case 5: // FXR270
 				tcoords.X = 1.0 - tcoords.X;
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
 			case 6: // FYR90
 				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
 			case 7: // FYR270
 				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
 			case 8: // FX
 				tcoords.X = 1.0 - tcoords.X;
