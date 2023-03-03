@@ -118,13 +118,7 @@ public:
 			other.m_data[i] = m_data[i];
 	}
 
-	UniqueBuffer copy() const
-	{
-		UniqueBuffer ret = UniqueBuffer(make_unique_for_overwrite<T[]>(m_size), m_size);
-		for (size_t i = 0; i != m_size; ++i)
-			ret.m_data[i] = m_data[i];
-		return ret;
-	}
+	UniqueBuffer copy() const;
 
 	constexpr size_t size() const noexcept { return m_size; }
 
@@ -144,15 +138,6 @@ private:
 	std::unique_ptr<T[]> m_data = nullptr;
 	size_t m_size = 0;
 };
-
-template <typename T>
-UniqueBuffer<T> copy_to_unique_buffer(const T *data, size_t size)
-{
-	auto ret = UniqueBuffer<T>::makeForOverwrite(size);
-	for (size_t i = 0; i != size; ++i)
-		ret[i] = data[i];
-	return ret;
-}
 
 template <typename T>
 constexpr void swap(UniqueBuffer<T> &a, UniqueBuffer<T> &b) noexcept
@@ -294,13 +279,7 @@ public:
 		m_data = nullptr;
 		return UniqueBuffer<T>(std::move(data), size);
 	}
-	UniqueBuffer<T> copy() const
-	{
-		auto ret = UniqueBuffer<T>::makeForOverwrite(m_size);
-		for (size_t i = 0; i != m_size; ++i)
-			ret[i] = m_data[i];
-		return ret;
-	}
+	UniqueBuffer<T> copy() const;
 
 private:
 	void drop()
@@ -316,6 +295,92 @@ private:
 	size_t m_size;
 	unsigned int *m_refcount;
 };
+
+
+template <typename T>
+class View
+{
+public:
+	constexpr View() noexcept = default;
+
+	constexpr View(std::nullptr_t) noexcept {}
+
+	constexpr View(T *data, size_t size) noexcept :
+		m_data(data), m_size(size) {}
+
+	template <typename It>
+	constexpr View(It begin, It end) noexcept :
+		m_data(&*begin), m_size(end - begin) {}
+
+	constexpr View(const UniqueBuffer<T> &buffer) noexcept :
+		m_data(buffer.get()), m_size(buffer.size()) {}
+
+	constexpr View(const SharedBuffer<T> &buffer) noexcept :
+		m_data(buffer.get()), m_size(buffer.size()) {}
+
+	constexpr T *begin() const noexcept { return m_data; }
+	constexpr T *end() const noexcept { return m_data + m_size; }
+
+	constexpr const T *cbegin() const noexcept { return m_data; }
+	constexpr const T *cend() const noexcept { return m_data + m_size; }
+
+	constexpr T *get() const noexcept { return m_data; }
+
+	constexpr size_t size() const noexcept { return m_size; }
+
+	explicit constexpr operator bool() const noexcept { return (bool)m_data; }
+
+	constexpr bool empty() const noexcept { return m_size != 0; }
+
+	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
+
+	constexpr T &front() const noexcept { return m_data[0]; }
+	constexpr T &back() const noexcept { return m_data[m_size - 1]; }
+
+	constexpr void reset(std::nullptr_t) noexcept
+	{
+		m_data = nullptr;
+		m_size = 0;
+	}
+
+	constexpr void reset(T *data, size_t size) noexcept
+	{
+		m_data = data;
+		m_size = size;
+	}
+
+	template <typename It>
+	constexpr void reset(It begin, It end) noexcept
+	{
+		m_data = &*begin;
+		m_size = end - begin;
+	}
+
+	UniqueBuffer<T> copy() const noexcept
+	{
+		auto ret = UniqueBuffer<T>::makeForOverwrite(m_size);
+		for (size_t i = 0; i != m_size; ++i)
+			ret[i] = m_data[i];
+		return ret;
+	}
+
+private:
+	T *m_data = nullptr;
+	size_t m_size = 0;
+};
+
+
+template <typename T>
+UniqueBuffer<T> SharedBuffer<T>::copy() const
+{
+	return static_cast<View<T>>(*this).copy();
+}
+
+template <typename T>
+UniqueBuffer<T> UniqueBuffer<T>::copy() const
+{
+	return static_cast<View<T>>(*this).copy();
+}
 
 
 // This class is not thread-safe!

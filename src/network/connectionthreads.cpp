@@ -304,7 +304,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacketPtr &p, Channel *c
 }
 
 bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
-	const SharedBuffer<u8> &data, bool reliable)
+		View<u8> data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
@@ -392,7 +392,7 @@ void ConnectionSendThread::processReliableCommand(ConnectionCommandPtr &c)
 		case CONCMD_CREATE_PEER:
 			LOG(dout_con << m_connection->getDesc()
 				<< "UDP processing reliable CONCMD_CREATE_PEER" << std::endl);
-			if (!rawSendAsPacket(c->peer_id, c->channelnum, c->data.copy(), c->reliable)) {
+			if (!rawSendAsPacket(c->peer_id, c->channelnum, c->data, c->reliable)) {
 				/* put to queue if we couldn't send it immediately */
 				sendReliable(c);
 			}
@@ -444,12 +444,12 @@ void ConnectionSendThread::processNonReliableCommand(ConnectionCommandPtr &c_ptr
 		case CONNCMD_SEND:
 			LOG(dout_con << m_connection->getDesc()
 				<< " UDP processing CONNCMD_SEND" << std::endl);
-			send(c.peer_id, c.channelnum, c.data.copy());
+			send(c.peer_id, c.channelnum, c.data);
 			return;
 		case CONNCMD_SEND_TO_ALL:
 			LOG(dout_con << m_connection->getDesc()
 				<< " UDP processing CONNCMD_SEND_TO_ALL" << std::endl);
-			sendToAll(c.channelnum, c.data.copy());
+			sendToAll(c.channelnum, c.data);
 			return;
 		case CONCMD_ACK:
 			LOG(dout_con << m_connection->getDesc()
@@ -544,8 +544,7 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 	dynamic_cast<UDPPeer *>(&peer)->m_pending_disconnect = true;
 }
 
-void ConnectionSendThread::send(session_t peer_id, u8 channelnum,
-	const SharedBuffer<u8> &data)
+void ConnectionSendThread::send(session_t peer_id, u8 channelnum, View<u8> data)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
@@ -585,7 +584,7 @@ void ConnectionSendThread::sendReliable(ConnectionCommandPtr &c)
 	peer->PutReliableSendCommand(c, m_max_packet_size);
 }
 
-void ConnectionSendThread::sendToAll(u8 channelnum, const SharedBuffer<u8> &data)
+void ConnectionSendThread::sendToAll(u8 channelnum, View<u8> data)
 {
 	std::vector<session_t> peerids = m_connection->getPeerIDs();
 
