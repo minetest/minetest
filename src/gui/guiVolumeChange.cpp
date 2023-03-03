@@ -73,21 +73,14 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 70 * s);
 
-		wchar_t text[100];
-		const wchar_t *str = wgettext("Sound Volume: %d%%");
-		swprintf(text, sizeof(text) / sizeof(wchar_t), str, volume);
-		delete[] str;
-		core::stringw volume_text = text;
-
-		Environment->addStaticText(volume_text.c_str(), rect, false,
-				true, this, ID_soundText);
+		Environment->addStaticText(fwgettext("Sound Volume: %d%%", volume).c_str(),
+				rect, false, true, this, ID_soundText);
 	}
 	{
 		core::rect<s32> rect(0, 0, 80 * s, 30 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s / 2, size.Y / 2 + 55 * s);
-		const wchar_t *text = wgettext("Exit");
-		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_soundExitButton, text);
-		delete[] text;
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_soundExitButton,
+				wstrgettext("Exit").c_str());
 	}
 	{
 		core::rect<s32> rect(0, 0, 300 * s, 20 * s);
@@ -100,10 +93,8 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 35 * s);
-		const wchar_t *text = wgettext("Muted");
 		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
-				ID_soundMuteButton, text);
-		delete[] text;
+				ID_soundMuteButton, wstrgettext("Muted").c_str());
 	}
 }
 
@@ -164,14 +155,7 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 				g_settings->setFloat("sound_volume", (float) pos / 100);
 
 				gui::IGUIElement *e = getElementFromId(ID_soundText);
-				wchar_t text[100];
-				const wchar_t *str = wgettext("Sound Volume: %d%%");
-				swprintf(text, sizeof(text) / sizeof(wchar_t), str, pos);
-				delete[] str;
-
-				core::stringw volume_text = text;
-
-				e->setText(volume_text.c_str());
+				e->setText(fwgettext("Sound Volume: %d%%", pos).c_str());
 				return true;
 			}
 		}

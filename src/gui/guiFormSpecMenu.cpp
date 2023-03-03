@@ -3405,9 +3405,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					size.X / 2 - 70,       pos.Y,
 					size.X / 2 - 70 + 140, pos.Y + m_btn_height * 2
 			);
-			const wchar_t *text = wgettext("Proceed");
-			GUIButton::addButton(Environment, mydata.rect, m_tsrc, this, 257, text);
-			delete[] text;
+			GUIButton::addButton(Environment, mydata.rect, m_tsrc, this, 257,
+					wstrgettext("Proceed").c_str());
 		}
 	}
 
