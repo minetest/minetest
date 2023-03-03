@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <map>
+#include <memory>
 #include "irrlichttypes.h"
 
 class TestClientActiveObjectMgr;
@@ -33,13 +34,13 @@ class ActiveObjectMgr
 
 public:
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
-	virtual bool registerObject(T *obj) = 0;
+	virtual bool registerObject(std::unique_ptr<T> obj) = 0;
 	virtual void removeObject(u16 id) = 0;
 
 	T *getActiveObject(u16 id)
 	{
-		auto n = m_active_objects.find(id);
-		return (n != m_active_objects.end() ? n->second : nullptr);
+		auto it = m_active_objects.find(id);
+		return it != m_active_objects.end() ? it->second.get() : nullptr;
 	}
 
 protected:
@@ -61,5 +62,8 @@ protected:
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}
 
-	std::map<u16, T *> m_active_objects; // ordered to fix #10985 
+	// ordered to fix #10985
+	// Note: Be careful when erasing elements. ActiveObjects can access the
+	// ActiveObjectMgr. Please always reset the unique_ptr first.
+	std::map<u16, std::unique_ptr<T>> m_active_objects;
 };

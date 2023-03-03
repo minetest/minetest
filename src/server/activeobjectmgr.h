@@ -29,10 +29,11 @@ namespace server
 class ActiveObjectMgr : public ::ActiveObjectMgr<ServerActiveObject>
 {
 public:
+	// If cb returns true, the obj will be deleted
 	void clear(const std::function<bool(ServerActiveObject *, u16)> &cb);
 	void step(float dtime,
 			const std::function<void(ServerActiveObject *)> &f) override;
-	bool registerObject(ServerActiveObject *obj) override;
+	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
 	void getObjectsInsideRadius(const v3f &pos, float radius,

@@ -32,7 +32,7 @@ public:
 	void clear();
 	void step(float dtime,
 			const std::function<void(ClientActiveObject *)> &f) override;
-	bool registerObject(ClientActiveObject *obj) override;
+	bool registerObject(std::unique_ptr<ClientActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
 	void getActiveObjects(const v3f &origin, f32 max_d,
