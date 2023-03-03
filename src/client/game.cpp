@@ -1519,17 +1519,10 @@ bool Game::createClient(const GameStartData &start_data)
 	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
 	str += L" ";
 	str += utf8_to_wide(g_version_hash);
-	{
-		const wchar_t *text = nullptr;
-		if (simple_singleplayer_mode)
-			text = wgettext("Singleplayer");
-		else
-			text = wgettext("Multiplayer");
-		str += L" [";
-		str += text;
-		str += L"]";
-		delete[] text;
-	}
+	str += L" [";
+	str += simple_singleplayer_mode ? wstrgettext("Singleplayer")
+			: wstrgettext("Multiplayer");
+	str += L"]";
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -1745,17 +1738,13 @@ bool Game::getServerContent(bool *aborted)
 		int progress = 25;
 
 		if (!client->itemdefReceived()) {
-			const wchar_t *text = wgettext("Item definitions...");
 			progress = 25;
-			m_rendering_engine->draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			m_rendering_engine->draw_load_screen(wstrgettext("Item definitions..."),
+					guienv, texture_src, dtime, progress);
 		} else if (!client->nodedefReceived()) {
-			const wchar_t *text = wgettext("Node definitions...");
 			progress = 30;
-			m_rendering_engine->draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			m_rendering_engine->draw_load_screen(wstrgettext("Node definitions..."),
+					guienv, texture_src, dtime, progress);
 		} else {
 			std::ostringstream message;
 			std::fixed(message);
@@ -4278,10 +4267,8 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_clouds)
 {
-	const wchar_t *wmsg = wgettext(msg);
-	m_rendering_engine->draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
-		draw_clouds);
-	delete[] wmsg;
+	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
+			dtime, percent, draw_clouds);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)

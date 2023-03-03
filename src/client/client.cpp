@@ -339,7 +339,7 @@ Client::~Client()
 
 	m_mesh_update_manager.stop();
 	m_mesh_update_manager.wait();
-	
+
 	MeshUpdateResult r;
 	while (m_mesh_update_manager.getNextResult(r)) {
 		for (auto block : r.map_blocks)
@@ -1756,7 +1756,7 @@ struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
-	const wchar_t* text_base;
+	std::wstring text_base;
 	ITextureSource *tsrc;
 };
 
@@ -1791,8 +1791,6 @@ void Client::afterContentReceived()
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
 
-	const wchar_t* text = wgettext("Loading textures...");
-
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
 	// content from previous sessions.
@@ -1800,21 +1798,20 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 70);
+	m_rendering_engine->draw_load_screen(wstrgettext("Loading textures..."),
+			guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
-	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
-	text = wgettext("Rebuilding shaders...");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 71);
+	m_rendering_engine->draw_load_screen(wstrgettext("Rebuilding shaders..."),
+			guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
-	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
-	text = wgettext("Initializing nodes...");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 72);
+	m_rendering_engine->draw_load_screen(wstrgettext("Initializing nodes..."),
+			guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	for (const auto &path : getTextureDirs()) {
 		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
@@ -1823,7 +1820,6 @@ void Client::afterContentReceived()
 	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
-	delete[] text;
 
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
@@ -1831,10 +1827,9 @@ void Client::afterContentReceived()
 	tu_args.guienv = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
-	tu_args.text_base = wgettext("Initializing nodes");
+	tu_args.text_base = wstrgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;
 	m_nodedef->updateTextures(this, &tu_args);
-	delete[] tu_args.text_base;
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
@@ -1846,10 +1841,8 @@ void Client::afterContentReceived()
 	if (m_mods_loaded)
 		m_script->on_client_ready(m_env.getLocalPlayer());
 
-	text = wgettext("Done!");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 100);
+	m_rendering_engine->draw_load_screen(wstrgettext("Done!"), guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
-	delete[] text;
 }
 
 float Client::getRTT()

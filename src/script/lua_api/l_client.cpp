@@ -202,7 +202,7 @@ int ModApiClient::l_disconnect(lua_State *L)
 // gettext(text)
 int ModApiClient::l_gettext(lua_State *L)
 {
-	std::string text = strgettext(std::string(luaL_checkstring(L, 1)));
+	std::string text = strgettext(luaL_checkstring(L, 1));
 	lua_pushstring(L, text.c_str());
 
 	return 1;
