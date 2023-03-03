@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "exceptions.h"
 #include <iostream>
-#include "util/pointer.h"
+
+template <typename T>
+class SharedBuffer;
 
 /*
 	Map format serialization version

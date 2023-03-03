@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/string.h"
 #include "util/serialize.h"
+#include "util/pointer.h"
 #include "util/basic_macros.h"
 
 static const char *modified_reason_strings[] = {

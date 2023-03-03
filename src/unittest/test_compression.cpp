@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "nodedef.h"
 #include "noise.h"
+#include "util/pointer.h"
 
 class TestCompression : public TestBase {
 public:

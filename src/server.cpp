@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <algorithm>
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "ban.h"

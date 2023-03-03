@@ -21,12 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "light.h"
-#include "util/pointer.h"
+#include "util/basic_macros.h"
 #include <string>
 #include <vector>
 
 class NodeDefManager;
 class Map;
+template <typename T>
+class SharedBuffer;
 
 /*
 	Naming scheme:

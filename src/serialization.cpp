@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 
 #include "util/serialize.h"
+#include "util/pointer.h"
 
 #include <zlib.h>
 #include <zstd.h>

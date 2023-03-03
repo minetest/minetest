@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
+#include "util/pointer.h"
 #include "log.h"
 #include "util/directiontables.h"
 #include "util/numeric.h"

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
+#include "util/pointer.h"
 #include "serialization.h"
 #include "filesys.h"
 #include "voxelalgorithms.h"

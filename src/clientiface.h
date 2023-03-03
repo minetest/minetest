@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "network/networkpacket.h"
 #include "network/networkprotocol.h"
 #include "network/address.h"
 #include "porting.h"
@@ -39,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MapBlock;
 class ServerEnvironment;
 class EmergeManager;
+class NetworkPacket;
 
 /*
  * State Transitions
