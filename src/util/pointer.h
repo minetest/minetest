@@ -23,6 +23,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For assert()
 #include <cstring>
 #include <memory>
+#include <type_traits>
+
+
+template <typename T>
+struct is_unbounded_array : std::false_type {};
+template <typename T>
+struct is_unbounded_array<T[]> : std::true_type {};
+
+template <typename T, std::enable_if_t<!std::is_array<T>::value, bool> = true>
+std::unique_ptr<T> make_unique_for_overwrite()
+{
+	return std::unique_ptr<T>(new T);
+}
+template <typename T, std::enable_if_t<is_unbounded_array<T>::value, bool> = true>
+std::unique_ptr<T> make_unique_for_overwrite(size_t size)
+{
+	return std::unique_ptr<T>(new std::remove_extent_t<T>[size]);
+}
 
 
 //! A std::unique_ptr<T[]> with size. Like std::vector<T>, but not growable.
@@ -94,7 +112,7 @@ public:
 	void copyTo(UniqueBuffer &other) const
 	{
 		if (other.m_size != m_size)
-			other = UniqueBuffer(std::unique_ptr<T[]>(new T[m_size]), m_size);
+			other = UniqueBuffer(make_unique_for_overwrite<T[]>(m_size), m_size);
 
 		for (size_t i = 0; i != m_size; ++i)
 			other.m_data[i] = m_data[i];
@@ -102,7 +120,7 @@ public:
 
 	UniqueBuffer copy() const
 	{
-		UniqueBuffer ret = UniqueBuffer(std::unique_ptr<T[]>(new T[m_size]), m_size);
+		UniqueBuffer ret = UniqueBuffer(make_unique_for_overwrite<T[]>(m_size), m_size);
 		for (size_t i = 0; i != m_size; ++i)
 			ret.m_data[i] = m_data[i];
 		return ret;
@@ -119,7 +137,7 @@ public:
 	static UniqueBuffer makeForOverwrite(size_t size)
 	{
 		return size == 0 ? UniqueBuffer() :
-				UniqueBuffer(std::unique_ptr<T[]>(new T[size]), size);
+				UniqueBuffer(make_unique_for_overwrite<T[]>(size), size);
 	}
 
 private:
