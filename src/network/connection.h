@@ -326,7 +326,7 @@ struct ConnectionCommand
 	Address address;
 	session_t peer_id = PEER_ID_INEXISTENT;
 	u8 channelnum = 0;
-	Buffer<u8> data;
+	UniqueBuffer<u8> data;
 	bool reliable = false;
 	bool raw = false;
 
@@ -337,8 +337,8 @@ struct ConnectionCommand
 	static ConnectionCommandPtr disconnect();
 	static ConnectionCommandPtr disconnect_peer(session_t peer_id);
 	static ConnectionCommandPtr send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
-	static ConnectionCommandPtr ack(session_t peer_id, u8 channelnum, const Buffer<u8> &data);
-	static ConnectionCommandPtr createPeer(session_t peer_id, const Buffer<u8> &data);
+	static ConnectionCommandPtr ack(session_t peer_id, u8 channelnum, const UniqueBuffer<u8> &data);
+	static ConnectionCommandPtr createPeer(session_t peer_id, const UniqueBuffer<u8> &data);
 
 private:
 	ConnectionCommand(ConnectionCommandType type_) :
@@ -672,7 +672,7 @@ struct ConnectionEvent
 {
 	const ConnectionEventType type;
 	session_t peer_id = 0;
-	Buffer<u8> data;
+	UniqueBuffer<u8> data;
 	bool timeout = false;
 	Address address;
 
@@ -680,7 +680,7 @@ struct ConnectionEvent
 	DISABLE_CLASS_COPY(ConnectionEvent);
 
 	static ConnectionEventPtr create(ConnectionEventType type);
-	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data);
+	static ConnectionEventPtr dataReceived(session_t peer_id, const UniqueBuffer<u8> &data);
 	static ConnectionEventPtr peerAdded(session_t peer_id, Address address);
 	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address);
 	static ConnectionEventPtr bindFailed();

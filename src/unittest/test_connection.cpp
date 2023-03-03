@@ -97,8 +97,8 @@ void TestConnection::testNetworkPacketSerialize()
 		pkt << std::wstring(L"\U00020b9a");
 
 		auto buf = pkt.oldForgePacket();
-		UASSERTEQ(int, buf.getSize(), sizeof(expected));
-		UASSERT(!memcmp(expected, &buf[0], buf.getSize()));
+		UASSERTEQ(int, buf.size(), sizeof(expected));
+		UASSERT(!memcmp(expected, &buf[0], buf.size()));
 	}
 
 	{
@@ -144,13 +144,13 @@ void TestConnection::testHelpers()
 
 	SharedBuffer<u8> p2 = con::makeReliablePacket(data1, seqnum);
 
-	/*infostream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
-			<<data1.getSize()<<std::endl;
+	/*infostream<<"p2.size()="<<p2.size()<<", data1.size()="
+			<<data1.size()<<std::endl;
 	infostream<<"readU8(&p2[3])="<<readU8(&p2[3])
 			<<" p2[3]="<<((u32)p2[3]&0xff)<<std::endl;
 	infostream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
 
-	UASSERT(p2.getSize() == 3 + data1.getSize());
+	UASSERT(p2.size() == 3 + data1.size());
 	UASSERT(readU8(&p2[0]) == con::PACKET_TYPE_RELIABLE);
 	UASSERT(readU16(&p2[1]) == seqnum);
 	UASSERT(readU8(&p2[3]) == data1[0]);
@@ -297,7 +297,7 @@ void TestConnection::testConnectSendReceive()
 
 		auto recvdata = pkt.oldForgePacket();
 
-		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
+		UASSERT(memcmp(sentdata.get(), recvdata.get(), recvdata.size()) == 0);
 	}
 
 	session_t peer_id_client = 2;
@@ -330,7 +330,7 @@ void TestConnection::testConnectSendReceive()
 
 		//sleep_ms(3000);
 
-		Buffer<u8> recvdata;
+		UniqueBuffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
 		session_t peer_id = 132;
 		u16 size = 0;
@@ -366,7 +366,7 @@ void TestConnection::testConnectSendReceive()
 			infostream << "...";
 		infostream << std::endl;
 
-		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
+		UASSERT(memcmp(sentdata.get(), recvdata.get(), recvdata.size()) == 0);
 		UASSERT(peer_id == PEER_ID_SERVER);
 	}
 

@@ -22,113 +22,160 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "debug.h" // For assert()
 #include <cstring>
-#include <memory> // std::shared_ptr
+#include <memory>
 
 
+//! A std::unique_ptr<T[]> with size. Like std::vector<T>, but not growable.
 template <typename T>
-class Buffer
+class UniqueBuffer
 {
 public:
-	Buffer()
-	{
-		m_size = 0;
-		data = nullptr;
-	}
-	Buffer(unsigned int size)
-	{
-		m_size = size;
-		if(size != 0)
-			data = new T[size];
-		else
-			data = nullptr;
-	}
+	constexpr UniqueBuffer() noexcept = default;
+	constexpr UniqueBuffer(std::nullptr_t) noexcept {}
 
-	// Disable class copy
-	Buffer(const Buffer &) = delete;
-	Buffer &operator=(const Buffer &) = delete;
+	constexpr UniqueBuffer(std::unique_ptr<T[]> data, size_t size) noexcept :
+		m_data(std::move(data)), m_size(size) {}
 
-	Buffer(Buffer &&buffer)
-	{
-		m_size = buffer.m_size;
-		if(m_size != 0)
-		{
-			data = buffer.data;
-			buffer.data = nullptr;
-			buffer.m_size = 0;
-		}
-		else
-			data = nullptr;
-	}
-	// Copies whole buffer
-	Buffer(const T *t, unsigned int size)
-	{
-		m_size = size;
-		if(size != 0)
-		{
-			data = new T[size];
-			memcpy(data, t, size);
-		}
-		else
-			data = nullptr;
-	}
+	UniqueBuffer(const UniqueBuffer &) = delete;
 
-	~Buffer()
-	{
-		drop();
-	}
+	constexpr UniqueBuffer(UniqueBuffer &&other) noexcept :
+		m_data(std::move(other.m_data)), m_size(other.m_size) {}
 
-	Buffer& operator=(Buffer &&buffer)
+	~UniqueBuffer() = default;
+
+	constexpr UniqueBuffer &operator=(const UniqueBuffer &) = delete;
+
+	constexpr UniqueBuffer &operator=(UniqueBuffer &&other) noexcept
 	{
-		if(this == &buffer)
+		if (&other == this)
 			return *this;
-		drop();
-		m_size = buffer.m_size;
-		if(m_size != 0)
-		{
-			data = buffer.data;
-			buffer.data = nullptr;
-			buffer.m_size = 0;
-		}
-		else
-			data = nullptr;
+		m_data = std::move(other.m_data);
+		m_size = other.m_size;
+		other.m_size = 0;
 		return *this;
 	}
 
-	void copyTo(Buffer &buffer) const
+	constexpr UniqueBuffer &operator=(std::nullptr_t) noexcept
 	{
-		buffer.drop();
-		buffer.m_size = m_size;
-		if (m_size != 0) {
-			buffer.data = new T[m_size];
-			memcpy(buffer.data, data, m_size);
-		} else {
-			buffer.data = nullptr;
-		}
+		m_data = nullptr;
+		m_size = 0;
 	}
 
-	T & operator[](unsigned int i) const
+	constexpr std::unique_ptr<T[]> release() noexcept
 	{
-		return data[i];
-	}
-	T * operator*() const
-	{
-		return data;
+		m_size = 0;
+		return std::move(m_data);
 	}
 
-	unsigned int getSize() const
+	constexpr void reset(std::unique_ptr<T[]> data, size_t size) noexcept
 	{
-		return m_size;
+		m_data = data;
+		m_size = size;
+	}
+
+	constexpr void reset(std::nullptr_t) noexcept
+	{
+		m_size = 0;
+		m_data = nullptr;
+	}
+
+	constexpr void swap(UniqueBuffer &other) noexcept
+	{
+		std::swap(m_size, other.m_size);
+		std::swap(m_data, other.m_data);
+	}
+
+	constexpr T *get() const noexcept { return m_data.get(); }
+
+	explicit constexpr operator bool() const noexcept { return (bool)m_data; }
+
+	constexpr T &operator[](size_t i) const { return m_data[i]; }
+
+	void copyTo(UniqueBuffer &other) const
+	{
+		if (other.m_size != m_size)
+			other = UniqueBuffer(std::unique_ptr<T[]>(new T[m_size]), m_size);
+
+		for (size_t i = 0; i != m_size; ++i)
+			other.m_data[i] = m_data[i];
+	}
+
+	UniqueBuffer copy() const
+	{
+		UniqueBuffer ret = UniqueBuffer(std::unique_ptr<T[]>(new T[m_size]), m_size);
+		for (size_t i = 0; i != m_size; ++i)
+			ret.m_data[i] = m_data[i];
+		return ret;
+	}
+
+	constexpr size_t size() const noexcept { return m_size; }
+
+	static UniqueBuffer make(size_t size)
+	{
+		return size == 0 ? UniqueBuffer() :
+				UniqueBuffer(std::make_unique<T[]>(size), size);
+	}
+
+	static UniqueBuffer makeForOverwrite(size_t size)
+	{
+		return size == 0 ? UniqueBuffer() :
+				UniqueBuffer(std::unique_ptr<T[]>(new T[size]), size);
 	}
 
 private:
-	void drop()
-	{
-		delete[] data;
-	}
-	T *data;
-	unsigned int m_size;
+	std::unique_ptr<T[]> m_data = nullptr;
+	size_t m_size = 0;
 };
 
+template <typename T>
+UniqueBuffer<T> copy_to_unique_buffer(const T *data, size_t size)
+{
+	auto ret = UniqueBuffer<T>::makeForOverwrite(size);
+	for (size_t i = 0; i != size; ++i)
+		ret[i] = data[i];
+	return ret;
+}
+
+template <typename T>
+constexpr void swap(UniqueBuffer<T> &a, UniqueBuffer<T> &b) noexcept
+{
+	a.swap(b);
+}
+
+template <typename T, typename U>
+constexpr bool operator==(const UniqueBuffer<T> &a, const UniqueBuffer<U> &b) noexcept
+{
+	return a.get() == b.get();
+}
+template <typename T, typename U>
+constexpr bool operator!=(const UniqueBuffer<T> &a, const UniqueBuffer<U> &b) noexcept
+{
+	return a.get() != b.get();
+}
+template <typename T>
+constexpr bool operator==(const UniqueBuffer<T> &a, std::nullptr_t) noexcept
+{
+	return (bool)a;
+}
+template <typename T>
+constexpr bool operator==(std::nullptr_t, const UniqueBuffer<T> &a) noexcept
+{
+	return (bool)a;
+}
+template <typename T>
+constexpr bool operator!=(const UniqueBuffer<T> &a, std::nullptr_t) noexcept
+{
+	return !a;
+}
+template <typename T>
+constexpr bool operator!=(std::nullptr_t, const UniqueBuffer<T> &a) noexcept
+{
+	return !a;
+}
+
+
+//! Similar to std::shared_ptr<T[]>, but with size.
+//!
 /************************************************
  *           !!!  W A R N I N G  !!!            *
  *                                              *
@@ -143,106 +190,115 @@ public:
 	SharedBuffer()
 	{
 		m_size = 0;
-		data = NULL;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+		m_data = nullptr;
+		m_refcount = new unsigned int;
+		(*m_refcount) = 1;
 	}
-	SharedBuffer(unsigned int size)
+	SharedBuffer(size_t size)
 	{
 		m_size = size;
-		if(m_size != 0)
-			data = new T[m_size];
+		if (m_size != 0)
+			m_data = new T[m_size];
 		else
-			data = nullptr;
-		refcount = new unsigned int;
-		memset(data,0,sizeof(T)*m_size);
-		(*refcount) = 1;
+			m_data = nullptr;
+		m_refcount = new unsigned int;
+		memset(m_data, 0, sizeof(T) * m_size);
+		(*m_refcount) = 1;
 	}
 	SharedBuffer(const SharedBuffer &buffer)
 	{
 		m_size = buffer.m_size;
-		data = buffer.data;
-		refcount = buffer.refcount;
-		(*refcount)++;
+		m_data = buffer.m_data;
+		m_refcount = buffer.m_refcount;
+		(*m_refcount)++;
 	}
-	SharedBuffer & operator=(const SharedBuffer & buffer)
+	SharedBuffer &operator=(const SharedBuffer &buffer)
 	{
-		if(this == &buffer)
+		if (this == &buffer)
 			return *this;
 		drop();
 		m_size = buffer.m_size;
-		data = buffer.data;
-		refcount = buffer.refcount;
-		(*refcount)++;
+		m_data = buffer.m_data;
+		m_refcount = buffer.m_refcount;
+		(*m_refcount)++;
 		return *this;
 	}
 	/*
 		Copies whole buffer
 	*/
-	SharedBuffer(const T *t, unsigned int size)
+	SharedBuffer(const T *t, size_t size)
 	{
 		m_size = size;
 		if(m_size != 0)
 		{
-			data = new T[m_size];
-			memcpy(data, t, m_size);
+			m_data = new T[m_size];
+			memcpy(m_data, t, m_size);
 		}
 		else
-			data = nullptr;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+			m_data = nullptr;
+		m_refcount = new unsigned int;
+		(*m_refcount) = 1;
 	}
-	/*
-		Copies whole buffer
-	*/
-	SharedBuffer(const Buffer<T> &buffer)
+	SharedBuffer(UniqueBuffer<T> &&buffer)
 	{
-		m_size = buffer.getSize();
-		if (m_size != 0) {
-				data = new T[m_size];
-				memcpy(data, *buffer, buffer.getSize());
-		}
-		else
-			data = nullptr;
-		refcount = new unsigned int;
-		(*refcount) = 1;
+		m_size = buffer.size();
+		m_data = buffer.release().release();
+		m_refcount = new unsigned int;
+		(*m_refcount) = 1;
 	}
 	~SharedBuffer()
 	{
 		drop();
 	}
-	T & operator[](unsigned int i) const
+	T &operator[](size_t i) const
 	{
 		assert(i < m_size);
-		return data[i];
+		return m_data[i];
 	}
-	T * operator*() const
+	T *operator*() const
 	{
-		return data;
+		return m_data;
 	}
-	unsigned int getSize() const
+	T *get() const
+	{
+		return m_data;
+	}
+	size_t size() const
 	{
 		return m_size;
 	}
-	operator Buffer<T>() const
+	UniqueBuffer<T> moveOut()
 	{
-		return Buffer<T>(data, m_size);
+		SANITY_CHECK(*m_refcount == 1);
+		size_t size = m_size;
+		auto data = std::unique_ptr<T>(m_data);
+		m_size = 0;
+		m_data = nullptr;
+		return UniqueBuffer<T>(std::move(data), size);
 	}
+	UniqueBuffer<T> copy() const
+	{
+		auto ret = UniqueBuffer<T>::makeForOverwrite(m_size);
+		for (size_t i = 0; i != m_size; ++i)
+			ret[i] = m_data[i];
+		return ret;
+	}
+
 private:
 	void drop()
 	{
-		assert((*refcount) > 0);
-		(*refcount)--;
-		if(*refcount == 0)
-		{
-			delete[] data;
-			delete refcount;
+		assert((*m_refcount) > 0);
+		(*m_refcount)--;
+		if (*m_refcount == 0) {
+			delete[] m_data;
+			delete m_refcount;
 		}
 	}
-	T *data;
-	unsigned int m_size;
-	unsigned int *refcount;
+	T *m_data;
+	size_t m_size;
+	unsigned int *m_refcount;
 };
+
 
 // This class is not thread-safe!
 class IntrusiveReferenceCounted {

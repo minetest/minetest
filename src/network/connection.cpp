@@ -62,7 +62,7 @@ u16 BufferedPacket::getSeqnum() const
 BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
-	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
+	u32 packet_size = data.size() + BASE_HEADER_SIZE;
 
 	auto p = std::make_shared<BufferedPacket>(packet_size);
 	p->address = address;
@@ -71,7 +71,7 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 	writeU16(&p->data[4], sender_peer_id);
 	writeU8(&p->data[6], channel);
 
-	memcpy(&p->data[BASE_HEADER_SIZE], *data, data.getSize());
+	memcpy(&p->data[BASE_HEADER_SIZE], *data, data.size());
 
 	return p;
 }
@@ -79,12 +79,12 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 SharedBuffer<u8> makeOriginalPacket(const SharedBuffer<u8> &data)
 {
 	u32 header_size = 1;
-	u32 packet_size = data.getSize() + header_size;
+	u32 packet_size = data.size() + header_size;
 	SharedBuffer<u8> b(packet_size);
 
 	writeU8(&(b[0]), PACKET_TYPE_ORIGINAL);
-	if (data.getSize() > 0) {
-		memcpy(&(b[header_size]), *data, data.getSize());
+	if (data.size() > 0) {
+		memcpy(&(b[header_size]), *data, data.size());
 	}
 	return b;
 }
@@ -102,8 +102,8 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 	u16 chunk_count = 0;
 	do {
 		end = start + maximum_data_size - 1;
-		if (end > data.getSize() - 1)
-			end = data.getSize() - 1;
+		if (end > data.size() - 1)
+			end = data.size() - 1;
 
 		u32 payload_size = end - start + 1;
 		u32 packet_size = chunk_header_size + payload_size;
@@ -122,7 +122,7 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 		start = end + 1;
 		chunk_num++;
 	}
-	while (end != data.getSize() - 1);
+	while (end != data.size() - 1);
 
 	for (SharedBuffer<u8> &chunk : *chunks) {
 		// Write chunk_count
@@ -135,7 +135,7 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 {
 	u32 original_header_size = 1;
 
-	if (data.getSize() + original_header_size > chunksize_max) {
+	if (data.size() + original_header_size > chunksize_max) {
 		makeSplitPacket(data, chunksize_max, split_seqnum, list);
 		split_seqnum++;
 		return;
@@ -147,13 +147,13 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, u16 seqnum)
 {
 	u32 header_size = 3;
-	u32 packet_size = data.getSize() + header_size;
+	u32 packet_size = data.size() + header_size;
 	SharedBuffer<u8> b(packet_size);
 
 	writeU8(&b[0], PACKET_TYPE_RELIABLE);
 	writeU16(&b[1], seqnum);
 
-	memcpy(&b[header_size], *data, data.getSize());
+	memcpy(&b[header_size], *data, data.size());
 
 	return b;
 }
@@ -396,7 +396,7 @@ SharedBuffer<u8> IncomingSplitPacket::reassemble()
 	// Calculate total size
 	u32 totalsize = 0;
 	for (const auto &chunk : chunks)
-		totalsize += chunk.second.getSize();
+		totalsize += chunk.second.size();
 
 	SharedBuffer<u8> fulldata(totalsize);
 
@@ -404,8 +404,8 @@ SharedBuffer<u8> IncomingSplitPacket::reassemble()
 	u32 start = 0;
 	for (u32 chunk_i = 0; chunk_i < chunk_count; chunk_i++) {
 		const SharedBuffer<u8> &buf = chunks[chunk_i];
-		memcpy(&fulldata[start], *buf, buf.getSize());
-		start += buf.getSize();
+		memcpy(&fulldata[start], *buf, buf.size());
+		start += buf.size();
 	}
 
 	return fulldata;
@@ -559,7 +559,7 @@ ConnectionCommandPtr ConnectionCommand::send(session_t peer_id, u8 channelnum,
 	return c;
 }
 
-ConnectionCommandPtr ConnectionCommand::ack(session_t peer_id, u8 channelnum, const Buffer<u8> &data)
+ConnectionCommandPtr ConnectionCommand::ack(session_t peer_id, u8 channelnum, const UniqueBuffer<u8> &data)
 {
 	auto c = create(CONCMD_ACK);
 	c->peer_id = peer_id;
@@ -569,7 +569,7 @@ ConnectionCommandPtr ConnectionCommand::ack(session_t peer_id, u8 channelnum, co
 	return c;
 }
 
-ConnectionCommandPtr ConnectionCommand::createPeer(session_t peer_id, const Buffer<u8> &data)
+ConnectionCommandPtr ConnectionCommand::createPeer(session_t peer_id, const UniqueBuffer<u8> &data)
 {
 	auto c = create(CONCMD_CREATE_PEER);
 	c->peer_id = peer_id;
@@ -1008,13 +1008,13 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommandPtr &c,
 			(chan.queued_reliables.size() + 1 < chan.getWindowSize() / 2)) {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" processing reliable command for peer id: " << c->peer_id
-				<<" data size: " << c->data.getSize() << std::endl);
+				<<" data size: " << c->data.size() << std::endl);
 		if (processReliableSendCommand(c, max_packet_size))
 			return;
 	} else {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" Queueing reliable command for peer id: " << c->peer_id
-				<<" data size: " << c->data.getSize() <<std::endl);
+				<<" data size: " << c->data.size() <<std::endl);
 
 		if (chan.queued_commands.size() + 1 >= chan.getWindowSize() / 2) {
 			LOG(derr_con << m_connection->getDesc()
@@ -1040,15 +1040,16 @@ bool UDPPeer::processReliableSendCommand(
 							- BASE_HEADER_SIZE
 							- RELIABLE_HEADER_SIZE;
 
-	sanity_check(c.data.getSize() < MAX_RELIABLE_WINDOW_SIZE*512);
+	sanity_check(c.data.size() < MAX_RELIABLE_WINDOW_SIZE*512);
 
 	std::list<SharedBuffer<u8>> originals;
 	u16 split_sequence_number = chan.readNextSplitSeqNum();
 
 	if (c.raw) {
-		originals.emplace_back(c.data);
+		originals.emplace_back(c.data.copy());
 	} else {
-		makeAutoSplitPacket(c.data, chunksize_max,split_sequence_number, &originals);
+		makeAutoSplitPacket(c.data.copy(), chunksize_max,
+				split_sequence_number, &originals);
 		chan.setNextSplitSeqNum(split_sequence_number);
 	}
 
@@ -1119,7 +1120,7 @@ bool UDPPeer::processReliableSendCommand(
 
 	LOG(dout_con<<m_connection->getDesc()
 			<< " Windowsize exceeded on reliable sending "
-			<< c.data.getSize() << " bytes"
+			<< c.data.size() << " bytes"
 			<< std::endl << "\t\tinitial_sequence_number: "
 			<< initial_sequence_number
 			<< std::endl << "\t\tgot at most            : "
@@ -1155,7 +1156,7 @@ void UDPPeer::RunCommandQueues(
 				} else {
 					LOG(dout_con << m_connection->getDesc()
 							<< " Failed to queue packets for peer_id: " << c->peer_id
-							<< ", delaying sending of " << c->data.getSize()
+							<< ", delaying sending of " << c->data.size()
 							<< " bytes" << std::endl);
 				}
 			}
@@ -1212,7 +1213,7 @@ ConnectionEventPtr ConnectionEvent::create(ConnectionEventType type)
 	return std::shared_ptr<ConnectionEvent>(new ConnectionEvent(type));
 }
 
-ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const Buffer<u8> &data)
+ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const UniqueBuffer<u8> &data)
 {
 	auto e = create(CONNEVENT_DATA_RECEIVED);
 	e->peer_id = peer_id;
@@ -1439,11 +1440,11 @@ bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 			return false;
 		case CONNEVENT_DATA_RECEIVED:
 			// Data size is lesser than command size, ignoring packet
-			if (e.data.getSize() < 2) {
+			if (e.data.size() < 2) {
 				continue;
 			}
 
-			pkt->putRawPacket(*e.data, e.data.getSize(), e.peer_id);
+			pkt->putRawPacket(e.data.get(), e.data.size(), e.peer_id);
 			return true;
 		case CONNEVENT_PEER_ADDED: {
 			UDPPeer tmp(e.peer_id, e.address, this);
@@ -1582,7 +1583,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
 
 	{
-		Buffer<u8> reply(4);
+		auto reply = UniqueBuffer<u8>::makeForOverwrite(4);
 		writeU8(&reply[0], PACKET_TYPE_CONTROL);
 		writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
 		writeU16(&reply[2], peer_id_new);
@@ -1617,7 +1618,7 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 			" channel: " << (channelnum & 0xFF) <<
 			" seqnum: " << seqnum << std::endl);
 
-	SharedBuffer<u8> ack(4);
+	auto ack = UniqueBuffer<u8>::makeForOverwrite(4);
 	writeU8(&ack[0], PACKET_TYPE_CONTROL);
 	writeU8(&ack[1], CONTROLTYPE_ACK);
 	writeU16(&ack[2], seqnum);

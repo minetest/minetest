@@ -347,7 +347,7 @@ void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level)
 
 void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int level)
 {
-	compress(*data, data.getSize(), os, version, level);
+	compress(*data, data.size(), os, version, level);
 }
 
 void compress(const std::string &data, std::ostream &os, u8 version, int level)

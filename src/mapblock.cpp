@@ -427,7 +427,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	writeU8(os, content_width);
 	writeU8(os, params_width);
 	if (version >= 29) {
-		os.write(reinterpret_cast<char*>(*buf), buf.getSize());
+		os.write(reinterpret_cast<char*>(*buf), buf.size());
 	} else {
 		// prior to 29 node data was compressed individually
 		compress(buf, os, version, compression_level);
