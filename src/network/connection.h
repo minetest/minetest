@@ -264,7 +264,7 @@ public:
 	void insert(BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<ConstSharedPtr<BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
+	std::list<std::shared_ptr<const BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();

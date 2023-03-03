@@ -348,11 +348,11 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 	}
 }
 
-std::list<ConstSharedPtr<BufferedPacket>>
+std::list<std::shared_ptr<const BufferedPacket>>
 	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	std::list<ConstSharedPtr<BufferedPacket>> timed_outs;
+	std::list<std::shared_ptr<const BufferedPacket>> timed_outs;
 	for (auto &packet : m_list) {
 		if (packet->time < timeout)
 			continue;

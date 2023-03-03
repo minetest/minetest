@@ -25,19 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory> // std::shared_ptr
 
 
-template<typename T> class ConstSharedPtr {
-public:
-	ConstSharedPtr(T *ptr) : ptr(ptr) {}
-	ConstSharedPtr(const std::shared_ptr<T> &ptr) : ptr(ptr) {}
-
-	const T* get() const noexcept { return ptr.get(); }
-	const T& operator*() const noexcept { return *ptr.get(); }
-	const T* operator->() const noexcept { return ptr.get(); }
-
-private:
-	std::shared_ptr<T> ptr;
-};
-
 template <typename T>
 class Buffer
 {
