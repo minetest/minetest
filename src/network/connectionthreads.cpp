@@ -188,7 +188,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		PROFILE(ScopeProfiler
 		peerprofiler(g_profiler, peerIdentifier.str(), SPT_AVG));
 
-		SharedBuffer<u8> data(2); // data for sending ping, required here because of goto
+		SharedBuffer<u8> data = make_buffer<u8>(2); // data for sending ping, required here because of goto
 
 		/*
 			Check peer timeout
@@ -509,7 +509,7 @@ void ConnectionSendThread::disconnect()
 	LOG(dout_con << m_connection->getDesc() << " disconnecting" << std::endl);
 
 	// Create and send DISCO packet
-	SharedBuffer<u8> data(2);
+	SharedBuffer<u8> data = make_buffer_for_overwrite<u8>(2);
 	writeU8(&data[0], PACKET_TYPE_CONTROL);
 	writeU8(&data[1], CONTROLTYPE_DISCO);
 
@@ -527,7 +527,7 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 	LOG(dout_con << m_connection->getDesc() << " disconnecting peer" << std::endl);
 
 	// Create and send DISCO packet
-	SharedBuffer<u8> data(2);
+	SharedBuffer<u8> data = make_buffer_for_overwrite<u8>(2);
 	writeU8(&data[0], PACKET_TYPE_CONTROL);
 	writeU8(&data[1], CONTROLTYPE_DISCO);
 	sendAsPacket(peer_id, 0, data, false);
@@ -786,7 +786,7 @@ void *ConnectionReceiveThread::run()
 	// theoretical reliable upper boundary of a udp packet for all IPv6 enabled
 	// infrastructure
 	const unsigned int packet_maxsize = 1500;
-	SharedBuffer<u8> packetdata(packet_maxsize);
+	SharedBuffer<u8> packetdata = make_buffer<u8>(packet_maxsize);
 
 	bool packet_queued = true;
 
@@ -894,7 +894,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 		// Call Receive() to wait for incoming data
 		Address sender;
 		s32 received_size = m_connection->m_udpSocket.Receive(sender,
-			*packetdata, packetdata.size());
+				packetdata.get(), packetdata.size());
 		if (received_size < 0)
 			return;
 
@@ -909,8 +909,8 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			return;
 		}
 
-		session_t peer_id = readPeerId(*packetdata);
-		u8 channelnum = readChannel(*packetdata);
+		session_t peer_id = readPeerId(packetdata.get());
+		u8 channelnum = readChannel(packetdata.get());
 
 		if (channelnum > CHANNEL_COUNT - 1) {
 			LOG(derr_con << m_connection->getDesc()
@@ -976,9 +976,9 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 		// Throw the received packet to channel->processPacket()
 
 		// Make a new SharedBuffer from the data without the base headers
-		SharedBuffer<u8> strippeddata(received_size - BASE_HEADER_SIZE);
-		memcpy(*strippeddata, &packetdata[BASE_HEADER_SIZE],
-			strippeddata.size());
+		SharedBuffer<u8> strippeddata =
+				make_buffer_for_overwrite<u8>(received_size - BASE_HEADER_SIZE);
+		memcpy(strippeddata.get(), &packetdata[BASE_HEADER_SIZE], strippeddata.size());
 
 		try {
 			// Process it (the result is some data with no headers made by us)
@@ -1056,8 +1056,8 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 
 	u32 headers_size = BASE_HEADER_SIZE + RELIABLE_HEADER_SIZE;
 	// Get out the inside packet and re-process it
-	SharedBuffer<u8> payload(p->size() - headers_size);
-	memcpy(*payload, &p->data[headers_size], payload.size());
+	SharedBuffer<u8> payload = make_buffer_for_overwrite<u8>(p->size() - headers_size);
+	memcpy(payload.get(), &p->data[headers_size], payload.size());
 
 	dst = processPacket(channel, payload, peer_id, channelnum, true);
 	return true;
@@ -1212,8 +1212,9 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *cha
 	LOG(dout_con << m_connection->getDesc() << "RETURNING TYPE_ORIGINAL to user"
 		<< std::endl);
 	// Get the inside packet out and return it
-	SharedBuffer<u8> payload(packetdata.size() - ORIGINAL_HEADER_SIZE);
-	memcpy(*payload, &(packetdata[ORIGINAL_HEADER_SIZE]), payload.size());
+	SharedBuffer<u8> payload =
+			make_buffer_for_overwrite<u8>(packetdata.size() - ORIGINAL_HEADER_SIZE);
+	memcpy(payload.get(), &(packetdata[ORIGINAL_HEADER_SIZE]), payload.size());
 	return payload;
 }
 
@@ -1350,8 +1351,9 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 	channel->incNextIncomingSeqNum();
 
 	// Get out the inside packet and re-process it
-	SharedBuffer<u8> payload(packetdata.size() - RELIABLE_HEADER_SIZE);
-	memcpy(*payload, &packetdata[RELIABLE_HEADER_SIZE], payload.size());
+	SharedBuffer<u8> payload =
+			make_buffer_for_overwrite<u8>(packetdata.size() - RELIABLE_HEADER_SIZE);
+	memcpy(payload.get(), &packetdata[RELIABLE_HEADER_SIZE], payload.size());
 
 	return processPacket(channel, payload, peer->id, channelnum, true);
 }

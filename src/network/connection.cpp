@@ -80,7 +80,7 @@ SharedBuffer<u8> makeOriginalPacket(View<u8> data)
 {
 	u32 header_size = 1;
 	u32 packet_size = data.size() + header_size;
-	SharedBuffer<u8> b(packet_size);
+	SharedBuffer<u8> b = make_buffer_for_overwrite<u8>(packet_size);
 
 	writeU8(&(b[0]), PACKET_TYPE_ORIGINAL);
 	if (data.size() > 0) {
@@ -108,7 +108,7 @@ void makeSplitPacket(View<u8> data, u32 chunksize_max, u16 seqnum,
 		u32 payload_size = end - start + 1;
 		u32 packet_size = chunk_header_size + payload_size;
 
-		SharedBuffer<u8> chunk(packet_size);
+		SharedBuffer<u8> chunk = make_buffer_for_overwrite<u8>(packet_size);
 
 		writeU8(&chunk[0], PACKET_TYPE_SPLIT);
 		writeU16(&chunk[1], seqnum);
@@ -148,7 +148,7 @@ SharedBuffer<u8> makeReliablePacket(View<u8> data, u16 seqnum)
 {
 	u32 header_size = 3;
 	u32 packet_size = data.size() + header_size;
-	SharedBuffer<u8> b(packet_size);
+	SharedBuffer<u8> b = make_buffer_for_overwrite<u8>(packet_size);
 
 	writeU8(&b[0], PACKET_TYPE_RELIABLE);
 	writeU16(&b[1], seqnum);
@@ -398,13 +398,13 @@ SharedBuffer<u8> IncomingSplitPacket::reassemble()
 	for (const auto &chunk : chunks)
 		totalsize += chunk.second.size();
 
-	SharedBuffer<u8> fulldata(totalsize);
+	SharedBuffer<u8> fulldata = make_buffer_for_overwrite<u8>(totalsize);
 
 	// Copy chunks to data buffer
 	u32 start = 0;
 	for (u32 chunk_i = 0; chunk_i < chunk_count; chunk_i++) {
 		const SharedBuffer<u8> &buf = chunks[chunk_i];
-		memcpy(&fulldata[start], *buf, buf.size());
+		memcpy(&fulldata[start], buf.get(), buf.size());
 		start += buf.size();
 	}
 
@@ -471,8 +471,8 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 
 	// Cut chunk data out of packet
 	u32 chunkdatasize = p.size() - headersize;
-	SharedBuffer<u8> chunkdata(chunkdatasize);
-	memcpy(*chunkdata, &(p.data[headersize]), chunkdatasize);
+	SharedBuffer<u8> chunkdata = make_buffer_for_overwrite<u8>(chunkdatasize);
+	memcpy(chunkdata.get(), &(p.data[headersize]), chunkdatasize);
 
 	if (!sp->insert(chunk_num, chunkdata))
 		return SharedBuffer<u8>();
@@ -1583,7 +1583,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
 
 	{
-		auto reply = UniqueBuffer<u8>::makeForOverwrite(4);
+		UniqueBuffer<u8> reply = make_buffer_for_overwrite<u8>(4);
 		writeU8(&reply[0], PACKET_TYPE_CONTROL);
 		writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
 		writeU16(&reply[2], peer_id_new);
@@ -1618,7 +1618,7 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 			" channel: " << (channelnum & 0xFF) <<
 			" seqnum: " << seqnum << std::endl);
 
-	auto ack = UniqueBuffer<u8>::makeForOverwrite(4);
+	UniqueBuffer<u8> ack = make_buffer_for_overwrite<u8>(4);
 	writeU8(&ack[0], PACKET_TYPE_CONTROL);
 	writeU8(&ack[1], CONTROLTYPE_ACK);
 	writeU16(&ack[2], seqnum);

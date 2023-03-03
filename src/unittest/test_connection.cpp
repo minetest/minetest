@@ -119,7 +119,7 @@ void TestConnection::testHelpers()
 	u32 proto_id = 0x12345678;
 	session_t peer_id = 123;
 	u8 channel = 2;
-	SharedBuffer<u8> data1(1);
+	SharedBuffer<u8> data1 = make_buffer_for_overwrite<u8>(1);
 	data1[0] = 100;
 	Address a(127,0,0,1, 10);
 	const u16 seqnum = 34352;

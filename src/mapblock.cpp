@@ -428,7 +428,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	writeU8(os, content_width);
 	writeU8(os, params_width);
 	if (version >= 29) {
-		os.write(reinterpret_cast<char*>(*buf), buf.size());
+		os.write(reinterpret_cast<char *>(buf.get()), buf.size());
 	} else {
 		// prior to 29 node data was compressed individually
 		compress(buf, os, version, compression_level);
@@ -670,7 +670,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 
 	// Make a temporary buffer
 	u32 ser_length = MapNode::serializedLength(version);
-	SharedBuffer<u8> databuf_nodelist(nodecount * ser_length);
+	SharedBuffer<u8> databuf_nodelist = make_buffer<u8>(nodecount * ser_length);
 
 	// These have no compression
 	if (version <= 3 || version == 5 || version == 6) {
@@ -680,7 +680,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			throw SerializationError(std::string(FUNCTION_NAME)
 				+ ": not enough input data");
 		is_underground = tmp;
-		is.read((char *)*databuf_nodelist, nodecount * ser_length);
+		is.read((char *)databuf_nodelist.get(), nodecount * ser_length);
 		if ((u32)is.gcount() != nodecount * ser_length)
 			throw SerializationError(std::string(FUNCTION_NAME)
 				+ ": not enough input data");

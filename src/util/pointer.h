@@ -31,6 +31,7 @@ struct is_unbounded_array : std::false_type {};
 template <typename T>
 struct is_unbounded_array<T[]> : std::true_type {};
 
+// Use this for default-initialization (aka don't fill with zeros)
 template <typename T, std::enable_if_t<!std::is_array<T>::value, bool> = true>
 std::unique_ptr<T> make_unique_for_overwrite()
 {
@@ -41,6 +42,20 @@ std::unique_ptr<T> make_unique_for_overwrite(size_t size)
 {
 	return std::unique_ptr<T>(new std::remove_extent_t<T>[size]);
 }
+
+
+/*
+ * Buffer smart-ptrs
+ * =================
+ *
+ * If you want to create a buffer, use make_buffer<T>() or make_buffer_for_overwrite<T>().
+ * This creates a UniqueBuffer<T>, which is cheaply convertible to a SharedBuffer<T>.
+ * Also, always prefer returning a UniqueBuffer<T> if the buffer hasn't multiple
+ * owners.
+ *
+ * If you want to only read some buffer, but don't need ownership, use a View<T>
+ * (or even better: View<const T>, but this might require more overloads).
+ */
 
 
 //! A std::unique_ptr<T[]> with size. Like std::vector<T>, but not growable.
@@ -122,18 +137,6 @@ public:
 
 	constexpr size_t size() const noexcept { return m_size; }
 
-	static UniqueBuffer make(size_t size)
-	{
-		return size == 0 ? UniqueBuffer() :
-				UniqueBuffer(std::make_unique<T[]>(size), size);
-	}
-
-	static UniqueBuffer makeForOverwrite(size_t size)
-	{
-		return size == 0 ? UniqueBuffer() :
-				UniqueBuffer(make_unique_for_overwrite<T[]>(size), size);
-	}
-
 private:
 	std::unique_ptr<T[]> m_data = nullptr;
 	size_t m_size = 0;
@@ -143,6 +146,20 @@ template <typename T>
 constexpr void swap(UniqueBuffer<T> &a, UniqueBuffer<T> &b) noexcept
 {
 	a.swap(b);
+}
+
+template <typename T>
+constexpr UniqueBuffer<T> make_buffer(size_t size)
+{
+	return size == 0 ? UniqueBuffer<T>() :
+			UniqueBuffer<T>(std::make_unique<T[]>(size), size);
+}
+
+template <typename T>
+constexpr UniqueBuffer<T> make_buffer_for_overwrite(size_t size)
+{
+	return size == 0 ? UniqueBuffer<T>() :
+			UniqueBuffer<T>(make_unique_for_overwrite<T[]>(size), size);
 }
 
 template <typename T, typename U>
@@ -190,86 +207,71 @@ template <typename T>
 class SharedBuffer
 {
 public:
-	SharedBuffer()
+	SharedBuffer() :
+		m_data(nullptr), m_size(0), m_refcount(new unsigned int)
 	{
-		m_size = 0;
-		m_data = nullptr;
-		m_refcount = new unsigned int;
+		*m_refcount = 1;
+	}
+
+	SharedBuffer(UniqueBuffer<T> &&buffer) :
+			m_size(buffer.size()), m_refcount(new unsigned int)
+	{
+		m_data = buffer.release().release();
 		(*m_refcount) = 1;
 	}
-	SharedBuffer(size_t size)
+
+	constexpr SharedBuffer(const SharedBuffer &buffer) noexcept :
+		m_data(buffer.m_data), m_size(buffer.m_size), m_refcount(buffer.m_refcount)
 	{
-		m_size = size;
-		if (m_size != 0)
-			m_data = new T[m_size];
-		else
-			m_data = nullptr;
-		m_refcount = new unsigned int;
-		memset(m_data, 0, sizeof(T) * m_size);
-		(*m_refcount) = 1;
+		*m_refcount += 1;
 	}
-	SharedBuffer(const SharedBuffer &buffer)
-	{
-		m_size = buffer.m_size;
-		m_data = buffer.m_data;
-		m_refcount = buffer.m_refcount;
-		(*m_refcount)++;
-	}
-	SharedBuffer &operator=(const SharedBuffer &buffer)
+
+	constexpr SharedBuffer &operator=(UniqueBuffer<T> &buffer)
 	{
 		if (this == &buffer)
 			return *this;
 		drop();
-		m_size = buffer.m_size;
-		m_data = buffer.m_data;
-		m_refcount = buffer.m_refcount;
-		(*m_refcount)++;
-		return *this;
-	}
-	/*
-		Copies whole buffer
-	*/
-	SharedBuffer(const T *t, size_t size)
-	{
-		m_size = size;
-		if(m_size != 0)
-		{
-			m_data = new T[m_size];
-			memcpy(m_data, t, m_size);
-		}
-		else
-			m_data = nullptr;
-		m_refcount = new unsigned int;
-		(*m_refcount) = 1;
-	}
-	SharedBuffer(UniqueBuffer<T> &&buffer)
-	{
 		m_size = buffer.size();
 		m_data = buffer.release().release();
 		m_refcount = new unsigned int;
-		(*m_refcount) = 1;
+		*m_refcount = 1;
+		return *this;
 	}
+
+	constexpr SharedBuffer &operator=(const SharedBuffer &buffer) noexcept
+	{
+		if (this == &buffer)
+			return *this;
+		drop();
+		m_data = buffer.m_data;
+		m_size = buffer.m_size;
+		m_refcount = buffer.m_refcount;
+		*m_refcount += 1;
+		return *this;
+	}
+
 	~SharedBuffer()
 	{
 		drop();
 	}
-	T &operator[](size_t i) const
+
+	constexpr void swap(SharedBuffer &buffer) noexcept
+	{
+		std::swap(m_data, buffer.m_data);
+		std::swap(m_size, buffer.m_size);
+		std::swap(m_refcount, buffer.m_refcount);
+	}
+
+	constexpr T &operator[](size_t i) const noexcept
 	{
 		assert(i < m_size);
 		return m_data[i];
 	}
-	T *operator*() const
-	{
-		return m_data;
-	}
-	T *get() const
-	{
-		return m_data;
-	}
-	size_t size() const
-	{
-		return m_size;
-	}
+
+	constexpr T *get() const noexcept { return m_data; }
+
+	constexpr size_t size() const noexcept { return m_size; }
+
 	UniqueBuffer<T> moveOut()
 	{
 		SANITY_CHECK(*m_refcount == 1);
@@ -279,13 +281,14 @@ public:
 		m_data = nullptr;
 		return UniqueBuffer<T>(std::move(data), size);
 	}
+
 	UniqueBuffer<T> copy() const;
 
 private:
 	void drop()
 	{
 		assert((*m_refcount) > 0);
-		(*m_refcount)--;
+		*m_refcount -= 1;
 		if (*m_refcount == 0) {
 			delete[] m_data;
 			delete m_refcount;
@@ -295,6 +298,12 @@ private:
 	size_t m_size;
 	unsigned int *m_refcount;
 };
+
+template <typename T>
+constexpr void swap(SharedBuffer<T> &a, SharedBuffer<T> &b)
+{
+	a.swap(b);
+}
 
 
 template <typename T>
@@ -328,6 +337,7 @@ public:
 
 	constexpr size_t size() const noexcept { return m_size; }
 
+	// Returns whether the View is set to something (but it can be empty).
 	explicit constexpr operator bool() const noexcept { return (bool)m_data; }
 
 	constexpr bool empty() const noexcept { return m_size != 0; }
@@ -358,7 +368,7 @@ public:
 
 	UniqueBuffer<T> copy() const noexcept
 	{
-		auto ret = UniqueBuffer<T>::makeForOverwrite(m_size);
+		UniqueBuffer<T> ret = make_buffer_for_overwrite<T>(m_size);
 		for (size_t i = 0; i != m_size; ++i)
 			ret[i] = m_data[i];
 		return ret;

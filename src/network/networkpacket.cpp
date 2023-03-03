@@ -551,7 +551,7 @@ NetworkPacket& NetworkPacket::operator<<(video::SColor src)
 
 UniqueBuffer<u8> NetworkPacket::oldForgePacket()
 {
-	auto sb = UniqueBuffer<u8>::makeForOverwrite(m_datasize + 2);
+	UniqueBuffer<u8> sb = make_buffer_for_overwrite<u8>(m_datasize + 2);
 	writeU16(&sb[0], m_command);
 	memcpy(&sb[2], m_data.data(), m_datasize);
 

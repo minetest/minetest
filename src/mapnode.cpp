@@ -674,7 +674,8 @@ SharedBuffer<u8> MapNode::serializeBulk(int version,
 		throw SerializationError("MapNode::serializeBulk: serialization to "
 				"version < 24 not possible");
 
-	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
+	SharedBuffer<u8> databuf =
+			make_buffer_for_overwrite<u8>(nodecount * (content_width + params_width));
 
 	u32 start1 = content_width * nodecount;
 	u32 start2 = (content_width + 1) * nodecount;
@@ -703,7 +704,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// read data
 	const u32 len = nodecount * (content_width + params_width);
-	auto databuf = UniqueBuffer<u8>::makeForOverwrite(len);
+	UniqueBuffer<u8> databuf = make_buffer_for_overwrite<u8>(len);
 	is.read(reinterpret_cast<char *>(databuf.get()), len);
 
 	// Deserialize content

@@ -65,7 +65,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0, bool is_apple_tree,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-2, -1, -2), v3s16(2, 2, 2));
-	auto leaves_d = UniqueBuffer<u8>::makeForOverwrite(leaves_a.getVolume());
+	UniqueBuffer<u8> leaves_d = make_buffer_for_overwrite<u8>(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 
@@ -693,8 +693,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -2, -3), v3s16(3, 2, 3));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
-	auto leaves_d = UniqueBuffer<u8>::makeForOverwrite(leaves_a.getVolume());
+	UniqueBuffer<u8> leaves_d = make_buffer_for_overwrite<u8>(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 
@@ -783,7 +782,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -6, -3), v3s16(3, 3, 3));
-	auto leaves_d = UniqueBuffer<u8>::makeForOverwrite(leaves_a.getVolume());
+	UniqueBuffer<u8> leaves_d = make_buffer_for_overwrite<u8>(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 
