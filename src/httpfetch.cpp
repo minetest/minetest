@@ -734,7 +734,7 @@ protected:
 	}
 };
 
-CurlFetchThread *g_httpfetch_thread = NULL;
+std::unique_ptr<CurlFetchThread> g_httpfetch_thread = nullptr;
 
 void httpfetch_init(int parallel_limit)
 {
@@ -744,7 +744,7 @@ void httpfetch_init(int parallel_limit)
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
 	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
 
-	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
+	g_httpfetch_thread = std::make_unique<CurlFetchThread>(parallel_limit);
 
 	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
 	u64 randbuf[2];
@@ -760,7 +760,7 @@ void httpfetch_cleanup()
 		g_httpfetch_thread->stop();
 		g_httpfetch_thread->requestWakeUp();
 		g_httpfetch_thread->wait();
-		delete g_httpfetch_thread;
+		g_httpfetch_thread.reset();
 	}
 
 	curl_global_cleanup();
