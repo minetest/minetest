@@ -53,7 +53,7 @@ Database_MariaDB::Database_MariaDB(const std::string &connect_string, const char
 		    << "Set mariadb" << type << "_connection string in world.mt to use the MariaDB backend.\n\n"
 		    << "Notes:\n\n"
 		    << "1. mariadb" << type << "_connection format is as follows:\n\n"
-		    << "   \"hostname=127.0.0.1 port=3306 user=minetest password=minetest dbname=minetest\n\n"
+		    << "   \"host=127.0.0.1 port=3306 user=minetest password=minetest dbname=minetest\n\n"
 		    << "   Hint: is better to use 127.0.0.1 in place of localhost to avoid unnecessary DNS lookup\n\n"
 		    << "2. The user must be created using the MariaDB client prior to using it with Minetest. Example:\n\n"
 		    << "   $ mysql -sse \"CREATE USER 'minetest'@'%' IDENTIFIED BY 'PaSSw0rd';\"\n\n"
@@ -72,13 +72,13 @@ Database_MariaDB::Database_MariaDB(const std::string &connect_string, const char
 
 	std::string connect_string_key = "mariadb" + (std::string) type;
 
-	if (0 == params.count("hostname")) {
-		errorstream << "[MariaDB] Error: required parameter 'hostname' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
+	if (0 == params.count("host")) {
+		errorstream << "[MariaDB] Error: required parameter 'host' is undefined (check " + connect_string_key + " in world.mt)" << std::endl;
 		throw DatabaseException("MariaDB error");
 	}
 
-	if (params.at("hostname").empty()) {
-		errorstream << "[MariaDB] Error: hostname cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
+	if (params.at("host").empty()) {
+		errorstream << "[MariaDB] Error: host cannot be empty (check " + connect_string_key + " in world.mt)" << std::endl;
 		throw DatabaseException("MariaDB error");
 	}
 
@@ -168,7 +168,7 @@ void Database_MariaDB::connect() {
 
 		// configure
 		sql::Driver* driver(sql::mariadb::get_driver_instance());
-		sql::SQLString url("jdbc:mariadb://" + params.at("hostname") + ":" + params.at("port"));
+		sql::SQLString url("jdbc:mariadb://" + params.at("host") + ":" + params.at("port"));
 		sql::Properties properties({
 			{ "autoReconnect",	"true" },
 			{ "user",       	params.at("user") },
