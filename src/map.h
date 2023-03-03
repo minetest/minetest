@@ -465,7 +465,7 @@ private:
 	std::set<v3s16> m_chunks_in_progress;
 
 	// used by deleteBlock() and deleteDetachedBlocks()
-	MapBlockVect m_detached_blocks;
+	std::vector<std::unique_ptr<MapBlock>> m_detached_blocks;
 
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;
