@@ -39,16 +39,11 @@ void MapSector::deleteBlocks()
 	// Clear cache
 	m_block_cache = nullptr;
 
-	// Delete all
-	for (auto &block : m_blocks) {
-		delete block.second;
-	}
-
-	// Clear container
+	// Delete all blocks
 	m_blocks.clear();
 }
 
-MapBlock * MapSector::getBlockBuffered(s16 y)
+MapBlock *MapSector::getBlockBuffered(s16 y)
 {
 	MapBlock *block;
 
@@ -57,8 +52,8 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	}
 
 	// If block doesn't exist, return NULL
-	std::unordered_map<s16, MapBlock*>::const_iterator n = m_blocks.find(y);
-	block = (n != m_blocks.end() ? n->second : nullptr);
+	auto it = m_blocks.find(y);
+	block = it != m_blocks.end() ? it->second.get() : nullptr;
 
 	// Cache the last result
 	m_block_cache_y = y;
@@ -67,32 +62,31 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	return block;
 }
 
-MapBlock * MapSector::getBlockNoCreateNoEx(s16 y)
+MapBlock *MapSector::getBlockNoCreateNoEx(s16 y)
 {
 	return getBlockBuffered(y);
 }
 
-MapBlock * MapSector::createBlankBlockNoInsert(s16 y)
+std::unique_ptr<MapBlock> MapSector::createBlankBlockNoInsert(s16 y)
 {
-	assert(getBlockBuffered(y) == NULL);	// Pre-condition
+	assert(getBlockBuffered(y) == nullptr); // Pre-condition
 
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
 
-	MapBlock *block = new MapBlock(m_parent, blockpos_map, m_gamedef);
-
-	return block;
+	return std::make_unique<MapBlock>(m_parent, blockpos_map, m_gamedef);
 }
 
-MapBlock * MapSector::createBlankBlock(s16 y)
+MapBlock *MapSector::createBlankBlock(s16 y)
 {
-	MapBlock *block = createBlankBlockNoInsert(y);
+	std::unique_ptr<MapBlock> block_u = createBlankBlockNoInsert(y);
+	MapBlock *block = block_u.get();
 
-	m_blocks[y] = block;
+	m_blocks[y] = std::move(block_u);
 
 	return block;
 }
 
-void MapSector::insertBlock(MapBlock *block)
+void MapSector::insertBlock(std::unique_ptr<MapBlock> block)
 {
 	s16 block_y = block->getPos().Y;
 
@@ -105,16 +99,16 @@ void MapSector::insertBlock(MapBlock *block)
 	assert(p2d == m_pos);
 
 	// Insert into container
-	m_blocks[block_y] = block;
+	m_blocks[block_y] = std::move(block);
 }
 
 void MapSector::deleteBlock(MapBlock *block)
 {
 	detachBlock(block);
-	delete block;
+	// returned smart-ptr is dropped
 }
 
-void MapSector::detachBlock(MapBlock *block)
+std::unique_ptr<MapBlock> MapSector::detachBlock(MapBlock *block)
 {
 	s16 block_y = block->getPos().Y;
 
@@ -122,16 +116,22 @@ void MapSector::detachBlock(MapBlock *block)
 	m_block_cache = nullptr;
 
 	// Remove from container
-	m_blocks.erase(block_y);
+	auto it = m_blocks.find(block_y);
+	assert(it != m_blocks.end());
+	std::unique_ptr<MapBlock> ret = std::move(it->second);
+	assert(ret.get() == block);
+	m_blocks.erase(it);
 
 	// Mark as removed
 	block->makeOrphan();
+
+	return ret;
 }
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
 	dest.reserve(dest.size() + m_blocks.size());
 	for (auto &block : m_blocks) {
-		dest.push_back(block.second);
+		dest.push_back(block.second.get());
 	}
 }

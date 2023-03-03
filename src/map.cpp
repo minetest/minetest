@@ -116,22 +116,22 @@ MapSector * Map::getSectorNoGenerateNoLock(v2s16 p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerate(v2s16 p)
+MapSector *Map::getSectorNoGenerate(v2s16 p)
 {
 	return getSectorNoGenerateNoLock(p);
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+MapBlock *Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerate(p2d);
-	if(sector == NULL)
-		return NULL;
+	MapSector *sector = getSectorNoGenerate(p2d);
+	if (!sector)
+		return nullptr;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
+MapBlock *Map::getBlockNoCreate(v3s16 p3d)
 {
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
@@ -1795,21 +1795,20 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			throw SerializationError("ServerMap::loadBlock(): Failed"
 					" to read MapBlock version");
 
-		MapBlock *block = NULL;
-		bool created_new = false;
+		MapBlock *block = nullptr;
+		std::unique_ptr<MapBlock> block_created_new;
 		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
-			block = sector->createBlankBlockNoInsert(p3d.Y);
-			created_new = true;
+		if (!block) {
+			block_created_new = sector->createBlankBlockNoInsert(p3d.Y);
+			block = block_created_new.get();
 		}
 
 		// Read basic data
 		block->deSerialize(is, version, true);
 
 		// If it's a new block, insert it to the map
-		if (created_new) {
-			sector->insertBlock(block);
+		if (block_created_new) {
+			sector->insertBlock(std::move(block_created_new));
 			ReflowScan scanner(this, m_emerge->ndef);
 			scanner.scan(block, &m_transforming_liquid);
 		}
@@ -1892,8 +1891,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 			return false;
 		// It may not be safe to delete the block from memory at the moment
 		// (pointers to it could still be in use)
-		sector->detachBlock(block);
-		m_detached_blocks.push_back(block);
+		m_detached_blocks.push_back(sector->detachBlock(block));
 	}
 
 	return true;
@@ -1901,10 +1899,11 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 
 void ServerMap::deleteDetachedBlocks()
 {
-	for (MapBlock *block : m_detached_blocks) {
+	for (const auto &block : m_detached_blocks) {
 		assert(block->isOrphan());
-		delete block;
+		(void)block; // silence unused-variable warning in release builds
 	}
+
 	m_detached_blocks.clear();
 }
 
