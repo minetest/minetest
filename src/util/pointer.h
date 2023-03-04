@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "debug.h" // For assert()
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <sstream>
 #include <type_traits>
@@ -31,6 +32,16 @@ template <typename T>
 struct is_unbounded_array : std::false_type {};
 template <typename T>
 struct is_unbounded_array<T[]> : std::true_type {};
+
+// Whether a `buffer<From>` can be implicitly casted to `buffer<To>`, where `buffer`
+// is some buffer smart-ptr.
+// We only allow to implicitly cast from non-const to const. If you need other
+// conversions, cast the underlying ptrs.
+template <typename From, typename To>
+using is_implicitly_array_convertible = std::integral_constant<bool,
+		std::is_same<From, To>::value
+		|| std::is_same<From, std::remove_const_t<To>>::value
+	>;
 
 // Use this for default-initialization (aka don't fill with zeros)
 template <typename T, std::enable_if_t<!std::is_array<T>::value, bool> = true>
@@ -54,8 +65,10 @@ std::unique_ptr<T> make_unique_for_overwrite(size_t size)
  * Also, always prefer returning a UniqueBuffer<T> if the buffer hasn't multiple
  * owners.
  *
- * If you want to only read some buffer, but don't need ownership, use a View<T>
- * (or even better: View<const T>, but this might require more overloads).
+ * If you only want to read some buffer, use ConstView<T>. If you also need to
+ * write, but don't need ownership, use a View<T>.
+ *
+ * The buffer smart-ptrs are small. Pass View<T>s by value.
  *
  * Note that const buffer smart-ptrs do not necessarily have const data, i.e.
  * `const UniqueBuffer<const T>` is similar to `const std::vector<T>`, not
@@ -68,16 +81,37 @@ template <typename T>
 class UniqueBuffer
 {
 public:
+	using value_type = T;
+	using size_type = size_t;
+	using reference = T &;
+	using iterator = T *;
+	using const_iterator = const T *;
+
 	constexpr UniqueBuffer() noexcept = default;
 	constexpr UniqueBuffer(std::nullptr_t) noexcept {}
 
-	constexpr UniqueBuffer(std::unique_ptr<T[]> data, size_t size) noexcept :
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr UniqueBuffer(std::unique_ptr<U[]> data, size_t size) noexcept :
 		m_data(std::move(data)), m_size(size) {}
 
 	UniqueBuffer(const UniqueBuffer &) = delete;
 
 	constexpr UniqueBuffer(UniqueBuffer &&other) noexcept :
-		m_data(std::move(other.m_data)), m_size(other.m_size) {}
+		m_size(other.size())
+	{
+		m_data = other.release();
+	}
+
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr UniqueBuffer(UniqueBuffer<U> &&other) noexcept :
+		m_size(other.size())
+	{
+		m_data = other.release();
+	}
 
 	~UniqueBuffer() = default;
 
@@ -87,8 +121,8 @@ public:
 	{
 		if (&other == this)
 			return *this;
-		reset();
-		swap(other);
+		m_size = other.size();
+		m_data = other.release();
 		return *this;
 	}
 
@@ -103,7 +137,10 @@ public:
 		return std::move(m_data);
 	}
 
-	constexpr void reset(std::unique_ptr<T[]> data, size_t size) noexcept
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr void reset(std::unique_ptr<U[]> data, size_t size) noexcept
 	{
 		m_data = std::move(data);
 		m_size = size;
@@ -127,7 +164,7 @@ public:
 
 	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
 
-	constexpr T &at(size_t i) const
+	T &at(size_t i) const
 	{
 		if (i >= m_size) {
 			std::ostringstream os;
@@ -137,16 +174,19 @@ public:
 		return m_data[i];
 	}
 
-	void copyTo(UniqueBuffer &other) const
+	template <typename U, std::enable_if_t<
+			std::is_convertible<T, U>::value, bool> = true
+	>
+	void copyTo(UniqueBuffer<U> &other) const
 	{
-		if (other.m_size != m_size)
-			other = UniqueBuffer(make_unique_for_overwrite<T[]>(m_size), m_size);
+		if (other.size() != m_size)
+			other.reset(make_unique_for_overwrite<U[]>(m_size), m_size);
 
 		for (size_t i = 0; i != m_size; ++i)
-			other.m_data[i] = m_data[i];
+			other[i] = m_data[i];
 	}
 
-	UniqueBuffer copy() const;
+	UniqueBuffer<std::remove_const_t<T>> copy() const;
 
 	constexpr size_t size() const noexcept { return m_size; }
 
@@ -191,12 +231,21 @@ template <typename T>
 class SharedBuffer
 {
 public:
+	using value_type = T;
+	using size_type = size_t;
+	using reference = T &;
+	using iterator = T *;
+	using const_iterator = const T *;
+
 	constexpr SharedBuffer() noexcept = default;
 
 	constexpr SharedBuffer(std::nullptr_t) noexcept {}
 
-	SharedBuffer(UniqueBuffer<T> &&buffer) :
-			m_size(buffer.size()), m_refcount(nullptr)
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	SharedBuffer(UniqueBuffer<U> &&buffer) :
+		m_size(buffer.size()), m_refcount(nullptr)
 	{
 		m_data = buffer.release().release();
 		if (m_data) {
@@ -210,7 +259,28 @@ public:
 		swap(buffer);
 	}
 
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr SharedBuffer(SharedBuffer<U> &&buffer) noexcept :
+		m_data(buffer.m_data), m_size(buffer.m_size), m_refcount(buffer.m_refcount)
+	{
+		buffer.m_data = nullptr;
+		buffer.m_size = 0;
+		buffer.m_refcount = nullptr;
+	}
+
 	constexpr SharedBuffer(const SharedBuffer &buffer) noexcept :
+		m_data(buffer.m_data), m_size(buffer.m_size), m_refcount(buffer.m_refcount)
+	{
+		if (m_refcount)
+			*m_refcount += 1;
+	}
+
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr SharedBuffer(const SharedBuffer<U> &buffer) noexcept :
 		m_data(buffer.m_data), m_size(buffer.m_size), m_refcount(buffer.m_refcount)
 	{
 		if (m_refcount)
@@ -220,12 +290,6 @@ public:
 	SharedBuffer &operator=(std::nullptr_t)
 	{
 		reset();
-		return *this;
-	}
-
-	SharedBuffer &operator=(UniqueBuffer<T> &&buffer)
-	{
-		*this = SharedBuffer(std::move(buffer));
 		return *this;
 	}
 
@@ -242,13 +306,7 @@ public:
 	{
 		if (this == &buffer)
 			return *this;
-		reset();
-		m_data = buffer.m_data;
-		m_size = buffer.m_size;
-		m_refcount = buffer.m_refcount;
-		if (m_refcount)
-			*m_refcount += 1;
-		return *this;
+		return (*this = SharedBuffer(buffer));
 	}
 
 	~SharedBuffer()
@@ -273,7 +331,7 @@ public:
 
 	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
 
-	constexpr T &at(size_t i) const
+	T &at(size_t i) const
 	{
 		if (i >= m_size) {
 			std::ostringstream os;
@@ -293,7 +351,9 @@ public:
 
 	UniqueBuffer<T> moveOut()
 	{
-		SANITY_CHECK(m_refcount && *m_refcount == 1);
+		UniqueBuffer<T> ret;
+		if (!m_refcount || *m_refcount != 1)
+			throw std::runtime_error("SharedBuffer::moveOut: Preconditions not met");
 		size_t size = m_size;
 		auto data = std::unique_ptr<T[]>(m_data);
 		delete m_refcount;
@@ -303,7 +363,7 @@ public:
 		return UniqueBuffer<T>(std::move(data), size);
 	}
 
-	UniqueBuffer<T> copy() const;
+	UniqueBuffer<std::remove_const_t<T>> copy() const;
 
 	UniqueBuffer<T> moveOrCopyOut()
 	{
@@ -319,17 +379,20 @@ public:
 	}
 
 private:
-	void drop()
+	void drop() noexcept
 	{
 		if (!m_refcount)
 			return;
 		assert((*m_refcount) > 0);
 		*m_refcount -= 1;
 		if (*m_refcount == 0) {
-			delete[] m_data;
 			delete m_refcount;
+			delete[] m_data;
 		}
 	}
+
+	friend SharedBuffer<std::remove_const_t<T>>;
+	friend SharedBuffer<const std::remove_const_t<T>>;
 
 	// values for an unset SharedBuffer:
 	T *m_data = nullptr;
@@ -348,21 +411,53 @@ template <typename T>
 class View
 {
 public:
+	using value_type = T;
+	using size_type = size_t;
+	using reference = T &;
+	using iterator = T *;
+	using const_iterator = const T *;
+
 	constexpr View() noexcept = default;
 
 	constexpr View(std::nullptr_t) noexcept {}
 
-	constexpr View(T *data, size_t size) noexcept :
+	constexpr View(const View &) noexcept = default;
+	constexpr View(View &&) noexcept = default;
+
+	constexpr View &operator=(const View &) noexcept = default;
+	constexpr View &operator=(View &&) noexcept = default;
+
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr View(View<U> other) noexcept :
+			m_data(other.get()), m_size(other.size()) {}
+
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr View(U *data, size_t size) noexcept :
 		m_data(data), m_size(size) {}
 
-	template <typename It>
+	// `It` must also satisfy LegacyContiguousIterator.
+	template <typename It, std::enable_if_t<
+			is_implicitly_array_convertible<typename std::iterator_traits<It>::value_type, T>::value
+			&& std::is_same<typename std::iterator_traits<It>::iterator_category, std::random_access_iterator_tag>::value
+		, bool> = true
+	>
 	constexpr View(It begin, It end) noexcept :
 		m_data(&*begin), m_size(end - begin) {}
 
-	constexpr View(const UniqueBuffer<T> &buffer) noexcept :
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr View(const UniqueBuffer<U> &buffer) noexcept :
 		m_data(buffer.get()), m_size(buffer.size()) {}
 
-	constexpr View(const SharedBuffer<T> &buffer) noexcept :
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr View(const SharedBuffer<U> &buffer) noexcept :
 		m_data(buffer.get()), m_size(buffer.size()) {}
 
 	constexpr T *begin() const noexcept { return m_data; }
@@ -382,7 +477,7 @@ public:
 
 	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
 
-	constexpr T &at(size_t i) const
+	T &at(size_t i) const
 	{
 		if (i >= m_size) {
 			std::ostringstream os;
@@ -401,22 +496,31 @@ public:
 		m_size = 0;
 	}
 
-	constexpr void reset(T *data, size_t size) noexcept
+	template <typename U, std::enable_if_t<
+			is_implicitly_array_convertible<U, T>::value, bool> = true
+	>
+	constexpr void reset(U *data, size_t size) noexcept
 	{
 		m_data = data;
 		m_size = size;
 	}
 
-	template <typename It>
+	// `It` must also satisfy LegacyContiguousIterator.
+	template <typename It, std::enable_if_t<
+			is_implicitly_array_convertible<typename std::iterator_traits<It>::value_type, T>::value
+			&& std::is_same<typename std::iterator_traits<It>::iterator_category, std::random_access_iterator_tag>::value
+		, bool> = true
+	>
 	constexpr void reset(It begin, It end) noexcept
 	{
 		m_data = &*begin;
 		m_size = end - begin;
 	}
 
-	UniqueBuffer<T> copy() const noexcept
+	UniqueBuffer<std::remove_const_t<T>> copy() const
 	{
-		UniqueBuffer<T> ret = make_buffer_for_overwrite<T>(m_size);
+		using U = std::remove_const_t<T>;
+		UniqueBuffer<U> ret = make_buffer_for_overwrite<U>(m_size);
 		for (size_t i = 0; i != m_size; ++i)
 			ret[i] = m_data[i];
 		return ret;
@@ -427,15 +531,18 @@ private:
 	size_t m_size = 0;
 };
 
+template <typename T>
+using ConstView = View<const T>;
+
 
 template <typename T>
-UniqueBuffer<T> SharedBuffer<T>::copy() const
+UniqueBuffer<std::remove_const_t<T>> SharedBuffer<T>::copy() const
 {
 	return static_cast<View<T>>(*this).copy();
 }
 
 template <typename T>
-UniqueBuffer<T> UniqueBuffer<T>::copy() const
+UniqueBuffer<std::remove_const_t<T>> UniqueBuffer<T>::copy() const
 {
 	return static_cast<View<T>>(*this).copy();
 }

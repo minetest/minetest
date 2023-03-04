@@ -33,6 +33,15 @@ public:
 	void testUniqueBuffer();
 	void testSharedBuffer();
 	void testView();
+	void testConstView();
+
+private:
+	struct A {
+		int a;
+		int b;
+		A() = default;
+		A(int x, int y) : a(x), b(y) {}
+	};
 };
 
 static TestPointer g_test_instance;
@@ -42,19 +51,13 @@ void TestPointer::runTests(IGameDef *gamedef)
 	TEST(testUniqueBuffer);
 	TEST(testSharedBuffer);
 	TEST(testView);
+	TEST(testConstView);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestPointer::testUniqueBuffer()
 {
-	struct A {
-		int a;
-		int b;
-		A() = default;
-		A(int x, int y) : a(x), b(y) {}
-	};
-
 	UniqueBuffer<A> ubuf1 = make_buffer<A>(12);
 	UniqueBuffer<A> ubuf2 = make_buffer_for_overwrite<A>(42);
 	UniqueBuffer<A> ubuf3;
@@ -94,13 +97,6 @@ void TestPointer::testUniqueBuffer()
 
 void TestPointer::testSharedBuffer()
 {
-	struct A {
-		int a;
-		int b;
-		A() = default;
-		A(int x, int y) : a(x), b(y) {}
-	};
-
 	UniqueBuffer<A> ubuf1 = make_buffer<A>(14);
 	SharedBuffer<A> sbuf1 = make_buffer<A>(13);
 	SharedBuffer<A> sbuf2 = make_buffer_for_overwrite<A>(42);
@@ -144,13 +140,6 @@ void TestPointer::testSharedBuffer()
 
 void TestPointer::testView()
 {
-	struct A {
-		int a;
-		int b;
-		A() = default;
-		A(int x, int y) : a(x), b(y) {}
-	};
-
 	std::array<A, 4> arr1;
 	UniqueBuffer<A> ubuf1 = make_buffer<A>(13);
 	UniqueBuffer<A> ubuf2;
@@ -166,6 +155,8 @@ void TestPointer::testView()
 	View<A> v8 = {arr1.data(), 1};
 	View<A> v9 = {arr1.data(), 0};
 	View<A> v10 = ubuf2;
+	View<A> v11 = v3;
+	View<A> v12 = std::move(v3);
 	v7.at(13);
 	UASSERT(!v1);
 	UASSERT(v1.empty());
@@ -191,6 +182,19 @@ void TestPointer::testView()
 	UASSERT(v9);
 	UASSERT(!v10);
 	UASSERT(v10.size() == 0);
+	UASSERT(v11.get() == arr1.data());
+	UASSERT(v11.size() == 4);
+	UASSERT(v12.get() == arr1.data());
+	UASSERT(v12.size() == 4);
+
+	v11 = v3;
+	v12 = std::move(v3);
+	UASSERT(v3.get() == arr1.data());
+	UASSERT(v3.size() == 4);
+	UASSERT(v11.get() == arr1.data());
+	UASSERT(v11.size() == 4);
+	UASSERT(v12.get() == arr1.data());
+	UASSERT(v12.size() == 4);
 
 	v6.reset();
 	v7.reset(arr1.data(), 2);
@@ -206,4 +210,21 @@ void TestPointer::testView()
 	UASSERT(v8.size() == 0);
 	UASSERT(ubuf2);
 	UASSERT(ubuf2.size() == 4);
+}
+
+void TestPointer::testConstView()
+{
+	UniqueBuffer<A> ubuf1 = make_buffer<A>(13);
+	UniqueBuffer<A> ubuf2;
+	UniqueBuffer<const A> cubuf1 = make_buffer<A>(14);
+	SharedBuffer<A> sbuf1 = make_buffer<A>(15);
+	SharedBuffer<const A> csbuf1;
+	View<A> v1 = ubuf1;
+	ConstView<A> cv1 = v1;
+	UASSERT(v1.get() == cv1.get());
+
+	ubuf2 = cv1.copy();
+	csbuf1 = sbuf1;
+	UASSERT(ubuf2);
+	UASSERT(csbuf1.get() == sbuf1.get());
 }
