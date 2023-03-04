@@ -416,7 +416,7 @@ core.register_chatcommand("revokeme", {
 
 core.register_chatcommand("setpassword", {
 	params = S("<name> <password>"),
-	description = S("Set player's password"),
+	description = S("Set player's password (sent unencrypted, thus insecure)"),
 	privs = {password=true},
 	func = function(name, param)
 		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")

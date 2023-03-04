@@ -37,10 +37,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
-	m_client(client),
-	m_use_shaders(use_shaders),
 	m_mesh_grid(client->getMeshGrid()),
-	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size)
+	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size),
+	m_client(client),
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
@@ -1395,14 +1395,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 MapBlockMesh::~MapBlockMesh()
 {
 	for (scene::IMesh *m : m_mesh) {
-#if IRRLICHT_VERSION_MT_REVISION < 5
-		if (m_enable_vbo) {
-			for (u32 i = 0; i < m->getMeshBufferCount(); i++) {
-				scene::IMeshBuffer *buf = m->getMeshBuffer(i);
-				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
-			}
-		}
-#endif
 		m->drop();
 	}
 	for (MinimapMapblock *block : m_minimap_mapblocks)

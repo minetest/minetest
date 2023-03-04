@@ -923,7 +923,7 @@ void Client::ReceiveAll()
 {
 	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	const u64 budget = 100;
+	const u64 budget = 10;
 	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
@@ -1411,6 +1411,17 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 	pkt << static_cast<u8>(tokens.size());
 	for (u32 token : tokens)
 		pkt << token;
+
+	Send(&pkt);
+}
+
+void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
+{
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*2);
+	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
+	pkt << info.real_gui_scaling;
+	pkt << info.real_hud_scaling;
+	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
 
 	Send(&pkt);
 }

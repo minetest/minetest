@@ -978,9 +978,10 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	std::vector<DrawDescriptor> draw_order;
 
 
-	int count = 0;
-	int low_bound = is_transparent_pass ? 0 : m_drawlist_shadow.size() / total_frames * frame;
-	int high_bound = is_transparent_pass ? m_drawlist_shadow.size() : m_drawlist_shadow.size() / total_frames * (frame + 1);
+	std::size_t count = 0;
+	std::size_t meshes_per_frame = m_drawlist_shadow.size() / total_frames + 1;
+	std::size_t low_bound = is_transparent_pass ? 0 : meshes_per_frame * frame;
+	std::size_t high_bound = is_transparent_pass ? m_drawlist_shadow.size() : meshes_per_frame * (frame + 1);
 
 	// transparent pass should be rendered in one go
 	if (is_transparent_pass && frame != total_frames - 1) {
@@ -1121,6 +1122,9 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
 
+	std::set<v3s16> shortlist;
+	MeshGrid mesh_grid = m_client->getMeshGrid();
+
 	for (auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
 		if (!sector)
@@ -1134,8 +1138,8 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			Loop through blocks in sector
 		*/
 		for (MapBlock *block : sectorblocks) {
-			if (!block->mesh) {
-				// Ignore if mesh doesn't exist
+			if (mesh_grid.cell_size == 1 && !block->mesh) {
+				// fast out in the case of no mesh chunking
 				continue;
 			}
 
@@ -1143,6 +1147,17 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
 			if (projection.getDistanceFrom(block_pos) > radius)
 				continue;
+
+			if (mesh_grid.cell_size > 1) {
+				// Block meshes are stored in the corner block of a chunk
+				// (where all coordinate are divisible by the chunk size)
+				// Add them to the de-dup set.
+				shortlist.emplace(mesh_grid.getMeshPos(block->getPos()));
+			}
+			if (!block->mesh) {
+				// Ignore if mesh doesn't exist
+				continue;
+			}
 
 			blocks_in_range_with_mesh++;
 
@@ -1153,6 +1168,12 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			if (m_drawlist_shadow.emplace(block->getPos(), block).second) {
 				block->refGrab();
 			}
+		}
+	}
+	for (auto pos : shortlist) {
+		MapBlock * block = getBlockNoCreateNoEx(pos);
+		if (block && block->mesh && m_drawlist_shadow.emplace(pos, block).second) {
+			block->refGrab();
 		}
 	}
 
