@@ -59,7 +59,7 @@ u16 BufferedPacket::getSeqnum() const
 	return readU16(&data[BASE_HEADER_SIZE + 1]);
 }
 
-BufferedPacketPtr makePacket(Address &address, View<u8> data,
+BufferedPacketPtr makePacket(Address &address, ConstView<u8> data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.size() + BASE_HEADER_SIZE;
@@ -76,7 +76,7 @@ BufferedPacketPtr makePacket(Address &address, View<u8> data,
 	return p;
 }
 
-SharedBuffer<u8> makeOriginalPacket(View<u8> data)
+SharedBuffer<u8> makeOriginalPacket(ConstView<u8> data)
 {
 	u32 header_size = 1;
 	u32 packet_size = data.size() + header_size;
@@ -90,7 +90,7 @@ SharedBuffer<u8> makeOriginalPacket(View<u8> data)
 }
 
 // Split data in chunks and add TYPE_SPLIT headers to them
-void makeSplitPacket(View<u8> data, u32 chunksize_max, u16 seqnum,
+void makeSplitPacket(ConstView<u8> data, u32 chunksize_max, u16 seqnum,
 		std::list<SharedBuffer<u8>> *chunks)
 {
 	// Chunk packets, containing the TYPE_SPLIT header
@@ -130,7 +130,7 @@ void makeSplitPacket(View<u8> data, u32 chunksize_max, u16 seqnum,
 	}
 }
 
-void makeAutoSplitPacket(View<u8> data, u32 chunksize_max,
+void makeAutoSplitPacket(ConstView<u8> data, u32 chunksize_max,
 		u16 &split_seqnum, std::list<SharedBuffer<u8>> *list)
 {
 	u32 original_header_size = 1;
@@ -144,7 +144,7 @@ void makeAutoSplitPacket(View<u8> data, u32 chunksize_max,
 	list->push_back(makeOriginalPacket(data));
 }
 
-SharedBuffer<u8> makeReliablePacket(View<u8> data, u16 seqnum)
+SharedBuffer<u8> makeReliablePacket(ConstView<u8> data, u16 seqnum)
 {
 	u32 header_size = 3;
 	u32 packet_size = data.size() + header_size;

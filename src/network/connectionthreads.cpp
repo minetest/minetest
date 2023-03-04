@@ -304,7 +304,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacketPtr &p, Channel *c
 }
 
 bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
-		View<u8> data, bool reliable)
+		ConstView<u8> data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
@@ -544,7 +544,7 @@ void ConnectionSendThread::disconnect_peer(session_t peer_id)
 	dynamic_cast<UDPPeer *>(&peer)->m_pending_disconnect = true;
 }
 
-void ConnectionSendThread::send(session_t peer_id, u8 channelnum, View<u8> data)
+void ConnectionSendThread::send(session_t peer_id, u8 channelnum, ConstView<u8> data)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
@@ -584,7 +584,7 @@ void ConnectionSendThread::sendReliable(ConnectionCommandPtr &c)
 	peer->PutReliableSendCommand(c, m_max_packet_size);
 }
 
-void ConnectionSendThread::sendToAll(u8 channelnum, View<u8> data)
+void ConnectionSendThread::sendToAll(u8 channelnum, ConstView<u8> data)
 {
 	std::vector<session_t> peerids = m_connection->getPeerIDs();
 

@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 template <typename T>
 class View;
+template <typename T>
+using ConstView = View<const T>;
 
 /*
 	Map format serialization version
@@ -97,7 +99,7 @@ void compressZstd(const std::string &data, std::ostream &os, int level = 0);
 void decompressZstd(std::istream &is, std::ostream &os);
 
 // These choose between zlib and a self-made one according to version
-void compress(View<u8> data, std::ostream &os, u8 version, int level = -1);
+void compress(ConstView<u8> data, std::ostream &os, u8 version, int level = -1);
 void compress(const std::string &data, std::ostream &os, u8 version, int level = -1);
-void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level = -1);
+void compress(const u8 *data, u32 size, std::ostream &os, u8 version, int level = -1);
 void decompress(std::istream &is, std::ostream &os, u8 version);

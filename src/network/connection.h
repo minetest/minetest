@@ -211,16 +211,16 @@ typedef std::shared_ptr<BufferedPacket> BufferedPacketPtr;
 
 
 // This adds the base headers to the data and makes a packet out of it
-BufferedPacketPtr makePacket(Address &address, View<u8> data,
+BufferedPacketPtr makePacket(Address &address, ConstView<u8> data,
 		u32 protocol_id, session_t sender_peer_id, u8 channel);
 
 // Depending on size, make a TYPE_ORIGINAL or TYPE_SPLIT packet
 // Increments split_seqnum if a split packet is made
-void makeAutoSplitPacket(View<u8> data, u32 chunksize_max,
+void makeAutoSplitPacket(ConstView<u8> data, u32 chunksize_max,
 		u16 &split_seqnum, std::list<SharedBuffer<u8>> *list);
 
 // Add the TYPE_RELIABLE header to the data
-SharedBuffer<u8> makeReliablePacket(View<u8> data, u16 seqnum);
+SharedBuffer<u8> makeReliablePacket(ConstView<u8> data, u16 seqnum);
 
 struct IncomingSplitPacket
 {
