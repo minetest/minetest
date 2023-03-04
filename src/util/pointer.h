@@ -55,6 +55,10 @@ std::unique_ptr<T> make_unique_for_overwrite(size_t size)
  *
  * If you want to only read some buffer, but don't need ownership, use a View<T>
  * (or even better: View<const T>, but this might require more overloads).
+ *
+ * Note that const buffer smart-ptrs do not necessarily have const data, i.e.
+ * `const UniqueBuffer<const T>` is similar to `const std::vector<T>`, not
+ * `const UniqueBuffer<T>`.
  */
 
 
@@ -207,34 +211,50 @@ template <typename T>
 class SharedBuffer
 {
 public:
-	SharedBuffer() :
-		m_data(nullptr), m_size(0), m_refcount(new unsigned int)
-	{
-		*m_refcount = 1;
-	}
+	constexpr SharedBuffer() noexcept = default;
+
+	constexpr SharedBuffer(std::nullptr_t) noexcept {}
 
 	SharedBuffer(UniqueBuffer<T> &&buffer) :
-			m_size(buffer.size()), m_refcount(new unsigned int)
+			m_size(buffer.size()), m_refcount(nullptr)
 	{
 		m_data = buffer.release().release();
-		(*m_refcount) = 1;
+		if (m_data) {
+			m_refcount = new unsigned int;
+			*m_refcount = 1;
+		}
+	}
+
+	constexpr SharedBuffer(SharedBuffer &&buffer) noexcept
+	{
+		swap(buffer);
 	}
 
 	constexpr SharedBuffer(const SharedBuffer &buffer) noexcept :
 		m_data(buffer.m_data), m_size(buffer.m_size), m_refcount(buffer.m_refcount)
 	{
-		*m_refcount += 1;
+		if (m_refcount)
+			*m_refcount += 1;
 	}
 
-	constexpr SharedBuffer &operator=(UniqueBuffer<T> &buffer)
+	SharedBuffer &operator=(std::nullptr_t)
+	{
+		reset();
+		return *this;
+	}
+
+	SharedBuffer &operator=(UniqueBuffer<T> &&buffer)
+	{
+		*this = SharedBuffer(std::move(buffer));
+		return *this;
+	}
+
+	constexpr SharedBuffer &operator=(SharedBuffer &&buffer) noexcept
 	{
 		if (this == &buffer)
 			return *this;
-		drop();
-		m_size = buffer.size();
-		m_data = buffer.release().release();
-		m_refcount = new unsigned int;
-		*m_refcount = 1;
+		reset();
+		swap(buffer);
 		return *this;
 	}
 
@@ -242,17 +262,26 @@ public:
 	{
 		if (this == &buffer)
 			return *this;
-		drop();
+		reset();
 		m_data = buffer.m_data;
 		m_size = buffer.m_size;
 		m_refcount = buffer.m_refcount;
-		*m_refcount += 1;
+		if (m_refcount)
+			*m_refcount += 1;
 		return *this;
 	}
 
 	~SharedBuffer()
 	{
 		drop();
+	}
+
+	constexpr void reset(std::nullptr_t = nullptr) noexcept
+	{
+		drop();
+		m_data = nullptr;
+		m_size = 0;
+		m_refcount = nullptr;
 	}
 
 	constexpr void swap(SharedBuffer &buffer) noexcept
@@ -264,7 +293,6 @@ public:
 
 	constexpr T &operator[](size_t i) const noexcept
 	{
-		assert(i < m_size);
 		return m_data[i];
 	}
 
@@ -274,19 +302,36 @@ public:
 
 	UniqueBuffer<T> moveOut()
 	{
-		SANITY_CHECK(*m_refcount == 1);
+		SANITY_CHECK(m_refcount && *m_refcount == 1);
 		size_t size = m_size;
-		auto data = std::unique_ptr<T>(m_data);
+		auto data = std::unique_ptr<T[]>(m_data);
+		delete m_refcount;
 		m_size = 0;
 		m_data = nullptr;
+		m_refcount = nullptr;
 		return UniqueBuffer<T>(std::move(data), size);
 	}
 
 	UniqueBuffer<T> copy() const;
 
+	UniqueBuffer<T> moveOrCopyOut()
+	{
+		if (!m_refcount) {
+			return UniqueBuffer<T>();
+		} else if (*m_refcount == 1) {
+			return moveOut();
+		} else {
+			UniqueBuffer<T> ret = copy();
+			reset();
+			return ret;
+		}
+	}
+
 private:
 	void drop()
 	{
+		if (!m_refcount)
+			return;
 		assert((*m_refcount) > 0);
 		*m_refcount -= 1;
 		if (*m_refcount == 0) {
@@ -294,9 +339,11 @@ private:
 			delete m_refcount;
 		}
 	}
-	T *m_data;
-	size_t m_size;
-	unsigned int *m_refcount;
+
+	// values for an unset SharedBuffer:
+	T *m_data = nullptr;
+	size_t m_size = 0;
+	unsigned int *m_refcount = nullptr;
 };
 
 template <typename T>

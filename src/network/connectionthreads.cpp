@@ -982,8 +982,8 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		try {
 			// Process it (the result is some data with no headers made by us)
-			SharedBuffer<u8> resultdata = processPacket
-				(channel, strippeddata, peer_id, channelnum, false);
+			SharedBuffer<u8> resultdata =
+					processPacket(channel, strippeddata, peer_id, channelnum, false);
 
 			LOG(dout_con << m_connection->getDesc()
 				<< " ProcessPacket from peer_id: " << peer_id
@@ -991,7 +991,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 				<< resultdata.size() << " bytes" << std::endl);
 
 			m_connection->putEvent(ConnectionEvent::dataReceived(peer_id,
-					resultdata.copy()));
+					resultdata.moveOrCopyOut()));
 		}
 		catch (ProcessedSilentlyException &e) {
 		}
