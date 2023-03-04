@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // For assert()
 #include <cstring>
 #include <memory>
+#include <sstream>
 #include <type_traits>
 
 
@@ -86,16 +87,14 @@ public:
 	{
 		if (&other == this)
 			return *this;
-		m_data = std::move(other.m_data);
-		m_size = other.m_size;
-		other.m_size = 0;
+		reset();
+		swap(other);
 		return *this;
 	}
 
 	constexpr UniqueBuffer &operator=(std::nullptr_t) noexcept
 	{
-		m_data = nullptr;
-		m_size = 0;
+		reset();
 	}
 
 	constexpr std::unique_ptr<T[]> release() noexcept
@@ -106,11 +105,11 @@ public:
 
 	constexpr void reset(std::unique_ptr<T[]> data, size_t size) noexcept
 	{
-		m_data = data;
+		m_data = std::move(data);
 		m_size = size;
 	}
 
-	constexpr void reset(std::nullptr_t) noexcept
+	constexpr void reset(std::nullptr_t = nullptr) noexcept
 	{
 		m_size = 0;
 		m_data = nullptr;
@@ -126,7 +125,17 @@ public:
 
 	explicit constexpr operator bool() const noexcept { return (bool)m_data; }
 
-	constexpr T &operator[](size_t i) const { return m_data[i]; }
+	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
+
+	constexpr T &at(size_t i) const
+	{
+		if (i >= m_size) {
+			std::ostringstream os;
+			os << "UniqueBuffer::at: i (" << i << ") >= m_size (" << m_size << ")";
+			throw std::out_of_range(os.str());
+		}
+		return m_data[i];
+	}
 
 	void copyTo(UniqueBuffer &other) const
 	{
@@ -140,6 +149,8 @@ public:
 	UniqueBuffer copy() const;
 
 	constexpr size_t size() const noexcept { return m_size; }
+
+	constexpr size_t empty() const noexcept { return m_size == 0; }
 
 private:
 	std::unique_ptr<T[]> m_data = nullptr;
@@ -164,37 +175,6 @@ constexpr UniqueBuffer<T> make_buffer_for_overwrite(size_t size)
 {
 	return size == 0 ? UniqueBuffer<T>() :
 			UniqueBuffer<T>(make_unique_for_overwrite<T[]>(size), size);
-}
-
-template <typename T, typename U>
-constexpr bool operator==(const UniqueBuffer<T> &a, const UniqueBuffer<U> &b) noexcept
-{
-	return a.get() == b.get();
-}
-template <typename T, typename U>
-constexpr bool operator!=(const UniqueBuffer<T> &a, const UniqueBuffer<U> &b) noexcept
-{
-	return a.get() != b.get();
-}
-template <typename T>
-constexpr bool operator==(const UniqueBuffer<T> &a, std::nullptr_t) noexcept
-{
-	return (bool)a;
-}
-template <typename T>
-constexpr bool operator==(std::nullptr_t, const UniqueBuffer<T> &a) noexcept
-{
-	return (bool)a;
-}
-template <typename T>
-constexpr bool operator!=(const UniqueBuffer<T> &a, std::nullptr_t) noexcept
-{
-	return !a;
-}
-template <typename T>
-constexpr bool operator!=(std::nullptr_t, const UniqueBuffer<T> &a) noexcept
-{
-	return !a;
 }
 
 
@@ -291,14 +271,25 @@ public:
 		std::swap(m_refcount, buffer.m_refcount);
 	}
 
-	constexpr T &operator[](size_t i) const noexcept
+	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
+
+	constexpr T &at(size_t i) const
 	{
+		if (i >= m_size) {
+			std::ostringstream os;
+			os << "SharedBuffer::at: i (" << i << ") >= m_size (" << m_size << ")";
+			throw std::out_of_range(os.str());
+		}
 		return m_data[i];
 	}
 
 	constexpr T *get() const noexcept { return m_data; }
 
 	constexpr size_t size() const noexcept { return m_size; }
+
+	explicit constexpr operator bool() { return (bool)m_refcount; }
+
+	constexpr size_t empty() const noexcept { return m_size == 0; }
 
 	UniqueBuffer<T> moveOut()
 	{
@@ -377,8 +368,8 @@ public:
 	constexpr T *begin() const noexcept { return m_data; }
 	constexpr T *end() const noexcept { return m_data + m_size; }
 
-	constexpr const T *cbegin() const noexcept { return m_data; }
-	constexpr const T *cend() const noexcept { return m_data + m_size; }
+	constexpr const T *cbegin() const noexcept { return begin(); }
+	constexpr const T *cend() const noexcept { return end(); }
 
 	constexpr T *get() const noexcept { return m_data; }
 
@@ -387,14 +378,24 @@ public:
 	// Returns whether the View is set to something (but it can be empty).
 	explicit constexpr operator bool() const noexcept { return (bool)m_data; }
 
-	constexpr bool empty() const noexcept { return m_size != 0; }
+	constexpr bool empty() const noexcept { return m_size == 0; }
 
 	constexpr T &operator[](size_t i) const noexcept { return m_data[i]; }
+
+	constexpr T &at(size_t i) const
+	{
+		if (i >= m_size) {
+			std::ostringstream os;
+			os << "View::at: i (" << i << ") >= m_size (" << m_size << ")";
+			throw std::out_of_range(os.str());
+		}
+		return m_data[i];
+	}
 
 	constexpr T &front() const noexcept { return m_data[0]; }
 	constexpr T &back() const noexcept { return m_data[m_size - 1]; }
 
-	constexpr void reset(std::nullptr_t) noexcept
+	constexpr void reset(std::nullptr_t = nullptr) noexcept
 	{
 		m_data = nullptr;
 		m_size = 0;
