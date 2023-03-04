@@ -100,7 +100,15 @@ local function load_texture_packs(txtpath, retval)
 	end
 end
 
-function get_mods(path, virtual_path, retval, modpack)
+--modmanager implementation
+pkgmgr = {}
+
+--- Scans a directory recursively for mods and adds them to `listing`
+-- @param path         Absolute directory path to scan recursively
+-- @param virtual_path Prettified unique path (e.g. "mods", "mods/mt_modpack")
+-- @param listing      Input. Flat array to insert located mods and modpacks
+-- @param modpack      Currently processing modpack or nil/"" if none (recursion)
+function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 	local mods = core.get_dir_list(path, true)
 
 	for _, name in ipairs(mods) do
@@ -111,7 +119,7 @@ function get_mods(path, virtual_path, retval, modpack)
 				dir_name = name,
 				parent_dir = path,
 			}
-			retval[#retval + 1] = toadd
+			listing[#listing + 1] = toadd
 
 			-- Get config file
 			local mod_conf
@@ -156,14 +164,18 @@ function get_mods(path, virtual_path, retval, modpack)
 			elseif toadd.is_modpack then
 				toadd.type = "modpack"
 				toadd.is_modpack = true
-				get_mods(mod_path, mod_virtual_path, retval, name)
+				pkgmgr.get_mods(mod_path, mod_virtual_path, listing, name)
 			end
 		end
 	end
-end
 
---modmanager implementation
-pkgmgr = {}
+	if not modpack then
+		-- Sort all when the recursion is done
+		table.sort(listing, function(a, b)
+			return a.virtual_path:lower() < b.virtual_path:lower()
+		end)
+	end
+end
 
 function pkgmgr.get_texture_packs()
 	local txtpath = core.get_texturepath()
@@ -177,7 +189,7 @@ function pkgmgr.get_texture_packs()
 	end
 
 	table.sort(retval, function(a, b)
-		return a.name > b.name
+		return a.title:lower() < b.title:lower()
 	end)
 
 	return retval
@@ -243,101 +255,12 @@ function pkgmgr.get_base_folder(temppath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.isValidModname(modpath)
-	if modpath:find("-") ~= nil then
-		return false
-	end
-
-	return true
+function pkgmgr.is_valid_modname(modpath)
+	return modpath:match("[^a-z0-9_]") == nil
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.parse_register_line(line)
-	local pos1 = line:find("\"")
-	local pos2 = nil
-	if pos1 ~= nil then
-		pos2 = line:find("\"",pos1+1)
-	end
-
-	if pos1 ~= nil and pos2 ~= nil then
-		local item = line:sub(pos1+1,pos2-1)
-
-		if item ~= nil and
-			item ~= "" then
-			local pos3 = item:find(":")
-
-			if pos3 ~= nil then
-				local retval = item:sub(1,pos3-1)
-				if retval ~= nil and
-					retval ~= "" then
-					return retval
-				end
-			end
-		end
-	end
-	return nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.parse_dofile_line(modpath,line)
-	local pos1 = line:find("\"")
-	local pos2 = nil
-	if pos1 ~= nil then
-		pos2 = line:find("\"",pos1+1)
-	end
-
-	if pos1 ~= nil and pos2 ~= nil then
-		local filename = line:sub(pos1+1,pos2-1)
-
-		if filename ~= nil and
-			filename ~= "" and
-			filename:find(".lua") then
-			return pkgmgr.identify_modname(modpath,filename)
-		end
-	end
-	return nil
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.identify_modname(modpath,filename)
-	local testfile = io.open(modpath .. DIR_DELIM .. filename,"r")
-	if testfile ~= nil then
-		local line = testfile:read()
-
-		while line~= nil do
-			local modname = nil
-
-			if line:find("minetest.register_tool") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-			if line:find("minetest.register_craftitem") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-
-			if line:find("minetest.register_node") then
-				modname = pkgmgr.parse_register_line(line)
-			end
-
-			if line:find("dofile") then
-				modname = pkgmgr.parse_dofile_line(modpath,line)
-			end
-
-			if modname ~= nil then
-				testfile:close()
-				return modname
-			end
-
-			line = testfile:read()
-		end
-		testfile:close()
-	end
-
-	return nil
-end
---------------------------------------------------------------------------------
-function pkgmgr.render_packagelist(render_list, use_technical_names)
+function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 	if not render_list then
 		if not pkgmgr.global_mods then
 			pkgmgr.refresh_globals()
@@ -349,22 +272,57 @@ function pkgmgr.render_packagelist(render_list, use_technical_names)
 	local retval = {}
 	for i, v in ipairs(list) do
 		local color = ""
+		local icon = 0
+		local error = with_error and with_error[v.virtual_path]
+		local function update_error(val)
+			if val and (not error or (error.type == "warning" and val.type == "error")) then
+				error = val
+			end
+		end
+
 		if v.is_modpack then
 			local rawlist = render_list:get_raw_list()
 			color = mt_color_dark_green
 
-			for j = 1, #rawlist, 1 do
-				if rawlist[j].modpack == list[i].name and
-						not rawlist[j].enabled then
-					-- Modpack not entirely enabled so showing as grey
-					color = mt_color_grey
-					break
+			for j = 1, #rawlist do
+				if rawlist[j].modpack == list[i].name then
+					if with_error then
+						update_error(with_error[rawlist[j].virtual_path])
+					end
+
+					if rawlist[j].enabled then
+						icon = 1
+					else
+						-- Modpack not entirely enabled so showing as grey
+						color = mt_color_grey
+					end
 				end
 			end
 		elseif v.is_game_content or v.type == "game" then
+			icon = 1
 			color = mt_color_blue
+
+			local rawlist = render_list:get_raw_list()
+			if v.type == "game" and with_error then
+				for j = 1, #rawlist do
+					if rawlist[j].is_game_content then
+						update_error(with_error[rawlist[j].virtual_path])
+					end
+				end
+			end
 		elseif v.enabled or v.type == "txp" then
+			icon = 1
 			color = mt_color_green
+		end
+
+		if error then
+			if error.type == "warning" then
+				color = mt_color_orange
+				icon = 2
+			else
+				color = mt_color_red
+				icon = 3
+			end
 		end
 
 		retval[#retval + 1] = color
@@ -372,6 +330,10 @@ function pkgmgr.render_packagelist(render_list, use_technical_names)
 			retval[#retval + 1] = "1"
 		else
 			retval[#retval + 1] = "0"
+		end
+
+		if with_error then
+			retval[#retval + 1] = icon
 		end
 
 		if use_technical_names then
@@ -503,7 +465,7 @@ function pkgmgr.enable_mod(this, toset)
 			if not mod_to_enable then
 				core.log("warning", "Mod dependency \"" .. name ..
 					"\" not found!")
-			else
+			elseif not mod_to_enable.is_game_content then
 				if not mod_to_enable.enabled then
 					mod_to_enable.enabled = true
 					toggled_mods[#toggled_mods+1] = mod_to_enable.name
@@ -558,22 +520,28 @@ function pkgmgr.get_worldconfig(worldpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.install_dir(type, path, basename, targetpath)
+function pkgmgr.install_dir(expected_type, path, basename, targetpath)
+	assert(type(expected_type) == "string")
+	assert(type(path) == "string")
+	assert(basename == nil or type(basename) == "string")
+	assert(targetpath == nil or type(targetpath) == "string")
+
 	local basefolder = pkgmgr.get_base_folder(path)
 
-	-- There's no good way to detect a texture pack, so let's just assume
-	-- it's correct for now.
-	if type == "txp" then
+	if expected_type == "txp" then
+		assert(basename)
+
+		-- There's no good way to detect a texture pack, so let's just assume
+		-- it's correct for now.
 		if basefolder and basefolder.type ~= "invalid" and basefolder.type ~= "txp" then
 			return nil, fgettext("Unable to install a $1 as a texture pack", basefolder.type)
 		end
 
 		local from = basefolder and basefolder.path or path
-		if targetpath then
-			core.delete_dir(targetpath)
-		else
+		if not targetpath then
 			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
 		end
+		core.delete_dir(targetpath)
 		if not core.copy_dir(from, targetpath, false) then
 			return nil,
 				fgettext("Failed to install $1 to $2", basename, targetpath)
@@ -581,76 +549,38 @@ function pkgmgr.install_dir(type, path, basename, targetpath)
 		return targetpath, nil
 
 	elseif not basefolder then
-		return nil, fgettext("Unable to find a valid mod or modpack")
+		return nil, fgettext("Unable to find a valid mod, modpack, or game")
 	end
 
-	--
-	-- Get destination
-	--
-	if basefolder.type == "modpack" then
-		if type ~= "mod" then
-			return nil, fgettext("Unable to install a modpack as a $1", type)
-		end
+	-- Check type
+	if basefolder.type ~= expected_type and (basefolder.type ~= "modpack" or expected_type ~= "mod") then
+		return nil, fgettext("Unable to install a $1 as a $2", basefolder.type, expected_type)
+	end
 
-		-- Get destination name for modpack
-		if targetpath then
-			core.delete_dir(targetpath)
+	-- Set targetpath if not predetermined
+	if not targetpath then
+		local content_path
+		if basefolder.type == "modpack" or basefolder.type == "mod" then
+			if not basename then
+				basename = get_last_folder(cleanup_path(basefolder.path))
+			end
+			content_path = core.get_modpath()
+		elseif basefolder.type == "game" then
+			content_path = core.get_gamepath()
 		else
-			local clean_path = nil
-			if basename ~= nil then
-				clean_path = basename
-			end
-			if not clean_path then
-				clean_path = get_last_folder(cleanup_path(basefolder.path))
-			end
-			if clean_path then
-				targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
-			else
-				return nil,
-					fgettext("Install Mod: Unable to find suitable folder name for modpack $1",
-					path)
-			end
-		end
-	elseif basefolder.type == "mod" then
-		if type ~= "mod" then
-			return nil, fgettext("Unable to install a mod as a $1", type)
+			error("Unknown content type")
 		end
 
-		if targetpath then
-			core.delete_dir(targetpath)
+		if basename and (basefolder.type ~= "mod" or pkgmgr.is_valid_modname(basename)) then
+			targetpath = content_path .. DIR_DELIM .. basename
 		else
-			local targetfolder = basename
-			if targetfolder == nil then
-				targetfolder = pkgmgr.identify_modname(basefolder.path, "init.lua")
-			end
-
-			-- If heuristic failed try to use current foldername
-			if targetfolder == nil then
-				targetfolder = get_last_folder(basefolder.path)
-			end
-
-			if targetfolder ~= nil and pkgmgr.isValidModname(targetfolder) then
-				targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
-			else
-				return nil, fgettext("Install Mod: Unable to find real mod name for: $1", path)
-			end
+			return nil,
+				fgettext("Install: Unable to find suitable folder name for $1", path)
 		end
-
-	elseif basefolder.type == "game" then
-		if type ~= "game" then
-			return nil, fgettext("Unable to install a game as a $1", type)
-		end
-
-		if targetpath then
-			core.delete_dir(targetpath)
-		else
-			targetpath = core.get_gamepath() .. DIR_DELIM .. basename
-		end
-	else
-		error("basefolder didn't return a recognised type, this shouldn't happen")
 	end
 
 	-- Copy it
+	core.delete_dir(targetpath)
 	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
 			fgettext("Failed to install $1 to $2", basename, targetpath)
@@ -675,7 +605,7 @@ function pkgmgr.preparemodlist(data)
 	--read global mods
 	local modpaths = core.get_modpaths()
 	for key, modpath in pairs(modpaths) do
-		get_mods(modpath, key, global_mods)
+		pkgmgr.get_mods(modpath, key, global_mods)
 	end
 
 	for i=1,#global_mods,1 do
@@ -783,35 +713,6 @@ function pkgmgr.comparemod(elem1,elem2)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.mod_exists(basename)
-
-	if pkgmgr.global_mods == nil then
-		pkgmgr.refresh_globals()
-	end
-
-	if pkgmgr.global_mods:raw_index_by_uid(basename) > 0 then
-		return true
-	end
-
-	return false
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_global_mod(idx)
-
-	if pkgmgr.global_mods == nil then
-		return nil
-	end
-
-	if idx == nil or idx < 1 or
-		idx > pkgmgr.global_mods:size() then
-		return nil
-	end
-
-	return pkgmgr.global_mods:get_list()[idx]
-end
-
---------------------------------------------------------------------------------
 function pkgmgr.refresh_globals()
 	local function is_equal(element,uid) --uid match
 		if element.name == uid then
@@ -826,9 +727,9 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.find_by_gameid(gameid)
-	for i=1,#pkgmgr.games,1 do
-		if pkgmgr.games[i].id == gameid then
-			return pkgmgr.games[i], i
+	for i, game in ipairs(pkgmgr.games) do
+		if game.id == gameid then
+			return game, i
 		end
 	end
 	return nil, nil
@@ -839,49 +740,16 @@ function pkgmgr.get_game_mods(gamespec, retval)
 	if gamespec ~= nil and
 		gamespec.gamemods_path ~= nil and
 		gamespec.gamemods_path ~= "" then
-		get_mods(gamespec.gamemods_path, ("games/%s/mods"):format(gamespec.id), retval)
+		pkgmgr.get_mods(gamespec.gamemods_path, ("games/%s/mods"):format(gamespec.id), retval)
 	end
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_game_modlist(gamespec)
-	local retval = ""
-	local game_mods = {}
-	pkgmgr.get_game_mods(gamespec, game_mods)
-	for i=1,#game_mods,1 do
-		if retval ~= "" then
-			retval = retval..","
-		end
-		retval = retval .. game_mods[i].name
-	end
-	return retval
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.get_game(index)
-	if index > 0 and index <= #pkgmgr.games then
-		return pkgmgr.games[index]
-	end
-
-	return nil
 end
 
 --------------------------------------------------------------------------------
 function pkgmgr.update_gamelist()
 	pkgmgr.games = core.get_games()
-end
-
---------------------------------------------------------------------------------
-function pkgmgr.gamelist()
-	local retval = ""
-	if #pkgmgr.games > 0 then
-		retval = retval .. core.formspec_escape(pkgmgr.games[1].title)
-
-		for i=2,#pkgmgr.games,1 do
-			retval = retval .. "," .. core.formspec_escape(pkgmgr.games[i].title)
-		end
-	end
-	return retval
+	table.sort(pkgmgr.games, function(a, b)
+		return a.title:lower() < b.title:lower()
+	end)
 end
 
 --------------------------------------------------------------------------------

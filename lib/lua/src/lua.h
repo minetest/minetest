@@ -113,6 +113,11 @@ LUA_API lua_State *(lua_newthread) (lua_State *L);
 
 LUA_API lua_CFunction (lua_atpanic) (lua_State *L, lua_CFunction panicf);
 
+/* MINETEST-SPECIFIC CHANGE: Let custom code wrap C function calls. */
+typedef int (*lua_CFunctionwrapper)(lua_State *L, lua_CFunction f);
+LUA_API lua_CFunctionwrapper (lua_atccall) (lua_State *L,
+                                            lua_CFunctionwrapper wrapf);
+
 
 /*
 ** basic stack manipulation

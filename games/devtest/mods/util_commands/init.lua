@@ -28,37 +28,11 @@ minetest.register_chatcommand("hp", {
 			return false, "No player."
 		end
 		local hp = tonumber(param)
-		if not hp then
+		if not hp or minetest.is_nan(hp) or hp < 0 or hp > 65535 then
 			return false, "Missing or incorrect hp parameter!"
 		end
 		player:set_hp(hp)
 		return true
-	end,
-})
-
-minetest.register_on_joinplayer(function(player)
-	player:set_properties({zoom_fov = 15})
-end)
-
-minetest.register_chatcommand("zoomfov", {
-	params = "[<FOV>]",
-	description = "Set or display your zoom_fov",
-	func = function(name, param)
-		local player = minetest.get_player_by_name(name)
-		if not player then
-			return false, "No player."
-		end
-		if param == "" then
-			local fov = player:get_properties().zoom_fov
-			return true, "zoom_fov = "..tostring(fov)
-		end
-		local fov = tonumber(param)
-		if not fov then
-			return false, "Missing or incorrect zoom_fov parameter!"
-		end
-		player:set_properties({zoom_fov = fov})
-		fov = player:get_properties().zoom_fov
-		return true, "zoom_fov = "..tostring(fov)
 	end,
 })
 
@@ -166,64 +140,6 @@ minetest.register_chatcommand("use_tool", {
 })
 
 
-
--- Use this to test waypoint capabilities
-minetest.register_chatcommand("test_waypoints", {
-	params = "[change_immediate]",
-	description = "tests waypoint capabilities",
-	func = function(name, params)
-		local player = minetest.get_player_by_name(name)
-		local regular = player:hud_add {
-			hud_elem_type = "waypoint",
-			name = "regular waypoint",
-			text = "m",
-			number = 0xFF0000,
-			world_pos = vector.add(player:get_pos(), {x = 0, y = 1.5, z = 0})
-		}
-		local reduced_precision = player:hud_add {
-			hud_elem_type = "waypoint",
-			name = "better waypoint",
-			text = "m (0.5 steps, precision = 2)",
-			precision = 10,
-			number = 0xFFFF00,
-			world_pos = vector.add(player:get_pos(), {x = 0, y = 1, z = 0})
-		}
-		local function change()
-			if regular then
-				player:hud_change(regular, "world_pos", vector.add(player:get_pos(), {x = 0, y = 3, z = 0}))
-			end
-			if reduced_precision then
-				player:hud_change(reduced_precision, "precision", 2)
-			end
-		end
-		if params ~= "" then
-			-- change immediate
-			change()
-		else
-			minetest.after(0.5, change)
-		end
-		regular = regular or "error"
-		reduced_precision = reduced_precision or "error"
-		local hidden_distance = player:hud_add {
-			hud_elem_type = "waypoint",
-			name = "waypoint with hidden distance",
-			text = "this text is hidden as well (precision = 0)",
-			precision = 0,
-			number = 0x0000FF,
-			world_pos = vector.add(player:get_pos(), {x = 0, y = 0.5, z = 0})
-		} or "error"
-		local image_waypoint = player:hud_add {
-			hud_elem_type = "image_waypoint",
-			text = "wieldhand.png",
-			world_pos = player:get_pos(),
-			scale = {x = 10, y = 10},
-			offset = {x = 0, y = -32}
-		} or "error"
-		minetest.chat_send_player(name, "Waypoint IDs: regular: " .. regular .. ", reduced precision: " .. reduced_precision ..
-			", hidden distance: " .. hidden_distance .. ", image waypoint: " .. image_waypoint)
-	end
-})
-
 -- Unlimited node placement
 minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack)
 	if placer and placer:is_player() then
@@ -294,16 +210,11 @@ minetest.register_chatcommand("dump_item", {
 	end,
 })
 
--- shadow control
-minetest.register_on_joinplayer(function (player)
-	player:set_lighting({shadows={intensity = 0.33}})
-end)
-
-core.register_chatcommand("set_shadow", {
-    params = "<shadow_intensity>",
-    description = "Set shadow parameters of current player.",
+core.register_chatcommand("set_saturation", {
+    params = "<saturation>",
+    description = "Set the saturation for current player.",
     func = function(player_name, param)
-        local shadow_intensity = tonumber(param)
-        minetest.get_player_by_name(player_name):set_lighting({shadows = { intensity = shadow_intensity} })
+        local saturation = tonumber(param)
+        minetest.get_player_by_name(player_name):set_lighting({saturation = saturation })
     end
 })

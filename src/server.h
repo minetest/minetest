@@ -96,30 +96,22 @@ struct MediaInfo
 	}
 };
 
-struct ServerSoundParams
+// Combines the pure sound (SimpleSoundSpec) with positional information
+struct ServerPlayingSound
 {
-	enum Type {
-		SSP_LOCAL,
-		SSP_POSITIONAL,
-		SSP_OBJECT
-	} type = SSP_LOCAL;
-	float gain = 1.0f;
-	float fade = 0.0f;
-	float pitch = 1.0f;
-	bool loop = false;
+	SoundLocation type = SoundLocation::Local;
+
+	float gain = 1.0f; // for amplification of the base sound
 	float max_hear_distance = 32 * BS;
 	v3f pos;
 	u16 object = 0;
-	std::string to_player = "";
-	std::string exclude_player = "";
+	std::string to_player;
+	std::string exclude_player;
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
-};
 
-struct ServerPlayingSound
-{
-	ServerSoundParams params;
 	SimpleSoundSpec spec;
+
 	std::unordered_set<session_t> clients; // peer ids
 };
 
@@ -165,7 +157,7 @@ public:
 	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
-	// Actual processing is done in an another thread.
+	// Actual processing is done in another thread.
 	void step(float dtime);
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
@@ -203,6 +195,7 @@ public:
 	void handleCommand_SrpBytesA(NetworkPacket* pkt);
 	void handleCommand_SrpBytesM(NetworkPacket* pkt);
 	void handleCommand_HaveMedia(NetworkPacket *pkt);
+	void handleCommand_UpdateClientInfo(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -236,8 +229,7 @@ public:
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
-	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params,
-			bool ephemeral=false);
+	s32 playSound(ServerPlayingSound &params, bool ephemeral=false);
 	void stopSound(s32 handle);
 	void fadeSound(s32 handle, float step, float gain);
 
@@ -285,7 +277,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
-	virtual ModMetadataDatabase *getModStorageDatabase() { return m_mod_storage_database; }
+	virtual ModStorageDatabase *getModStorageDatabase() { return m_mod_storage_database; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	NodeDefManager* getWritableNodeDefManager();
@@ -293,6 +285,7 @@ public:
 
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
+	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
 	virtual std::string getWorldPath() const { return m_path_world; }
 
@@ -349,11 +342,12 @@ public:
 	void DisconnectPeer(session_t peer_id);
 	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientInfo &ret);
+	const ClientDynamicInfo *getClientDynamicInfo(session_t peer_id);
 
 	void printToConsoleOnly(const std::string &text);
 
 	void HandlePlayerHPChange(PlayerSAO *sao, const PlayerHPChangeReason &reason);
-	void SendPlayerHP(PlayerSAO *sao);
+	void SendPlayerHP(PlayerSAO *sao, bool effect);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
@@ -366,9 +360,6 @@ public:
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
 
-	virtual bool registerModStorage(ModMetadata *storage);
-	virtual void unregisterModStorage(const std::string &name);
-
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
@@ -380,9 +371,9 @@ public:
 	// Get or load translations for a language
 	Translations *getTranslationLanguage(const std::string &lang_code);
 
-	static ModMetadataDatabase *openModStorageDatabase(const std::string &world_path);
+	static ModStorageDatabase *openModStorageDatabase(const std::string &world_path);
 
-	static ModMetadataDatabase *openModStorageDatabase(const std::string &backend,
+	static ModStorageDatabase *openModStorageDatabase(const std::string &backend,
 			const std::string &world_path, const Settings &world_mt);
 
 	static bool migrateModStorageDatabase(const GameParams &game_params,
@@ -439,7 +430,7 @@ private:
 	void init();
 
 	void SendMovement(session_t peer_id);
-	void SendHP(session_t peer_id, u16 hp);
+	void SendHP(session_t peer_id, u16 hp, bool effect);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
@@ -449,9 +440,6 @@ private:
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, const NodeDefManager *nodedef,
 		u16 protocol_version);
-
-	/* mark blocks not sent for all clients */
-	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);
@@ -491,6 +479,8 @@ private:
 	void sendAddNode(v3s16 p, MapNode n,
 			std::unordered_set<u16> *far_players = nullptr,
 			float far_d_nodes = 100, bool remove_metadata = true);
+	void sendNodeChangePkt(NetworkPacket &pkt, v3s16 block_pos,
+			v3f p, float far_d_nodes, std::unordered_set<u16> *far_players);
 
 	void sendMetadataChanged(const std::unordered_set<v3s16> &positions,
 			float far_d_nodes = 100);
@@ -704,8 +694,7 @@ private:
 	s32 m_next_sound_id = 0; // positive values only
 	s32 nextSoundId();
 
-	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
-	ModMetadataDatabase *m_mod_storage_database = nullptr;
+	ModStorageDatabase *m_mod_storage_database = nullptr;
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM restrictions byteflag

@@ -44,19 +44,27 @@ extern "C" {
 	Lua 5.1 / LuaJIT do not use any numeric indices (only string indices),
 	so we can use numeric indices freely.
 */
+enum {
 #ifdef LUA_RIDX_LAST
-#define CUSTOM_RIDX_BASE ((LUA_RIDX_LAST)+1)
+	CUSTOM_RIDX_BEFORE_ = LUA_RIDX_LAST,
 #else
-#define CUSTOM_RIDX_BASE 1
+	CUSTOM_RIDX_BEFORE_ = 0,
 #endif
 
-#define CUSTOM_RIDX_SCRIPTAPI           (CUSTOM_RIDX_BASE)
-#define CUSTOM_RIDX_GLOBALS_BACKUP      (CUSTOM_RIDX_BASE + 1)
-#define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
-#define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
-#define CUSTOM_RIDX_HTTP_API_LUA        (CUSTOM_RIDX_BASE + 4)
-#define CUSTOM_RIDX_VECTOR_METATABLE    (CUSTOM_RIDX_BASE + 5)
-#define CUSTOM_RIDX_METATABLE_MAP       (CUSTOM_RIDX_BASE + 6)
+	CUSTOM_RIDX_SCRIPTAPI,
+	CUSTOM_RIDX_GLOBALS_BACKUP,
+	CUSTOM_RIDX_CURRENT_MOD_NAME,
+	CUSTOM_RIDX_ERROR_HANDLER,
+	CUSTOM_RIDX_HTTP_API_LUA,
+	CUSTOM_RIDX_METATABLE_MAP,
+
+	// The following four functions are implemented in Lua because LuaJIT can
+	// trace them and optimize tables/string better than from the C API.
+	CUSTOM_RIDX_READ_VECTOR,
+	CUSTOM_RIDX_PUSH_VECTOR,
+	CUSTOM_RIDX_READ_NODE,
+	CUSTOM_RIDX_PUSH_NODE,
+};
 
 
 // Determine if CUSTOM_RIDX_SCRIPTAPI will hold a light or full userdata
@@ -70,7 +78,7 @@ extern "C" {
 
 // Pushes the error handler onto the stack and returns its index
 #define PUSH_ERROR_HANDLER(L) \
-	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
+	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER), lua_gettop((L)))
 
 #define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
@@ -113,6 +121,8 @@ enum RunCallbacksMode
 std::string script_get_backtrace(lua_State *L);
 // Wrapper for CFunction calls that converts C++ exceptions to Lua errors
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
+// Acts as the error handler for lua_pcall
+int script_error_handler(lua_State *L);
 // Takes an error from lua_pcall and throws it as a LuaError
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 

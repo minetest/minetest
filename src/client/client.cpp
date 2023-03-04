@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "mapsector.h"
 #include "minimap.h"
 #include "modchannels.h"
 #include "content/mods.h"
@@ -58,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "chatmessage.h"
 #include "translation.h"
+#include "content/mod_configuration.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -100,7 +102,8 @@ Client::Client(
 		MtEventManager *event,
 		RenderingEngine *rendering_engine,
 		bool ipv6,
-		GameUI *game_ui
+		GameUI *game_ui,
+		ELoginRegister allow_login_or_register
 ):
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
@@ -109,7 +112,7 @@ Client::Client(
 	m_sound(sound),
 	m_event(event),
 	m_rendering_engine(rendering_engine),
-	m_mesh_update_thread(this),
+	m_mesh_update_manager(this),
 	m_env(
 		new ClientMap(this, rendering_engine, control, 666),
 		tsrc, this
@@ -117,6 +120,7 @@ Client::Client(
 	m_particle_manager(&m_env),
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
+	m_allow_login_or_register(allow_login_or_register),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
 	m_password(password),
@@ -131,7 +135,7 @@ Client::Client(
 
 	// Make the mod storage database and begin the save for later
 	m_mod_storage_database =
-		new ModMetadataDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
+			new ModStorageDatabaseSQLite3(porting::path_user + DIR_DELIM + "client");
 	m_mod_storage_database->beginSave();
 
 	if (g_settings->getBool("enable_minimap")) {
@@ -139,6 +143,7 @@ Client::Client(
 	}
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_mesh_grid = { g_settings->getU16("client_mesh_chunk") };
 }
 
 void Client::migrateModStorage()
@@ -148,7 +153,7 @@ void Client::migrateModStorage()
 	if (fs::IsDir(old_mod_storage)) {
 		infostream << "Migrating client mod storage to SQLite3 database" << std::endl;
 		{
-			ModMetadataDatabaseFiles files_db(mod_storage_dir);
+			ModStorageDatabaseFiles files_db(mod_storage_dir);
 			std::vector<std::string> mod_list;
 			files_db.listMods(&mod_list);
 			for (const std::string &modname : mod_list) {
@@ -193,12 +198,28 @@ void Client::loadMods()
 	// Load builtin
 	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+	m_script->checkSetByBuiltin();
 
-	ClientModConfiguration modconf(getClientModsLuaPath());
+	ModConfiguration modconf;
+	{
+		std::unordered_map<std::string, std::string> paths;
+		std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
+		const auto modsPath = getClientModsLuaPath();
+		if (modsPath != path_user) {
+			paths["share"] = modsPath;
+		}
+		paths["mods"] = path_user;
+
+		std::string settings_path = path_user + DIR_DELIM + "mods.conf";
+		modconf.addModsFromConfig(settings_path, paths);
+		modconf.checkConflictsAndDeps();
+	}
+
 	m_mods = modconf.getMods();
+
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
-		modconf.printUnsatisfiedModsError();
+		errorstream << modconf.getUnsatisfiedModsError() << std::endl;
 		return;
 	}
 
@@ -293,7 +314,7 @@ void Client::Stop()
 	if (m_mods_loaded)
 		m_script->on_shutdown();
 	//request all client managed threads to stop
-	m_mesh_update_thread.stop();
+	m_mesh_update_manager.stop();
 	// Save local server map
 	if (m_localdb) {
 		infostream << "Local map saving ended." << std::endl;
@@ -306,7 +327,7 @@ void Client::Stop()
 
 bool Client::isShutdown()
 {
-	return m_shutdown || !m_mesh_update_thread.isRunning();
+	return m_shutdown || !m_mesh_update_manager.isRunning();
 }
 
 Client::~Client()
@@ -316,13 +337,16 @@ Client::~Client()
 
 	deleteAuthData();
 
-	m_mesh_update_thread.stop();
-	m_mesh_update_thread.wait();
-	while (!m_mesh_update_thread.m_queue_out.empty()) {
-		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
+	m_mesh_update_manager.stop();
+	m_mesh_update_manager.wait();
+	
+	MeshUpdateResult r;
+	while (m_mesh_update_manager.getNextResult(r)) {
+		for (auto block : r.map_blocks)
+			if (block)
+				block->refDrop();
 		delete r.mesh;
 	}
-
 
 	delete m_inventory_from_server;
 
@@ -396,10 +420,6 @@ void Client::step(float dtime)
 		initial_step = false;
 	}
 	else if(m_state == LC_Created) {
-		if (m_is_registration_confirmation_state) {
-			// Waiting confirmation
-			return;
-		}
 		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0) {
@@ -426,7 +446,7 @@ void Client::step(float dtime)
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-			g_settings->getFloat("client_unload_unused_data_timeout"),
+			std::max(g_settings->getFloat("client_unload_unused_data_timeout"), 0.0f),
 			g_settings->getS32("client_mapblock_limit"),
 			&deleted_blocks);
 
@@ -495,6 +515,7 @@ void Client::step(float dtime)
 			ClientEvent *event = new ClientEvent();
 			event->type = CE_PLAYER_DAMAGE;
 			event->player_damage.amount = damage;
+			event->player_damage.effect = true;
 			m_client_event_queue.push(event);
 		}
 	}
@@ -531,23 +552,32 @@ void Client::step(float dtime)
 		int num_processed_meshes = 0;
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
-		while (!m_mesh_update_thread.m_queue_out.empty())
+		MeshUpdateResult r;
+		while (m_mesh_update_manager.getNextResult(r))
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
-			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapSector *sector = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z));
+
+			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
+
+			// The block in question is not visible (perhaps it is culled at the server),
+			// create a blank block just to hold the chunk's mesh.
+			// If the block becomes visible later it will replace the blank block.
+			if (!block && r.mesh)
+				block = sector->createBlankBlock(r.p.Y);
+
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
 				block->mesh = nullptr;
 
 				if (r.mesh) {
-					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
+					if (minimap_mapblocks.empty())
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -560,24 +590,45 @@ void Client::step(float dtime)
 					else {
 						// Replace with the new mesh
 						block->mesh = r.mesh;
-						force_update_shadows = true;
+						if (r.urgent)
+							force_update_shadows = true;
 					}
 				}
 			} else {
 				delete r.mesh;
 			}
 
-			if (m_minimap && do_mapper_update)
-				m_minimap->addBlock(r.p, minimap_mapblock);
+			for (auto p : r.solid_sides) {
+				auto block = m_env.getMap().getBlockNoCreateNoEx(p.first);
+				if (block)
+					block->solid_sides = p.second;
+			}
 
-			if (r.ack_block_to_server) {
+			if (m_minimap && do_mapper_update) {
+				v3s16 ofs;
+
+				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
+				for (ofs.Z = 0; ofs.Z < m_mesh_grid.cell_size; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y < m_mesh_grid.cell_size; ofs.Y++)
+				for (ofs.X = 0; ofs.X < m_mesh_grid.cell_size; ofs.X++) {
+					size_t i = m_mesh_grid.getOffsetIndex(ofs);
+					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
+						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
+				}
+			}
+
+			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
 					blocks_to_ack.clear();
 				}
 
-				blocks_to_ack.emplace_back(r.p);
+				blocks_to_ack.emplace_back(p);
 			}
+
+			for (auto block : r.map_blocks)
+				if (block)
+					block->refDrop();
 		}
 		if (blocks_to_ack.size() > 0) {
 				// Acknowledge block(s)
@@ -872,7 +923,7 @@ void Client::ReceiveAll()
 {
 	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	const u64 budget = 100;
+	const u64 budget = 10;
 	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
@@ -1078,18 +1129,6 @@ void Client::sendInit(const std::string &playerName)
 	Send(&pkt);
 }
 
-void Client::promptConfirmRegistration(AuthMechanism chosen_auth_mechanism)
-{
-	m_chosen_auth_mech = chosen_auth_mechanism;
-	m_is_registration_confirmation_state = true;
-}
-
-void Client::confirmRegistration()
-{
-	m_is_registration_confirmation_state = false;
-	startAuth(m_chosen_auth_mech);
-}
-
 void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 {
 	m_chosen_auth_mech = chosen_auth_mechanism;
@@ -1267,7 +1306,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		pkt << message;
 
 		Send(&pkt);
-	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size == -1) {
+	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size < 0) {
 		m_out_chat_queue.push(message);
 	} else {
 		infostream << "Could not queue chat message because maximum out chat queue size ("
@@ -1372,6 +1411,17 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 	pkt << static_cast<u8>(tokens.size());
 	for (u32 token : tokens)
 		pkt << token;
+
+	Send(&pkt);
+}
+
+void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
+{
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*2);
+	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
+	pkt << info.real_gui_scaling;
+	pkt << info.real_hud_scaling;
+	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
 
 	Send(&pkt);
 }
@@ -1650,12 +1700,12 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	if (b == NULL)
 		return;
 
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
 }
 
 void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
 }
 
 void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
@@ -1669,7 +1719,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 	v3s16 blockpos = getNodeBlockPos(nodepos);
 	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
-	m_mesh_update_thread.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
+	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
 	// Leading edge
 	if (nodepos.X == blockpos_relative.X)
 		addUpdateMeshTask(blockpos + v3s16(-1, 0, 0), false, urgent);
@@ -1715,7 +1765,7 @@ void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progres
 		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
 		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
 
-		// update the loading menu -- if neccessary
+		// update the loading menu -- if necessary
 		bool do_draw = false;
 		u64 time_ms = targs->last_time_ms;
 		if (cur_percent != targs->last_percent) {
@@ -1788,7 +1838,7 @@ void Client::afterContentReceived()
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
-	m_mesh_update_thread.start();
+	m_mesh_update_manager.start();
 
 	m_state = LC_Ready;
 	sendReady();
@@ -1985,26 +2035,6 @@ const std::string* Client::getModFile(std::string filename)
 	if (it == m_mod_vfs.end())
 		return nullptr;
 	return &it->second;
-}
-
-bool Client::registerModStorage(ModMetadata *storage)
-{
-	if (m_mod_storages.find(storage->getModName()) != m_mod_storages.end()) {
-		errorstream << "Unable to register same mod storage twice. Storage name: "
-				<< storage->getModName() << std::endl;
-		return false;
-	}
-
-	m_mod_storages[storage->getModName()] = storage;
-	return true;
-}
-
-void Client::unregisterModStorage(const std::string &name)
-{
-	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
-		m_mod_storages.find(name);
-	if (it != m_mod_storages.end())
-		m_mod_storages.erase(name);
 }
 
 /*

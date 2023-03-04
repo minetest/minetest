@@ -269,6 +269,44 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	return 1;
 }
 
+// get_player_window_information(name)
+int ModApiServer::l_get_player_window_information(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Server *server = getServer(L);
+
+	const char *name = luaL_checkstring(L, 1);
+	RemotePlayer *player = server->getEnv().getPlayer(name);
+	if (!player)
+		return 0;
+
+	auto dynamic = server->getClientDynamicInfo(player->getPeerId());
+
+	if (!dynamic || dynamic->render_target_size == v2u32())
+		return 0;
+
+	lua_newtable(L);
+	int dyn_table = lua_gettop(L);
+
+	lua_pushstring(L, "size");
+	push_v2u32(L, dynamic->render_target_size);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "max_formspec_size");
+	push_v2f(L, dynamic->max_fs_size);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "real_gui_scaling");
+	lua_pushnumber(L, dynamic->real_gui_scaling);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "real_hud_scaling");
+	lua_pushnumber(L, dynamic->real_hud_scaling);
+	lua_settable(L, dyn_table);
+	return 1;
+}
+
 // get_ban_list()
 int ModApiServer::l_get_ban_list(lua_State *L)
 {
@@ -424,6 +462,20 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	return 1;
 }
 
+// get_game_info()
+int ModApiServer::l_get_game_info(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const SubgameSpec *game_spec = getGameDef(L)->getGameSpec();
+	assert(game_spec);
+	lua_newtable(L);
+	setstringfield(L, -1, "id", game_spec->id);
+	setstringfield(L, -1, "title", game_spec->title);
+	setstringfield(L, -1, "author", game_spec->author);
+	setstringfield(L, -1, "path", game_spec->path);
+	return 1;
+}
+
 // get_worldpath()
 int ModApiServer::l_get_worldpath(lua_State *L)
 {
@@ -437,16 +489,15 @@ int ModApiServer::l_get_worldpath(lua_State *L)
 int ModApiServer::l_sound_play(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-	ServerSoundParams params;
+	ServerPlayingSound params;
+	read_soundspec(L, 1, params.spec);
 	read_server_sound_params(L, 2, params);
 	bool ephemeral = lua_gettop(L) > 2 && readParam<bool>(L, 3);
 	if (ephemeral) {
-		getServer(L)->playSound(spec, params, true);
+		getServer(L)->playSound(params, true);
 		lua_pushnil(L);
 	} else {
-		s32 handle = getServer(L)->playSound(spec, params);
+		s32 handle = getServer(L)->playSound(params);
 		lua_pushinteger(L, handle);
 	}
 	return 1;
@@ -609,6 +660,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(get_modpath);
 	API_FCT(get_modnames);
+	API_FCT(get_game_info);
 
 	API_FCT(print);
 
@@ -621,6 +673,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);
+	API_FCT(get_player_window_information);
 	API_FCT(get_player_privs);
 	API_FCT(get_player_ip);
 	API_FCT(get_ban_list);
@@ -644,4 +697,5 @@ void ModApiServer::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(get_modpath);
 	API_FCT(get_modnames);
+	API_FCT(get_game_info);
 }

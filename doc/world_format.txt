@@ -130,6 +130,7 @@ Example content (added indentation and - explanations):
   player_backend = sqlite3      - which DB backend to use for player data
   readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
   auth_backend = files          - which DB backend to use for authentication data
+  mod_storage_backend = sqlite3 - which DB backend to use for mod storage
   server_announce = false       - whether the server is publicly announced or not
   load_mod_<mod> = false        - whether <mod> is to be loaded in this world
 
@@ -150,6 +151,7 @@ PostgreSQL backend specific settings:
   pgsql_player_connection = (same parameters as above)
   pgsql_readonly_connection = (same parameters as above)
   pgsql_auth_connection = (same parameters as above)
+  pgsql_mod_storage_connection = (same parameters as above)
 
 Redis backend specific settings:
   redis_address = 127.0.0.1  - Redis server address
@@ -311,7 +313,7 @@ NOTE: Since version 29 zstd is used instead of zlib. In addition the entire
       block is first serialized and then compressed (except the version byte).
 
 u8 version
-- map format version number, see serialisation.h for the latest number
+- map format version number, see serialization.h for the latest number
 
 u8 flags
 - Flag bitmasks:
@@ -367,7 +369,7 @@ if map format version >= 29:
     u16 name_len
     u8[name_len] name
 if map format version < 29:
-  -- Nothing right here, timpstamp and node id mappings are serialized later
+  -- Nothing right here, timestamp and node id mappings are serialized later
 
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes

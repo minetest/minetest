@@ -344,16 +344,14 @@ local function parse_config_file(read_all, parse_mods)
 	if parse_mods then
 		-- Parse games
 		local games_category_initialized = false
-		local index = 1
-		local game = pkgmgr.get_game(index)
-		while game do
+		for _, game in ipairs(pkgmgr.games) do
 			local path = game.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
-					fgettext_ne("Games") -- not used, but needed for xgettext
+					fgettext_ne("Content: Games") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Games",
+						name = "Content: Games",
 						level = 0,
 						type = "category",
 					})
@@ -370,23 +368,20 @@ local function parse_config_file(read_all, parse_mods)
 
 				file:close()
 			end
-
-			index = index + 1
-			game = pkgmgr.get_game(index)
 		end
 
 		-- Parse mods
 		local mods_category_initialized = false
 		local mods = {}
-		get_mods(core.get_modpath(), "mods", mods)
+		pkgmgr.get_mods(core.get_modpath(), "mods", mods)
 		for _, mod in ipairs(mods) do
 			local path = mod.path .. DIR_DELIM .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
-					fgettext_ne("Mods") -- not used, but needed for xgettext
+					fgettext_ne("Content: Mods") -- not used, but needed for xgettext
 					table.insert(settings, {
-						name = "Mods",
+						name = "Content: Mods",
 						level = 0,
 						type = "category",
 					})
@@ -396,6 +391,36 @@ local function parse_config_file(read_all, parse_mods)
 				table.insert(settings, {
 					name = mod.name,
 					readable_name = mod.title,
+					level = 1,
+					type = "category",
+				})
+
+				parse_single_file(file, path, read_all, settings, 2, false)
+
+				file:close()
+			end
+		end
+
+		-- Parse client mods
+		local clientmods_category_initialized = false
+		local clientmods = {}
+		pkgmgr.get_mods(core.get_clientmodpath(), "clientmods", clientmods)
+		for _, mod in ipairs(clientmods) do
+			local path = mod.path .. DIR_DELIM .. FILENAME
+			local file = io.open(path, "r")
+			if file then
+				if not clientmods_category_initialized then
+					fgettext_ne("Client Mods") -- not used, but needed for xgettext
+					table.insert(settings, {
+						name = "Client Mods",
+						level = 0,
+						type = "category",
+					})
+					clientmods_category_initialized = true
+				end
+
+				table.insert(settings, {
+					name = mod.name,
 					level = 1,
 					type = "category",
 				})

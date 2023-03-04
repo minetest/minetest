@@ -82,7 +82,7 @@ struct MapgenDesc {
 //// Built-in mapgens
 ////
 
-// Order used here defines the order of appearence in mainmenu.
+// Order used here defines the order of appearance in mainmenu.
 // v6 always last to discourage selection.
 // Special mapgens flat, fractal, singlenode, next to last. Of these, singlenode
 // last to discourage selection.
@@ -238,7 +238,8 @@ u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 
 u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 {
-	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
+	// Multiply by unsigned number to avoid signed overflow (UB)
+	u32 n = 1619U * p.X + 31337U * p.Y + 52591U * p.Z + 1013U * seed;
 	n = (n >> 13) ^ n;
 	return (n * (n * n * 60493 + 19990303) + 1376312589);
 }
@@ -449,12 +450,11 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 	// we hit a solid block that light cannot pass through.
 	if ((light_day  <= (n.param1 & 0x0F) &&
 			light_night <= (n.param1 & 0xF0)) ||
-			!ndef->get(n).light_propagates)
+			!ndef->getLightingFlags(n).light_propagates)
 		return;
 
-	// Since this recursive function only terminates when there is no light from
-	// either bank left, we need to take the max of both banks into account for
-	// the case where spreading has stopped for one light bank but not the other.
+	// MYMAX still needed here because we only exit early if both banks have
+	// nothing to propagate anymore.
 	light = MYMAX(light_day, n.param1 & 0x0F) |
 			MYMAX(light_night, n.param1 & 0xF0);
 
@@ -469,12 +469,9 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nm
 	bool propagate_shadow)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: update lighting", SPT_AVG);
-	//TimeTaker t("updateLighting");
 
 	propagateSunlight(nmin, nmax, propagate_shadow);
 	spreadLight(full_nmin, full_nmax);
-
-	//printf("updateLighting: %dms\n", t.stop());
 }
 
 
@@ -503,7 +500,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 
 			for (int y = a.MaxEdge.Y; y >= a.MinEdge.Y; y--) {
 				MapNode &n = vm->m_data[i];
-				if (!ndef->get(n).sunlight_propagates)
+				if (!ndef->getLightingFlags(n).sunlight_propagates)
 					break;
 				n.param1 = LIGHT_SUN;
 				VoxelArea::add_y(em, i, -1);
@@ -528,7 +525,7 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 				if (n.getContent() == CONTENT_IGNORE)
 					continue;
 
-				const ContentFeatures &cf = ndef->get(n);
+				ContentLightingFlags cf = ndef->getLightingFlags(n);
 				if (!cf.light_propagates)
 					continue;
 
@@ -748,7 +745,7 @@ void MapgenBasic::generateBiomes()
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;
 				water_above = false;
-			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
+			} else {  // Possible various nodes overgenerated from neighboring mapchunks
 				nplaced = U16_MAX;  // Disable top/filler placement
 				air_above = false;
 				water_above = false;
@@ -1041,6 +1038,8 @@ void MapgenParams::readParams(const Settings *settings)
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
+	chunksize = rangelim(chunksize, 1, 10);
+
 	delete bparams;
 	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
 	if (bparams) {
@@ -1064,9 +1063,20 @@ void MapgenParams::writeParams(Settings *settings) const
 }
 
 
-// Calculate exact edges of the outermost mapchunks that are within the
-// set 'mapgen_limit'.
-void MapgenParams::calcMapgenEdges()
+s32 MapgenParams::getSpawnRangeMax()
+{
+	if (!m_mapgen_edges_calculated) {
+		std::pair<s16, s16> edges = get_mapgen_edges(mapgen_limit, chunksize);
+		mapgen_edge_min = edges.first;
+		mapgen_edge_max = edges.second;
+		m_mapgen_edges_calculated = true;
+	}
+
+	return MYMIN(-mapgen_edge_min, mapgen_edge_max);
+}
+
+
+std::pair<s16, s16> get_mapgen_edges(s16 mapgen_limit, s16 chunksize)
 {
 	// Central chunk offset, in blocks
 	s16 ccoff_b = -chunksize / 2;
@@ -1090,17 +1100,5 @@ void MapgenParams::calcMapgenEdges()
 	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize_n, 0);
 	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize_n, 0);
 	// Mapgen edges, in nodes
-	mapgen_edge_min = ccmin - numcmin * csize_n;
-	mapgen_edge_max = ccmax + numcmax * csize_n;
-
-	m_mapgen_edges_calculated = true;
-}
-
-
-s32 MapgenParams::getSpawnRangeMax()
-{
-	if (!m_mapgen_edges_calculated)
-		calcMapgenEdges();
-
-	return MYMIN(-mapgen_edge_min, mapgen_edge_max);
+	return std::pair<s16, s16>(ccmin - numcmin * csize_n, ccmax + numcmax * csize_n);
 }

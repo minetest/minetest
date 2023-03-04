@@ -1,4 +1,4 @@
--- Minetest: builtin/misc_register.lua
+-- Minetest: builtin/register.lua
 
 local S = core.get_translator("__builtin")
 
@@ -79,8 +79,22 @@ local function check_modname_prefix(name)
 	end
 end
 
+local function check_node_list(list, field)
+	local t = type(list)
+	if t == "table" then
+		for _, entry in pairs(list) do
+			assert(type(entry) == "string",
+				"Field '" .. field .. "' contains non-string entry")
+		end
+	elseif t ~= "string" and t ~= "nil" then
+		error("Field '" .. field .. "' has invalid type " .. t)
+	end
+end
+
 function core.register_abm(spec)
 	-- Add to core.registered_abms
+	check_node_list(spec.nodenames, "nodenames")
+	check_node_list(spec.neighbors, "neighbors")
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
@@ -89,6 +103,7 @@ end
 function core.register_lbm(spec)
 	-- Add to core.registered_lbms
 	check_modname_prefix(spec.name)
+	check_node_list(spec.nodenames, "nodenames")
 	assert(type(spec.action) == "function", "Required field 'action' of type function")
 	core.registered_lbms[#core.registered_lbms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
@@ -303,14 +318,16 @@ end
 
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
 
 function core.craft_predict(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_craft_predicts) do
-		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
+		-- cast to ItemStack since func() could return a string
+		itemstack = ItemStack(func(itemstack, player, old_craft_list, craft_inv) or itemstack)
 	end
 	return itemstack
 end
@@ -605,6 +622,7 @@ core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
+core.registered_on_item_pickups, core.register_on_item_pickup = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
 core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
@@ -615,6 +633,17 @@ core.registered_on_player_inventory_actions, core.register_on_player_inventory_a
 core.registered_allow_player_inventory_actions, core.register_allow_player_inventory_action = make_registration()
 core.registered_on_rightclickplayers, core.register_on_rightclickplayer = make_registration()
 core.registered_on_liquid_transformed, core.register_on_liquid_transformed = make_registration()
+core.registered_on_mapblocks_changed, core.register_on_mapblocks_changed = make_registration()
+
+core.register_on_mods_loaded(function()
+	core.after(0, function()
+		setmetatable(core.registered_on_mapblocks_changed, {
+			__newindex = function()
+				error("on_mapblocks_changed callbacks must be registered at load time")
+			end,
+		})
+	end)
+end)
 
 --
 -- Compatibility for on_mapgen_init()

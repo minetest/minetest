@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "porting.h"
 #include "util/string.h"
+#include "util/numeric.h"
 
 bool JoystickButtonCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
@@ -188,7 +189,7 @@ JoystickLayout create_dragonrise_gamecube_layout()
 	// D-Pad
 	JLO_A_PB(KeyType::HOTBAR_PREV, 5,  1, jlo.axes_deadzone); // left
 	JLO_A_PB(KeyType::HOTBAR_NEXT, 5, -1, jlo.axes_deadzone); // right
-	// Axis are hard to actuate independantly, best to leave up and down unused.
+	// Axis are hard to actuate independently, best to leave up and down unused.
 	//JLO_A_PB(0, 6,  1, jlo.axes_deadzone); // up
 	//JLO_A_PB(0, 6, -1, jlo.axes_deadzone); // down
 
@@ -202,9 +203,9 @@ JoystickLayout create_dragonrise_gamecube_layout()
 }
 
 
-JoystickController::JoystickController() :
-		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
+JoystickController::JoystickController()
 {
+	doubling_dtime = std::max(g_settings->getFloat("repeat_joystick_button_time"), 0.001f);
 	for (float &i : m_past_pressed_time) {
 		i = 0;
 	}
@@ -217,19 +218,20 @@ void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo>
 	s32         id     = g_settings->getS32("joystick_id");
 	std::string layout = g_settings->get("joystick_type");
 
-	if (id < 0 || (u16)id >= joystick_infos.size()) {
+	if (id < 0 || id >= (s32)joystick_infos.size()) {
 		// TODO: auto detection
 		id = 0;
 	}
 
-	if (id >= 0 && (u16)id < joystick_infos.size()) {
+	if (id >= 0 && id < (s32)joystick_infos.size()) {
 		if (layout.empty() || layout == "auto")
 			setLayoutFromControllerName(joystick_infos[id].Name.c_str());
 		else
 			setLayoutFromControllerName(layout);
 	}
 
-	m_joystick_id = id;
+	// Irrlicht restriction.
+	m_joystick_id = rangelim(id, 0, UINT8_MAX);
 }
 
 void JoystickController::setLayoutFromControllerName(const std::string &name)

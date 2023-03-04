@@ -364,7 +364,7 @@ public:
 	u16 readNextIncomingSeqNum();
 	u16 incNextIncomingSeqNum();
 
-	u16 getOutgoingSequenceNumber(bool& successfull);
+	u16 getOutgoingSequenceNumber(bool& successful);
 	u16 readOutgoingSequenceNumber();
 	bool putBackSequenceNumber(u16);
 

@@ -71,17 +71,20 @@ public:
 	void setSunScale(f32 sun_scale) { m_sun_params.scale = sun_scale; }
 	void setSunriseVisible(bool glow_visible) { m_sun_params.sunrise_visible = glow_visible; }
 	void setSunriseTexture(const std::string &sunglow_texture, ITextureSource* tsrc);
+	v3f getSunDirection();
 
 	void setMoonVisible(bool moon_visible) { m_moon_params.visible = moon_visible; }
 	bool getMoonVisible() const { return m_moon_params.visible; }
 	void setMoonTexture(const std::string &moon_texture,
 		const std::string &moon_tonemap, ITextureSource *tsrc);
 	void setMoonScale(f32 moon_scale) { m_moon_params.scale = moon_scale; }
+	v3f getMoonDirection();
 
 	void setStarsVisible(bool stars_visible) { m_star_params.visible = stars_visible; }
 	void setStarCount(u16 star_count);
 	void setStarColor(video::SColor star_color) { m_star_params.starcolor = star_color; }
 	void setStarScale(f32 star_scale) { m_star_params.scale = star_scale; updateStars(); }
+	void setStarDayOpacity(f32 day_opacity) { m_star_params.day_opacity = day_opacity; }
 
 	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
 	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
@@ -92,6 +95,10 @@ public:
 	void setFallbackBgColor(video::SColor fallback_bg_color)
 	{
 		m_fallback_bg_color = fallback_bg_color;
+	}
+	void setBodyOrbitTilt(float body_orbit_tilt)
+	{
+		m_sky_params.body_orbit_tilt = body_orbit_tilt;
 	}
 	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
@@ -106,8 +113,6 @@ public:
 	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
-
-	float getSkyBodyOrbitTilt() const { return m_sky_body_orbit_tilt; }
 
 private:
 	aabb3f m_box;
@@ -163,7 +168,6 @@ private:
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 	bool m_enable_shaders = false;
-	float m_sky_body_orbit_tilt = 0.0f;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
@@ -199,9 +203,9 @@ private:
 
 	void updateStars();
 
-	void draw_sun(video::IVideoDriver *driver, float sunsize, const video::SColor &suncolor,
+	void draw_sun(video::IVideoDriver *driver, const video::SColor &suncolor,
 		const video::SColor &suncolor2, float wicked_time_of_day);
-	void draw_moon(video::IVideoDriver *driver, float moonsize, const video::SColor &mooncolor,
+	void draw_moon(video::IVideoDriver *driver, const video::SColor &mooncolor,
 		const video::SColor &mooncolor2, float wicked_time_of_day);
 	void draw_sky_body(std::array<video::S3DVertex, 4> &vertices,
 		float pos_1, float pos_2, const video::SColor &c);

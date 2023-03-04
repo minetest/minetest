@@ -17,35 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+extern "C" {
+#include <lauxlib.h>
+}
+
 #include "helper.h"
 #include <cmath>
-#include <sstream>
 #include <irr_v2d.h>
 #include <irr_v3d.h>
+#include "c_converter.h"
 #include "c_types.h"
-#include "c_internal.h"
-
-// imported from c_converter.cpp with pure C++ style
-static inline void check_lua_type(lua_State *L, int index, const char *name, int type)
-{
-	int t = lua_type(L, index);
-	if (t != type) {
-		std::string traceback = script_get_backtrace(L);
-		throw LuaError(std::string("Invalid ") + (name) + " (expected " +
-				lua_typename(L, (type)) + " got " + lua_typename(L, t) +
-				").\n" + traceback);
-	}
-}
-
-// imported from c_converter.cpp
-#define CHECK_POS_COORD(name)                                                            \
-	check_lua_type(L, -1, "position coordinate '" name "'", LUA_TNUMBER)
-#define CHECK_POS_TAB(index) check_lua_type(L, index, "position", LUA_TTABLE)
-
-bool LuaHelper::isNaN(lua_State *L, int idx)
-{
-	return lua_type(L, idx) == LUA_TNUMBER && std::isnan(lua_tonumber(L, idx));
-}
 
 /*
  * Read template functions
@@ -59,74 +40,41 @@ bool LuaHelper::readParam(lua_State *L, int index)
 template <>
 s16 LuaHelper::readParam(lua_State *L, int index)
 {
-	return lua_tonumber(L, index);
+	return luaL_checkinteger(L, index);
 }
 
 template <>
 int LuaHelper::readParam(lua_State *L, int index)
 {
-	return luaL_checkint(L, index);
+	return luaL_checkinteger(L, index);
 }
 
 template <>
 float LuaHelper::readParam(lua_State *L, int index)
 {
-	if (isNaN(L, index))
-		throw LuaError("NaN value is not allowed.");
+	lua_Number v = luaL_checknumber(L, index);
+	if (std::isnan(v) && std::isinf(v))
+		throw LuaError("Invalid float value (NaN or infinity)");
 
-	return (float)luaL_checknumber(L, index);
+	return static_cast<float>(v);
 }
 
 template <>
 v2s16 LuaHelper::readParam(lua_State *L, int index)
 {
-	v2s16 p;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	CHECK_POS_COORD("x");
-	p.X = readParam<s16>(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	CHECK_POS_COORD("y");
-	p.Y = readParam<s16>(L, -1);
-	lua_pop(L, 1);
-	return p;
+	return read_v2s16(L, index);
 }
 
 template <>
 v2f LuaHelper::readParam(lua_State *L, int index)
 {
-	v2f p;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	CHECK_POS_COORD("x");
-	p.X = readParam<float>(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	CHECK_POS_COORD("y");
-	p.Y = readParam<float>(L, -1);
-	lua_pop(L, 1);
-	return p;
+	return check_v2f(L, index);
 }
 
 template <>
 v3f LuaHelper::readParam(lua_State *L, int index)
 {
-	v3f p;
-	CHECK_POS_TAB(index);
-	lua_getfield(L, index, "x");
-	CHECK_POS_COORD("x");
-	p.X = readParam<float>(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	CHECK_POS_COORD("y");
-	p.Y = readParam<float>(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "z");
-	CHECK_POS_COORD("z");
-	p.Z = readParam<float>(L, -1);
-	lua_pop(L, 1);
-	return p;
+	return check_v3f(L, index);
 }
 
 template <>

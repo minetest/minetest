@@ -6,8 +6,10 @@ Note: The vector.*-functions must be able to accept old vectors that had no meta
 -- localize functions
 local setmetatable = setmetatable
 
--- vector.metatable is set by C++.
-local metatable = vector.metatable
+vector = {}
+
+local metatable = {}
+vector.metatable = metatable
 
 local xyz = {"x", "y", "z"}
 
@@ -79,7 +81,7 @@ metatable.__eq = vector.equals
 function vector.length(v)
 	return math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
 end
--- Note: we can not use __len because it is already used for primitive table length
+-- Note: we cannot use __len because it is already used for primitive table length
 
 function vector.normalize(v)
 	local len = vector.length(v)
@@ -354,7 +356,7 @@ function vector.dir_to_rotation(forward, up)
 
 	-- Since vector.angle never returns a negative value or a value greater
 	-- than math.pi, rot.z has to be inverted sometimes.
-	-- To determine wether this is the case, we rotate the up vector back around
+	-- To determine whether this is the case, we rotate the up vector back around
 	-- the forward vector and check if it worked out.
 	local back = vector.rotate_around_axis(up, forward, -rot.z)
 
@@ -365,4 +367,23 @@ function vector.dir_to_rotation(forward, up)
 		rot.z = -rot.z
 	end
 	return rot
+end
+
+if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then
+	local function read_vector(v)
+		return v.x, v.y, v.z
+	end
+	core.set_read_vector(read_vector)
+	core.set_read_vector = nil
+
+	if rawget(_G, "jit") then
+		-- This is necessary to prevent trace aborts.
+		local function push_vector(x, y, z)
+			return (fast_new(x, y, z))
+		end
+		core.set_push_vector(push_vector)
+	else
+		core.set_push_vector(fast_new)
+	end
+	core.set_push_vector = nil
 end

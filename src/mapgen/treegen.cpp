@@ -137,8 +137,7 @@ treegen::error spawn_ltree(ServerMap *map, v3s16 p0,
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (auto &modified_block : modified_blocks)
-		event.modified_blocks.insert(modified_block.first);
+	event.setModifiedBlocks(modified_blocks);
 	map->dispatchEvent(event);
 	return SUCCESS;
 }
@@ -806,7 +805,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, const NodeDefManager *ndef,
 		dev--;
 	}
 
-	// Centre top nodes
+	// Center top nodes
 	leaves_d[leaves_a.index(v3s16(0, 1, 0))] = 1;
 	leaves_d[leaves_a.index(v3s16(0, 2, 0))] = 1;
 	leaves_d[leaves_a.index(v3s16(0, 3, 0))] = 2;

@@ -170,6 +170,9 @@ end
 --------------------------------------------------------------------------------
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
+	if delim == "" then
+		error("string.split separator is empty", 2)
+	end
 	max_splits = max_splits or -2
 	local items = {}
 	local pos, len = 1, #str
@@ -250,11 +253,12 @@ local formspec_escapes = {
 	["["] = "\\[",
 	["]"] = "\\]",
 	[";"] = "\\;",
-	[","] = "\\,"
+	[","] = "\\,",
+	["$"] = "\\$",
 }
 function core.formspec_escape(text)
 	-- Use explicit character set instead of dot here because it doubles the performance
-	return text and text:gsub("[\\%[%];,]", formspec_escapes)
+	return text and string.gsub(text, "[\\%[%];,$]", formspec_escapes)
 end
 
 
@@ -519,18 +523,6 @@ end
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
-if INIT == "mainmenu" then
-	function core.get_game(index)
-		local games = core.get_games()
-
-		if index > 0 and index <= #games then
-			return games[index]
-		end
-
-		return nil
-	end
-end
-
 if core.gettext then -- for client and mainmenu
 	function fgettext_ne(text, ...)
 		text = core.gettext(text)

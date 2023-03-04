@@ -55,7 +55,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 	this->player      = player;
 	this->inventory   = inventory;
 
-	m_hud_scaling      = g_settings->getFloat("hud_scaling");
+	m_hud_scaling      = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
 	m_scale_factor     = m_hud_scaling * RenderingEngine::getDisplayDensity();
 	m_hotbar_imagesize = std::floor(HOTBAR_IMAGE_SIZE *
 		RenderingEngine::getDisplayDensity() + 0.5f);
@@ -150,7 +150,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		bool selected)
 {
 	if (selected) {
-		/* draw hihlighting around selected item */
+		/* draw highlighting around selected item */
 		if (use_hotbar_selected_image) {
 			core::rect<s32> imgrect2 = rect;
 			imgrect2.UpperLeftCorner.X  -= (m_padding*2);
@@ -411,7 +411,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			case HUD_ELEM_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
-				v3f p_pos = player->getPosition() / BS;
+				
 				pos += v2s32(e->offset.X, e->offset.Y);
 				video::SColor color(255, (e->number >> 16) & 0xFF,
 										 (e->number >> 8)  & 0xFF,
@@ -429,6 +429,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				font->draw(text.c_str(), bounds + v2s32((e->align.X - 1.0) * bounds.getWidth() / 2, 0), color);
 				if (draw_precision) {
 					std::ostringstream os;
+					v3f p_pos = player->getPosition() / BS;
 					float distance = std::floor(precision * p_pos.getDistanceFrom(e->world_pos)) / precision;
 					os << distance << unit;
 					text = unescape_translate(utf8_to_wide(os.str()));
@@ -825,28 +826,31 @@ void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 
 void Hud::drawSelectionMesh()
 {
+	if (m_mode == HIGHLIGHT_NONE || (m_mode == HIGHLIGHT_HALO && !m_selection_mesh))
+		return;
+	const video::SMaterial oldmaterial = driver->getMaterial2D();
+	driver->setMaterial(m_selection_material);
+	const core::matrix4 oldtransform = driver->getTransform(video::ETS_WORLD);
+
+	core::matrix4 translate;
+	translate.setTranslation(m_selection_pos_with_offset);
+	core::matrix4 rotation;
+	rotation.setRotationDegrees(m_selection_rotation);
+	driver->setTransform(video::ETS_WORLD, translate * rotation);
+
 	if (m_mode == HIGHLIGHT_BOX) {
 		// Draw 3D selection boxes
-		video::SMaterial oldmaterial = driver->getMaterial2D();
-		driver->setMaterial(m_selection_material);
 		for (auto & selection_box : m_selection_boxes) {
-			aabb3f box = aabb3f(
-				selection_box.MinEdge + m_selection_pos_with_offset,
-				selection_box.MaxEdge + m_selection_pos_with_offset);
-
 			u32 r = (selectionbox_argb.getRed() *
 					m_selection_mesh_color.getRed() / 255);
 			u32 g = (selectionbox_argb.getGreen() *
 					m_selection_mesh_color.getGreen() / 255);
 			u32 b = (selectionbox_argb.getBlue() *
 					m_selection_mesh_color.getBlue() / 255);
-			driver->draw3DBox(box, video::SColor(255, r, g, b));
+			driver->draw3DBox(selection_box, video::SColor(255, r, g, b));
 		}
-		driver->setMaterial(oldmaterial);
 	} else if (m_mode == HIGHLIGHT_HALO && m_selection_mesh) {
 		// Draw selection mesh
-		video::SMaterial oldmaterial = driver->getMaterial2D();
-		driver->setMaterial(m_selection_material);
 		setMeshColor(m_selection_mesh, m_selection_mesh_color);
 		video::SColor face_color(0,
 			MYMIN(255, m_selection_mesh_color.getRed() * 1.5),
@@ -854,16 +858,14 @@ void Hud::drawSelectionMesh()
 			MYMIN(255, m_selection_mesh_color.getBlue() * 1.5));
 		setMeshColorByNormal(m_selection_mesh, m_selected_face_normal,
 			face_color);
-		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
-		translateMesh(mesh, m_selection_pos_with_offset);
 		u32 mc = m_selection_mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; i++) {
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			scene::IMeshBuffer *buf = m_selection_mesh->getMeshBuffer(i);
 			driver->drawMeshBuffer(buf);
 		}
-		mesh->drop();
-		driver->setMaterial(oldmaterial);
 	}
+	driver->setMaterial(oldmaterial);
+	driver->setTransform(video::ETS_WORLD, oldtransform);
 }
 
 enum Hud::BlockBoundsMode Hud::toggleBlockBounds()

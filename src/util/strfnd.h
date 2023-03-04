@@ -48,7 +48,7 @@ public:
 		return ret;
 	}
 
-	// Returns substr up to the next occurence of sep that isn't escaped with esc ('\\')
+	// Returns substr up to the next occurrence of sep that isn't escaped with esc ('\\')
 	String next_esc(const String &sep, T esc=static_cast<T>('\\'))
 	{
 		if (pos >= str.size())

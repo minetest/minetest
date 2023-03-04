@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "threading/mutex_auto_lock.h"
+#include "util/numeric.h" // rangelim
 #include "util/strfnd.h"
 #include <iostream>
 #include <fstream>
@@ -531,6 +532,13 @@ s32 Settings::getS32(const std::string &name) const
 float Settings::getFloat(const std::string &name) const
 {
 	return stof(get(name));
+}
+
+
+float Settings::getFloat(const std::string &name, float min, float max) const
+{
+	float val = stof(get(name));
+	return rangelim(val, min, max);
 }
 
 

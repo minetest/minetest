@@ -114,6 +114,10 @@ private:
 
 	v3f pos;
 	v3f direction{0};
+
+	v3f last_cam_pos_world{0,0,0};
+	v3f last_look{0,1,0};
+
 	shadowFrustum shadow_frustum;
 	shadowFrustum future_frustum;
 	bool dirty{false};

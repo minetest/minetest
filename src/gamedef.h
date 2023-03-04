@@ -32,14 +32,15 @@ class IRollbackManager;
 class EmergeManager;
 class Camera;
 class ModChannel;
-class ModMetadata;
-class ModMetadataDatabase;
+class ModStorage;
+class ModStorageDatabase;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
 	class ISceneManager;
 }}
 
+struct SubgameSpec;
 struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
@@ -72,10 +73,9 @@ public:
 
 	virtual const std::vector<ModSpec> &getMods() const = 0;
 	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
+	virtual const SubgameSpec* getGameSpec() const { return nullptr; }
 	virtual std::string getWorldPath() const { return ""; }
-	virtual bool registerModStorage(ModMetadata *storage) = 0;
-	virtual void unregisterModStorage(const std::string &name) = 0;
-	virtual ModMetadataDatabase *getModStorageDatabase() = 0;
+	virtual ModStorageDatabase *getModStorageDatabase() = 0;
 
 	virtual bool joinModChannel(const std::string &channel) = 0;
 	virtual bool leaveModChannel(const std::string &channel) = 0;

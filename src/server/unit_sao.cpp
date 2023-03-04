@@ -179,12 +179,16 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 
 void UnitSAO::clearChildAttachments()
 {
-	for (int child_id : m_attachment_child_ids) {
+	// Cannot use for-loop here: setAttachment() modifies 'm_attachment_child_ids'!
+	while (!m_attachment_child_ids.empty()) {
+		int child_id = *m_attachment_child_ids.begin();
+
 		// Child can be NULL if it was deleted earlier
 		if (ServerActiveObject *child = m_env->getActiveObject(child_id))
 			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0), false);
+
+		removeAttachmentChild(child_id);
 	}
-	m_attachment_child_ids.clear();
 }
 
 void UnitSAO::clearParentAttachment()

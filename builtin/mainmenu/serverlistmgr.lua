@@ -15,28 +15,101 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-serverlistmgr = {}
+serverlistmgr = {
+	-- continent code we detected for ourselves
+	my_continent = core.get_once("continent"),
+
+	-- list of locally favorites servers
+	favorites = nil,
+
+	-- list of servers fetched from public list
+	servers = nil,
+}
 
 --------------------------------------------------------------------------------
+-- Efficient data structure for normalizing arbitrary scores attached to objects
+-- e.g. {{"a", 3.14}, {"b", 3.14}, {"c", 20}, {"d", 0}}
+--   -> {["d"] = 0, ["a"] = 0.5, ["b"] = 0.5, ["c"] = 1}
+local Normalizer = {}
+
+function Normalizer:new()
+	local t = {
+		map = {}
+	}
+	setmetatable(t, self)
+	self.__index = self
+	return t
+end
+
+function Normalizer:push(obj, score)
+	if not self.map[score] then
+		self.map[score] = {}
+	end
+	local t = self.map[score]
+	t[#t + 1] = obj
+end
+
+function Normalizer:calc()
+	local list = {}
+	for k, _ in pairs(self.map) do
+		list[#list + 1] = k
+	end
+	table.sort(list)
+	local ret = {}
+	for i, k in ipairs(list) do
+		local score = #list == 1 and 1 or ( (i - 1) / (#list - 1) )
+		for _, obj in ipairs(self.map[k]) do
+			ret[obj] = score
+		end
+	end
+	return ret
+end
+
+--------------------------------------------------------------------------------
+-- how much the pre-sorted server list contributes to the final ranking
+local WEIGHT_SORT = 2
+-- how much the estimated latency contributes to the final ranking
+local WEIGHT_LATENCY = 1
+
 local function order_server_list(list)
-	local res = {}
-	--orders the favorite list after support
+	-- calculate the scores
+	local s1 = Normalizer:new()
+	local s2 = Normalizer:new()
+	for i, fav in ipairs(list) do
+		-- first: the original position
+		s1:push(fav, #list - i)
+		-- second: estimated latency
+		local ping = (fav.ping or 0) * 1000
+		if ping < 400 then
+			-- If ping is under 400ms replace it with our own estimate,
+			-- we assume the server has latency issues anyway otherwise
+			ping = estimate_continent_latency(serverlistmgr.my_continent, fav) or 0
+		end
+		s2:push(fav, -ping)
+	end
+	s1 = s1:calc()
+	s2 = s2:calc()
+
+	-- make a shallow copy and pre-calculate ordering
+	local res, order = {}, {}
 	for i = 1, #list do
 		local fav = list[i]
-		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
-		end
+		res[i] = fav
+
+		local n = s1[fav] * WEIGHT_SORT + s2[fav] * WEIGHT_LATENCY
+		order[fav] = n
 	end
-	for i = 1, #list do
-		local fav = list[i]
-		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			res[#res + 1] = fav
-		end
-	end
+
+	-- now sort the list
+	table.sort(res, function(fav1, fav2)
+		return order[fav1] > order[fav2]
+	end)
+
 	return res
 end
 
 local public_downloading = false
+local geoip_downloading = false
 
 --------------------------------------------------------------------------------
 function serverlistmgr.sync()
@@ -54,6 +127,39 @@ function serverlistmgr.sync()
 			description = ""
 		}}
 		return
+	end
+
+	-- only fetched once per MT instance
+	if not serverlistmgr.my_continent and not geoip_downloading then
+		geoip_downloading = true
+		core.handle_async(
+			function(param)
+				local http = core.get_http_api()
+				local url = core.settings:get("serverlist_url") .. "/geoip"
+
+				local response = http.fetch_sync({ url = url })
+				if not response.succeeded then
+					return
+				end
+
+				local retval = core.parse_json(response.data)
+				return retval and type(retval.continent) == "string" and retval.continent
+			end,
+			nil,
+			function(result)
+				geoip_downloading = false
+				if not result then
+					return
+				end
+				serverlistmgr.my_continent = result
+				core.set_once("continent", result)
+				-- reorder list if we already have it
+				if serverlistmgr.servers then
+					serverlistmgr.servers = order_server_list(serverlistmgr.servers)
+					core.event_handler("Refresh")
+				end
+			end
+		)
 	end
 
 	if public_downloading then
@@ -79,7 +185,7 @@ function serverlistmgr.sync()
 		end,
 		nil,
 		function(result)
-			public_downloading = nil
+			public_downloading = false
 			local favs = order_server_list(result)
 			if favs[1] then
 				serverlistmgr.servers = favs

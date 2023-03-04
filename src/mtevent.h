@@ -66,6 +66,6 @@ public:
 	virtual ~MtEventManager() = default;
 	virtual void put(MtEvent *e) = 0;
 	virtual void reg(MtEvent::Type type, event_receive_func f, void *data) = 0;
-	// If data==NULL, every occurence of f is deregistered.
+	// If data==NULL, every occurrence of f is deregistered.
 	virtual void dereg(MtEvent::Type type, event_receive_func f, void *data) = 0;
 };

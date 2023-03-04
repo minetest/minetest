@@ -84,7 +84,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 #endif
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
 	s32 width = (relative_rect.getWidth() / (2.0 / 3.0)) * density *
-			g_settings->getFloat("gui_scaling");
+			g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
 			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y

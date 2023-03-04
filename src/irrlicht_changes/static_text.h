@@ -1,13 +1,10 @@
 // Copyright (C) 2002-2012 Nikolaus Gebhardt
-// Copyright (C) 2016 Nathanaël Courant
+// Copyright (C) 2016 Nathanaëlle Courant
 //   Modified this class to work with EnrichedStrings too
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #pragma once
-
-#include "IrrCompileConfig.h"
-#ifdef _IRR_COMPILE_WITH_GUI_
 
 #include "IGUIStaticText.h"
 #include "irrArray.h"
@@ -135,10 +132,8 @@ namespace gui
 		//! Gets the override color
 		virtual video::SColor getOverrideColor() const;
 
-		#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 		//! Gets the currently used text color
 		virtual video::SColor getActiveColor() const;
-		#endif
 
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
@@ -233,5 +228,3 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *
 {
 	setStaticText(static_text, EnrichedString(text, static_text->getOverrideColor()));
 }
-
-#endif // _IRR_COMPILE_WITH_GUI_

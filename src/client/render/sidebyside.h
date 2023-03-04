@@ -21,23 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
-class RenderingCoreSideBySide : public RenderingCoreStereo
+class DrawImageStep : public RenderStep
 {
-protected:
-	video::ITexture *left = nullptr;
-	video::ITexture *right = nullptr;
-	bool horizontal = false;
-	bool flipped = false;
-	core::dimension2du image_size;
-	v2s32 rpos;
-
-	void initTextures() override;
-	void clearTextures() override;
-	void useEye(bool right) override;
-	void resetEye() override;
-
 public:
-	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
-			bool _horizontal = false, bool _flipped = false);
-	void drawAll() override;
+	DrawImageStep(u8 texture_index, v2f offset);
+
+	void setRenderSource(RenderSource *_source) override;
+	void setRenderTarget(RenderTarget *_target) override;
+
+	void reset(PipelineContext &context) override {}
+	void run(PipelineContext &context) override;
+private:
+	u8 texture_index;
+	v2f offset;
+	RenderSource *source;
+	RenderTarget *target;
 };
+
+void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool horizontal, bool flipped, v2f &virtual_size_scale);

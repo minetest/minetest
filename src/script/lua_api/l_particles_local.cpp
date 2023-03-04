@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_object.h"
+#include "lua_api/l_particleparams.h"
 #include "client/particles.h"
 #include "client/client.h"
 #include "client/clientevent.h"
@@ -49,6 +50,19 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 		p.acc = check_v3f(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, 1, "drag");
+	if (lua_istable(L, -1))
+		p.drag = check_v3f(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "jitter");
+	LuaParticleParams::readLuaValue(L, p.jitter);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "bounce");
+	LuaParticleParams::readLuaValue(L, p.bounce);
+	lua_pop(L, 1);
+
 	p.expirationtime = getfloatfield_default(L, 1, "expirationtime",
 		p.expirationtime);
 	p.size = getfloatfield_default(L, 1, "size", p.size);
@@ -64,12 +78,16 @@ int ModApiParticlesLocal::l_add_particle(lua_State *L)
 	p.animation = read_animation_definition(L, -1);
 	lua_pop(L, 1);
 
-	p.texture = getstringfield_default(L, 1, "texture", p.texture);
+	lua_getfield(L, 1, "texture");
+	if (!lua_isnil(L, -1)) {
+		LuaParticleParams::readTexValue(L,p.texture);
+	}
+	lua_pop(L, 1);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
 
 	lua_getfield(L, 1, "node");
 	if (lua_istable(L, -1))
-		p.node = readnode(L, -1, getGameDef(L)->ndef());
+		p.node = readnode(L, -1);
 	lua_pop(L, 1);
 
 	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);
@@ -88,44 +106,50 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 
 	// Get parameters
 	ParticleSpawnerParameters p;
-
 	p.amount = getintfield_default(L, 1, "amount", p.amount);
 	p.time = getfloatfield_default(L, 1, "time", p.time);
 
-	lua_getfield(L, 1, "minpos");
-	if (lua_istable(L, -1))
-		p.minpos = check_v3f(L, -1);
-	lua_pop(L, 1);
+	// set default values
+	p.exptime = 1;
+	p.size = 1;
 
-	lua_getfield(L, 1, "maxpos");
-	if (lua_istable(L, -1))
-		p.maxpos = check_v3f(L, -1);
-	lua_pop(L, 1);
+	// read spawner parameters from the table
+	using namespace ParticleParamTypes;
+	LuaParticleParams::readTweenTable(L, "pos", p.pos);
+	LuaParticleParams::readTweenTable(L, "vel", p.vel);
+	LuaParticleParams::readTweenTable(L, "acc", p.acc);
+	LuaParticleParams::readTweenTable(L, "size", p.size);
+	LuaParticleParams::readTweenTable(L, "exptime", p.exptime);
+	LuaParticleParams::readTweenTable(L, "drag", p.drag);
+	LuaParticleParams::readTweenTable(L, "jitter", p.jitter);
+	LuaParticleParams::readTweenTable(L, "bounce", p.bounce);
+	lua_getfield(L, 1, "attract");
+	if (!lua_isnil(L, -1)) {
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "kind");
+		LuaParticleParams::readLuaValue(L, p.attractor_kind);
+		lua_pop(L,1);
 
-	lua_getfield(L, 1, "minvel");
-	if (lua_istable(L, -1))
-		p.minvel = check_v3f(L, -1);
-	lua_pop(L, 1);
+		lua_getfield(L, -1, "die_on_contact");
+		if (!lua_isnil(L, -1))
+			p.attractor_kill = readParam<bool>(L, -1);
+		lua_pop(L,1);
 
-	lua_getfield(L, 1, "maxvel");
-	if (lua_istable(L, -1))
-		p.maxvel = check_v3f(L, -1);
-	lua_pop(L, 1);
+		if (p.attractor_kind != AttractorKind::none) {
+			LuaParticleParams::readTweenTable(L, "strength", p.attract);
+			LuaParticleParams::readTweenTable(L, "origin", p.attractor_origin);
+			p.attractor_attachment = LuaParticleParams::readAttachmentID(L, "origin_attached");
+			if (p.attractor_kind != AttractorKind::point) {
+				LuaParticleParams::readTweenTable(L, "direction", p.attractor_direction);
+				p.attractor_direction_attachment = LuaParticleParams::readAttachmentID(L, "direction_attached");
+			}
+		}
+	} else {
+		p.attractor_kind = AttractorKind::none;
+	}
+	lua_pop(L,1);
+	LuaParticleParams::readTweenTable(L, "radius", p.radius);
 
-	lua_getfield(L, 1, "minacc");
-	if (lua_istable(L, -1))
-		p.minacc = check_v3f(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, 1, "maxacc");
-	if (lua_istable(L, -1))
-		p.maxacc = check_v3f(L, -1);
-	lua_pop(L, 1);
-
-	p.minexptime = getfloatfield_default(L, 1, "minexptime", p.minexptime);
-	p.maxexptime = getfloatfield_default(L, 1, "maxexptime", p.maxexptime);
-	p.minsize = getfloatfield_default(L, 1, "minsize", p.minsize);
-	p.maxsize = getfloatfield_default(L, 1, "maxsize", p.maxsize);
 	p.collisiondetection = getboolfield_default(L, 1,
 		"collisiondetection", p.collisiondetection);
 	p.collision_removal = getboolfield_default(L, 1,
@@ -137,13 +161,31 @@ int ModApiParticlesLocal::l_add_particlespawner(lua_State *L)
 	p.animation = read_animation_definition(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, 1, "texture");
+	if (!lua_isnil(L, -1)) {
+		LuaParticleParams::readTexValue(L, p.texture);
+	}
+	lua_pop(L, 1);
+
 	p.vertical = getboolfield_default(L, 1, "vertical", p.vertical);
-	p.texture = getstringfield_default(L, 1, "texture", p.texture);
 	p.glow = getintfield_default(L, 1, "glow", p.glow);
+
+	lua_getfield(L, 1, "texpool");
+	if (lua_istable(L, -1)) {
+		size_t tl = lua_objlen(L, -1);
+		p.texpool.reserve(tl);
+		for (size_t i = 0; i < tl; ++i) {
+			lua_pushinteger(L, i+1), lua_gettable(L, -2);
+			p.texpool.emplace_back();
+			LuaParticleParams::readTexValue(L, p.texpool.back());
+			lua_pop(L,1);
+		}
+	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "node");
 	if (lua_istable(L, -1))
-		p.node = readnode(L, -1, getGameDef(L)->ndef());
+		p.node = readnode(L, -1);
 	lua_pop(L, 1);
 
 	p.node_tile = getintfield_default(L, 1, "node_tile", p.node_tile);

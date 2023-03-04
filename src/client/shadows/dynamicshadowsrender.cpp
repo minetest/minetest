@@ -70,21 +70,6 @@ ShadowRenderer::~ShadowRenderer()
 		delete m_shadow_mix_cb;
 	m_shadow_node_array.clear();
 	m_light_list.clear();
-
-	if (shadowMapTextureDynamicObjects)
-		m_driver->removeTexture(shadowMapTextureDynamicObjects);
-
-	if (shadowMapTextureFinal)
-		m_driver->removeTexture(shadowMapTextureFinal);
-
-	if (shadowMapTextureColors)
-		m_driver->removeTexture(shadowMapTextureColors);
-
-	if (shadowMapClientMap)
-		m_driver->removeTexture(shadowMapClientMap);
-
-	if (shadowMapClientMapFuture)
-		m_driver->removeTexture(shadowMapClientMapFuture);
 }
 
 void ShadowRenderer::disable()
@@ -93,8 +78,36 @@ void ShadowRenderer::disable()
 	if (shadowMapTextureFinal) {
 		m_driver->setRenderTarget(shadowMapTextureFinal, true, true,
 			video::SColor(255, 255, 255, 255));
-		m_driver->setRenderTarget(0, true, true);
+		m_driver->setRenderTarget(0, false, false);
 	}
+
+	if (shadowMapTextureDynamicObjects) {
+		m_driver->removeTexture(shadowMapTextureDynamicObjects);
+		shadowMapTextureDynamicObjects = nullptr;
+	}
+
+	if (shadowMapTextureFinal) {
+		m_driver->removeTexture(shadowMapTextureFinal);
+		shadowMapTextureFinal = nullptr;
+	}
+
+	if (shadowMapTextureColors) {
+		m_driver->removeTexture(shadowMapTextureColors);
+		shadowMapTextureColors = nullptr;
+	}
+
+	if (shadowMapClientMap) {
+		m_driver->removeTexture(shadowMapClientMap);
+		shadowMapClientMap = nullptr;
+	}
+
+	if (shadowMapClientMapFuture) {
+		m_driver->removeTexture(shadowMapClientMapFuture);
+		shadowMapClientMapFuture = nullptr;
+	}
+
+	for (auto node : m_shadow_node_array)
+		node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
 }
 
 void ShadowRenderer::initialize()
@@ -119,7 +132,7 @@ void ShadowRenderer::initialize()
 	m_texture_format_color = m_shadow_map_texture_32bit
 						 ? video::ECOLOR_FORMAT::ECF_G32R32F
 						 : video::ECOLOR_FORMAT::ECF_G16R16F;
-	
+
 	m_shadows_enabled &= m_shadows_supported;
 }
 
@@ -163,11 +176,16 @@ void ShadowRenderer::setShadowIntensity(float shadow_intensity)
 void ShadowRenderer::addNodeToShadowList(
 		scene::ISceneNode *node, E_SHADOW_MODE shadowMode)
 {
-	m_shadow_node_array.emplace_back(NodeToApply(node, shadowMode));
+	m_shadow_node_array.emplace_back(node, shadowMode);
+	// node should never be ClientMap
+	assert(strcmp(node->getName(), "ClientMap") != 0);
+
+	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 {
+	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
 	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
 		if (it->node == node) {
 			it = m_shadow_node_array.erase(it);
@@ -235,6 +253,9 @@ void ShadowRenderer::updateSMTextures()
 			std::string("shadowmap_final_") + itos(m_shadow_map_texture_size),
 			frt, true);
 		assert(shadowMapTextureFinal != nullptr);
+
+		for (auto &node : m_shadow_node_array)
+			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	}
 
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
@@ -264,7 +285,7 @@ void ShadowRenderer::updateSMTextures()
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
 					cb->CameraPos = light.getFuturePlayerPos();
 				}
-			
+
 			// set the Render Target
 			// right now we can only render in usual RTT, not
 			// Depth texture is available in irrlicth maybe we
@@ -322,11 +343,12 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 		return;
 	}
 
+
 	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values for entities are set in updateSMTextures
-			// SM texture for entities is not updated incrementally and 
+			// SM texture for entities is not updated incrementally and
 			// must by updated using current player position.
 			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
 
@@ -369,7 +391,7 @@ void ShadowRenderer::drawDebug()
 		m_driver->draw2DImage(shadowMapClientMap,
 				core::rect<s32>(0, 50 + 128, 128, 128 + 50 + 128),
 				core::rect<s32>({0, 0}, shadowMapTextureFinal->getSize()));
-	
+
 	if (shadowMapTextureDynamicObjects)
 		m_driver->draw2DImage(shadowMapTextureDynamicObjects,
 				core::rect<s32>(0, 128 + 50 + 128, 128,
@@ -406,39 +428,32 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 	m_driver->setTransform(video::ETS_VIEW, light.getFutureViewMatrix());
 	m_driver->setTransform(video::ETS_PROJECTION, light.getFutureProjectionMatrix());
 
-	// Operate on the client map
-	for (const auto &shadow_node : m_shadow_node_array) {
-		if (strcmp(shadow_node.node->getName(), "ClientMap") != 0)
-			continue;
+	ClientMap &map_node = static_cast<ClientMap &>(m_client->getEnv().getMap());
 
-		ClientMap *map_node = static_cast<ClientMap *>(shadow_node.node);
-
-		video::SMaterial material;
-		if (map_node->getMaterialCount() > 0) {
-			// we only want the first material, which is the one with the albedo info
-			material = map_node->getMaterial(0);
-		}
-
-		material.BackfaceCulling = false;
-		material.FrontfaceCulling = true;
-
-		if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
-			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
-		}
-		else {
-			material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
-			material.BlendOperation = video::EBO_MIN;
-		}
-
-		m_driver->setTransform(video::ETS_WORLD,
-				map_node->getAbsoluteTransformation());
-
-		int frame = m_force_update_shadow_map ? 0 : m_current_frame;
-		int total_frames = m_force_update_shadow_map ? 1 : m_map_shadow_update_frames;
-
-		map_node->renderMapShadows(m_driver, material, pass, frame, total_frames);
-		break;
+	video::SMaterial material;
+	if (map_node.getMaterialCount() > 0) {
+		// we only want the first material, which is the one with the albedo info
+		material = map_node.getMaterial(0);
 	}
+
+	material.BackfaceCulling = false;
+	material.FrontfaceCulling = true;
+
+	if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
+		material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;
+	}
+	else {
+		material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
+		material.BlendOperation = video::EBO_MIN;
+	}
+
+	m_driver->setTransform(video::ETS_WORLD,
+			map_node.getAbsoluteTransformation());
+
+	int frame = m_force_update_shadow_map ? 0 : m_current_frame;
+	int total_frames = m_force_update_shadow_map ? 1 : m_map_shadow_update_frames;
+
+	map_node.renderMapShadows(m_driver, material, pass, frame, total_frames);
 }
 
 void ShadowRenderer::renderShadowObjects(
@@ -449,8 +464,7 @@ void ShadowRenderer::renderShadowObjects(
 
 	for (const auto &shadow_node : m_shadow_node_array) {
 		// we only take care of the shadow casters
-		if (shadow_node.shadowMode == ESM_RECEIVE ||
-				strcmp(shadow_node.node->getName(), "ClientMap") == 0)
+		if (shadow_node.shadowMode == ESM_RECEIVE)
 			continue;
 
 		// render other objects
@@ -680,4 +694,23 @@ std::string ShadowRenderer::readShaderFile(const std::string &path)
 	fs::ReadFile(path, content);
 
 	return prefix + content;
+}
+
+ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
+{
+	// disable if unsupported
+	if (g_settings->getBool("enable_dynamic_shadows") && (
+		g_settings->get("video_driver") != "opengl" ||
+		!g_settings->getBool("enable_shaders"))) {
+		g_settings->setBool("enable_dynamic_shadows", false);
+	}
+
+	if (g_settings->getBool("enable_shaders") &&
+			g_settings->getBool("enable_dynamic_shadows")) {
+		ShadowRenderer *shadow_renderer = new ShadowRenderer(device, client);
+		shadow_renderer->initialize();
+		return shadow_renderer;
+	}
+
+	return nullptr;
 }

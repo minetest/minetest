@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "clientdynamicinfo.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -108,8 +109,10 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Use the highest version supported by both
 	u8 depl_serial_v = std::min(client_max, our_max);
 	// If it's lower than the lowest supported, give up.
+#if SER_FMT_VER_LOWEST_READ > 0
 	if (depl_serial_v < SER_FMT_VER_LOWEST_READ)
 		depl_serial_v = SER_FMT_VER_INVALID;
+#endif
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
@@ -1838,4 +1841,19 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 				getScriptIface()->on_dynamic_media_added(token, player->getName());
 		}
 	}
+}
+
+void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
+{
+	ClientDynamicInfo info;
+	*pkt >> info.render_target_size.X;
+	*pkt >> info.render_target_size.Y;
+	*pkt >> info.real_gui_scaling;
+	*pkt >> info.real_hud_scaling;
+	*pkt >> info.max_fs_size.X;
+	*pkt >> info.max_fs_size.Y;
+
+	session_t peer_id = pkt->getPeerId();
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
+	client->setDynamicInfo(info);
 }

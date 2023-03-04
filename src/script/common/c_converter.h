@@ -61,23 +61,10 @@ bool getintfield(lua_State *L, int table,
 	return got;
 }
 
-template<class T>
-bool getv3intfield(lua_State *L, int index,
-		const char *fieldname, T &result)
-{
-	lua_getfield(L, index, fieldname);
-	bool got = false;
-	if (lua_istable(L, -1)) {
-		got |= getintfield(L, -1, "x", result.X);
-		got |= getintfield(L, -1, "y", result.Y);
-		got |= getintfield(L, -1, "z", result.Z);
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
+// Retrieve an v3s16 where all components are optional (falls back to default)
 v3s16              getv3s16field_default(lua_State *L, int table,
                              const char *fieldname, v3s16 default_);
+
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
 size_t             getstringlistfield(lua_State *L, int table,
@@ -100,6 +87,7 @@ void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
 
 v3f                 checkFloatPos       (lua_State *L, int index);
+v2f                 check_v2f           (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);
 
@@ -120,6 +108,7 @@ size_t              read_stringlist     (lua_State *L, int index,
 
 void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
+void                push_v2u32          (lua_State *L, v2u32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
 void                push_aabb3f         (lua_State *L, aabb3f box);
 void                push_ARGB8          (lua_State *L, video::SColor color);
@@ -133,3 +122,12 @@ void                warn_if_field_exists(lua_State *L, int table,
 
 size_t write_array_slice_float(lua_State *L, int table_index, float *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
+
+// This must match the implementation in builtin/game/misc_s.lua
+// Note that this returns a floating point result as Lua integers are 32-bit
+inline lua_Number hash_node_position(v3s16 pos)
+{
+	return (((s64)pos.Z + 0x8000L) << 32)
+			| (((s64)pos.Y + 0x8000L) << 16)
+			| ((s64)pos.X + 0x8000L);
+}

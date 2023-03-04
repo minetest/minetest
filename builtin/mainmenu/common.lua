@@ -45,6 +45,27 @@ local function configure_selected_world_params(idx)
 	end
 end
 
+-- retrieved from https://wondernetwork.com/pings with (hopefully) representative cities
+-- Amsterdam, Auckland, Brasilia, Denver, Lagos, Singapore
+local latency_matrix = {
+	["AF"] = { ["AS"]=258, ["EU"]=100, ["NA"]=218, ["OC"]=432, ["SA"]=308 },
+	["AS"] = { ["EU"]=168, ["NA"]=215, ["OC"]=125, ["SA"]=366 },
+	["EU"] = { ["NA"]=120, ["OC"]=298, ["SA"]=221 },
+	["NA"] = { ["OC"]=202, ["SA"]=168 },
+	["OC"] = { ["SA"]=411 },
+	["SA"] = {}
+}
+function estimate_continent_latency(own, spec)
+	local there = spec.geo_continent
+	if not own or not there then
+		return nil
+	end
+	if own == there then
+		return 0
+	end
+	return latency_matrix[there][own] or latency_matrix[own][there]
+end
+
 function render_serverlist_row(spec)
 	local text = ""
 	if spec.name then
@@ -125,18 +146,12 @@ os.tmpname = function()
 end
 --------------------------------------------------------------------------------
 
-function menu_render_worldlist(show_gameid)
+function menu_render_worldlist()
 	local retval = {}
 	local current_worldlist = menudata.worldlist:get_list()
 
-	local row
 	for i, v in ipairs(current_worldlist) do
-		row = v.name
-		if show_gameid == nil or show_gameid == true then
-			row = row .. " [" .. v.gameid .. "]"
-		end
-		retval[#retval+1] = core.formspec_escape(row)
-
+		retval[#retval+1] = core.formspec_escape(v.name)
 	end
 
 	return table.concat(retval, ",")
@@ -241,4 +256,12 @@ function menu_worldmt_legacy(selected)
 			menu_worldmt(selected, mode_name, core.settings:get(mode_name))
 		end
 	end
+end
+
+function confirmation_formspec(message, confirm_id, confirm_label, cancel_id, cancel_label)
+	return "size[10,2.5,true]" ..
+			"label[0.5,0.5;" .. message .. "]" ..
+			"style[" .. confirm_id .. ";bgcolor=red]" ..
+			"button[0.5,1.5;2.5,0.5;" .. confirm_id .. ";" .. confirm_label .. "]" ..
+			"button[7.0,1.5;2.5,0.5;" .. cancel_id .. ";" .. cancel_label .. "]"
 end

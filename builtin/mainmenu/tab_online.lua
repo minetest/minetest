@@ -77,7 +77,7 @@ local function get_formspec(tabview, name, tabdata)
 		"container_end[]" ..
 
 		"container[9.75,0]" ..
-		"box[0,0;5.75,7;#666666]" ..
+		"box[0,0;5.75,7.1;#666666]" ..
 
 		-- Address / Port
 		"label[0.25,0.35;" .. fgettext("Address") .. "]" ..
@@ -87,27 +87,34 @@ local function get_formspec(tabview, name, tabdata)
 		"field[4.25,0.5;1.25,0.75;te_port;;" ..
 			core.formspec_escape(core.settings:get("remote_port")) .. "]" ..
 
-		-- Name / Password
-		"label[0.25,1.55;" .. fgettext("Name") .. "]" ..
-		"label[3,1.55;" .. fgettext("Password") .. "]" ..
-		"field[0.25,1.75;2.75,0.75;te_name;;" ..
-			core.formspec_escape(core.settings:get("name")) .. "]" ..
-		"pwdfield[3,1.75;2.5,0.75;te_pwd;]" ..
-
 		-- Description Background
-		"label[0.25,2.75;" .. fgettext("Server Description") .. "]" ..
-		"box[0.25,3;5.25,2.75;#999999]"..
+		"label[0.25,1.6;" .. fgettext("Server Description") .. "]" ..
+		"box[0.25,1.85;5.25,2.7;#999999]"..
+
+		-- Name / Password
+		"container[0,4.8]" ..
+		"label[0.25,0;" .. fgettext("Name") .. "]" ..
+		"label[2.875,0;" .. fgettext("Password") .. "]" ..
+		"field[0.25,0.2;2.625,0.75;te_name;;" .. core.formspec_escape(core.settings:get("name")) .. "]" ..
+		"pwdfield[2.875,0.2;2.625,0.75;te_pwd;]" ..
+		"container_end[]" ..
 
 		-- Connect
-		"button[3,6;2.5,0.75;btn_mp_connect;" .. fgettext("Connect") .. "]"
+		"button[3,6;2.5,0.75;btn_mp_login;" .. fgettext("Login") .. "]"
+
+	if core.settings:get_bool("enable_split_login_register") then
+		retval = retval .. "button[0.25,6;2.5,0.75;btn_mp_register;" .. fgettext("Register") .. "]"
+	end
 
 	if tabdata.selected then
 		if gamedata.fav then
-			retval = retval .. "button[0.25,6;2.5,0.75;btn_delete_favorite;" ..
-				fgettext("Del. Favorite") .. "]"
+			retval = retval .. "tooltip[btn_delete_favorite;" .. fgettext("Remove favorite") .. "]"
+			retval = retval .. "style[btn_delete_favorite;padding=6]"
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 		if gamedata.serverdescription then
-			retval = retval .. "textarea[0.25,3;5.25,2.75;;;" ..
+			retval = retval .. "textarea[0.25,1.85;5.2,2.75;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 	end
@@ -141,7 +148,7 @@ local function get_formspec(tabview, name, tabdata)
 		"align=inline,padding=0.25,width=1.5;" ..
 		"color,align=inline,span=1;" ..
 		"text,align=inline,padding=1]" ..
-		"table[0.25,1;9.25,5.75;servers;"
+		"table[0.25,1;9.25,5.8;servers;"
 
 	local servers = get_sorted_servers()
 
@@ -173,7 +180,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[15.5,7,false]real_coordinates[true]"
+	return retval, "size[15.5,7.1,false]real_coordinates[true]"
 end
 
 --------------------------------------------------------------------------------
@@ -339,12 +346,15 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if (fields.btn_mp_connect or fields.key_enter)
+	if (fields.btn_mp_login or fields.key_enter)
 			and fields.te_address ~= "" and fields.te_port then
 		gamedata.playername = fields.te_name
 		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
 		gamedata.port       = tonumber(fields.te_port)
+
+		local enable_split_login_register = core.settings:get_bool("enable_split_login_register")
+		gamedata.allow_login_or_register = enable_split_login_register and "login" or "any"
 		gamedata.selected_world = 0
 
 		local idx = core.get_table_index("servers")
@@ -378,6 +388,25 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		core.settings:set("remote_port", gamedata.port)
 
 		core.start()
+		return true
+	end
+
+	if fields.btn_mp_register and fields.te_address ~= "" and fields.te_port then
+		local idx = core.get_table_index("servers")
+		local server = idx and tabdata.lookup[idx]
+		if server and (server.address ~= fields.te_address or server.port ~= tonumber(fields.te_port)) then
+			server = nil
+		end
+
+		if server and not is_server_protocol_compat_or_error(
+					server.proto_min, server.proto_max) then
+			return true
+		end
+
+		local dlg = create_register_dialog(fields.te_address, tonumber(fields.te_port), server)
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
 		return true
 	end
 

@@ -52,15 +52,15 @@ public:
 	// is_writeable()
 	static int l_is_writeable(lua_State *L);
 
+	static const char className[];
+
 private:
 	// garbage collector
 	static int gc_object(lua_State *L);
 
-	static ModChannelRef *checkobject(lua_State *L, int narg);
 	static ModChannel *getobject(lua_State *L, ModChannelRef *ref);
 
 	std::string m_modchannel_name;
 
-	static const char className[];
 	static const luaL_Reg methods[];
 };

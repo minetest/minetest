@@ -234,7 +234,6 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
-	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;
 	std::map<v3s16, MapBlock *>::iterator it;
 
@@ -257,7 +256,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (s.Z - 1) / 2;
 
-	//// Create VManip for effected area, emerge our area, modify area
+	//// Create VManip for affected area, emerge our area, modify area
 	//// inside VManip, then blit back.
 	v3s16 bp1 = getNodeBlockPos(p);
 	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1, 1, 1));
@@ -274,8 +273,7 @@ void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	//// Create & dispatch map modification events to observers
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (it = modified_blocks.begin(); it != modified_blocks.end(); ++it)
-		event.modified_blocks.insert(it->first);
+	event.setModifiedBlocks(modified_blocks);
 
 	map->dispatchEvent(event);
 }

@@ -376,27 +376,58 @@ bool AuthDatabaseFiles::writeAuthFile()
 	return true;
 }
 
-ModMetadataDatabaseFiles::ModMetadataDatabaseFiles(const std::string &savedir):
+ModStorageDatabaseFiles::ModStorageDatabaseFiles(const std::string &savedir):
 	m_storage_dir(savedir + DIR_DELIM + "mod_storage")
 {
 }
 
-bool ModMetadataDatabaseFiles::getModEntries(const std::string &modname, StringMap *storage)
+void ModStorageDatabaseFiles::getModEntries(const std::string &modname, StringMap *storage)
 {
 	Json::Value *meta = getOrCreateJson(modname);
 	if (!meta)
-		return false;
+		return;
 
 	const Json::Value::Members attr_list = meta->getMemberNames();
 	for (const auto &it : attr_list) {
 		Json::Value attr_value = (*meta)[it];
 		(*storage)[it] = attr_value.asString();
 	}
-
-	return true;
 }
 
-bool ModMetadataDatabaseFiles::setModEntry(const std::string &modname,
+void ModStorageDatabaseFiles::getModKeys(const std::string &modname,
+		std::vector<std::string> *storage)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return;
+
+	std::vector<std::string> keys = meta->getMemberNames();
+	storage->reserve(storage->size() + keys.size());
+	for (std::string &key : keys)
+		storage->push_back(std::move(key));
+}
+
+bool ModStorageDatabaseFiles::getModEntry(const std::string &modname,
+	const std::string &key, std::string *value)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta)
+		return false;
+
+	if (meta->isMember(key)) {
+		*value = (*meta)[key].asString();
+		return true;
+	}
+	return false;
+}
+
+bool ModStorageDatabaseFiles::hasModEntry(const std::string &modname, const std::string &key)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	return meta && meta->isMember(key);
+}
+
+bool ModStorageDatabaseFiles::setModEntry(const std::string &modname,
 	const std::string &key, const std::string &value)
 {
 	Json::Value *meta = getOrCreateJson(modname);
@@ -409,7 +440,7 @@ bool ModMetadataDatabaseFiles::setModEntry(const std::string &modname,
 	return true;
 }
 
-bool ModMetadataDatabaseFiles::removeModEntry(const std::string &modname,
+bool ModStorageDatabaseFiles::removeModEntry(const std::string &modname,
 		const std::string &key)
 {
 	Json::Value *meta = getOrCreateJson(modname);
@@ -424,22 +455,33 @@ bool ModMetadataDatabaseFiles::removeModEntry(const std::string &modname,
 	return false;
 }
 
-void ModMetadataDatabaseFiles::beginSave()
+bool ModStorageDatabaseFiles::removeModEntries(const std::string &modname)
+{
+	Json::Value *meta = getOrCreateJson(modname);
+	if (!meta || meta->empty())
+		return false;
+
+	meta->clear();
+	m_modified.insert(modname);
+	return true;
+}
+
+void ModStorageDatabaseFiles::beginSave()
 {
 }
 
-void ModMetadataDatabaseFiles::endSave()
+void ModStorageDatabaseFiles::endSave()
 {
 	if (m_modified.empty())
 		return;
 
 	if (!fs::CreateAllDirs(m_storage_dir)) {
-		errorstream << "ModMetadataDatabaseFiles: Unable to save. '"
+		errorstream << "ModStorageDatabaseFiles: Unable to save. '"
 				<< m_storage_dir << "' cannot be created." << std::endl;
 		return;
 	}
 	if (!fs::IsDir(m_storage_dir)) {
-		errorstream << "ModMetadataDatabaseFiles: Unable to save. '"
+		errorstream << "ModStorageDatabaseFiles: Unable to save. '"
 				<< m_storage_dir << "' is not a directory." << std::endl;
 		return;
 	}
@@ -447,10 +489,10 @@ void ModMetadataDatabaseFiles::endSave()
 	for (auto it = m_modified.begin(); it != m_modified.end();) {
 		const std::string &modname = *it;
 
-		const Json::Value &json = m_mod_meta[modname];
+		const Json::Value &json = m_mod_storage[modname];
 
 		if (!fs::safeWriteToFile(m_storage_dir + DIR_DELIM + modname, fastWriteJson(json))) {
-			errorstream << "ModMetadataDatabaseFiles[" << modname
+			errorstream << "ModStorageDatabaseFiles[" << modname
 					<< "]: failed to write file." << std::endl;
 			++it;
 			continue;
@@ -460,24 +502,24 @@ void ModMetadataDatabaseFiles::endSave()
 	}
 }
 
-void ModMetadataDatabaseFiles::listMods(std::vector<std::string> *res)
+void ModStorageDatabaseFiles::listMods(std::vector<std::string> *res)
 {
 	// List in-memory metadata first.
-	for (const auto &pair : m_mod_meta) {
+	for (const auto &pair : m_mod_storage) {
 		res->push_back(pair.first);
 	}
 
 	// List other metadata present in the filesystem.
 	for (const auto &entry : fs::GetDirListing(m_storage_dir)) {
-		if (!entry.dir && m_mod_meta.count(entry.name) == 0)
+		if (!entry.dir && m_mod_storage.count(entry.name) == 0)
 			res->push_back(entry.name);
 	}
 }
 
-Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modname)
+Json::Value *ModStorageDatabaseFiles::getOrCreateJson(const std::string &modname)
 {
-	auto found = m_mod_meta.find(modname);
-	if (found != m_mod_meta.end())
+	auto found = m_mod_storage.find(modname);
+	if (found != m_mod_storage.end())
 		return &found->second;
 
 	Json::Value meta(Json::objectValue);
@@ -491,11 +533,11 @@ Json::Value *ModMetadataDatabaseFiles::getOrCreateJson(const std::string &modnam
 		std::string errs;
 
 		if (!Json::parseFromStream(builder, is, &meta, &errs)) {
-			errorstream << "ModMetadataDatabaseFiles[" << modname
+			errorstream << "ModStorageDatabaseFiles[" << modname
 					<< "]: failed to decode data: " << errs << std::endl;
 			return nullptr;
 		}
 	}
 
-	return &(m_mod_meta[modname] = meta);
+	return &(m_mod_storage[modname] = std::move(meta));
 }

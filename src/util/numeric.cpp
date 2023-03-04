@@ -46,9 +46,20 @@ void myrand_bytes(void *out, size_t len)
 	g_pcgrand.bytes(out, len);
 }
 
+float myrand_float()
+{
+	u32 uv = g_pcgrand.next();
+	return (float)uv / (float)U32_MAX;
+}
+
 int myrand_range(int min, int max)
 {
 	return g_pcgrand.range(min, max);
+}
+
+float myrand_range(float min, float max)
+{
+	return (max-min) * myrand_float() + min;
 }
 
 
@@ -136,7 +147,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// Adjust camera position, for purposes of computing the angle,
 	// such that a block that has any portion visible with the
 	// current camera position will have the center visible at the
-	// adjusted postion
+	// adjusted position
 	f32 adjdist = BLOCK_MAX_RADIUS / cos((M_PI - camera_fov) / 2);
 
 	// Block position relative to adjusted camera
@@ -150,7 +161,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	f32 cosangle = dforward / blockpos_adj.getLength();
 
 	// If block is not in the field of view, skip it
-	// HOTFIX: use sligthly increased angle (+10%) to fix too agressive
+	// HOTFIX: use sligthly increased angle (+10%) to fix too aggressive
 	// culling. Somebody have to find out whats wrong with the math here.
 	// Previous value: camera_fov / 2
 	if (cosangle < std::cos(camera_fov * 0.55f))

@@ -939,7 +939,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 		do {
 			PLAYER_TO_SA(player)->item_OnDrop(output_replacement, player,
 				player->getBasePosition());
-			if (count >= output_replacement.count) {
+			if (count <= output_replacement.count) {
 				errorstream << "Couldn't drop replacement stack " <<
 					output_replacement.getItemString() << " because drop loop didn't "
 					"decrease count." << std::endl;
@@ -973,7 +973,7 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 	if (!clist)
 		return false;
 
-	// Mangle crafting grid to an another format
+	// Mangle crafting grid to another format
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
 	ci.width = clist->getWidth() ? clist->getWidth() : 3;

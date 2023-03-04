@@ -36,9 +36,6 @@ class Client;
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
 
-// PROTOCOL_VERSION >= 37
-static const u8 CONTENTFEATURES_VERSION = 13;
-
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
@@ -61,7 +58,7 @@ enum ContentParamType2
 	CPT2_FULL,
 	// Flowing liquid properties
 	CPT2_FLOWINGLIQUID,
-	// Direction for chests and furnaces and such
+	// Direction for chests and furnaces and such (with axis rotation)
 	CPT2_FACEDIR,
 	// Direction for signs, torches and such
 	CPT2_WALLMOUNTED,
@@ -81,6 +78,10 @@ enum ContentParamType2
 	CPT2_GLASSLIKE_LIQUID_LEVEL,
 	// 3 bits of palette index, then degrotate
 	CPT2_COLORED_DEGROTATE,
+	// Simplified direction for chests and furnaces and such (4 directions)
+	CPT2_4DIR,
+	// 6 bits of palette index, then 4dir
+	CPT2_COLORED_4DIR,
 };
 
 enum LiquidType
@@ -212,10 +213,10 @@ enum NodeDrawType
 	// paramtype2 = "meshoptions" allows various forms, sizes and
 	// vertical and horizontal random offsets.
 	NDT_PLANTLIKE,
-	// Fenceposts that connect to neighbouring fenceposts with horizontal bars
+	// Fenceposts that connect to neighboring fenceposts with horizontal bars
 	NDT_FENCELIKE,
 	// Selects appropriate junction texture to connect like rails to
-	// neighbouring raillikes.
+	// neighboring raillikes.
 	NDT_RAILLIKE,
 	// Custom Lua-definable structure of multiple cuboids
 	NDT_NODEBOX,
@@ -224,7 +225,7 @@ enum NodeDrawType
 	// Uses 3 textures, one for frames, second for faces,
 	// optional third is a 'special tile' for the liquid.
 	NDT_GLASSLIKE_FRAMED,
-	// Draw faces slightly rotated and only on neighbouring nodes
+	// Draw faces slightly rotated and only on neighboring nodes
 	NDT_FIRELIKE,
 	// Enabled -> ndt_glasslike_framed, disabled -> ndt_glasslike
 	NDT_GLASSLIKE_FRAMED_OPTIONAL,
@@ -286,8 +287,7 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, u8 contentfeatures_version,
-		NodeDrawType drawtype);
+	void deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_version);
 };
 
 // Defines the number of special tiles per nodedef
@@ -299,6 +299,10 @@ struct TileDef
 
 struct ContentFeatures
 {
+	// PROTOCOL_VERSION >= 37. This is legacy and should not be increased anymore, 
+	// write checks that depend directly on the protocol version instead.
+	static const u8 CONTENTFEATURES_VERSION = 13;
+
 	/*
 		Cached stuff
 	 */
@@ -317,6 +321,9 @@ struct ContentFeatures
 	bool has_on_construct;
 	bool has_on_destruct;
 	bool has_after_destruct;
+
+	// "float" group
+	bool floats;
 
 	/*
 		Actual data
@@ -447,7 +454,7 @@ struct ContentFeatures
 	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*
 		Some handy methods
@@ -489,15 +496,25 @@ struct ContentFeatures
 	bool isLiquid() const{
 		return (liquid_type != LIQUID_NONE);
 	}
-	bool sameLiquid(const ContentFeatures &f) const{
-		if(!isLiquid() || !f.isLiquid()) return false;
-		return (liquid_alternative_flowing_id == f.liquid_alternative_flowing_id);
+
+	bool isLiquidRender() const {
+		return (drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID);
 	}
 
-	bool lightingEquivalent(const ContentFeatures &other) const {
-		return light_propagates == other.light_propagates
-				&& sunlight_propagates == other.sunlight_propagates
-				&& light_source == other.light_source;
+	bool sameLiquidRender(const ContentFeatures &f) const {
+		if (!isLiquidRender() || !f.isLiquidRender())
+			return false;
+		return liquid_alternative_flowing_id == f.liquid_alternative_flowing_id &&
+			liquid_alternative_source_id == f.liquid_alternative_source_id;
+	}
+
+	ContentLightingFlags getLightingFlags() const {
+		ContentLightingFlags flags;
+		flags.has_light = param_type == CPT_LIGHT;
+		flags.light_propagates = light_propagates;
+		flags.sunlight_propagates = sunlight_propagates;
+		flags.light_source = light_source;
+		return flags;
 	}
 
 	int getGroup(const std::string &group) const
@@ -567,6 +584,15 @@ public:
 	 */
 	inline const ContentFeatures& get(const MapNode &n) const {
 		return get(n.getContent());
+	}
+
+	inline ContentLightingFlags getLightingFlags(content_t c) const {
+		// No bound check is necessary, since the array's length is CONTENT_MAX + 1.
+		return m_content_lighting_flag_cache[c];
+	}
+
+	inline ContentLightingFlags getLightingFlags(const MapNode &n) const {
+		return getLightingFlags(n.getContent());
 	}
 
 	/*!
@@ -690,7 +716,7 @@ public:
 
 	/*!
 	 * Writes the content of this manager to the given output stream.
-	 * @param protocol_version serialization version of ContentFeatures
+	 * @param protocol_version Active network protocol version
 	 */
 	void serialize(std::ostream &os, u16 protocol_version) const;
 
@@ -698,8 +724,9 @@ public:
 	 * Restores the manager from a serialized stream.
 	 * This clears the previous state.
 	 * @param is input stream containing a serialized NodeDefManager
+	 * @param protocol_version Active network protocol version
 	 */
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, u16 protocol_version);
 
 	/*!
 	 * Used to indicate that node registration has finished.
@@ -814,6 +841,11 @@ private:
 	 * Even constant NodeDefManager instances can register listeners.
 	 */
 	mutable std::vector<NodeResolver *> m_pending_resolve_callbacks;
+
+	/*!
+	 * Fast cache of content lighting flags.
+	 */
+	ContentLightingFlags m_content_lighting_flag_cache[CONTENT_MAX + 1L];
 };
 
 NodeDefManager *createNodeDefManager();

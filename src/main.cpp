@@ -77,12 +77,17 @@ extern "C" {
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
+#define ENV_NO_COLOR "NO_COLOR"
+#define ENV_CLICOLOR "CLICOLOR"
+#define ENV_CLICOLOR_FORCE "CLICOLOR_FORCE"
+
 typedef std::map<std::string, ValueSpec> OptionList;
 
 /**********************************************************************
  * Private functions
  **********************************************************************/
 
+static void get_env_opts(Settings &args);
 static bool get_cmdline_opts(int argc, char *argv[], Settings *cmd_args);
 static void set_allowed_options(OptionList *allowed_options);
 
@@ -97,6 +102,7 @@ static void list_game_ids();
 static void list_worlds(bool print_name, bool print_path);
 static bool setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
+static bool use_debugger(int argc, char *argv[]);
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
 static void uninit_common();
 static void startup_message();
@@ -136,6 +142,7 @@ int main(int argc, char *argv[])
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
 
 	Settings cmd_args;
+	get_env_opts(cmd_args);
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);
 	if (!cmd_args_ok
 			|| cmd_args.getFlag("help")
@@ -155,6 +162,11 @@ int main(int argc, char *argv[])
 
 	if (!setup_log_params(cmd_args))
 		return 1;
+
+	if (cmd_args.getFlag("debugger")) {
+		if (!use_debugger(argc, argv))
+			warningstream << "Continuing without debugger" << std::endl;
+	}
 
 	porting::signal_handler_init();
 
@@ -269,6 +281,29 @@ int main(int argc, char *argv[])
  *****************************************************************************/
 
 
+static void get_env_opts(Settings &args)
+{
+	// CLICOLOR is a de-facto standard option for colors <https://bixense.com/clicolors/>
+	// CLICOLOR != 0: ANSI colors are supported (auto-detection, this is the default)
+	// CLICOLOR == 0: ANSI colors are NOT supported
+	const char *clicolor = std::getenv(ENV_CLICOLOR);
+	if (clicolor && std::string(clicolor) == "0") {
+		args.set("color", "never");
+	}
+	// NO_COLOR only specifies that no color is allowed.
+	// Implemented according to <http://no-color.org/>
+	const char *no_color = std::getenv(ENV_NO_COLOR);
+	if (no_color && no_color[0]) {
+		args.set("color", "never");
+	}
+	// CLICOLOR_FORCE is another option, which should turn on colors "no matter what".
+	const char *clicolor_force = std::getenv(ENV_CLICOLOR_FORCE);
+	if (clicolor_force && std::string(clicolor_force) != "0") {
+		// should ALWAYS have colors, so we ignore tty (no "auto")
+		args.set("color", "always");
+	}
+}
+
 static bool get_cmdline_opts(int argc, char *argv[], Settings *cmd_args)
 {
 	set_allowed_options(&allowed_options);
@@ -312,6 +347,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Print even more information to console"))));
 	allowed_options->insert(std::make_pair("trace", ValueSpec(VALUETYPE_FLAG,
 			_("Print enormous amounts of information to log and console"))));
+	allowed_options->insert(std::make_pair("debugger", ValueSpec(VALUETYPE_FLAG,
+			_("Try to automatically attach a debugger before starting (convenience option)"))));
 	allowed_options->insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
 			_("Set logfile path ('' = no logging)"))));
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
@@ -360,12 +397,14 @@ static void print_help(const OptionList &allowed_options)
 static void print_allowed_options(const OptionList &allowed_options)
 {
 	for (const auto &allowed_option : allowed_options) {
-		std::ostringstream os1(std::ios::binary);
-		os1 << "  --" << allowed_option.first;
+		std::string opt = "  --" + allowed_option.first;
 		if (allowed_option.second.type != VALUETYPE_FLAG)
-			os1 << _(" <value>");
+			opt += _(" <value>");
 
-		std::cout << padStringRight(os1.str(), 30);
+		std::string opt_padded = padStringRight(opt, 30);
+		std::cout << opt_padded;
+		if (opt == opt_padded) // Line is too long to pad
+			std::cout << std::endl << padStringRight("", 30);
 
 		if (allowed_option.second.help)
 			std::cout << allowed_option.second.help;
@@ -455,7 +494,7 @@ static bool setup_log_params(const Settings &cmd_args)
 			color_mode = color_mode_env;
 #endif
 	}
-	if (color_mode != "") {
+	if (!color_mode.empty()) {
 		if (color_mode == "auto") {
 			Logger::color_mode = LOG_COLOR_AUTO;
 		} else if (color_mode == "always") {
@@ -498,10 +537,130 @@ static bool create_userdata_path()
 	}
 #else
 	// Create user data directory
-	success = fs::CreateDir(porting::path_user);
+	success = fs::CreateAllDirs(porting::path_user);
 #endif
 
 	return success;
+}
+
+namespace {
+	std::string findProgram(const char *name)
+	{
+		char *path_c = getenv("PATH");
+		if (!path_c)
+			return "";
+		std::istringstream iss(path_c);
+		std::string checkpath;
+		while (!iss.eof()) {
+			std::getline(iss, checkpath, PATH_DELIM[0]);
+			if (!checkpath.empty() && checkpath.back() != DIR_DELIM_CHAR)
+				checkpath.push_back(DIR_DELIM_CHAR);
+			checkpath.append(name);
+			if (fs::IsExecutable(checkpath))
+				return checkpath;
+		}
+		return "";
+	}
+
+#ifdef _WIN32
+	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
+#else
+	const char *debuggerNames[] = {"gdb", "lldb"};
+#endif
+	template <class T>
+	void getDebuggerArgs(T &out, int i) {
+		if (i == 0) {
+			for (auto s : {"-q", "--batch", "-iex", "set confirm off",
+				"-ex", "run", "-ex", "bt", "--args"})
+				out.push_back(s);
+		} else if (i == 1) {
+			for (auto s : {"-Q", "-b", "-o", "run", "-k", "bt\nq", "--"})
+				out.push_back(s);
+		}
+	}
+}
+
+static bool use_debugger(int argc, char *argv[])
+{
+#if defined(__ANDROID__)
+	return false;
+#else
+#ifdef _WIN32
+	if (IsDebuggerPresent()) {
+		warningstream << "Process is already being debugged." << std::endl;
+		return false;
+	}
+#endif
+
+	char exec_path[1024];
+	if (!porting::getCurrentExecPath(exec_path, sizeof(exec_path)))
+		return false;
+
+	int debugger = -1;
+	std::string debugger_path;
+	for (u32 i = 0; i < ARRLEN(debuggerNames); i++) {
+		debugger_path = findProgram(debuggerNames[i]);
+		if (!debugger_path.empty()) {
+			debugger = i;
+			break;
+		}
+	}
+	if (debugger == -1) {
+		warningstream << "Couldn't find a debugger to use. Try installing gdb or lldb." << std::endl;
+		return false;
+	}
+
+	// Try to be helpful
+#ifdef NDEBUG
+	if (strcmp(BUILD_TYPE, "RelWithDebInfo") != 0) {
+		warningstream << "It looks like your " PROJECT_NAME_C " executable was built without "
+			"debug symbols (BUILD_TYPE=" BUILD_TYPE "), so you won't get useful backtraces."
+			<< std::endl;
+	}
+#endif
+
+	std::vector<const char*> new_args;
+	new_args.push_back(debugger_path.c_str());
+	getDebuggerArgs(new_args, debugger);
+	// Copy the existing arguments
+	new_args.push_back(exec_path);
+	for (int i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "--debugger"))
+			continue;
+		new_args.push_back(argv[i]);
+	}
+	new_args.push_back(nullptr);
+
+#ifdef _WIN32
+	// Special treatment for Windows
+	std::string cmdline;
+	for (int i = 1; new_args[i]; i++) {
+		if (i > 1)
+			cmdline += ' ';
+		cmdline += porting::QuoteArgv(new_args[i]);
+	}
+
+	STARTUPINFO startup_info = {};
+	PROCESS_INFORMATION process_info = {};
+	bool ok = CreateProcess(new_args[0], cmdline.empty() ? nullptr : &cmdline[0],
+		nullptr, nullptr, false, CREATE_UNICODE_ENVIRONMENT,
+		nullptr, nullptr, &startup_info, &process_info);
+	if (!ok) {
+		warningstream << "CreateProcess: " << GetLastError() << std::endl;
+		return false;
+	}
+	DWORD exitcode = 0;
+	WaitForSingleObject(process_info.hProcess, INFINITE);
+	GetExitCodeProcess(process_info.hProcess, &exitcode);
+	exit(exitcode);
+	// not reached
+#else
+	errno = 0;
+	execv(new_args[0], const_cast<char**>(new_args.data()));
+	warningstream << "execv: " << strerror(errno) << std::endl;
+	return false;
+#endif
+#endif
 }
 
 static bool init_common(const Settings &cmd_args, int argc, char *argv[])
@@ -557,7 +716,7 @@ static void startup_message()
 static bool read_config_file(const Settings &cmd_args)
 {
 	// Path of configuration file in use
-	sanity_check(g_settings_path == "");	// Sanity check
+	sanity_check(g_settings_path.empty());	// Sanity check
 
 	if (cmd_args.exists("config")) {
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
@@ -764,7 +923,7 @@ static bool auto_select_world(GameParams *game_params)
 		           << world_path << "]" << std::endl;
 	}
 
-	assert(world_path != "");	// Post-condition
+	assert(!world_path.empty());	// Post-condition
 	game_params->world_path = world_path;
 	return true;
 }
@@ -820,7 +979,7 @@ static bool determine_subgame(GameParams *game_params)
 {
 	SubgameSpec gamespec;
 
-	assert(game_params->world_path != "");	// Pre-condition
+	assert(!game_params->world_path.empty());	// Pre-condition
 
 	// If world doesn't exist
 	if (!game_params->world_path.empty()
@@ -1102,14 +1261,16 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		iss.str(data);
 		iss.clear();
 
-		MapBlock mb(nullptr, v3s16(0,0,0), &server);
-		u8 ver = readU8(iss);
-		mb.deSerialize(iss, ver, true);
+		{
+			MapBlock mb(nullptr, v3s16(0,0,0), &server);
+			u8 ver = readU8(iss);
+			mb.deSerialize(iss, ver, true);
 
-		oss.str("");
-		oss.clear();
-		writeU8(oss, serialize_as_ver);
-		mb.serialize(oss, serialize_as_ver, true, -1);
+			oss.str("");
+			oss.clear();
+			writeU8(oss, serialize_as_ver);
+			mb.serialize(oss, serialize_as_ver, true, -1);
+		}
 
 		db->saveBlock(*it, oss.str());
 

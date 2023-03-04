@@ -40,6 +40,14 @@ Usage:
 
 * Punch: Open node metadata editor
 
+## Item Meta Editor
+Edit and view metadata of items.
+
+Usage:
+
+* Place/Punch: Opens item metadata editor of the item in the next
+               inventory slot from the wielded item
+
 ## Entity Rotator
 Changes the entity rotation (with `set_rotation`).
 
@@ -112,9 +120,35 @@ Usage:
 * Punch entity to increase visual size
 * Sneak+punch entity to decrease visual size
 
+## Branding Iron
+Give an object a temporary name.
+
+Usage:
+* Punch object: Brand the object
+* Punch air: Brand yourself
+* The name is valid until the object unloads.
+* Devices that accept the returned name also accept "player:<playername>" for players.
+
+Use `testtools.get_branded_object(name)` to get an ObjRef.
+
+## Note Meta Privatizer
+Sets the 'formspec' and 'infotext' metadata fields of a node
+to private. This means that clients can no longer access these
+fields.
+This only works for chests [`chest:chest`] at the moment.
+
+Usage:
+* Punch: Set metadata of pointed node to private
+
 ## Light Tool
 Show light level of node.
 
 Usage:
 * Punch: Show light info of node in front of the punched node's side
 * Place: Show light info of the node that you touched
+
+## Particle Spawner
+Spawn a random animated particle.
+
+Usage:
+* Punch: Spawn particle

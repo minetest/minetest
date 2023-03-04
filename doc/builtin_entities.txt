@@ -10,15 +10,17 @@ artificially with `minetest.spawn_falling_node`.
 
 Needs manual initialization when spawned using `/spawnentity`.
 
-Default behaviour:
+Default behavior:
 
 * Falls down in a straight line (gravity = `movement_gravity` setting)
 * Collides with `walkable` node
 * Collides with all physical objects except players
 * If the node group `float=1` is set, it also collides with liquid nodes
+  (nodes with `liquidtype ~= "none"`)
 * When it hits a solid (=`walkable`) node, it will try to place itself as a
   node, replacing the node above.
-    * If the falling node cannot replace the destination node, it is dropped.
+    * If the falling node cannot replace the destination node, it is dropped
+      as an item.
     * If the destination node is a leveled node (`paramtype2="leveled"`) of the
       same node name, the levels of both are summed.
 
@@ -57,13 +59,18 @@ Supported drawtypes:
 * `airlike` (not pointable)
 
 Other drawtypes still kinda work, but they might look weird.
+If the node uses a world-aligned texture with a `scale` greater
+than 1, the falling node will display the top-most, left-most
+portion of that texture.
 
 Supported `paramtype2` values:
 
 * `wallmounted`
 * `facedir`
+* `4dir`
 * `colorwallmounted`
 * `colorfacedir`
+* `color4dir`
 * `color`
 
 ## Dropped item stack (`__builtin:item`)
@@ -94,7 +101,7 @@ Needs manual initialization when spawned using `/spawnentity`.
 * `set_item(self, item)`:
     * Function to initialize the dropped item
     * `item` (type `ItemStack`) specifies the item to represent
-* `age`: Age in seconds. Behaviour according to the setting `item_entity_ttl`
+* `age`: Age in seconds. Behavior according to the setting `item_entity_ttl`
 * `itemstring`: Itemstring of the item that this item entity represents.
   Read-only.
 

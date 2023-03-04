@@ -40,6 +40,7 @@ struct SkyboxParams
 	video::SColor fog_sun_tint;
 	video::SColor fog_moon_tint;
 	std::string fog_tint_type;
+	float body_orbit_tilt;
 };
 
 struct SunParams
@@ -66,6 +67,7 @@ struct StarParams
 	u32 count;
 	video::SColor starcolor;
 	f32 scale;
+	f32 day_opacity;
 };
 
 struct CloudParams
@@ -94,6 +96,7 @@ public:
 		sky.fog_sun_tint = video::SColor(255, 244, 125, 29);
 		sky.fog_moon_tint = video::SColorf(0.5, 0.6, 0.8, 1).toSColor();
 		sky.fog_tint_type = "default";
+		sky.body_orbit_tilt = 0.0f;
 		return sky;
 	}
 
@@ -141,6 +144,7 @@ public:
 		stars.count = 1000;
 		stars.starcolor = video::SColor(105, 235, 235, 255);
 		stars.scale = 1;
+		stars.day_opacity = 0;
 		return stars;
 	}
 

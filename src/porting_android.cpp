@@ -46,10 +46,9 @@ void android_main(android_app *app)
 
 	Thread::setName("Main");
 
+	char *argv[] = {strdup(PROJECT_NAME), strdup("--verbose"), nullptr};
 	try {
-		char *argv[] = {strdup(PROJECT_NAME), nullptr};
 		main(ARRLEN(argv) - 1, argv);
-		free(argv[0]);
 	} catch (std::exception &e) {
 		errorstream << "Uncaught exception in main thread: " << e.what() << std::endl;
 		retval = -1;
@@ -57,6 +56,8 @@ void android_main(android_app *app)
 		errorstream << "Uncaught exception in main thread!" << std::endl;
 		retval = -1;
 	}
+	free(argv[0]);
+	free(argv[1]);
 
 	porting::cleanupAndroid();
 	infostream << "Shutting down." << std::endl;
@@ -210,6 +211,18 @@ void openURIAndroid(const std::string &url)
 		"porting::openURIAndroid unable to find java openURI method");
 
 	jstring jurl = jnienv->NewStringUTF(url.c_str());
+	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
+}
+
+void shareFileAndroid(const std::string &path)
+{
+	jmethodID url_open = jnienv->GetMethodID(nativeActivity, "shareFile",
+			"(Ljava/lang/String;)V");
+
+	FATAL_ERROR_IF(url_open == nullptr,
+			"porting::shareFileAndroid unable to find java openURI method");
+
+	jstring jurl = jnienv->NewStringUTF(path.c_str());
 	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
 }
 

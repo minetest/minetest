@@ -194,6 +194,7 @@ public:
 	void step(float dtime);
 	void resetHud();
 	void registerHudItem(int index, const rect<s32> &rect);
+	inline void setUseCrosshair(bool use_crosshair) { m_draw_crosshair = use_crosshair; }
 	void Toggle(bool visible);
 
 	void hide();
@@ -240,6 +241,7 @@ private:
 	bool m_joystick_has_really_moved = false;
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
+	bool m_draw_crosshair = false;
 	button_info *m_joystick_btn_off = nullptr;
 	button_info *m_joystick_btn_bg = nullptr;
 	button_info *m_joystick_btn_center = nullptr;

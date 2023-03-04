@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "remoteplayer.h"
 #include "server/player_sao.h"
+#include <cstdlib>
 
 Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string,
 	const char *type) :
@@ -275,7 +276,7 @@ void MapDatabasePostgreSQL::loadBlock(const v3s16 &pos, std::string *block)
 		argLen, argFmt, false);
 
 	if (PQntuples(results))
-		block->assign(PQgetvalue(results, 0, 0), PQgetlength(results, 0, 0));
+		*block = pg_to_string(results, 0, 0);
 	else
 		block->clear();
 
@@ -696,8 +697,8 @@ bool AuthDatabasePostgreSQL::getAuth(const std::string &name, AuthEntry &res)
 	}
 
 	res.id = pg_to_uint(result, 0, 0);
-	res.name = std::string(PQgetvalue(result, 0, 1), PQgetlength(result, 0, 1));
-	res.password = std::string(PQgetvalue(result, 0, 2), PQgetlength(result, 0, 2));
+	res.name = pg_to_string(result, 0, 1);
+	res.password = pg_to_string(result, 0, 2);
 	res.last_login = pg_to_int(result, 0, 3);
 
 	PQclear(result);
@@ -754,7 +755,7 @@ bool AuthDatabasePostgreSQL::createAuth(AuthEntry &authEntry)
 
 	int numrows = PQntuples(result);
 	if (numrows == 0) {
-		errorstream << "Strange behaviour on auth creation, no ID returned." << std::endl;
+		errorstream << "Strange behavior on auth creation, no ID returned." << std::endl;
 		PQclear(result);
 		rollback();
 		return false;
@@ -810,6 +811,205 @@ void AuthDatabasePostgreSQL::writePrivileges(const AuthEntry &authEntry)
 		const char *values[] = { authIdStr.c_str(), privilege.c_str() };
 		execPrepared("auth_write_privs", 2, values);
 	}
+}
+
+ModStorageDatabasePostgreSQL::ModStorageDatabasePostgreSQL(const std::string &connect_string):
+	Database_PostgreSQL(connect_string, "_mod_storage"),
+	ModStorageDatabase()
+{
+	connectToDatabase();
+}
+
+void ModStorageDatabasePostgreSQL::createDatabase()
+{
+	createTableIfNotExists("mod_storage",
+		"CREATE TABLE mod_storage ("
+			"modname TEXT NOT NULL,"
+			"key BYTEA NOT NULL,"
+			"value BYTEA NOT NULL,"
+			"PRIMARY KEY (modname, key)"
+		");");
+
+	infostream << "PostgreSQL: Mod Storage Database was initialized." << std::endl;
+}
+
+void ModStorageDatabasePostgreSQL::initStatements()
+{
+	prepareStatement("get_all",
+		"SELECT key, value FROM mod_storage WHERE modname = $1");
+	prepareStatement("get_all_keys",
+		"SELECT key FROM mod_storage WHERE modname = $1");
+	prepareStatement("get",
+		"SELECT value FROM mod_storage WHERE modname = $1 AND key = $2::bytea");
+	prepareStatement("has",
+		"SELECT true FROM mod_storage WHERE modname = $1 AND key = $2::bytea");
+	if (getPGVersion() < 90500) {
+		prepareStatement("set_insert",
+			"INSERT INTO mod_storage (modname, key, value) "
+				"SELECT $1, $2::bytea, $3::bytea "
+					"WHERE NOT EXISTS ("
+						"SELECT true FROM mod_storage WHERE modname = $1 AND key = $2::bytea"
+					")");
+		prepareStatement("set_update",
+			"UPDATE mod_storage SET value = $3::bytea WHERE modname = $1 AND key = $2::bytea");
+	} else {
+		prepareStatement("set",
+			"INSERT INTO mod_storage (modname, key, value) VALUES ($1, $2::bytea, $3::bytea) "
+				"ON CONFLICT ON CONSTRAINT mod_storage_pkey DO "
+					"UPDATE SET value = $3::bytea");
+	}
+	prepareStatement("remove",
+		"DELETE FROM mod_storage WHERE modname = $1 AND key = $2::bytea");
+	prepareStatement("remove_all",
+		"DELETE FROM mod_storage WHERE modname = $1");
+	prepareStatement("list",
+		"SELECT DISTINCT modname FROM mod_storage");
+}
+
+void ModStorageDatabasePostgreSQL::getModEntries(const std::string &modname, StringMap *storage)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str() };
+	const int argLen[] = { -1 };
+	const int argFmt[] = { 0 };
+	PGresult *results = execPrepared("get_all", ARRLEN(args),
+			args, argLen, argFmt, false);
+
+	int numrows = PQntuples(results);
+
+	for (int row = 0; row < numrows; ++row)
+		(*storage)[pg_to_string(results, row, 0)] = pg_to_string(results, row, 1);
+
+	PQclear(results);
+}
+
+void ModStorageDatabasePostgreSQL::getModKeys(const std::string &modname,
+		std::vector<std::string> *storage)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str() };
+	const int argLen[] = { -1 };
+	const int argFmt[] = { 0 };
+	PGresult *results = execPrepared("get_all_keys", ARRLEN(args),
+			args, argLen, argFmt, false);
+
+	int numrows = PQntuples(results);
+
+	storage->reserve(storage->size() + numrows);
+	for (int row = 0; row < numrows; ++row)
+		storage->push_back(pg_to_string(results, row, 0));
+
+	PQclear(results);
+}
+
+bool ModStorageDatabasePostgreSQL::getModEntry(const std::string &modname,
+	const std::string &key, std::string *value)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str(), key.c_str() };
+	const int argLen[] = { -1, (int)MYMIN(key.size(), INT_MAX) };
+	const int argFmt[] = { 0, 1 };
+	PGresult *results = execPrepared("get", ARRLEN(args), args, argLen, argFmt, false);
+
+	int numrows = PQntuples(results);
+	bool found = numrows > 0;
+
+	if (found)
+		*value = pg_to_string(results, 0, 0);
+
+	PQclear(results);
+
+	return found;
+}
+
+bool ModStorageDatabasePostgreSQL::hasModEntry(const std::string &modname,
+		const std::string &key)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str(), key.c_str() };
+	const int argLen[] = { -1, (int)MYMIN(key.size(), INT_MAX) };
+	const int argFmt[] = { 0, 1 };
+	PGresult *results = execPrepared("has", ARRLEN(args), args, argLen, argFmt, false);
+
+	int numrows = PQntuples(results);
+	bool found = numrows > 0;
+
+	PQclear(results);
+
+	return found;
+}
+
+bool ModStorageDatabasePostgreSQL::setModEntry(const std::string &modname,
+	const std::string &key, const std::string &value)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str(), key.c_str(), value.c_str() };
+	const int argLen[] = {
+		-1,
+		(int)MYMIN(key.size(), INT_MAX),
+		(int)MYMIN(value.size(), INT_MAX),
+	};
+	const int argFmt[] = { 0, 1, 1 };
+	if (getPGVersion() < 90500) {
+		execPrepared("set_insert", ARRLEN(args), args, argLen, argFmt);
+		execPrepared("set_update", ARRLEN(args), args, argLen, argFmt);
+	} else {
+		execPrepared("set", ARRLEN(args), args, argLen, argFmt);
+	}
+
+	return true;
+}
+
+bool ModStorageDatabasePostgreSQL::removeModEntry(const std::string &modname,
+		const std::string &key)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str(), key.c_str() };
+	const int argLen[] = { -1, (int)MYMIN(key.size(), INT_MAX) };
+	const int argFmt[] = { 0, 1 };
+	PGresult *results = execPrepared("remove", ARRLEN(args), args, argLen, argFmt, false);
+
+	int affected = atoi(PQcmdTuples(results));
+
+	PQclear(results);
+
+	return affected > 0;
+}
+
+bool ModStorageDatabasePostgreSQL::removeModEntries(const std::string &modname)
+{
+	verifyDatabase();
+
+	const void *args[] = { modname.c_str() };
+	const int argLen[] = { -1 };
+	const int argFmt[] = { 0 };
+	PGresult *results = execPrepared("remove_all", ARRLEN(args), args, argLen, argFmt, false);
+
+	int affected = atoi(PQcmdTuples(results));
+
+	PQclear(results);
+
+	return affected > 0;
+}
+
+void ModStorageDatabasePostgreSQL::listMods(std::vector<std::string> *res)
+{
+	verifyDatabase();
+
+	PGresult *results = execPrepared("list", 0, NULL, false);
+
+	int numrows = PQntuples(results);
+
+	for (int row = 0; row < numrows; ++row)
+		res->push_back(pg_to_string(results, row, 0));
+
+	PQclear(results);
 }
 
 

@@ -75,6 +75,10 @@ public:
 
 	v3f getSelectionPos() const { return m_selection_pos; }
 
+	void setSelectionRotation(v3f rotation) { m_selection_rotation = rotation; }
+
+	v3f getSelectionRotation() const { return m_selection_rotation; }
+
 	void setSelectionMeshColor(const video::SColor &color)
 	{
 		m_selection_mesh_color = color;
@@ -126,6 +130,7 @@ private:
 	std::vector<aabb3f> m_halo_boxes;
 	v3f m_selection_pos;
 	v3f m_selection_pos_with_offset;
+	v3f m_selection_rotation;
 
 	scene::IMesh *m_selection_mesh = nullptr;
 	video::SColor m_selection_mesh_color;

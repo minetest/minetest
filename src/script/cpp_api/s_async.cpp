@@ -247,6 +247,7 @@ bool AsyncEngine::prepareEnvironment(lua_State* L, int top)
 	try {
 		script->loadMod(Server::getBuiltinLuaPath() + DIR_DELIM + "init.lua",
 			BUILTIN_MOD_NAME);
+		script->checkSetByBuiltin();
 	} catch (const ModError &e) {
 		errorstream << "Execution of async base environment failed: "
 			<< e.what() << std::endl;

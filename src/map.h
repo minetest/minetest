@@ -26,12 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 
 #include "irrlichttypes_bloated.h"
+#include "mapblock.h"
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "util/metricsbackend.h"
+#include "util/numeric.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
 #include "debug.h"
@@ -72,26 +74,35 @@ struct MapEditEvent
 	MapEditEventType type = MEET_OTHER;
 	v3s16 p;
 	MapNode n = CONTENT_AIR;
-	std::set<v3s16> modified_blocks;
+	std::vector<v3s16> modified_blocks; // Represents a set
 	bool is_private_change = false;
 
 	MapEditEvent() = default;
+
+	// Sets the event's position and marks the block as modified.
+	void setPositionModified(v3s16 pos)
+	{
+		assert(modified_blocks.empty()); // only meant for initialization (once)
+		p = pos;
+		modified_blocks.push_back(getNodeBlockPos(pos));
+	}
+
+	void setModifiedBlocks(const std::map<v3s16, MapBlock *> blocks)
+	{
+		assert(modified_blocks.empty()); // only meant for initialization (once)
+		modified_blocks.reserve(blocks.size());
+		for (const auto &block : blocks)
+			modified_blocks.push_back(block.first);
+	}
 
 	VoxelArea getArea() const
 	{
 		switch(type){
 		case MEET_ADDNODE:
-			return VoxelArea(p);
 		case MEET_REMOVENODE:
-			return VoxelArea(p);
 		case MEET_SWAPNODE:
-			return VoxelArea(p);
 		case MEET_BLOCK_NODE_METADATA_CHANGED:
-		{
-			v3s16 np1 = p*MAP_BLOCKSIZE;
-			v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
-			return VoxelArea(np1, np2);
-		}
+			return VoxelArea(p);
 		case MEET_OTHER:
 		{
 			VoxelArea a;
@@ -161,7 +172,7 @@ public:
 	bool isValidPosition(v3s16 p);
 
 	// throws InvalidPositionException if not found
-	void setNode(v3s16 p, MapNode & n);
+	void setNode(v3s16 p, MapNode n);
 
 	// Returns a CONTENT_IGNORE node if not found
 	// If is_valid_position is not NULL then this will be set to true if the
@@ -205,7 +216,7 @@ public:
 		Updates usage timers and unloads unused blocks and sectors.
 		Saves modified blocks before unloading if possible.
 	*/
-	void timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
+	void timerUpdate(float dtime, float unload_timeout, s32 max_loaded_blocks,
 			std::vector<v3s16> *unloaded_blocks=NULL);
 
 	/*
@@ -257,8 +268,42 @@ public:
 	void removeNodeTimer(v3s16 p);
 
 	/*
-		Variables
+		Utilities
 	*/
+
+	// Iterates through all nodes in the area in an unspecified order.
+	// The given callback takes the position as its first argument and the node
+	// as its second. If it returns false, forEachNodeInArea returns early.
+	template<typename F>
+	void forEachNodeInArea(v3s16 minp, v3s16 maxp, F func)
+	{
+		v3s16 bpmin = getNodeBlockPos(minp);
+		v3s16 bpmax = getNodeBlockPos(maxp);
+		for (s16 bz = bpmin.Z; bz <= bpmax.Z; bz++)
+		for (s16 bx = bpmin.X; bx <= bpmax.X; bx++)
+		for (s16 by = bpmin.Y; by <= bpmax.Y; by++) {
+			// y is iterated innermost to make use of the sector cache.
+			v3s16 bp(bx, by, bz);
+			MapBlock *block = getBlockNoCreateNoEx(bp);
+			v3s16 basep = bp * MAP_BLOCKSIZE;
+			s16 minx_block = rangelim(minp.X - basep.X, 0, MAP_BLOCKSIZE - 1);
+			s16 miny_block = rangelim(minp.Y - basep.Y, 0, MAP_BLOCKSIZE - 1);
+			s16 minz_block = rangelim(minp.Z - basep.Z, 0, MAP_BLOCKSIZE - 1);
+			s16 maxx_block = rangelim(maxp.X - basep.X, 0, MAP_BLOCKSIZE - 1);
+			s16 maxy_block = rangelim(maxp.Y - basep.Y, 0, MAP_BLOCKSIZE - 1);
+			s16 maxz_block = rangelim(maxp.Z - basep.Z, 0, MAP_BLOCKSIZE - 1);
+			for (s16 z_block = minz_block; z_block <= maxz_block; z_block++)
+			for (s16 y_block = miny_block; y_block <= maxy_block; y_block++)
+			for (s16 x_block = minx_block; x_block <= maxx_block; x_block++) {
+				v3s16 p = basep + v3s16(x_block, y_block, z_block);
+				MapNode n = block ?
+						block->getNodeNoCheck(x_block, y_block, z_block) :
+						MapNode(CONTENT_IGNORE);
+				if (!func(p, n))
+					return;
+			}
+		}
+	}
 
 	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
 protected:

@@ -1,4 +1,4 @@
--- can be overriden by mods
+-- can be overridden by mods
 function core.calculate_knockback(player, hitter, time_from_last_punch, tool_capabilities, dir, distance, damage)
 	if damage == 0 or player:get_armor_groups().immortal then
 		return 0.0

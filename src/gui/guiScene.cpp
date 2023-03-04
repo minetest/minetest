@@ -86,9 +86,10 @@ void GUIScene::draw()
 
 	core::rect<s32> oldViewPort = m_driver->getViewPort();
 	m_driver->setViewPort(getAbsoluteClippingRect());
-	core::recti borderRect = Environment->getRootGUIElement()->getAbsoluteClippingRect();
 
 	if (m_bgcolor != 0) {
+		core::recti borderRect =
+				Environment->getRootGUIElement()->getAbsoluteClippingRect();
 		Environment->getSkin()->draw3DSunkenPane(
 			this, m_bgcolor, false, true, borderRect, 0);
 	}

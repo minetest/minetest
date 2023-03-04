@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "IrrCompileConfig.h"
 #include "guiChatConsole.h"
 #include "chat.h"
 #include "client/client.h"
@@ -31,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gettext.h"
 #include "irrlicht_changes/CGUITTFont.h"
+#include "util/string.h"
 #include <string>
 
 inline u32 clamp_u8(s32 value)
@@ -76,9 +76,9 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setBlue(clamp_u8(myround(console_color.Z)));
 	}
 
-	u16 chat_font_size = g_settings->getU16("chat_font_size");
+	const u16 chat_font_size = g_settings->getU16("chat_font_size");
 	m_font = g_fontengine->getFont(chat_font_size != 0 ?
-		chat_font_size : FONT_SIZE_UNSPECIFIED, FM_Mono);
+		rangelim(chat_font_size, 5, 72) : FONT_SIZE_UNSPECIFIED, FM_Mono);
 
 	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font" << std::endl;
@@ -353,44 +353,48 @@ void GUIChatConsole::drawPrompt()
 	if (!m_font)
 		return;
 
-	u32 row = m_chat_backend->getConsoleBuffer().getRows();
-	s32 line_height = m_fontsize.Y;
-	s32 y = row * line_height + m_height - m_desired_height;
-
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	// FIXME Draw string at once, not character by character
-	// That will only work with the cursor once we have a monospace font
-	for (u32 i = 0; i < prompt_text.size(); ++i)
-	{
-		wchar_t ws[2] = {prompt_text[i], 0};
-		s32 x = (1 + i) * m_fontsize.X;
-		core::rect<s32> destrect(
-			x, y, x + m_fontsize.X, y + m_fontsize.Y);
-		m_font->draw(
-			ws,
-			destrect,
-			video::SColor(255, 255, 255, 255),
-			false,
-			false,
-			&AbsoluteClippingRect);
-	}
+	u32 font_width  = m_fontsize.X;
+	u32 font_height = m_fontsize.Y;
+
+	core::dimension2d<u32> size = m_font->getDimension(prompt_text.c_str());
+	u32 text_width = size.Width;
+	if (size.Height > font_height)
+		font_height = size.Height;
+
+	u32 row = m_chat_backend->getConsoleBuffer().getRows();
+	s32 y = row * font_height + m_height - m_desired_height;
+
+	core::rect<s32> destrect(
+		font_width, y, font_width + text_width, y + font_height);
+	m_font->draw(
+		prompt_text.c_str(),
+		destrect,
+		video::SColor(255, 255, 255, 255),
+		false,
+		false,
+		&AbsoluteClippingRect);
 
 	// Draw the cursor during on periods
 	if ((m_cursor_blink & 0x8000) != 0)
 	{
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
+
 		if (cursor_pos >= 0)
 		{
+
+			u32 text_to_cursor_pos_width = m_font->getDimension(prompt_text.substr(0, cursor_pos).c_str()).Width;
+
 			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
-			s32 x = (1 + cursor_pos) * m_fontsize.X;
+			s32 x = font_width + text_to_cursor_pos_width;
 			core::rect<s32> destrect(
 				x,
-				y + m_fontsize.Y * (1.0 - m_cursor_height),
-				x + m_fontsize.X * MYMAX(cursor_len, 1),
-				y + m_fontsize.Y * (cursor_len ? m_cursor_height+1 : 1)
+				y + font_height * (1.0 - m_cursor_height),
+				x + font_width * MYMAX(cursor_len, 1),
+				y + font_height * (cursor_len ? m_cursor_height+1 : 1)
 			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(
@@ -432,6 +436,10 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 
+		// Mac OS sends private use characters along with some keys.
+		bool has_char = event.KeyInput.Char && !event.KeyInput.Control &&
+				!iswcntrl(event.KeyInput.Char) && !IS_PRIVATE_USE_CHAR(event.KeyInput.Char);
+
 		if (event.KeyInput.Key == KEY_ESCAPE) {
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
@@ -441,13 +449,17 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_PRIOR)
 		{
-			m_chat_backend->scrollPageUp();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageUp();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_NEXT)
 		{
-			m_chat_backend->scrollPageDown();
-			return true;
+			if (!has_char) { // no num lock
+				m_chat_backend->scrollPageDown();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
@@ -462,53 +474,63 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_UP)
 		{
-			// Up pressed
-			// Move back in history
-			prompt.historyPrev();
-			return true;
+			if (!has_char) { // no num lock
+				// Up pressed
+				// Move back in history
+				prompt.historyPrev();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_DOWN)
 		{
-			// Down pressed
-			// Move forward in history
-			prompt.historyNext();
-			return true;
+			if (!has_char) { // no num lock
+				// Down pressed
+				// Move forward in history
+				prompt.historyNext();
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
 		{
-			// Left/right pressed
-			// Move/select character/word to the left depending on control and shift keys
-			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
-				ChatPrompt::CURSOROP_SELECT :
-				ChatPrompt::CURSOROP_MOVE;
-			ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
-				ChatPrompt::CURSOROP_DIR_LEFT :
-				ChatPrompt::CURSOROP_DIR_RIGHT;
-			ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(op, dir, scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Left/right pressed
+				// Move/select character/word to the left depending on control and shift keys
+				ChatPrompt::CursorOp op = event.KeyInput.Shift ?
+					ChatPrompt::CURSOROP_SELECT :
+					ChatPrompt::CURSOROP_MOVE;
+				ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
+					ChatPrompt::CURSOROP_DIR_LEFT :
+					ChatPrompt::CURSOROP_DIR_RIGHT;
+				ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(op, dir, scope);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_HOME)
 		{
-			// Home pressed
-			// move to beginning of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// Home pressed
+				// move to beginning of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_LEFT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_END)
 		{
-			// End pressed
-			// move to end of line
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				ChatPrompt::CURSOROP_SCOPE_LINE);
-			return true;
+			if (!has_char) { // no num lock
+				// End pressed
+				// move to end of line
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_MOVE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					ChatPrompt::CURSOROP_SCOPE_LINE);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_BACK)
 		{
@@ -526,17 +548,19 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_DELETE)
 		{
-			// Delete or Ctrl-Delete pressed
-			// delete character / word to the right
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_DELETE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				scope);
-			return true;
+			if (!has_char) { // no num lock
+				// Delete or Ctrl-Delete pressed
+				// delete character / word to the right
+				ChatPrompt::CursorOpScope scope =
+					event.KeyInput.Control ?
+					ChatPrompt::CURSOROP_SCOPE_WORD :
+					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_RIGHT,
+					scope);
+				return true;
+			}
 		}
 		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
 		{
@@ -620,7 +644,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
-		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
+		}
+
+		if (has_char) {
 			prompt.input(event.KeyInput.Char);
 			return true;
 		}
@@ -646,13 +672,11 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 		}
 	}
-#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
 		prompt.input(std::wstring(event.StringInput.Str->c_str()));
 		return true;
 	}
-#endif
 
 	return Parent ? Parent->OnEvent(event) : false;
 }

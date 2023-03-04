@@ -220,7 +220,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	MapNode n = getClient(L)->CSMGetNode(pos, &pos_ok);
 	if (pos_ok) {
 		// Return node
-		pushnode(L, n, getClient(L)->ndef());
+		pushnode(L, n);
 	} else {
 		lua_pushnil(L);
 	}
@@ -237,7 +237,7 @@ int ModApiClient::l_get_language(lua_State *L)
 #endif
 	std::string lang = gettext("LANG_CODE");
 	if (lang == "LANG_CODE")
-		lang = "";
+		lang.clear();
 
 	lua_pushstring(L, locale);
 	lua_pushstring(L, lang.c_str());
@@ -268,30 +268,32 @@ int ModApiClient::l_sound_play(lua_State *L)
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
 
+	SoundLocation type = SoundLocation::Local;
 	float gain = 1.0f;
-	float pitch = 1.0f;
-	bool looped = false;
-	s32 handle;
+	v3f position;
 
 	if (lua_istable(L, 2)) {
 		getfloatfield(L, 2, "gain", gain);
-		getfloatfield(L, 2, "pitch", pitch);
-		getboolfield(L, 2, "loop", looped);
+		getfloatfield(L, 2, "pitch", spec.pitch);
+		getboolfield(L, 2, "loop", spec.loop);
 
 		lua_getfield(L, 2, "pos");
 		if (!lua_isnil(L, -1)) {
-			v3f pos = read_v3f(L, -1) * BS;
+			position = read_v3f(L, -1) * BS;
+			type = SoundLocation::Position;
 			lua_pop(L, 1);
-			handle = sound->playSoundAt(
-					spec.name, looped, gain * spec.gain, pos, pitch);
-			lua_pushinteger(L, handle);
-			return 1;
 		}
 	}
 
-	handle = sound->playSound(spec.name, looped, gain * spec.gain, spec.fade, pitch);
-	lua_pushinteger(L, handle);
+	spec.gain *= gain;
 
+	s32 handle;
+	if (type == SoundLocation::Local)
+		handle = sound->playSound(spec);
+	else
+		handle = sound->playSoundAt(spec, position);
+
+	lua_pushinteger(L, handle);
 	return 1;
 }
 

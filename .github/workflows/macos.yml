@@ -22,37 +22,32 @@ on:
       - '.github/workflows/macos.yml'
 
 env:
-  IRRLICHT_TAG: 1.9.0mt6
   MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
   MINETEST_GAME_BRANCH: master
   MINETEST_GAME_NAME: minetest_game
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
         run: |
-          pkgs=(cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd)
-          brew update
-          brew install ${pkgs[@]}
-          brew unlink $(brew ls --formula)
-          brew link ${pkgs[@]}
+          source ./util/ci/common.sh
+          install_macos_deps
 
       - name: Build
         run: |
           git clone -b $MINETEST_GAME_BRANCH $MINETEST_GAME_REPO games/$MINETEST_GAME_NAME
-          rm -rvf games/$MINETEST_GAME_NAME/.git
-          git clone https://github.com/minetest/irrlicht -b $IRRLICHT_TAG lib/irrlichtmt
+          git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
           mkdir build
           cd build
           cmake .. \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
             -DCMAKE_FIND_FRAMEWORK=LAST \
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-            -DRUN_IN_PLACE=FALSE \
-            -DENABLE_FREETYPE=TRUE -DENABLE_GETTEXT=TRUE
+            -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
+            -DINSTALL_DEVTEST=TRUE
           make -j2
           make install
 
@@ -60,7 +55,14 @@ jobs:
         run: |
           ./build/macos/minetest.app/Contents/MacOS/minetest --run-unittests
 
+      # Zipping the built .app preserves permissions on the contained files,
+      #   which the GitHub artifact pipeline would otherwise strip away.
+      - name: CPack
+        run: |
+          cd build
+          cpack -G ZIP -B macos
+
       - uses: actions/upload-artifact@v3
         with:
           name: minetest-macos
-          path: ./build/macos/
+          path: ./build/macos/*.zip

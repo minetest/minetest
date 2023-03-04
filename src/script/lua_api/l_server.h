@@ -52,6 +52,9 @@ private:
 	// the returned list is sorted alphabetically for you
 	static int l_get_modnames(lua_State *L);
 
+	// get_game_info()
+	static int l_get_game_info(lua_State *L);
+
 	// print(text)
 	static int l_print(lua_State *L);
 
@@ -84,6 +87,9 @@ private:
 
 	// get_player_information(name)
 	static int l_get_player_information(lua_State *L);
+
+	// get_player_window_information(name)
+	static int l_get_player_window_information(lua_State *L);
 
 	// get_ban_list()
 	static int l_get_ban_list(lua_State *L);

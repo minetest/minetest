@@ -78,6 +78,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	place_param2 = def.place_param2;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
+	sound_use = def.sound_use;
+	sound_use_air = def.sound_use_air;
 	range = def.range;
 	palette_image = def.palette_image;
 	color = def.color;
@@ -99,14 +101,14 @@ void ItemDefinition::resetInitial()
 void ItemDefinition::reset()
 {
 	type = ITEM_NONE;
-	name = "";
-	description = "";
-	short_description = "";
-	inventory_image = "";
-	inventory_overlay = "";
-	wield_image = "";
-	wield_overlay = "";
-	palette_image = "";
+	name.clear();
+	description.clear();
+	short_description.clear();
+	inventory_image.clear();
+	inventory_overlay.clear();
+	wield_image.clear();
+	wield_overlay.clear();
+	palette_image.clear();
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
@@ -117,8 +119,10 @@ void ItemDefinition::reset()
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
+	sound_use = SimpleSoundSpec();
+	sound_use_air = SimpleSoundSpec();
 	range = -1;
-	node_placement_prediction = "";
+	node_placement_prediction.clear();
 	place_param2 = 0;
 }
 
@@ -154,8 +158,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString16(node_placement_prediction);
 
 	// Version from ContentFeatures::serialize to keep in sync
-	sound_place.serialize(os, CONTENTFEATURES_VERSION);
-	sound_place_failed.serialize(os, CONTENTFEATURES_VERSION);
+	sound_place.serialize(os, protocol_version);
+	sound_place_failed.serialize(os, protocol_version);
 
 	writeF32(os, range);
 	os << serializeString16(palette_image);
@@ -166,9 +170,12 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString16(short_description);
 
 	os << place_param2;
+
+	sound_use.serialize(os, protocol_version);
+	sound_use_air.serialize(os, protocol_version);
 }
 
-void ItemDefinition::deSerialize(std::istream &is)
+void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 {
 	// Reset everything
 	reset();
@@ -205,9 +212,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	node_placement_prediction = deSerializeString16(is);
 
-	// Version from ContentFeatures::serialize to keep in sync
-	sound_place.deSerialize(is, CONTENTFEATURES_VERSION);
-	sound_place_failed.deSerialize(is, CONTENTFEATURES_VERSION);
+	sound_place.deSerialize(is, protocol_version);
+	sound_place_failed.deSerialize(is, protocol_version);
 
 	range = readF32(is);
 	palette_image = deSerializeString16(is);
@@ -215,12 +221,15 @@ void ItemDefinition::deSerialize(std::istream &is)
 	inventory_overlay = deSerializeString16(is);
 	wield_overlay = deSerializeString16(is);
 
-	// If you add anything here, insert it primarily inside the try-catch
+	// If you add anything here, insert it inside the try-catch
 	// block to not need to increase the version.
 	try {
 		short_description = deSerializeString16(is);
 
 		place_param2 = readU8(is); // 0 if missing
+
+		sound_use.deSerialize(is, protocol_version);
+		sound_use_air.deSerialize(is, protocol_version);
 	} catch(SerializationError &e) {};
 }
 
@@ -463,7 +472,7 @@ public:
 		//   "ignore" is the ignore node
 
 		ItemDefinition* hand_def = new ItemDefinition;
-		hand_def->name = "";
+		hand_def->name.clear();
 		hand_def->wield_image = "wieldhand.png";
 		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
@@ -538,21 +547,21 @@ public:
 			os << serializeString16(it.second);
 		}
 	}
-	void deSerialize(std::istream &is)
+	void deSerialize(std::istream &is, u16 protocol_version)
 	{
 		// Clear everything
 		clear();
-		// Deserialize
-		int version = readU8(is);
-		if(version != 0)
+
+		if(readU8(is) != 0)
 			throw SerializationError("unsupported ItemDefManager version");
+
 		u16 count = readU16(is);
 		for(u16 i=0; i<count; i++)
 		{
 			// Deserialize a string and grab an ItemDefinition from it
 			std::istringstream tmp_is(deSerializeString16(is), std::ios::binary);
 			ItemDefinition def;
-			def.deSerialize(tmp_is);
+			def.deSerialize(tmp_is, protocol_version);
 			// Register
 			registerItem(def);
 		}

@@ -38,9 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mesh.h"
 #include "nodedef.h"
-#include "serialization.h" // For decompressZlib
 #include "settings.h"
-#include "sound.h"
 #include "tool.h"
 #include "wieldmesh.h"
 #include <algorithm>
@@ -570,7 +568,8 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 
 	if (auto shadow = RenderingEngine::get_shadow_renderer())
-		shadow->removeNodeFromShadowList(getSceneNode());
+		if (auto node = getSceneNode())
+			shadow->removeNodeFromShadowList(node);
 
 	if (m_meshnode) {
 		m_meshnode->remove();
@@ -842,7 +841,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			oss << "GenericCAO::addToScene(): Model "
 				<< m_prop.mesh << " loaded with " << mat_count
 				<< " mesh buffers but only " << m_prop.textures.size()
-				<< " texture(s) specifed, this is deprecated.";
+				<< " texture(s) specified, this is deprecated.";
 			logOnce(oss, warningstream);
 
 			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
@@ -858,7 +857,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 void GenericCAO::updateLight(u32 day_night_ratio)
 {
-	if (m_glow < 0)
+	if (m_prop.glow < 0)
 		return;
 
 	u16 light_at_pos = 0;
@@ -871,8 +870,9 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 		bool this_ok;
 		MapNode n = m_env->getMap().getNode(pos[i], &this_ok);
 		if (this_ok) {
-			u16 this_light = getInteriorLight(n, 0, m_client->ndef());
-			u8 this_light_intensity = MYMAX(this_light & 0xFF, (this_light >> 8) && 0xFF);
+			// Get light level at the position plus the entity glow
+			u16 this_light = getInteriorLight(n, m_prop.glow, m_client->ndef());
+			u8 this_light_intensity = MYMAX(this_light & 0xFF, this_light >> 8);
 			if (this_light_intensity > light_at_pos_intensity) {
 				light_at_pos = this_light;
 				light_at_pos_intensity = this_light_intensity;
@@ -883,8 +883,14 @@ void GenericCAO::updateLight(u32 day_night_ratio)
 	if (!pos_ok)
 		light_at_pos = LIGHT_SUN;
 
-	video::SColor light = encode_light(light_at_pos, m_glow);
-	if (!m_enable_shaders)
+	// Initialize with full alpha, otherwise entity won't be visible
+	video::SColor light{0xFFFFFFFF};
+
+	// Encode light into color, adding a small boost
+	// based on the entity glow.
+	if (m_enable_shaders)
+		light = encode_light(light_at_pos, m_prop.glow);
+	else
 		final_color_blend(&light, light_at_pos, day_night_ratio);
 
 	if (light != m_last_light) {
@@ -1174,7 +1180,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				// Reduce footstep gain, as non-local-player footsteps are
 				// somehow louder.
 				spec.gain *= 0.6f;
-				m_client->sound()->playSoundAt(spec, false, getPosition());
+				m_client->sound()->playSoundAt(spec, getPosition());
 			}
 		}
 	}
@@ -1199,7 +1205,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if (!getParent() && node && fabs(m_prop.automatic_rotate) > 0.001f) {
+	if (node && fabs(m_prop.automatic_rotate) > 0.001f) {
 		// This is the child node's rotation. It is only used for automatic_rotate.
 		v3f local_rot = node->getRotation();
 		local_rot.Y = modulo360f(local_rot.Y - dtime * core::RADTODEG *
@@ -1319,13 +1325,6 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
-	m_glow = m_prop.glow;
-
-	video::ITexture *shadow_texture = nullptr;
-	if (auto shadow = RenderingEngine::get_shadow_renderer())
-		shadow_texture = shadow->get_texture();
-
-	const u32 TEXTURE_LAYER_SHADOW = 3;
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
@@ -1337,7 +1336,6 @@ void GenericCAO::updateTextures(std::string mod)
 			m_spritenode->getMaterial(0).MaterialTypeParam = 0.5f;
 			m_spritenode->setMaterialTexture(0,
 					tsrc->getTextureForMesh(texturestring));
-			m_spritenode->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
@@ -1373,7 +1371,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
 				material.TextureLayer[0].Texture = texture;
-				material.TextureLayer[TEXTURE_LAYER_SHADOW].Texture = shadow_texture;
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
@@ -1424,7 +1421,6 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(texturestring));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 				material.getTextureMatrix(0).makeIdentity();
 
 				// This allows setting per-material colors. However, until a real lighting
@@ -1451,7 +1447,6 @@ void GenericCAO::updateTextures(std::string mod)
 				auto& material = m_meshnode->getMaterial(0);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1476,7 +1471,6 @@ void GenericCAO::updateTextures(std::string mod)
 				auto& material = m_meshnode->getMaterial(1);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(tname));
-				material.setTexture(TEXTURE_LAYER_SHADOW, shadow_texture);
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1496,7 +1490,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
 			// Set mesh color (only if lighting is disabled)
-			if (!m_prop.colors.empty() && m_glow < 0)
+			if (!m_prop.colors.empty() && m_prop.glow < 0)
 				setMeshColor(mesh, m_prop.colors[0]);
 		}
 	}
@@ -1753,7 +1747,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == AO_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString16(is);
 
-		// immediately reset a engine issued texture modifier if a mod sends a different one
+		// immediately reset an engine issued texture modifier if a mod sends a different one
 		if (m_reset_textures_timer > 0) {
 			m_reset_textures_timer = -1;
 			updateTextures(m_previous_texture_modifier);
@@ -1776,21 +1770,20 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_speed = readF32(is);
 		float override_jump = readF32(is);
 		float override_gravity = readF32(is);
-		// these are sent inverted so we get true when the server sends nothing
+		// MT 0.4.10 legacy: send inverted for detault `true` if the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
 
 
-		if(m_is_local_player)
-		{
-			LocalPlayer *player = m_env->getLocalPlayer();
-			player->physics_override_speed = override_speed;
-			player->physics_override_jump = override_jump;
-			player->physics_override_gravity = override_gravity;
-			player->physics_override_sneak = sneak;
-			player->physics_override_sneak_glitch = sneak_glitch;
-			player->physics_override_new_move = new_move;
+		if (m_is_local_player) {
+			auto &phys = m_env->getLocalPlayer()->physics_override;
+			phys.speed = override_speed;
+			phys.jump = override_jump;
+			phys.gravity = override_gravity;
+			phys.sneak = sneak;
+			phys.sneak_glitch = sneak_glitch;
+			phys.new_move = new_move;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value

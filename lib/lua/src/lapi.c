@@ -137,6 +137,18 @@ LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf) {
 }
 
 
+/* MINETEST-SPECIFIC CHANGE */
+LUA_API lua_CFunctionwrapper lua_atccall (lua_State *L,
+                                          lua_CFunctionwrapper wrapf) {
+  lua_CFunctionwrapper old;
+  lua_lock(L);
+  old = G(L)->wrapcf;
+  G(L)->wrapcf = wrapf;
+  lua_unlock(L);
+  return old;
+}
+
+
 LUA_API lua_State *lua_newthread (lua_State *L) {
   lua_State *L1;
   lua_lock(L);

@@ -205,7 +205,7 @@ private:
 
 	/**
 	 * transform index pos to mappos
-	 * @param ipos a index position
+	 * @param ipos an index position
 	 * @return map position
 	 */
 	v3s16          getRealPos(v3s16 ipos);
@@ -238,7 +238,7 @@ private:
 	v3s16          invert(v3s16 pos);
 
 	/**
-	 * check if a index is within current search area
+	 * check if an index is within current search area
 	 * @param index position to validate
 	 * @return true/false
 	 */

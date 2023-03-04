@@ -60,7 +60,7 @@ void TestNodeDef::testContentFeaturesSerialization()
 
 	std::istringstream is(os.str(), std::ios::binary);
 	ContentFeatures f2;
-	f2.deSerialize(is);
+	f2.deSerialize(is, LATEST_PROTOCOL_VERSION);
 
 	UASSERT(f.walkable == f2.walkable);
 	UASSERT(f.node_box.type == f2.node_box.type);

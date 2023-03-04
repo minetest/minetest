@@ -3,7 +3,8 @@
 local S = minetest.get_translator("testnodes")
 
 minetest.register_node("testnodes:6sides", {
-	description = S("Six Textures Test Node"),
+	description = S("Six Textures Test Node").."\n"..
+		S("Has 1 texture per face"),
 	tiles = {
 		"testnodes_normal1.png",
 		"testnodes_normal2.png",
@@ -17,7 +18,8 @@ minetest.register_node("testnodes:6sides", {
 })
 
 minetest.register_node("testnodes:anim", {
-	description = S("Animated Test Node"),
+	description = S("Animated Test Node").."\n"..
+		S("Tiles animate from A to D in 4s cycle"),
 	tiles = {
 		{ name = "testnodes_anim.png",
 		animation = {
@@ -40,7 +42,8 @@ for a=1,#alphas do
 
 	-- Transparency taken from texture
 	minetest.register_node("testnodes:alpha_texture_"..alpha, {
-		description = S("Texture Alpha Test Node (@1)", alpha),
+		description = S("Texture Alpha Test Node (@1)", alpha).."\n"..
+			S("Semi-transparent"),
 		drawtype = "glasslike",
 		paramtype = "light",
 		tiles = {
@@ -53,7 +56,8 @@ for a=1,#alphas do
 
 	-- Transparency set via texture modifier
 	minetest.register_node("testnodes:alpha_"..alpha, {
-		description = S("Alpha Test Node (@1)", alpha),
+		description = S("Alpha Test Node (@1)", alpha).."\n"..
+			S("Semi-transparent"),
 		drawtype = "glasslike",
 		paramtype = "light",
 		tiles = {
@@ -157,12 +161,18 @@ minetest.register_node("testnodes:generated_png_emb", {
 	description = S("Generated In-Band Mandelbrot PNG Test Node"),
 	tiles = { png_emb },
 
+	drawtype = "allfaces", -- required because of transparent pixels
+	use_texture_alpha = "clip",
+	paramtype = "light",
 	groups = { dig_immediate = 2 },
 })
 minetest.register_node("testnodes:generated_png_src_emb", {
 	description = S("Generated In-Band Source Blit Mandelbrot PNG Test Node"),
 	tiles = { png_emb .. "^testnodes_damage_neg.png" },
 
+	drawtype = "allfaces", -- required because of transparent pixels
+	use_texture_alpha = "clip",
+	paramtype = "light",
 	groups = { dig_immediate = 2 },
 })
 minetest.register_node("testnodes:generated_png_dst_emb", {

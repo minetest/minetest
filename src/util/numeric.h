@@ -145,6 +145,37 @@ inline v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
 	return v3s16(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
 }
 
+/// @brief Describes a grid with given step, oirginating at (0,0,0)
+struct MeshGrid {
+	u16 cell_size;
+
+	u32 getCellVolume() const { return cell_size * cell_size * cell_size; }
+
+	/// @brief returns closest step of the grid smaller than p
+	s16 getMeshPos(s16 p) const
+	{
+		return ((p - (p < 0) * (cell_size - 1)) / cell_size * cell_size);
+	}
+
+	/// @brief Returns coordinates of the origin of the grid cell containing p
+	v3s16 getMeshPos(v3s16 p) const
+	{
+		return v3s16(getMeshPos(p.X), getMeshPos(p.Y), getMeshPos(p.Z));
+	}
+	
+	/// @brief Returns true if p is an origin of a cell in the grid.
+	bool isMeshPos(v3s16 &p) const
+	{
+		return ((p.X + p.Y + p.Z) % cell_size) == 0;
+	}
+
+	/// @brief Returns index of the given offset in a grid cell
+	/// All offset coordinates must be smaller than the size of the cell
+	u16 getOffsetIndex(v3s16 offset) const
+	{
+		return (offset.Z * cell_size + offset.Y) * cell_size + offset.X;
+	}
+};
 
 /** Returns \p f wrapped to the range [-360, 360]
  *
@@ -223,6 +254,8 @@ u32 myrand();
 void mysrand(unsigned int seed);
 void myrand_bytes(void *out, size_t len);
 int myrand_range(int min, int max);
+float myrand_range(float min, float max);
+float myrand_float();
 
 /*
 	Miscellaneous functions
@@ -445,4 +478,25 @@ inline irr::video::SColor multiplyColorValue(const irr::video::SColor &color, fl
 			core::clamp<u32>(color.getRed() * mod, 0, 255),
 			core::clamp<u32>(color.getGreen() * mod, 0, 255),
 			core::clamp<u32>(color.getBlue() * mod, 0, 255));
+}
+
+template <typename T> inline T numericAbsolute(T v) { return v < 0 ? T(-v) : v;                }
+template <typename T> inline T numericSign(T v)     { return T(v < 0 ? -1 : (v == 0 ? 0 : 1)); }
+
+inline v3f vecAbsolute(v3f v)
+{
+	return v3f(
+		numericAbsolute(v.X),
+		numericAbsolute(v.Y),
+		numericAbsolute(v.Z)
+	);
+}
+
+inline v3f vecSign(v3f v)
+{
+	return v3f(
+		numericSign(v.X),
+		numericSign(v.Y),
+		numericSign(v.Z)
+	);
 }

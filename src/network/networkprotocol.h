@@ -207,9 +207,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
+		Added new particlespawner parameters
+		[scheduled bump for 5.6.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 40
+#define LATEST_PROTOCOL_VERSION 41
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -228,8 +230,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
                                // base64-encoded SHA-1 (27+\0).
 
-// See also: Formspec Version History in doc/lua_api.txt
-#define FORMSPEC_API_VERSION 5
+// See also formspec [Version History] in doc/lua_api.txt
+#define FORMSPEC_API_VERSION 6
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -241,7 +243,7 @@ enum ToClientCommand
 	/*
 		Sent after TOSERVER_INIT.
 
-		u8 deployed serialisation version
+		u8 deployed serialization version
 		u16 deployed network compression mode
 		u16 deployed protocol version
 		u32 supported auth methods
@@ -511,11 +513,12 @@ enum ToClientCommand
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		v3f1000 pos
-		v3f1000 velocity
-		v3f1000 acceleration
-		f1000 expirationtime
-		f1000 size
+		-- struct range<T> { T min, T max, f32 bias };
+		v3f pos
+		v3f velocity
+		v3f acceleration
+		f32 expirationtime
+		f32 size
 		u8 bool collisiondetection
 		u32 len
 		u8[len] texture
@@ -524,22 +527,26 @@ enum ToClientCommand
 		TileAnimation animation
 		u8 glow
 		u8 object_collision
+		v3f drag
+		range<v3f> bounce
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
 	/*
+		-- struct range<T> { T min, T max, f32 bias };
+		-- struct tween<T> { T start, T end };
 		u16 amount
-		f1000 spawntime
-		v3f1000 minpos
-		v3f1000 maxpos
-		v3f1000 minvel
-		v3f1000 maxvel
-		v3f1000 minacc
-		v3f1000 maxacc
-		f1000 minexptime
-		f1000 maxexptime
-		f1000 minsize
-		f1000 maxsize
+		f32 spawntime
+		v3f minpos
+		v3f maxpos
+		v3f minvel
+		v3f maxvel
+		v3f minacc
+		v3f maxacc
+		f32 minexptime
+		f32 maxexptime
+		f32 minsize
+		f32 maxsize
 		u8 bool collisiondetection
 		u32 len
 		u8[len] texture
@@ -549,6 +556,63 @@ enum ToClientCommand
 		TileAnimation animation
 		u8 glow
 		u8 object_collision
+
+		f32 pos_start_bias
+		f32 vel_start_bias
+		f32 acc_start_bias
+		f32 exptime_start_bias
+		f32 size_start_bias
+
+		range<v3f> pos_end
+		-- i.e v3f pos_end_min
+		--     v3f pos_end_max
+		--     f32 pos_end_bias
+		range<v3f> vel_end
+		range<v3f> acc_end
+
+		tween<range<v3f>> drag
+		-- i.e. v3f drag_start_min
+		--      v3f drag_start_max
+		--      f32 drag_start_bias
+		--      v3f drag_end_min
+		--      v3f drag_end_max
+		--      f32 drag_end_bias
+		tween<range<v3f>> jitter
+		tween<range<f32>> bounce
+
+		u8 attraction_kind
+			none  = 0
+			point = 1
+			line  = 2
+			plane = 3
+
+		if attraction_kind > none {
+			tween<range<f32>> attract_strength
+			tween<v3f>        attractor_origin
+			u16               attractor_origin_attachment_object_id
+			u8                spawner_flags
+			    bit 1: attractor_kill (particles dies on contact)
+			if attraction_mode > point {
+				tween<v3f> attractor_angle
+				u16        attractor_origin_attachment_object_id
+			}
+		}
+
+		tween<range<v3f>> radius
+		tween<range<v3f>> drag
+
+		u16 texpool_sz
+		texpool_sz.times {
+			u8 flags
+			-- bit 0: animated
+			-- other bits free & ignored as of proto v40
+			tween<f32> alpha
+			tween<v2f> scale
+			if flags.animated {
+				TileAnimation animation
+			}
+		}
+
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48, // Obsolete
@@ -637,6 +701,7 @@ enum ToClientCommand
 		u8[4] fog_sun_tint (ARGB)
 		u8[4] fog_moon_tint (ARGB)
 		std::string fog_tint_type
+		float body_orbit_tilt
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -735,6 +800,7 @@ enum ToClientCommand
 		u32 count
 		u8[4] starcolor (ARGB)
 		f32 scale
+		f32 day_opacity
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
@@ -765,6 +831,14 @@ enum ToClientCommand
 	TOCLIENT_SET_LIGHTING = 0x63,
 	/*
 		f32 shadow_intensity
+		f32 saturation
+		exposure parameters
+			f32 luminance_min
+			f32 luminance_max
+			f32 exposure_correction
+			f32 speed_dark_bright
+			f32 speed_bright_dark
+			f32 center_weight_power
 	*/
 
 	TOCLIENT_NUM_MSG_TYPES = 0x64,
@@ -776,7 +850,7 @@ enum ToServerCommand
 	/*
 		Sent first after connected.
 
-		u8 serialisation version (=SER_FMT_VER_HIGHEST_READ)
+		u8 serialization version (=SER_FMT_VER_HIGHEST_READ)
 		u16 supported network compression modes
 		u16 minimum supported network protocol version
 		u16 maximum supported network protocol version
@@ -988,7 +1062,15 @@ enum ToServerCommand
 		std::string bytes_M
 	*/
 
-	TOSERVER_NUM_MSG_TYPES = 0x53,
+	TOSERVER_UPDATE_CLIENT_INFO = 0x53,
+	/*
+		v2s16 render_target_size
+		f32 gui_scaling
+		f32 hud_scaling
+		v2f32 max_fs_info
+ 	*/
+
+	TOSERVER_NUM_MSG_TYPES = 0x54,
 };
 
 enum AuthMechanism

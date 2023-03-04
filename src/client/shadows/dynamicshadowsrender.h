@@ -51,6 +51,8 @@ struct NodeToApply
 class ShadowRenderer
 {
 public:
+	static const int TEXTURE_LAYER_SHADOW = 3;
+
 	ShadowRenderer(IrrlichtDevice *device, Client *client);
 
 	~ShadowRenderer();
@@ -158,3 +160,12 @@ private:
 	shadowScreenQuad *m_screen_quad{nullptr};
 	shadowScreenQuadCB *m_shadow_mix_cb{nullptr};
 };
+
+/**
+ * @brief Create a shadow renderer if settings allow this.
+ *
+ * @param device Device to be used to render shadows.
+ * @param client Reference to the client context.
+ * @return A new ShadowRenderer instance or nullptr if shadows are disabled or not supported.
+ */
+ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client);

@@ -74,4 +74,8 @@ public:
  * @returns true if a collision point was found
  */
 bool boxLineCollision(const aabb3f &box, const v3f &start, const v3f &dir,
-	v3f *collision_point, v3s16 *collision_normal);
+	v3f *collision_point, v3f *collision_normal);
+
+bool boxLineCollision(const aabb3f &box, const v3f &box_rotation,
+	const v3f &start, const v3f &dir,
+	v3f *collision_point, v3f *collision_normal, v3f *raw_collision_normal);

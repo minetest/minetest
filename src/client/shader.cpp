@@ -184,7 +184,7 @@ public:
 	ShaderCallback(const Factories &factories)
 	{
 		for (auto &&factory : factories)
-			m_setters.push_back(std::unique_ptr<IShaderConstantSetter>(factory->create()));
+			m_setters.emplace_back(factory->create());
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData) override
@@ -327,7 +327,7 @@ public:
 			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
 			m_camera_pos.set(cam_pos, services);
 
-			// I dont like using this hardcoded value. maybe something like
+			// I don't like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
@@ -402,7 +402,7 @@ public:
 
 	void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) override
 	{
-		m_setter_factories.push_back(std::unique_ptr<IShaderConstantSetterFactory>(setter));
+		m_setter_factories.emplace_back(setter);
 	}
 
 private:
@@ -682,6 +682,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		)";
 	}
 
+	// map legacy semantic texture names to texture identifiers
+	fragment_header += R"(
+		#define baseTexture texture0
+		#define normalTexture texture1
+		#define textureFlags texture2
+	)";
+
 	// Since this is the first time we're using the GL bindings be extra careful.
 	// This should be removed before 5.6.0 or similar.
 	if (!GL.GetString) {
@@ -770,6 +777,15 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			shadow_soft_radius = 1.0f;
 		shaders_header << "#define SOFTSHADOWRADIUS " << shadow_soft_radius << "\n";
 	}
+
+	if (g_settings->getBool("enable_bloom")) {
+		shaders_header << "#define ENABLE_BLOOM 1\n";
+		if (g_settings->getBool("enable_bloom_debug"))
+			shaders_header << "#define ENABLE_BLOOM_DEBUG 1\n";
+	}
+
+	if (g_settings->getBool("enable_auto_exposure"))
+		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
