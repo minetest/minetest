@@ -4363,41 +4363,6 @@ void Game::showPauseMenu()
 		"- touch&drag, tap 2nd finger\n"
 		" --> place single item to slot\n"
 		);
-#else
-	static const std::string control_text_template = strgettext("Controls:\n"
-		"- %s: move forwards\n"
-		"- %s: move backwards\n"
-		"- %s: move left\n"
-		"- %s: move right\n"
-		"- %s: jump/climb up\n"
-		"- %s: dig/punch\n"
-		"- %s: place/use\n"
-		"- %s: sneak/climb down\n"
-		"- %s: drop item\n"
-		"- %s: inventory\n"
-		"- Mouse: turn/look\n"
-		"- Mouse wheel: select item\n"
-		"- %s: chat\n"
-	);
-
-	char control_text_buf[600];
-
-	porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
-		GET_KEY_NAME(keymap_forward),
-		GET_KEY_NAME(keymap_backward),
-		GET_KEY_NAME(keymap_left),
-		GET_KEY_NAME(keymap_right),
-		GET_KEY_NAME(keymap_jump),
-		GET_KEY_NAME(keymap_dig),
-		GET_KEY_NAME(keymap_place),
-		GET_KEY_NAME(keymap_sneak),
-		GET_KEY_NAME(keymap_drop),
-		GET_KEY_NAME(keymap_inventory),
-		GET_KEY_NAME(keymap_chat)
-	);
-
-	std::string control_text = std::string(control_text_buf);
-	str_formspec_escape(control_text);
 #endif
 
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
@@ -4427,9 +4392,11 @@ void Game::showPauseMenu()
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-		<< strgettext("Exit to OS")   << "]"
-		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
+		<< strgettext("Exit to OS")   << "]";
+#ifdef HAVE_TOUCHSCREENGUI
+	os		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]";
+#endif
+	os		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
 	const std::string &address = client->getAddressName();
