@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
+#include "filesys.h"
 #include "../gui/guiSkin.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
@@ -49,10 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef _WIN32
 #include <windows.h>
 #include <winuser.h>
-#endif
-
-#if ENABLE_GLES
-#include "filesys.h"
 #endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
@@ -136,12 +133,10 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
-#if ENABLE_GLES
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";
 	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
-#endif
 
 	m_device = createDeviceEx(params);
 	driver = m_device->getVideoDriver();
@@ -289,10 +284,8 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
 	switch (driver->getDriverType()) {
-#if ENABLE_GLES
 	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
-#endif
 	case video::EDT_OPENGL:
 		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
 		break;

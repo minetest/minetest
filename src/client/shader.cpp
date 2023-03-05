@@ -229,14 +229,12 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
 
-#if ENABLE_GLES
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view;
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture;
 	// Normal matrix
 	CachedVertexShaderSetting<float, 9> m_normal;
-#endif
 
 public:
 	MainShaderConstantSetter() :
@@ -256,11 +254,9 @@ public:
 		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
-#if ENABLE_GLES
 		, m_world_view("mWorldView")
 		, m_texture("mTexture")
 		, m_normal("mNormal")
-#endif
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -283,21 +279,21 @@ public:
 		worldViewProj *= worldView;
 		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
-#if ENABLE_GLES
-		core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-		m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
-		m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
+		if (driver->getDriverType() == video::EDT_OGLES2) {
+			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
+			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
+			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
 
-		core::matrix4 normal;
-		worldView.getTransposed(normal);
-		sanity_check(normal.makeInverse());
-		float m[9] = {
-			normal[0], normal[1], normal[2],
-			normal[4], normal[5], normal[6],
-			normal[8], normal[9], normal[10],
-		};
-		m_normal.set(m, services);
-#endif
+			core::matrix4 normal;
+			worldView.getTransposed(normal);
+			sanity_check(normal.makeInverse());
+			float m[9] = {
+				normal[0], normal[1], normal[2],
+				normal[4], normal[5], normal[6],
+				normal[8], normal[9], normal[10],
+			};
+			m_normal.set(m, services);
+		}
 
 		// Set uniforms for Shadow shader
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
@@ -628,10 +624,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
-	bool use_gles = false;
-#if ENABLE_GLES
-	use_gles = driver->getDriverType() == video::EDT_OGLES2;
-#endif
+	bool use_gles = driver->getDriverType() == video::EDT_OGLES2;
 	std::stringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha

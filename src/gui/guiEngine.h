@@ -111,8 +111,8 @@ public:
 private:
 	/** driver to get textures from */
 	video::IVideoDriver *m_driver = nullptr;
-	/** set of texture names to delete */
-	std::set<std::string> m_to_delete;
+	/** set of textures to delete */
+	std::vector<video::ITexture*> m_to_delete;
 };
 
 /** GUIEngine specific implementation of OnDemandSoundFetcher */

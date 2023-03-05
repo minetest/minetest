@@ -109,10 +109,6 @@ if(BUILD_CLIENT AND ENABLE_SOUND)
 	endif()
 endif()
 
-# TODO: this should be removed one day, we can enable it unconditionally
-option(ENABLE_GLES "Enable extra support code for OpenGL ES" FALSE)
-mark_as_advanced(ENABLE_GLES)
-
 option(ENABLE_TOUCH "Enable Touchscreen support" FALSE)
 if(ENABLE_TOUCH)
 	add_definitions(-DHAVE_TOUCHSCREENGUI)
