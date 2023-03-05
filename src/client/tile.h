@@ -28,13 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "config.h"
 
-#if ENABLE_GLES
-#include <IVideoDriver.h>
-#endif
-
 class IGameDef;
 struct TileSpec;
 struct TileDef;
+
+namespace irr { namespace video { class IVideoDriver; } }
 
 typedef std::vector<video::SColor> Palette;
 
@@ -133,9 +131,7 @@ public:
 
 IWritableTextureSource *createTextureSource();
 
-#if ENABLE_GLES
 video::IImage *Align2Npot2(video::IImage *image, video::IVideoDriver *driver);
-#endif
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,

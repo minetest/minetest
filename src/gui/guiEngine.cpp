@@ -38,10 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
-
-#if ENABLE_GLES
 #include "client/tile.h"
-#endif
 
 
 /******************************************************************************/
@@ -59,11 +56,15 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 /******************************************************************************/
 MenuTextureSource::~MenuTextureSource()
 {
-	for (const std::string &texture_to_delete : m_to_delete) {
-		const char *tname = texture_to_delete.c_str();
-		video::ITexture *texture = m_driver->getTexture(tname);
-		m_driver->removeTexture(texture);
+	u32 before = m_driver->getTextureCount();
+
+	for (const auto &it: m_to_delete) {
+		m_driver->removeTexture(it);
 	}
+	m_to_delete.clear();
+
+	infostream << "~MenuTextureSource() before cleanup: "<< before
+			<< " after: " << m_driver->getTextureCount() << std::endl;
 }
 
 /******************************************************************************/
@@ -75,7 +76,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (name.empty())
 		return NULL;
 
-#if ENABLE_GLES
+	// return if already loaded
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
 		return retval;
@@ -86,12 +87,11 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	image = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
-	m_to_delete.insert(name);
 	image->drop();
+
+	if (retval)
+		m_to_delete.push_back(retval);
 	return retval;
-#else
-	return m_driver->getTexture(name.c_str());
-#endif
 }
 
 /******************************************************************************/

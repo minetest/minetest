@@ -230,12 +230,6 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
-#   Only works on GLES platforms. Most users will not need to change this.
-#   Increasing can reduce artifacting on weaker GPUs.
-#   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near plane) float 0.1 0 0.25
-
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 
