@@ -171,7 +171,7 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.Antialiasing() .. "]" ..
 		"box[8,0;3.75,4.5;#999999]"
 
-	local video_driver = core.settings:get("video_driver")
+	local video_driver = core.get_active_driver()
 	local shaders_enabled = core.settings:get_bool("enable_shaders")
 	if video_driver == "opengl" then
 		tab_string = tab_string ..
