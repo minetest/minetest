@@ -99,22 +99,27 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType;
 	const std::string &driverstring = g_settings->get("video_driver");
 	std::vector<video::E_DRIVER_TYPE> drivers =
 			RenderingEngine::getSupportedVideoDrivers();
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
-		if (!strcasecmp(driverstring.c_str(),
-				RenderingEngine::getVideoDriverInfo(drivers[i]).name.c_str())) {
+		auto &driverinfo = RenderingEngine::getVideoDriverInfo(drivers[i]);
+		if (!strcasecmp(driverstring.c_str(), driverinfo.name.c_str())) {
 			driverType = drivers[i];
 			break;
 		}
 	}
 	if (i == drivers.size()) {
-		errorstream << "Invalid video_driver specified; "
-			       "defaulting to opengl"
-			    << std::endl;
+		driverType = drivers.at(0);
+		auto &name = RenderingEngine::getVideoDriverInfo(driverType).name;
+		if (driverstring.empty()) {
+			infostream << "Defaulting to video_driver = " << name << std::endl;
+		} else {
+			errorstream << "Invalid video_driver specified; defaulting to "
+				<< name << std::endl;
+		}
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
@@ -517,20 +522,20 @@ void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
 	get_video_driver()->endScene();
 }
 
-std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
+std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 {
-	// Only check these drivers.
-	// We do not support software and D3D in any capacity.
-	static const irr::video::E_DRIVER_TYPE glDrivers[4] = {
-		irr::video::EDT_NULL,
-		irr::video::EDT_OPENGL,
-		irr::video::EDT_OGLES1,
-		irr::video::EDT_OGLES2,
+	// Only check these drivers. We do not support software and D3D in any capacity.
+	// Order by preference (best first)
+	static const video::E_DRIVER_TYPE glDrivers[] = {
+		video::EDT_OPENGL,
+		video::EDT_OGLES2,
+		video::EDT_OGLES1,
+		video::EDT_NULL,
 	};
-	std::vector<irr::video::E_DRIVER_TYPE> drivers;
+	std::vector<video::E_DRIVER_TYPE> drivers;
 
-	for (int i = 0; i < 4; i++) {
-		if (irr::IrrlichtDevice::isDriverSupported(glDrivers[i]))
+	for (u32 i = 0; i < ARRLEN(glDrivers); i++) {
+		if (IrrlichtDevice::isDriverSupported(glDrivers[i]))
 			drivers.push_back(glDrivers[i]);
 	}
 

@@ -206,11 +206,7 @@ void set_default_settings()
 	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
-#if ENABLE_GLES
-	settings->setDefault("video_driver", "ogles2");
-#else
-	settings->setDefault("video_driver", "opengl");
-#endif
+	settings->setDefault("video_driver", "");
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
