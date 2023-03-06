@@ -617,13 +617,13 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 	}
 }
 
-PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
-	session_t peer_id, bool is_singleplayer)
+PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, session_t peer_id)
 {
-	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
+	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, m_server->isSingleplayer());
 	// Create player if it doesn't exist
 	if (!m_player_database->loadPlayer(player, playersao)) {
-		*new_player = true;
+		playersao->setNewPlayer();
+
 		// Set player position
 		infostream << "Server: Finding spawn place for player \""
 			<< player->getName() << "\"" << std::endl;
@@ -641,15 +641,6 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 			playersao->setBasePosition(m_server->findSpawnPos());
 		}
 	}
-
-	// Add player to environment
-	addPlayer(player);
-
-	/* Clean up old HUD elements from previous sessions */
-	player->clearHud();
-
-	/* Add object to environment */
-	addActiveObject(playersao);
 
 	// Update active blocks quickly for a bit so objects in those blocks appear on the client
 	m_fast_active_block_divider = 10;

@@ -1079,7 +1079,7 @@ void Server::Receive()
 	}
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
 	PlayerSAO *playersao = NULL;
@@ -1092,11 +1092,12 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str());
+	RemotePlayer *player = playersao ? playersao->getPlayer() : nullptr;
 
 	// If failed, cancel
-	if (!playersao || !player) {
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+	if (!player) {
+		RemotePlayer *joined = m_env->getPlayer(playername.c_str());
+		if (joined && joined->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to another client)" << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
@@ -1107,6 +1108,18 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 		return nullptr;
 	}
+
+	// Add player to environment
+	m_env->addPlayer(player);
+
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
+
+	/* Add object to environment */
+	m_env->addActiveObject(playersao);
+
+	if (playersao->isNewPlayer())
+		m_script->on_newplayer(playersao);
 
 	/*
 		Send complete position information
@@ -3207,9 +3220,7 @@ void Server::reportPrivsModified(const std::string &name)
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(!sao)
 			return;
-		sao->updatePrivileges(
-				getPlayerEffectivePrivs(name),
-				isSingleplayer());
+		sao->updatePrivileges(getPlayerEffectivePrivs(name));
 	}
 }
 
@@ -3864,19 +3875,12 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 		player = new RemotePlayer(name, idef());
 	}
 
-	bool newplayer = false;
-
 	// Load player
-	PlayerSAO *playersao = m_env->loadPlayer(player, &newplayer, peer_id, isSingleplayer());
+	PlayerSAO *playersao = m_env->loadPlayer(player, peer_id);
 
 	// Complete init with server parts
 	playersao->finalize(player, getPlayerEffectivePrivs(player->getName()));
 	player->protocol_version = proto_version;
-
-	/* Run scripts */
-	if (newplayer) {
-		m_script->on_newplayer(playersao);
-	}
 
 	return playersao;
 }

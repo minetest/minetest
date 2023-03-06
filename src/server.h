@@ -162,7 +162,10 @@ public:
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
-	PlayerSAO* StageTwoClientInit(session_t peer_id);
+
+	// Full player initialization after they processed all static media
+	// This is a helper function for TOSERVER_CLIENT_READY
+	PlayerSAO *StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
