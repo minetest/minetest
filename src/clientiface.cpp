@@ -328,8 +328,15 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
+				/*
+					Check occlusion cache first.
+				 */
+				if (m_blocks_occ.find(p) != m_blocks_occ.end())
+					continue;
+
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					m_blocks_occ.insert(p);
 					continue;
 				}
 			}
@@ -395,8 +402,11 @@ queue_full_break:
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
+		// if the distance has changed, clear the occlusion cache
+		m_blocks_occ.clear();
+	}
 }
 
 void RemoteClient::GotBlock(v3s16 p)
