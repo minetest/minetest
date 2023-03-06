@@ -1168,24 +1168,25 @@ void Server::yieldToOtherThreads(float dtime)
 	g_profiler->avg("Server::yieldTo...() progress [#]", qs_initial - qs);
 }
 
-PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
+PlayerSAO *Server::StageTwoClientInit(session_t peer_id)
 {
 	std::string playername;
-	PlayerSAO *playersao = NULL;
+	std::unique_ptr<PlayerSAO> sao;
 	{
 		ClientInterface::AutoLock clientlock(m_clients);
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client) {
 			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
+			sao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
 	}
 
-	RemotePlayer *player = m_env->getPlayer(playername.c_str(), true);
+	RemotePlayer *player = sao ? sao->getPlayer() : nullptr;
 
 	// If failed, cancel
-	if (!playersao || !player) {
-		if (player && player->getPeerId() != PEER_ID_INEXISTENT) {
+	if (!player) {
+		RemotePlayer *joined = m_env->getPlayer(playername.c_str());
+		if (joined && joined->getPeerId() != PEER_ID_INEXISTENT) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to another client)" << std::endl;
 			DenyAccess(peer_id, SERVER_ACCESSDENIED_ALREADY_CONNECTED);
@@ -1196,6 +1197,19 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		}
 		return nullptr;
 	}
+
+	// Add player to environment
+	m_env->addPlayer(player);
+
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
+
+	/* Add object to environment */
+	PlayerSAO *playersao = sao.get();
+	m_env->addActiveObject(std::move(sao));
+
+	if (playersao->isNewPlayer())
+		m_script->on_newplayer(playersao);
 
 	/*
 		Send complete position information
@@ -3229,9 +3243,7 @@ void Server::reportPrivsModified(const std::string &name)
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(!sao)
 			return;
-		sao->updatePrivileges(
-				getPlayerEffectivePrivs(name),
-				isSingleplayer());
+		sao->updatePrivileges(getPlayerEffectivePrivs(name));
 	}
 }
 
@@ -3965,7 +3977,8 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	m_shutdown_state.trigger(delay, msg, reconnect);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_version)
+std::unique_ptr<PlayerSAO> Server::emergePlayer(const char *name, session_t peer_id,
+	u16 proto_version)
 {
 	/*
 		Try to get an existing player
@@ -4008,19 +4021,12 @@ PlayerSAO* Server::emergePlayer(const char *name, session_t peer_id, u16 proto_v
 		player = new RemotePlayer(name, idef());
 	}
 
-	bool newplayer = false;
-
 	// Load player
-	PlayerSAO *playersao = m_env->loadPlayer(player, &newplayer, peer_id, isSingleplayer());
+	auto playersao = m_env->loadPlayer(player, peer_id);
 
 	// Complete init with server parts
 	playersao->finalize(player, getPlayerEffectivePrivs(player->getName()));
 	player->protocol_version = proto_version;
-
-	/* Run scripts */
-	if (newplayer) {
-		m_script->on_newplayer(playersao);
-	}
 
 	return playersao;
 }
