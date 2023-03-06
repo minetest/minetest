@@ -701,6 +701,7 @@ enum ToClientCommand
 		u8[4] fog_sun_tint (ARGB)
 		u8[4] fog_moon_tint (ARGB)
 		std::string fog_tint_type
+		float body_orbit_tilt
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -1061,7 +1062,15 @@ enum ToServerCommand
 		std::string bytes_M
 	*/
 
-	TOSERVER_NUM_MSG_TYPES = 0x53,
+	TOSERVER_UPDATE_CLIENT_INFO = 0x53,
+	/*
+		v2s16 render_target_size
+		f32 gui_scaling
+		f32 hud_scaling
+		v2f32 max_fs_info
+ 	*/
+
+	TOSERVER_NUM_MSG_TYPES = 0x54,
 };
 
 enum AuthMechanism

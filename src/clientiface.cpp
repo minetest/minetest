@@ -295,21 +295,22 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
+				Check if map has this block
+			*/
+			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
+			if (block) {
+				// First: Reset usage timer, this block will be of use in the future.
+				block->resetUsageTimer();
+			}
+
+			/*
 				Don't send already sent blocks
 			*/
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
-			/*
-				Check if map has this block
-			*/
-			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
-
 			bool block_not_found = false;
 			if (block) {
-				// Reset usage timer, this block will be of use in the future.
-				block->resetUsageTimer();
-
 				// Check whether the block exists (with data)
 				if (!block->isGenerated())
 					block_not_found = true;

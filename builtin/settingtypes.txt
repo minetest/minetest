@@ -185,7 +185,7 @@ opaque_water (Opaque liquids) bool false
 leaves_style (Leaves style) enum fancy fancy,simple,opaque
 
 #    Connects glass if supported by node.
-connected_glass (Connect glass) bool false
+connected_glass (Connect glass) bool true
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
@@ -442,11 +442,6 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
 #    Minimum value: 1.0; maximum value: 15.0
 shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
-
-#    Set the tilt of Sun/Moon orbit in degrees.
-#    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
-shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 
 [**Post processing]
 

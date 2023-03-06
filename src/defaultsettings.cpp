@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <IrrCompileConfig.h>
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
@@ -196,7 +195,7 @@ void set_default_settings()
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
-	settings->setDefault("connected_glass", "false");
+	settings->setDefault("connected_glass", "true");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
@@ -208,11 +207,7 @@ void set_default_settings()
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 #if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	settings->setDefault("video_driver", "ogles1");
-#else
 	settings->setDefault("video_driver", "ogles2");
-#endif
 #else
 	settings->setDefault("video_driver", "opengl");
 #endif
@@ -297,7 +292,6 @@ void set_default_settings()
 	settings->setDefault("shadow_poisson_filter", "true");
 	settings->setDefault("shadow_update_frames", "8");
 	settings->setDefault("shadow_soft_radius", "5.0");
-	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
 
 	// Input
 	settings->setDefault("invert_mouse", "false");

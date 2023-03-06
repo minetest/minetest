@@ -31,7 +31,7 @@ using namespace irr;
 
 namespace irr {
 
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 9)
+// Define missing constant for vector math with 16-bit numbers
 namespace core {
 	template <typename T>
 	inline T roundingError();
@@ -42,7 +42,6 @@ namespace core {
 		return 0;
 	}
 }
-#endif
 
 }
 

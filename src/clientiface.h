@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "porting.h"
 #include "threading/mutex_auto_lock.h"
+#include "clientdynamicinfo.h"
 
 #include <list>
 #include <vector>
@@ -350,6 +351,9 @@ public:
 	void setCachedAddress(const Address &addr) { m_addr = addr; }
 	const Address &getAddress() const { return m_addr; }
 
+	void setDynamicInfo(const ClientDynamicInfo &info) { m_dynamic_info = info; }
+	const ClientDynamicInfo &getDynamicInfo() const { return m_dynamic_info; }
+
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
@@ -360,8 +364,11 @@ private:
 	// Cached here so retrieval doesn't have to go to connection API
 	Address m_addr;
 
-	// Client sent language code
+	// Client-sent language code
 	std::string m_lang_code;
+
+	// Client-sent dynamic info
+	ClientDynamicInfo m_dynamic_info{};
 
 	/*
 		Blocks that have been sent to client.
