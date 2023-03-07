@@ -597,7 +597,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 
 void Camera::updateViewingRange()
 {
-	f32 viewing_range = g_settings->getFloat("viewing_range");
+	LocalPlayer *player = m_client->getEnv().getLocalPlayer();
+	assert(player);
+
+	PlayerFogSpec fog_spec = player->getFog();
+	f32 viewing_range = fog_spec.distance > 0.f ? fog_spec.distance : g_settings->getFloat("viewing_range");
 
 	// Ignore near_plane setting on all other platforms to prevent abuse
 #if ENABLE_GLES

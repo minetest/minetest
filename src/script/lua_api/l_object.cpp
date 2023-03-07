@@ -1197,6 +1197,63 @@ int ObjectRef::l_get_fov(lua_State *L)
 	return 3;
 }
 
+// set_fog(self, distance)
+int ObjectRef::l_set_fog(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+
+	if (!player)
+		return 0;
+
+	PlayerFogSpec fog_spec = player->getFog();
+
+	luaL_checktype(L, 2, LUA_TTABLE);
+
+	lua_getfield(L, 2, "distance");
+
+	if (!lua_isnil(L, -1))
+		fog_spec.distance = static_cast<f32>(luaL_checknumber(L, -1));
+
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "color");
+
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &fog_spec.color);
+
+	lua_pop(L, 1);
+
+	player->setFog(fog_spec);
+	getServer(L)->SendPlayerFog(player->getPeerId());
+
+	return 0;
+}
+
+// get_fog(self)
+int ObjectRef::l_get_fog(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+
+	if (!player)
+		return 0;
+
+	PlayerFogSpec fog_spec = player->getFog();
+
+	lua_newtable(L);
+
+	lua_pushnumber(L, fog_spec.distance);
+	lua_setfield(L, -2, "distance");
+
+	push_ARGB8(L, fog_spec.color);
+	lua_setfield(L, -2, "color");
+
+	return 1;
+}
+
 // set_breath(self, breath)
 int ObjectRef::l_set_breath(lua_State *L)
 {
@@ -2467,6 +2524,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, get_fov),
 	luamethod(ObjectRef, set_fov),
+	luamethod(ObjectRef, get_fog),
+	luamethod(ObjectRef, set_fog),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, get_attribute),

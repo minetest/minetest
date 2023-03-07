@@ -1948,6 +1948,15 @@ void Server::SendPlayerFov(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendPlayerFog(session_t peer_id)
+{
+	NetworkPacket pkt(TOCLIENT_SET_FOG, sizeof(f32) + sizeof(video::SColor), peer_id);
+	PlayerFogSpec fog_spec = m_env->getPlayer(peer_id)->getFog();
+
+	pkt << fog_spec.distance;
+	Send(&pkt);
+}
+
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed)
 {

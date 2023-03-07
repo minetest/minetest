@@ -4019,25 +4019,27 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Fog
 	*/
 
+	PlayerFogSpec fog_spec = player->getFog();
+
 	if (m_cache_enable_fog) {
 		driver->setFog(
-				sky->getBgColor(),
-				video::EFT_FOG_LINEAR,
-				runData.fog_range * m_cache_fog_start,
-				runData.fog_range * 1.0,
-				0.01,
-				false, // pixel fog
-				true // range fog
+			fog_spec.color,
+			video::EFT_FOG_LINEAR,
+			runData.fog_range * m_cache_fog_start,
+			runData.fog_range * 1.f,
+			0.01f,
+			false, // pixel fog
+			true // range fog
 		);
 	} else {
 		driver->setFog(
-				sky->getBgColor(),
-				video::EFT_FOG_LINEAR,
-				100000 * BS,
-				110000 * BS,
-				0.01f,
-				false, // pixel fog
-				false // range fog
+			fog_spec.color,
+			video::EFT_FOG_LINEAR,
+			1e5f * BS,
+			11e4f * BS,
+			0.01f,
+			false, // pixel fog
+			false // range fog
 		);
 	}
 

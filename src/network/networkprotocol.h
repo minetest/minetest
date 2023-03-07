@@ -841,7 +841,13 @@ enum ToClientCommand
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x64,
+	TOCLIENT_SET_FOG = 0x64,
+	/*
+		f32 distance
+		u8[4] color (ARGB)
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x65,
 };
 
 enum ToServerCommand

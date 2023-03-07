@@ -126,6 +126,12 @@ struct PlayerSettings
 	void readGlobalSettings();
 };
 
+struct PlayerFogSpec
+{
+	f32 distance;
+	video::SColor color; 
+};
+
 class Map;
 struct CollisionInfo;
 struct HudElement;
@@ -213,6 +219,15 @@ public:
 		return m_fov_override_spec;
 	}
 
+	inline void setFog(const PlayerFogSpec &spec)
+	{
+		m_fog_override_spec = spec;
+	}
+	inline const PlayerFogSpec &getFog() const
+	{
+		return m_fog_override_spec;
+	}
+
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
@@ -226,6 +241,7 @@ protected:
 	v3f m_speed;
 	u16 m_wield_index = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };
+	PlayerFogSpec m_fog_override_spec { 0.f, video::SColor() };
 
 	std::vector<HudElement *> hud;
 private:

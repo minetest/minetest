@@ -7237,6 +7237,12 @@ child will follow movement and rotation of that bone.
     * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
     * Boolean indicating whether the FOV value is a multiplier.
     * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
+* `set_fog(fog_parameters)`:
+     * `fog_parameters` is a table with the following optional fields:
+        * `distance`: Distance value. Sets the fog distance.
+          A value above 0 overrides the client's viewing range setting, but it cannot exceed it.
+        * `color`: ColorSpec. (default: `#ffffff`).
+* `get_fog()`: returns a table containing fog parameters as defined in `set_fog(fog_parameters)`.
 * `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a

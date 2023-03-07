@@ -1767,3 +1767,17 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 				>> lighting.exposure.center_weight_power;
 	}
 }
+
+void Client::handleCommand_SetFog(NetworkPacket *pkt)
+{
+	f32 distance;
+	video::SColor color;
+
+	*pkt >> distance >> color;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+
+	distance = rangelim(distance, 0.f, g_settings->getFloat("viewing_range"));
+	player->setFog({distance, color});
+}
