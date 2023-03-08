@@ -43,7 +43,7 @@ Invalid parameters (see /help revoke).=Ungültige Parameter (siehe „/help revo
 Revoke privileges from yourself=Privilegien von Ihnen selbst entfernen
 Invalid parameters (see /help revokeme).=Ungültige Parameter (siehe „/help revokeme“).
 <name> <password>=<Name> <Passwort>
-Set player's password (sent unencrypted, thus insecure)=
+Set player's password (sent unencrypted, thus insecure)=Spielerpasswort setzen (unverschlüsselt gesendet, also unsicher)
 Name field required.=Namensfeld benötigt.
 Your password was cleared by @1.=Ihr Passwort wurde von @1 geleert.
 Password of player "@1" cleared.=Passwort von Spieler „@1“ geleert.
@@ -244,8 +244,3 @@ A total of @1 sample(s) were taken.=Es wurden insgesamt @1 Datenpunkt(e) aufgeze
 The output is limited to '@1'.=Die Ausgabe ist beschränkt auf „@1“.
 Saving of profile failed: @1=Speichern des Profils fehlgeschlagen: @1
 Profile saved to @1=Profil abgespeichert nach @1
-
-
-##### not used anymore #####
-
-Set player's password=Passwort von Spieler setzen
