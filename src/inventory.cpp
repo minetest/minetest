@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <sstream>
 #include "log.h"
-#include "itemdef.h"
 #include "util/strfnd.h"
 #include "content_mapnode.h" // For loading legacy MaterialItems
 #include "nameidmapping.h" // For loading legacy MaterialItems

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "constants.h"
+#include "metadata.h"
 #include "network/networkprotocol.h"
 #include "unit_sao.h"
 #include "util/numeric.h"

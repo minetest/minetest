@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
 #include "client/joystick_controller.h"
+#include "client/mapblock_mesh.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"

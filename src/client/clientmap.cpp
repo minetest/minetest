@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
+#include "nodedef.h"
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h"               // CameraModes

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 #include "util/strfnd.h"
 #include "util/basic_macros.h"
+#include "inventory.h"
 
 #define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
 

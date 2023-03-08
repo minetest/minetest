@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientmap.h"
 #include "profiler.h"
+#include "EShaderTypes.h"
+#include "IGPUProgrammingServices.h"
+#include "IMaterialRenderer.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
