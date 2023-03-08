@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "pipeline.h"
 #include "client/client.h"
 #include "client/hud.h"
+#include "IRenderTarget.h"
 
 #include <vector>
 #include <memory>
@@ -63,7 +64,7 @@ void TextureBuffer::setTexture(u8 index, v2f scale_factor, const std::string &na
 
 	if (m_definitions.size() <= index)
 		m_definitions.resize(index + 1);
-	
+
 	auto &definition = m_definitions[index];
 	definition.valid = true;
 	definition.dirty = true;
@@ -99,7 +100,7 @@ void TextureBuffer::reset(PipelineContext &context)
 		ensureTexture(ptr, m_definitions[i], context);
 		m_definitions[i].dirty = false;
 	}
-	
+
 	RenderSource::reset(context);
 }
 
@@ -124,7 +125,7 @@ bool TextureBuffer::ensureTexture(video::ITexture **texture, const TextureDefini
 			size = core::dimension2du(
 					(u32)(context.target_size.X * definition.scale_factor.X),
 					(u32)(context.target_size.Y * definition.scale_factor.Y));
-		
+
 		modify = definition.dirty || (*texture == nullptr) || (*texture)->getSize() != size;
 	}
 	else {
@@ -283,7 +284,7 @@ void RenderPipeline::run(PipelineContext &context)
 
 	for (auto &step: m_pipeline)
 		step->run(context);
-	
+
 	context.target_size = original_size;
 }
 

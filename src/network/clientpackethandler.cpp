@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/base64.h"
 #include "client/camera.h"
+#include "client/mesh_generator_thread.h"
 #include "chatmessage.h"
 #include "client/clientmedia.h"
 #include "log.h"
@@ -30,12 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "nodedef.h"
 #include "serialization.h"
-#include "server.h"
 #include "util/strfnd.h"
 #include "client/clientevent.h"
 #include "client/sound.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
@@ -43,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "gettext.h"
 #include "skyparams.h"
+#include "particles.h"
 #include <memory>
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
@@ -672,7 +674,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_manager.isRunning());
+	sanity_check(!m_mesh_update_manager->isRunning());
 
 	for (u16 i = 0; i < num_files; i++) {
 		std::string name, sha1_base64;
@@ -732,7 +734,7 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	if (init_phase) {
 		// Mesh update thread must be stopped while
 		// updating content definitions
-		sanity_check(!m_mesh_update_manager.isRunning());
+		sanity_check(!m_mesh_update_manager->isRunning());
 	}
 
 	for (u32 i = 0; i < num_files; i++) {
@@ -769,7 +771,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_manager.isRunning());
+	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress node definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
@@ -788,7 +790,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	sanity_check(!m_mesh_update_manager.isRunning());
+	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress item definitions
 	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);

@@ -73,6 +73,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-files.h"
 #include "database/database-dummy.h"
 #include "gameparams.h"
+#include "particles.h"
 
 class ClientNotFoundException : public BaseException
 {

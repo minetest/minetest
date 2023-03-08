@@ -20,8 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "inventorymanager.h"
+#include <cassert>
 #include <functional>
+#include <unordered_map>
 
+class IItemDefManager;
 class ServerEnvironment;
 
 class ServerInventoryManager : public InventoryManager
