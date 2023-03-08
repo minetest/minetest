@@ -43,7 +43,7 @@ Invalid parameters (see /help revoke).=Parametri non validi (vedi /help revoke).
 Revoke privileges from yourself=Revoca privilegi a te stessǝ
 Invalid parameters (see /help revokeme).=Parametri non validi (vedi /help revokeme).
 <name> <password>=<nome> <password>
-Set player's password=Imposta la password del giocatore
+Set player's password (sent unencrypted, thus insecure)=
 Name field required.=Campo "nome" richiesto.
 Your password was cleared by @1.=La tua password è stata resettata da @1.
 Password of player "@1" cleared.=Password del giocatore "@1" resettata.
@@ -197,6 +197,7 @@ Available commands:=Comandi disponibili:
 Command not available: @1=Comando non disponibile: @1
 [all | privs | <cmd>] [-t]=
 Get help for commands or list privileges (-t: output in chat)=
+Available privileges:=Privilegi disponibili:
 Command=Comando
 Parameters=Parametri
 For more information, click on any entry in the list.=Per più informazioni, clicca su una qualsiasi voce dell'elenco.
@@ -206,7 +207,6 @@ Available commands: (see also: /help <cmd>)=Comandi disponibili: (vedi anche /he
 Close=Chiudi
 Privilege=Privilegio
 Description=Descrizione
-Available privileges:=Privilegi disponibili:
 print [<filter>] | dump [<filter>] | save [<format> [<filter>]] | reset=print [<filtro>] | dump [<filtro>] | save [<formato> [<filtro>]] | reset
 Handle the profiler and profiling data=Gestisce il profiler e i dati da esso elaborati
 Statistics written to action log.=Statistiche scritte nel log delle azioni.
@@ -248,6 +248,7 @@ Profile saved to @1=
 
 ##### not used anymore #####
 
+Set player's password=Imposta la password del giocatore
 Invalid time.=Orario non valido.
 [all | privs | <cmd>]=[all | privs | <comando>]
 Get help for commands or list privileges=Richiama la finestra d'aiuto dei comandi o dei privilegi
