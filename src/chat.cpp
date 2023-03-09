@@ -672,7 +672,7 @@ std::wstring ChatPrompt::getVisiblePortion() const
 {
 	const std::wstring &line_ref = getLineRef();
 	if ((size_t)m_view >= line_ref.size())
-		return L"";
+		return m_prompt;
 	else
 		return m_prompt + line_ref.substr(m_view, m_cols);
 }
