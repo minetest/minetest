@@ -247,7 +247,6 @@ private:
 	IShaderSource *m_shdrsrc;
 
 	f32 m_bounding_radius;
-	// MapblockMeshGenerator uses the same as mapblock center
 	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
