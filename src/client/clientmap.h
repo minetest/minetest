@@ -29,8 +29,6 @@ struct MapDrawControl
 {
 	// Wanted drawing range
 	float wanted_range = 0.0f;
-	// Loaded range
-	float loaded_range = 0.0f;
 	// Overrides limits by drawing everything
 	bool range_all = false;
 	// Allow rendering out of bounds

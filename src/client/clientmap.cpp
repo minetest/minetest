@@ -266,7 +266,7 @@ void ClientMap::updateDrawList()
 
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, m_control.range_all ? m_control.loaded_range : -1.0f);
+	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
@@ -532,7 +532,6 @@ void ClientMap::touchMapBlocks()
 	// Number of blocks with mesh in rendering range
 	u32 blocks_in_range_with_mesh = 0;
 
-	float loaded_range = 0;
 	v3f cam_pos_f = intToFloat(cam_pos_nodes, BS);
 
 	for (const auto &sector_it : m_sectors) {
@@ -568,13 +567,10 @@ void ClientMap::touchMapBlocks()
 					+ block->mesh->getBoundingSphereCenter();
 			f32 mesh_sphere_radius = block->mesh->getBoundingRadius();
 
-			float range = mesh_sphere_center.getDistanceFrom(cam_pos_f);
-			if (range > loaded_range)
-				loaded_range = range;
-
 			// First, perform a simple distance check.
 			if (!m_control.range_all &&
-				range >	m_control.wanted_range * BS + mesh_sphere_radius)
+				mesh_sphere_center.getDistanceFrom(cam_pos_f) >
+					m_control.wanted_range * BS + mesh_sphere_radius)
 				continue; // Out of range, skip.
 
 			// Keep the block alive as long as it is in range.
@@ -583,8 +579,6 @@ void ClientMap::touchMapBlocks()
 		}
 	}
 
-	m_control.loaded_range = loaded_range / BS;
-	g_profiler->avg("MapBlock loaded range", m_control.loaded_range);
 	g_profiler->avg("MapBlock meshes in range [#]", blocks_in_range_with_mesh);
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
 }
