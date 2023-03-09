@@ -670,7 +670,11 @@ void ChatPrompt::reformat(u32 cols)
 
 std::wstring ChatPrompt::getVisiblePortion() const
 {
-	return m_prompt + getLineRef().substr(m_view, m_cols);
+	const std::wstring &line_ref = getLineRef();
+	if ((size_t)m_view >= line_ref.size())
+		return L"";
+	else
+		return m_prompt + line_ref.substr(m_view, m_cols);
 }
 
 s32 ChatPrompt::getVisibleCursorPosition() const
