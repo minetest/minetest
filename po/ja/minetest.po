@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-01-03 19:51+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -295,7 +295,8 @@ msgstr "$1のダウンロードに失敗"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "\"$1\" の展開に失敗 (サポートされていないファイル形式または壊れたアーカイブ)"
+msgstr ""
+"\"$1\" の展開に失敗 (サポートされていないファイル形式または壊れたアーカイブ)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -1674,6 +1675,11 @@ msgid "ok"
 msgstr "決定"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "ズームは現在ゲームまたはMODにより無効"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "チャット 非表示"
 
@@ -1984,14 +1990,16 @@ msgstr "%s がありません:"
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
-msgstr "必要なMODをインストールして有効にするか、エラーの原因となるMODを無効にしてく"
+msgstr ""
+"必要なMODをインストールして有効にするか、エラーの原因となるMODを無効にしてく"
 "ださい。"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
-msgstr "注: これは依存関係のサイクルが原因の可能性があります。その場合はMODを更新して"
+msgstr ""
+"注: これは依存関係のサイクルが原因の可能性があります。その場合はMODを更新して"
 "みてください。"
 
 #: src/content/mod_configuration.cpp
@@ -2341,6 +2349,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "マップチャンクごとのダンジョンの数を決定する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2350,7 +2359,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3Dサポート。\n"
@@ -2445,24 +2453,6 @@ msgstr ""
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "検出されたディスプレイの密度を調整し、UI要素のスケーリングに使用します。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
-"シーンの彩度（または鮮やかさ）を調整する\n"
-"値\n"
-"< 1.0 彩度を下げる\n"
-"> 1.0 彩度を上げる\n"
-"1.0 = 彩度を変更しない\n"
-"0.0 = 白黒\n"
-"(トーン マッピングを有効にする必要があります。)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2824,6 +2814,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "クライアント"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3308,6 +3302,10 @@ msgid "Dungeon noise"
 msgstr "ダンジョンノイズ"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
 msgstr "ブルームを有効化"
 
@@ -3340,6 +3338,18 @@ msgstr ""
 "ポアソンディスクによるフィルタリングを有効にします。\n"
 "true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の"
 "場合は、PCFフィルタリングを使用します。"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3518,7 +3528,8 @@ msgstr ""
 "作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+#, fuzzy
+msgid "Exposure compensation"
 msgstr "露出係数"
 
 #: src/settings_translation_file.cpp
@@ -4745,6 +4756,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "マップブロックのメッシュ生成遅延"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "マップブロックのメッシュ生成遅延"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "メッシュ生成のマップブロックキャッシュサイズ(MB)"
 
@@ -5214,6 +5230,13 @@ msgstr ""
 "トレードオフです (大体 4096 = 100MB)。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "不透明な液体"
 
@@ -5526,10 +5549,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "砂浜は np_beach がこの値を超えたときに出現します。"
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr "彩度"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "クライアントが受信したマップをディスクに保存します。"
 
@@ -5716,12 +5735,11 @@ msgid "Serverlist file"
 msgstr "サーバー一覧ファイル"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 "露出補正係数を設定します。\n"
 "この係数は、他のすべての後処理効果の前に線形カラー値に\n"
@@ -5765,16 +5783,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"太陽/月の軌道の傾きを度数で設定します。\n"
-"0 は傾きのない垂直な軌道です。\n"
-"最小値: 0.0、最大値: 60.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5814,9 +5822,10 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5907,6 +5916,15 @@ msgstr "サーバー終了時のメッセージ"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5930,10 +5948,6 @@ msgstr ""
 "メッシュ生成のマップブロックキャッシュサイズ。これを大きくすると、\n"
 "キャッシュヒット率が上がり、メインスレッドからコピーされるデータが\n"
 "減るため、ジッタが減少します。"
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "天体の軌道傾斜角"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6266,13 +6280,12 @@ msgstr ""
 "これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "レンダリングのバックエンドです。\n"
 "変更後は再起動が必要です。\n"
@@ -6536,6 +6549,12 @@ msgstr ""
 "シェーダーを無効にすると、ノード間に可視スペースが表示されます。\n"
 "0 に設定すると、MSAAは無効になります。\n"
 "このオプションを変更した場合、再起動が必要です。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6983,6 +7002,23 @@ msgstr "cURL並行処理制限"
 #~ msgstr ""
 #~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
 #~ "この設定はクライアント専用であり、サーバでは無視されます。"
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "シーンの彩度（または鮮やかさ）を調整する\n"
+#~ "値\n"
+#~ "< 1.0 彩度を下げる\n"
+#~ "> 1.0 彩度を上げる\n"
+#~ "1.0 = 彩度を変更しない\n"
+#~ "0.0 = 白黒\n"
+#~ "(トーン マッピングを有効にする必要があります。)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
@@ -8159,6 +8195,9 @@ msgstr "cURL並行処理制限"
 #~ msgid "Right key"
 #~ msgstr "右キー"
 
+#~ msgid "Saturation"
+#~ msgstr "彩度"
+
 #~ msgid "Select Package File:"
 #~ msgstr "パッケージファイルを選択:"
 
@@ -8176,6 +8215,15 @@ msgstr "cURL並行処理制限"
 #~ "す。\n"
 #~ "最小値0.001秒、最大値0.2秒"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "太陽/月の軌道の傾きを度数で設定します。\n"
+#~ "0 は傾きのない垂直な軌道です。\n"
+#~ "最小値: 0.0、最大値: 60.0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "影の制限"
 
@@ -8185,6 +8233,9 @@ msgstr "cURL並行処理制限"
 #~ msgstr ""
 #~ "フォールバックフォントの影のオフセット（ピクセル単位）。 \n"
 #~ "0の場合、影は描画されません。"
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "天体の軌道傾斜角"
 
 #~ msgid "Sneak key"
 #~ msgstr "スニークキー"

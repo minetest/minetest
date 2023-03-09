@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2022-03-18 01:05+0000\n"
 "Last-Translator: Thomas Wiegand <weblate.org@wiegand.info>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1687,6 +1687,11 @@ msgid "ok"
 msgstr "ตกลง"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "ซูมถูกปิดใช้งานในปัจจุบันโดยเกมหรือตัวดัดแปลง"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "สนทนาซ่อนอยู่"
 
@@ -2353,6 +2358,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "เสียง 3 มิติที่กำหนดจำนวนดันเจี้ยนต่อแมปชังค์."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2362,7 +2368,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "รองรับ 3D\n"
@@ -2457,17 +2462,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "ปรับความหนาแน่นของการแสดงผลที่ตรวจพบ ซึ่งใช้สำหรับปรับขนาดองค์ประกอบ UI"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2831,6 +2825,10 @@ msgstr "เว็บลิงก์ที่คลิกได้ (คลิก�
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "ไคลเอนต์"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3306,6 +3304,10 @@ msgid "Dungeon noise"
 msgstr "เสียงดันเจี้ยน"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "เปิดใช้งานทั้งหมด"
@@ -3338,6 +3340,18 @@ msgid ""
 msgstr ""
 "เปิดใช้งานการกรองดิสก์ปัวซอง.\n"
 "บนทรูใช้ดิสก์ปัวซองเพื่อสร้าง \"เงาอ่อน\" มิฉะนั้นจะใช้การกรอง PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3515,7 +3529,7 @@ msgstr ""
 "ที่ราบลุ่มที่ราบเรียบเหมาะสำหรับชั้นทุ่นลอยน้ำที่เป็นของแข็ง."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4731,6 +4745,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "การสร้างตาข่าย Mapblock ล่าช้า"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "การสร้างตาข่าย Mapblock ล่าช้า"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "ขนาดแคช MapBlock ของตัวสร้างตาข่าย Mapblock เป็น MB"
 
@@ -5199,6 +5218,13 @@ msgstr ""
 "การใช้หน่วยความจำ (4096=100MB ตามหลักการทั่วไป)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "ของเหลวทึบแสง"
 
@@ -5505,11 +5531,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "หาดทรายเกิดขึ้นเมื่อ np_beach มีค่าเกินกว่านี้."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "การทำซ้ำ"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "บันทึกแผนที่ที่ลูกค้าได้รับบนดิสก์."
 
@@ -5704,11 +5725,9 @@ msgstr "ไฟล์เซิร์ฟเวอร์รายการ"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5745,16 +5764,6 @@ msgstr ""
 "กำหนดขนาดรัศมีเงาที่นุ่มนวล.\n"
 "ค่าที่ต่ำกว่าหมายถึงเงาที่คมชัดกว่า ค่าที่มากขึ้นหมายถึงเงาที่นุ่มนวลกว่า.\n"
 "ค่าต่ำสุด: 1.0; มูลค่าสูงสุด: 10.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"ตั้งค่าความเอียงของวงโคจรของดวงอาทิตย์/ดวงจันทร์เป็นองศา.\n"
-"ค่า 0 หมายถึงไม่มีวงโคจรเอียง/แนวตั้ง.\n"
-"ค่าต่ำสุด: 0.0; ค่าสูงสุด: 60.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5797,7 +5806,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5884,6 +5893,15 @@ msgstr "ข้อความปิดเครื่อง"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5907,10 +5925,6 @@ msgstr ""
 "ขนาดของแคช MapBlock ของตัวสร้างตาข่าย การเพิ่มความประสงค์นี้\n"
 "เพิ่มแคชการเข้าชม% ลดการคัดลอกข้อมูลจากหลัก\n"
 "ด้ายจึงลดกระวนกระวายใจ"
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "วงโคจรของท้องฟ้าเอียง"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6240,13 +6254,12 @@ msgstr ""
 "ควรกำหนดค่านี้ร่วมกับ active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "แบ็กเอนด์การเรนเดอร์.\n"
 "จำเป็นต้องรีสตาร์ทหลังจากเปลี่ยนแปลงสิ่งนี้.\n"
@@ -6509,6 +6522,12 @@ msgstr ""
 "ช่องว่างที่มองเห็นได้ปรากฏขึ้นระหว่างโหนดเมื่อปิดใช้ shaders.\n"
 "หากตั้งค่าเป็น 0 MSAA จะถูกปิดใช้งาน.\n"
 "จำเป็นต้องรีสตาร์ทหลังจากเปลี่ยนตัวเลือกนี้."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -8024,17 +8043,33 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Right key"
 #~ msgstr "ปุ่มขวา"
 
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "การทำซ้ำ"
+
 #~ msgid "Select Package File:"
 #~ msgstr "เลือกแฟ้มแพคเกจ:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "เซิร์ฟเวอร์ / ผู้เล่นเดี่ยว"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "ตั้งค่าความเอียงของวงโคจรของดวงอาทิตย์/ดวงจันทร์เป็นองศา.\n"
+#~ "ค่า 0 หมายถึงไม่มีวงโคจรเอียง/แนวตั้ง.\n"
+#~ "ค่าต่ำสุด: 0.0; ค่าสูงสุด: 60.0"
+
 #, fuzzy
 #~ msgid ""
 #~ "Shadow offset (in pixels) of the fallback font. If 0, then shadow will "
 #~ "not be drawn."
 #~ msgstr "เงาแบบอักษรชดเชยถ้า 0 แล้วเงาจะไม่ถูกวาด."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "วงโคจรของท้องฟ้าเอียง"
 
 #~ msgid "Sneak key"
 #~ msgstr "กุญแจแอบ"

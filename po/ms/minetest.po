@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-01-03 19:51+0000\n"
 "Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi <translation@mnh48.moe>\n"
@@ -296,7 +296,8 @@ msgstr "Gagal memuat turun $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Gagal untuk menyari \"$1\" (jenis fail tidak disokong atau arkib rosak)"
+msgstr ""
+"Gagal untuk menyari \"$1\" (jenis fail tidak disokong atau arkib rosak)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -1681,6 +1682,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zum sedang dilumpuhkan oleh permainan atau mods"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Sembang disembunyikan"
 
@@ -2352,6 +2358,7 @@ msgstr ""
 "Hingar 3D yang menentukan jumlah kurungan bawah tanah per ketulan peta."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2361,7 +2368,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Sokongan 3D.\n"
@@ -2461,24 +2467,6 @@ msgstr ""
 "elemen UI."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
-"Laraskan penepuan (atau terangnya) pemandangan\n"
-"Nilai\n"
-"< 1.0 kurangkan penepuan\n"
-"> 1.0 tingkatkan penepuan\n"
-"1.0 = penepuan tidak berubah\n"
-"0.0 = hitam dan putih\n"
-"(Pemetaan tona perlu dibolehkan.)"
-
-#: src/settings_translation_file.cpp
 #, c-format
 msgid ""
 "Adjusts the density of the floatland layer.\n"
@@ -2488,8 +2476,8 @@ msgid ""
 "to be sure) creates a solid floatland layer."
 msgstr ""
 "Melaraskan ketumpatan lapisan tanah terapung.\n"
-"Naikkan nilai untuk meningkatkan ketumpatan. Boleh jadi positif atau negatif."
-"\n"
+"Naikkan nilai untuk meningkatkan ketumpatan. Boleh jadi positif atau "
+"negatif.\n"
 "Nilai = 0.0: 50% daripada isi padu merupakan tanah terapung.\n"
 "Nilai = 2.0 mencipta lapisan tanah terapung yang pejal (boleh jadi lebih "
 "tinggi\n"
@@ -2842,6 +2830,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Klien"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3339,6 +3331,10 @@ msgid "Dungeon noise"
 msgstr "Hingar kurungan bawah tanah"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
 msgstr "Membolehkan Seri"
 
@@ -3371,6 +3367,18 @@ msgstr ""
 "Membolehkan penapisan cakera Poisson.\n"
 "Jika dibenarkan, gunakan cakera Poisson untuk membuat \"bayang lembut\". "
 "Jika tidak, gunakan penapisan PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3553,7 +3561,8 @@ msgstr ""
 "bahagian tanah yang lebih rata, sesuai untuk lapisan tanah terapung pejal."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+#, fuzzy
+msgid "Exposure compensation"
 msgstr "Faktor Dedahan"
 
 #: src/settings_translation_file.cpp
@@ -3775,8 +3784,8 @@ msgid ""
 "placeholders:\n"
 "@name, @message, @timestamp (optional)"
 msgstr ""
-"Format mesej sembang pemain. Rentetan berikut ialah pemegang tempat yang sah:"
-"\n"
+"Format mesej sembang pemain. Rentetan berikut ialah pemegang tempat yang "
+"sah:\n"
 "@name (untuk nama), @message (untuk mesej), @timestamp (pilihan, untuk cap "
 "masa)"
 
@@ -4813,6 +4822,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Lengah masa penjanaan jejaring blok peta"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Lengah masa penjanaan jejaring blok peta"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Saiz cache BlokPeta untuk penjana jejaring blokpeta dalam unit MB"
 
@@ -5293,6 +5307,13 @@ msgstr ""
 "dan penggunaan ingatan (4096=100MB, mengikut kebiasaan)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Cecair legap"
 
@@ -5611,10 +5632,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Pantai berpasir terjadi apabila nilai np_beach melebihi nilai ini."
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr "Penepuan"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Simpan peta yang diterima oleh klien dalam cakera."
 
@@ -5803,12 +5820,11 @@ msgid "Serverlist file"
 msgstr "Fail senarai pelayan"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 "Menetapkan faktor pampasan dedahan.\n"
 "Faktor ini digunakan pada nilai warna lelurus\n"
@@ -5855,16 +5871,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Menetapkan kecondongan orbit Matahari/Bulan dalam unit darjah.\n"
-"Nilai 0 untuk tidak condong / tiada orbit menegak.\n"
-"Nilai minimum: 0.0; nilai maksimum: 60.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5904,9 +5910,10 @@ msgstr ""
 "Memerlukan pembayang untuk dibolehkan."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -6000,6 +6007,15 @@ msgstr "Mesej penutupan"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6023,10 +6039,6 @@ msgstr ""
 "Saiz cache blokpeta untuk penjana jejaring. Menaikkan nilai ini akan\n"
 "meningkatkan jumlah % hit cache, mengurangkan data yang perlu disalin\n"
 "daripada jalur utama, lalu mengurangkan ketaran."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Kecondongan Orbit Badan Angkasa"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6374,13 +6386,12 @@ msgstr ""
 "(active_object_send_range_blocks)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Kemas gabung bahagian belakang.\n"
 "Anda perlu memulakan semula selepas mengubah tetapan ini.\n"
@@ -6663,6 +6674,12 @@ msgstr ""
 "Ruangan kosong akan kelihatan di antara nod apabila pembayang dilumpuhkan.\n"
 "Jika ditetapkan ke 0, MSAA akan dilumpuhkan.\n"
 "Anda perlu mulakan semula selepas mengubah pilihan ini."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7125,6 +7142,23 @@ msgstr "Had cURL selari"
 #~ "Laraskan pengekodan gama untuk jadual cahaya. Nombor lebih tinggi lebih "
 #~ "cerah.\n"
 #~ "Tetapan ini hanya untuk klien dan diabaikan oleh pelayan permainan."
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "Laraskan penepuan (atau terangnya) pemandangan\n"
+#~ "Nilai\n"
+#~ "< 1.0 kurangkan penepuan\n"
+#~ "> 1.0 tingkatkan penepuan\n"
+#~ "1.0 = penepuan tidak berubah\n"
+#~ "0.0 = hitam dan putih\n"
+#~ "(Pemetaan tona perlu dibolehkan.)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
@@ -8309,6 +8343,9 @@ msgstr "Had cURL selari"
 #~ msgid "Right key"
 #~ msgstr "Kekunci ke kanan"
 
+#~ msgid "Saturation"
+#~ msgstr "Penepuan"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Pilih Fail Pakej:"
 
@@ -8326,6 +8363,15 @@ msgstr "Had cURL selari"
 #~ "menggunakan lebih banyak sumber.\n"
 #~ "Nilai minimum 0.001 saat dan nilai maksimum 0.2 saat"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Menetapkan kecondongan orbit Matahari/Bulan dalam unit darjah.\n"
+#~ "Nilai 0 untuk tidak condong / tiada orbit menegak.\n"
+#~ "Nilai minimum: 0.0; nilai maksimum: 60.0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "Had bayang"
 
@@ -8335,6 +8381,9 @@ msgstr "Had cURL selari"
 #~ msgstr ""
 #~ "Ofset bayang fon berbalik (dalam unit piksel). Jika 0, maka bayang tidak "
 #~ "akan dilukis."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Kecondongan Orbit Badan Angkasa"
 
 #~ msgid "Sneak key"
 #~ msgstr "Kekunci selinap"

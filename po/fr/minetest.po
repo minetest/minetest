@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-01-11 22:58+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1683,6 +1683,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zoom actuellement désactivé par un jeu ou un mod"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Tchat caché"
 
@@ -2246,8 +2251,8 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) de décalage du fractal à partir du centre du monde en unités « "
-"échelle ».\n"
+"(X,Y,Z) de décalage du fractal à partir du centre du monde en unités "
+"« échelle ».\n"
 "Peut être utilisé pour déplacer un point désiré à (0, 0) pour créer une zone "
 "d'apparition convenable, ou pour autoriser à « zoomer » sur un point désiré "
 "en augmentant l'« échelle ».\n"
@@ -2270,8 +2275,8 @@ msgstr ""
 "Échelle (X,Y,Z) de la fractale en nœuds.\n"
 "La taille réelle de la fractale est 2 à 3 fois plus grande.\n"
 "Ces nombres peuvent être très grands, la fractale n'a pas à être contenue "
-"dans le monde. Les augmenter pour « zoomer » dans les détails de la fractale."
-"\n"
+"dans le monde. Les augmenter pour « zoomer » dans les détails de la "
+"fractale.\n"
 "Le valeur par défaut est pour une forme verticalement écrasée convenant pour "
 "une île, définir les 3 nombres égaux pour la forme brute."
 
@@ -2358,6 +2363,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Bruit 3D qui détermine le nombre de donjons par tranche de carte."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2367,7 +2373,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Support 3D.\n"
@@ -2465,24 +2470,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Ajuste la densité d'affichage détectée, utilisée pour la mise à l'échelle "
 "des éléments de l'interface utilisateur."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
-"Ajuste la saturation (ou l'éclat) de la scène\n"
-"Valeurs\n"
-"< 1,0 diminue la saturation\n"
-"> 1,0 augmente la saturation\n"
-"1,0 = saturation inchangée\n"
-"0,0 = noir et blanc\n"
-"(Nécessite le mappage tonal pour être activé.)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2724,8 +2711,8 @@ msgid ""
 msgstr ""
 "Distance de la caméra « près du plan de coupure » dans les nœuds, entre 0 et "
 "0,25\n"
-"Ne fonctionne que sur les plateformes GLES. La plupart des utilisateurs n’"
-"ont pas besoin de changer cela.\n"
+"Ne fonctionne que sur les plateformes GLES. La plupart des utilisateurs "
+"n’ont pas besoin de changer cela.\n"
 "L’augmentation peut réduire les artefacts sur des GPUs plus faibles.\n"
 "0,1 = Défaut, 0,25 = Bonne valeur pour les tablettes plus faibles."
 
@@ -2849,6 +2836,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Client"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3350,6 +3341,10 @@ msgid "Dungeon noise"
 msgstr "Bruit de donjons"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
 msgstr "Activer le flou lumineux"
 
@@ -3382,6 +3377,18 @@ msgstr ""
 "Active le filtrage par disque de Poisson.\n"
 "Si activé, utilise le disque de Poisson pour créer des « ombres douces ». "
 "Sinon, utilise le filtrage PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3566,7 +3573,8 @@ msgstr ""
 "flottant."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+#, fuzzy
+msgid "Exposure compensation"
 msgstr "Facteur d'exposition"
 
 #: src/settings_translation_file.cpp
@@ -4831,6 +4839,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Délai de génération des maillages de blocs de carte"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Délai de génération des maillages de blocs de carte"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Taille du cache de blocs de carte en Mo du générateur de maillage"
 
@@ -5301,8 +5314,8 @@ msgstr ""
 "ATTENTION : augmenter le nombre de processus « emerge » accélère bien la\n"
 "création de terrain, mais cela peut nuire à la performance du jeu en "
 "interférant\n"
-"avec d’autres processus, en particulier en mode solo et/ou lors de l’"
-"exécution de\n"
+"avec d’autres processus, en particulier en mode solo et/ou lors de "
+"l’exécution de\n"
 "code Lua en mode « on_generated ». Pour beaucoup, le réglage optimal peut "
 "être « 1 »."
 
@@ -5317,6 +5330,13 @@ msgstr ""
 "C'est un compromis entre la surcharge de transaction SQLite et la "
 "consommation mémoire\n"
 "(4096 = 100 Mo, comme règle générale)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5642,10 +5662,6 @@ msgstr ""
 "Des plages de sables apparaissent lorsque « np_beach » dépasse cette valeur."
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr "Saturation"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Sauvegarde le monde du serveur sur le disque dur du client."
 
@@ -5835,12 +5851,11 @@ msgid "Serverlist file"
 msgstr "Fichier de la liste des serveurs"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 "Définit le facteur de compensation de l'exposition. Ce facteur est appliqué "
 "à la valeur de couleur linéaire avant tous les autres effets de post-"
@@ -5888,16 +5903,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Définit l'inclinaison de l'orbite du soleil / lune en degrés.\n"
-"La valeur de 0 signifie aucune inclinaison / orbite verticale.\n"
-"Valeur minimale : 0,0 ; valeur maximale : 60,0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5937,9 +5942,10 @@ msgstr ""
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -6033,6 +6039,15 @@ msgstr "Message d'arrêt"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6057,10 +6072,6 @@ msgstr ""
 "Taille du cache de blocs de carte du générateur de maillage. Augmenter ceci "
 "augmente le % d'interception du cache et réduit la copie de données dans le "
 "fil principal, réduisant les tremblements."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Inclinaison de l'orbite du corps du ciel"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6137,8 +6148,8 @@ msgid ""
 msgstr ""
 "Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
 "d'utiliser le port UDP.\n"
-"$filename doit être accessible depuis $remote_media$filename via cURL ("
-"évidemment, remote_media devrait se terminer avec un slash).\n"
+"$filename doit être accessible depuis $remote_media$filename via cURL "
+"(évidemment, remote_media devrait se terminer avec un slash).\n"
 "Les fichiers qui ne sont pas présents sont récupérés de la manière "
 "habituelle."
 
@@ -6229,15 +6240,15 @@ msgstr ""
 "Niveau de la surface de l'eau (optionnel) placée sur une couche solide de "
 "terrain flottant.\n"
 "L'eau est désactivée par défaut et est placée seulement si cette valeur est "
-"supérieure à « mgv7_floatland_ymax » - « mgv7_floatland_taper » (début de l’"
-"effilage du haut).\n"
-"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES SERVEURS*** "
-":\n"
+"supérieure à « mgv7_floatland_ymax » - « mgv7_floatland_taper » (début de "
+"l’effilage du haut).\n"
+"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES "
+"SERVEURS*** :\n"
 "Lorsque le placement de l'eau est activé, les terrains flottants doivent "
-"être configurés et vérifiés pour être une couche solide en mettant « "
-"mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de « "
-"mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui surchargent "
-"les serveurs et pourraient inonder les terres en dessous."
+"être configurés et vérifiés pour être une couche solide en mettant "
+"« mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de "
+"« mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui "
+"surchargent les serveurs et pourraient inonder les terres en dessous."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6412,13 +6423,12 @@ msgstr ""
 "Ceci devrait être configuré avec « active_object_send_range_blocks »."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Le moteur de rendu.\n"
 "Un redémarrage est nécessaire après cette modification.\n"
@@ -6709,6 +6719,12 @@ msgstr ""
 "désactivés.\n"
 "Si définie à 0, MSAA est désactivé.\n"
 "Un redémarrage est nécessaire après la modification de cette option."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7163,6 +7179,23 @@ msgstr "Limite parallèle de cURL"
 #~ msgstr ""
 #~ "Ajuster la correction gamma. Les valeurs plus basses sont plus claires.\n"
 #~ "Ce paramètre s'applique au client seulement et est ignoré par le serveur."
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "Ajuste la saturation (ou l'éclat) de la scène\n"
+#~ "Valeurs\n"
+#~ "< 1,0 diminue la saturation\n"
+#~ "> 1,0 augmente la saturation\n"
+#~ "1,0 = saturation inchangée\n"
+#~ "0,0 = noir et blanc\n"
+#~ "(Nécessite le mappage tonal pour être activé.)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
@@ -8338,6 +8371,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgid "Right key"
 #~ msgstr "Touche droite"
 
+#~ msgid "Saturation"
+#~ msgstr "Saturation"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Sélectionner le fichier du mod :"
 
@@ -8355,6 +8391,15 @@ msgstr "Limite parallèle de cURL"
 #~ "carte sont plus rapides, mais cela consomme plus de ressources.\n"
 #~ "Valeur minimale 0,001 seconde et maximale 0,2 seconde."
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Définit l'inclinaison de l'orbite du soleil / lune en degrés.\n"
+#~ "La valeur de 0 signifie aucune inclinaison / orbite verticale.\n"
+#~ "Valeur minimale : 0,0 ; valeur maximale : 60,0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "Limite des ombres"
 
@@ -8364,6 +8409,9 @@ msgstr "Limite parallèle de cURL"
 #~ msgstr ""
 #~ "Décalage de l'ombre de la police de secours (en pixel). Aucune ombre si "
 #~ "la valeur est 0."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Inclinaison de l'orbite du corps du ciel"
 
 #~ msgid "Sneak key"
 #~ msgstr "Touche déplacement lent"

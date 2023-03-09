@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-03-08 20:41+0000\n"
 "Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -1681,6 +1681,11 @@ msgid "ok"
 msgstr "OK"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Приближение в настоящее время отключено игрой или модом"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Чат скрыт"
 
@@ -2357,6 +2362,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-шум, определяющий количество подземелий в куске карты."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2366,7 +2372,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Поддержка 3D.\n"
@@ -2463,24 +2468,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Настройка обнаруженной плотности дисплея, используется для масштабирования "
 "элементов интерфейса."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
-"Настройте насыщенность (или яркость) сцены\n"
-"Значения\n"
-"< 1,0 уменьшение насыщенности\n"
-"> 1.0 увеличение насыщенности\n"
-"1.0 = неизменная насыщенность\n"
-"0.0 = чёрно-белое\n"
-"(Необходимо включить отображение тонов.)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2847,6 +2834,10 @@ msgid "Client"
 msgstr "Клиент"
 
 #: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Client and Server"
 msgstr "Клиент и сервер"
 
@@ -2906,8 +2897,8 @@ msgid ""
 msgstr ""
 "Разделённый запятыми список меток, который можно скрывать в хранилище. "
 "«nonfree» можно использовать,\n"
-"чтобы скрыть пакеты, которые не являются «свободным программным обеспечением»"
-"\n"
+"чтобы скрыть пакеты, которые не являются «свободным программным "
+"обеспечением»\n"
 "по определению Фонда свободного программного обеспечения.\n"
 "Также вы можете назначить оценку.\n"
 "Метки не зависят от версии Minetest,\n"
@@ -3344,6 +3335,10 @@ msgid "Dungeon noise"
 msgstr "Шум подземелья"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
 msgstr "Включить эффект расцветки"
 
@@ -3376,6 +3371,18 @@ msgstr ""
 "Включить фильтрацию диска Пуассона.\n"
 "Если включена использует диск Пуассона для создания «мягких теней». В "
 "противном случае используется фильтрация PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3559,7 +3566,8 @@ msgstr ""
 "островов."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+#, fuzzy
+msgid "Exposure compensation"
 msgstr "Показатель нарастания"
 
 #: src/settings_translation_file.cpp
@@ -4797,6 +4805,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Задержка в генерации мешей блоков"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Задержка в генерации мешей блоков"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Размер кэша блоков карты в генераторе мешей в МБ"
 
@@ -5259,8 +5272,8 @@ msgstr ""
 "-    Указывает количество потоков, минимально — 1.\n"
 "ВНИМАНИЕ: Увеличение числа потоков улучшает быстродействие движка\n"
 "картогенератора, но может снижать производительность игры, мешая другим\n"
-"процессам, особенно в одиночной игре и при запуске кода Lua в «on_generated»."
-"\n"
+"процессам, особенно в одиночной игре и при запуске кода Lua в "
+"«on_generated».\n"
 "Для большинства пользователей наилучшим значением может быть «1»."
 
 #: src/settings_translation_file.cpp
@@ -5274,6 +5287,13 @@ msgstr ""
 "Что означает уменьшение накладных расходов на транзакции SQLite и "
 "потребления\n"
 "памяти (как правило, 4096 = 100 МБ)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5597,10 +5617,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Песчаные пляжи появляются, когда np_beach превышает это значение."
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr "Насыщенность цвета"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Сохранение карты, полученной от клиента на диск."
 
@@ -5791,12 +5807,11 @@ msgid "Serverlist file"
 msgstr "Файл списка серверов"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 "Установите показатель компенсации нарастания.\n"
 "Этот показатель применяется к линейному значению цвета\n"
@@ -5842,16 +5857,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Установите наклон орбиты Солнца/Луны в градусах.\n"
-"Значение 0 означает отсутствие наклона / вертикальную орбиту.\n"
-"Наименьшее значение: 0.0/; наибольшее значение: 60.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5891,9 +5896,10 @@ msgstr ""
 "Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5988,6 +5994,15 @@ msgstr "Сообщение о выключении"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6014,10 +6029,6 @@ msgstr ""
 "Размер кэша блоков карты в генераторе мешей. Увеличение этого значения\n"
 "увеличит процент попаданий в кэш, предотвращая копирование информации\n"
 "из основного потока игры, тем самым уменьшая колебания кадровой частоты."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Наклон орбиты небесного тела"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6364,13 +6375,12 @@ msgstr ""
 "Это должно быть настроено вместе с active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Движок отрисовки.\n"
 "После изменения этой настройки требуется перезагрузка.\n"
@@ -6647,15 +6657,21 @@ msgid ""
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
 msgstr ""
-"Используйте многовыборочное сглаживание (MSAA) для сглаживания краёв блоков."
-"\n"
-"Этот алгоритм сглаживает область просмотра 3D, сохраняя резкость изображения,"
-"\n"
+"Используйте многовыборочное сглаживание (MSAA) для сглаживания краёв "
+"блоков.\n"
+"Этот алгоритм сглаживает область просмотра 3D, сохраняя резкость "
+"изображения,\n"
 "но это не влияет на внутренности текстур\n"
 "(что особенно заметно на прозрачных текстурах).\n"
 "Когда шейдеры отключены, между блоками появляются видимые пробелы.\n"
 "Если установлено значение 0, MSAA отключено.\n"
 "После изменения этой настройки требуется перезагрузка."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6889,10 +6905,10 @@ msgstr ""
 "увеличенных текстур;\n"
 "значения выше выглядят чётче, но требуют больше памяти. Желательно "
 "использовать значения, кратные 2.\n"
-"Эта настройка применяется ТОЛЬКО в том случае, если включена "
-"билинейная/трилинейная/анизотропная фильтрация. Это значение также "
-"используется в качестве основного размера текстур блоков для "
-"автомасштабирования с выравниванием по миру."
+"Эта настройка применяется ТОЛЬКО в том случае, если включена билинейная/"
+"трилинейная/анизотропная фильтрация. Это значение также используется в "
+"качестве основного размера текстур блоков для автомасштабирования с "
+"выравниванием по миру."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7110,6 +7126,23 @@ msgstr "Предел одновременных соединений cURL"
 #~ "Регулирует гамма-кодировку таблиц освещения. Более высокие значения "
 #~ "ярче.\n"
 #~ "Этот параметр предназначен только для клиента и игнорируется сервером."
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "Настройте насыщенность (или яркость) сцены\n"
+#~ "Значения\n"
+#~ "< 1,0 уменьшение насыщенности\n"
+#~ "> 1.0 увеличение насыщенности\n"
+#~ "1.0 = неизменная насыщенность\n"
+#~ "0.0 = чёрно-белое\n"
+#~ "(Необходимо включить отображение тонов.)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr "Управляет сужением островов горного типа ниже средней точки."
@@ -8293,6 +8326,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgid "Right key"
 #~ msgstr "Правая клавиша меню"
 
+#~ msgid "Saturation"
+#~ msgstr "Насыщенность цвета"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Выберите файл дополнения:"
 
@@ -8310,6 +8346,15 @@ msgstr "Предел одновременных соединений cURL"
 #~ "потребляет больше ресурсов.\n"
 #~ "Минимальное значение 0,001 секунды, максимальное 0,2 секунды"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Установите наклон орбиты Солнца/Луны в градусах.\n"
+#~ "Значение 0 означает отсутствие наклона / вертикальную орбиту.\n"
+#~ "Наименьшее значение: 0.0/; наибольшее значение: 60.0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "Лимит теней"
 
@@ -8319,6 +8364,9 @@ msgstr "Предел одновременных соединений cURL"
 #~ msgstr ""
 #~ "Смещение тени резервного шрифта (в пикселях). Если указан 0, то тень не "
 #~ "будет показана."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Наклон орбиты небесного тела"
 
 #~ msgid "Sneak key"
 #~ msgstr "Красться"

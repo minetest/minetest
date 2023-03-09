@@ -1,13 +1,8 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-01-18 22:47+0000\n"
 "Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -1687,6 +1682,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zväčšenie je zakázané hrou, alebo rozšírením"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Komunikačná konzola je skrytá"
 
@@ -2358,6 +2358,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D šum definujúci počet kobiek na časť mapy (mapchunk)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2367,7 +2368,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Podpora 3D.\n"
@@ -2465,24 +2465,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Uprav zistenú hustotu zobrazenia, použitú pre zmenu veľkosti prvkov "
 "grafického rozhrania."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
-"Uprav sýtosť (resp. živosť) scény\n"
-"Hodnoty\n"
-"< 1.0 zníž sýtosť\n"
-"> 1.0 zvýš sýtosť\n"
-"1.0 = sýtosť nezmenená\n"
-"0.0 = čierno-biele\n"
-"(Optimalizácia farieb musí byť povolená)"
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2845,6 +2827,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Klient"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3333,6 +3319,10 @@ msgid "Dungeon noise"
 msgstr "Šum kobky"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
 msgstr "Povoliť žiaru"
 
@@ -3365,6 +3355,18 @@ msgstr ""
 "Aktivuj poisson disk filtrovanie.\n"
 "Ak je aktivované použije poisson disk pre vytvorenie \"mäkkých tieňov\". V "
 "opačnom prípade sa použije PCF filtrovanie."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3533,8 +3535,8 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
-"Exponent zošpicatenia lietajúcej pevniny. Pozmeňuje fungovanie zošpicatenia."
-"\n"
+"Exponent zošpicatenia lietajúcej pevniny. Pozmeňuje fungovanie "
+"zošpicatenia.\n"
 "Hodnota = 1.0 vytvorí stále, lineárne zošpicatenie.\n"
 "Hodnoty > 1.0 vytvoria plynulé zošpicatenie, vhodné pre štandardné oddelené\n"
 "lietajúce pevniny.\n"
@@ -3542,7 +3544,8 @@ msgstr ""
 "rovnejšími nížinami, vhodné ako pevná základná vrstva lietajúcej pevniny."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+#, fuzzy
+msgid "Exposure compensation"
 msgstr "Faktor expozície"
 
 #: src/settings_translation_file.cpp
@@ -4787,6 +4790,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Oneskorenie generovania Mesh blokov"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Oneskorenie generovania Mesh blokov"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Medzipamäť Mapblock Mesh generátora blokov v MB"
 
@@ -5260,6 +5268,13 @@ msgstr ""
 "a spotrebou pamäti (4096=100MB, ako približné pravidlo)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Nepriehľadné tekutiny"
 
@@ -5572,10 +5587,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Pieskové pláže sa objavia keď np_beach presiahne túto hodnotu."
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr "Sýtosť"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Ulož mapu získanú klientom na disk."
 
@@ -5762,12 +5773,11 @@ msgid "Serverlist file"
 msgstr "Súbor so zoznamom serverov"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 "Nastav kompenzačný faktor expozície.\n"
 "Tento faktor sa aplikuje na lineárnu hodnotu farby \n"
@@ -5811,16 +5821,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Nastav sklon orbity slnka/mesiaca v stupňoch\n"
-"Hodnota 0 znamená bez vertikálneho sklonu orbity.\n"
-"Minimálna hodnota: 0.0; max. hodnota: 60.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5860,9 +5860,10 @@ msgstr ""
 "Požaduje aby boli aktivované shadery."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5956,6 +5957,15 @@ msgstr "Správa pri vypínaní"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5980,10 +5990,6 @@ msgstr ""
 "Veľkosť medzipamäte blokov v Mesh generátori.\n"
 "Zvýšenie zvýši využitie medzipamäte %, zníži sa množstvo dát kopírovaných\n"
 "z hlavnej vetvy a tým sa zníži chvenie."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Sklon orbity na oblohe"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6321,13 +6327,12 @@ msgstr ""
 "Malo by to byť konfigurované spolu s active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Renderovací back-end.\n"
 "Po zmene je vyžadovaný reštart.\n"
@@ -6600,6 +6605,12 @@ msgstr ""
 "Ak sú shadery zakázané, objavia sa viditeľné medzery medzi kockami.\n"
 "Ak sú nastavené na 0, MSAA je zakázané.\n"
 "Po zmene tohto nastavenia je požadovaný reštart."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7033,6 +7044,23 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Address / Port"
 #~ msgstr "Adresa / Port"
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "Uprav sýtosť (resp. živosť) scény\n"
+#~ "Hodnoty\n"
+#~ "< 1.0 zníž sýtosť\n"
+#~ "> 1.0 zvýš sýtosť\n"
+#~ "1.0 = sýtosť nezmenená\n"
+#~ "0.0 = čierno-biele\n"
+#~ "(Optimalizácia farieb musí byť povolená)"
 
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Si si istý, že chceš vynulovať svoj svet jedného hráča?"
@@ -8125,6 +8153,9 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Right key"
 #~ msgstr "Tlačidlo Vpravo"
 
+#~ msgid "Saturation"
+#~ msgstr "Sýtosť"
+
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Server / Hra pre jedného hráča"
 
@@ -8140,11 +8171,23 @@ msgstr "Paralelný limit cURL"
 #~ "Minimálna hodnota je 0.001 sekúnd max. hodnota je 0.2 sekundy"
 
 #~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Nastav sklon orbity slnka/mesiaca v stupňoch\n"
+#~ "Hodnota 0 znamená bez vertikálneho sklonu orbity.\n"
+#~ "Minimálna hodnota: 0.0; max. hodnota: 60.0"
+
+#~ msgid ""
 #~ "Shadow offset (in pixels) of the fallback font. If 0, then shadow will "
 #~ "not be drawn."
 #~ msgstr ""
 #~ "Posun tieňa (v pixeloch) záložného písma. Ak je 0, tak tieň nebude "
 #~ "vykreslený."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Sklon orbity na oblohe"
 
 #~ msgid "Sneak key"
 #~ msgstr "Tlačidlo zakrádania sa"
