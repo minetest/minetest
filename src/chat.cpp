@@ -229,8 +229,8 @@ void ChatBuffer::scrollBottom()
 	m_scroll = getBottomScrollPos();
 }
 
-u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
-		std::vector<ChatFormattedLine>& destination) const
+u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
+		std::vector<ChatFormattedLine> &destination) const
 {
 	u32 num_added = 0;
 	std::vector<ChatFormattedFragment> next_frags;
@@ -269,7 +269,10 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		// Very long names
 		hanging_indentation = 2;
 	}
-	//EnrichedString line_text(line.text);
+	// If there are no columns remaining after the indentation (window is very
+	// narrow), we can't write anything
+	if (hanging_indentation >= cols)
+		return 0;
 
 	next_line.first = true;
 	// Set/use forced newline after the last frag in each line
