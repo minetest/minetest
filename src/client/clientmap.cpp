@@ -65,59 +65,6 @@ static void on_settings_changed(const std::string &name, void *data)
 {
 	static_cast<ClientMap*>(data)->onSettingChanged(name);
 }
-
-static bool isMeshOccluded(ClientMap* map, MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes)
-{
-	if (mesh_size == 1)
-		return map->isBlockOccluded(mesh_block, cam_pos_nodes);
-
-	v3s16 min_edge = mesh_block->getPosRelative();
-	v3s16 max_edge = min_edge + mesh_size * MAP_BLOCKSIZE -1;
-	bool check_axis[3] = { false, false, false };
-	u16 closest_side[3] = { 0, 0, 0 };
-
-	for (int axis = 0; axis < 3; axis++) {
-		if (cam_pos_nodes[axis] < min_edge[axis])
-			check_axis[axis] = true;
-		else if (cam_pos_nodes[axis] > max_edge[axis]) {
-			check_axis[axis] = true;
-			closest_side[axis] = mesh_size - 1;
-		}
-	}
-
-	std::vector<bool> processed_blocks(mesh_size * mesh_size * mesh_size);
-
-	// scan the side
-	for (u16 i = 0; i < mesh_size; i++)
-	for (u16 j = 0; j < mesh_size; j++) {
-		v3s16 offsets[3] = {
-			v3s16(closest_side[0], i, j),
-			v3s16(i, closest_side[1], j),
-			v3s16(i, j, closest_side[2])
-		};
-		for (int axis = 0; axis < 3; axis++) {
-			v3s16 offset = offsets[axis];
-			int block_index = offset.X + offset.Y * mesh_size + offset.Z * mesh_size * mesh_size;
-			if (check_axis[axis] && !processed_blocks[block_index]) {
-				processed_blocks[block_index] = true;
-				v3s16 block_pos = mesh_block->getPos() + offset;
-				MapBlock *block;
-
-				if (mesh_block->getPos() == block_pos)
-					block = mesh_block;
-				else
-					block = map->getBlockNoCreateNoEx(block_pos);
-
-				if (block && !map->isBlockOccluded(block, cam_pos_nodes))
-					return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-
 // ClientMap
 
 ClientMap::ClientMap(
@@ -137,7 +84,7 @@ ClientMap::ClientMap(
 
 	/*
 	 * @Liso: Sadly C++ doesn't have introspection, so the only way we have to know
-	 * the class is with a name ;) Name property cames from ISceneNode base class.
+	 * the class is whith a name ;) Name property cames from ISceneNode base class.
 	 */
 	Name = "ClientMap";
 	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
@@ -432,7 +379,7 @@ void ClientMap::updateDrawList()
 		// Raytraced occlusion culling - send rays from the camera to the block's corners
 		if (occlusion_culling_enabled && m_enable_raytraced_culling &&
 				block && mesh &&
-				visible_outer_sides != 0x07 && isMeshOccluded(this, block, mesh_grid.cell_size, cam_pos_nodes)) {
+				visible_outer_sides != 0x07 && isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
 			blocks_occlusion_culled++;
 			continue;
 		}
@@ -1308,3 +1255,53 @@ void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 	}
 }
 
+bool ClientMap::isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes)
+{
+	if (mesh_size == 1)
+		return isBlockOccluded(mesh_block, cam_pos_nodes);
+
+	v3s16 min_edge = mesh_block->getPosRelative();
+	v3s16 max_edge = min_edge + mesh_size * MAP_BLOCKSIZE -1;
+	bool check_axis[3] = { false, false, false };
+	u16 closest_side[3] = { 0, 0, 0 };
+
+	for (int axis = 0; axis < 3; axis++) {
+		if (cam_pos_nodes[axis] < min_edge[axis])
+			check_axis[axis] = true;
+		else if (cam_pos_nodes[axis] > max_edge[axis]) {
+			check_axis[axis] = true;
+			closest_side[axis] = mesh_size - 1;
+		}
+	}
+
+	std::vector<bool> processed_blocks(mesh_size * mesh_size * mesh_size);
+
+	// scan the side
+	for (u16 i = 0; i < mesh_size; i++)
+	for (u16 j = 0; j < mesh_size; j++) {
+		v3s16 offsets[3] = {
+			v3s16(closest_side[0], i, j),
+			v3s16(i, closest_side[1], j),
+			v3s16(i, j, closest_side[2])
+		};
+		for (int axis = 0; axis < 3; axis++) {
+			v3s16 offset = offsets[axis];
+			int block_index = offset.X + offset.Y * mesh_size + offset.Z * mesh_size * mesh_size;
+			if (check_axis[axis] && !processed_blocks[block_index]) {
+				processed_blocks[block_index] = true;
+				v3s16 block_pos = mesh_block->getPos() + offset;
+				MapBlock *block;
+
+				if (mesh_block->getPos() == block_pos)
+					block = mesh_block;
+				else
+					block = getBlockNoCreateNoEx(block_pos);
+
+				if (block && !isBlockOccluded(block, cam_pos_nodes))
+					return false;
+			}
+		}
+	}
+
+	return true;
+}
