@@ -555,7 +555,7 @@ public:
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
 
-		float animation_timer_delta_f = rangelim((float)m_client->getEnv().getFrameTimeDelta() / 100000.f, 0.f, 1.f);
+		float animation_timer_delta_f = (float)m_client->getEnv().getFrameTimeDelta() / 100000.f;
 		m_animation_timer_delta_vertex.set(&animation_timer_delta_f, services);
 		m_animation_timer_delta_pixel.set(&animation_timer_delta_f, services);
 
