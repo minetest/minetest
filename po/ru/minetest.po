@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-08 20:41+0000\n"
-"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"Last-Translator: Rodion Borisov <vintprox@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -5680,7 +5680,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
-msgstr "Снимки экрана"
+msgstr "Скриншоты"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
