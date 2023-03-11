@@ -29,7 +29,7 @@ class GUIScene : public gui::IGUIElement
 {
 public:
 	GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
-		 gui::IGUIElement *parent, core::recti rect, s32 id = -1);
+			gui::IGUIElement *parent, core::recti rect, s32 id = -1);
 
 	~GUIScene();
 
@@ -42,6 +42,8 @@ public:
 	void setRotation(v2f rot) noexcept { m_custom_rot = rot; };
 	void enableContinuousRotation(bool enable) noexcept { m_inf_rot = enable; };
 	void setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &styles);
+	void setCameraOffsets(const v3f &offset);
+	void setCameraDistanceClamping(float min, float max);
 
 	virtual void draw();
 	virtual bool OnEvent(const SEvent &event);
@@ -56,8 +58,14 @@ private:
 	void cameraLoop();
 
 	void updateCameraPos() { m_cam_pos = m_cam->getPosition(); };
-	v3f getCameraRotation() const { return (m_cam_pos - m_target_pos).getHorizontalAngle(); };
-	void rotateCamera(const v3f &delta) { setCameraRotation(getCameraRotation() + delta); };
+	v3f getCameraRotation() const
+	{
+		return (m_cam_pos - m_target_pos).getHorizontalAngle();
+	};
+	void rotateCamera(const v3f &delta)
+	{
+		setCameraRotation(getCameraRotation() + delta);
+	};
 
 	scene::ISceneManager *m_smgr;
 	video::IVideoDriver *m_driver;
@@ -72,6 +80,10 @@ private:
 	v3f m_cam_pos;
 	v3f m_target_pos;
 	v3f m_last_target_pos;
+	v3f m_target_offset_pos;	 // Defined offset from formspec
+	float m_camera_min_distance; // Clamping values for the camera. if both are 0, then it
+								 // is unclamped.
+	float m_camera_max_distance;
 	// Cursor positions
 	v2f m_curr_pos;
 	v2f m_last_pos;
@@ -80,7 +92,7 @@ private:
 
 	bool m_mouse_ctrl = true;
 	bool m_update_cam = false;
-	bool m_inf_rot    = false;
+	bool m_inf_rot = false;
 	bool m_initial_rotation = true;
 
 	video::SColor m_bgcolor = 0;

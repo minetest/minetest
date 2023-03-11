@@ -2566,7 +2566,7 @@ Elements
     * Requires formspec version >= 6.
     * See `background9[]` documentation for more information.
 
-### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
+### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>;<camera offset>;<camera distance clamp>]`
 
 * Show a mesh model.
 * `name`: Element name that can be used for styling
@@ -2581,6 +2581,14 @@ Elements
     * Defaults to the full range of all available frames.
     * Syntax: `<begin>,<end>`
 * `animation speed` (Optional): Sets the animation speed. Default 0 FPS.
+* `camera offset` (Optional): Sets the camera offset from the origin of the mesh. 
+    * Defaults to no offset.
+    * Syntax: `<X>,<Y>,<Z>`
+* `camera distance clamp` (Optional): Clamps the camera's distance from the mesh. Either one or two numbers can be supplied. 
+    * If one number `<min>` is used, and it is the minimum distance the camera can be from the model's origin.
+    * If two numbers `<min>,<max>` are used, it is the minimum and maximum clamping distance from the model's origin.
+    * If both numbers are 0, then the camera distance is unclamped.
+    * Defaults to no clamp distance.
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 

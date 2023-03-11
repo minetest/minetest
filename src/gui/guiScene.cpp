@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
-		   gui::IGUIElement *parent, core::recti rect, s32 id)
-	: IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
+		gui::IGUIElement *parent, core::recti rect, s32 id) :
+		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
 {
 	m_driver = env->getVideoDriver();
 	m_smgr = smgr->createNewSceneManager(false);
@@ -54,7 +54,7 @@ scene::IAnimatedMeshSceneNode *GUIScene::setMesh(scene::IAnimatedMesh *mesh)
 		return nullptr;
 
 	m_mesh = m_smgr->addAnimatedMeshSceneNode(mesh);
-	m_mesh->setPosition(-m_mesh->getBoundingBox().getCenter());
+	m_mesh->setPosition(-mesh->getBoundingBox().getCenter());
 	m_mesh->animateJoints();
 
 	return m_mesh;
@@ -91,7 +91,7 @@ void GUIScene::draw()
 		core::recti borderRect =
 				Environment->getRootGUIElement()->getAbsoluteClippingRect();
 		Environment->getSkin()->draw3DSunkenPane(
-			this, m_bgcolor, false, true, borderRect, 0);
+				this, m_bgcolor, false, true, borderRect, 0);
 	}
 
 	core::dimension2d<s32> size = getAbsoluteClippingRect().getSize();
@@ -132,8 +132,7 @@ bool GUIScene::OnEvent(const SEvent &event)
 				m_curr_pos = v2f((f32)event.MouseInput.X, (f32)event.MouseInput.Y);
 
 				rotateCamera(v3f(
-					m_last_pos.Y - m_curr_pos.Y,
-					m_curr_pos.X - m_last_pos.X, 0.f));
+						m_last_pos.Y - m_curr_pos.Y, m_curr_pos.X - m_last_pos.X, 0.f));
 
 				m_last_pos = m_curr_pos;
 				return true;
@@ -151,6 +150,17 @@ void GUIScene::setStyles(const std::array<StyleSpec, StyleSpec::NUM_STATES> &sty
 
 	setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	setBackgroundColor(style.getColor(StyleSpec::BGCOLOR, m_bgcolor));
+}
+
+void GUIScene::setCameraOffsets(const v3f &offset)
+{
+	m_target_offset_pos = offset;
+}
+
+void GUIScene::setCameraDistanceClamping(float min, float max)
+{
+	m_camera_min_distance = min;
+	m_camera_max_distance = max;
 }
 
 /**
@@ -174,10 +184,17 @@ void GUIScene::setAnimationSpeed(f32 speed)
 
 inline void GUIScene::calcOptimalDistance()
 {
+	// early out when clamp values are the same
+	if (m_camera_min_distance != 0.0f && m_camera_max_distance == m_camera_min_distance) {
+		m_cam_distance = m_camera_min_distance;
+		m_update_cam = true;
+		return;
+	}
+
 	core::aabbox3df box = m_mesh->getBoundingBox();
-	f32 width  = box.MaxEdge.X - box.MinEdge.X;
+	f32 width = box.MaxEdge.X - box.MinEdge.X;
 	f32 height = box.MaxEdge.Y - box.MinEdge.Y;
-	f32 depth  = box.MaxEdge.Z - box.MinEdge.Z;
+	f32 depth = box.MaxEdge.Z - box.MinEdge.Z;
 	f32 max_width = width > depth ? width : depth;
 
 	const scene::SViewFrustum *f = m_cam->getViewFrustum();
@@ -195,6 +212,14 @@ inline void GUIScene::calcOptimalDistance()
 	else
 		dist = (height / (far_height / cam_far)) + (0.5f * max_width);
 
+	if (m_camera_min_distance != 0.0f || m_camera_max_distance != 0.0f) {
+		if (m_camera_max_distance != 0.0f) {
+			dist = core::clamp(dist, m_camera_min_distance, m_camera_max_distance);
+		} else {
+			dist = core::max_(dist, m_camera_min_distance);
+		}
+	}
+
 	m_cam_distance = dist;
 	m_update_cam = true;
 }
@@ -202,9 +227,10 @@ inline void GUIScene::calcOptimalDistance()
 void GUIScene::updateCamera(scene::ISceneNode *target)
 {
 	m_target = target;
+	m_target->setParent(m_mesh);
 	updateTargetPos();
 
-	m_last_target_pos = m_target_pos;
+	// m_last_target_pos = m_target_pos;
 	updateCameraPos();
 
 	m_update_cam = true;
@@ -213,6 +239,7 @@ void GUIScene::updateCamera(scene::ISceneNode *target)
 void GUIScene::updateTargetPos()
 {
 	m_last_target_pos = m_target_pos;
+	m_target->setPosition(m_target_offset_pos);
 	m_target->updateAbsolutePosition();
 	m_target_pos = m_target->getAbsolutePosition();
 }
@@ -261,7 +288,8 @@ void GUIScene::cameraLoop()
 		m_update_cam = true;
 
 	if (m_update_cam) {
-		m_cam_pos = m_target_pos + (m_cam_pos - m_target_pos).normalize() * m_cam_distance;
+		m_cam_pos =
+				m_target_pos + (m_cam_pos - m_target_pos).normalize() * m_cam_distance;
 
 		v3f rot = getCameraRotation();
 		if (correctBounds(rot))
