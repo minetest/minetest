@@ -124,6 +124,7 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
+	dest.reserve(dest.size() + m_blocks.size());
 	for (auto &block : m_blocks) {
 		dest.push_back(block.second);
 	}

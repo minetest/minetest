@@ -262,7 +262,7 @@ void ClientMap::updateDrawList()
 	}
 	m_keeplist.clear();
 
-	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
+	const v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
@@ -281,7 +281,7 @@ void ClientMap::updateDrawList()
 			occlusion_culling_enabled = false;
 	}
 
-	v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
+	const v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
 	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
@@ -295,7 +295,7 @@ void ClientMap::updateDrawList()
 	std::set<v3s16> shortlist;
 
 	/*
-	 When range_all is enabled, simply enumerate all blocks visible in the
+	 When range_all is enabled, enumerate all blocks visible in the
 	 frustum and display them.
 	 */
 	if (m_control.range_all) {
@@ -361,8 +361,7 @@ void ClientMap::updateDrawList()
 				}
 			}
 		}
-	}
-	else {
+	} else {
 		// Blocks visited by the algorithm
 		u32 blocks_visited = 0;
 		// Block sides that were not traversed
@@ -386,7 +385,7 @@ void ClientMap::updateDrawList()
 		meshes_seen.getChunk(camera_cell).getBits(camera_cell) = 0x07; // mark all sides as visible
 
 		// Recursively walk the space and pick mapblocks for drawing
-		while (blocks_to_consider.size() > 0) {
+		while (!blocks_to_consider.empty()) {
 
 			v3s16 block_coord = blocks_to_consider.front();
 			blocks_to_consider.pop();
@@ -418,8 +417,7 @@ void ClientMap::updateDrawList()
 				mesh_sphere_center = intToFloat(block_pos_nodes, BS)
 						+ mesh->getBoundingSphereCenter();
 				mesh_sphere_radius = mesh->getBoundingRadius();
-			}
-			else {
+			} else {
 				mesh_sphere_center = intToFloat(block_pos_nodes, BS) + v3f((mesh_grid.cell_size * MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
 				mesh_sphere_radius = 0.87f * mesh_grid.cell_size * MAP_BLOCKSIZE * BS;
 			}
@@ -465,8 +463,7 @@ void ClientMap::updateDrawList()
 					m_keeplist.push_back(block);
 					block->refGrab();
 				}
-			}
-			else if (mesh) {
+			} else if (mesh) {
 				// without mesh chunking we can add the block to the drawlist
 				block->refGrab();
 				m_drawlist.emplace(block_coord, block);
@@ -578,7 +575,7 @@ void ClientMap::updateDrawList()
 
 	assert(m_drawlist.empty() || shortlist.empty());
 	for (auto pos : shortlist) {
-		MapBlock * block = getBlockNoCreateNoEx(pos);
+		MapBlock *block = getBlockNoCreateNoEx(pos);
 		if (block) {
 			block->refGrab();
 			m_drawlist.emplace(pos, block);
