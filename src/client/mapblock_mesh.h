@@ -247,8 +247,7 @@ private:
 	IShaderSource *m_shdrsrc;
 
 	f32 m_bounding_radius;
-	// MapblockMeshGenerator uses the same as mapblock center
-	v3f m_bounding_sphere_center = v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;
@@ -338,7 +337,7 @@ void final_color_blend(video::SColor *result,
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
 
-/// Return bitset of the sides of the mapblock that consist of solid nodes only
+/// Return bitset of the sides of the mesh that consist of solid nodes only
 /// Bits:
 /// 0 0 -Z +Z -X +X -Y +Y
-std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data);
+u8 get_solid_sides(MeshMakeData *data);

@@ -624,7 +624,8 @@ update_last_checked (Last update check) string
 update_last_known (Last known version update) int 0
 
 #    Use raytraced occlusion culling in the new culler.
-#	 This flag enables use of raytraced occlusion culling test
+#	 This flag enables use of raytraced occlusion culling test for
+#    client mesh sizes smaller than 4x4x4 map blocks.
 enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 [*Server]

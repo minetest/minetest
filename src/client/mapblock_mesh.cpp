@@ -1169,6 +1169,7 @@ void PartialMeshBuffer::afterDraw() const
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_tsrc(data->m_client->getTextureSource()),
 	m_shdrsrc(data->m_client->getShaderSource()),
+	m_bounding_sphere_center((data->side_length * 0.5f - 0.5f) * BS),
 	m_animation_force_timer(0), // force initial animation
 	m_last_crack(-1),
 	m_last_daynight_ratio((u32) -1)
@@ -1573,40 +1574,31 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	return video::SColor(r, b, b, b);
 }
 
-std::unordered_map<v3s16, u8> get_solid_sides(MeshMakeData *data)
+u8 get_solid_sides(MeshMakeData *data)
 {
 	std::unordered_map<v3s16, u8> results;
 	v3s16 ofs;
-	const u16 mesh_chunk = data->side_length / MAP_BLOCKSIZE;
+	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
+	const NodeDefManager *ndef = data->m_client->ndef();
 
-	for (ofs.X = 0; ofs.X < mesh_chunk; ofs.X++)
-	for (ofs.Y = 0; ofs.Y < mesh_chunk; ofs.Y++)
-	for (ofs.Z = 0; ofs.Z < mesh_chunk; ofs.Z++) {
-		v3s16 blockpos = data->m_blockpos + ofs;
-		v3s16 blockpos_nodes = blockpos * MAP_BLOCKSIZE;
-		const NodeDefManager *ndef = data->m_client->ndef();
+	u8 result = 0x3F; // all sides solid;
 
-		u8 result = 0x3F; // all sides solid;
+	for (s16 i = 0; i < data->side_length && result != 0; i++)
+	for (s16 j = 0; j < data->side_length && result != 0; j++) {
+		v3s16 positions[6] = {
+			v3s16(0, i, j),
+			v3s16(data->side_length - 1, i, j),
+			v3s16(i, 0, j),
+			v3s16(i, data->side_length - 1, j),
+			v3s16(i, j, 0),
+			v3s16(i, j, data->side_length - 1)
+		};
 
-		for (s16 i = 0; i < MAP_BLOCKSIZE && result != 0; i++)
-		for (s16 j = 0; j < MAP_BLOCKSIZE && result != 0; j++) {
-			v3s16 positions[6] = {
-				v3s16(0, i, j),
-				v3s16(MAP_BLOCKSIZE - 1, i, j),
-				v3s16(i, 0, j),
-				v3s16(i, MAP_BLOCKSIZE - 1, j),
-				v3s16(i, j, 0),
-				v3s16(i, j, MAP_BLOCKSIZE - 1)
-			};
-
-			for (u8 k = 0; k < 6; k++) {
-				const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
-				if (ndef->get(top).solidness != 2)
-					result &= ~(1 << k);
-			}
+		for (u8 k = 0; k < 6; k++) {
+			const MapNode &top = data->m_vmanip.getNodeRefUnsafe(blockpos_nodes + positions[k]);
+			if (ndef->get(top).solidness != 2)
+				result &= ~(1 << k);
 		}
-
-		results[blockpos] = result;
 	}
-	return results;
+	return result;
 }
