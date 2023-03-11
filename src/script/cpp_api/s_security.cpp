@@ -457,11 +457,10 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 	size_t start = 0;
 	int c = std::getc(fp);
 	if (c == '#') {
-		// Skip the first line
-		while ((c = std::getc(fp)) != EOF && c != '\n') {}
-		if (c == '\n')
-			std::getc(fp);
-		start = std::ftell(fp);
+		// Skip the content of the first line
+		while (c != EOF && c != '\n')
+			c = std::getc(fp);
+		start = std::ftell(fp) - 1;
 	}
 
 	// Read the file
