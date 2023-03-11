@@ -8,6 +8,8 @@ struct ExposureParams {
 uniform sampler2D rendered;
 uniform sampler2D bloom;
 
+uniform vec2 texelSize0;
+
 uniform ExposureParams exposureParams;
 uniform lowp float bloomIntensity;
 uniform lowp float saturation;
@@ -20,6 +22,9 @@ centroid varying vec2 varTexCoord;
 
 #ifdef ENABLE_AUTO_EXPOSURE
 varying float exposure; // linear exposure factor, see vertex shader
+varying float ev; // exponential EV
+varying float targetEv;
+varying float ll;
 #endif
 
 #ifdef ENABLE_BLOOM
@@ -114,6 +119,26 @@ void main(void)
 
 	// return to sRGB colorspace (approximate)
 	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
+
+#ifdef ENABLE_AUTO_EXPOSURE
+	if (uv.y >= 0.3 && uv.y < 0.35)	{
+		if (abs(uv.x - (ev + 20.) / 40. ) < texelSize0.x * 2.)
+			color.rgb = vec3(1., 0., 0.);
+		if (abs(uv.x - (targetEv + 20.) / 40.) < texelSize0.x * 2.)
+			color.rgb = vec3(0., 0., 1.);
+		if (abs(uv.x - (ll + 20.) / 40.) < texelSize0.x * 2.)
+			color.rgb = vec3(0., 1., 0.);
+	}
+	else if (uv.y > 0.28 && uv.y < 0.3) {
+		color.rgb = vec3(0.);
+		float tick = floor(uv.x * 40. - 20.);
+		vec3 tickColor = vec3(1.);
+		if (tick == 0.)
+			tickColor = vec3(0.);
+		if (abs(uv.x - (tick + 20.) / 40.) < texelSize0.x)
+			color.rgb = tickColor;
+	}
+#endif
 
 	gl_FragColor = vec4(color.rgb, 1.0); // force full alpha to avoid holes in the image.
 }

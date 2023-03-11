@@ -65,11 +65,10 @@ void main(void)
 	// 3. exposure = 1 / Lmax
 	//    => exposure = 2^EC / (9.6 * luminance)
 	float wantedExposure = exposureParams.exposureCorrection - log(luminance)/0.693147180559945 - 3.263034405833794;
+	float speed = wantedExposure < previousExposure ? exposureParams.speedDarkBright : exposureParams.speedBrightDark;
+	float result = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * speed));
 
-	if (wantedExposure < previousExposure)
-		wantedExposure = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * exposureParams.speedDarkBright)); // dark -> bright
-	else
-		wantedExposure = mix(wantedExposure, previousExposure, exp(-animationTimerDelta * exposureParams.speedBrightDark)); // bright -> dark
+	result = clamp(result, -20., 20.);
 
-	gl_FragColor = vec4(vec3(wantedExposure), 1.);
+	gl_FragColor = vec4(result, wantedExposure, -log(luminance), 1.);
 }

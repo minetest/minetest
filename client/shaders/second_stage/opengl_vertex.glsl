@@ -4,6 +4,9 @@
 uniform sampler2D exposureMap;
 
 varying float exposure;
+varying float ll;
+varying float ev;
+varying float targetEv;
 #endif
 
 #ifdef GL_ES
@@ -16,8 +19,11 @@ void main(void)
 {
 #ifdef ENABLE_AUTO_EXPOSURE
 	// value in the texture is on a logarithtmic scale
-	exposure = texture2D(exposureMap, vec2(0.5)).r;
-	exposure = pow(2., exposure);
+	vec4 sample = texture2D(exposureMap, vec2(0.5));
+	ev = sample.r;
+	targetEv = sample.g;
+	ll = sample.b;
+	exposure = pow(2., ev);
 #endif
 
 	varTexCoord.st = inTexCoord0.st;
