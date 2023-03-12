@@ -1192,7 +1192,7 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
+	core::dimension2du previous_screen_size(g_settings->getU16("screen_w"),
 			g_settings->getU16("screen_h"));
 
 	while (m_rendering_engine->run()
@@ -1217,14 +1217,14 @@ void Game::run()
 			}
 		}
 
-		const irr::core::dimension2d<u32> &current_screen_size =
+		const core::dimension2du &current_screen_size =
 				RenderingEngine::get_video_driver()->getScreenSize();
 
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
-				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
+				current_screen_size != core::dimension2du(0, 0) &&
 				g_settings->getBool("autosave_screensize")) {
 			g_settings->setU16("screen_w", current_screen_size.Width);
 			g_settings->setU16("screen_h", current_screen_size.Height);
