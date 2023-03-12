@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 
 GUIScene::GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
-		gui::IGUIElement *parent, core::recti rect, s32 id) :
-		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
+		   gui::IGUIElement *parent, core::recti rect, s32 id)
+	: IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
 {
 	m_driver = env->getVideoDriver();
 	m_smgr = smgr->createNewSceneManager(false);
@@ -91,7 +91,7 @@ void GUIScene::draw()
 		core::recti borderRect =
 				Environment->getRootGUIElement()->getAbsoluteClippingRect();
 		Environment->getSkin()->draw3DSunkenPane(
-				this, m_bgcolor, false, true, borderRect, 0);
+			this, m_bgcolor, false, true, borderRect, 0);
 	}
 
 	core::dimension2d<s32> size = getAbsoluteClippingRect().getSize();
@@ -230,7 +230,7 @@ void GUIScene::updateCamera(scene::ISceneNode *target)
 	m_target->setParent(m_mesh);
 	updateTargetPos();
 
-	// m_last_target_pos = m_target_pos;
+	m_last_target_pos = m_target_pos;
 	updateCameraPos();
 
 	m_update_cam = true;
@@ -288,8 +288,7 @@ void GUIScene::cameraLoop()
 		m_update_cam = true;
 
 	if (m_update_cam) {
-		m_cam_pos =
-				m_target_pos + (m_cam_pos - m_target_pos).normalize() * m_cam_distance;
+		m_cam_pos = m_target_pos + (m_cam_pos - m_target_pos).normalize() * m_cam_distance;
 
 		v3f rot = getCameraRotation();
 		if (correctBounds(rot))

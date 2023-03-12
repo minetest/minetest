@@ -29,7 +29,7 @@ class GUIScene : public gui::IGUIElement
 {
 public:
 	GUIScene(gui::IGUIEnvironment *env, scene::ISceneManager *smgr,
-			gui::IGUIElement *parent, core::recti rect, s32 id = -1);
+		 gui::IGUIElement *parent, core::recti rect, s32 id = -1);
 
 	~GUIScene();
 
@@ -80,9 +80,8 @@ private:
 	v3f m_cam_pos;
 	v3f m_target_pos;
 	v3f m_last_target_pos;
-	v3f m_target_offset_pos;	 // Defined offset from formspec
-	float m_camera_min_distance; // Clamping values for the camera. if both are 0, then it
-								 // is unclamped.
+	v3f m_target_offset_pos;	 // Defined offset from model origin
+	float m_camera_min_distance; // Clamping values for the camera. if both are 0, then it is unclamped.
 	float m_camera_max_distance;
 	// Cursor positions
 	v2f m_curr_pos;
@@ -92,7 +91,7 @@ private:
 
 	bool m_mouse_ctrl = true;
 	bool m_update_cam = false;
-	bool m_inf_rot = false;
+	bool m_inf_rot    = false;
 	bool m_initial_rotation = true;
 
 	video::SColor m_bgcolor = 0;
