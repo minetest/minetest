@@ -28,15 +28,17 @@ AppDir:
       - libc6
       - libcrypt1
       - libcurl3-gnutls
+      - libcurl4
       - libfreetype6
       - libgl1
-      - libhiredis0.14
       - libjpeg-turbo8
       - libjsoncpp1
       - libleveldb1d
       - libluajit-5.1-2
       - libopenal1
       - libpng16-16
+      - libsqlite3-0
+      - libpq5
       - libstdc++6
       - libvorbisfile3
       - libx11-6
@@ -48,7 +50,7 @@ AppImage:
   arch: x86_64
 script: |
     # Compile and install binaries into AppDir
-    cmake -B appimage-build -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
+    cmake -B appimage-build -DENABLE_REDIS=FALSE -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
     cmake --build appimage-build --parallel $(nproc) --config Release
     cmake --install appimage-build
 
