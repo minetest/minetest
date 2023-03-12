@@ -339,13 +339,6 @@ void ClientMap::updateDrawList()
 					continue;
 				}
 
-				// Raytraced occlusion culling - send rays from the camera to the block's corners
-				if (occlusion_culling_enabled && mesh
-						&& isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
-					blocks_occlusion_culled++;
-					continue;
-				}
-
 				if (mesh_grid.cell_size > 1) {
 					// Block meshes are stored in the corner block of a chunk
 					// (where all coordinate are divisible by the chunk size)
@@ -355,9 +348,15 @@ void ClientMap::updateDrawList()
 					m_keeplist.push_back(block);
 					block->refGrab();
 				} else if (mesh) {
-					// without mesh chunking we can add the block to the drawlist
-					block->refGrab();
-					m_drawlist.emplace(block->getPos(), block);
+					// Raytraced occlusion culling - send rays from the camera to the block's corners
+					if (occlusion_culling_enabled
+							&& isBlockOccluded(block, cam_pos_nodes)) {
+						blocks_occlusion_culled++;
+					} else {
+						// without mesh chunking we can add the block to the drawlist
+						block->refGrab();
+						m_drawlist.emplace(block->getPos(), block);
+					}
 				}
 			}
 		}
