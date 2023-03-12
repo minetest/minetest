@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-03-17 11:44+0000\n"
-"Last-Translator: Rodion Borisov <vintprox@gmail.com>\n"
+"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -1681,9 +1681,8 @@ msgid "ok"
 msgstr "OK"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Приближение в настоящее время отключено игрой или модом"
+msgstr "Чат в настоящее время отключён игрой или дополнением"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
