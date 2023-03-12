@@ -4429,10 +4429,10 @@ void Game::showPauseMenu()
 		}
 		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
 	} else {
-		std::string singleplayer_path = g_settings->get("selected_world_path");
+		std::string WorldPath = server->getWorldPath();
 		os << mode << strgettext("Singleplayer") << "\n"
-		<< strgettext("- World: ") << getWorldName(singleplayer_path, strgettext("Unnamed World")) << "\n"
-		<< strgettext("- Game: ") << findWorldSubgame(singleplayer_path).title << "\n";
+		<< strgettext("- World: ") << getWorldName(WorldPath, strgettext("Unnamed World")) << "\n"
+		<< strgettext("- Game: ") << findWorldSubgame(WorldPath).title << "\n";
 	}
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
