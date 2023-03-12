@@ -348,15 +348,9 @@ void ClientMap::updateDrawList()
 					m_keeplist.push_back(block);
 					block->refGrab();
 				} else if (mesh) {
-					// Raytraced occlusion culling - send rays from the camera to the block's corners
-					if (occlusion_culling_enabled
-							&& isBlockOccluded(block, cam_pos_nodes)) {
-						blocks_occlusion_culled++;
-					} else {
-						// without mesh chunking we can add the block to the drawlist
-						block->refGrab();
-						m_drawlist.emplace(block->getPos(), block);
-					}
+					// without mesh chunking we can add the block to the drawlist
+					block->refGrab();
+					m_drawlist.emplace(block->getPos(), block);
 				}
 			}
 		}
