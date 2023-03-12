@@ -185,7 +185,7 @@ opaque_water (Opaque liquids) bool false
 leaves_style (Leaves style) enum fancy fancy,simple,opaque
 
 #    Connects glass if supported by node.
-connected_glass (Connect glass) bool false
+connected_glass (Connect glass) bool true
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
@@ -443,11 +443,6 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 #    Minimum value: 1.0; maximum value: 15.0
 shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
-#    Set the tilt of Sun/Moon orbit in degrees.
-#    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
-shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
-
 [**Post processing]
 
 #    Set the exposure compensation in EV units.
@@ -629,7 +624,8 @@ update_last_checked (Last update check) string
 update_last_known (Last known version update) int 0
 
 #    Use raytraced occlusion culling in the new culler.
-#	 This flag enables use of raytraced occlusion culling test
+#	 This flag enables use of raytraced occlusion culling test for
+#    client mesh sizes smaller than 4x4x4 map blocks.
 enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 [*Server]
@@ -1654,10 +1650,9 @@ ignore_world_load_errors (Ignore world errors) bool false
 shader_path (Shader path) path
 
 #    The rendering back-end.
-#    A restart is required after changing this.
-#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended.
-#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
+#    Note: A restart is required after changing this!
+#    OpenGL is the default for desktop, and OGLES2 for Android.
+#    Shaders are supported by OpenGL and OGLES2 (experimental).
 video_driver (Video driver) enum opengl opengl,ogles1,ogles2
 
 #    Distance in nodes at which transparency depth sorting is enabled
@@ -1712,6 +1707,13 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    See also texture_min_size.
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
+
+#    Side length of a cube of map blocks that the client will consider together
+#    when generating meshes.
+#    Larger values increase the utilization of the GPU by reducing the number of
+#    draw calls, benefiting especially high-end GPUs.
+#    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
+client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
 
 [**Font]
 

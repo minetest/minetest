@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-08-14 20:15+0000\n"
-"Last-Translator: Ian giestas pauli <iangiestaspauli@gmail.com>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-03-02 16:38+0000\n"
+"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -284,12 +284,11 @@ msgstr "Baixando..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Erro ao instalar \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Falha ao baixar $1"
+msgstr "Falha ao baixar \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -1688,6 +1687,11 @@ msgid "ok"
 msgstr "Ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zoom atualmente desabilitado por jogo ou mod"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Conversa oculta"
 
@@ -2009,7 +2013,7 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Sem dependências fortes"
+msgstr "Alguns mods têm dependências insatisfeitas:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2365,6 +2369,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Ruído 3D que determina o número de cavernas por pedaço de mapa."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2374,7 +2379,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Suporte 3D.\n"
@@ -2475,17 +2479,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Ajuste a densidade de exibição detectada, usada para dimensionar os "
 "elementos da IU."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2855,6 +2848,10 @@ msgid "Client"
 msgstr "Cliente"
 
 #: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Client and Server"
 msgstr "Cliente e servidor"
 
@@ -3133,7 +3130,9 @@ msgstr ""
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Número máximo de chunks carregados forçadamente."
+msgstr ""
+"Número máximo padrão de blocos de mapas carregados à força.\n"
+"Defina como -1 para desativar o limite."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3342,6 +3341,10 @@ msgid "Dungeon noise"
 msgstr "Ruído de masmorra"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "Habilitar todos"
@@ -3375,6 +3378,18 @@ msgstr ""
 "Ativa filtragem de Poisson disk.\n"
 "Quando em true usa o Poisson disk para fazer \"sombras suaves\". Caso "
 "contrário, usa filtragem PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3560,7 +3575,7 @@ msgstr ""
 "planícies mais planas, adequadas para uma camada sólida de ilhas flutuantes."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4820,6 +4835,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Intervalo de geração de mapa"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Intervalo de geração de mapa"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr ""
 "Tamanho em MB da memória cache de MapBlock para o gerador de Malha de "
@@ -5301,6 +5321,13 @@ msgstr ""
 "consumo de memória (4096 = 100 MB, como uma regra de ouro)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Líquidos Opacos"
 
@@ -5620,11 +5647,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Praias de areia ocorrem quando \"np_beach\" excede esse valor."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "Monitorização"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Salvar o mapa recebido pelo cliente no disco."
 
@@ -5813,11 +5835,9 @@ msgstr "Arquivo da lista de servidores"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5855,16 +5875,6 @@ msgstr ""
 "Valores mais baixos significam sombras mais nítidas e valores altos sombras "
 "mais suaves.\n"
 "Mínimo: 1.0; Máximo: 15.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Defina a inclinação da órbita do Sol/Lua em graus\n"
-"Valor 0 significa sem inclinação/ órbita vertical.\n"
-"Valor mínimo de 0.0 e máximo de 60.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5907,7 +5917,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5996,6 +6006,15 @@ msgstr "Mensagem de desligamento"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6021,10 +6040,6 @@ msgstr ""
 "o percentual de hit do cache, reduzindo os dados sendo copiados do "
 "encadeamento principal\n"
 ", reduzindo assim o jitter."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Inclinação Da Órbita Do Céu"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6370,13 +6385,12 @@ msgstr ""
 "Isso deve ser configurado junto com active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "O back-end de renderização.\n"
 "É necessário reiniciar após alterar isso.\n"
@@ -6652,6 +6666,12 @@ msgstr ""
 "desativados.\n"
 "Se definido como 0, MSAA é desativado.\n"
 "É necessário reiniciar após alterar esta opção."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -8278,6 +8298,10 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Right key"
 #~ msgstr "Tecla direita"
 
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "Monitorização"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Selecionar o arquivo do pacote:"
 
@@ -8295,6 +8319,15 @@ msgstr "limite paralelo de cURL"
 #~ "mas consume mais recursos.\n"
 #~ "Valor mínimo 0.001 segundos e valor máximo 0.2 segundos"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Defina a inclinação da órbita do Sol/Lua em graus\n"
+#~ "Valor 0 significa sem inclinação/ órbita vertical.\n"
+#~ "Valor mínimo de 0.0 e máximo de 60.0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "Limite de mapblock"
 
@@ -8304,6 +8337,9 @@ msgstr "limite paralelo de cURL"
 #~ msgstr ""
 #~ "Distância (em pixels) da sombra da fonte de backup. Se 0, então nenhuma "
 #~ "sombra será desenhada."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Inclinação Da Órbita Do Céu"
 
 #~ msgid "Sneak key"
 #~ msgstr "Esgueirar"

@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Dutch (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2021-12-29 20:51+0000\n"
-"Last-Translator: Gert-dev <qnyasgjhapqyuhoibr@kiabws.com>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-01-26 12:51+0000\n"
+"Last-Translator: Ghurir <tamimzain@hotmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
 "nl/>\n"
 "Language: nl\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -403,7 +403,7 @@ msgstr "Grotten"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Maak aan"
+msgstr "Maken"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -613,9 +613,8 @@ msgid "Password"
 msgstr "Wachtwoord"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "De wachtwoorden zijn niet gelijk!"
+msgstr "De wachtwoorden zijn niet gelijk"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 #, fuzzy
@@ -842,7 +841,7 @@ msgstr "Kan $1 niet als textuurpakket installeren"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "Laden..."
+msgstr "Bezig met laden..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
@@ -1102,9 +1101,8 @@ msgid "Dynamic shadows"
 msgstr "Dynamische schaduwen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dynamische schaduwen: "
+msgstr "Dynamische schaduwen:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1199,9 +1197,8 @@ msgid "Tone Mapping"
 msgstr "Tone-mapping"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Toetsgrenswaarde: (px)"
+msgstr "Toetsgrenswaarde (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1231,7 +1228,7 @@ msgstr "Bewegende planten"
 #: src/client/client.cpp
 #, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Fout bij verbinden (time out?)"
+msgstr "Fout bij verbinden (time out?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1501,7 +1498,7 @@ msgstr "Oneindige kijkafstand aangezet"
 #: src/client/game.cpp
 #, fuzzy, c-format
 msgid "Error creating client: %s"
-msgstr "Gebruiker aanmaken..."
+msgstr "Fout bij aanmaken van client: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1697,6 +1694,11 @@ msgstr "Zoom momenteel uitgeschakeld door game of mod"
 #: src/client/game.cpp
 msgid "ok"
 msgstr "oké"
+
+#: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zoom momenteel uitgeschakeld door game of mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2020,7 +2022,7 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Geen afhankelijkheden"
+msgstr "Er zijn mods met afhankelijkheden die niet zijn voldaan :"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2224,9 +2226,8 @@ msgid ""
 msgstr ""
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Kies alsjeblieft een naam!"
+msgstr "De naam is al in gebruik. Kies alsjeblieft een andere naam"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2372,6 +2373,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-ruis die het aantal kerkers per mapchunk bepaalt."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2381,7 +2383,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3D ondersteuning.\n"
@@ -2482,17 +2483,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Pas de gedetecteerde weergavedichtheid aan, gebruikt om elementen uit de "
 "gebruikersinterface te schalen."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2865,6 +2855,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Cliënt"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3355,6 +3349,10 @@ msgid "Dungeon noise"
 msgstr "Lawaai in kerkers"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "Alles aanzetten"
@@ -3388,6 +3386,18 @@ msgstr ""
 "Filteren d.m.v. Poisson-schijf inschakelen.\n"
 "Indien ingeschakeld, wordt een Poisson-schijf gebruikt om zachte schaduwen "
 "te genereren. In het andere geval wordt PCF-filteren toegepast."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3572,7 +3582,7 @@ msgstr ""
 "platte laaglanden, geschikt voor een solide zwevende eilanden laag."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4837,6 +4847,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Mapblock maas generatie vertraging"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Mapblock maas generatie vertraging"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Mapblock maas generator's MapBlock cache grootte in MB"
 
@@ -5336,6 +5351,13 @@ msgstr ""
 "geheugengebruik (als vuistregel is 4096 gelijk aan 100 MB)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Ondoorzichtige vloeistoffen"
 
@@ -5671,11 +5693,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Zandstranden komen voor wanneer np_beach groter is dan deze waarde."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "Iteraties"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Bewaar de ontvangen wereld lokaal (op de cliënt)."
 
@@ -5871,11 +5888,9 @@ msgstr "Bestand met publieke serverlijst"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5913,16 +5928,6 @@ msgstr ""
 "Radiusgrootte zachte schaduwen instellen.\n"
 "Lagere waarden betekenen scherpere schaduwen, hogere waarden zachtere.\n"
 "Minimumwaarde: 1.0; maximumwaarde: 10.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Tilt van baan zon/maan in graden instellen:\n"
-"Een waarde van 0 betekent geen tilt / verticale baan.\n"
-"Minimumwaarde: 0.0; maximumwaarde: 60.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5965,7 +5970,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -6054,6 +6059,15 @@ msgstr "Afsluitbericht van server"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6079,10 +6093,6 @@ msgstr ""
 "Grootte van de MapBlock cache voor de maas generator. Dit verhogen vergroot\n"
 "de kans op een cache hit, waardoor minder data van de main thread\n"
 "wordt gekopieerd waardoor flikkeren verminderd."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Tilt baan hemellichaam"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6433,13 +6443,12 @@ msgstr ""
 "Dit moet samen met active_object_send_range_blocks worden geconfigureerd."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Back-end om mee te renderen.\n"
 "Een herstart is vereist om dit definitief te wijzigen.\n"
@@ -6718,6 +6727,12 @@ msgstr ""
 "Zichtbare ruimtes verschijnen tussen nodes als de shaders uitgezet zijn.\n"
 "Als de waarde op 0 staat, is MSAA uitgeschakeld.\n"
 "Een herstart is nodig om deze wijziging te laten functioneren."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -8334,11 +8349,24 @@ msgstr "Maximaal parallellisme in cURL"
 #~ msgstr "Toets voor rechts"
 
 #, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "Iteraties"
+
+#, fuzzy
 #~ msgid "Select Package File:"
 #~ msgstr "Selecteer Modbestand:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Server / Singleplayer"
+
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Tilt van baan zon/maan in graden instellen:\n"
+#~ "Een waarde van 0 betekent geen tilt / verticale baan.\n"
+#~ "Minimumwaarde: 0.0; maximumwaarde: 60.0"
 
 #~ msgid "Shadow limit"
 #~ msgstr "Schaduw limiet"
@@ -8349,6 +8377,9 @@ msgstr "Maximaal parallellisme in cURL"
 #~ msgstr ""
 #~ "Fontschaduw afstand van het standaard lettertype (in beeldpunten). Indien "
 #~ "0, dan wordt geen schaduw getekend."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Tilt baan hemellichaam"
 
 #~ msgid "Sneak key"
 #~ msgstr "Sluipen toets"

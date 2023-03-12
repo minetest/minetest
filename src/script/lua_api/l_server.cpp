@@ -269,6 +269,44 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	return 1;
 }
 
+// get_player_window_information(name)
+int ModApiServer::l_get_player_window_information(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	Server *server = getServer(L);
+
+	const char *name = luaL_checkstring(L, 1);
+	RemotePlayer *player = server->getEnv().getPlayer(name);
+	if (!player)
+		return 0;
+
+	auto dynamic = server->getClientDynamicInfo(player->getPeerId());
+
+	if (!dynamic || dynamic->render_target_size == v2u32())
+		return 0;
+
+	lua_newtable(L);
+	int dyn_table = lua_gettop(L);
+
+	lua_pushstring(L, "size");
+	push_v2u32(L, dynamic->render_target_size);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "max_formspec_size");
+	push_v2f(L, dynamic->max_fs_size);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "real_gui_scaling");
+	lua_pushnumber(L, dynamic->real_gui_scaling);
+	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "real_hud_scaling");
+	lua_pushnumber(L, dynamic->real_hud_scaling);
+	lua_settable(L, dyn_table);
+	return 1;
+}
+
 // get_ban_list()
 int ModApiServer::l_get_ban_list(lua_State *L)
 {
@@ -635,6 +673,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(dynamic_add_media);
 
 	API_FCT(get_player_information);
+	API_FCT(get_player_window_information);
 	API_FCT(get_player_privs);
 	API_FCT(get_player_ip);
 	API_FCT(get_ban_list);

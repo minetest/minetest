@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'de.undercouch.download'
 
 android {
-	compileSdkVersion 32
-	buildToolsVersion '32.0.0'
+	compileSdkVersion 33
+	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
-		minSdkVersion 16
-		targetSdkVersion 32
+		minSdkVersion 21
+		targetSdkVersion 33
 		externalNativeBuild {
 			ndkBuild {
 				arguments '-j' + Runtime.getRuntime().availableProcessors(),
@@ -52,18 +52,23 @@ android {
 
 // get precompiled deps
 task downloadDeps(type: Download) {
-	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
-	dest new File(buildDir, 'deps.zip')
-	overwrite false
-}
+	def depsDir = new File(buildDir.parent, 'deps')
+	def depsZip = new File(buildDir, 'deps.zip')
 
-task getDeps(dependsOn: downloadDeps, type: Copy) {
-	def deps = new File(buildDir.parent, 'deps')
-	if (!deps.exists()) {
-		deps.mkdir()
-		from zipTree(downloadDeps.dest)
-		into deps
+	src 'https://github.com/minetest/minetest_android_deps/releases/download/latest/deps.zip'
+	dest depsZip
+	overwrite false
+
+	task getDeps(dependsOn: downloadDeps, type: Copy) {
+		depsDir.mkdir()
+		from zipTree(depsZip)
+		into depsDir
+		doFirst { logger.lifecycle('Extracting to {}', depsDir) }
 	}
 }
 
 preBuild.dependsOn getDeps
+
+clean {
+	delete new File(buildDir.parent, 'deps')
+}

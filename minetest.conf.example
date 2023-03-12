@@ -52,7 +52,7 @@
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
-#    type: float min: 0.25 max: 2
+#    type: float min: 0.16 max: 2
 # repeat_place_time = 0.25
 
 #    Automatically jump up single-node obstacles.
@@ -165,7 +165,7 @@
 
 #    Connects glass if supported by node.
 #    type: bool
-# connected_glass = false
+# connected_glass = true
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
@@ -191,9 +191,8 @@
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
 #    -    crossview: Cross-eyed 3d
-#    -    pageflip: quadbuffer based 3d.
 #    Note that the interlaced mode requires shaders to be enabled.
-#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview, pageflip
+#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview
 # 3d_mode = none
 
 #    Strength of 3D mode parallax.
@@ -380,16 +379,6 @@
 #    type: bool
 # tone_mapping = false
 
-#    Adjust the saturation (or vividness) of the scene
-#    Values
-#    < 1.0 decrease saturation
-#    > 1.0 increase saturation
-#    1.0 = unchanged saturation
-#    0.0 = black and white
-#    (Tone mapping needs to be enabled.)
-#    type: float min: 0 max: 5
-# saturation = 1.0
-
 ### Waving Nodes
 
 #    Set to true to enable waving leaves.
@@ -484,21 +473,20 @@
 #    type: float min: 1 max: 15
 # shadow_soft_radius = 5.0
 
-#    Set the tilt of Sun/Moon orbit in degrees.
-#    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
-#    type: float min: -60 max: 60
-# shadow_sky_body_orbit_tilt = 0.0
-
 ### Post processing
 
-#    Set the exposure compensation factor.
-#    This factor is applied to linear color value 
-#    before all other post-processing effects.
-#    Value of 1.0 (default) means no exposure compensation.
-#    Range: from 0.1 to 10.0
-#    type: float min: 0.1 max: 10
-# exposure_factor = 1.0
+#    Set the exposure compensation in EV units.
+#    Value of 0.0 (default) means no exposure compensation.
+#    Range: from -1 to 1.0
+#    type: float min: -1 max: 1
+# exposure_compensation = 0.0
+
+#    Enable automatic exposure correction
+#    When enabled, the post-processing engine will
+#    automatically adjust to the brightness of the scene,
+#    simulating the behavior of human eye.
+#    type: bool
+# enable_auto_exposure = false
 
 ### Bloom
 
@@ -508,7 +496,7 @@
 # enable_bloom = false
 
 #    Set to true to render debugging breakdown of the bloom effect.
-#    In debug mode, the screen is split into 4 quadrants: 
+#    In debug mode, the screen is split into 4 quadrants:
 #    top-left - processed base image, top-right - final image
 #    bottom-left - raw base image, bottom-right - bloom texture.
 #    type: bool
@@ -700,6 +688,11 @@
 #    Ex: 5.5.0 is 005005000
 #    type: int
 # update_last_known = 0
+
+#    Use raytraced occlusion culling in the new culler.
+#    This flag enables use of raytraced occlusion culling test
+#    type: bool
+# enable_raytraced_culling = true
 
 ## Server
 
@@ -2666,10 +2659,9 @@
 # shader_path =
 
 #    The rendering back-end.
-#    A restart is required after changing this.
-#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended.
-#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
+#    Note: A restart is required after changing this!
+#    OpenGL is the default for desktop, and OGLES2 for Android.
+#    Shaders are supported by OpenGL and OGLES2 (experimental).
 #    type: enum values: opengl, ogles1, ogles2
 # video_driver = opengl
 
@@ -2701,6 +2693,11 @@
 #    type: int min: 0 max: 50
 # mesh_generation_interval = 0
 
+#    Number of threads to use for mesh generation.
+#    Value of 0 (default) will let Minetest autodetect the number of available threads.
+#    type: int min: 0 max: 8
+# mesh_generation_threads = 0
+
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
 #    thread, thus reducing jitter.
@@ -2730,6 +2727,14 @@
 #    Warning: This option is EXPERIMENTAL!
 #    type: enum values: disable, enable, force
 # autoscale_mode = disable
+
+#    Side length of a cube of map blocks that the client will consider together
+#    when generating meshes.
+#    Larger values increase the utilization of the GPU by reducing the number of
+#    draw calls, benefiting especially high-end GPUs.
+#    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
+#    type: int min: 1 max: 16
+# client_mesh_chunk = 1
 
 ### Font
 

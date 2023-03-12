@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-11-05 12:08+0000\n"
-"Last-Translator: Tianshu Feng <admin@theaceblock.space>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-01-06 08:49+0000\n"
+"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -826,7 +826,7 @@ msgstr "无法将$1安装为材质包"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr "载入中..."
+msgstr "加载中..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
@@ -1675,6 +1675,11 @@ msgid "ok"
 msgstr "确定"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "缩放被当前子游戏或 mod 禁用"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "聊天已隐藏"
 
@@ -2339,6 +2344,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "确定每个地图块的地窖数量的3D噪声。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2348,7 +2354,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3D 支持。\n"
@@ -2442,17 +2447,6 @@ msgstr "为支持4K等屏幕，调节像素点密度（非 X11/Android 环境才
 #, fuzzy
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "调整检测到的显示密度，用来缩放 UI 元素。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2814,6 +2808,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "客户端"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3288,6 +3286,10 @@ msgid "Dungeon noise"
 msgstr "地窖噪声"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "全部启用"
@@ -3320,6 +3322,18 @@ msgid ""
 msgstr ""
 "启用泊松盘（Poisson disk）滤镜。\n"
 "使用泊松盘算法来产生“软阴影”。不启用的话就会使用 PCF 滤镜。"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3493,7 +3507,7 @@ msgstr ""
 "适用于固体悬空岛层。"
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4694,6 +4708,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "地图生成延时"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "地图生成延时"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "地图生成缓存大小"
 
@@ -5158,6 +5177,13 @@ msgstr ""
 "（4096=100MB，按经验法则）。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "不透明液体"
 
@@ -5465,11 +5491,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "当 np_beach 超过这个值时会出现沙滩。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "迭代"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "将客户端接收到的地图保存在磁盘上。"
 
@@ -5660,11 +5681,9 @@ msgstr "服务器列表文件"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5701,17 +5720,6 @@ msgstr ""
 "设置软阴影半径大小。\n"
 "较低的值意味着更清晰的阴影更大的值更柔和。\n"
 "最小值 1.0 和最大值 10.0"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"以度为单位设置太阳/月亮轨道的倾斜度\n"
-"值 0 表示没有倾斜/垂直轨道。\n"
-"最小值 0.0 和最大值 60.0"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5755,7 +5763,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5846,6 +5854,15 @@ msgstr "关闭消息"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5869,10 +5886,6 @@ msgstr ""
 "网格生成器的地图区块缓存大小。增加此值将会\n"
 "增加缓存命中率，减少从主线程复制数据，从而\n"
 "减少抖动。"
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "天体轨道倾斜"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6188,11 +6201,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6421,6 +6432,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7958,6 +7975,10 @@ msgstr "cURL 并发限制"
 #~ msgid "Right key"
 #~ msgstr "右方向键"
 
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "迭代"
+
 #~ msgid "Select Package File:"
 #~ msgstr "选择包文件："
 
@@ -7975,6 +7996,16 @@ msgstr "cURL 并发限制"
 #~ "最小值 0.001 秒 最大值 0.2 秒"
 
 #, fuzzy
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "以度为单位设置太阳/月亮轨道的倾斜度\n"
+#~ "值 0 表示没有倾斜/垂直轨道。\n"
+#~ "最小值 0.0 和最大值 60.0"
+
+#, fuzzy
 #~ msgid "Shadow limit"
 #~ msgstr "地图块限制"
 
@@ -7982,6 +8013,9 @@ msgstr "cURL 并发限制"
 #~ "Shadow offset (in pixels) of the fallback font. If 0, then shadow will "
 #~ "not be drawn."
 #~ msgstr "后备字体阴影偏移（单位为像素），0 表示不绘制阴影。"
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "天体轨道倾斜"
 
 #~ msgid "Sneak key"
 #~ msgstr "潜行键"

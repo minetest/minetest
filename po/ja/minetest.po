@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-01-03 19:51+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "アウト チャット キューをクリアする"
+msgstr "アウト チャット キューをクリア"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -283,21 +283,20 @@ msgstr "ダウンロード中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "\"$1\" をインストール中にエラー: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "$1のダウンロードに失敗"
+msgstr "\"$1\" のダウンロードに失敗"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "$1のダウンロードに失敗"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "インストール: 非対応のファイル形式か、壊れたアーカイブ"
+msgstr ""
+"\"$1\" の展開に失敗 (サポートされていないファイル形式または壊れたアーカイブ)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -811,19 +810,16 @@ msgid "Failed to install $1 to $2"
 msgstr "$2へ$1をインストールできませんでした"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "MODインストール: MODパック $1 に適したフォルダ名が見つかりません"
+msgstr "インストール: $1 に適したフォルダ名が見つかりません"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "有効なMODまたはMODパックが見つかりません"
+msgstr "有効なMOD、MODパック、またはゲームが見つかりません"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "MODを$1としてインストールすることができません"
+msgstr "$1 を $2 としてインストールできません"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -859,7 +855,7 @@ msgstr "開発者"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "コアチーム"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1679,6 +1675,11 @@ msgid "ok"
 msgstr "決定"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "ズームは現在ゲームまたはMODにより無効"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "チャット 非表示"
 
@@ -1984,23 +1985,26 @@ msgstr "ミニマップ テクスチャモード"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s がありません:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"必要なMODをインストールして有効にするか、エラーの原因となるMODを無効にしてく"
+"ださい。"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"注: これは依存関係のサイクルが原因の可能性があります。その場合はMODを更新して"
+"みてください。"
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "必須依存MODなし"
+msgstr "一部のMODは満たされていない依存関係があります:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2345,6 +2349,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "マップチャンクごとのダンジョンの数を決定する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2354,7 +2359,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3Dサポート。\n"
@@ -2449,17 +2453,6 @@ msgstr ""
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "検出されたディスプレイの密度を調整し、UI要素のスケーリングに使用します。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2643,20 +2636,19 @@ msgstr "ブロック送信最適化距離"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "ブルーム"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "ブルーム強度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "雲の半径"
+msgstr "ブルーム半径"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "ブルーム強度係数"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2822,6 +2814,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "クライアント"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3039,7 +3035,7 @@ msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
-"十字カーソルの透過度 (不透明、0～255の間)。\n"
+"十字カーソルの透過度 (不透明、0 から 255 の間)。\n"
 "これはオブジェクトの十字カーソルにも適用されます。"
 
 #: src/settings_translation_file.cpp
@@ -3095,11 +3091,12 @@ msgstr ""
 "メインメニューからワールドを作成するときにこれは上書きされます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "強制読み込みマップブロックの最大数。"
+msgstr ""
+"強制読み込みマップブロックの既定の最大数。\n"
+"これを -1 に設定すると制限が無効になります。"
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3154,6 +3151,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"レンダリングされたイメージに適用されるブルームの量を定義します\n"
+"値が小さいほどブルームはより繊細になります\n"
+"範囲: 0.01 から 1.0、規定値: 0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3176,6 +3176,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"ブルーム露出オーバーの大きさを定義します。\n"
+"範囲: 0.1 から 10.0、規定値: 1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3300,13 +3302,16 @@ msgid "Dungeon noise"
 msgstr "ダンジョンノイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
-msgstr "すべて有効化"
+msgstr "ブルームを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "ブルームデバッグを有効化"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3333,6 +3338,18 @@ msgstr ""
 "ポアソンディスクによるフィルタリングを有効にします。\n"
 "true の場合、ポアソンディスクを使用して「やわらない影」を作ります。それ以外の"
 "場合は、PCFフィルタリングを使用します。"
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3495,7 +3512,6 @@ msgid "Entity methods"
 msgstr "エンティティメソッド"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3512,8 +3528,9 @@ msgstr ""
 "作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
-msgstr ""
+#, fuzzy
+msgid "Exposure compensation"
+msgstr "露出係数"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4433,12 +4450,11 @@ msgstr "大きな洞窟の浸水割合"
 
 #: src/settings_translation_file.cpp
 msgid "Last known version update"
-msgstr ""
+msgstr "最終バージョンアップ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Last update check"
-msgstr "液体の更新間隔"
+msgstr "最終更新チェック"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4616,6 +4632,9 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"ブルーム効果が明るいオブジェクトからどこまで広がるかを\n"
+"制御する論理値です。\n"
+"範囲: 0.1 から 8、規定値: 1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -4734,6 +4753,11 @@ msgstr "マップブロック制限"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
+msgstr "マップブロックのメッシュ生成遅延"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
 msgstr "マップブロックのメッシュ生成遅延"
 
 #: src/settings_translation_file.cpp
@@ -5206,6 +5230,13 @@ msgstr ""
 "トレードオフです (大体 4096 = 100MB)。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "不透明な液体"
 
@@ -5328,7 +5359,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post processing"
-msgstr ""
+msgstr "後処理"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5518,11 +5549,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "砂浜は np_beach がこの値を超えたときに出現します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "繰り返し"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "クライアントが受信したマップをディスクに保存します。"
 
@@ -5709,13 +5735,17 @@ msgid "Serverlist file"
 msgstr "サーバー一覧ファイル"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
+"露出補正係数を設定します。\n"
+"この係数は、他のすべての後処理効果の前に線形カラー値に\n"
+"適用されます。\n"
+"値 1.0 (規定値) は露出補正なしを意味します。\n"
+"範囲: 0.1 から 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5753,16 +5783,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"太陽/月の軌道の傾きを度数で設定します。\n"
-"0 は傾きのない垂直な軌道です。\n"
-"最小値: 0.0、最大値: 60.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -5774,6 +5794,8 @@ msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
 msgstr ""
+"true に設定するとブルーム効果が有効になります。\n"
+"明るい色が隣接するオブジェクトににじみます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5800,12 +5822,17 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
+"true に設定すると、ブルーム効果のデバッグの内訳がレンダリングされます。\n"
+"デバッグモードでは、画面は4つの象限に分割されます。\n"
+"左上 - 処理済み基本画像、右上 - 最終画像\n"
+"左下 - 生のベース画像、右下 - ブルームテクスチャ。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5889,6 +5916,15 @@ msgstr "サーバー終了時のメッセージ"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5912,10 +5948,6 @@ msgstr ""
 "メッシュ生成のマップブロックキャッシュサイズ。これを大きくすると、\n"
 "キャッシュヒット率が上がり、メインスレッドからコピーされるデータが\n"
 "減るため、ジッタが減少します。"
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "天体の軌道傾斜角"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6248,13 +6280,12 @@ msgstr ""
 "これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "レンダリングのバックエンドです。\n"
 "変更後は再起動が必要です。\n"
@@ -6411,7 +6442,7 @@ msgstr "信頼するMOD"
 #: src/settings_translation_file.cpp
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
-msgstr ""
+msgstr "最新のMinetestリリースに関する情報を提供するJSONファイルへのURL"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6439,6 +6470,8 @@ msgid ""
 "Unix timestamp (integer) of when the client last checked for an update\n"
 "Set this value to \"disabled\" to never check for updates."
 msgstr ""
+"クライアントが最後に更新をチェックしたときのUnixタイムスタンプ(整数)\n"
+"この値を \"disabled \"に設定すると、更新のチェックを一切行いません。"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6450,7 +6483,7 @@ msgstr "未使用のサーバーデータを破棄"
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
-msgstr ""
+msgstr "更新情報URL"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
@@ -6478,13 +6511,15 @@ msgstr "テクスチャを拡大縮小する場合はバイリニアフィルタ
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr ""
+msgstr "タッチスクリーンに十字カーソルを使用する"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
+"画面全体ではなく、十字カーソルを使用してオブジェクトを選択します。\n"
+"有効にすると、十字カーソルが表示されオブジェクトの選択に使用されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6514,6 +6549,12 @@ msgstr ""
 "シェーダーを無効にすると、ノード間に可視スペースが表示されます。\n"
 "0 に設定すると、MSAAは無効になります。\n"
 "このオプションを変更した場合、再起動が必要です。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6590,6 +6631,10 @@ msgid ""
 "Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
 "Ex: 5.5.0 is 005005000"
 msgstr ""
+"更新チェック中に最後に確認されたバージョン番号。\n"
+"\n"
+"表現: MMMIIIPPP、M=メジャー、I=マイナー、P=パッチ\n"
+"例: 5.5.0 は 005005000"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6957,6 +7002,23 @@ msgstr "cURL並行処理制限"
 #~ msgstr ""
 #~ "ライトテーブルのガンマ補正を調整します。数値が大きいほど明るくなります。\n"
 #~ "この設定はクライアント専用であり、サーバでは無視されます。"
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "シーンの彩度（または鮮やかさ）を調整する\n"
+#~ "値\n"
+#~ "< 1.0 彩度を下げる\n"
+#~ "> 1.0 彩度を上げる\n"
+#~ "1.0 = 彩度を変更しない\n"
+#~ "0.0 = 白黒\n"
+#~ "(トーン マッピングを有効にする必要があります。)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr "山型浮遊大陸が中間点の上下でどのように先細くなるかを変更します。"
@@ -8133,6 +8195,9 @@ msgstr "cURL並行処理制限"
 #~ msgid "Right key"
 #~ msgstr "右キー"
 
+#~ msgid "Saturation"
+#~ msgstr "彩度"
+
 #~ msgid "Select Package File:"
 #~ msgstr "パッケージファイルを選択:"
 
@@ -8150,6 +8215,15 @@ msgstr "cURL並行処理制限"
 #~ "す。\n"
 #~ "最小値0.001秒、最大値0.2秒"
 
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "太陽/月の軌道の傾きを度数で設定します。\n"
+#~ "0 は傾きのない垂直な軌道です。\n"
+#~ "最小値: 0.0、最大値: 60.0"
+
 #~ msgid "Shadow limit"
 #~ msgstr "影の制限"
 
@@ -8159,6 +8233,9 @@ msgstr "cURL並行処理制限"
 #~ msgstr ""
 #~ "フォールバックフォントの影のオフセット（ピクセル単位）。 \n"
 #~ "0の場合、影は描画されません。"
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "天体の軌道傾斜角"
 
 #~ msgid "Sneak key"
 #~ msgstr "スニークキー"
