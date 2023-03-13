@@ -1021,10 +1021,13 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 	// Activate stored objects
 	activateObjects(block, dtime_s);
+	if (!block->getParent())
+		return; // block was deleted
 
 	/* Handle LoadingBlockModifiers */
-	if (block->getParent()) // Block not deleted
-		m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
+	m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
+	if (!block->getParent())
+		return; // block was deleted
 
 	// Run node timers
 	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
@@ -2002,6 +2005,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false, dtime_s);
+		if (!block->getParent())
+			return; // block was deleted
 	}
 
 	// Clear stored list
