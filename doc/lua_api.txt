@@ -7261,7 +7261,7 @@ child will follow movement and rotation of that bone.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with the following boolean values
       representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
-      `aux1`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
+      `aux1`, `aux2`, `sneak`, `dig`, `place`, `LMB`, `RMB`, and `zoom`.
     * The fields `LMB` and `RMB` are equal to `dig` and `place` respectively,
       and exist only to preserve backwards compatibility.
     * Returns an empty table `{}` if the object is not a player.
@@ -7278,6 +7278,7 @@ child will follow movement and rotation of that bone.
         * 7 - dig
         * 8 - place
         * 9 - zoom
+        * 10 - aux2
     * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:

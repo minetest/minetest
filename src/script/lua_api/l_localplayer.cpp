@@ -226,6 +226,7 @@ int LuaLocalPlayer::l_get_control(lua_State *L)
 	lua_createtable(L, 0, 12);
 	set("jump",  c.jump);
 	set("aux1",  c.aux1);
+	set("aux2", c.aux2);
 	set("sneak", c.sneak);
 	set("zoom",  c.zoom);
 	set("dig",   c.dig);
