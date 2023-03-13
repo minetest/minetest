@@ -130,7 +130,7 @@ public:
 	// step handler
 	void step(float dtime);
 
-	// check if the button bar is active
+	// return whether the button bar is active
 	bool active() { return m_active; }
 
 	// deactivate button bar
