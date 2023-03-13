@@ -1775,7 +1775,7 @@ void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progres
 			std::wostringstream strm;
 			strm << targs->text_base << L" " << targs->last_percent << L"%...";
 			m_rendering_engine->draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
-				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
+				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
 		}
 }
 

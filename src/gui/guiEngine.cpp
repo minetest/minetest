@@ -252,8 +252,6 @@ void GUIEngine::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
-	static const video::SColor sky_color(255, 140, 186, 250);
-
 	// Reset fog color
 	{
 		video::SColor fog_color;
@@ -266,8 +264,8 @@ void GUIEngine::run()
 		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 				fog_pixelfog, fog_rangefog);
 
-		driver->setFog(sky_color, fog_type, fog_start, fog_end, fog_density,
-				fog_pixelfog, fog_rangefog);
+		driver->setFog(RenderingEngine::MENU_SKY_COLOR, fog_type, fog_start,
+				fog_end, fog_density, fog_pixelfog, fog_rangefog);
 	}
 
 	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
@@ -291,7 +289,7 @@ void GUIEngine::run()
 			text_height = g_fontengine->getTextHeight();
 		}
 
-		driver->beginScene(true, true, sky_color);
+		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 
 		if (m_clouds_enabled)
 		{
