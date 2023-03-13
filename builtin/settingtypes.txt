@@ -2170,7 +2170,7 @@ keymap_rangeselect (Range select key) key
 keymap_freemove (Fly key) key KEY_KEY_K
 
 #    Key for toggling pitch move mode.
-keymap_pitchmove (Pitch move key) key KEY_KEY_P
+keymap_pitchmove (Pitch move key) key
 
 #    Key for toggling fast mode.
 keymap_fastmove (Fast key) key KEY_KEY_J
