@@ -1101,17 +1101,18 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		258 + m_fields.size()
 	);
 
-	core::rect<s32> rect;
+	core::rect<s32> rect{};
+	v2s32 autoclip_offset{};
 	if (!clip) {
 		// no auto_clip => position like normal image
 		rect = core::rect<s32>(pos, pos + geom);
 	} else {
-		// it will be auto-clipped when drawing
-		rect = core::rect<s32>(-pos, pos);
+		// element will be auto-clipped when drawing
+		autoclip_offset = pos;
 	}
 
 	GUIBackgroundImage *e = new GUIBackgroundImage(Environment, data->background_parent.get(),
-			spec.fid, rect, name, middle, m_tsrc, clip);
+			spec.fid, rect, name, middle, m_tsrc, clip, autoclip_offset);
 
 	FATAL_ERROR_IF(!e, "Failed to create background formspec element");
 

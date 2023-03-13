@@ -22,9 +22,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 GUIBackgroundImage::GUIBackgroundImage(gui::IGUIEnvironment *env,
 	gui::IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
 	const std::string &name, const core::rect<s32> &middle,
-	ISimpleTextureSource *tsrc, bool autoclip) :
+	ISimpleTextureSource *tsrc, bool autoclip, v2s32 autoclip_offset) :
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_name(name), m_middle(middle), m_tsrc(tsrc), m_autoclip(autoclip)
+	m_name(name), m_middle(middle), m_tsrc(tsrc), m_autoclip(autoclip),
+	m_autoclip_offset(autoclip_offset)
 {
 }
 
@@ -42,9 +43,14 @@ void GUIBackgroundImage::draw()
 		return;
 	}
 
-	core::rect<s32> rect = AbsoluteRect;
-	if (m_autoclip)
-		rect.LowerRightCorner += Parent->getAbsoluteClippingRect().getSize();
+	core::rect<s32> rect;
+	if (m_autoclip) {
+		rect = Parent->getAbsoluteClippingRect();
+		rect.UpperLeftCorner -= m_autoclip_offset;
+		rect.LowerRightCorner += m_autoclip_offset;
+	} else {
+		rect = AbsoluteRect;
+	}
 
 	video::IVideoDriver *driver = Environment->getVideoDriver();
 
