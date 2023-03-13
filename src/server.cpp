@@ -667,10 +667,9 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	/*
-		Delete from memory blocks removed by deleteBlocks() only when pointers
-		to them are (probably) no longer in use
+		Note: Orphan MapBlock ptrs become dangling after this call.
 	*/
-	m_env->getServerMap().deleteDeletedBlocks();
+	m_env->getServerMap().step();
 
 	/*
 		Listen to the admin chat, if available

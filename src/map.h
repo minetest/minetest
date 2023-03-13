@@ -419,6 +419,8 @@ public:
 
 	void deleteDeletedBlocks();
 
+	void step();
+
 	void updateVManip(v3s16 pos);
 
 	// For debug printing

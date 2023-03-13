@@ -1908,6 +1908,13 @@ void ServerMap::deleteDeletedBlocks()
 	m_deleted_blocks.clear();
 }
 
+void ServerMap::step()
+{
+	// Delete from memory blocks removed by deleteBlocks() only when pointers
+	// to them are (probably) no longer in use
+	deleteDeletedBlocks();
+}
+
 void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
