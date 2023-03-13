@@ -1902,7 +1902,7 @@ bool ServerMap::deleteBlock(v3s16 blockpos)
 void ServerMap::deleteDeletedBlocks()
 {
 	for (MapBlock *block : m_deleted_blocks) {
-		assert(!block->getParent());
+		assert(block->isOrphan());
 		delete block;
 	}
 	m_deleted_blocks.clear();
