@@ -346,12 +346,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
+	local host_filled = (fields.te_address ~= "") and fields.te_port:match("^%s*[1-9][0-9]*%s*$")
 	local te_port_number = tonumber(fields.te_port)
-	-- te_port_number will be nil if input is not a number
-	-- '%1' gets fractional part, which is zero for integers
-	-- '1/0' is infinity, which a port cannot be
-	local host_filled = (fields.te_address ~= "") and te_port_number
-		and (te_port_number > 0) and (te_port_number ~= 1/0) and (te_port_number % 1 == 0)
 
 	if (fields.btn_mp_login or fields.key_enter) and host_filled then
 		gamedata.playername = fields.te_name
