@@ -1001,6 +1001,7 @@ private:
 	bool m_invert_mouse = false;
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
+	bool m_game_focused;
 
 	bool m_does_lost_focus_pause_game = false;
 
@@ -1964,19 +1965,28 @@ void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
-		input->clear();
+		if(m_game_focused) {
+			m_game_focused = false;
+			infostream << "Game lost focus" << std::endl;
+			input->releaseAllKeys();
+		} else {
+			input->clear();
+		}
 #ifdef HAVE_TOUCHSCREENGUI
 		g_touchscreengui->hide();
 #endif
-	}
+	} else {
 #ifdef HAVE_TOUCHSCREENGUI
-	else if (g_touchscreengui) {
-		/* on touchscreengui step may generate own input events which ain't
-		 * what we want in case we just did clear them */
-		g_touchscreengui->show();
-		g_touchscreengui->step(dtime);
-	}
+		if (g_touchscreengui) {
+			/* on touchscreengui step may generate own input events which ain't
+			 * what we want in case we just did clear them */
+			g_touchscreengui->show();
+			g_touchscreengui->step(dtime);
+		}
 #endif
+
+		m_game_focused = true;
+	}
 
 	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
