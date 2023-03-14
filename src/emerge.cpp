@@ -600,7 +600,6 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 		if ((*block)->isGenerated())
 			return EMERGE_FROM_MEMORY;
 	} else {
-		ScopeProfiler sp(g_profiler, "EmergeThread: load block", SPT_AVG);
 		// 2). Attempt to load block from disk if it was not in the memory
 		*block = m_map->loadBlock(pos);
 		if (*block && (*block)->isGenerated())
