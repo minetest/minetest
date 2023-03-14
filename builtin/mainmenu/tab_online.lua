@@ -400,7 +400,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields.btn_mp_register and host_filled then
 		local idx = core.get_table_index("servers")
 		local server = idx and tabdata.lookup[idx]
-		if server and server.address ~= fields.te_address or server.port ~= te_port_number then
+		if server and (server.address ~= fields.te_address or server.port ~= te_port_number) then
 			server = nil
 		end
 
