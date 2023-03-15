@@ -8,13 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"Last-Translator: dreigiau <sterilgrimed23@gmail.com>\n"
+"Language-Team: Welsh <https://hosted.weblate.org/projects/minetest/minetest/"
+"cy/>\n"
 "Language: cy\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0) ? 0 : (n==1) ? 1 : (n==2) ? 2 : "
+"(n==3) ? 3 :(n==6) ? 4 : 5;\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -22,11 +26,11 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Gorchymyn gwag."
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Gorchymyn annilys: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
@@ -38,7 +42,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Chwaraewyr ar-lein: "
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -54,15 +58,15 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Buest ti farw"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Atgyfodi"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Gorchmynion sydd ar gael: "
 
 #: builtin/common/chatcommands.lua
 msgid ""
@@ -71,7 +75,7 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Gorchmynion sydd ar gael:"
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -87,11 +91,11 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Iawn"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<dim>"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -99,11 +103,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Ail-gysylltu"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "Prif ddewislen"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -135,7 +139,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Byd:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -155,7 +159,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Addasiad:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
@@ -181,7 +185,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Cadw"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -191,7 +195,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Canslo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -199,23 +203,23 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable modpack"
-msgstr ""
+msgstr "Diffodd pecyn addasiadau"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr ""
+msgstr "Galluogi pecyn addasiadau"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "ymlaen"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
-msgstr ""
+msgstr "Diffodd popeth"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Galluogi popeth"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -229,19 +233,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
-msgstr ""
+msgstr "Pob pecyn"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
-msgstr ""
+msgstr "Gemau"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
-msgstr ""
+msgstr "Addasiadau"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Pecynnau adnodd"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
@@ -261,7 +265,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr ""
+msgstr "Wedi ei osod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -269,7 +273,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Heb ei ganfod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -289,11 +293,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install $1"
-msgstr ""
+msgstr "Gosod $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "Gêm Sylfaenol:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install missing dependencies"
@@ -301,7 +305,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Gosod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -309,7 +313,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Trosysgrifo"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -323,11 +327,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr ""
+msgstr "Wrthi'n lawrlwytho $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Dim diweddariadau"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
@@ -335,7 +339,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr ""
+msgstr "Dim canlyniadau"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -343,19 +347,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Wrthi'n lawrlwytho..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Wedi ciwio"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Diweddaru"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
-msgstr ""
+msgstr "Dadosod"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -363,7 +367,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Ceudyllau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
@@ -371,7 +375,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Afonydd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
@@ -379,7 +383,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Mynyddoedd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
@@ -423,11 +427,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Bryniau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Llynnoedd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -447,7 +451,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Llif mwd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
@@ -475,15 +479,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Ogofeydd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Dwnsiynau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Addurniadau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -501,11 +505,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Bïomau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Cyfuniad bïom"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -513,7 +517,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Fflagiau mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
@@ -521,16 +525,16 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "Enw'r byd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Hedyn"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
@@ -542,7 +546,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Creu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -560,7 +564,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Dileu"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -576,29 +580,29 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Wrthi'n ymuno â $1"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Enw"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr ""
+msgstr "Cyfrinair"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Cadarnhau Cyfrinair"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "Cofrestru"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Enw ar goll"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
@@ -606,7 +610,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Derbyn"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -616,31 +620,31 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Ailenwi pecyn addasiadau:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
-msgstr ""
+msgstr "Cynnwys: Gemau"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr ""
+msgstr "Cynnwys: Addasiadau"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Client Mods"
-msgstr ""
+msgstr "Addasiadau i'r Cleient"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Wedi analluogi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Ymlaen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Pori"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
@@ -648,7 +652,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
-msgstr ""
+msgstr "Graddfa"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -668,7 +672,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
-msgstr ""
+msgstr "Wythfedau"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Persistence"
@@ -683,7 +687,7 @@ msgstr ""
 #. for noise settings in main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "defaults"
-msgstr ""
+msgstr "diofyn"
 
 #. ~ "eased" is a noise parameter flag.
 #. It is used to make the map smoother and
@@ -703,15 +707,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -739,11 +743,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select file"
-msgstr ""
+msgstr "Dewiswch ffeil"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Chwilio"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -751,11 +755,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Golygu"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Adfer gosodiadau diofyn"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Show technical names"
@@ -775,19 +779,19 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Gwefan"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr ""
+msgstr "Nes ymlaen"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Byth"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Ymlaen)"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -811,11 +815,11 @@ msgstr ""
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "Addasiadau $1"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Wrthi'n llwytho..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -827,19 +831,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Ynghylch"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Datblygwyr Craidd"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Tîm Craidd"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Cyfranwyr Gweithgar"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
@@ -847,7 +851,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Cyn-Gyfranwyr"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
@@ -869,7 +873,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr ""
+msgstr "Pecynnau wedi eu gosod:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -881,7 +885,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Ailenwi"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
@@ -897,15 +901,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Gwybodaeth:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
-msgstr ""
+msgstr "Dadosod Pecyn"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Cynnwys"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -913,11 +917,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Modd Creadigol"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Galluogi Difrod"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
@@ -925,15 +929,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr ""
+msgstr "Dewis Addasiadau"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Newydd"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Dewis Byd:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
@@ -941,7 +945,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Cyhoeddi Gweinydd"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -949,15 +953,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
-msgstr ""
+msgstr "Porth"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Porth y Gweinydd"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Chwarae Gêm"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
@@ -965,39 +969,39 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Dechrau Gêm"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Clirio"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Adnewyddu"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
-msgstr ""
+msgstr "Cyfeiriad"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr ""
+msgstr "Disgrifiad y Gweinydd"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Mewngofnodi"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
-msgstr ""
+msgstr "Dileu o ffefrynnau"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Modd Creadigol"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
@@ -1006,19 +1010,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
-msgstr ""
+msgstr "Ffefrynnau"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr ""
+msgstr "Gweinyddion Cyhoeddus"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Gweinyddion Anghydnaws"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Ymuno â Gêm"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1042,11 +1046,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Dim"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "Dim Hidlydd"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -1058,11 +1062,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "Dim Mipmapio"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -1070,35 +1074,35 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Isel Iawn"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Isel"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Canolig"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Uchel"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very High"
-msgstr ""
+msgstr "Uchel Iawn"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
@@ -1106,11 +1110,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Gronynnau"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "Cymylau 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
@@ -1122,7 +1126,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Gweadau:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -1142,11 +1146,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Newid Bysellau"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Pob Gosodiad"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touch threshold (px):"
@@ -1154,7 +1158,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "Sgrîn:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
@@ -1190,7 +1194,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Gosodiadau"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1202,7 +1206,7 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Wrthi'n llwytho gweadau..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
@@ -1218,11 +1222,11 @@ msgstr ""
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Iawn!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Prif Ddewislen"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -1258,11 +1262,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Wrthi'n cau..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Wrthi'n creu gweinydd..."
 
 #: src/client/game.cpp
 #, c-format
@@ -1271,7 +1275,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Wrthi'n creu cleient..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
@@ -1279,11 +1283,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr ""
+msgstr "Chwaraewr Sengl"
 
 #: src/client/game.cpp
 msgid "Multiplayer"
-msgstr ""
+msgstr "Aml-chwaraewr"
 
 #: src/client/game.cpp
 msgid "Resolving address..."
@@ -1319,7 +1323,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Diffiniadau eitem..."
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1327,15 +1331,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Cyfryngau..."
 
 #: src/client/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/client/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1343,7 +1347,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "Sain wedi diffodd"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1364,7 +1368,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr ""
+msgstr "iawn"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
@@ -1550,11 +1554,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Parhau"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Newid Cyfrinair"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -1598,11 +1602,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "On"
-msgstr ""
+msgstr "Ie"
 
 #: src/client/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "Na"
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
@@ -1683,32 +1687,32 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Backspace"
-msgstr ""
+msgstr "Backspace"
 
 #: src/client/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Return"
 
 #: src/client/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/client/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
@@ -1716,7 +1720,7 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Space"
 
 #: src/client/keycode.cpp
 msgid "Page up"
@@ -1728,53 +1732,53 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr ""
+msgstr "Chwith"
 
 #: src/client/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "I fyny"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Right"
-msgstr ""
+msgstr "Dde"
 
 #: src/client/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "I lawr"
 
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Print"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "Cyflawni"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Sgrinlun"
 
 #: src/client/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Mewnosod"
 
 #: src/client/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Cymorth"
 
 #: src/client/keycode.cpp
 msgid "Left Windows"
@@ -1898,11 +1902,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Apiau"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Cysgu"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
@@ -1910,11 +1914,11 @@ msgstr ""
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "Chwarae"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "Chwyddo"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
@@ -1969,11 +1973,11 @@ msgstr ""
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Ymlaen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Bysellau brys."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "\"Aux1\" = climb down"
@@ -1997,31 +2001,31 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Ymlaen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Bacio"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Neidio"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Sleifio"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Gollwng"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "Rhestr Eiddo"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Prev. item"
@@ -2057,7 +2061,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Anwybyddu"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -2068,16 +2072,17 @@ msgid "Inc. volume"
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Autoforward"
-msgstr ""
+msgstr "Awto-gerdded"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Sgwrs"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "Sgrinlun"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -2093,11 +2098,11 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Consol"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Gorchymyn"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2129,7 +2134,7 @@ msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Newid"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
@@ -2142,11 +2147,11 @@ msgstr ""
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Gadael"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "Wedi anwybyddu"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
@@ -2162,15 +2167,15 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "cy"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Rheoli"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Cyffredinol"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -2284,7 +2289,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen"
-msgstr ""
+msgstr "Sgrîn gyffwrdd"
 
 #: src/settings_translation_file.cpp
 msgid "Touch screen threshold"
@@ -2331,11 +2336,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Graffeg"
 
 #: src/settings_translation_file.cpp
 msgid "Screen"
-msgstr ""
+msgstr "Sgrîn"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
@@ -2383,7 +2388,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr ""
+msgstr "FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
@@ -2397,7 +2402,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
-msgstr ""
+msgstr "VSync"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
@@ -2494,7 +2499,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "3d"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
@@ -2523,7 +2528,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "Neidio"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
@@ -2557,7 +2562,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: src/settings_translation_file.cpp
 msgid "Near plane"
@@ -2606,7 +2611,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
-msgstr ""
+msgstr "Sgrinluniau"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -2697,7 +2702,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Niwl"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
@@ -2722,7 +2727,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Cymylau"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
@@ -2742,7 +2747,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
-msgstr ""
+msgstr "Mipmapio"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2805,7 +2810,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3095,11 +3100,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Sain"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Lefel"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3125,7 +3130,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Iaith"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3135,7 +3140,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "GUIs"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -3223,7 +3228,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
@@ -3357,7 +3362,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
-msgstr ""
+msgstr "Cleient"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -3428,7 +3433,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server"
-msgstr ""
+msgstr "Gweinydd"
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
@@ -3518,7 +3523,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Networking"
-msgstr ""
+msgstr "Rhwydwaith"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
@@ -3746,7 +3751,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Ffiseg"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -3850,7 +3855,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Disgyrchiant"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
@@ -4063,7 +4068,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "Synau"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
@@ -4867,7 +4872,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Uwch"
 
 #: src/settings_translation_file.cpp
 msgid "Developer Options"
@@ -4925,7 +4930,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "Dadfygio"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -5072,7 +5077,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "Mewnol"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5082,7 +5087,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Proffiliwr"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5109,7 +5114,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5160,8 +5165,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5282,7 +5288,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font"
-msgstr ""
+msgstr "Ffont"
 
 #: src/settings_translation_file.cpp
 msgid "Font bold by default"
@@ -5403,7 +5409,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lighting"
-msgstr ""
+msgstr "Goleuo"
 
 #: src/settings_translation_file.cpp
 msgid "Light curve low gradient"
@@ -5880,7 +5886,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
@@ -5917,11 +5923,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Misc"
-msgstr ""
+msgstr "Amrywiol"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6082,7 +6088,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Map bach"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -6125,7 +6131,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "Difrod"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -6133,7 +6139,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
-msgstr ""
+msgstr "Creadigol"
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for all players"
@@ -6149,7 +6155,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Hedfan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6179,7 +6185,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Noclip"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6225,7 +6231,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Sain"
 
 #: src/settings_translation_file.cpp
 msgid ""
