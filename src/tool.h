@@ -129,7 +129,7 @@ struct WearBarParams
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
 };
-Wear Bar
+
 struct DigParams
 {
 	bool diggable;
