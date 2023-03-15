@@ -436,7 +436,7 @@ local wear_colors = { nil, nil, nil, "#5865f2", "slateblue", {blend=true, defaul
                                                                                                                                                default="#ffff00",      -- color to use if no other ranges match the durability
                                                                                                                                                blend=false
                                                                                                                                            }, nil, nil, nil }
-local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Range from thistle to blue to red", "Random blocks", nil, nil, nil }
+local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Ranges from blue to yellow to red", "Random blocks", nil, nil, nil }
 for i=1, #uses do
 	local u = uses[i]
 	local wc = wear_colors[i]
