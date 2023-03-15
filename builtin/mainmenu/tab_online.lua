@@ -112,6 +112,11 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "style[btn_delete_favorite;padding=6]"
 			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
 				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
+		else
+			retval = retval .. "tooltip[btn_add_favorite;" .. fgettext("Add favorite") .. "]"
+			retval = retval .. "style[btn_add_favorite;padding=6]"
+			retval = retval .. "image_button[5,1.3;0.5,0.5;" .. core.formspec_escape(defaulttexturedir ..
+				"server_favorite.png") .. ";btn_add_favorite;]"
 		end
 		if gamedata.serverdescription then
 			retval = retval .. "textarea[0.25,1.85;5.2,2.75;;;" ..
@@ -321,6 +326,17 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		serverlistmgr.delete_favorite(server)
 		-- the server at [idx+1] will be at idx once list is refreshed
 		set_selected_server(tabdata, idx, tabdata.lookup[idx+1])
+		return true
+	end
+
+	if fields.btn_add_favorite then
+		local idx = core.get_table_index("servers")
+		if not idx then return end
+		local server = tabdata.lookup[idx]
+		if not server then return end
+
+		serverlistmgr.add_favorite(server)
+		set_selected_server(tabdata, idx, tabdata.lookup[idx])
 		return true
 	end
 
