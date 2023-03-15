@@ -4983,7 +4983,7 @@ Utilities
           connection_uptime = 200,   -- seconds since client connected
           protocol_version = 32,     -- protocol version used by client
           formspec_version = 2,      -- supported formspec version
-          lang_code = "fr"           -- Language code used for translation
+          lang_code = "fr",          -- Language code used for translation
 
           -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
@@ -5536,7 +5536,7 @@ Environment access
       returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
-* `minetest.get_node_light(pos, timeofday)`
+* `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
       to get the light value of a neighbor.
@@ -7319,7 +7319,7 @@ child will follow movement and rotation of that bone.
     * This should be used to set style elements such as background[] and
       bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
-* `get_formspec_prepend(formspec)`: returns a formspec string.
+* `get_formspec_prepend()`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with the following boolean values
       representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
@@ -7381,13 +7381,13 @@ child will follow movement and rotation of that bone.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `32`
-* `hud_get_hotbar_itemcount`: returns number of visible items
+* `hud_get_hotbar_itemcount()`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
-* `hud_get_hotbar_image`: returns texturename
+* `hud_get_hotbar_image()`: returns texturename
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
-* `hud_get_hotbar_selected_image`: returns texturename
+* `hud_get_hotbar_selected_image()`: returns texturename
 * `set_minimap_modes({mode, mode, ...}, selected_mode)`
     * Overrides the available minimap modes (and toggle order), and changes the
     selected mode.
