@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-18 22:47+0000\n"
-"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
+"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
 "Language: sk\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1682,9 +1682,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zväčšenie je zakázané hrou, alebo rozšírením"
+msgstr "Chat je zakázaný hrou, alebo rozšírením"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2358,7 +2357,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D šum definujúci počet kobiek na časť mapy (mapchunk)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2372,7 +2370,7 @@ msgid ""
 msgstr ""
 "Podpora 3D.\n"
 "Aktuálne sú podporované:\n"
-"-    none: žiaden 3D režim.\n"
+"-    none: bez 3D režimu.\n"
 "-    anaglyph: tyrkysovo/purpurová farba 3D.\n"
 "-    interlaced: podpora polarizácie založenej na párnych/nepárnych riadkoch "
 "obrazu.\n"
@@ -2830,7 +2828,7 @@ msgstr "Klient"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Veľkosť chunku pre \"Client Mesh\""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3320,7 +3318,7 @@ msgstr "Šum kobky"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Povoliť automatickú expozíciu"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3358,7 +3356,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Povoliť Raytraced Culling"
 
 #: src/settings_translation_file.cpp
 msgid ""
