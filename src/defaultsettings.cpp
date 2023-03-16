@@ -95,7 +95,7 @@ void set_default_settings()
 	settings->setDefault("keymap_rangeselect", "");
 #endif
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
+	settings->setDefault("keymap_pitchmove", "");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
