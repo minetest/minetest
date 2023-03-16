@@ -457,7 +457,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 	size_t start = 0;
 	int c = std::getc(fp);
 	if (c == '#') {
-		// Skip the content of the first line
+		// Skip the shebang line (but keep line-ending)
 		while (c != EOF && c != '\n')
 			c = std::getc(fp);
 		start = std::ftell(fp) - 1;
