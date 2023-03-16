@@ -397,11 +397,11 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 		-- Check if inv is null, since non-players don't have one
 		if inv then
 			replace_with_item = inv:add_item("main", replace_with_item)
-			if not replace_with_item:is_empty() then
-				local pos = user:get_pos()
-				pos.y = math.floor(pos.y + 0.5)
-				core.add_item(pos, replace_with_item)
-			end
+		end
+		if not replace_with_item:is_empty() then
+			local pos = user:get_pos()
+			pos.y = math.floor(pos.y + 0.5)
+			core.add_item(pos, replace_with_item)
 		end
 	end
 
