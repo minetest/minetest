@@ -1542,7 +1542,8 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 		//the client should close the formspec
 		//but make sure there wasn't another one open in meantime
 		const auto it = m_formspec_state_data.find(peer_id);
-		if (it != m_formspec_state_data.end() && it->second == formname) {
+		if (it != m_formspec_state_data.end() &&
+				(it->second == formname || formname.empty())) {
 			m_formspec_state_data.erase(peer_id);
 		}
 		pkt.putLongString("");
