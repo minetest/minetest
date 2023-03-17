@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
-"Last-Translator: Julien Maulny <julien.maulny@protonmail.com>\n"
+"PO-Revision-Date: 2023-03-18 18:53+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -1218,7 +1218,7 @@ msgstr "Plantes ondulantes"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Connexion interrompue (erreur de protocole ?)."
+msgstr "Connexion interrompue (erreur de protocole ?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -2429,7 +2429,7 @@ msgstr "Accélération de la gravité, en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr "Modificateurs de bloc actif"
+msgstr "Modificateurs de Blocs Actif"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
@@ -2855,7 +2855,7 @@ msgstr "Restrictions du modding côté client"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr "Restriction de distance de recherche des noeuds côté client"
+msgstr "Restriction de la distance de recherche de blocs côté client"
 
 #: src/settings_translation_file.cpp
 msgid "Client-side Modding"
@@ -2912,9 +2912,8 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Liste des mods de confiance séparés par des virgules qui sont autorisés à "
-"accéder\n"
-"aux API HTTP, leur permettant d'envoyer et de télécharger des données vers/"
+"Liste des mods de confiance séparés par des virgules autorisés à accéder aux "
+"APIs HTTP, leur permettant d'envoyer et de télécharger des données vers/"
 "depuis Internet."
 
 #: src/settings_translation_file.cpp
@@ -3424,7 +3423,7 @@ msgstr "Activer le support des canaux de mods."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "Activer la sécurisation des mods"
+msgstr "Activer la sécurité des mods"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -3555,7 +3554,7 @@ msgstr "Intervalle d'impression des données du moteur de profilage"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr "Systèmes d'entité"
+msgstr "Méthodes des entités"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3805,36 +3804,36 @@ msgstr "Format de captures d'écran."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr "Couleur de l'arrière-plan par défaut des formspec"
+msgstr "Couleur de l'arrière-plan par défaut des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr "Opacité de l'arrière-plan par défaut des formspec"
+msgstr "Opacité de l'arrière-plan par défaut des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr "Couleur de l'arrière-plan en plein écran des formspec"
+msgstr "Couleur de l'arrière-plan en plein écran des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr "Opacité de l'arrière-plan en plein écran des formspec"
+msgstr "Opacité de l'arrière-plan en plein écran des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background color (R,G,B)."
-msgstr "Couleur de l'arrière-plan par défaut des formspec (R,V,B)."
+msgstr "Couleur de l'arrière-plan par défaut des formspecs (R,V,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "Opacité de l'arrière-plan par défaut des formspec (entre 0 et 255)."
+msgstr "Opacité de l'arrière-plan par défaut des formspecs (entre 0 et 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Couleur de l'arrière-plan en plein écran des formspec (R,V,B)."
+msgstr "Couleur de l'arrière-plan en plein écran des formspecs (R,V,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
-"Opacité de l'arrière-plan en plein écran des formspec (entre 0 et 255)."
+"Opacité de l'arrière-plan en plein écran des formspecs (entre 0 et 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3895,19 +3894,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "Taille du GUI"
+msgstr "Taille de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "Filtrage des images du GUI"
+msgstr "Filtrage des images de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "Filtrage de mise à l'échelle txr2img du GUI"
+msgstr "Filtrage de mise à l'échelle txr2img de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr "Interfaces utilisateur"
+msgstr "Interfaces graphiques"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -4005,12 +4004,11 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Auto-instrumentaliser le profileur :\n"
-"* Instrumentalise une fonction vide.\n"
-"La surcharge est évaluée (l'auto-instrumentalisation ajoute 1 appel de "
-"fonction à chaque fois).\n"
-"* Instrumentalise l’échantillonneur utilisé pour mettre à jour les "
-"statistiques."
+"Auto-instrumenter le profileur :\n"
+"* Instrumente une fonction vide.\n"
+"La surcharge est évaluée (l'auto-instrumentation ajoute 1 appel de fonction "
+"à chaque fois).\n"
+"* Instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -4258,7 +4256,7 @@ msgid ""
 "to this distance from the player to the node."
 msgstr ""
 "Si la restriction « CSM » pour la distance des blocs est activée, les appels "
-"« get_node » sont limités à la distance entre le joueur et le bloc."
+"« get_node » sont limités à cette distance entre le joueur et le bloc."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4313,39 +4311,39 @@ msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
-"Instrument d'intégration.\n"
-"Ceci est habituellement nécessaire pour les contributeurs d'intégration au "
-"noyau."
+"Instrumenter « Intégré » (« builtin »).\n"
+"Ceci est habituellement nécessaire seulement pour les développeurs "
+"principaux."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chat commands on registration."
-msgstr "Instrument d'enregistrement des commandes de tchat."
+msgstr "Instrumenter les commandes de tchat à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Instrument des fonctions de rappel global enregistrées.\n"
-"(tout ce que vous passez dans une fonction minetest.register_*())"
+"Instrumenter les fonctions de rappel global à l'enregistrement (tout ce que "
+"vous passez à une fonction « minetest.register_*() »)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
-"Instrumentalise la fonction d'action des modificateurs de bloc actif lors de "
-"l'enregistrement."
+"Instrumenter la fonction action des Modificateurs de Blocs Actif (« Active "
+"Block Modifiers ») à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
-"Instrumentalise la fonction d'action des modificateurs de blocs de "
-"chargement à l'enregistrement."
+"Instrumenter la fonction action du Chargement des Modificateurs de Blocs (« "
+"Loading Block Modifiers ») à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr "Instrumentalise les systèmes d'entités lors de l'enregistrement."
+msgstr "Instrumenter les méthodes des entités à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
@@ -4408,7 +4406,7 @@ msgstr "Intervalle de répétition des boutons de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick dead zone"
-msgstr "Zone morte de la manette."
+msgstr "Zone morte de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4416,7 +4414,7 @@ msgstr "Sensibilité tronconique de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr "Type de manette."
+msgstr "Type de manette"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4705,7 +4703,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr "Chargement des modificateurs de blocs"
+msgstr "Chargement des Modificateurs de Blocs"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5152,7 +5150,7 @@ msgstr "Divers"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
-msgstr "Profileur des mods"
+msgstr "Profileur de mods"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Security"
@@ -5684,8 +5682,9 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
-"Met à l'échelle l'interface par une valeur spécifiée par l'utilisateur, à "
-"l'aide d'un filtre au plus proche voisin avec anticrénelage.\n"
+"Met à l'échelle l'interface graphique par une valeur spécifiée par "
+"l'utilisateur, à l'aide d'un filtre au plus proche voisin avec anticrénelage."
+"\n"
 "Cela lisse certains bords grossiers, et mélange les pixels en réduisant "
 "l'échelle au détriment d'un effet de flou sur des pixels en bordure quand "
 "les images sont mises à l'échelle par des valeurs fractionnelles."
@@ -5806,7 +5805,7 @@ msgstr "Serveur"
 
 #: src/settings_translation_file.cpp
 msgid "Server Gameplay"
-msgstr "Jeu du serveur"
+msgstr "Jouabilité du serveur"
 
 #: src/settings_translation_file.cpp
 msgid "Server Security"
@@ -6046,8 +6045,8 @@ msgstr ""
 "Longueur du côté d'un cube de blocs de carte que le client considère "
 "ensemble lors de la génération du maillage.\n"
 "Des valeurs plus grandes augmentent l'utilisation du GPU en réduisant le "
-"nombre d'appels (« draw calls »), bénéficiant en particulier aux GPUs haut "
-"de gamme.\n"
+"nombre d'appels de dessin, bénéficiant en particulier aux GPUs haut de gamme."
+"\n"
 "Les systèmes avec un GPU bas de gamme (ou sans GPU) bénéficient de valeurs "
 "plus faibles."
 
@@ -6533,7 +6532,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr "Intervalle d'envoi du temps"
+msgstr "Intervalle d'envoi de l'heure"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
@@ -6626,7 +6625,7 @@ msgid ""
 msgstr ""
 "Le sous-échantillonnage ressemble à l'utilisation d'une résolution d'écran "
 "inférieure, mais il ne s'applique qu'au rendu 3D, gardant l'interface "
-"intacte.\n"
+"graphique intacte.\n"
 "Cela doit donner un bonus de performance conséquent, au détriment de la "
 "qualité d'image.\n"
 "Les valeurs plus élevées réduisent la qualité du détail des images."
@@ -6927,9 +6926,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
-"Quand « gui_scaling_filter » est activé, tous les images du GUI sont "
-"filtrées par le logiciel, mais certaines sont générées directement par le "
-"matériel (ex. : textures des blocs dans l'inventaire)."
+"Quand « gui_scaling_filter » est activé, tous les images de l'interface "
+"graphique sont filtrées par le logiciel, mais certaines sont générées "
+"directement par le matériel (ex. : textures des blocs dans l'inventaire)."
 
 #: src/settings_translation_file.cpp
 msgid ""
