@@ -39,12 +39,13 @@ void Draw3D::run(PipelineContext &context)
 		return;
 	context.hud->drawBlockBounds();
 	context.hud->drawSelectionMesh();
-	if (context.draw_wield_tool)
-		context.client->getCamera()->drawWieldedTool();
 }
 
 void DrawHUD::run(PipelineContext &context)
 {
+	if (context.draw_wield_tool)
+		context.client->getCamera()->drawWieldedTool();
+
 	if (context.show_hud) {
 		if (context.shadow_renderer)
 			context.shadow_renderer->drawDebug();
