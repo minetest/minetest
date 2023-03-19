@@ -288,6 +288,7 @@ void set_default_settings()
 	settings->setDefault("shadow_poisson_filter", "true");
 	settings->setDefault("shadow_update_frames", "8");
 	settings->setDefault("shadow_soft_radius", "5.0");
+	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
 
 	// Input
 	settings->setDefault("invert_mouse", "false");
