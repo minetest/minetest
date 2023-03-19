@@ -1113,6 +1113,8 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
+	if (m_rendering_engine)
+		m_rendering_engine->finalize();
 }
 
 bool Game::startup(bool *kill,
@@ -1289,8 +1291,6 @@ void Game::run()
 
 void Game::shutdown()
 {
-	m_rendering_engine->finalize();
-
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
