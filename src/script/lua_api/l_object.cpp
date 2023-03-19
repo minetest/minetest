@@ -1919,8 +1919,10 @@ int ObjectRef::l_get_sky(lua_State *L)
 	lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
 	lua_setfield(L, -2, "type");
 
-	lua_pushnumber(L, skybox_params.body_orbit_tilt);
-	lua_setfield(L, -2, "body_orbit_tilt");
+	if (skybox_params.body_orbit_tilt != SkyboxParams::INVALID_SKYBOX_TILT) {
+		lua_pushnumber(L, skybox_params.body_orbit_tilt);
+		lua_setfield(L, -2, "body_orbit_tilt");
+	}
 
 	lua_newtable(L);
 	s16 i = 1;
