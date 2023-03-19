@@ -5370,6 +5370,15 @@ Call these functions only at load time!
 * `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
     * Determines how much of a stack may be taken, put or moved to a
       player inventory.
+    * Function arguments: see `minetest.register_on_player_inventory_action`
+    * Return a numeric value to limit the amount of items to be taken, put or
+      moved. A value of `-1` for `take` will make the source stack infinite.
+* `minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info))`
+    * Called after an item take, put or move event from/to/in a player inventory
+    * These inventory actions are recognized:
+        * move: Item was moved within the player inventory
+        * put: Item was put into player inventory from another inventory
+        * take: Item was taken from player inventory and put into another inventory
     * `player` (type `ObjectRef`) is the player who modified the inventory
       `inventory` (type `InvRef`).
     * List of possible `action` (string) values and their
@@ -5377,11 +5386,6 @@ Call these functions only at load time!
         * `move`: `{from_list=string, to_list=string, from_index=number, to_index=number, count=number}`
         * `put`:  `{listname=string, index=number, stack=ItemStack}`
         * `take`: Same as `put`
-    * Return a numeric value to limit the amount of items to be taken, put or
-      moved. A value of `-1` for `take` will make the source stack infinite.
-* `minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info))`
-    * Called after a take, put or move event from/to/in a player inventory
-    * Function arguments: see `minetest.register_allow_player_inventory_action`
     * Does not accept or handle any return value.
 * `minetest.register_on_protection_violation(function(pos, name))`
     * Called by `builtin` and mods when a player violates protection at a
