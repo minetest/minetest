@@ -36,14 +36,6 @@ RenderingCore::~RenderingCore()
 	delete shadow_renderer;
 }
 
-void RenderingCore::initialize()
-{
-	if (shadow_renderer)
-		pipeline->addStep<RenderShadowMapStep>();
-
-	createPipeline();
-}
-
 void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 		bool _draw_wield_tool, bool _draw_crosshair)
 {
