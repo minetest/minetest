@@ -1539,10 +1539,13 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 {
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0, peer_id);
 	if (formspec.empty()){
-		//the client should close the formspec
-		//but make sure there wasn't another one open in meantime
+		// The client should close the formspec
+		// But make sure there wasn't another one open in meantime
+		// If the formname is empty, any open formspec will be closed so the
+		// form name should always be erased from the state.
 		const auto it = m_formspec_state_data.find(peer_id);
-		if (it != m_formspec_state_data.end() && it->second == formname) {
+		if (it != m_formspec_state_data.end() &&
+				(it->second == formname || formname.empty())) {
 			m_formspec_state_data.erase(peer_id);
 		}
 		pkt.putLongString("");
