@@ -39,6 +39,13 @@ void Draw3D::run(PipelineContext &context)
 		return;
 	context.hud->drawBlockBounds();
 	context.hud->drawSelectionMesh();
+}
+
+void DrawWield::run(PipelineContext &context)
+{
+	if (m_target)
+		m_target->activate(context);
+
 	if (context.draw_wield_tool)
 		context.client->getCamera()->drawWieldedTool();
 }
@@ -144,6 +151,7 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 	auto downscale_factor = getDownscaleFactor();
 	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
 	pipeline->addStep(step3D);
+	pipeline->addStep<DrawWield>();
 	pipeline->addStep<MapPostFxStep>();
 
 	step3D = addUpscaling(pipeline, step3D, downscale_factor);
