@@ -59,7 +59,7 @@ public:
 	void deleteBlock(MapBlock *block);
 
 	// Remove a block from the map and the sector without deleting it
-	void removeBlock(MapBlock *block);
+	void detachBlock(MapBlock *block);
 
 	void getBlocks(MapBlockVect &dest);
 

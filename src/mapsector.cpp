@@ -110,11 +110,11 @@ void MapSector::insertBlock(MapBlock *block)
 
 void MapSector::deleteBlock(MapBlock *block)
 {
-	removeBlock(block);
+	detachBlock(block);
 	delete block;
 }
 
-void MapSector::removeBlock(MapBlock *block)
+void MapSector::detachBlock(MapBlock *block)
 {
 	s16 block_y = block->getPos().Y;
 
