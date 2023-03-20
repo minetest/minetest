@@ -2516,11 +2516,21 @@ bool Server::addMediaFile(const std::string &filename,
 	}
 	// Ok, attempt to load the file and add to cache
 
-	// Read data
-	std::string filedata;
-	if (!fs::ReadFile(filepath, filedata)) {
+	// Read data if not given
+	bool ok = true;
+	std::string filedata_file;
+	std::string &filedata = [&]() -> std::string & {
+		if (filedata_to && !filedata_to->empty()) {
+			return *filedata_to;
+		} else {
+			ok = fs::ReadFile(filepath, filedata_file);
+			return filedata_file;
+		}
+	}();
+
+	if (!ok) {
 		errorstream << "Server::addMediaFile(): Failed to open \""
-					<< filename << "\" for reading" << std::endl;
+			<< filename << "\" for reading" << std::endl;
 		return false;
 	}
 
@@ -2545,7 +2555,7 @@ bool Server::addMediaFile(const std::string &filename,
 	verbosestream << "Server: " << sha1_hex << " is " << filename
 			<< std::endl;
 
-	if (filedata_to)
+	if (filedata_to && (*filedata_to).empty())
 		*filedata_to = std::move(filedata);
 	return true;
 }
@@ -3517,10 +3527,9 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 	SendDeleteParticleSpawner(peer_id, id);
 }
 
-bool Server::dynamicAddMedia(std::string filepath,
-	const u32 token, const std::string &to_player, bool ephemeral)
+bool Server::dynamicAddMedia(const std::string &filename, std::string filepath,
+	const u32 token, const std::string &to_player, bool ephemeral, std::string *filedata)
 {
-	std::string filename = fs::GetFilenameFromPath(filepath.c_str());
 	auto it = m_media.find(filename);
 	if (it != m_media.end()) {
 		// Allow the same path to be "added" again in certain conditions
@@ -3532,8 +3541,8 @@ bool Server::dynamicAddMedia(std::string filepath,
 	}
 
 	// Load the file and add it to our media cache
-	std::string filedata, raw_hash;
-	bool ok = addMediaFile(filename, filepath, &filedata, &raw_hash);
+	std::string raw_hash;
+	bool ok = addMediaFile(filename, filepath, filedata, &raw_hash);
 	if (!ok)
 		return false;
 
@@ -3547,7 +3556,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 			std::ofstream os(filepath.c_str(), std::ios::binary);
 			if (!os.good())
 				return false;
-			os << filedata;
+			os << *filedata;
 			os.close();
 			return !os.fail();
 		})();
@@ -3576,7 +3585,7 @@ bool Server::dynamicAddMedia(std::string filepath,
 	// Newer clients get asked to fetch the file (asynchronous)
 	pkt << token;
 	// Older clients have an awful hack that just throws the data at them
-	legacy_pkt.putLongString(filedata);
+	legacy_pkt.putLongString(*filedata);
 
 	std::unordered_set<session_t> delivered, waiting;
 	{

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
+#include "filesys.h"
 #include "log.h"
 #include <algorithm>
 
@@ -531,26 +532,54 @@ int ModApiServer::l_dynamic_add_media(lua_State *L)
 		throw LuaError("Dynamic media cannot be added before server has started up");
 	Server *server = getServer(L);
 
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+
+	bool fromfile = true;
+	bool fromdata = false;
+
 	std::string filepath;
+	std::string filedata;
+	std::string filename;
 	std::string to_player;
 	bool ephemeral = false;
 
 	if (lua_istable(L, 1)) {
-		getstringfield(L, 1, "filepath", filepath);
+		fromfile = getstringfield(L, 1, "filepath", filepath);
+		fromdata = getstringfield(L, 1, "data", filedata);
+		getstringfield(L, 1, "filename", filename);
 		getstringfield(L, 1, "to_player", to_player);
-		getboolfield(L, 1, "ephemeral", ephemeral);
-	} else {
+		// When using passed data, ephemeral has to be true.
+		// Using a default rather than forcing true allows us to sanity check below.
+		ephemeral = getboolfield_default(L, 1, "ephemeral", fromdata);
+	} else if (lua_isstring(L, 1)) {
 		filepath = readParam<std::string>(L, 1);
+		if (filepath.empty())
+			luaL_typerror(L, 1, "non-empty string or table");
+	} else {
+		luaL_typerror(L, 1, "non-empty string or table");
 	}
-	if (filepath.empty())
-		luaL_typerror(L, 1, "non-empty string");
-	luaL_checktype(L, 2, LUA_TFUNCTION);
 
-	CHECK_SECURE_PATH(L, filepath.c_str(), false);
+	if (fromfile && fromdata)
+		return luaL_argerror(L, 1, "cannot have both filepath and data");
+
+	if (fromfile) {
+		CHECK_SECURE_PATH(L, filepath.c_str(), false);
+		if (filename.empty())
+			filename = fs::GetFilenameFromPath(filepath.c_str());
+	} else if (fromdata) {
+		if (!ephemeral)
+			return luaL_error(L, "Cannot load non-emphemeral media from a string of data. "
+				"Either supply a filepath or change to ephemeral.");
+		if (filename.empty())
+			return luaL_argerror(L, 1, "missing filename");
+	} else {
+		return luaL_argerror(L, 1, "missing filepath or data");
+	}
 
 	u32 token = server->getScriptIface()->allocateDynamicMediaCallback(L, 2);
 
-	bool ok = server->dynamicAddMedia(filepath, token, to_player, ephemeral);
+	bool ok = server->dynamicAddMedia(filename, filepath, token, to_player, ephemeral, &filedata);
+
 	if (!ok)
 		server->getScriptIface()->freeDynamicMediaCallback(token);
 	lua_pushboolean(L, ok);

@@ -27,6 +27,7 @@ core.features = {
 	get_light_data_buffer = true,
 	mod_storage_on_disk = true,
 	compress_zstd = true,
+	dynamic_add_media_from_string = true,
 }
 
 function core.has_feature(arg)
