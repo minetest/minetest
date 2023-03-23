@@ -102,11 +102,10 @@ void RemoteClient::GetNextBlocks (
 	m_map_send_completion_timer += dtime;
 
 	if (m_map_send_completion_timer > g_settings->getFloat("server_unload_unused_data_timeout") * 0.8f) {
-		warningstream << "Server: Player " << m_name << ", RemoteClient " << peer_id
+		infostream << "Server: Player " << m_name << ", RemoteClient " << peer_id
 				<< ": full map send is taking too long "
 				<< m_map_send_completion_timer
-				<< "s, restarting to avoid visible blocks being unloaded. \n"
-				<< "Consider increasing `server_unload_unused_data_timeout`"
+				<< "s, restarting to avoid visible blocks being unloaded."
 				<< std::endl;
 		m_map_send_completion_timer = 0.0f;
 		m_nearest_unsent_d = 0;
