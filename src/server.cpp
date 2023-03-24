@@ -667,6 +667,11 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	/*
+		Note: Orphan MapBlock ptrs become dangling after this call.
+	*/
+	m_env->getServerMap().step();
+
+	/*
 		Listen to the admin chat, if available
 	*/
 	if (m_admin_chat) {
