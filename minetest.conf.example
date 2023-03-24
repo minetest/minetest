@@ -473,6 +473,12 @@
 #    type: float min: 1 max: 15
 # shadow_soft_radius = 5.0
 
+#    Set the default tilt of Sun/Moon orbit in degrees.
+#    Games may change orbit tilt via API.
+#    Value of 0 means no tilt / vertical orbit.
+#    type: float min: -60 max: 60
+# shadow_sky_body_orbit_tilt = 0.0
+
 ### Post processing
 
 #    Set the exposure compensation in EV units.

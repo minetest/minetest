@@ -97,6 +97,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 	}
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+	m_sky_params.body_orbit_tilt = g_settings->getFloat("shadow_sky_body_orbit_tilt", -60., 60.);
 
 	setStarCount(1000);
 }
