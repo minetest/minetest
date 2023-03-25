@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <cmath>
 #include <IFileSystem.h>
+#include <json/json.h>
 #include "client.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"

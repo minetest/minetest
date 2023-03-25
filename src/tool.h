@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include "itemgroup.h"
-#include <json/json.h>
+#include "json-forwards.h"
 
 struct ItemDefinition;
 

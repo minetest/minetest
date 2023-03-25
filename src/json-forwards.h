@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2023 DS
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,23 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "config.h"
-#include "content/mods.h"
-#include "json-forwards.h"
-#include <iostream>
-
 #pragma once
 
-namespace ServerList
-{
-#if USE_CURL
-enum AnnounceAction {AA_START, AA_UPDATE, AA_DELETE};
-void sendAnnounce(AnnounceAction, u16 port,
-		const std::vector<std::string> &clients_names = std::vector<std::string>(),
-		double uptime = 0, u32 game_time = 0, float lag = 0,
-		const std::string &gameid = "", const std::string &mg_name = "",
-		const std::vector<ModSpec> &mods = std::vector<ModSpec>(),
-		bool dedicated = false);
-#endif
+#include "config.h"
 
-} // namespace ServerList
+#if USE_SYSTEM_JSONCPP
+#include <json/version.h>
+#include <json/allocator.h>
+#include <json/config.h>
+#include <json/forwards.h>
+#else
+#include <json/json-forwards.h>
+#endif
