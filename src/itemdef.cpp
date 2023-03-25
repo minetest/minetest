@@ -323,24 +323,24 @@ public:
 	{
 		IItemDefManager *idef = client->getItemDefManager();
 		std::string inventory_image = item.getInventoryImage(idef);
-		std::string name = item.getDefinition(idef).name;
+		std::string item_name = item.getDefinition(idef).name;
+		std::string cache_key = item_name;
 		if (!inventory_image.empty())
-			name += ":" + inventory_image;
+			cache_key += "/" + inventory_image;
 
 		infostream << "Lazily creating item texture and mesh for \""
-				<< name << "\""<<std::endl;
+				<< cache_key << "\""<<std::endl;
 
 		// This is not thread-safe
 		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
 		ClientCached *cc = NULL;
-		m_clientcached.get(name, &cc);
+		m_clientcached.get(cache_key, &cc);
 		if (cc)
 			return cc;
 
 		ITextureSource *tsrc = client->getTextureSource();
-		const ItemDefinition &def = get(name);
 
 		// Create new ClientCached
 		cc = new ClientCached();
@@ -352,11 +352,11 @@ public:
 		else
 			cc->inventory_texture = tsrc->getTexture(inventory_image);
 
-
+		const ItemDefinition &def = get(item_name);
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
-		m_clientcached.set(name, cc);
+		m_clientcached.set(cache_key, cc);
 
 		return cc;
 	}
@@ -365,12 +365,12 @@ public:
 	{
 		IItemDefManager *idef = client->getItemDefManager();
 		std::string inventory_image = item.getInventoryImage(idef);
-		std::string name = item.getDefinition(idef).name;
+		std::string cache_key = item.getDefinition(idef).name;
 		if (!inventory_image.empty())
-			name += ":" + inventory_image;
+			cache_key += "/" + inventory_image;
 
 		ClientCached *cc = NULL;
-		m_clientcached.get(name, &cc);
+		m_clientcached.get(cache_key, &cc);
 		if (cc)
 			return cc;
 
@@ -382,19 +382,19 @@ public:
 		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
 		// Throw a request in
-		m_get_clientcached_queue.add(name, 0, 0, &result_queue);
+		m_get_clientcached_queue.add(cache_key, 0, 0, &result_queue);
 		try {
-			while(true) {
+			while (true) {
 				// Wait result for a second
 				GetResult<std::string, ClientCached*, u8, u8>
 					result = result_queue.pop_front(1000);
 
-				if (result.key == name) {
+				if (result.key == cache_key) {
 					return result.item;
 				}
 			}
 		} catch(ItemNotFoundException &e) {
-			errorstream << "Waiting for clientcached " << name
+			errorstream << "Waiting for clientcached " << cache_key
 				<< " timed out." << std::endl;
 			return &m_dummy_clientcached;
 		}
@@ -582,17 +582,23 @@ public:
 			registerAlias(name, convert_to);
 		}
 	}
+
 	void processQueue(IGameDef *gamedef)
 	{
 #ifndef SERVER
 		//NOTE this is only thread safe for ONE consumer thread!
-		while(!m_get_clientcached_queue.empty())
-		{
+		while (!m_get_clientcached_queue.empty()) {
 			GetRequest<std::string, ClientCached*, u8, u8>
 					request = m_get_clientcached_queue.pop();
 
 			ItemStack item;
-			item.name = request.key;
+			size_t idx = request.key.find('/');
+			if (idx != std::string::npos) {
+				item.name = request.key.substr(0, idx);
+				item.metadata.setString("inventory_image", request.key.substr(idx + 1));
+			} else {
+				item.name = request.key;
+			}
 
 			m_get_clientcached_queue.pushResult(request,
 					createClientCachedDirect(item, (Client *)gamedef));
