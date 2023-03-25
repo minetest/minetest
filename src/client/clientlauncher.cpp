@@ -118,7 +118,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		return false;
 	}
 
-	m_rendering_engine->setupTopLevelWindow(PROJECT_NAME_C);
+	m_rendering_engine->setupTopLevelWindow();
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
