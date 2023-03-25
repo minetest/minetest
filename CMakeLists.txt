@@ -277,6 +277,7 @@ find_package(Lua REQUIRED)
 if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()
+add_subdirectory(lib/sha256)
 
 if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 	add_subdirectory(lib/catch2)

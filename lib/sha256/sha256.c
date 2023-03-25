@@ -56,17 +56,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "util/sha256.h"
+#include "sha256/sha256.h"
 
 #if defined(_MSC_VER) && !defined(__clang__) && !defined(__attribute__)
 #define __attribute__(a)
 #endif
 
-/* pull HAVE_ENDIAN_H from Minetest */
-#include "config.h"
-#if !HAVE_ENDIAN_H
-#undef HAVE_ENDIAN_H
-#endif
+#include "cmake_config.h" /* HAVE_ENDIAN_H */
 
 /** endian.h **/
 /*
