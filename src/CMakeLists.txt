@@ -48,6 +48,25 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 endif()
 
 
+option(PRECOMPILE_HEADERS "Precompile some headers (experimental; requires CMake 3.16 or later)" FALSE)
+set(PRECOMPILED_HEADERS_PATH "" CACHE FILEPATH "Path to a file listing all headers to precompile")
+
+if(PRECOMPILE_HEADERS)
+	if(${CMAKE_VERSION} VERSION_LESS 3.16)
+		message(FATAL_ERROR "PRECOMPILE_HEADERS is on, but precompiled headers require at least CMake 3.16.")
+	endif()
+	if(PRECOMPILED_HEADERS_PATH)
+		set(PRECOMPILED_HEADERS ${PRECOMPILED_HEADERS_PATH})
+	else()
+		set(PRECOMPILED_HEADERS "${CMAKE_SOURCE_DIR}/src/precompiled_headers.txt")
+	endif()
+	message(STATUS "Reading headers to precompile from: ${PRECOMPILED_HEADERS}")
+	# ignore lines that begin with # and empty lines
+	file(STRINGS ${PRECOMPILED_HEADERS} PRECOMPILED_HEADERS_LIST REGEX "^[^#].*$")
+	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${PRECOMPILED_HEADERS})
+endif()
+
+
 option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
 
@@ -619,6 +638,10 @@ if(BUILD_CLIENT)
 	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 		target_link_libraries(${PROJECT_NAME} Catch2::Catch2)
 	endif()
+
+	if(PRECOMPILE_HEADERS)
+		target_precompile_headers(${PROJECT_NAME} PRIVATE ${PRECOMPILED_HEADERS_LIST})
+	endif()
 endif(BUILD_CLIENT)
 
 
@@ -681,6 +704,10 @@ if(BUILD_SERVER)
 	endif()
 	if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 		target_link_libraries(${PROJECT_NAME}server Catch2::Catch2)
+	endif()
+
+	if(PRECOMPILE_HEADERS)
+		target_precompile_headers(${PROJECT_NAME}server PRIVATE ${PRECOMPILED_HEADERS_LIST})
 	endif()
 endif(BUILD_SERVER)
 
