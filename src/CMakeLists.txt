@@ -565,6 +565,7 @@ if(BUILD_CLIENT)
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		sha256
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 		# on Android, Minetest depends on SDL2 directly
@@ -637,6 +638,7 @@ if(BUILD_SERVER)
 		${JSON_LIBRARY}
 		${LUA_LIBRARY}
 		${LUA_BIT_LIBRARY}
+		sha256
 		${GMP_LIBRARY}
 		${PLATFORM_LIBS}
 	)

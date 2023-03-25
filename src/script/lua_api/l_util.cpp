@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
-#include "util/sha256.h"
+#include <sha256/sha256.h>
 #include "util/png.h"
 #include <cstdio>
 
@@ -573,7 +573,7 @@ int ModApiUtil::l_sha256(lua_State *L)
 
 	auto data = readParam<std::string_view>(L, 1);
 	bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
-	
+
 	std::string data_sha256;
 	data_sha256.resize(SHA256_DIGEST_LENGTH);
 	SHA256(reinterpret_cast<const unsigned char*>(data.data()), data.size(),
