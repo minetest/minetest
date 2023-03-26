@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
-"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2023-03-28 20:39+0000\n"
+"Last-Translator: Timofey Bezruchenko <beztim81@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3334,8 +3334,9 @@ msgid "Dungeon noise"
 msgstr "Шум подземелья"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Включить автоматическую экспозицию"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -5293,6 +5294,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Количество потоков процессора, используемых для создания сетки.\n"
+"Значение 0 (по умолчанию) позволит Minetest автоматически определять "
+"количество доступных потоков процессора."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
