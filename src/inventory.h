@@ -277,6 +277,8 @@ public:
 
 	inline bool checkModified() const { return m_dirty; }
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }
+	inline void checkResizeLock();
+	inline void setResizeLock(bool status) { m_resize_lock = status; }
 
 private:
 	std::vector<ItemStack> m_items;
@@ -285,6 +287,7 @@ private:
 	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 	bool m_dirty = true;
+	bool m_resize_lock = false; // Lua callback sanity
 };
 
 class Inventory

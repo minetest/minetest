@@ -278,6 +278,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
+	mgr->lockList(list_from);
+	mgr->lockList(list_to);
+
 	if (move_somewhere) {
 		s16 old_to_i = to_i;
 		u16 old_count = count;
@@ -570,6 +573,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
+	list_to->setResizeLock(false);
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
@@ -683,6 +687,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
+	mgr->lockList(list_from);
+
 	/*
 		Do not handle rollback if inventory is player's
 	*/
@@ -763,6 +769,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report drop to endpoints
 	*/
+	list_from->setResizeLock(false);
 
 	switch (from_inv.type) {
 	case InventoryLocation::DETACHED:
@@ -878,6 +885,10 @@ void ICraftAction::apply(InventoryManager *mgr,
 				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
+
+	mgr->lockList(list_craft);
+	mgr->lockList(list_craftresult);
+	mgr->lockList(list_main);
 
 	ItemStack crafted;
 	ItemStack craftresultitem;

@@ -747,6 +747,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	// Do the action
 	a->apply(m_inventory_mgr.get(), playersao, this);
+	m_inventory_mgr.get()->unlockLists();
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
