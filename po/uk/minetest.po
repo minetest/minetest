@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
-"Last-Translator: Fixer <artem.brz@gmail.com>\n"
+"PO-Revision-Date: 2023-03-28 20:39+0000\n"
+"Last-Translator: Денис Савченко <denissavchenko0@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -660,7 +660,7 @@ msgstr "Заборонено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Правити"
+msgstr "Редагувати"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -783,7 +783,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr ""
+msgstr "Пізніше"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
@@ -1014,7 +1014,7 @@ msgstr "Долучитися до гри"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Логін"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -2465,13 +2465,13 @@ msgid ""
 "Value = 2.0 (can be higher depending on 'mgv7_np_floatland', always test\n"
 "to be sure) creates a solid floatland layer."
 msgstr ""
-"Налаштувати щільність плавучого шару.\n"
-"Збільшуйте значення, щоб збільшити щільність. Може бути позитивним або "
+"Регулює щільність шару floatland.\n"
+"Збільште значення, щоб збільшити щільність. Може бути позитивним або "
 "негативним.\n"
-"Значення = 0.0: 50% від обсягу плавучого острова.\n"
-"Значення = 2.0 (можна збільшувати залежно від 'mgv7_np_floatland', завжди "
-"перевіряйте,\n"
-"щоб бути певними) створює твердий шар плавучої землі."
+"Значення = 0,0: об’єм 50% of є floatland.\n"
+"Значення = 2,0 (може бути вищим залежно від 'mgv7_np_floatland', завжди "
+"перевіряйте\n"
+"щоб бути впевненим) створює міцний плавучий шар."
 
 #: src/settings_translation_file.cpp
 msgid "Admin name"
