@@ -6082,8 +6082,8 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * Returns `function(itemstack, user, pointed_thing)` as a
       function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
-      If the player is eating a stack, then replace_with_item goes to a
-      different spot.
+      If the player is eating a stack and `replace_with_item` doesn't fit onto
+      the eaten stack, then the remainings go to a different spot, or are dropped.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
