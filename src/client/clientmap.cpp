@@ -303,7 +303,7 @@ void ClientMap::updateDrawList()
 	 When range_all is enabled, enumerate all blocks visible in the
 	 frustum and display them.
 	 */
-	if (m_control.range_all || !m_loops_occlusion_culler) {
+	if (m_control.range_all || m_loops_occlusion_culler) {
 		MapBlockVect sectorblocks;
 
 		for (auto &sector_it : m_sectors) {
