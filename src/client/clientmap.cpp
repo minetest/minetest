@@ -103,18 +103,23 @@ ClientMap::ClientMap(
 	m_cache_bilinear_filter   = g_settings->getBool("bilinear_filter");
 	m_cache_anistropic_filter = g_settings->getBool("anisotropic_filter");
 	m_cache_transparency_sorting_distance = g_settings->getU16("transparency_sorting_distance");
+	m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
+	g_settings->registerChangedCallback("occlusion_culler", on_settings_changed, this);
 	m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 	g_settings->registerChangedCallback("enable_raytraced_culling", on_settings_changed, this);
 }
 
 void ClientMap::onSettingChanged(const std::string &name)
 {
+	if (name == "occlusion_culler")
+		m_loops_occlusion_culler = g_settings->get("occlusion_culler") == "loops";
 	if (name == "enable_raytraced_culling")
 		m_enable_raytraced_culling = g_settings->getBool("enable_raytraced_culling");
 }
 
 ClientMap::~ClientMap()
 {
+	g_settings->deregisterChangedCallback("occlusion_culler", on_settings_changed, this);
 	g_settings->deregisterChangedCallback("enable_raytraced_culling", on_settings_changed, this);
 }
 
@@ -298,7 +303,7 @@ void ClientMap::updateDrawList()
 	 When range_all is enabled, enumerate all blocks visible in the
 	 frustum and display them.
 	 */
-	if (m_control.range_all) {
+	if (m_control.range_all || m_loops_occlusion_culler) {
 		MapBlockVect sectorblocks;
 
 		for (auto &sector_it : m_sectors) {
@@ -336,6 +341,14 @@ void ClientMap::updateDrawList()
 				if (is_frustum_culled(mesh_sphere_center,
 						mesh_sphere_radius + frustum_cull_extra_radius)) {
 					blocks_frustum_culled++;
+					continue;
+				}
+
+				// Raytraced occlusion culling - send rays from the camera to the block's corners
+				if (occlusion_culling_enabled && m_enable_raytraced_culling &&
+						mesh &&
+						isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
+					blocks_occlusion_culled++;
 					continue;
 				}
 
@@ -582,6 +595,9 @@ void ClientMap::updateDrawList()
 
 void ClientMap::touchMapBlocks()
 {
+	if (!m_loops_occlusion_culler)
+		return;
+
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
