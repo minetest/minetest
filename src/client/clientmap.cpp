@@ -346,7 +346,7 @@ void ClientMap::updateDrawList()
 
 				// Raytraced occlusion culling - send rays from the camera to the block's corners
 				if (occlusion_culling_enabled && m_enable_raytraced_culling &&
-						block && mesh &&
+						mesh &&
 						isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
 					blocks_occlusion_culled++;
 					continue;
