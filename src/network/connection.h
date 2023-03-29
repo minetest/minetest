@@ -714,7 +714,8 @@ public:
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
-	void Receive(NetworkPacket* pkt);
+	bool ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms);
+	void Receive(NetworkPacket *pkt);
 	bool TryReceive(NetworkPacket *pkt);
 	void Send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	session_t GetPeerID() const { return m_peer_id; }
@@ -746,8 +747,6 @@ protected:
 	UDPSocket m_udpSocket;
 	// Command queue: user -> SendThread
 	MutexedQueue<ConnectionCommandPtr> m_command_queue;
-
-	bool Receive(NetworkPacket *pkt, u32 timeout);
 
 	void putEvent(ConnectionEventPtr e);
 
