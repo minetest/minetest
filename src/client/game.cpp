@@ -1304,8 +1304,8 @@ void Game::run()
 		updatePauseState();
 		if (m_is_paused)
 			dtime = 0.0f;
-		else
-			step(dtime);
+
+		step(dtime);
 
 		processClientEvents(&cam_view_target);
 		updateDebugState();
@@ -1454,7 +1454,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	} else {
 		bind_str = g_settings->get("bind_address");
 	}
-	
+
 	Address bind_addr(0, 0, 0, 0, port);
 
 	if (g_settings->getBool("ipv6_server"))
@@ -1682,10 +1682,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			fps_control.limit(device, &dtime);
 
 			// Update client and server
-			client->step(dtime);
-
-			if (server != NULL)
-				server->step(dtime);
+			step(dtime);
 
 			// End condition
 			if (client->getState() == LC_Init) {
@@ -1744,10 +1741,7 @@ bool Game::getServerContent(bool *aborted)
 		fps_control.limit(device, &dtime);
 
 		// Update client and server
-		client->step(dtime);
-
-		if (server != NULL)
-			server->step(dtime);
+		step(dtime);
 
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
@@ -2765,10 +2759,23 @@ void Game::updatePauseState()
 
 inline void Game::step(f32 dtime)
 {
-	if (server)
-		server->step(dtime);
+	if (server) {
+		float fps_max = (!device->isWindowFocused() || g_menumgr.pausesGame()) ?
+				g_settings->getFloat("fps_max_unfocused") :
+				g_settings->getFloat("fps_max");
+		fps_max = std::max(fps_max, 1.0f);
+		float steplen = 1.0f / fps_max;
 
-	client->step(dtime);
+		server->setStepSettings(Server::StepSettings{
+				steplen,
+				m_is_paused
+			});
+
+		server->step();
+	}
+
+	if (!m_is_paused)
+		client->step(dtime);
 }
 
 static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node) {
