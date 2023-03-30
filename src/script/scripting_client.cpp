@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_localplayer.h"
 #include "lua_api/l_camera.h"
 #include "lua_api/l_settings.h"
+#include "lua_api/l_solar_crypto.h"
 
 ClientScripting::ClientScripting(Client *client):
 	ScriptApiBase(ScriptingType::Client)
@@ -75,6 +76,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	LuaCamera::Register(L);
 	ModChannelRef::Register(L);
 	LuaSettings::Register(L);
+	LuaCrypto::Register(L);
 
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_settings.h"
+#include "lua_api/l_solar_crypto.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
@@ -685,6 +686,10 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
+
+	LuaCrypto::create(L);
+	lua_setfield(L, top, "solar_crypto");
+
 }
 
 void ModApiUtil::InitializeClient(lua_State *L, int top)
@@ -711,6 +716,9 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
+
+	LuaCrypto::create(L);
+	lua_setfield(L, top, "solar_crypto");
 }
 
 void ModApiUtil::InitializeAsync(lua_State *L, int top)
@@ -754,4 +762,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 
 	LuaSettings::create(L, g_settings, g_settings_path);
 	lua_setfield(L, top, "settings");
+
+	LuaCrypto::create(L);
+	lua_setfield(L, top, "solar_crypto");
 }

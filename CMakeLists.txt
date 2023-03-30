@@ -289,6 +289,13 @@ if(APPLE)
 	install(FILES "misc/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
 endif()
 
+set(SOLAR_CRYPTO_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/solar_crypto)
+set(SOLAR_CRYPTO_LIBRARY solar_crypto)
+add_subdirectory(lib/solar_crypto)
+
+
+
+#
 # Library pack
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
