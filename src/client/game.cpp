@@ -71,6 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "script/scripting_client.h"
 #include "hud.h"
+#include "clientdynamicinfo.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -917,11 +918,15 @@ private:
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	f32 getSensitivityScaleFactor() const;
+	ClientDynamicInfo getCurrentDynamicInfo() const;
 
 	InputHandler *input = nullptr;
 
 	Client *client = nullptr;
 	Server *server = nullptr;
+
+	ClientDynamicInfo client_display_info{};
+	float dynamic_info_send_timer = 0;
 
 	IWritableTextureSource *texture_src = nullptr;
 	IWritableShaderSource *shader_src = nullptr;
@@ -1108,6 +1113,8 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
+	if (m_rendering_engine)
+		m_rendering_engine->finalize();
 }
 
 bool Game::startup(bool *kill,
@@ -1187,30 +1194,44 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
+	core::dimension2du previous_screen_size(g_settings->getU16("screen_w"),
+			g_settings->getU16("screen_h"));
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		const irr::core::dimension2d<u32> &current_screen_size =
-			m_rendering_engine->get_video_driver()->getScreenSize();
+		// Calculate dtime =
+		//    m_rendering_engine->run() from this iteration
+		//  + Sleep time until the wanted FPS are reached
+		draw_times.limit(device, &dtime);
+
+		const auto current_dynamic_info = getCurrentDynamicInfo();
+		if (!current_dynamic_info.equal(client_display_info)) {
+			client_display_info = current_dynamic_info;
+			dynamic_info_send_timer = 0.2f;
+		}
+
+		if (dynamic_info_send_timer > 0) {
+			dynamic_info_send_timer -= dtime;
+			if (dynamic_info_send_timer <= 0) {
+				client->sendUpdateClientInfo(current_dynamic_info);
+			}
+		}
+
+		const core::dimension2du &current_screen_size =
+				RenderingEngine::get_video_driver()->getScreenSize();
+
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
-				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
+				current_screen_size != core::dimension2du(0, 0) &&
 				g_settings->getBool("autosave_screensize")) {
 			g_settings->setU16("screen_w", current_screen_size.Width);
 			g_settings->setU16("screen_h", current_screen_size.Height);
 			previous_screen_size = current_screen_size;
 		}
-
-		// Calculate dtime =
-		//    m_rendering_engine->run() from this iteration
-		//  + Sleep time until the wanted FPS are reached
-		draw_times.limit(device, &dtime);
 
 		// Prepare render data for next iteration
 
@@ -1270,8 +1291,6 @@ void Game::run()
 
 void Game::shutdown()
 {
-	m_rendering_engine->finalize();
-
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
@@ -2085,7 +2104,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		m_game_ui->toggleChat();
+		m_game_ui->toggleChat(client);
 	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
@@ -2531,7 +2550,7 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-#if !defined(__ANDROID__) && IRRLICHT_VERSION_MT_REVISION >= 9
+#ifndef __ANDROID__
 	if (isMenuActive())
 		device->getCursorControl()->setRelativeMode(false);
 	else
@@ -2581,6 +2600,19 @@ f32 Game::getSensitivityScaleFactor() const
 	// 16:9 aspect ratio to minimize disruption of existing sensitivity
 	// settings.
 	return tan(fov_y / 2.0f) * 1.3763818698f;
+}
+
+ClientDynamicInfo Game::getCurrentDynamicInfo() const
+{
+	v2u32 screen_size = RenderingEngine::getWindowSize();
+	f32 density = RenderingEngine::getDisplayDensity();
+	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
+	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
+
+	return {
+		screen_size, gui_scaling, hud_scaling,
+		ClientDynamicInfo::calculateMaxFSSize(screen_size)
+	};
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
@@ -2975,6 +3007,9 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 			"custom"
 		);
 	}
+
+	// Orbit Tilt:
+	sky->setBodyOrbitTilt(event->set_sky->body_orbit_tilt);
 
 	delete event->set_sky;
 }

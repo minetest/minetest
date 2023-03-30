@@ -93,7 +93,7 @@ public:
 
 	void updateProfiler();
 
-	void toggleChat();
+	void toggleChat(Client *client);
 	void toggleHud();
 	void toggleProfiler();
 

@@ -110,6 +110,12 @@ void MapSector::insertBlock(MapBlock *block)
 
 void MapSector::deleteBlock(MapBlock *block)
 {
+	detachBlock(block);
+	delete block;
+}
+
+void MapSector::detachBlock(MapBlock *block)
+{
 	s16 block_y = block->getPos().Y;
 
 	// Clear from cache
@@ -118,12 +124,13 @@ void MapSector::deleteBlock(MapBlock *block)
 	// Remove from container
 	m_blocks.erase(block_y);
 
-	// Delete
-	delete block;
+	// Mark as removed
+	block->makeOrphan();
 }
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
+	dest.reserve(dest.size() + m_blocks.size());
 	for (auto &block : m_blocks) {
 		dest.push_back(block.second);
 	}

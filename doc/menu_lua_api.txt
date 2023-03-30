@@ -203,17 +203,42 @@ GUI
         will be added to fieldname value is set to formname itself
   * if `is_file_select` is `true`, a file and not a folder will be selected
   * returns nil or selected file/folder
-* `core.get_screen_info()`
-  * returns
+* `core.get_active_renderer()`: Ex: "OpenGL 4.6".
+* `core.get_window_info()`: Same as server-side `get_player_window_information` API.
 
-        {
-          density         = <screen density 0.75,1.0,2.0,3.0 ... (dpi)>,
-          display_width   = <width of display>,
-          display_height  = <height of display>,
-          window_width    = <current window width>,
-          window_height   = <current window height>,
-          render_info     = <active render information>
-        }
+      -- Note that none of these things are constant, they are likely to change
+      -- as the player resizes the window and moves it between monitors
+      --
+      -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
+      -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
+      -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
+      {
+          -- Current size of the in-game render target.
+          --
+          -- This is usually the window size, but may be smaller in certain situations,
+          -- such as side-by-side mode.
+          size = {
+              x = 1308,
+              y = 577,
+          },
+
+          -- Estimated maximum formspec size before Minetest will start shrinking the
+          -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
+          -- this and `padding[-0.01,-0.01]`.
+          max_formspec_size = {
+              x = 20,
+              y = 11.25
+          },
+
+          -- GUI Scaling multiplier
+          -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
+          real_gui_scaling = 1,
+
+          -- HUD Scaling multiplier
+          -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
+          real_hud_scaling = 1,
+      }
+
 
 
 Content and Packages

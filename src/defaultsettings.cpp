@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <IrrCompileConfig.h>
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
@@ -66,6 +65,7 @@ void set_default_settings()
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_split_login_register", "true");
+	settings->setDefault("occlusion_culler", "bfs");
 	settings->setDefault("enable_raytraced_culling", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
@@ -96,7 +96,7 @@ void set_default_settings()
 	settings->setDefault("keymap_rangeselect", "");
 #endif
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
+	settings->setDefault("keymap_pitchmove", "");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
@@ -196,7 +196,7 @@ void set_default_settings()
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
-	settings->setDefault("connected_glass", "false");
+	settings->setDefault("connected_glass", "true");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
@@ -208,11 +208,7 @@ void set_default_settings()
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 #if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	settings->setDefault("video_driver", "ogles1");
-#else
 	settings->setDefault("video_driver", "ogles2");
-#endif
 #else
 	settings->setDefault("video_driver", "opengl");
 #endif
@@ -250,11 +246,7 @@ void set_default_settings()
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-#if ENABLE_GLES
-	settings->setDefault("enable_shaders", "false");
-#else
 	settings->setDefault("enable_shaders", "true");
-#endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");

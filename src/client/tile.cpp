@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <ICameraSceneNode.h>
-#include <IrrCompileConfig.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -1869,6 +1868,11 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			auto *memfile = fs->createMemoryReadFile(png.data(), png.size(), "__temp_png");
 			video::IImage* pngimg = vd->createImageFromFile(memfile);
 			memfile->drop();
+
+			if (!pngimg) {
+				errorstream << "generateImagePart(): Invalid PNG data" << std::endl;
+				return false;
+			}
 
 			if (baseimg) {
 				blitBaseImage(pngimg, baseimg);

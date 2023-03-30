@@ -99,6 +99,7 @@ void RemoteClient::GetNextBlocks (
 {
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
+	m_map_send_completion_timer += dtime;
 
 	if (m_nothing_to_send_pause_timer >= 0)
 		return;
@@ -295,21 +296,22 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
+				Check if map has this block
+			*/
+			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
+			if (block) {
+				// First: Reset usage timer, this block will be of use in the future.
+				block->resetUsageTimer();
+			}
+
+			/*
 				Don't send already sent blocks
 			*/
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
-			/*
-				Check if map has this block
-			*/
-			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
-
 			bool block_not_found = false;
 			if (block) {
-				// Reset usage timer, this block will be of use in the future.
-				block->resetUsageTimer();
-
 				// Check whether the block exists (with data)
 				if (!block->isGenerated())
 					block_not_found = true;
@@ -326,8 +328,15 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
+				/*
+					Check occlusion cache first.
+				 */
+				if (m_blocks_occ.find(p) != m_blocks_occ.end())
+					continue;
+
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					m_blocks_occ.insert(p);
 					continue;
 				}
 			}
@@ -383,6 +392,8 @@ queue_full_break:
 		if (d > full_d_max) {
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0f;
+			infostream << "Server: Player " << m_name << ", RemoteClient " << peer_id << ": full map send completed after " << m_map_send_completion_timer << "s, restarting" << std::endl;
+			m_map_send_completion_timer = 0.0f;
 		} else {
 			if (nearest_sent_d != -1)
 				new_nearest_unsent_d = nearest_sent_d;
@@ -391,8 +402,11 @@ queue_full_break:
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
+		// if the distance has changed, clear the occlusion cache
+		m_blocks_occ.clear();
+	}
 }
 
 void RemoteClient::GotBlock(v3s16 p)

@@ -574,6 +574,7 @@ void Client::step(float dtime)
 				// Delete the old mesh
 				delete block->mesh;
 				block->mesh = nullptr;
+				block->solid_sides = r.solid_sides;
 
 				if (r.mesh) {
 					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
@@ -596,12 +597,6 @@ void Client::step(float dtime)
 				}
 			} else {
 				delete r.mesh;
-			}
-
-			for (auto p : r.solid_sides) {
-				auto block = m_env.getMap().getBlockNoCreateNoEx(p.first);
-				if (block)
-					block->solid_sides = p.second;
 			}
 
 			if (m_minimap && do_mapper_update) {
@@ -923,7 +918,7 @@ void Client::ReceiveAll()
 {
 	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	const u64 budget = 100;
+	const u64 budget = 10;
 	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
@@ -1411,6 +1406,17 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 	pkt << static_cast<u8>(tokens.size());
 	for (u32 token : tokens)
 		pkt << token;
+
+	Send(&pkt);
+}
+
+void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
+{
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*2);
+	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
+	pkt << info.real_gui_scaling;
+	pkt << info.real_hud_scaling;
+	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
 
 	Send(&pkt);
 }

@@ -42,8 +42,6 @@ protected:
 	v2f virtual_size_scale;
 	v2u32 virtual_size { 0, 0 };
 
-	virtual void createPipeline() {}
-
 public:
 	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud, 
 			ShadowRenderer *shadow_renderer, RenderPipeline *pipeline,
@@ -55,7 +53,6 @@ public:
 	RenderingCore &operator=(const RenderingCore &) = delete;
 	RenderingCore &operator=(RenderingCore &&) = delete;
 
-	void initialize();
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
 

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "IrrCompileConfig.h"
-
 #include <IGUIStaticText.h>
 #include "irrlicht_changes/static_text.h"
 #include "IGUIButton.h"

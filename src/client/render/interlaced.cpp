@@ -69,6 +69,7 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 		auto output = pipeline->createOwned<TextureBufferOutput>(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		pipeline->addStep<SetRenderTargetStep>(step3D, output);
 		pipeline->addStep(step3D);
+		pipeline->addStep<DrawWield>();
 		pipeline->addStep<MapPostFxStep>();
 	}
 

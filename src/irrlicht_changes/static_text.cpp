@@ -5,7 +5,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "static_text.h"
-#ifdef _IRR_COMPILE_WITH_GUI_
 
 #include <IGUIFont.h>
 #include <IVideoDriver.h>
@@ -582,6 +581,3 @@ s32 StaticText::getTextWidth() const
 } // end namespace gui
 
 } // end namespace irr
-
-
-#endif // _IRR_COMPILE_WITH_GUI_

@@ -635,11 +635,14 @@ void Camera::wield(const ItemStack &item)
 
 void Camera::drawWieldedTool(irr::core::matrix4* translation)
 {
+	// Clear Z buffer so that the wielded tool stays in front of world geometry
+	m_wieldmgr->getVideoDriver()->clearBuffers(video::ECBF_DEPTH);
+
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
 	cam->setFOV(72.0*M_PI/180.0);
-	cam->setNearValue(40); // give wield tool smaller z-depth than the world in most cases.
+	cam->setNearValue(10);
 	cam->setFarValue(1000);
 	if (translation != NULL)
 	{
