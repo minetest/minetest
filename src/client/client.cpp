@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "mapsector.h"
 #include "minimap.h"
 #include "modchannels.h"
 #include "content/mods.h"
@@ -142,6 +143,7 @@ Client::Client(
 	}
 
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
+	m_mesh_grid = { g_settings->getU16("client_mesh_chunk") };
 }
 
 void Client::migrateModStorage()
@@ -555,19 +557,28 @@ void Client::step(float dtime)
 		{
 			num_processed_meshes++;
 
-			MinimapMapblock *minimap_mapblock = NULL;
+			std::vector<MinimapMapblock*> minimap_mapblocks;
 			bool do_mapper_update = true;
 
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			MapSector *sector = m_env.getMap().emergeSector(v2s16(r.p.X, r.p.Z));
+
+			MapBlock *block = sector->getBlockNoCreateNoEx(r.p.Y);
+
+			// The block in question is not visible (perhaps it is culled at the server),
+			// create a blank block just to hold the chunk's mesh.
+			// If the block becomes visible later it will replace the blank block.
+			if (!block && r.mesh)
+				block = sector->createBlankBlock(r.p.Y);
+
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
 				block->mesh = nullptr;
+				block->solid_sides = r.solid_sides;
 
 				if (r.mesh) {
-					block->solid_sides = r.solid_sides;
-					minimap_mapblock = r.mesh->moveMinimapMapblock();
-					if (minimap_mapblock == NULL)
+					minimap_mapblocks = r.mesh->moveMinimapMapblocks();
+					if (minimap_mapblocks.empty())
 						do_mapper_update = false;
 
 					bool is_empty = true;
@@ -588,16 +599,26 @@ void Client::step(float dtime)
 				delete r.mesh;
 			}
 
-			if (m_minimap && do_mapper_update)
-				m_minimap->addBlock(r.p, minimap_mapblock);
+			if (m_minimap && do_mapper_update) {
+				v3s16 ofs;
 
-			if (r.ack_block_to_server) {
+				// See also mapblock_mesh.cpp for the code that creates the array of minimap blocks.
+				for (ofs.Z = 0; ofs.Z < m_mesh_grid.cell_size; ofs.Z++)
+				for (ofs.Y = 0; ofs.Y < m_mesh_grid.cell_size; ofs.Y++)
+				for (ofs.X = 0; ofs.X < m_mesh_grid.cell_size; ofs.X++) {
+					size_t i = m_mesh_grid.getOffsetIndex(ofs);
+					if (i < minimap_mapblocks.size() && minimap_mapblocks[i])
+						m_minimap->addBlock(r.p + ofs, minimap_mapblocks[i]);
+				}
+			}
+
+			for (auto p : r.ack_list) {
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
 					blocks_to_ack.clear();
 				}
 
-				blocks_to_ack.emplace_back(r.p);
+				blocks_to_ack.emplace_back(p);
 			}
 
 			for (auto block : r.map_blocks)
@@ -897,7 +918,7 @@ void Client::ReceiveAll()
 {
 	NetworkPacket pkt;
 	u64 start_ms = porting::getTimeMs();
-	const u64 budget = 100;
+	const u64 budget = 10;
 	for(;;) {
 		// Limit time even if there would be huge amounts of data to
 		// process
@@ -1385,6 +1406,17 @@ void Client::sendHaveMedia(const std::vector<u32> &tokens)
 	pkt << static_cast<u8>(tokens.size());
 	for (u32 token : tokens)
 		pkt << token;
+
+	Send(&pkt);
+}
+
+void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
+{
+	NetworkPacket pkt(TOSERVER_UPDATE_CLIENT_INFO, 4*2 + 4 + 4 + 4*2);
+	pkt << (u32)info.render_target_size.X << (u32)info.render_target_size.Y;
+	pkt << info.real_gui_scaling;
+	pkt << info.real_hud_scaling;
+	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
 
 	Send(&pkt);
 }

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include <array>
 #include <map>
+#include <unordered_map>
 
 class Client;
 class IShaderSource;
@@ -42,6 +43,8 @@ struct MeshMakeData
 	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
 	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
 	bool m_smooth_lighting = false;
+	MeshGrid m_mesh_grid;
+	u16 side_length;
 
 	Client *m_client;
 	bool m_use_shaders;
@@ -52,13 +55,7 @@ struct MeshMakeData
 		Copy block data manually (to allow optimizations by the caller)
 	*/
 	void fillBlockDataBegin(const v3s16 &blockpos);
-	void fillBlockData(const v3s16 &block_offset, MapNode *data);
-
-	/*
-		Copy central data directly from block, and other data from
-		parent of block.
-	*/
-	void fill(MapBlock *block);
+	void fillBlockData(const v3s16 &bp, MapNode *data);
 
 	/*
 		Set the (node) position of a crack
@@ -108,7 +105,7 @@ class MapBlockBspTree
 public:
 	MapBlockBspTree() {}
 
-	void buildTree(const std::vector<MeshTriangle> *triangles);
+	void buildTree(const std::vector<MeshTriangle> *triangles, u16 side_lingth);
 
 	void traverse(v3f viewpoint, std::vector<s32> &output) const
 	{
@@ -203,11 +200,11 @@ public:
 		return m_mesh[layer];
 	}
 
-	MinimapMapblock *moveMinimapMapblock()
+	std::vector<MinimapMapblock*> moveMinimapMapblocks()
 	{
-		MinimapMapblock *p = m_minimap_mapblock;
-		m_minimap_mapblock = NULL;
-		return p;
+		std::vector<MinimapMapblock*> minimap_mapblocks;
+		minimap_mapblocks.swap(m_minimap_mapblocks);
+		return minimap_mapblocks;
 	}
 
 	bool isAnimationForced() const
@@ -245,13 +242,12 @@ private:
 	};
 
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
-	MinimapMapblock *m_minimap_mapblock;
+	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 
 	f32 m_bounding_radius;
-	// MapblockMeshGenerator uses the same as mapblock center
-	v3f m_bounding_sphere_center = v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+	v3f m_bounding_sphere_center;
 
 	bool m_enable_shaders;
 	bool m_enable_vbo;
@@ -341,7 +337,7 @@ void final_color_blend(video::SColor *result,
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile);
 
-/// Return bitset of the sides of the mapblock that consist of solid nodes only
+/// Return bitset of the sides of the mesh that consist of solid nodes only
 /// Bits:
 /// 0 0 -Z +Z -X +X -Y +Y
 u8 get_solid_sides(MeshMakeData *data);

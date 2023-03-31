@@ -667,6 +667,11 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	/*
+		Note: Orphan MapBlock ptrs become dangling after this call.
+	*/
+	m_env->getServerMap().step();
+
+	/*
 		Listen to the admin chat, if available
 	*/
 	if (m_admin_chat) {
@@ -1303,6 +1308,17 @@ bool Server::getClientInfo(session_t peer_id, ClientInfo &ret)
 	return true;
 }
 
+const ClientDynamicInfo *Server::getClientDynamicInfo(session_t peer_id)
+{
+	ClientInterface::AutoLock clientlock(m_clients);
+	RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
+
+	if (!client)
+		return nullptr;
+
+	return &client->getDynamicInfo();
+}
+
 void Server::handlePeerChanges()
 {
 	while(!m_peer_change_queue.empty())
@@ -1528,10 +1544,13 @@ void Server::SendShowFormspecMessage(session_t peer_id, const std::string &forms
 {
 	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0, peer_id);
 	if (formspec.empty()){
-		//the client should close the formspec
-		//but make sure there wasn't another one open in meantime
+		// The client should close the formspec
+		// But make sure there wasn't another one open in meantime
+		// If the formname is empty, any open formspec will be closed so the
+		// form name should always be erased from the state.
 		const auto it = m_formspec_state_data.find(peer_id);
-		if (it != m_formspec_state_data.end() && it->second == formname) {
+		if (it != m_formspec_state_data.end() &&
+				(it->second == formname || formname.empty())) {
 			m_formspec_state_data.erase(peer_id);
 		}
 		pkt.putLongString("");
@@ -1808,6 +1827,8 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 				<< params.sky_color.night_sky << params.sky_color.night_horizon
 				<< params.sky_color.indoors;
 		}
+
+		pkt << params.body_orbit_tilt;
 	}
 
 	Send(&pkt);

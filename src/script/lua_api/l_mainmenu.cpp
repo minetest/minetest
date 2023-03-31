@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "content/mod_configuration.h"
 #include "threading/mutex_auto_lock.h"
+#include "common/c_converter.h"
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
@@ -922,26 +923,40 @@ int ModApiMainMenu::l_gettext(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_get_screen_info(lua_State *L)
+int ModApiMainMenu::l_get_window_info(lua_State *L)
 {
 	lua_newtable(L);
 	int top = lua_gettop(L);
-	lua_pushstring(L,"density");
-	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
-	lua_settable(L, top);
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
-	lua_pushstring(L,"window_width");
-	lua_pushnumber(L, window_size.X);
+	f32 density = RenderingEngine::getDisplayDensity();
+	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
+	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
+
+	lua_pushstring(L, "size");
+	push_v2u32(L, window_size);
 	lua_settable(L, top);
 
-	lua_pushstring(L,"window_height");
-	lua_pushnumber(L, window_size.Y);
+	lua_pushstring(L, "max_formspec_size");
+	push_v2f(L, ClientDynamicInfo::calculateMaxFSSize(window_size));
 	lua_settable(L, top);
 
-	lua_pushstring(L, "render_info");
+	lua_pushstring(L, "real_gui_scaling");
+	lua_pushnumber(L, gui_scaling);
+	lua_settable(L, top);
+
+	lua_pushstring(L, "real_hud_scaling");
+	lua_pushnumber(L, hud_scaling);
+	lua_settable(L, top);
+
+	return 1;
+}
+
+/******************************************************************************/
+
+int ModApiMainMenu::l_get_active_renderer(lua_State *L)
+{
 	lua_pushstring(L, wide_to_utf8(RenderingEngine::get_video_driver()->getName()).c_str());
-	lua_settable(L, top);
 	return 1;
 }
 
@@ -1086,7 +1101,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
-	API_FCT(get_screen_info);
+	API_FCT(get_window_info);
+	API_FCT(get_active_renderer);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);

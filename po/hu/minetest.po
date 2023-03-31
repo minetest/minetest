@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-25 20:07+0000\n"
-"Last-Translator: Kisjuhász Attila <kj.attil@gmail.com>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-02-10 22:35+0000\n"
+"Last-Translator: unacceptium core <kolonics20132a@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -295,9 +295,9 @@ msgid "Failed to download $1"
 msgstr "$1 letöltése nem sikerült"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Telepítés: nem támogatott fájltípus vagy sérült archívum"
+msgstr ""
+"$1 kibontása sikertelen (nem támogatott fájltípus vagy sérült archívum)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -317,7 +317,7 @@ msgstr "hiányzó függőségek telepitése"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
-msgstr "Modok"
+msgstr "Modifikációk \"Modok\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
@@ -814,15 +814,12 @@ msgid "Failed to install $1 to $2"
 msgstr "$1 telepítése meghiúsult ide: $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Mod telepítése: nem található megfelelő mappanév ehhez a modcsomaghoz: $1"
+msgstr "Telepítés: nem található megfelelő mappanév ehhez: $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Nem található érvényes mod vagy modcsomag"
+msgstr "Nem található érvényes mod, modcsomag vagy játék"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -1687,6 +1684,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Nagyítás letiltva (szerver, vagy mod által)"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Csevegés elrejtve"
 
@@ -2006,9 +2008,8 @@ msgid ""
 msgstr ""
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Nincsenek kötelező függőségek"
+msgstr "Néhány mod kielégítetlen függőségekkel rendelkezik:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2360,6 +2361,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-s zaj, amely meghatározza a tömlöcök számát egy térképdarabkánként."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2369,7 +2371,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3D támogatás.\n"
@@ -2466,17 +2467,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Az észlelt képsűrűség kiigazítása a felhasználói felület elemeinek "
 "méretezéséhez."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2846,6 +2836,10 @@ msgid "Client"
 msgstr "Kliens"
 
 #: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Client and Server"
 msgstr "Kliens és szerver"
 
@@ -3123,11 +3117,12 @@ msgstr ""
 "A főmenüből történő világ létrehozása ezt felülírja."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Az erőltetetten betöltött térképblokkok maximális száma."
+msgstr ""
+"Az erőltetetten betöltött térképblokkok maximális száma.\n"
+"Állítsd -1-re, hogy megszűntesd a limitet."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3334,6 +3329,10 @@ msgid "Dungeon noise"
 msgstr "Tömlöc zaj"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "Összes engedélyezése"
@@ -3367,6 +3366,18 @@ msgstr ""
 "Poisson disk szűrés engedélyezése.\n"
 "Igazra állítás esetén Poisson disk eljárással képez lágy árnyékokat. "
 "Különben a PCF szűrőt használja."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3554,7 +3565,7 @@ msgstr ""
 "egybefüggű lebegő föld réteghez használható."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4826,6 +4837,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "Térképblokk háló generálási késleltetés"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Térképblokk háló generálási késleltetés"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Térképblokk hálógenerátor MapBlock gyorsítótár mérete MB-ban"
 
@@ -5308,6 +5324,13 @@ msgstr ""
 "memóriahasználat között (4096=100MB hüvelykujjszabályként)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Átlátszatlan folyadékok"
 
@@ -5631,11 +5654,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Homokos partok képződnek, ha az np_beach meghaladja ezt az értéket."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "Ismétlések"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "A kliens által fogadott térkép mentése lemezre."
 
@@ -5827,11 +5845,9 @@ msgstr "Szerverlista fájl"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5868,16 +5884,6 @@ msgstr ""
 "A lágy árnyék sugarának méreti beállítása\n"
 "Kisebb érték élesebb, nagyobb érték lágyabb árnyékokat jelent.\n"
 "Minimális érték: 1.0; maximális érték: 15.0"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"A Nap/Hold pályájának fokokban mért döntési szögét szabályozza.\n"
-"A 0 érték azt jelenti, hogy nincs döntés / függőleges a pályájuk.\n"
-"Minimális érték: 0,0; maximális érték: 60,0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5920,7 +5926,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -6009,6 +6015,15 @@ msgstr "Leállítási üzenet"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6035,10 +6050,6 @@ msgstr ""
 "cache kiszolgálási teljesítményét, ezáltal csökken a fő szálból másolt "
 "adatok\n"
 "mennyisége, és ezáltal csökken a szaggatás."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr "Égitestek pályájának döntése"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6392,13 +6403,12 @@ msgstr ""
 "megadni."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "A renderelő háttérprogram.\n"
 "Ha ezt megváltoztatod, újraindítás szükséges.\n"
@@ -6674,6 +6684,12 @@ msgstr ""
 "A kockák között látható rések jelennek meg, ha az árnyalók nincsenek\n"
 "engedélyezve. Ha 0-ra van állítva, az MSAA tiltva van.\n"
 "E beállítás megváltoztatása után újraindítás szükséges."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -8236,11 +8252,24 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "Right key"
 #~ msgstr "Jobb gomb"
 
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "Ismétlések"
+
 #~ msgid "Select Package File:"
 #~ msgstr "csomag fájl kiválasztása:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Szerver / Egyjátékos"
+
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "A Nap/Hold pályájának fokokban mért döntési szögét szabályozza.\n"
+#~ "A 0 érték azt jelenti, hogy nincs döntés / függőleges a pályájuk.\n"
+#~ "Minimális érték: 0,0; maximális érték: 60,0"
 
 #, fuzzy
 #~ msgid "Shadow limit"
@@ -8252,6 +8281,9 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgstr ""
 #~ "Tartalék betűtípus árnyékának eltolása. Ha 0, akkor nem lesz árnyék "
 #~ "rajzolva."
+
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Égitestek pályájának döntése"
 
 #~ msgid "Sneak key"
 #~ msgstr "Lopakodás gomb"

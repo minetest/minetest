@@ -14,7 +14,9 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
-varying float exposure;
+#ifdef ENABLE_AUTO_EXPOSURE
+varying float exposure; // linear exposure factor, see vertex shader
+#endif
 
 void main(void)
 {
@@ -23,6 +25,11 @@ void main(void)
 	// translate to linear colorspace (approximate)
 	color = pow(color, vec3(2.2));
 
-	color *= pow(2., exposure) * exposureParams.compensationFactor * bloomStrength;
+	color *= exposureParams.compensationFactor * bloomStrength;
+
+#ifdef ENABLE_AUTO_EXPOSURE
+	color *= exposure;
+#endif
+
 	gl_FragColor = vec4(color, 1.0); // force full alpha to avoid holes in the image.
 }

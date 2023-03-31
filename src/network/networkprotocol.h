@@ -207,11 +207,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Minimap modes
 	PROTOCOL VERSION 40:
 		TOCLIENT_MEDIA_PUSH changed, TOSERVER_HAVE_MEDIA added
+	PROTOCOL VERSION 41:
 		Added new particlespawner parameters
 		[scheduled bump for 5.6.0]
+	PROTOCOL VERSION 42:
+		TOSERVER_UPDATE_CLIENT_INFO added
+		new fields for TOCLIENT_SET_LIGHTING and TOCLIENT_SET_SKY
+		[scheduled bump for 5.7.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 41
+#define LATEST_PROTOCOL_VERSION 42
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -701,6 +706,7 @@ enum ToClientCommand
 		u8[4] fog_sun_tint (ARGB)
 		u8[4] fog_moon_tint (ARGB)
 		std::string fog_tint_type
+		float body_orbit_tilt
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -1061,7 +1067,15 @@ enum ToServerCommand
 		std::string bytes_M
 	*/
 
-	TOSERVER_NUM_MSG_TYPES = 0x53,
+	TOSERVER_UPDATE_CLIENT_INFO = 0x53,
+	/*
+		v2s16 render_target_size
+		f32 gui_scaling
+		f32 hud_scaling
+		v2f32 max_fs_info
+	*/
+
+	TOSERVER_NUM_MSG_TYPES = 0x54,
 };
 
 enum AuthMechanism

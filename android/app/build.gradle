@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+
 android {
-	compileSdkVersion 32
-	buildToolsVersion '32.0.0'
+	compileSdkVersion 33
+	buildToolsVersion '33.0.2'
 	ndkVersion "$ndk_version"
 	defaultConfig {
 		applicationId 'net.minetest.minetest'
-		minSdkVersion 16
-		targetSdkVersion 32
+		minSdkVersion 21
+		targetSdkVersion 33
 		versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 		versionCode project.versionCode
 	}
@@ -52,51 +53,59 @@ android {
 
 task prepareAssets() {
 	def assetsFolder = "build/assets"
-	def projRoot = "../.."
+	def projRoot = rootDir.parent
 	def gameToCopy = "minetest_game"
 
-	copy {
-		from "${projRoot}/minetest.conf.example", "${projRoot}/README.md" into assetsFolder
+	doFirst {
+		logger.lifecycle('Preparing assets at {}', assetsFolder)
 	}
-	copy {
-		from "${projRoot}/doc/lgpl-2.1.txt" into "${assetsFolder}"
-	}
-	copy {
-		from "${projRoot}/builtin" into "${assetsFolder}/builtin"
-	}
-	copy {
-		from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
-	}
-	copy {
-		from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
-	}
-	copy {
-		from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
-	}
-	copy {
-		from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
-	}
-	fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
-		def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
-		file(moPath).mkdirs()
-		exec {
-			commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+	doLast {
+		copy {
+			from "${projRoot}/minetest.conf.example", "${projRoot}/README.md" into assetsFolder
 		}
-	}
-	copy {
-		from "${projRoot}/textures" into "${assetsFolder}/textures"
+		copy {
+			from "${projRoot}/doc/lgpl-2.1.txt" into assetsFolder
+		}
+		copy {
+			from "${projRoot}/builtin" into "${assetsFolder}/builtin"
+		}
+		copy {
+			from "${projRoot}/client/shaders" into "${assetsFolder}/client/shaders"
+		}
+		copy {
+			from "../native/deps/armeabi-v7a/Irrlicht/Shaders" into "${assetsFolder}/client/shaders/Irrlicht"
+		}
+		copy {
+			from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
+		}
+		copy {
+			from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
+		}
+		copy {
+			from "${projRoot}/textures" into "${assetsFolder}/textures"
+		}
+
+		// compile translations
+		fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
+			def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
+			file(moPath).mkdirs()
+			exec {
+				commandLine 'msgfmt', '-o', "${moPath}/minetest.mo", poFile
+			}
+		}
+
+		file("${assetsFolder}/.nomedia").text = ""
 	}
 
-	file("${assetsFolder}/.nomedia").text = ""
-
-	task zipAssets(type: Zip) {
+	task zipAssets(dependsOn: prepareAssets, type: Zip) {
 		archiveFileName = "Minetest.zip"
-		from "${assetsFolder}"
+		from assetsFolder
 		destinationDirectory = file("src/main/assets")
 	}
 }
 
 preBuild.dependsOn zipAssets
+prepareAssets.dependsOn ':native:getDeps'
 
 // Map for the version code that gives each ABI a value.
 import com.android.build.OutputFile
@@ -112,5 +121,5 @@ android.applicationVariants.all { variant ->
 
 dependencies {
 	implementation project(':native')
-	implementation 'androidx.appcompat:appcompat:1.5.1'
+	implementation 'androidx.appcompat:appcompat:1.6.1'
 }

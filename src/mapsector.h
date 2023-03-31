@@ -58,6 +58,9 @@ public:
 
 	void deleteBlock(MapBlock *block);
 
+	// Remove a block from the map and the sector without deleting it
+	void detachBlock(MapBlock *block);
+
 	void getBlocks(MapBlockVect &dest);
 
 	bool empty() const { return m_blocks.empty(); }

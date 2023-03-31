@@ -61,11 +61,9 @@ Some can be changed in the key config dialog in the settings tab.
 | T                             | Chat                                                           |
 | /                             | Command                                                        |
 | Esc                           | Pause menu/abort/exit (pauses only singleplayer game)          |
-| R                             | Enable/disable full range view                                 |
 | +                             | Increase view range                                            |
 | -                             | Decrease view range                                            |
 | K                             | Enable/disable fly mode (needs fly privilege)                  |
-| P                             | Enable/disable pitch move mode                                 |
 | J                             | Enable/disable fast mode (needs fast privilege)                |
 | H                             | Enable/disable noclip mode (needs noclip privilege)            |
 | E                             | Aux1 (Move fast in fast mode. Games may add special features)  |
@@ -148,7 +146,7 @@ For Debian/Ubuntu users:
 
 For Fedora users:
 
-    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libvorbis-devel libXi-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
+    sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libpng-devel libjpeg-devel libvorbis-devel libXi-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel
 
 For Arch users:
 
@@ -169,6 +167,14 @@ This is an example for installing Git on Debian/Ubuntu:
 For Fedora users:
 
     sudo dnf install git
+
+For Arch users:
+	
+	sudo pacman -S git
+
+For Alpine users:
+
+	sudo apk add git
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 

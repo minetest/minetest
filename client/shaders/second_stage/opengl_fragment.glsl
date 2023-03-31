@@ -18,7 +18,9 @@ varying mediump vec2 varTexCoord;
 centroid varying vec2 varTexCoord;
 #endif
 
-varying float exposure;
+#ifdef ENABLE_AUTO_EXPOSURE
+varying float exposure; // linear exposure factor, see vertex shader
+#endif
 
 #ifdef ENABLE_BLOOM
 
@@ -87,7 +89,10 @@ void main(void)
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
 	{
-		color.rgb *= exposure * exposureParams.compensationFactor;
+		color.rgb *= exposureParams.compensationFactor;
+#ifdef ENABLE_AUTO_EXPOSURE
+		color.rgb *= exposure;
+#endif
 	}
 
 

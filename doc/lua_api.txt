@@ -460,9 +460,10 @@ texture is overlaid on top of `cobble.png`.
 
 Modifiers that accept texture names (e.g. `[combine`) accept escaping to allow
 passing complex texture names as arguments. Escaping is done with backslash and
-is required for `^` and `:`.
+is required for `^`, `:` and `\`.
 
 Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
+Or as a Lua string: `"cobble.png^[lowpart:50:color.png\\^[mask\\:trans.png"`
 
 The lower 50 percent of `color.png^[mask:trans.png` are overlaid
 on top of `cobble.png`.
@@ -648,7 +649,8 @@ don't change very much.
 Embed a base64 encoded PNG image in the texture string.
 You can produce a valid string for this by calling
 `minetest.encode_base64(minetest.encode_png(tex))`,
-refer to the documentation of these functions for details.
+where `tex` is pixel data. Refer to the documentation of these
+functions for details.
 You can use this to send disposable images such as captchas
 to individual clients, or render things that would be too
 expensive to compose with `[combine:`.
@@ -2221,16 +2223,25 @@ Some of the values in the key-value store are handled specially:
 Example:
 
     local meta = minetest.get_meta(pos)
+
+    -- Set node formspec and infotext
     meta:set_string("formspec",
             "size[8,9]"..
             "list[context;main;0,0;8,4;]"..
             "list[current_player;main;0,5;8,4;]")
     meta:set_string("infotext", "Chest");
+
+    -- Set inventory list size of `"main"` list to 32
     local inv = meta:get_inventory()
-    inv:set_size("main", 8*4)
+    inv:set_size("main", 32)
+
+    -- Dump node metadata
     print(dump(meta:to_table()))
+
+    -- Set node metadata from a metadata table
     meta:from_table({
         inventory = {
+            -- Set items of inventory in all 32 slots of the `"main"` list
             main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "",
                     [5] = "", [6] = "", [7] = "", [8] = "", [9] = "",
                     [10] = "", [11] = "", [12] = "", [13] = "",
@@ -2240,6 +2251,7 @@ Example:
                     [27] = "", [28] = "", [29] = "", [30] = "", [31] = "",
                     [32] = ""}
         },
+        -- metadata fields
         fields = {
             formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
             infotext = "Chest"
@@ -2726,6 +2738,7 @@ Elements
 ### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 
 * `item name` is the registered name of an item/node
+* `name` is non-optional and must be unique, or else tooltips are broken.
 * The item description will be used as the tooltip. This can be overridden with
   a tooltip element.
 
@@ -4971,7 +4984,8 @@ Utilities
           connection_uptime = 200,   -- seconds since client connected
           protocol_version = 32,     -- protocol version used by client
           formspec_version = 2,      -- supported formspec version
-          lang_code = "fr"           -- Language code used for translation
+          lang_code = "fr",          -- Language code used for translation
+
           -- the following keys can be missing if no stats have been collected yet
           min_rtt = 0.01,            -- minimum round trip time
           max_rtt = 0.2,             -- maximum round trip time
@@ -4987,6 +5001,42 @@ Utilities
           --patch = 10,                -- patch version number
           --vers_string = "0.4.9-git", -- full version string
           --state = "Active"           -- current client state
+      }
+* `minetest.get_player_window_information(player_name)`:
+
+      -- Will only be present if the client sent this information (requires v5.7+)
+      --
+      -- Note that none of these things are constant, they are likely to change during a client
+      -- connection as the player resizes the window and moves it between monitors
+      --
+      -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
+      -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
+      -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
+      {
+          -- Current size of the in-game render target (pixels).
+          --
+          -- This is usually the window size, but may be smaller in certain situations,
+          -- such as side-by-side mode.
+          size = {
+              x = 1308,
+              y = 577,
+          },
+
+          -- Estimated maximum formspec size before Minetest will start shrinking the
+          -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
+          -- this and `padding[-0.01,-0.01]`.
+          max_formspec_size = {
+              x = 20,
+              y = 11.25
+          },
+
+          -- GUI Scaling multiplier
+          -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
+          real_gui_scaling = 1,
+
+          -- HUD Scaling multiplier
+          -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
+          real_hud_scaling = 1,
       }
 
 * `minetest.mkdir(path)`: returns success.
@@ -5320,6 +5370,15 @@ Call these functions only at load time!
 * `minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info))`
     * Determines how much of a stack may be taken, put or moved to a
       player inventory.
+    * Function arguments: see `minetest.register_on_player_inventory_action`
+    * Return a numeric value to limit the amount of items to be taken, put or
+      moved. A value of `-1` for `take` will make the source stack infinite.
+* `minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info))`
+    * Called after an item take, put or move event from/to/in a player inventory
+    * These inventory actions are recognized:
+        * move: Item was moved within the player inventory
+        * put: Item was put into player inventory from another inventory
+        * take: Item was taken from player inventory and put into another inventory
     * `player` (type `ObjectRef`) is the player who modified the inventory
       `inventory` (type `InvRef`).
     * List of possible `action` (string) values and their
@@ -5327,11 +5386,6 @@ Call these functions only at load time!
         * `move`: `{from_list=string, to_list=string, from_index=number, to_index=number, count=number}`
         * `put`:  `{listname=string, index=number, stack=ItemStack}`
         * `take`: Same as `put`
-    * Return a numeric value to limit the amount of items to be taken, put or
-      moved. A value of `-1` for `take` will make the source stack infinite.
-* `minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info))`
-    * Called after a take, put or move event from/to/in a player inventory
-    * Function arguments: see `minetest.register_allow_player_inventory_action`
     * Does not accept or handle any return value.
 * `minetest.register_on_protection_violation(function(pos, name))`
     * Called by `builtin` and mods when a player violates protection at a
@@ -5428,6 +5482,8 @@ Authentication
     * The player needs to be online for this to be successful.
 
 * `minetest.get_auth_handler()`: Return the currently active auth handler
+    * Must be called *after* load time, to ensure that any custom auth handler was
+      already registered.
     * See the [Authentication handler definition]
     * Use this to e.g. get the authentication data for a player:
       `local auth_data = minetest.get_auth_handler().get_auth(playername)`
@@ -5486,7 +5542,7 @@ Environment access
       returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
-* `minetest.get_node_light(pos, timeofday)`
+* `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
       to get the light value of a neighbor.
@@ -6026,8 +6082,8 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * Returns `function(itemstack, user, pointed_thing)` as a
       function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
-      If the player is eating a stack, then replace_with_item goes to a
-      different spot.
+      If the player is eating a stack and `replace_with_item` doesn't fit onto
+      the eaten stack, then the remainings go to a different spot, or are dropped.
 
 Defaults for the `on_punch` and `on_dig` node definition callbacks
 ------------------------------------------------------------------
@@ -6742,7 +6798,8 @@ An `InvRef` is a reference to an inventory.
 * `set_width(listname, width)`: set width of list; currently used for crafting
 * `get_stack(listname, i)`: get a copy of stack index `i` in list
 * `set_stack(listname, i, stack)`: copy `stack` to index `i` in list
-* `get_list(listname)`: return full list (list of `ItemStack`s)
+* `get_list(listname)`: returns full list (list of `ItemStack`s)
+                        or `nil` if list doesn't exist (size 0)
 * `set_list(listname, list)`: set full list (size will not change)
 * `get_lists()`: returns table that maps listnames to inventory lists
 * `set_lists(lists)`: sets inventory lists (size will not change)
@@ -6911,15 +6968,58 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `set_float(key, value)`
 * `get_float(key)`: Returns `0` if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
-* `to_table()`: returns `nil` or a table with keys:
-    * `fields`: key-value storage
-    * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)
-* `from_table(nil or {})`
-    * Any non-table value will clear the metadata
-    * See [Node Metadata] for an example
-    * returns `true` on success
+* `to_table()`:
+    * Returns a metadata table (see below) or `nil` on failure.
+* `from_table(data)`
+    * Imports metadata from a metadata table
+    * If `data` is a metadata table (see below), the metadata it represents
+      will replace all metadata of this MetaDataRef object
+    * Any non-table value for `data` will clear all metadata
+    * Item table values the `inventory` field may also be itemstrings
+    * Returns `true` on success
 * `equals(other)`
     * returns `true` if this metadata has the same key-value pairs as `other`
+
+### Metadata tables
+
+Metadata tables represent MetaDataRef in a Lua table form (see `from_table`/`to_table`).
+
+A metadata table is a table that has the following keys:
+
+* `fields`: key-value storage of metadata fields
+    * all values are stored as strings
+    * numbers must be converted to strings first
+* `inventory` (for NodeMetaRef only): A node inventory in table form
+    * inventory table keys are inventory list names
+    * inventory table values are item tables
+    * item table keys are slot IDs (starting with 1)
+    * item table values are ItemStacks
+
+Example:
+
+    metadata_table = {
+        -- metadata fields (key/value store)
+        fields = {
+            infotext = "Container",
+            anoter_key = "Another Value",
+        },
+
+        -- inventory data (for nodes)
+        inventory = {
+            -- inventory list "main" with 4 slots
+            main = {
+                -- list of all item slots
+                [1] = "example:dirt",
+                [2] = "example:stone 25",
+                [3] = "", -- empty slot
+                [4] = "example:pickaxe",
+            },
+            -- inventory list "hidden" with 1 slot
+            hidden = {
+                [1] = "example:diamond",
+            },
+        },
+    }
 
 `ModChannel`
 ------------
@@ -7219,7 +7319,7 @@ child will follow movement and rotation of that bone.
     * This should be used to set style elements such as background[] and
       bgcolor[], any non-style elements (eg: label) may result in weird behavior.
     * Only affects formspecs shown after this is called.
-* `get_formspec_prepend(formspec)`: returns a formspec string.
+* `get_formspec_prepend()`: returns a formspec string.
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with the following boolean values
       representing the pressed keys: `up`, `down`, `left`, `right`, `jump`,
@@ -7274,18 +7374,20 @@ child will follow movement and rotation of that bone.
         * `basic_debug`: Allow showing basic debug info that might give a gameplay advantage.
           This includes map seed, player position, look direction, the pointed node and block bounds.
           Does not affect players with the `debug` privilege.
+        * `chat`: Modifies the client's permission to view chat on the HUD.
+          The client may locally elect to not view chat. Does not affect the console.
     * If a flag equals `nil`, the flag is not modified
 * `hud_get_flags()`: returns a table of player HUD flags with boolean values.
     * See `hud_set_flags` for a list of flags that can be toggled.
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `32`
-* `hud_get_hotbar_itemcount`: returns number of visible items
+* `hud_get_hotbar_itemcount()`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
-* `hud_get_hotbar_image`: returns texturename
+* `hud_get_hotbar_image()`: returns texturename
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
-* `hud_get_hotbar_selected_image`: returns texturename
+* `hud_get_hotbar_selected_image()`: returns texturename
 * `set_minimap_modes({mode, mode, ...}, selected_mode)`
     * Overrides the available minimap modes (and toggle order), and changes the
     selected mode.
@@ -7314,6 +7416,10 @@ child will follow movement and rotation of that bone.
     * `sky_parameters` is a table with the following optional fields:
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
           (default: `#ffffff`)
+        * `body_orbit_tilt`: Float, rotation angle of sun/moon orbit in degrees.
+           By default, orbit is controlled by a client-side setting, and this field is not set.
+           After a value is assigned, it can only be changed to another float value.
+           Valid range [-60.0,60.0] (default: not set)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
@@ -7760,7 +7866,7 @@ Player properties need to be saved manually.
         -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
         -- If `rotate = true`, it will match the object's rotation and any attachment rotations.
         -- Raycasts use the selection box and object's rotation, but do *not* obey attachment rotations.
-        
+
 
         pointable = true,
         -- Whether the object can be pointed at
@@ -7783,6 +7889,8 @@ Player properties need to be saved manually.
         --   'inventory_image'.
         --   If 'itemname' contains a ColorString or palette index (e.g. from
         --   `minetest.itemstring_with_palette()`), the entity will inherit the color.
+        --   Wielditems are scaled a bit. If you want a wielditem to appear
+        --   to be as large as a node, use `0.667` in `visual_size`
         -- "item" is similar to "wielditem" but ignores the 'wield_image' parameter.
 
         visual_size = {x = 1, y = 1, z = 1},
@@ -8567,15 +8675,17 @@ Used by `minetest.register_node`.
         -- Warning: making a liquid node 'floodable' will cause problems.
 
         preserve_metadata = function(pos, oldnode, oldmeta, drops),
-        -- Called when oldnode is about be converted to an item, but before the
+        -- Called when `oldnode` is about be converted to an item, but before the
         -- node is deleted from the world or the drops are added. This is
         -- generally the result of either the node being dug or an attached node
         -- becoming detached.
-        -- oldmeta are the metadata fields (table) of the node before deletion.
-        -- drops is a table of ItemStacks, so any metadata to be preserved can
-        -- be added directly to one or more of the dropped items. See
-        -- "ItemStackMetaRef".
-        -- default: nil
+        -- * `pos`: node position
+        -- * `oldnode`: node table of node before it was deleted
+        -- * `oldmeta`: metadata of node before it was deleted, as a metadata table
+        -- * `drops`: a table of `ItemStack`s, so any metadata to be preserved can
+        --   be added directly to one or more of the dropped items. See
+        --   "ItemStackMetaRef".
+        -- default: `nil`
 
         after_place_node = function(pos, placer, itemstack, pointed_thing),
         -- Called after constructing node when node was placed using
@@ -8585,9 +8695,13 @@ Used by `minetest.register_node`.
         -- default: nil
 
         after_dig_node = function(pos, oldnode, oldmetadata, digger),
-        -- oldmetadata is in table format.
-        -- Called after destructing node when node was dug using
-        -- minetest.node_dig / minetest.dig_node.
+        -- Called after destructing the node when node was dug using
+        -- `minetest.node_dig` / `minetest.dig_node`.
+        -- * `pos`: node position
+        -- * `oldnode`: node table of node before it was dug
+        -- * `oldmetadata`: metadata of node before it was dug,
+        --                  as a metadata table
+        -- * `digger`: ObjectRef of digger
         -- default: nil
 
         can_dig = function(pos, [player]),
@@ -9299,20 +9413,31 @@ Chat command definition
 
 Used by `minetest.register_chatcommand`.
 
+Specifies the function to be called and the privileges required when a player
+issues the command.  A help message that is the concatenation of the params and
+description fields is shown when the "/help" chatcommand is issued.
+
     {
-        params = "<name> <privilege>",  -- Short parameter description
+        params = "",
+        -- Short parameter description.  See the below note.
 
-        description = "Remove privilege from player",  -- Full description
+        description = "",
+        -- General description of the command's purpose.
 
-        privs = {privs=true},  -- Require the "privs" privilege to run
+        privs = {},
+        -- Required privileges to run. See `minetest.check_player_privs()` for
+        -- the format and see [Privileges] for an overview of privileges.
 
         func = function(name, param),
-        -- Called when command is run. Returns boolean success and text output.
-        -- Special case: The help message is shown to the player if `func`
-        -- returns false without a text output.
+        -- Called when command is run.
+        -- * `name` is the name of the player who issued the command.
+        -- * `param` is a string with the full arguments to the command.
+        -- Returns a boolean for success and a string value.
+        -- The string is shown to the issuing player upon exit of `func` or,
+        -- if `func` returns `false` and no string, the help message is shown.
     }
 
-Note that in params, use of symbols is as follows:
+Note that in params, the conventional use of symbols is as follows:
 
 * `<>` signifies a placeholder to be replaced when the command is used. For
   example, when a player name is needed: `<name>`
@@ -9323,6 +9448,18 @@ Note that in params, use of symbols is as follows:
   provided. For example: `<param1> | <param2>`
 * `()` signifies grouping. For example, when param1 and param2 are both
   required, or only param3 is required: `(<param1> <param2>) | <param3>`
+
+Example:
+
+    {
+        params = "<name> <privilege>",
+
+        description = "Remove privilege from player",
+
+        privs = {privs=true},  -- Require the "privs" privilege to run
+
+        func = function(name, param),
+    }
 
 Privilege definition
 --------------------
@@ -9699,6 +9836,8 @@ section, along with the datatypes they accept.
 All of the properties in this list can be animated with `*_tween` tables
 unless otherwise specified. For example, `jitter` can be tweened by setting
 a `jitter_tween` table instead of (or in addition to) a `jitter` table/value.
+In this section, a float range is a table defined as so: { min = A, max = B }
+A and B are your supplemented values. For a vec3 range this means they are vectors.
 Types used are defined in the previous section.
 
 * vec3 range `pos`: the position at which particles can appear

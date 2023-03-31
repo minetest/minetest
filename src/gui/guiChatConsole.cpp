@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "IrrCompileConfig.h"
 #include "guiChatConsole.h"
 #include "chat.h"
 #include "client/client.h"
@@ -673,13 +672,11 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 		}
 	}
-#if (IRRLICHT_VERSION_MT_REVISION >= 2)
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
 		prompt.input(std::wstring(event.StringInput.Str->c_str()));
 		return true;
 	}
-#endif
 
 	return Parent ? Parent->OnEvent(event) : false;
 }

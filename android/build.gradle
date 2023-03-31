@@ -11,13 +11,13 @@ project.ext.set("developmentBuild", 1) // Whether it is a development build, or 
 // each APK must have a larger `versionCode` than the previous
 
 buildscript {
-	ext.ndk_version = '25.1.8937393'
+	ext.ndk_version = '25.2.9519653'
 	repositories {
 		google()
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.2.2'
+		classpath 'com.android.tools.build:gradle:7.4.1'
 		classpath 'de.undercouch:gradle-download-task:4.1.1'
 		// NOTE: Do not place your application dependencies here; they belong
 		// in the individual module build.gradle files
@@ -33,5 +33,4 @@ allprojects {
 
 task clean(type: Delete) {
 	delete rootProject.buildDir
-	delete 'native/deps'
 }
