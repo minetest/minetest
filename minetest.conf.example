@@ -165,7 +165,7 @@
 
 #    Connects glass if supported by node.
 #    type: bool
-# connected_glass = true
+# connected_glass = false
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
