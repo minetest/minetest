@@ -1243,6 +1243,8 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	std::set<v3s16> shortlist;
 	MeshGrid mesh_grid = m_client->getMeshGrid();
 
+	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
+
 	for (auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
 		if (!sector)
@@ -1256,15 +1258,39 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			Loop through blocks in sector
 		*/
 		for (MapBlock *block : sectorblocks) {
-			if (mesh_grid.cell_size == 1 && !block->mesh) {
+			MapBlockMesh *mesh = block->mesh;
+			if (mesh_grid.cell_size == 1 && !mesh) {
 				// fast out in the case of no mesh chunking
 				continue;
 			}
 
+			// Calculate the coordinates for range and frustum culling
+			v3f mesh_sphere_center;
+			f32 mesh_sphere_radius;
+
 			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS);
+
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
 			if (projection.getDistanceFrom(block_pos) > radius)
 				continue;
+
+			if (mesh) {
+				mesh_sphere_center = block_pos
+						+ mesh->getBoundingSphereCenter();
+				mesh_sphere_radius = mesh->getBoundingRadius();
+			} else {
+				mesh_sphere_center = block_pos
+						+ v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+				mesh_sphere_radius = 0.0f;
+			}
+			// Frustum culling
+			// Only do coarse culling here, to account for fast camera movement.
+			// This is needed because this function is not called every frame.
+			float frustum_cull_extra_radius = 300.0f;
+			if (is_frustum_culled(mesh_sphere_center,
+					mesh_sphere_radius + frustum_cull_extra_radius)) {
+				continue;
+			}
 
 			if (mesh_grid.cell_size > 1) {
 				// Block meshes are stored in the corner block of a chunk
