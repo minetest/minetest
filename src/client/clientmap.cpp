@@ -1237,8 +1237,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	u32 blocks_loaded = 0;
 	// Number of blocks with mesh in rendering range
 	u32 blocks_in_range_with_mesh = 0;
-	// Number of blocks occlusion culled
-	u32 blocks_occlusion_culled = 0;
 
 	for (auto &sector_it : m_sectors) {
 		MapSector *sector = sector_it.second;
@@ -1253,14 +1251,15 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			Loop through blocks in sector
 		*/
 		for (MapBlock *block : sectorblocks) {
-			if (!block->mesh) {
+			MapBlockMesh *mesh = block->mesh;
+			if (!mesh) {
 				// Ignore if mesh doesn't exist
 				continue;
 			}
 
-			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS);
+			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS) + mesh->getBoundingSphereCenter();
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
-			if (projection.getDistanceFrom(block_pos) > radius)
+			if (projection.getDistanceFrom(block_pos) > (radius + mesh->getBoundingRadius()))
 				continue;
 
 			blocks_in_range_with_mesh++;
@@ -1276,7 +1275,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	}
 
 	g_profiler->avg("SHADOW MapBlock meshes in range [#]", blocks_in_range_with_mesh);
-	g_profiler->avg("SHADOW MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
 	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
 }
