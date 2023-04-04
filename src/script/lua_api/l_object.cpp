@@ -449,7 +449,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 
 	// Prevent abuse of offset values (keep player always visible)
 	offset_third.X = rangelim(offset_third.X,-10,10);
-	offset_third.Z = rangelim(offset_third.Z,-5,5);
+	offset_third.Z = rangelim(offset_third.Z,-150,5);
 	/* TODO: if possible: improve the camera collision detection to allow Y <= -1.5) */
 	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
 
