@@ -3540,6 +3540,8 @@ vectors are written like this: `(x, y, z)`:
     * Returns a boolean value indicating whether `v` is a real vector, eg. created
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
+* `vector.contains(v1, v2, pos)`:
+	* Returns a boolean value indicating if `pos` is inside area formed by `v1` and `v2`.
 
 For the following functions `x` can be either a vector or a number:
 

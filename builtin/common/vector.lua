@@ -387,3 +387,9 @@ if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then
 	end
 	core.set_push_vector = nil
 end
+
+function vector.contains(v1, v2, pos)
+	return (pos.x >= v1.x) and (pos.x <= v2.x) and
+		(pos.y >= v1.y) and (pos.y <= v2.y) and
+		(pos.z >= v1.z) and (pos.z <= v2.z)
+end
