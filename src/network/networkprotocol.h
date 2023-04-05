@@ -213,6 +213,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 42:
 		TOSERVER_UPDATE_CLIENT_INFO added
 		new fields for TOCLIENT_SET_LIGHTING and TOCLIENT_SET_SKY
+		Send forgotten TweenedParameter properties
 		[scheduled bump for 5.7.0]
 */
 
@@ -538,20 +539,33 @@ enum ToClientCommand
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
 	/*
-		-- struct range<T> { T min, T max, f32 bias };
-		-- struct tween<T> { T start, T end };
+		using range<T> = RangedParameter<T> {
+			T min, max
+			f32 bias
+		}
+		using tween<T> = TweenedParameter<T> {
+			u8 style
+			u16 reps
+			f32 beginning
+			T start, end
+		}
+
 		u16 amount
 		f32 spawntime
-		v3f minpos
-		v3f maxpos
-		v3f minvel
-		v3f maxvel
-		v3f minacc
-		v3f maxacc
-		f32 minexptime
-		f32 maxexptime
-		f32 minsize
-		f32 maxsize
+		if PROTOCOL_VERSION >= 42 {
+			tween<T> pos, vel, acc, exptime, size
+		} else {
+			v3f minpos
+			v3f maxpos
+			v3f minvel
+			v3f maxvel
+			v3f minacc
+			v3f maxacc
+			f32 minexptime
+			f32 maxexptime
+			f32 minsize
+			f32 maxsize
+		}
 		u8 bool collisiondetection
 		u32 len
 		u8[len] texture
@@ -562,18 +576,20 @@ enum ToClientCommand
 		u8 glow
 		u8 object_collision
 
-		f32 pos_start_bias
-		f32 vel_start_bias
-		f32 acc_start_bias
-		f32 exptime_start_bias
-		f32 size_start_bias
+		if PROTOCOL_VERSION < 42 {
+			f32 pos_start_bias
+			f32 vel_start_bias
+			f32 acc_start_bias
+			f32 exptime_start_bias
+			f32 size_start_bias
 
-		range<v3f> pos_end
-		-- i.e v3f pos_end_min
-		--     v3f pos_end_max
-		--     f32 pos_end_bias
-		range<v3f> vel_end
-		range<v3f> acc_end
+			range<v3f> pos_end
+			-- i.e v3f pos_end_min
+			--     v3f pos_end_max
+			--     f32 pos_end_bias
+			range<v3f> vel_end
+			range<v3f> acc_end
+		}
 
 		tween<range<v3f>> drag
 		-- i.e. v3f drag_start_min

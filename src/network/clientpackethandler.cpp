@@ -994,14 +994,22 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.amount             = readU16(is);
 	p.time               = readF32(is);
 
-	// older protocols do not support tweening, and send only
-	// static ranges, so we can't just use the normal serialization
-	// functions for the older values.
-	p.pos.start.legacyDeSerialize(is);
-	p.vel.start.legacyDeSerialize(is);
-	p.acc.start.legacyDeSerialize(is);
-	p.exptime.start.legacyDeSerialize(is);
-	p.size.start.legacyDeSerialize(is);
+	bool missing_end_values = false;
+	if (m_proto_ver >= 42) {
+		// All tweenable parameters
+		p.pos.deSerialize(is);
+		p.vel.deSerialize(is);
+		p.acc.deSerialize(is);
+		p.exptime.deSerialize(is);
+		p.size.deSerialize(is);
+	} else {
+		p.pos.start.legacyDeSerialize(is);
+		p.vel.start.legacyDeSerialize(is);
+		p.acc.start.legacyDeSerialize(is);
+		p.exptime.start.legacyDeSerialize(is);
+		p.size.start.legacyDeSerialize(is);
+		missing_end_values = true;
+	}
 
 	p.collisiondetection = readU8(is);
 	p.texture.string     = deSerializeString32(is);
@@ -1017,8 +1025,6 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	p.glow = readU8(is);
 	p.object_collision = readU8(is);
 
-	bool legacy_format = true;
-
 	// This is kinda awful
 	do {
 		u16 tmp_param0 = readU16(is);
@@ -1028,25 +1034,30 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		p.node.param2 = readU8(is);
 		p.node_tile   = readU8(is);
 
-		// v >= 5.6.0
-		f32 tmp_sbias = readF32(is);
-		if (is.eof())
-			break;
+		if (m_proto_ver < 42) {
+			// v >= 5.6.0
+			f32 tmp_sbias = readF32(is);
+			if (is.eof())
+				break;
 
-		// initial bias must be stored separately in the stream to preserve
-		// backwards compatibility with older clients, which do not support
-		// a bias field in their range "format"
-		p.pos.start.bias = tmp_sbias;
-		p.vel.start.bias = readF32(is);
-		p.acc.start.bias = readF32(is);
-		p.exptime.start.bias = readF32(is);
-		p.size.start.bias = readF32(is);
+			// initial bias must be stored separately in the stream to preserve
+			// backwards compatibility with older clients, which do not support
+			// a bias field in their range "format"
+			p.pos.start.bias = tmp_sbias;
+			p.vel.start.bias = readF32(is);
+			p.acc.start.bias = readF32(is);
+			p.exptime.start.bias = readF32(is);
+			p.size.start.bias = readF32(is);
 
-		p.pos.end.deSerialize(is);
-		p.vel.end.deSerialize(is);
-		p.acc.end.deSerialize(is);
-		p.exptime.end.deSerialize(is);
-		p.size.end.deSerialize(is);
+			p.pos.end.deSerialize(is);
+			p.vel.end.deSerialize(is);
+			p.acc.end.deSerialize(is);
+			p.exptime.end.deSerialize(is);
+			p.size.end.deSerialize(is);
+
+			missing_end_values = false;
+		}
+		// else: fields are already read by deSerialize() very early
 
 		// properties for legacy texture field
 		p.texture.deSerialize(is, m_proto_ver, true);
@@ -1077,11 +1088,9 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 			newtex.deSerialize(is, m_proto_ver);
 			p.texpool.push_back(newtex);
 		}
-
-		legacy_format = false;
 	} while(0);
 
-	if (legacy_format) {
+	if (missing_end_values) {
 		// there's no tweening data to be had, so we need to set the
 		// legacy params to constant values, otherwise everything old
 		// will tween to zero
