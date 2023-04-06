@@ -4075,11 +4075,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	runData.update_draw_list_timer += dtime;
 	runData.touch_blocks_timer += dtime;
 
-	bool draw_list_updated = false;
-
 	float update_draw_list_delta = 0.2f;
 
 	v3f camera_direction = camera->getDirection();
+
+	// call only one of updateDrawList, touchMapBlocks, or updateShadow per frame
+	// (the else-ifs below are intentional)
 	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| m_camera_offset_changed
@@ -4087,15 +4088,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
-		draw_list_updated = true;
-	}
-
-	if (runData.touch_blocks_timer > update_draw_list_delta && !draw_list_updated) {
+	} else if (runData.touch_blocks_timer > update_draw_list_delta) {
 		client->getEnv().getClientMap().touchMapBlocks();
 		runData.touch_blocks_timer = 0;
-	}
-
-	if (RenderingEngine::get_shadow_renderer()) {
+	} else if (RenderingEngine::get_shadow_renderer()) {
 		updateShadows();
 	}
 
