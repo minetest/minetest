@@ -4223,8 +4223,6 @@ void Game::updateShadows()
 
 	v3f sun_pos = light * offset_constant;
 
-	if (shadow->getDirectionalLightCount() == 0)
-		shadow->addDirectionalLight();
 	shadow->getDirectionalLight().setDirection(sun_pos);
 	shadow->setTimeOfDay(in_timeofday);
 
