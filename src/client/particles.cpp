@@ -38,105 +38,106 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 Particle::Particle(
-	IGameDef *gamedef,
-	LocalPlayer *player,
-	ClientEnvironment *env,
-	const ParticleParameters &p,
-	const ClientTexRef& texture,
-	v2f texpos,
-	v2f texsize,
-	video::SColor color
-):
-	scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
-		((Client *)gamedef)->getSceneManager()),
-	m_texture(texture)
+		IGameDef *gamedef,
+		LocalPlayer *player,
+		ClientEnvironment *env,
+		const ParticleParameters &p,
+		const ClientParticleTexRef &texture,
+		v2f texpos,
+		v2f texsize,
+		video::SColor color
+	) :
+		scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
+				((Client *)gamedef)->getSceneManager()),
+
+		m_expiration(p.expirationtime),
+
+		m_env(env),
+		m_gamedef(gamedef),
+		m_collisionbox(aabb3f(v3f(-p.size / 2.0f), v3f(p.size / 2.0f))),
+		m_texture(texture), //TODO
+		m_texpos(texpos),
+		m_texsize(texsize),
+		m_pos(p.pos),
+		m_velocity(p.vel),
+		m_acceleration(p.acc),
+		m_drag(p.drag),
+		m_jitter(p.jitter),
+		m_bounce(p.bounce),
+		m_player(player),
+		m_size(p.size),
+
+		m_base_color(color),
+		m_color(color),
+		m_collisiondetection(p.collisiondetection),
+		m_collision_removal(p.collision_removal),
+		m_object_collision(p.object_collision),
+		m_vertical(p.vertical),
+		m_animation(p.animation),
+		m_glow(p.glow)
 {
-	// Misc
-	m_gamedef = gamedef;
-	m_env = env;
+	// Set material
+	m_material = [&] {
+		video::SMaterial material;
 
-	// translate blend modes to GL blend functions
-	video::E_BLEND_FACTOR bfsrc, bfdst;
-	video::E_BLEND_OPERATION blendop;
-	const auto blendmode = texture.tex != nullptr
-			? texture.tex -> blendmode
-			: ParticleParamTypes::BlendMode::alpha;
+		// translate blend modes to GL blend functions
+		video::E_BLEND_FACTOR bfsrc, bfdst;
+		video::E_BLEND_OPERATION blendop;
+		const auto blendmode = texture.tex != nullptr
+				? texture.tex -> blendmode
+				: ParticleParamTypes::BlendMode::alpha;
 
-	switch (blendmode) {
-		case ParticleParamTypes::BlendMode::add:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_DST_ALPHA;
-			blendop = video::EBO_ADD;
-		break;
+		switch (blendmode) {
+			case ParticleParamTypes::BlendMode::add:
+				bfsrc = video::EBF_SRC_ALPHA;
+				bfdst = video::EBF_DST_ALPHA;
+				blendop = video::EBO_ADD;
+			break;
 
-		case ParticleParamTypes::BlendMode::sub:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_DST_ALPHA;
-			blendop = video::EBO_REVSUBTRACT;
-		break;
+			case ParticleParamTypes::BlendMode::sub:
+				bfsrc = video::EBF_SRC_ALPHA;
+				bfdst = video::EBF_DST_ALPHA;
+				blendop = video::EBO_REVSUBTRACT;
+			break;
 
-		case ParticleParamTypes::BlendMode::screen:
-			bfsrc = video::EBF_ONE;
-			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
-			blendop = video::EBO_ADD;
-		break;
+			case ParticleParamTypes::BlendMode::screen:
+				bfsrc = video::EBF_ONE;
+				bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
+				blendop = video::EBO_ADD;
+			break;
 
-		default: // includes ParticleParamTypes::BlendMode::alpha
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
-			blendop = video::EBO_ADD;
-		break;
-	}
+			default: // includes ParticleParamTypes::BlendMode::alpha
+				bfsrc = video::EBF_SRC_ALPHA;
+				bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
+				blendop = video::EBO_ADD;
+			break;
+		}
 
-	// Texture
-	m_material.Lighting = false;
-	m_material.BackfaceCulling = false;
-	m_material.FogEnable = true;
-	m_material.forEachTexture([] (auto &tex) {
-		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-		tex.MagFilter = video::ETMAGF_NEAREST;
-	});
+		// Texture
+		material.Lighting = false;
+		material.BackfaceCulling = false;
+		material.FogEnable = true;
+		material.forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
 
-	// correctly render layered transparent particles -- see #10398
-	m_material.ZWriteEnable = video::EZW_AUTO;
+		// correctly render layered transparent particles -- see #10398
+		material.ZWriteEnable = video::EZW_AUTO;
 
-	// enable alpha blending and set blend mode
-	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	m_material.MaterialTypeParam = video::pack_textureBlendFunc(
-			bfsrc, bfdst,
-			video::EMFN_MODULATE_1X,
-			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-	m_material.BlendOperation = blendop;
-	m_material.setTexture(0, m_texture.ref);
-	m_texpos = texpos;
-	m_texsize = texsize;
-	m_animation = p.animation;
+		// enable alpha blending and set blend mode
+		material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+		material.MaterialTypeParam = video::pack_textureBlendFunc(
+				bfsrc, bfdst,
+				video::EMFN_MODULATE_1X,
+				video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+		material.BlendOperation = blendop;
+		material.setTexture(0, m_texture.ref);
 
-	// Color
-	m_base_color = color;
-	m_color = color;
-
-	// Particle related
-	m_pos = p.pos;
-	m_velocity = p.vel;
-	m_acceleration = p.acc;
-	m_drag = p.drag;
-	m_jitter = p.jitter;
-	m_bounce = p.bounce;
-	m_expiration = p.expirationtime;
-	m_player = player;
-	m_size = p.size;
-	m_collisiondetection = p.collisiondetection;
-	m_collision_removal = p.collision_removal;
-	m_object_collision = p.object_collision;
-	m_vertical = p.vertical;
-	m_glow = p.glow;
-	m_alpha = 0;
-	m_parent = nullptr;
+		return material;
+	}();
 
 	// Irrlicht stuff
-	const float c = p.size / 2;
-	m_collisionbox = aabb3f(-c, -c, -c, c, c, c);
 	this->setAutomaticCulling(scene::EAC_OFF);
 
 	// Init lighting
@@ -349,7 +350,7 @@ ParticleSpawner::ParticleSpawner(
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &params,
 		u16 attached_id,
-		std::vector<ClientTexture> &&texpool,
+		std::vector<ClientParticleTexture> &&texpool,
 		ParticleManager *p_manager
 	) :
 		m_active(0),
@@ -536,7 +537,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	m_params.copyCommon(pp);
 
-	ClientTexRef texture;
+	ClientParticleTexRef texture;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
@@ -730,7 +731,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			const ParticleSpawnerParameters &p = *event->add_particlespawner.p;
 
 			// texture pool
-			std::vector<ClientTexture> texpool;
+			std::vector<ClientParticleTexture> texpool;
 			if (!p.texpool.empty()) {
 				size_t txpsz = p.texpool.size();
 				texpool.reserve(txpsz);
@@ -739,7 +740,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				}
 			} else {
 				// no texpool in use, use fallback texture
-				texpool = { ClientTexture(p.texture, client->tsrc()) };
+				texpool = { ClientParticleTexture(p.texture, client->tsrc()) };
 			}
 
 			auto toadd = new ParticleSpawner(client, player,
@@ -756,7 +757,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 		case CE_SPAWN_PARTICLE: {
 			ParticleParameters &p = *event->spawn_particle;
 
-			ClientTexRef texture;
+			ClientParticleTexRef texture;
 			v2f texpos, texsize;
 			video::SColor color(0xFFFFFFFF);
 
@@ -770,9 +771,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				/* with no particlespawner to own the texture, we need
 				 * to save it on the heap. it will be freed when the
 				 * particle is destroyed */
-				auto texstore = new ClientTexture(p.texture, client->tsrc());
+				auto texstore = new ClientParticleTexture(p.texture, client->tsrc());
 
-				texture = ClientTexRef(*texstore);
+				texture = ClientParticleTexRef(*texstore);
 				texpos = v2f(0.0f, 0.0f);
 				texsize = v2f(1.0f, 1.0f);
 			}
@@ -887,7 +888,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		player,
 		m_env,
 		p,
-		ClientTexRef(ref),
+		ClientParticleTexRef(ref),
 		texpos,
 		texsize,
 		color);

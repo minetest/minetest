@@ -31,33 +31,33 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-struct ClientTexture
+struct ClientParticleTexture
 {
 	/* per-spawner structure used to store the ParticleTexture structs
-	 * that spawned particles will refer to through ClientTexRef */
+	 * that spawned particles will refer to through ClientParticleTexRef */
 	ParticleTexture tex;
 	video::ITexture *ref = nullptr;
 
-	ClientTexture() = default;
-	ClientTexture(const ServerParticleTexture& p, ITextureSource *t):
+	ClientParticleTexture() = default;
+	ClientParticleTexture(const ServerParticleTexture& p, ITextureSource *t):
 			tex(p),
 			ref(t->getTextureForMesh(p.string)) {};
 };
 
-struct ClientTexRef
+struct ClientParticleTexRef
 {
 	/* per-particle structure used to avoid massively duplicating the
 	 * fairly large ParticleTexture struct */
 	ParticleTexture *tex = nullptr;
 	video::ITexture *ref = nullptr;
-	ClientTexRef() = default;
+	ClientParticleTexRef() = default;
 
 	/* constructor used by particles spawned from a spawner */
-	ClientTexRef(ClientTexture& t):
+	ClientParticleTexRef(ClientParticleTexture& t):
 			tex(&t.tex), ref(t.ref) {};
 
 	/* constructor used for node particles */
-	ClientTexRef(video::ITexture *tp): ref(tp) {};
+	ClientParticleTexRef(video::ITexture *tp): ref(tp) {};
 };
 
 class ParticleSpawner;
@@ -70,7 +70,7 @@ public:
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		const ParticleParameters &p,
-		const ClientTexRef &texture,
+		const ClientParticleTexRef &texture,
 		v2f texpos,
 		v2f texsize,
 		video::SColor color
@@ -100,7 +100,7 @@ public:
 	bool get_expired ()
 	{ return m_expiration < m_time; }
 
-	ParticleSpawner *m_parent;
+	ParticleSpawner *m_parent = nullptr; //TODO: private
 
 private:
 	void updateLight();
@@ -113,9 +113,9 @@ private:
 
 	ClientEnvironment *m_env;
 	IGameDef *m_gamedef;
-	aabb3f m_box;
+	aabb3f m_box{v3f()};
 	aabb3f m_collisionbox;
-	ClientTexRef m_texture;
+	ClientParticleTexRef m_texture;
 	video::SMaterial m_material;
 	v2f m_texpos;
 	v2f m_texsize;
@@ -136,7 +136,6 @@ private:
 	bool m_collision_removal;
 	bool m_object_collision;
 	bool m_vertical;
-	v3s16 m_camera_offset;
 	struct TileAnimationParams m_animation;
 	float m_animation_time = 0.0f;
 	int m_animation_frame = 0;
@@ -151,7 +150,7 @@ public:
 		LocalPlayer *player,
 		const ParticleSpawnerParameters &params,
 		u16 attached_id,
-		std::vector<ClientTexture> &&texpool,
+		std::vector<ClientParticleTexture> &&texpool,
 		ParticleManager *p_manager);
 
 	void step(float dtime, ClientEnvironment *env);
@@ -174,7 +173,7 @@ private:
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters m_params;
-	std::vector<ClientTexture> m_texpool;
+	std::vector<ClientParticleTexture> m_texpool;
 	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
