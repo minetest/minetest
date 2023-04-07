@@ -48,8 +48,8 @@ struct ClientTexRef
 {
 	/* per-particle structure used to avoid massively duplicating the
 	 * fairly large ParticleTexture struct */
-	ParticleTexture* tex = nullptr;
-	video::ITexture* ref = nullptr;
+	ParticleTexture *tex = nullptr;
+	video::ITexture *ref = nullptr;
 	ClientTexRef() = default;
 
 	/* constructor used by particles spawned from a spawner */
@@ -57,7 +57,7 @@ struct ClientTexRef
 			tex(&t.tex), ref(t.ref) {};
 
 	/* constructor used for node particles */
-	ClientTexRef(decltype(ref) tp): ref(tp) {};
+	ClientTexRef(video::ITexture *tp): ref(tp) {};
 };
 
 class ParticleSpawner;
@@ -149,31 +149,32 @@ class ParticleSpawner
 public:
 	ParticleSpawner(IGameDef *gamedef,
 		LocalPlayer *player,
-		const ParticleSpawnerParameters &p,
+		const ParticleSpawnerParameters &params,
 		u16 attached_id,
-		std::unique_ptr<ClientTexture[]> &texpool,
-		size_t texcount,
-		ParticleManager* p_manager);
+		std::vector<ClientTexture> &&texpool,
+		ParticleManager *p_manager);
 
 	void step(float dtime, ClientEnvironment *env);
 
-	size_t m_active;
-
 	bool getExpired() const
-	{ return m_dying || (p.amount <= 0 && p.time != 0); }
+	{ return m_dying || (m_params.amount <= 0 && m_params.time != 0); }
 	void setDying() { m_dying = true; }
+
+	bool hasActive() const { return m_active != 0; }
+	void decrActive() { m_active -= 1; }
 
 private:
 	void spawnParticle(ClientEnvironment *env, float radius,
 		const core::matrix4 *attached_absolute_pos_rot_matrix);
 
+	size_t m_active;
 	ParticleManager *m_particlemanager;
 	float m_time;
 	bool m_dying;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
-	ParticleSpawnerParameters p;
-	std::unique_ptr<ClientTexture[]> m_texpool;
+	ParticleSpawnerParameters m_params;
+	std::vector<ClientTexture> m_texpool;
 	size_t m_texcount;
 	std::vector<float> m_spawntimes;
 	u16 m_attached_id;
