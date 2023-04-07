@@ -683,22 +683,22 @@ void ParticleManager::stepParticles(float dtime)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 
-	for (auto it = m_particles.begin(); it != m_particles.end();) {
-		std::unique_ptr<Particle> &p = *it;
-		if (p->isExpired()) {
-			ParticleSpawner *parent = p->getParent();
+	for (size_t i = 0; i < m_particles.size();) {
+		Particle &p = *m_particles[i];
+		if (p.isExpired()) {
+			ParticleSpawner *parent = p.getParent();
 			if (parent) {
 				assert(parent->hasActive());
 				parent->decrActive();
 			}
 			// remove scene node
-			p->remove();
+			p.remove();
 			// delete
-			p.reset();
-			it = m_particles.erase(it); // FIXME: m_particles is a std::vector. this is slow
+			m_particles[i] = std::move(m_particles.back());
+			m_particles.pop_back();
 		} else {
-			p->step(dtime);
-			++it;
+			p.step(dtime);
+			++i;
 		}
 	}
 }
@@ -715,13 +715,13 @@ void ParticleManager::clearAll()
 	}
 
 	// clear particles
-	for (auto it = m_particles.begin(); it != m_particles.end();) {
+	for (std::unique_ptr<Particle> &p : m_particles) {
 		// remove scene node
-		(*it)->remove();
+		p->remove();
 		// delete
-		it->reset();
-		it = m_particles.erase(it); // FIXME: m_particles is a std::vector. this is slow
+		p.reset();
 	}
+	m_particles.clear();
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
