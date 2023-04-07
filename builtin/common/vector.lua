@@ -369,6 +369,12 @@ function vector.dir_to_rotation(forward, up)
 	return rot
 end
 
+function vector.contains(pos, min, max)
+	return (pos.x >= min.x) and (pos.x <= max.x) and
+		(pos.y >= min.y) and (pos.y <= max.y) and
+		(pos.z >= min.z) and (pos.z <= max.z)
+end
+
 if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then
 	local function read_vector(v)
 		return v.x, v.y, v.z
@@ -386,10 +392,4 @@ if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then
 		core.set_push_vector(fast_new)
 	end
 	core.set_push_vector = nil
-end
-
-function vector.contains(v1, v2, pos)
-	return (pos.x >= v1.x) and (pos.x <= v2.x) and
-		(pos.y >= v1.y) and (pos.y <= v2.y) and
-		(pos.z >= v1.z) and (pos.z <= v2.z)
 end
