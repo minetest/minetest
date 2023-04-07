@@ -50,14 +50,15 @@ struct ClientParticleTexRef
 	 * fairly large ParticleTexture struct */
 	ParticleTexture *tex = nullptr;
 	video::ITexture *ref = nullptr;
+
 	ClientParticleTexRef() = default;
 
 	/* constructor used by particles spawned from a spawner */
-	ClientParticleTexRef(ClientParticleTexture& t):
+	explicit ClientParticleTexRef(ClientParticleTexture &t):
 			tex(&t.tex), ref(t.ref) {};
 
 	/* constructor used for node particles */
-	ClientParticleTexRef(video::ITexture *tp): ref(tp) {};
+	explicit ClientParticleTexRef(video::ITexture *tp): ref(tp) {};
 };
 
 class ParticleSpawner;
@@ -73,9 +74,10 @@ public:
 		const ClientParticleTexRef &texture,
 		v2f texpos,
 		v2f texsize,
-		video::SColor color
+		video::SColor color,
+		ParticleSpawner *parent = nullptr,
+		std::unique_ptr<ClientParticleTexture> owned_texture = nullptr
 	);
-	~Particle();
 
 	virtual const aabb3f &getBoundingBox() const
 	{
@@ -100,7 +102,7 @@ public:
 	bool get_expired ()
 	{ return m_expiration < m_time; }
 
-	ParticleSpawner *m_parent = nullptr; //TODO: private
+	ParticleSpawner *getParent() { return m_parent; }
 
 private:
 	void updateLight();
@@ -141,6 +143,10 @@ private:
 	int m_animation_frame = 0;
 	u8 m_glow;
 	float m_alpha = 0.0f;
+
+	ParticleSpawner *m_parent = nullptr;
+	// Used if not spawned from a particlespawner
+	std::unique_ptr<ClientParticleTexture> m_owned_texture;
 };
 
 class ParticleSpawner

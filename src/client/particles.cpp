@@ -45,7 +45,9 @@ Particle::Particle(
 		const ClientParticleTexRef &texture,
 		v2f texpos,
 		v2f texsize,
-		video::SColor color
+		video::SColor color,
+		ParticleSpawner *parent,
+		std::unique_ptr<ClientParticleTexture> owned_texture
 	) :
 		scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
 				((Client *)gamedef)->getSceneManager()),
@@ -55,7 +57,7 @@ Particle::Particle(
 		m_env(env),
 		m_gamedef(gamedef),
 		m_collisionbox(aabb3f(v3f(-p.size / 2.0f), v3f(p.size / 2.0f))),
-		m_texture(texture), //TODO
+		m_texture(texture),
 		m_texpos(texpos),
 		m_texsize(texsize),
 		m_pos(p.pos),
@@ -74,7 +76,10 @@ Particle::Particle(
 		m_object_collision(p.object_collision),
 		m_vertical(p.vertical),
 		m_animation(p.animation),
-		m_glow(p.glow)
+		m_glow(p.glow),
+
+		m_parent(parent),
+		m_owned_texture(std::move(owned_texture))
 {
 	// Set material
 	m_material = [&] {
@@ -145,14 +150,6 @@ Particle::Particle(
 
 	// Init model
 	updateVertices();
-}
-
-Particle::~Particle()
-{
-	/* if our textures aren't owned by a particlespawner, we need to clean
-	 * them up ourselves when the particle dies */
-	if (m_parent == nullptr)
-		delete m_texture.tex;
 }
 
 void Particle::OnRegisterSceneNode()
@@ -550,7 +547,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	} else {
 		if (m_texpool.size() == 0)
 			return;
-		texture = decltype(texture)(m_texpool[m_texpool.size() == 1 ? 0 : myrand_range(0,m_texpool.size()-1)]);
+		texture = ClientParticleTexRef(m_texpool[m_texpool.size() == 1 ? 0
+				: myrand_range(0, m_texpool.size()-1)]);
 		texpos = v2f(0.0f, 0.0f);
 		texsize = v2f(1.0f, 1.0f);
 		if (texture.tex->animated)
@@ -588,9 +586,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		texture,
 		texpos,
 		texsize,
-		color
+		color,
+		this
 	);
-	pa->m_parent = this;
 	m_particlemanager->addParticle(pa);
 }
 
@@ -685,9 +683,10 @@ void ParticleManager::stepParticles(float dtime)
 	MutexAutoLock lock(m_particle_list_lock);
 	for (auto i = m_particles.begin(); i != m_particles.end();) {
 		if ((*i)->get_expired()) {
-			if ((*i)->m_parent) {
-				assert((*i)->m_parent->hasActive());
-				(*i)->m_parent->decrActive();
+			ParticleSpawner *parent = (*i)->getParent();
+			if (parent) {
+				assert(parent->hasActive());
+				parent->decrActive();
 			}
 			(*i)->remove();
 			delete *i;
@@ -758,6 +757,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			ParticleParameters &p = *event->spawn_particle;
 
 			ClientParticleTexRef texture;
+			std::unique_ptr<ClientParticleTexture> texstore;
 			v2f texpos, texsize;
 			video::SColor color(0xFFFFFFFF);
 
@@ -771,7 +771,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				/* with no particlespawner to own the texture, we need
 				 * to save it on the heap. it will be freed when the
 				 * particle is destroyed */
-				auto texstore = new ClientParticleTexture(p.texture, client->tsrc());
+				texstore = std::make_unique<ClientParticleTexture>(p.texture, client->tsrc());
 
 				texture = ClientParticleTexRef(*texstore);
 				texpos = v2f(0.0f, 0.0f);
@@ -784,7 +784,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 
 			if (texture.ref) {
 				Particle *toadd = new Particle(client, player, m_env,
-						p, texture, texpos, texsize, color);
+						p, texture, texpos, texsize, color, nullptr,
+						std::move(texstore));
 
 				addParticle(toadd);
 			}
