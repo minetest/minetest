@@ -578,18 +578,17 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pp.size = r_size.pickWithin();
 
 	++m_active;
-	auto pa = new Particle(
-		m_gamedef,
-		m_player,
-		env,
-		pp,
-		texture,
-		texpos,
-		texsize,
-		color,
-		this
-	);
-	m_particlemanager->addParticle(pa);
+	m_particlemanager->addParticle(std::make_unique<Particle>(
+			m_gamedef,
+			m_player,
+			env,
+			pp,
+			texture,
+			texpos,
+			texsize,
+			color,
+			this
+		));
 }
 
 void ParticleSpawner::step(float dtime, ClientEnvironment *env)
@@ -661,19 +660,21 @@ void ParticleManager::step(float dtime)
 void ParticleManager::stepSpawners(float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
-	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
-		if (i->second->getExpired()) {
+
+	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
+		std::unique_ptr<ParticleSpawner> &ps = it->second;
+		if (ps->getExpired()) {
 			// the particlespawner owns the textures, so we need to make
 			// sure there are no active particles before we free it
-			if (!i->second->hasActive()) {
-				delete i->second;
-				m_particle_spawners.erase(i++);
+			if (!ps->hasActive()) {
+				ps.reset();
+				it = m_particle_spawners.erase(it);
 			} else {
-				++i;
+				++it;
 			}
 		} else {
-			i->second->step(dtime, m_env);
-			++i;
+			ps->step(dtime, m_env);
+			++it;
 		}
 	}
 }
@@ -681,19 +682,23 @@ void ParticleManager::stepSpawners(float dtime)
 void ParticleManager::stepParticles(float dtime)
 {
 	MutexAutoLock lock(m_particle_list_lock);
-	for (auto i = m_particles.begin(); i != m_particles.end();) {
-		if ((*i)->get_expired()) {
-			ParticleSpawner *parent = (*i)->getParent();
+
+	for (auto it = m_particles.begin(); it != m_particles.end();) {
+		std::unique_ptr<Particle> &p = *it;
+		if (p->isExpired()) {
+			ParticleSpawner *parent = p->getParent();
 			if (parent) {
 				assert(parent->hasActive());
 				parent->decrActive();
 			}
-			(*i)->remove();
-			delete *i;
-			i = m_particles.erase(i); // FIXME: m_particles is a std::vector. this is slow
+			// remove scene node
+			p->remove();
+			// delete
+			p.reset();
+			it = m_particles.erase(it); // FIXME: m_particles is a std::vector. this is slow
 		} else {
-			(*i)->step(dtime);
-			++i;
+			p->step(dtime);
+			++it;
 		}
 	}
 }
@@ -702,16 +707,20 @@ void ParticleManager::clearAll()
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	MutexAutoLock lock2(m_particle_list_lock);
-	for (auto i = m_particle_spawners.begin(); i != m_particle_spawners.end();) {
-		delete i->second;
-		m_particle_spawners.erase(i++);
+
+	// clear particle spawners
+	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
+		it->second.reset();
+		it = m_particle_spawners.erase(it);
 	}
 
-	for(auto i = m_particles.begin(); i != m_particles.end();)
-	{
-		(*i)->remove();
-		delete *i;
-		i = m_particles.erase(i);
+	// clear particles
+	for (auto it = m_particles.begin(); it != m_particles.end();) {
+		// remove scene node
+		(*it)->remove();
+		// delete
+		it->reset();
+		it = m_particles.erase(it); // FIXME: m_particles is a std::vector. this is slow
 	}
 }
 
@@ -742,13 +751,15 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				texpool = { ClientParticleTexture(p.texture, client->tsrc()) };
 			}
 
-			auto toadd = new ParticleSpawner(client, player,
-					p,
-					event->add_particlespawner.attached_id,
-					std::move(texpool),
-					this);
-
-			addParticleSpawner(event->add_particlespawner.id, toadd);
+			addParticleSpawner(event->add_particlespawner.id,
+					std::make_unique<ParticleSpawner>(
+						client,
+						player,
+						p,
+						event->add_particlespawner.attached_id,
+						std::move(texpool),
+						this)
+					);
 
 			delete event->add_particlespawner.p;
 			break;
@@ -783,11 +794,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				p.size = oldsize;
 
 			if (texture.ref) {
-				Particle *toadd = new Particle(client, player, m_env,
+				addParticle(std::make_unique<Particle>(client, player, m_env,
 						p, texture, texpos, texsize, color, nullptr,
-						std::move(texstore));
-
-				addParticle(toadd);
+						std::move(texstore)));
 			}
 
 			delete event->spawn_particle;
@@ -884,7 +893,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		(f32)pos.Z + myrand_range(0.f, .5f) - .25f
 	);
 
-	Particle *toadd = new Particle(
+	addParticle(std::make_unique<Particle>(
 		gamedef,
 		player,
 		m_env,
@@ -892,33 +901,35 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		ClientParticleTexRef(ref),
 		texpos,
 		texsize,
-		color);
-
-	addParticle(toadd);
+		color));
 }
 
 void ParticleManager::reserveParticleSpace(size_t max_estimate)
 {
 	MutexAutoLock lock(m_particle_list_lock);
+
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
-void ParticleManager::addParticle(Particle *toadd)
+void ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
-	m_particles.push_back(toadd);
+
+	m_particles.push_back(std::move(toadd));
 }
 
 
-void ParticleManager::addParticleSpawner(u64 id, ParticleSpawner *toadd)
+void ParticleManager::addParticleSpawner(u64 id, std::unique_ptr<ParticleSpawner> toadd)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
-	m_particle_spawners[id] = toadd;
+
+	m_particle_spawners[id] = std::move(toadd);
 }
 
 void ParticleManager::deleteParticleSpawner(u64 id)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
+
 	auto it = m_particle_spawners.find(id);
 	if (it != m_particle_spawners.end()) {
 		it->second->setDying();

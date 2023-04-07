@@ -99,7 +99,7 @@ public:
 
 	void step(float dtime);
 
-	bool get_expired ()
+	bool isExpired ()
 	{ return m_expiration < m_time; }
 
 	ParticleSpawner *getParent() { return m_parent; }
@@ -193,6 +193,7 @@ class ParticleManager
 friend class ParticleSpawner;
 public:
 	ParticleManager(ClientEnvironment* env);
+	DISABLE_CLASS_COPY(ParticleManager)
 	~ParticleManager();
 
 	void step (float dtime);
@@ -225,10 +226,10 @@ protected:
 		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
 		v2f &texsize, video::SColor *color, u8 tilenum = 0);
 
-	void addParticle(Particle* toadd);
+	void addParticle(std::unique_ptr<Particle> toadd);
 
 private:
-	void addParticleSpawner(u64 id, ParticleSpawner *toadd);
+	void addParticleSpawner(u64 id, std::unique_ptr<ParticleSpawner> toadd);
 	void deleteParticleSpawner(u64 id);
 
 	void stepParticles(float dtime);
@@ -236,13 +237,13 @@ private:
 
 	void clearAll();
 
-	std::vector<Particle*> m_particles;
-	std::unordered_map<u64, ParticleSpawner*> m_particle_spawners;
+	std::vector<std::unique_ptr<Particle>> m_particles;
+	std::unordered_map<u64, std::unique_ptr<ParticleSpawner>> m_particle_spawners;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
 	u64 m_next_particle_spawner_id = U32_MAX + 1;
 
-	ClientEnvironment* m_env;
+	ClientEnvironment *m_env;
 	std::mutex m_particle_list_lock;
 	std::mutex m_spawner_list_lock;
 };
