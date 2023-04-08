@@ -49,13 +49,6 @@ local function test_v3s16_metatable(player, pos)
 end
 unittests.register("test_v3s16_metatable", test_v3s16_metatable, {map=true})
 
-local function test_v3f_contains()
-	assert(vector.contains(vector.zero(), vector.new(-10, -10, -10), vector.new(10, 10, 10)))
-	assert(vector.contains(vector.new(-2, 5, -8), vector.new(-10, -10, -10), vector.new(10, 10, 10)))
-	assert(vector.contains(vector.new(-10, -10, -10), vector.new(-10, -10, -10), vector.new(10, 10, 10)))
-end
-unittests.register("test_v3f_contains", test_v3f_contains)
-
 local function test_clear_meta(_, pos)
 	local ref = core.get_meta(pos)
 

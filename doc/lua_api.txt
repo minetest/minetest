@@ -3540,8 +3540,10 @@ vectors are written like this: `(x, y, z)`:
     * Returns a boolean value indicating whether `v` is a real vector, eg. created
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
-* `vector.contains(pos, min, max)`:
+* `vector.in_area(pos, min, max)`:
 	* Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
+	* `min` and `max` are inclusive.
+	* If `min` is smaller than `max` on some axis, function always returns false.
 
 For the following functions `x` can be either a vector or a number:
 
