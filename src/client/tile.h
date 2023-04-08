@@ -254,12 +254,6 @@ struct TileLayer
 		}
 	}
 
-	bool isTileable() const
-	{
-		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
-			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
-	}
-
 	bool isTransparent() const
 	{
 		switch (material_type) {
@@ -311,22 +305,6 @@ struct TileLayer
 struct TileSpec
 {
 	TileSpec() = default;
-
-	/*!
-	 * Returns true if this tile can be merged with the other tile.
-	 */
-	bool isTileable(const TileSpec &other) const {
-		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-			if (layers[layer] != other.layers[layer])
-				return false;
-			// Only non-transparent tiles can be merged into fast faces
-			if (layers[layer].isTransparent() || !layers[layer].isTileable())
-				return false;
-		}
-		return rotation == 0
-			&& rotation == other.rotation
-			&& emissive_light == other.emissive_light;
-	}
 
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
