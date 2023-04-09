@@ -119,6 +119,7 @@ void *ServerThread::run()
 	}
 
 	while (!stopRequested()) {
+		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 		try {
 			m_server->AsyncRunStep();
 
