@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Greek (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-03-24 18:55+0000\n"
-"Last-Translator: Elnaz javadi <elnazjavadii1369@gmail.com>\n"
+"PO-Revision-Date: 2023-04-10 18:50+0000\n"
+"Last-Translator: Alexandros Koutroulis <monsieuricy@gmail.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/minetest/minetest/"
 "el/>\n"
 "Language: el\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1498,9 +1498,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Ενεργοποιημένο το απεριόριστο εύρος προβολής"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Δημιουργία πελάτη..."
+msgstr "Σφάλμα δημιουργίας πελάτη: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
