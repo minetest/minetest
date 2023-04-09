@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-18 18:53+0000\n"
+"PO-Revision-Date: 2023-04-27 17:03+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -818,7 +818,7 @@ msgstr "Échec de l'installation de $1 vers $2"
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
-"Installation : Impossible de trouver le nom de dossier approprié pour « $1 »"
+"Installation : impossible de trouver le nom de dossier approprié pour « $1 »"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
@@ -2165,7 +2165,7 @@ msgstr "Mini-carte"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Mode sans collision"
+msgstr "Mode sans collisions"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
@@ -2421,7 +2421,7 @@ msgstr "Limite stricte de la file de blocs émergents"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr "Accélération en l'air"
+msgstr "Accélération dans l'air"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration of gravity, in nodes per second per second."
@@ -2429,7 +2429,7 @@ msgstr "Accélération de la gravité, en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr "Modificateurs de Blocs Actif"
+msgstr "Modificateurs de Blocs Actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
@@ -2503,12 +2503,12 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-"Il modifie la courbe de lumière en lui appliquant une « correction gamma ».\n"
+"Modifie la courbe de lumière en lui appliquant une « correction gamma ».\n"
 "Des valeurs plus élevées rendent les niveaux de lumière moyens et inférieurs "
 "plus lumineux.\n"
 "La valeur « 1,0 » laisse la courbe de lumière intacte.\n"
 "Cela a un effet significatif seulement sur la lumière du jour et la lumière "
-"artificielle, elle a très peu d'effet sur la lumière naturelle nocturne."
+"artificielle, et a très peu d'effet sur la lumière naturelle nocturne."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly fast"
@@ -2830,8 +2830,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
-"Liens web cliquables (molette de la souris ou ctrl+clic gauche) activés dans "
-"la sortie de la console de tchat."
+"Liens web cliquables (clic molette ou ctrl + clic gauche) activés dans la "
+"sortie de la console de tchat."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2863,7 +2863,7 @@ msgstr "Modding côté client"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr "Vitesse d'escalade du joueur"
+msgstr "Vitesse d'escalade"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
@@ -2912,18 +2912,17 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Liste des mods de confiance séparés par des virgules autorisés à accéder aux "
-"APIs HTTP, leur permettant d'envoyer et de télécharger des données vers/"
-"depuis Internet."
+"Liste séparée par des virgules des mods autorisés à accéder aux APIs HTTP, "
+"leur permettant d'envoyer et de télécharger des données vers/depuis Internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Liste séparée par des virgules des mods de confiance qui sont autorisés à "
-"accéder aux fonctions non sécurisées même lorsque l'option de sécurisation "
-"des mods est activée (via « request_insecure_environment() »)."
+"Liste séparée par des virgules des mods de confiance autorisés à accéder aux "
+"fonctions non sécurisées même lorsque l'option de sécurisation des mods est "
+"activée (via « request_insecure_environment() »)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2934,9 +2933,9 @@ msgid ""
 msgstr ""
 "Niveau de compression à utiliser lors de la sauvegarde des blocs de carte "
 "sur le disque.\n"
-"-1 - utilise le niveau de compression par défaut\n"
-"0 - compression minimale, le plus rapide\n"
-"9 - meilleure compression, le plus lent"
+"-1 – utilise le niveau de compression par défaut\n"
+"0 – compression minimale, le plus rapide\n"
+"9 – meilleure compression, le plus lent"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2947,9 +2946,9 @@ msgid ""
 msgstr ""
 "Niveau de compression à utiliser lors de l'envoi des blocs de carte au "
 "client.\n"
-"-1 - utilise le niveau de compression par défaut\n"
-"0 - compression minimale, le plus rapide\n"
-"9 - meilleure compression, le plus lent"
+"-1 – utilise le niveau de compression par défaut\n"
+"0 – compression minimale, le plus rapide\n"
+"9 – meilleure compression, le plus lent"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -3104,7 +3103,7 @@ msgstr "Intervalle de mise à jour des objets sur le serveur"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr "Vitesse d’accélération par défaut"
+msgstr "Accélération par défaut"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
@@ -3507,13 +3506,13 @@ msgid ""
 msgstr ""
 "Active le mappage de tons filmique « Uncharted 2 » de Hable.\n"
 "Simule la courbe de tons d'un film photographique et ainsi se rapproche de "
-"l'apparence des images à plage dynamique élevée. Le contraste de milieu de "
-"plage est légèrement amélioré, les hautes lumières et les ombres sont "
-"progressivement compressées."
+"l'apparence des images à plage dynamique élevée.\n"
+"Le contraste de milieu de plage est légèrement amélioré, les hautes lumières "
+"et les ombres sont progressivement compressées."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr "Active la rotation des items d'inventaire."
+msgstr "Active l'animation des objets de l'inventaire."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -3672,12 +3671,12 @@ msgstr "Filtrage et anticrénelage"
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Le premier des 4 bruits 2D qui définissent ensemble la hauteur des collines "
-"et des montagnes."
+"Premier des 4 bruits 2D qui définissent ensemble la hauteur des collines et "
+"des montagnes."
 
 #: src/settings_translation_file.cpp
 msgid "First of two 3D noises that together define tunnels."
-msgstr "Le premier des deux bruits 3D qui définissent ensemble les tunnels."
+msgstr "Premier des deux bruits 3D qui définissent ensemble les tunnels."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -3784,10 +3783,10 @@ msgid ""
 msgstr ""
 "Pour les polices de style pixel qui ne s'adaptent pas bien, cela garantit "
 "que les tailles de police utilisées avec cette police sont toujours "
-"divisibles par cette valeur, en pixels. Par exemple une police de style "
-"pixel de 16 pixels de haut doit avoir cette valeur définie sur 16, alors "
-"elle ne sera jamais que de taille 16, 32, 48, etc., donc un mod demandant "
-"une taille de 25 obtiendra 32."
+"divisibles par cette valeur, en pixels.\n"
+"Par exemple une police de style pixel de 16 pixels de haut doit avoir cette "
+"valeur définie sur 16, alors elle ne sera jamais que de taille 16, 32, 48, "
+"etc., donc un mod demandant une taille de 25 obtiendra 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3838,8 +3837,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Le quatrième des 4 bruits 2D qui définissent ensemble la hauteur des "
-"collines et des montagnes."
+"Quatrième des 4 bruits 2D qui définissent ensemble la hauteur des collines "
+"et des montagnes."
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
@@ -3894,15 +3893,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "Taille de l'interface"
+msgstr "Taille de l'interface graphique"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "Filtrage des images de l'interface"
+msgstr "Filtrage des images de l'interface graphique"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "Filtrage de mise à l'échelle txr2img de l'interface"
+msgstr "Filtrage de mise à l'échelle txr2img de l'interface graphique"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
@@ -3929,7 +3928,7 @@ msgstr ""
 "Attributs de génération de terrain globaux.\n"
 "Dans le générateur de terrain v6, le drapeau « décorations » contrôle toutes "
 "les décorations sauf les arbres et les herbes de la jungle, dans tous les "
-"autres générateurs de terrain, ce drapeau contrôle toutes les décorations."
+"autres générateurs de terrains, ce drapeau contrôle toutes les décorations."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4005,10 +4004,10 @@ msgid ""
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
 "Auto-instrumenter le profileur :\n"
-"* Instrumente une fonction vide.\n"
-"La surcharge est évaluée (l'auto-instrumentation ajoute 1 appel de fonction "
+"* instrumente une fonction vide.\n"
+"la surcharge est évaluée (l'auto-instrumentation ajoute 1 appel de fonction "
 "à chaque fois).\n"
-"* Instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
+"* instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -4022,8 +4021,8 @@ msgstr "Bruit de chaleur"
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
-"Composant de hauteur de la taille initiale de la fenêtre. Ignoré en mode "
-"plein écran."
+"Composante de la hauteur de la taille initiale de la fenêtre. Ignorée en "
+"mode plein écran."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -4171,7 +4170,7 @@ msgstr ""
 "invisibles selon la position des yeux du joueur.\n"
 "Cela peut réduire le nombre de blocs envoyés au client de 50 à 80 %.\n"
 "Le client ne reçoit plus la plupart des blocs invisibles, de sorte que "
-"l'utilité du mode sans collision est réduite."
+"l'utilité du mode sans collisions est réduite."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4245,7 +4244,7 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
-"Si activé, vous pourrez placer des blocs à la position où vous êtes.\n"
+"Si activé, vous pouvez placer des blocs à la position où vous êtes.\n"
 "C'est utile pour travailler avec des modèles « nodebox » dans des zones "
 "exiguës."
 
@@ -4331,7 +4330,7 @@ msgstr ""
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
-"Instrumenter la fonction action des Modificateurs de Blocs Actif (« Active "
+"Instrumenter la fonction action des Modificateurs de Blocs Actifs (« Active "
 "Block Modifiers ») à l'enregistrement."
 
 #: src/settings_translation_file.cpp
@@ -4357,7 +4356,7 @@ msgstr "Intervalle d'envoi de l'heure aux clients, établi en secondes."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr "Animation des items d'inventaire"
+msgstr "Animation des objets de l'inventaire"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -4484,7 +4483,7 @@ msgstr "Julia z"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr "Vitesse de saut du joueur"
+msgstr "Vitesse de saut"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
@@ -4542,11 +4541,11 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
-"Apparence des feuilles d’arbres :\n"
-"– Détaillée : toutes les faces sont visibles\n"
-"– Simple : seulement les faces externes, si des « special_tiles » sont "
-"définies\n"
-"– Opaque : désactive la transparence"
+"Apparence des feuilles :\n"
+"– détaillée : toutes les faces sont visibles\n"
+"– simple : seulement les faces externes, si les « special_tiles » définies "
+"sont utilisées\n"
+"– opaque : désactive la transparence"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4654,9 +4653,9 @@ msgid ""
 "Only has an effect if compiled with cURL."
 msgstr ""
 "Nombre limite de requête HTTP en parallèle. Affecte :\n"
-"– L'obtention de média si le serveur utilise le paramètre « remote_media ».\n"
-"– Le téléchargement de la liste des serveurs et l'annonce du serveur.\n"
-"– Les téléchargements effectués par le menu (ex. : gestionnaire de mods).\n"
+"– l'obtention de média si le serveur utilise le paramètre « remote_media ».\n"
+"– le téléchargement de la liste des serveurs et l'annonce du serveur.\n"
+"– les téléchargements effectués par le menu (ex. : gestionnaire de mods).\n"
 "Prend seulement effet si Minetest est compilé avec cURL."
 
 #: src/settings_translation_file.cpp
@@ -4981,8 +4980,8 @@ msgid ""
 "max_total = ceil((#clients + max_users) * per_client / 4)"
 msgstr ""
 "Le nombre maximal de blocs envoyés simultanément par client.\n"
-"Le compte total maximal est calculé dynamiquement :\n"
-"max_total = ceil((nombre clients + max_users) × per_client ÷ 4)"
+"Le compte total maximal est calculé dynamiquement : max_total = ceil(("
+"nombre_clients + max_utilisateurs) × par_client ÷ 4)"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
@@ -5112,7 +5111,7 @@ msgstr "Message du jour affiché aux joueurs lors de la connexion."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
-msgstr "Méthodes utilisées pour l'éclairage des objets."
+msgstr "Méthode utilisée pour mettre en surbrillance l'objet sélectionné."
 
 #: src/settings_translation_file.cpp
 msgid "Minimal level of logging to be written to chat."
@@ -5226,8 +5225,8 @@ msgid ""
 msgstr ""
 "Nom du générateur de terrain utilisé à la création d’un nouveau monde.\n"
 "La création d'un monde depuis le menu principal le remplace.\n"
-"Les générateurs de terrain actuellement très instables sont :\n"
-"– Les terrains flottants optionnels du générateur v7 (désactivé par défaut)."
+"Les générateurs de terrains actuellement très instables sont :\n"
+"– les terrains flottants optionnels du générateur v7 (désactivé par défaut)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5269,7 +5268,7 @@ msgstr "Les nouveaux joueurs ont besoin d'entrer ce mot de passe."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr "Sans collision"
+msgstr "Sans collisions"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -5306,15 +5305,17 @@ msgid ""
 msgstr ""
 "Nombre de fils émergents à utiliser.\n"
 "Valeur 0 :\n"
-"– Sélection automatique. Le nombre de fils émergents est le « nombre de "
-"processeurs - 2 », avec un minimum de 1.\n"
+"– Sélection automatique. Le nombre de fils émergents est le « nombre de "
+"processeurs - 2 », avec un minimum de 1.\n"
 "Toute autre valeur :\n"
 "– Spécifie le nombre de fils émergents, avec un minimum de 1.\n"
 "ATTENTION : augmenter le nombre de fils émergents accélère bien la création "
-"de terrain, mais cela peut nuire à la performance du jeu en interférant avec "
-"d’autres processus, en particulier en mode solo et/ou lors de l’exécution de "
-"code Lua dans « on_generated ». Pour beaucoup d'utilisateurs, le réglage "
-"optimal peut être « 1 »."
+"de terrain,\n"
+"mais cela peut nuire à la performance du jeu en interférant avec d’autres "
+"processus,\n"
+"en particulier en mode solo et/ou lors de l’exécution de code Lua dans « "
+"on_generated ».\n"
+"Pour beaucoup d'utilisateurs, le réglage optimal peut être « 1 »."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5479,8 +5480,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
-"Empêcher les mods d'exécuter des fonctions insécurisées (comme des commandes "
-"système)."
+"Empêcher les mods d'exécuter des fonctions non sécurisées, comme des "
+"commandes système."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5948,8 +5949,8 @@ msgid ""
 msgstr ""
 "Mettre sur « Activé » restitue la partition de débogage du flou lumineux.\n"
 "En mode débogage, l'écran est divisé en 4 quadrants :\n"
-"en haut à gauche - image de base traitée, en haut à droite - image finale\n"
-"en bas à gauche - image de base brute, en bas à droite - texture de l'effet "
+"en haut à gauche – image de base traitée, en haut à droite – image finale\n"
+"en bas à gauche – image de base brute, en bas à droite – texture de l'effet "
 "lumineux."
 
 #: src/settings_translation_file.cpp
@@ -6016,14 +6017,14 @@ msgstr "Afficher les infos de débogage"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr "Afficher les boîtes de sélection de l'entité"
+msgstr "Afficher les boîtes de sélection des entités"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Afficher les boîtes de sélection de l'entité\n"
+"Afficher les boîtes de sélection des entités\n"
 "Un redémarrage est nécessaire après cette modification."
 
 #: src/settings_translation_file.cpp
@@ -6061,7 +6062,7 @@ msgid ""
 msgstr ""
 "Taille des tranches de carte générés à la création de terrain, établie en "
 "blocs de carte (16 nœuds).\n"
-"ATTENTION ! : Il n’y a aucun avantage, et plusieurs dangers, à augmenter "
+"ATTENTION ! : il n’y a aucun avantage, et plusieurs dangers, à augmenter "
 "cette valeur au-dessus de 5.\n"
 "Réduire cette valeur augmente la densité de cavernes et de donjons.\n"
 "La modification de cette valeur est réservée à un usage spécial. Il est "
@@ -6163,9 +6164,9 @@ msgid ""
 "Note that mods or games may explicitly set a stack for certain (or all) "
 "items."
 msgstr ""
-"Définit la taille de pile par défaut des nœuds, items et outils.\n"
-"Les mods ou les jeux peuvent fixer explicitement une pile pour certains (ou "
-"tous) items."
+"Définit la taille d'empilement par défaut des nœuds, objets et outils.\n"
+"Les mods ou les jeux peuvent définir explicitement une taille de pile pour "
+"certains (ou tous) objets."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6244,15 +6245,14 @@ msgstr ""
 "Niveau de la surface de l'eau (optionnel) placée sur une couche solide de "
 "terrain flottant.\n"
 "L'eau est désactivée par défaut et est placée seulement si cette valeur est "
-"supérieure à « mgv7_floatland_ymax » - « mgv7_floatland_taper » (début de "
-"l’effilage du haut).\n"
-"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES "
-"SERVEURS*** :\n"
-"Lorsque le placement de l'eau est activé, les terrains flottants doivent "
-"être configurés et vérifiés pour être une couche solide en mettant "
-"« mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de "
-"« mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui "
-"surchargent les serveurs et pourraient inonder les terres en dessous."
+"supérieure à « mgv7_floatland_ymax » - « mgv7_floatland_taper » (début de l’"
+"effilage du haut).\n"
+"***ATTENTION, DANGER POTENTIEL AU MONDES ET AUX PERFORMANCES DES SERVEURS*** "
+": lorsque le placement de l'eau est activé, les terrains flottants doivent "
+"être configurés et vérifiés pour être une couche solide en mettant « "
+"mgv7_floatland_density » à 2,0 (ou autre valeur dépendante de « "
+"mgv7_np_floatland »), pour éviter les chutes d'eaux énormes qui surchargent "
+"les serveurs et pourraient inonder les terres en dessous."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -6334,14 +6334,16 @@ msgid ""
 "this option allows enforcing it for certain node types. Note though that\n"
 "that is considered EXPERIMENTAL and may not work properly."
 msgstr ""
-"Les textures sur un nœud peuvent être alignées soit sur le nœud, soit sur le "
-"monde. Le premier mode convient mieux aux choses comme des machines, des "
-"meubles, etc., tandis que le second rend les escaliers et les microblocs "
-"mieux adaptés à l'environnement. Cependant, comme cette possibilité est "
-"nouvelle, elle ne peut donc pas être utilisée par les anciens serveurs, "
-"cette option permet de l'appliquer pour certains types de nœuds. Noter "
-"cependant que c'est considéré comme EXPÉRIMENTAL et peut ne pas fonctionner "
-"correctement."
+"Les textures d'un nœud peuvent être alignées soit sur le nœud, soit sur le "
+"monde.\n"
+"Le premier mode convient mieux aux choses comme des machines, des meubles, "
+"etc., tandis que le second rend les escaliers et les microblocs mieux "
+"adaptés à l'environnement.\n"
+"Cependant, comme cette possibilité est nouvelle, elle ne peut donc pas être "
+"utilisée par les anciens serveurs, cette option permet de l'appliquer pour "
+"certains types de nœuds.\n"
+"Noter cependant que c'est considéré comme EXPÉRIMENTAL et peut ne pas "
+"fonctionner correctement."
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
@@ -6356,8 +6358,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
-"Le format par défaut dans lequel les profils sont enregistrés, lors de "
-"l'appel de « /profiler save [format] » sans format."
+"Format par défaut dans lequel les profils sont enregistrés, lors de l'appel "
+"de « /profiler save [format] » sans format."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
@@ -6379,7 +6381,7 @@ msgstr "L'identifiant de la manette à utiliser."
 #: src/settings_translation_file.cpp
 msgid "The length in pixels it takes for touch screen interaction to start."
 msgstr ""
-"La longueur en pixels qu'il faut pour que l'interaction avec l'écran tactile "
+"Longueur en pixels nécessaire pour que l'interaction avec l'écran tactile "
 "commence."
 
 #: src/settings_translation_file.cpp
@@ -6390,7 +6392,7 @@ msgid ""
 "Default is 1.0 (1/2 node).\n"
 "Requires waving liquids to be enabled."
 msgstr ""
-"La hauteur maximale de la surface des liquides ondulants.\n"
+"Hauteur maximale de la surface des liquides ondulants.\n"
 "4,0 - La hauteur des vagues est de deux blocs.\n"
 "0,0 - La vague ne bouge pas du tout.\n"
 "Par défaut est de 1,0 (1/2 bloc).\n"
@@ -6467,9 +6469,9 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
-"Le temps (en secondes) où la file des liquides peut s'agrandir au-delà de sa "
+"Temps en secondes où la file des liquides peut s'agrandir au-delà de sa "
 "capacité de traitement jusqu'à ce qu'une tentative soit faite pour réduire "
-"sa taille en vidant l'ancienne file d'articles.\n"
+"sa taille en vidant les anciennes entrées de la file.\n"
 "Une valeur de 0 désactive cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
@@ -6485,16 +6487,16 @@ msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
-"Le temps en secondes qu'il faut entre des événements répétés lors de l'appui "
-"d'une combinaison de boutons de la manette."
+"Temps en secondes entre des événements répétés lors du maintien d'une "
+"combinaison de boutons de la manette."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated node placements when holding\n"
 "the place button."
 msgstr ""
-"Le temps en secondes qu'il faut entre des placements de blocs répétés lors "
-"de l'appui sur le bouton de placement."
+"Temps en secondes entre des placements de blocs répétés lors du maintien du "
+"bouton de placement."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -6506,15 +6508,15 @@ msgid ""
 "enabled. Also the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
-"La distance verticale sur laquelle la chaleur diminue de 20 si "
-"« altitude_chill » est activé. Également la distance verticale sur laquelle "
-"l’humidité diminue de 10 si « altitude_dry » est activé."
+"Distance verticale sur laquelle la chaleur diminue de 20 si « altitude_chill "
+"» est activé. Également la distance verticale sur laquelle l’humidité "
+"diminue de 10 si « altitude_dry » est activé."
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-"Le troisième des 4 bruits 2D qui définissent ensemble la hauteur des "
-"collines et des montagnes."
+"Troisième des 4 bruits 2D qui définissent ensemble la hauteur des collines "
+"et des montagnes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6955,14 +6957,15 @@ msgid ""
 "texture autoscaling."
 msgstr ""
 "En utilisant le filtrage bilinéaire/trilinéaire/anisotrope, les textures de "
-"basse résolution peuvent être brouillées. Elles seront donc automatiquement "
-"agrandies avec l'interpolation du plus proche voisin pour garder des pixels "
-"moins floues. Ceci détermine la taille de la texture minimale pour les "
-"textures agrandies ; les valeurs plus hautes rendent plus détaillées, mais "
-"nécessitent plus de mémoire. Les puissances de 2 sont recommandées. Ce "
-"paramètre est appliqué uniquement si le filtrage bilinéaire/trilinéaire/"
+"basse résolution peuvent être floues.\n"
+"Elles seront donc automatiquement agrandies avec l'interpolation du plus "
+"proche voisin pour préserver des pixels nets.\n"
+"Ceci détermine la taille de la texture minimale pour les textures agrandies ;"
+" les valeurs plus hautes rendent plus détaillées, mais nécessitent plus de "
+"mémoire. Les puissances de 2 sont recommandées.\n"
+"Ce paramètre est appliqué uniquement si le filtrage bilinéaire/trilinéaire/"
 "anisotrope est activé.\n"
-"Ceci est également utilisée comme taille de texture de nœud de base pour "
+"Ceci est également utilisé comme taille de texture de nœud de base pour "
 "l'agrandissement automatique des textures alignées sur le monde."
 
 #: src/settings_translation_file.cpp
@@ -6985,7 +6988,7 @@ msgid ""
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
 "Détermine l'exposition illimitée des noms de joueurs aux autres clients.\n"
-"Obsolète : utiliser le paramètre « player_transfer_distance » à la place."
+"Obsolète, utiliser le paramètre « player_transfer_distance » à la place."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -7040,8 +7043,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
-"Composant de largeur de la taille initiale de la fenêtre. Ignoré en mode "
-"plein écran."
+"Composante de la largeur de la taille initiale de la fenêtre. Ignorée en "
+"mode plein écran."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
@@ -7079,10 +7082,11 @@ msgid ""
 "Warning: This option is EXPERIMENTAL!"
 msgstr ""
 "Les textures alignées sur le monde peuvent être mises à l'échelle pour "
-"couvrir plusieurs nœuds. Cependant, le serveur peut ne pas envoyer l'échelle "
-"que vous voulez, surtout si vous utilisez un pack de textures spécialement "
-"conçu ; avec cette option, le client essaie de déterminer l'échelle "
-"automatiquement en fonction de la taille de la texture.\n"
+"couvrir plusieurs nœuds.\n"
+"Cependant, le serveur peut ne pas envoyer l'échelle que vous voulez, surtout "
+"si vous utilisez un pack de textures spécialement conçu ;\n"
+"avec cette option, le client essaie de déterminer l'échelle automatiquement "
+"en fonction de la taille de la texture.\n"
 "Voir aussi « texture_min_size ».\n"
 "Avertissement : cette option est EXPÉRIMENTALE !"
 
@@ -7109,8 +7113,7 @@ msgstr "Limite haute Y des grandes grottes."
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
 msgstr ""
-"La distance Y jusqu'à laquelle les cavernes s'étendent à leur taille "
-"maximale."
+"Distance Y jusqu'à laquelle les cavernes s'étendent à leur taille maximale."
 
 #: src/settings_translation_file.cpp
 msgid ""
