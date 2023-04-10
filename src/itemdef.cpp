@@ -265,14 +265,14 @@ public:
 #endif
 		clear();
 	}
+
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const std::vector<ClientCached*> &values = m_clientcached.getValues();
-		for (ClientCached *cc : values) {
-			if (cc->wield_mesh.mesh)
-				cc->wield_mesh.mesh->drop();
-			delete cc;
+		for (auto &it : m_clientcached) {
+			if (it.second->wield_mesh.mesh)
+				it.second->wield_mesh.mesh->drop();
+			delete it.second;
 		}
 
 #endif
@@ -335,15 +335,14 @@ public:
 		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
-		ClientCached *cc = NULL;
-		m_clientcached.get(cache_key, &cc);
-		if (cc)
-			return cc;
+		auto it = m_clientcached.find(cache_key);
+		if (it != m_clientcached.end())
+			return it->second;
 
 		ITextureSource *tsrc = client->getTextureSource();
 
 		// Create new ClientCached
-		cc = new ClientCached();
+		ClientCached *cc = new ClientCached();
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
@@ -356,55 +355,16 @@ public:
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
-		m_clientcached.set(cache_key, cc);
+		m_clientcached[cache_key] = cc;
 
 		return cc;
-	}
-
-	ClientCached* getClientCached(const ItemStack &item, Client *client) const
-	{
-		IItemDefManager *idef = client->getItemDefManager();
-		std::string inventory_image = item.getInventoryImage(idef);
-		std::string cache_key = item.getDefinition(idef).name;
-		if (!inventory_image.empty())
-			cache_key += "/" + inventory_image;
-
-		ClientCached *cc = NULL;
-		m_clientcached.get(cache_key, &cc);
-		if (cc)
-			return cc;
-
-		if (std::this_thread::get_id() == m_main_thread) {
-			return createClientCachedDirect(item, client);
-		}
-
-		// We're gonna ask the result to be put into here
-		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
-
-		// Throw a request in
-		m_get_clientcached_queue.add(cache_key, 0, 0, &result_queue);
-		try {
-			while (true) {
-				// Wait result for a second
-				GetResult<std::string, ClientCached*, u8, u8>
-					result = result_queue.pop_front(1000);
-
-				if (result.key == cache_key) {
-					return result.item;
-				}
-			}
-		} catch(ItemNotFoundException &e) {
-			errorstream << "Waiting for clientcached " << cache_key
-				<< " timed out." << std::endl;
-			return &m_dummy_clientcached;
-		}
 	}
 
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const ItemStack &item,
 			Client *client) const
 	{
-		ClientCached *cc = getClientCached(item, client);
+		ClientCached *cc = createClientCachedDirect(item, client);
 		if (!cc)
 			return nullptr;
 		return cc->inventory_texture;
@@ -413,7 +373,7 @@ public:
 	// Get item wield mesh
 	virtual ItemMesh* getWieldMesh(const ItemStack &item, Client *client) const
 	{
-		ClientCached *cc = getClientCached(item, client);
+		ClientCached *cc = createClientCachedDirect(item, client);
 		if (!cc)
 			return nullptr;
 		return &(cc->wield_mesh);
@@ -422,7 +382,7 @@ public:
 	// Get item palette
 	virtual Palette* getPalette(const ItemStack &item, Client *client) const
 	{
-		ClientCached *cc = getClientCached(item, client);
+		ClientCached *cc = createClientCachedDirect(item, client);
 		if (!cc)
 			return nullptr;
 		return cc->palette;
@@ -583,28 +543,6 @@ public:
 		}
 	}
 
-	void processQueue(IGameDef *gamedef)
-	{
-#ifndef SERVER
-		//NOTE this is only thread safe for ONE consumer thread!
-		while (!m_get_clientcached_queue.empty()) {
-			GetRequest<std::string, ClientCached*, u8, u8>
-					request = m_get_clientcached_queue.pop();
-
-			ItemStack item;
-			size_t idx = request.key.find('/');
-			if (idx != std::string::npos) {
-				item.name = request.key.substr(0, idx);
-				item.metadata.setString("inventory_image", request.key.substr(idx + 1));
-			} else {
-				item.name = request.key;
-			}
-
-			m_get_clientcached_queue.pushResult(request,
-					createClientCachedDirect(item, (Client *)gamedef));
-		}
-#endif
-	}
 private:
 	// Key is name
 	std::map<std::string, ItemDefinition*> m_item_definitions;
@@ -616,9 +554,7 @@ private:
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes
-	mutable MutexedMap<std::string, ClientCached*> m_clientcached;
-	// Queued clientcached fetches (to be processed by the main thread)
-	mutable RequestQueue<std::string, ClientCached*, u8, u8> m_get_clientcached_queue;
+	mutable std::map<std::string, ClientCached*> m_clientcached;
 #endif
 };
 

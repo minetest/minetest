@@ -163,9 +163,6 @@ public:
 			const std::string &convert_to)=0;
 
 	virtual void deSerialize(std::istream &is, u16 protocol_version)=0;
-
-	// Do stuff asked by threads that can only be done in the main thread
-	virtual void processQueue(IGameDef *gamedef)=0;
 };
 
 IWritableItemDefManager* createItemDefManager();
