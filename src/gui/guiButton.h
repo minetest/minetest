@@ -123,6 +123,9 @@ public:
 	// PATCH
 	//! Returns if this element (or one of its direct children) is hovered
 	bool isHovered() const;
+
+	//! Returns if this element (or one of its direct children) is focused
+	bool isFocused() const;
 	// END PATCH
 
 	//! Sets if the button should use the skin to draw its border
@@ -268,6 +271,7 @@ private:
 	video::SColor Colors[4];
 	// PATCH
 	bool WasHovered = false;
+	bool WasFocused = false;
 	ISimpleTextureSource *TSrc;
 
 	gui::IGUIStaticText *StaticText;

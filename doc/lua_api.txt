@@ -3211,6 +3211,7 @@ Some types may inherit styles from parent types.
 * *all elements*
     * default - Equivalent to providing no states
 * button, button_exit, image_button, item_image_button
+    * focused - Active when button has focus
     * hovered - Active when the mouse is hovering over the element
     * pressed - Active when the button is pressed
 
