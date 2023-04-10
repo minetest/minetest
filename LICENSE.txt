@@ -71,6 +71,8 @@ erlehmann, Warr1024, rollerozxa:
 
 kilbith:
   textures/base/pack/server_favorite.png
+  textures/base/pack/progress_bar.png
+  textures/base/pack/progress_bar_bg.png
 
 SmallJoker:
   textures/base/pack/cdb_clear.png
