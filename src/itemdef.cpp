@@ -254,6 +254,8 @@ class CItemDefManager: public IWritableItemDefManager
 			palette(NULL)
 		{}
 
+		ClientCached(const ClientCached &other) = delete;
+
 		~ClientCached() {
 			if (wield_mesh.mesh)
 				wield_mesh.mesh->drop();
@@ -548,8 +550,6 @@ private:
 #ifndef SERVER
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
-	// A reference to this can be returned when nothing is found, to avoid NULLs
-	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes
 	mutable std::map<std::string, std::unique_ptr<ClientCached>> m_clientcached;
 #endif
