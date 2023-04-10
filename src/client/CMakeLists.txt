@@ -1,4 +1,4 @@
-set(sound_SRCS  ${CMAKE_CURRENT_SOURCE_DIR}/sound.cpp)
+set(sound_SRCS "")
 
 if(USE_SOUND)
 	set(sound_SRCS ${sound_SRCS}
