@@ -936,8 +936,7 @@ private:
 	NodeDefManager *nodedef_manager = nullptr;
 
 	GameOnDemandSoundFetcher soundfetcher; // useful when testing
-	ISoundManager *sound = nullptr;
-	bool sound_is_dummy = false;
+	std::unique_ptr<ISoundManager> sound_manager;
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
@@ -1074,8 +1073,7 @@ Game::~Game()
 {
 	delete client;
 	delete soundmaker;
-	if (!sound_is_dummy)
-		delete sound;
+	sound_manager.reset();
 
 	delete server; // deleted first to stop all server threads
 
@@ -1380,20 +1378,19 @@ bool Game::initSound()
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
-		sound = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
-		if (!sound)
+		sound_manager.reset(createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher));
+		if (!sound_manager)
 			infostream << "Failed to initialize OpenAL audio" << std::endl;
 	} else
 		infostream << "Sound disabled." << std::endl;
 #endif
 
-	if (!sound) {
+	if (!sound_manager) {
 		infostream << "Using dummy audio." << std::endl;
-		sound = &dummySoundManager;
-		sound_is_dummy = true;
+		sound_manager = std::make_unique<DummySoundManager>();
 	}
 
-	soundmaker = new SoundMaker(sound, nodedef_manager);
+	soundmaker = new SoundMaker(sound_manager.get(), nodedef_manager);
 	if (!soundmaker)
 		return false;
 
@@ -1609,7 +1606,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 		client = new Client(start_data.name.c_str(),
 				start_data.password, start_data.address,
 				*draw_control, texture_src, shader_src,
-				itemdef_manager, nodedef_manager, sound, eventmgr,
+				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
 				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
 				start_data.allow_login_or_register);
 		client->migrateModStorage();
@@ -2211,7 +2208,8 @@ void Game::openInventory()
 	TextDest *txt_dst = new TextDestPlayerInventory(client);
 	auto *&formspec = m_game_ui->updateFormspec("");
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+		sound_manager.get());
 
 	formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 }
@@ -2816,7 +2814,8 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
 		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 	}
 
 	delete event->show_formspec.formspec;
@@ -2829,7 +2828,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
 	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -3164,19 +3163,20 @@ void Game::updateSound(f32 dtime)
 {
 	// Update sound listener
 	v3s16 camera_offset = camera->getOffset();
-	sound->updateListener(camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
-			      v3f(0, 0, 0), // velocity
-			      camera->getDirection(),
-			      camera->getCameraNode()->getUpVector());
+	sound_manager->updateListener(
+			camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
+			v3f(0, 0, 0), // velocity
+			camera->getDirection(),
+			camera->getCameraNode()->getUpVector());
 
 	bool mute_sound = g_settings->getBool("mute_sound");
 	if (mute_sound) {
-		sound->setListenerGain(0.0f);
+		sound_manager->setListenerGain(0.0f);
 	} else {
 		// Check if volume is in the proper range, else fix it.
 		float old_volume = g_settings->getFloat("sound_volume");
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-		sound->setListenerGain(new_volume);
+		sound_manager->setListenerGain(new_volume);
 
 		if (old_volume != new_volume) {
 			g_settings->setFloat("sound_volume", new_volume);
@@ -3548,7 +3548,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 
 		formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		return false;
@@ -4324,7 +4325,8 @@ void Game::showDeathFormspec()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+		sound_manager.get());
 	formspec->setFocus("btn_respawn");
 }
 
@@ -4460,7 +4462,8 @@ void Game::showPauseMenu()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 	formspec->setFocus("btn_continue");
 	// game will be paused in next step, if in singleplayer (see m_is_paused)
 	formspec->doPause = true;
