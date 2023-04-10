@@ -253,6 +253,11 @@ class CItemDefManager: public IWritableItemDefManager
 			inventory_texture(NULL),
 			palette(NULL)
 		{}
+
+		~ClientCached() {
+			if (wield_mesh.mesh)
+				wield_mesh.mesh->drop();
+		}
 	};
 #endif
 
@@ -268,14 +273,6 @@ public:
 
 	virtual ~CItemDefManager()
 	{
-#ifndef SERVER
-		for (auto &it : m_clientcached) {
-			if (it.second->wield_mesh.mesh)
-				it.second->wield_mesh.mesh->drop();
-			delete it.second;
-		}
-
-#endif
 		for (auto &item_definition : m_item_definitions) {
 			delete item_definition.second;
 		}
@@ -337,12 +334,12 @@ public:
 		// Skip if already in cache
 		auto it = m_clientcached.find(cache_key);
 		if (it != m_clientcached.end())
-			return it->second;
+			return it->second.get();
 
 		ITextureSource *tsrc = client->getTextureSource();
 
 		// Create new ClientCached
-		ClientCached *cc = new ClientCached();
+		auto cc = std::make_unique<ClientCached>();
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
@@ -355,9 +352,9 @@ public:
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
-		m_clientcached[cache_key] = cc;
-
-		return cc;
+		ClientCached *ptr = cc.get();
+		m_clientcached[cache_key] = std::move(cc);
+		return ptr;
 	}
 
 	// Get item inventory texture
@@ -554,7 +551,7 @@ private:
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes
-	mutable std::map<std::string, ClientCached*> m_clientcached;
+	mutable std::map<std::string, std::unique_ptr<ClientCached>> m_clientcached;
 #endif
 };
 
