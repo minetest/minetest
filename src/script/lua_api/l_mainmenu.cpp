@@ -508,7 +508,7 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 {
-	GUIEngine* engine = getGuiEngine(L);
+	GUIEngine *engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
@@ -516,7 +516,7 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 			engine->m_parent,
 			-1,
 			engine->m_menumanager,
-			engine->m_texture_source);
+			engine->m_texture_source.get());
 	kmenu->drop();
 	return 0;
 }
