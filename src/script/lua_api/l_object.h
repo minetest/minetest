@@ -204,6 +204,9 @@ private:
 	// get_fov(self)
 	static int l_get_fov(lua_State *L);
 
+	// get_fog(self)
+	static int l_get_fog(lua_State *L);
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
@@ -223,6 +226,9 @@ private:
 
 	// set_fov(self, degrees, is_multiplier, transition_time)
 	static int l_set_fov(lua_State *L);
+
+	// set_fov(self, distance)
+	static int l_set_fog(lua_State *L);
 
 	// set_look_vertical(self, radians)
 	static int l_set_look_vertical(lua_State *L);

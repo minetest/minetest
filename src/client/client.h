@@ -232,6 +232,7 @@ public:
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
+	void handleCommand_SetFog(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
