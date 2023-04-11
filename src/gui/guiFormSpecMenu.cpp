@@ -154,8 +154,8 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 
 	} else {
 		cur_formspec->setFormspecPrepend(formspecPrepend);
-		cur_formspec->setFormSource(std::unique_ptr<IFormSource>(fs_src));
-		cur_formspec->setTextDest(std::unique_ptr<TextDest>(txt_dest));
+		cur_formspec->setFormSource(fs_src);
+		cur_formspec->setTextDest(txt_dest);
 	}
 }
 

@@ -39,8 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "client/tile.h"
 
-#include <memory>
-
 
 /******************************************************************************/
 void TextDestGuiEngine::gotText(const StringMap &fields)
@@ -82,15 +80,16 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (retval)
 		return retval;
 
-	irr_ptr<video::IImage> image(m_driver->createImageFromFile(name.c_str()));
+	video::IImage *image = m_driver->createImageFromFile(name.c_str());
 	if (!image)
-		return nullptr;
+		return NULL;
 
-	image.reset(Align2Npot2(image.release(), m_driver));
-	retval = m_driver->addTexture(name.c_str(), image.get());
+	image = Align2Npot2(image, m_driver);
+	retval = m_driver->addTexture(name.c_str(), image);
+	image->drop();
+
 	if (retval)
 		m_to_delete.push_back(retval);
-
 	return retval;
 }
 
