@@ -522,7 +522,7 @@ public:
 class OpenALSoundManager final : public ISoundManager
 {
 private:
-	std::unique_ptr<SoundLocalFallbackPathsGiver> m_local_fallback_paths_giver;
+	std::unique_ptr<SoundFallbackPathProvider> m_fallback_path_provider;
 
 	ALCdevice *m_device;
 	ALCcontext *m_context;
@@ -597,7 +597,7 @@ private:
 
 public:
 	OpenALSoundManager(SoundManagerSingleton *smg,
-			std::unique_ptr<SoundLocalFallbackPathsGiver> local_fallback_paths_giver);
+			std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider);
 
 	~OpenALSoundManager() override;
 

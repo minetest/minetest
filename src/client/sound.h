@@ -28,10 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct SoundSpec;
 
-class SoundLocalFallbackPathsGiver
+class SoundFallbackPathProvider
 {
 public:
-	virtual ~SoundLocalFallbackPathsGiver() = default;
+	virtual ~SoundFallbackPathProvider() = default;
 	std::vector<std::string> getLocalFallbackPathsForSoundname(const std::string &name);
 protected:
 	virtual void addThePaths(const std::string &name, std::vector<std::string> &paths);

@@ -853,7 +853,7 @@ std::string OpenALSoundManager::getOrLoadLoadedSoundNameFromGroup(const std::str
 		return sound_name;
 
 	// load
-	std::vector<std::string> paths = m_local_fallback_paths_giver
+	std::vector<std::string> paths = m_fallback_path_provider
 			->getLocalFallbackPathsForSoundname(group_name);
 	for (const std::string &path : paths) {
 		if (loadSoundFile(path, path))
@@ -980,12 +980,12 @@ int OpenALSoundManager::removeDeadSounds()
 }
 
 OpenALSoundManager::OpenALSoundManager(SoundManagerSingleton *smg,
-		std::unique_ptr<SoundLocalFallbackPathsGiver> local_fallback_paths_giver) :
-	m_local_fallback_paths_giver(std::move(local_fallback_paths_giver)),
+		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider) :
+	m_fallback_path_provider(std::move(fallback_path_provider)),
 	m_device(smg->m_device.get()),
 	m_context(smg->m_context.get())
 {
-	SANITY_CHECK(!!m_local_fallback_paths_giver);
+	SANITY_CHECK(!!m_fallback_path_provider);
 
 	infostream << "Audio: Initialized: OpenAL " << std::endl;
 }

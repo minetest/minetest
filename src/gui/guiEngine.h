@@ -115,8 +115,8 @@ private:
 	std::vector<video::ITexture*> m_to_delete;
 };
 
-/** GUIEngine specific implementation of SoundLocalFallbackPathsGiver */
-class MenuMusicFetcher final : public SoundLocalFallbackPathsGiver
+/** GUIEngine specific implementation of SoundFallbackPathProvider */
+class MenuMusicFetcher final : public SoundFallbackPathProvider
 {
 protected:
 	void addThePaths(const std::string &name,

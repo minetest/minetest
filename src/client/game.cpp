@@ -1358,7 +1358,7 @@ bool Game::initSound()
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
 		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
-				std::make_unique<SoundLocalFallbackPathsGiver>());
+				std::make_unique<SoundFallbackPathProvider>());
 		if (!sound_manager)
 			infostream << "Failed to initialize OpenAL audio" << std::endl;
 	} else {

@@ -36,7 +36,7 @@ std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
 }
 
 std::unique_ptr<ISoundManager> createOpenALSoundManager(SoundManagerSingleton *smg,
-		std::unique_ptr<SoundLocalFallbackPathsGiver> local_fallback_paths_giver)
+		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider)
 {
-	return std::make_unique<OpenALSoundManager>(smg, std::move(local_fallback_paths_giver));
+	return std::make_unique<OpenALSoundManager>(smg, std::move(fallback_path_provider));
 };

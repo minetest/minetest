@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 
-std::vector<std::string> SoundLocalFallbackPathsGiver::
+std::vector<std::string> SoundFallbackPathProvider::
 		getLocalFallbackPathsForSoundname(const std::string &name)
 {
 	std::vector<std::string> paths;
@@ -47,7 +47,7 @@ std::vector<std::string> SoundLocalFallbackPathsGiver::
 	return paths;
 }
 
-void SoundLocalFallbackPathsGiver::addAllAlternatives(const std::string &common,
+void SoundFallbackPathProvider::addAllAlternatives(const std::string &common,
 		std::vector<std::string> &paths)
 {
 	paths.reserve(paths.size() + 11);
@@ -57,7 +57,7 @@ void SoundLocalFallbackPathsGiver::addAllAlternatives(const std::string &common,
 	}
 }
 
-void SoundLocalFallbackPathsGiver::addThePaths(const std::string &name,
+void SoundFallbackPathProvider::addThePaths(const std::string &name,
 		std::vector<std::string> &paths)
 {
 	addAllAlternatives(porting::path_share + DIR_DELIM + "sounds" + DIR_DELIM + name, paths);

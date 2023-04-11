@@ -29,4 +29,4 @@ extern std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton();
 std::unique_ptr<ISoundManager> createOpenALSoundManager(
 		SoundManagerSingleton *smg,
-		std::unique_ptr<SoundLocalFallbackPathsGiver> local_fallback_paths_giver);
+		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider);
