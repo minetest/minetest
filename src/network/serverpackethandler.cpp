@@ -746,8 +746,15 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	}
 
 	// Do the action
-	a->apply(m_inventory_mgr.get(), playersao, this);
-	m_inventory_mgr.get()->unlockLists();
+	try {
+		a->apply(m_inventory_mgr.get(), playersao, this);
+		m_inventory_mgr.get()->unlockLists();
+	} catch (BaseException &e) {
+		// make sure the lists are unlocked prior attempting to free them
+		m_inventory_mgr.get()->unlockLists();
+		// rethrow to handle by Lua
+		throw LuaError(e.what());
+	}
 }
 
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)

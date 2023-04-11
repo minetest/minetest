@@ -779,6 +779,12 @@ Inventory::~Inventory()
 void Inventory::clear()
 {
 	for (auto &m_list : m_lists) {
+		// Placing this check within the destructor would be a logical solution
+		// but that's generally a bad idea, thus manual calls beforehand:
+		m_list->checkResizeLock();
+	}
+
+	for (auto &m_list : m_lists) {
 		delete m_list;
 	}
 	m_lists.clear();
