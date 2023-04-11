@@ -142,7 +142,9 @@ public:
 	 */
 	std::vector<sound_handle_t> pollRemovedSounds()
 	{
-		return std::move(m_removed_sounds);
+		std::vector<sound_handle_t> ret;
+		std::swap(m_removed_sounds, ret);
+		return ret;
 	}
 
 	/**
