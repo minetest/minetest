@@ -26,6 +26,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "util/numeric.h" // myrand()
 #include "../sound.h"
+#include "filesys.h"
 #include "settings.h"
 #include <algorithm>
 #include <cmath>
@@ -64,15 +65,6 @@ static ALenum warn_if_al_error(const char *desc) noexcept
 				<< std::endl;
 	} catch (...) { /* ignore */ }
 	return err;
-}
-
-static bool can_open_file(const std::string &path) noexcept
-{
-	std::FILE *f = std::fopen(path.c_str(), "r");
-	if (!f)
-		return false;
-	std::fclose(f);
-	return true;
 }
 
 // Transforms vectors from a left-handed coordinate system to a right-handed one
@@ -1068,7 +1060,7 @@ bool OpenALSoundManager::loadSoundFile(const std::string &name, const std::strin
 		return false;
 
 	// coarse check
-	if (!can_open_file(filepath))
+	if (!fs::IsFile(filepath))
 		return false;
 
 	// remember for lazy loading
