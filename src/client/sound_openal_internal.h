@@ -163,12 +163,6 @@ struct RAIIALSoundBuffer final
 	RAIIALSoundBuffer(RAIIALSoundBuffer &&other) noexcept : m_buffer(other.release()) {}
 	RAIIALSoundBuffer &operator=(RAIIALSoundBuffer &&other) noexcept;
 
-	friend void swap(RAIIALSoundBuffer &l, RAIIALSoundBuffer &r) noexcept
-	{
-		using std::swap;
-		swap(l.m_buffer, r.m_buffer); // no reset() needed
-	}
-
 	ALuint get() noexcept { return m_buffer; }
 
 	ALuint release() noexcept { return std::exchange(m_buffer, 0); }
@@ -394,13 +388,6 @@ struct SoundDataOpenStream final : ISoundDataOpen
 	{
 		ALuint m_end;
 		RAIIALSoundBuffer m_buffer;
-
-		friend void swap(SoundBufferUntil &l, SoundBufferUntil &r) noexcept
-		{
-			using std::swap;
-			swap(l.m_end, r.m_end);
-			swap(l.m_buffer, r.m_buffer);
-		}
 	};
 
 	/**

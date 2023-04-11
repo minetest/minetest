@@ -148,7 +148,8 @@ int OggVorbisBufferSource::seek_func(void *datasource, ogg_int64_t offset, int w
 
 int OggVorbisBufferSource::close_func(void *datasource) noexcept
 {
-	std::unique_ptr<OggVorbisBufferSource> s((OggVorbisBufferSource *)datasource);
+	auto s = reinterpret_cast<OggVorbisBufferSource *>(datasource);
+	delete s;
 	return 0;
 }
 
