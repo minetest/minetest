@@ -69,7 +69,7 @@ void ISoundManager::reportRemovedSound(sound_handle_t id)
 	if (id <= 0)
 		return;
 
-	freeId(id, 1);
+	freeId(id);
 	m_removed_sounds.push_back(id);
 }
 

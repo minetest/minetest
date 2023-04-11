@@ -160,7 +160,7 @@ public:
 	 * @param num_owners How much the owner-counter should be decreased. Id can
 	 *                   be reused when counter reaches 0.
 	 */
-	void freeId(sound_handle_t id, u32 num_owners);
+	void freeId(sound_handle_t id, u32 num_owners = 1);
 };
 
 class DummySoundManager final : public ISoundManager

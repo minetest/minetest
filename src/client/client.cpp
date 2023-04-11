@@ -377,7 +377,7 @@ Client::~Client()
 
 	// Free sound ids
 	for (auto &csp : m_sounds_client_to_server)
-		m_sound->freeId(csp.first, 1);
+		m_sound->freeId(csp.first);
 	m_sounds_client_to_server.clear();
 }
 
@@ -732,7 +732,7 @@ void Client::step(float dtime)
 			if (client_to_server_id_it == m_sounds_client_to_server.end())
 				continue;
 			s32 server_id = client_to_server_id_it->second;
-			m_sound->freeId(client_id, 1);
+			m_sound->freeId(client_id);
 			m_sounds_client_to_server.erase(client_to_server_id_it);
 			if (server_id != -1) {
 				m_sounds_server_to_client.erase(server_id);

@@ -85,7 +85,7 @@ int ClientSoundHandle::gc_object(lua_State *L)
 {
 	std::unique_ptr<ClientSoundHandle> o(*(ClientSoundHandle **)(lua_touserdata(L, 1)));
 	if (getClient(L) && getClient(L)->getSoundManager())
-		getClient(L)->getSoundManager()->freeId(o->m_handle, 1);
+		getClient(L)->getSoundManager()->freeId(o->m_handle);
 	return 0;
 }
 
