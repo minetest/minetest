@@ -276,9 +276,6 @@ public:
 	bool init();
 
 	~SoundManagerSingleton();
-
-private:
-	static void readDopplerFactorFromSettings(const std::string &, void *);
 };
 
 

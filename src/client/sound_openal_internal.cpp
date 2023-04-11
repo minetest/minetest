@@ -283,9 +283,8 @@ bool SoundManagerSingleton::init()
 	//        Ideally this should be mod-controlled.
 	alSpeedOfSound(343.3f);
 
-	readDopplerFactorFromSettings("", nullptr);
-	g_settings->registerChangedCallback("sound_doppler_factor",
-			readDopplerFactorFromSettings, nullptr);
+	// doppler effect turned off for now, for best backwards compatibility
+	alDopplerFactor(0.0f);
 
 	if (alGetError() != AL_NO_ERROR) {
 		errorstream << "Audio: Global Initialization: OpenAL Error " << alGetError() << std::endl;
@@ -301,16 +300,7 @@ bool SoundManagerSingleton::init()
 
 SoundManagerSingleton::~SoundManagerSingleton()
 {
-	g_settings->deregisterChangedCallback("sound_doppler_factor",
-			readDopplerFactorFromSettings, nullptr);
-
 	infostream << "Audio: Global Deinitialized." << std::endl;
-}
-
-void SoundManagerSingleton::readDopplerFactorFromSettings(const std::string &, void *)
-{
-	f32 doppler_factor = MYMAX(g_settings->getFloat("sound_doppler_factor"), 0.0f); // 0.0f if nan
-	alDopplerFactor(doppler_factor);
 }
 
 /*
