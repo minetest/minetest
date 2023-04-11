@@ -330,7 +330,7 @@ std::shared_ptr<ISoundDataOpen> ISoundDataOpen::fromOggFile(std::unique_ptr<RAII
 
 	// use duration (in seconds) to decide whether to load all at once or to stream
 	if (decode_info->length_seconds <= SOUND_DURATION_MAX_SINGLE) {
-		return std::make_shared<SoundDataOpenSinglebuf>(std::move(oggfile), *decode_info);
+		return std::make_shared<SoundDataOpenBuffer>(std::move(oggfile), *decode_info);
 	} else {
 		return std::make_shared<SoundDataOpenStream>(std::move(oggfile), *decode_info);
 	}
@@ -381,15 +381,15 @@ std::shared_ptr<ISoundDataOpen> SoundDataUnopenFile::open(const std::string &sou
 }
 
 /*
- * SoundDataOpenSinglebuf struct
+ * SoundDataOpenBuffer struct
  */
 
-SoundDataOpenSinglebuf::SoundDataOpenSinglebuf(std::unique_ptr<RAIIOggFile> oggfile,
+SoundDataOpenBuffer::SoundDataOpenBuffer(std::unique_ptr<RAIIOggFile> oggfile,
 		const OggFileDecodeInfo &decode_info) : ISoundDataOpen(decode_info)
 {
 	m_buffer = oggfile->loadBuffer(m_decode_info, 0, m_decode_info.length_samples);
 	if (m_buffer.get() == 0) {
-		warningstream << "SoundDataOpenSinglebuf: Failed to load sound \""
+		warningstream << "SoundDataOpenBuffer: Failed to load sound \""
 				<< m_decode_info.name_for_logging << "\"" << std::endl;
 		return;
 	}

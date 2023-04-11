@@ -88,7 +88,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
  *     We open the sound (see `openSingleSound`).
  *     If the sound is already open (in `m_sound_datas_open`), we take that one.
  *     Otherwise we open it by calling `ISoundDataUnopen::open`. We choose (by
- *     sound length), whether it's a single-buffer (`SoundDataOpenSinglebuf`) or
+ *     sound length), whether it's a single-buffer (`SoundDataOpenBuffer`) or
  *     streamed (`SoundDataOpenStream`) sound.
  *     Single-buffer sounds are always completely loaded. Streamed sounds can be
  *     partially loaded.
@@ -356,11 +356,11 @@ struct SoundDataUnopenFile final : ISoundDataUnopen
  * Non-streaming opened sound data.
  * All data is completely loaded in one buffer.
  */
-struct SoundDataOpenSinglebuf final : ISoundDataOpen
+struct SoundDataOpenBuffer final : ISoundDataOpen
 {
 	RAIIALSoundBuffer m_buffer;
 
-	SoundDataOpenSinglebuf(std::unique_ptr<RAIIOggFile> oggfile,
+	SoundDataOpenBuffer(std::unique_ptr<RAIIOggFile> oggfile,
 			const OggFileDecodeInfo &decode_info);
 
 	virtual bool isStreaming() const noexcept override { return false; }
