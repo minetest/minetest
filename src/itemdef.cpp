@@ -254,12 +254,12 @@ class CItemDefManager: public IWritableItemDefManager
 			palette(NULL)
 		{}
 
-		ClientCached(const ClientCached &other) = delete;
-
 		~ClientCached() {
 			if (wield_mesh.mesh)
 				wield_mesh.mesh->drop();
 		}
+
+		DISABLE_CLASS_COPY(ClientCached);
 	};
 #endif
 
