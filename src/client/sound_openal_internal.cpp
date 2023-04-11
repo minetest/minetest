@@ -70,7 +70,7 @@ static ALenum warn_if_al_error(const char *desc) noexcept
 // Transforms vectors from a left-handed coordinate system to a right-handed one
 // and vice-versa.
 // (Needed because Minetest uses a left-handed one and OpenAL a right-handed one.)
-static v3f swap_handedness(const v3f &v) noexcept
+static inline v3f swap_handedness(v3f v) noexcept
 {
 	return v3f(-v.X, v.Y, v.Z);
 }
