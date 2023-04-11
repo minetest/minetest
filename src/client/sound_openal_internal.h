@@ -69,7 +69,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
  * * Step 1:
  *   `loadSoundFile` or `loadSoundFile` is called. This adds an unopen sound with
  *   the given name to `m_sound_datas_unopen`.
- *   Unopen sounds (`ISoundDataUnopen`) are ogg-vorbis files that we did not yet
+ *   Unopen / lazy sounds (`ISoundDataUnopen`) are ogg-vorbis files that we did not yet
  *   start to decode. (Decoding an unopen sound does not fail under normal circumstances
  *   (because we check whether the file exists at least), if it does fail anyways,
  *   we should notify the user.)
@@ -282,6 +282,9 @@ private:
 };
 
 
+/**
+ * Stores sound pcm data buffers.
+ */
 struct ISoundDataOpen
 {
 	OggFileDecodeInfo m_decode_info;
@@ -319,14 +322,15 @@ struct ISoundDataOpen
 		const std::string &filename_for_logging);
 };
 
+/**
+ * Will be opened lazily when first used.
+ */
 struct ISoundDataUnopen
 {
 	virtual ~ISoundDataUnopen() = default;
 
 	virtual std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && = 0;
 };
-
-struct SoundDataUnopenBuffer;
 
 /**
  * Sound file is in a memory buffer.
