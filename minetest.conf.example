@@ -3233,14 +3233,6 @@
 #    type: bool
 # continuous_forward = false
 
-#    Formspec default background opacity (between 0 and 255).
-#    type: int min: 0 max: 255
-# formspec_default_bg_opacity = 140
-
-#    Formspec default background color (R,G,B).
-#    type: string
-# formspec_default_bg_color = (0,0,0)
-
 #    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
 #    setting names in All Settings.
@@ -3611,4 +3603,3 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
-
