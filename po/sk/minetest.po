@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"PO-Revision-Date: 2023-04-13 15:47+0000\n"
 "Last-Translator: Marian <daretmavi@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
 "sk/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2377,7 +2377,6 @@ msgstr ""
 "-    topbottom: rozdelená obrazovka hore/dole.\n"
 "-    sidebyside: rozdelená obrazovka vedľa seba.\n"
 "-    crossview: 3D prekrížených očí (Cross-eyed)\n"
-"-    pageflip: 3D založené na quadbuffer\n"
 "Režim interlaced požaduje, aby boli aktivované shadery."
 
 #: src/settings_translation_file.cpp
@@ -3365,6 +3364,10 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Povoliť automatickú korekciu expozície\n"
+"Keď je povolená, nástroj na následné spracovanie sa\n"
+"automaticky prispôsobí jasu scény,\n"
+"simulujúc správanie sa ľudského oka."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3542,9 +3545,8 @@ msgstr ""
 "rovnejšími nížinami, vhodné ako pevná základná vrstva lietajúcej pevniny."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Faktor expozície"
+msgstr "Kompenzácia expozície"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4788,9 +4790,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "Oneskorenie generovania Mesh blokov"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "Oneskorenie generovania Mesh blokov"
+msgstr "Vlákna generovania siete mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5271,6 +5272,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Počet vlákien, ktoré sa majú použiť na generovanie siete.\n"
+"Hodnota 0 (predvolená) umožní Minetestu automaticky zistiť počet dostupných "
+"vlákien."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5771,17 +5775,14 @@ msgid "Serverlist file"
 msgstr "Súbor so zoznamom serverov"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
-"Nastav kompenzačný faktor expozície.\n"
-"Tento faktor sa aplikuje na lineárnu hodnotu farby \n"
-"pred všetkými ostatnými post-process efektami.\n"
-"Hodnota 1.0 (predvolená) znamená, bez kompenzácie expozície.\n"
-"Rozsah: od 0.1 do 10.0"
+"Nastav kompenzačný faktor expozície v EV jednotkách.\n"
+"Hodnota 0.0 (predvolená) znamená, bez kompenzácie expozície.\n"
+"Rozsah: od -1 do 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5858,16 +5859,15 @@ msgstr ""
 "Požaduje aby boli aktivované shadery."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
 "In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
-"Nastav na true pre renderovanie ladiacich zlomový efektu žiary.\n"
+"Nastav na true pre renderovanie ladiacich zlomov efektu žiary.\n"
 "V režime ladenia je obrazovka rozdelená na 4 kvadranty:\n"
-"Horný ľavý - spracúva základný obraz, Horný pravý  - výsledný obraz\n"
+"Horný ľavý - spracúva základný obraz, Horný pravý - výsledný obraz\n"
 "Dolný ľavý - základný raw obraz, Dolný pravý - textúra žiary."
 
 #: src/settings_translation_file.cpp
@@ -5961,6 +5961,11 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"Dĺžka strany kocky mapových blokov, ktoré bude klient posudzovať spoločne\n"
+"pri vytváraní sietí.\n"
+"Väčšie hodnoty zvyšujú využitie GPU znížením počtu\n"
+"volaní pri vykresľovaní, z čoho profitujú najmä výkonné GPU.\n"
+"Systémy so slabým GPU (alebo bez GPU) viac profitujú z menších hodnôt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6325,7 +6330,6 @@ msgstr ""
 "Malo by to byť konfigurované spolu s active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6333,11 +6337,9 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Renderovací back-end.\n"
-"Po zmene je vyžadovaný reštart.\n"
-"Poznámka: Na Androide, ak si nie si istý, ponechaj OGLES1! Aplikácia by "
-"nemusela naštartovať.\n"
-"Na iných platformách, sa odporúča OpenGL.\n"
-"Shadery sú podporované v OpenGL (len pre desktop) a v OGLES2 (experimentálne)"
+"Poznámka: Po zmene je vyžadovaný reštart!\n"
+"OpenGL je predvolený pre stolné počítače a OGLES2 pre Android.\n"
+"Shadery sú podporované v OpenGL a v OGLES2 (experimentálne)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6609,6 +6611,8 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test"
 msgstr ""
+"Použite raytraced occlusion culling v novom culleri.\n"
+"Tento príznak umožňuje použiť raytraced occlusion culling test"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
