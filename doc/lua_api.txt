@@ -3540,6 +3540,11 @@ vectors are written like this: `(x, y, z)`:
     * Returns a boolean value indicating whether `v` is a real vector, eg. created
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
+* `vector.in_area(pos, min, max)`:
+	* Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
+	* `min` and `max` are inclusive.
+	* If `min` is bigger than `max` on some axis, function always returns false.
+	* You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
 
 For the following functions `x` can be either a vector or a number:
 
