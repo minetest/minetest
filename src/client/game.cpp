@@ -4335,7 +4335,7 @@ void Game::showDeathFormspec()
 void Game::showPauseMenu()
 {
 #ifdef HAVE_TOUCHSCREENGUI
-	static const std::string control_text = strgettext("Default controls:\n"
+	static const std::string control_text = strgettext("Controls:\n"
 		"No menu open:\n"
 		"- slide finger: look around\n"
 		"- tap: place/use\n"
