@@ -1010,12 +1010,12 @@ void Client::Send(NetworkPacket* pkt)
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
-void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
+void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool reverse_cam_dir)
 {
 	v3f pf           = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
-	s32 pitch        = myplayer->getPitch() * 100;
-	s32 yaw          = myplayer->getYaw() * 100;
+	s32 pitch        = (reverse_cam_dir ? -myplayer->getPitch() : myplayer->getPitch()) * 100;
+	s32 yaw          = (reverse_cam_dir ? myplayer->getYaw() + 180 : myplayer->getYaw()) * 100;
 	u32 keyPressed   = myplayer->control.getKeysPressed();
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = clientMap->getCameraFov() * 80;
@@ -1071,7 +1071,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 	pkt.putLongString(tmp_os.str());
 
-	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
+	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
 	Send(&pkt);
 }
@@ -1392,7 +1392,7 @@ void Client::sendPlayerPos()
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
-	writePlayerPos(player, &map, &pkt);
+	writePlayerPos(player, &map, &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
 	Send(&pkt);
 }
