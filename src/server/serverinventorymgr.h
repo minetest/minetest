@@ -39,9 +39,6 @@ public:
 	Inventory *getInventory(const InventoryLocation &loc);
 	void setInventoryModified(const InventoryLocation &loc);
 
-	void lockList(InventoryList *list);
-	void unlockLists();
-
 	// Creates or resets inventory
 	Inventory *createDetachedInventory(const std::string &name, IItemDefManager *idef,
 			const std::string &player = "");
@@ -60,6 +57,5 @@ private:
 
 	ServerEnvironment *m_env = nullptr;
 
-	std::set<InventoryList *> m_locked_lists;
 	std::unordered_map<std::string, DetachedInventory> m_detached_inventories;
 };

@@ -278,8 +278,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	mgr->lockList(list_from);
-	mgr->lockList(list_to);
+	auto list_from_lock = list_from->resizeLock();
+	auto list_to_lock = list_to->resizeLock();
 
 	if (move_somewhere) {
 		s16 old_to_i = to_i;
@@ -573,7 +573,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
-	list_to->setResizeLock(false);
+	list_to_lock.reset();
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
@@ -687,7 +687,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	mgr->lockList(list_from);
+	auto list_from_lock = list_from->resizeLock();
 
 	/*
 		Do not handle rollback if inventory is player's
@@ -769,7 +769,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report drop to endpoints
 	*/
-	list_from->setResizeLock(false);
+	list_from_lock.reset();
 
 	switch (from_inv.type) {
 	case InventoryLocation::DETACHED:
@@ -886,9 +886,9 @@ void ICraftAction::apply(InventoryManager *mgr,
 		return;
 	}
 
-	mgr->lockList(list_craft);
-	mgr->lockList(list_craftresult);
-	mgr->lockList(list_main);
+	auto list_craft_lock       = list_craft->resizeLock();
+	auto list_craftresult_lock = list_craftresult->resizeLock();
+	auto list_main_lock        = list_main->resizeLock();
 
 	ItemStack crafted;
 	ItemStack craftresultitem;

@@ -107,20 +107,6 @@ void ServerInventoryManager::setInventoryModified(const InventoryLocation &loc)
 	}
 }
 
-void ServerInventoryManager::lockList(InventoryList *list)
-{
-	m_locked_lists.insert(list);
-	list->setResizeLock(true);
-}
-
-void ServerInventoryManager::unlockLists()
-{
-	for (auto list : m_locked_lists)
-		list->setResizeLock(false);
-
-	m_locked_lists.clear();
-}
-
 Inventory *ServerInventoryManager::createDetachedInventory(
 		const std::string &name, IItemDefManager *idef, const std::string &player)
 {

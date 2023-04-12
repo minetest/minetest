@@ -757,16 +757,6 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 	return (oldcount - item1.count);
 }
 
-void InventoryList::checkResizeLock()
-{
-	if (!m_resize_lock)
-		return; // OK
-
-	throw BaseException("InventoryList '" + m_name + "' is currently"
-			" in use and cannot be deleted or resized.");
-}
-
-
 /*
 	Inventory
 */

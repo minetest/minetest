@@ -114,9 +114,6 @@ public:
 	virtual void setInventoryModified(const InventoryLocation &loc) {}
     // Send inventory action to server (only on client)
 	virtual void inventoryAction(InventoryAction *a){}
-	// To prevent the Lua API from resizig or deleting lists that are in use
-	virtual void lockList(InventoryList *list) {}
-	virtual void unlockLists() {}
 };
 
 enum class IAction : u16 {

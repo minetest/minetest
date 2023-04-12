@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "exceptions.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
 #include "itemstackmetadata.h"
@@ -277,8 +278,28 @@ public:
 
 	inline bool checkModified() const { return m_dirty; }
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }
-	inline void checkResizeLock();
-	inline void setResizeLock(bool status) { m_resize_lock = status; }
+
+	struct ResizeUnlocker {
+		void operator()(InventoryList *invlist)
+		{
+			invlist->m_resize_locks -= 1;;
+		}
+	};
+	using ResizeLocked = std::unique_ptr<InventoryList, ResizeUnlocker>;
+
+	inline void checkResizeLock()
+	{
+		if (m_resize_locks == 0)
+			return; // OK
+
+		throw BaseException("InventoryList '" + m_name
+				+ "' is currently in use and cannot be deleted or resized.");
+	}
+	inline ResizeLocked resizeLock()
+	{
+		m_resize_locks += 1;
+		return ResizeLocked(this);
+	}
 
 private:
 	std::vector<ItemStack> m_items;
@@ -287,7 +308,7 @@ private:
 	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 	bool m_dirty = true;
-	bool m_resize_lock = false; // Lua callback sanity
+	u32 m_resize_locks = 0; // Lua callback sanity
 };
 
 class Inventory
