@@ -46,6 +46,7 @@ class RenderingCore;
 class RenderingEngine
 {
 public:
+	static const video::SColor MENU_SKY_COLOR;
 	static const float BASE_BLOOM_STRENGTH;
 
 	RenderingEngine(IEventReceiver *eventReceiver);
@@ -113,9 +114,8 @@ public:
 
 	void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true);
+			float dtime = 0, int percent = 0, bool sky = true);
 
-	void draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime, bool clouds);
 	void draw_scene(video::SColor skycolor, bool show_hud,
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
 

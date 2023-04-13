@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
+const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
 const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
 
@@ -428,7 +429,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool clouds)
+		int percent, bool sky)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -440,14 +441,14 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			guienv->addStaticText(text.c_str(), textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
+	if (sky && g_settings->getBool("menu_clouds")) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
+		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 		g_menucloudsmgr->drawAll();
-	} else
+	} else if (sky)
+		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
+	else
 		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
 	// draw progress bar
@@ -493,26 +494,6 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	guienv->drawAll();
 	get_video_driver()->endScene();
 	guitext->remove();
-}
-
-/*
-	Draws the menu scene including (optional) cloud background.
-*/
-void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
-		float dtime, bool clouds)
-{
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
-		g_menuclouds->step(dtime * 3);
-		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
-		g_menucloudsmgr->drawAll();
-	} else
-		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
-
-	guienv->drawAll();
-	get_video_driver()->endScene();
 }
 
 std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
