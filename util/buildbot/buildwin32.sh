@@ -76,6 +76,7 @@ cmake_args=(
 )
 add_cmake_libs
 cmake -S $sourcedir -B build "${cmake_args[@]}"
+
 cmake --build build -j$(nproc)
 
 [ -z "$NO_PACKAGE" ] && cmake --build build --target package
