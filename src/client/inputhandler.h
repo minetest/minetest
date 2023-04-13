@@ -124,7 +124,7 @@ public:
 			push_back(key);
 	}
 
-	void append(KeyList &other)
+	void append(const KeyList &other)
 	{
 		for (const KeyPress &key : other) {
 			set(key);
