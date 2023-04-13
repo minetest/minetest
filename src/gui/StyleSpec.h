@@ -153,12 +153,12 @@ public:
 	{
 		if (name == "default") {
 			return STATE_DEFAULT;
+		} else if (name == "focused") {
+			return STATE_FOCUSED;
 		} else if (name == "hovered") {
 			return STATE_HOVERED;
 		} else if (name == "pressed") {
 			return STATE_PRESSED;
-		} else if (name == "focused") {
-			return STATE_FOCUSED;
 		} else {
 			return STATE_INVALID;
 		}
