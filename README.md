@@ -51,7 +51,7 @@ Some can be changed in the key config dialog in the settings tab.
 | Shift                         | Sneak/move down                                                |
 | Q                             | Drop itemstack                                                 |
 | Shift + Q                     | Drop single item                                               |
-| Left mouse button             | Dig/punch/take item                                            |
+| Left mouse button             | Dig/punch/use                                                  |
 | Right mouse button            | Place/use                                                      |
 | Shift + right mouse button    | Build (without using)                                          |
 | I                             | Inventory menu                                                 |
