@@ -78,7 +78,7 @@ fake_function() {
 	gettext("Adds particles when digging a node.");
 	gettext("3d");
 	gettext("3D mode");
-	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    crossview: Cross-eyed 3d\n-    pageflip: quadbuffer based 3d.\nNote that the interlaced mode requires shaders to be enabled.");
+	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    crossview: Cross-eyed 3d\nNote that the interlaced mode requires shaders to be enabled.");
 	gettext("3D mode parallax strength");
 	gettext("Strength of 3D mode parallax.");
 	gettext("Bobbing");
@@ -150,8 +150,6 @@ fake_function() {
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables Hable's 'Uncharted 2' filmic tone mapping.\nSimulates the tone curve of photographic film and how this approximates the\nappearance of high dynamic range images. Mid-range contrast is slightly\nenhanced, highlights and shadows are gradually compressed.");
-	gettext("Saturation");
-	gettext("Adjust the saturation (or vividness) of the scene\nValues\n< 1.0 decrease saturation\n> 1.0 increase saturation\n1.0 = unchanged saturation\n0.0 = black and white\n(Tone mapping needs to be enabled.)");
 	gettext("Waving Nodes");
 	gettext("Waving leaves");
 	gettext("Set to true to enable waving leaves.\nRequires shaders to be enabled.");
@@ -186,16 +184,16 @@ fake_function() {
 	gettext("Spread a complete update of shadow map over given amount of frames.\nHigher values might make shadows laggy, lower values\nwill consume more resources.\nMinimum value: 1; maximum value: 16");
 	gettext("Soft shadow radius");
 	gettext("Set the soft shadow radius size.\nLower values mean sharper shadows, bigger values mean softer shadows.\nMinimum value: 1.0; maximum value: 15.0");
-	gettext("Sky Body Orbit Tilt");
-	gettext("Set the tilt of Sun/Moon orbit in degrees.\nValue of 0 means no tilt / vertical orbit.\nMinimum value: 0.0; maximum value: 60.0");
 	gettext("Post processing");
-	gettext("Exposure Factor");
-	gettext("Set the exposure compensation factor.\nThis factor is applied to linear color value \nbefore all other post-processing effects.\nValue of 1.0 (default) means no exposure compensation.\nRange: from 0.1 to 10.0");
+	gettext("Exposure compensation");
+	gettext("Set the exposure compensation in EV units.\nValue of 0.0 (default) means no exposure compensation.\nRange: from -1 to 1.0");
+	gettext("Enable Automatic Exposure");
+	gettext("Enable automatic exposure correction\nWhen enabled, the post-processing engine will\nautomatically adjust to the brightness of the scene,\nsimulating the behavior of human eye.");
 	gettext("Bloom");
 	gettext("Enable Bloom");
 	gettext("Set to true to enable bloom effect.\nBright colors will bleed over the neighboring objects.");
 	gettext("Enable Bloom Debug");
-	gettext("Set to true to render debugging breakdown of the bloom effect.\nIn debug mode, the screen is split into 4 quadrants: \ntop-left - processed base image, top-right - final image\nbottom-left - raw base image, bottom-right - bloom texture.");
+	gettext("Set to true to render debugging breakdown of the bloom effect.\nIn debug mode, the screen is split into 4 quadrants:\ntop-left - processed base image, top-right - final image\nbottom-left - raw base image, bottom-right - bloom texture.");
 	gettext("Bloom Intensity");
 	gettext("Defines how much bloom is applied to the rendered image\nSmaller values make bloom more subtle\nRange: from 0.01 to 1.0, default: 0.05");
 	gettext("Bloom Strength Factor");
@@ -272,6 +270,8 @@ fake_function() {
 	gettext("Unix timestamp (integer) of when the client last checked for an update\nSet this value to \"disabled\" to never check for updates.");
 	gettext("Last known version update");
 	gettext("Version number which was last seen during an update check.\n\nRepresentation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\nEx: 5.5.0 is 005005000");
+	gettext("Enable Raytraced Culling");
+	gettext("Use raytraced occlusion culling in the new culler.\nThis flag enables use of raytraced occlusion culling test");
 	gettext("Server");
 	gettext("Admin name");
 	gettext("Name of the player.\nWhen running a server, clients connecting with this name are admins.\nWhen starting from the main menu, this is overridden.");
@@ -821,7 +821,7 @@ fake_function() {
 	gettext("Shader path");
 	gettext("Path to shader directory. If no path is defined, default location will be used.");
 	gettext("Video driver");
-	gettext("The rendering back-end.\nA restart is required after changing this.\nNote: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.\nOn other platforms, OpenGL is recommended.\nShaders are supported by OpenGL (desktop only) and OGLES2 (experimental)");
+	gettext("The rendering back-end.\nNote: A restart is required after changing this!\nOpenGL is the default for desktop, and OGLES2 for Android.\nShaders are supported by OpenGL and OGLES2 (experimental).");
 	gettext("Transparency Sorting Distance");
 	gettext("Distance in nodes at which transparency depth sorting is enabled\nUse this to limit the performance impact of transparency depth sorting");
 	gettext("VBO");
@@ -834,6 +834,8 @@ fake_function() {
 	gettext("Enables caching of facedir rotated meshes.");
 	gettext("Mapblock mesh generation delay");
 	gettext("Delay between mesh updates on the client in ms. Increasing this will slow\ndown the rate of mesh updates, thus reducing jitter on slower clients.");
+	gettext("Mapblock mesh generation threads");
+	gettext("Number of threads to use for mesh generation.\nValue of 0 (default) will let Minetest autodetect the number of available threads.");
 	gettext("Mapblock mesh generator's MapBlock cache size in MB");
 	gettext("Size of the MapBlock cache of the mesh generator. Increasing this will\nincrease the cache hit %, reducing the data being copied from the main\nthread, thus reducing jitter.");
 	gettext("Minimap scan height");
@@ -842,6 +844,8 @@ fake_function() {
 	gettext("Textures on a node may be aligned either to the node or to the world.\nThe former mode suits better things like machines, furniture, etc., while\nthe latter makes stairs and microblocks fit surroundings better.\nHowever, as this possibility is new, thus may not be used by older servers,\nthis option allows enforcing it for certain node types. Note though that\nthat is considered EXPERIMENTAL and may not work properly.");
 	gettext("Autoscaling mode");
 	gettext("World-aligned textures may be scaled to span several nodes. However,\nthe server may not send the scale you want, especially if you use\na specially-designed texture pack; with this option, the client tries\nto determine the scale automatically basing on the texture size.\nSee also texture_min_size.\nWarning: This option is EXPERIMENTAL!");
+	gettext("Client Mesh Chunksize");
+	gettext("Side length of a cube of map blocks that the client will consider together\nwhen generating meshes.\nLarger values increase the utilization of the GPU by reducing the number of\ndraw calls, benefiting especially high-end GPUs.\nSystems with a low-end GPU (or no GPU) would benefit from smaller values.");
 	gettext("Font");
 	gettext("Font bold by default");
 	gettext("Font italic by default");

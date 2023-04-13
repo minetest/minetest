@@ -82,8 +82,6 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	v2s32 size = DesiredRect.getSize();
 	v2s32 topleft_client(40 * s, 0);
 
-	const wchar_t *text;
-
 	/*
 		Add stuff
 	*/
@@ -91,9 +89,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 150 * s, 20 * s);
 		rect += topleft_client + v2s32(25 * s, ypos + 6 * s);
-		text = wgettext("Old Password");
-		Environment->addStaticText(text, rect, false, true, this, -1);
-		delete[] text;
+		Environment->addStaticText(wstrgettext("Old Password").c_str(), rect,
+				false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230 * s, 30 * s);
@@ -107,9 +104,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 150 * s, 20 * s);
 		rect += topleft_client + v2s32(25 * s, ypos + 6 * s);
-		text = wgettext("New Password");
-		Environment->addStaticText(text, rect, false, true, this, -1);
-		delete[] text;
+		Environment->addStaticText(wstrgettext("New Password").c_str(), rect, false, true,
+				this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230 * s, 30 * s);
@@ -122,9 +118,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 150 * s, 20 * s);
 		rect += topleft_client + v2s32(25 * s, ypos + 6 * s);
-		text = wgettext("Confirm Password");
-		Environment->addStaticText(text, rect, false, true, this, -1);
-		delete[] text;
+		Environment->addStaticText(wstrgettext("Confirm Password").c_str(), rect,
+				false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230 * s, 30 * s);
@@ -138,28 +133,24 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 56 * s, ypos);
-		text = wgettext("Change");
-		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_change, text);
-		delete[] text;
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_change,
+				wstrgettext("Change").c_str());
 	}
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
 		rect = rect + v2s32(size.X / 4 + 185 * s, ypos);
-		text = wgettext("Cancel");
-		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_cancel, text);
-		delete[] text;
+		GUIButton::addButton(Environment, rect, m_tsrc, this, ID_cancel,
+				wstrgettext("Cancel").c_str());
 	}
 
 	ypos += 50 * s;
 	{
 		core::rect<s32> rect(0, 0, 300 * s, 20 * s);
 		rect += topleft_client + v2s32(35 * s, ypos);
-		text = wgettext("Passwords do not match!");
-		IGUIElement *e =
-			Environment->addStaticText(
-			text, rect, false, true, this, ID_message);
+		IGUIElement *e = Environment->addStaticText(
+				wstrgettext("Passwords do not match!").c_str(), rect, false,
+				true, this, ID_message);
 		e->setVisible(false);
-		delete[] text;
 	}
 }
 

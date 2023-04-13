@@ -5,7 +5,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "static_text.h"
-#ifdef _IRR_COMPILE_WITH_GUI_
 
 #include <IGUIFont.h>
 #include <IVideoDriver.h>
@@ -239,12 +238,10 @@ video::SColor StaticText::getOverrideColor() const
 	return ColoredText.getDefaultColor();
 }
 
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 video::SColor StaticText::getActiveColor() const
 {
 	return getOverrideColor();
 }
-#endif
 
 //! Sets if the static text should use the overide color or the
 //! color in the gui skin.
@@ -584,6 +581,3 @@ s32 StaticText::getTextWidth() const
 } // end namespace gui
 
 } // end namespace irr
-
-
-#endif // _IRR_COMPILE_WITH_GUI_

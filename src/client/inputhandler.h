@@ -124,6 +124,13 @@ public:
 			push_back(key);
 	}
 
+	void append(const KeyList &other)
+	{
+		for (const KeyPress &key : other) {
+			set(key);
+		}
+	}
+
 	bool operator[](const KeyPress &key) const { return find(key) != end(); }
 };
 
@@ -176,6 +183,12 @@ public:
 		keyWasReleased.clear();
 
 		mouse_wheel = 0;
+	}
+
+	void releaseAllKeys()
+	{
+		keyWasReleased.append(keyIsDown);
+		keyIsDown.clear();
 	}
 
 	void clearWasKeyPressed()
@@ -263,6 +276,7 @@ public:
 	virtual void step(float dtime) {}
 
 	virtual void clear() {}
+	virtual void releaseAllKeys() {}
 
 	JoystickController joystick;
 	KeyCache keycache;
@@ -393,6 +407,12 @@ public:
 	{
 		joystick.clear();
 		m_receiver->clearInput();
+	}
+
+	void releaseAllKeys()
+	{
+		joystick.releaseAllKeys();
+		m_receiver->releaseAllKeys();
 	}
 
 private:

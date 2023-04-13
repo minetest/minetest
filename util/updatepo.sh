@@ -48,6 +48,7 @@ cd ..
 # directory at the top level. You a recent enough xgettext that supports
 # --package-name
 potfile=po/minetest.pot
+echo "updating pot"
 xgettext --package-name=minetest \
 	--add-comments='~' \
 	--sort-by-file \
@@ -67,6 +68,10 @@ xgettext --package-name=minetest \
 	`find src/ -name '*.cpp' -o -name '*.h'` \
 	`find builtin/ -name '*.lua'`
 
+# Gettext collects a bunch of bogus comments for the "Available commands: " string
+# I couldn't figure out how to avoid that so get rid of them afterwards
+sed '/^#\. ~<number>.*relative_to/,/^#: /{ /^#: /!d; }' -i $potfile 
+
 # Now iterate on all languages and create the po file if missing, or update it
 # if it exists already
 for lang in $langs ; do # note the missing quotes around $langs
@@ -79,4 +84,5 @@ for lang in $langs ; do # note the missing quotes around $langs
 		echo "[$lang]: NEW strings"
 		msginit --locale=$lang --output-file=$pofile --input=$potfile
 	fi
+
 done

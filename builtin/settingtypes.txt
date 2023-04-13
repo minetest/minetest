@@ -230,12 +230,6 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
-#   Only works on GLES platforms. Most users will not need to change this.
-#   Increasing can reduce artifacting on weaker GPUs.
-#   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near plane) float 0.1 0 0.25
-
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 
@@ -443,9 +437,10 @@ shadow_update_frames (Map shadows update frames) int 8 1 16
 #    Minimum value: 1.0; maximum value: 15.0
 shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
-#    Set the tilt of Sun/Moon orbit in degrees.
+#    Set the default tilt of Sun/Moon orbit in degrees.
+#    Games may change orbit tilt via API.
 #    Value of 0 means no tilt / vertical orbit.
-#    Minimum value: 0.0; maximum value: 60.0
+#    type: float min: -60 max: 60
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 
 [**Post processing]
@@ -628,8 +623,14 @@ update_last_checked (Last update check) string
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
 
+#    Type of occlusion_culler
+#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
+#    "bfs" is the new algorithm based on breadth-first-search and side culling
+occlusion_culler (Occlusion Culler) enum bfs bfs,loops
+
 #    Use raytraced occlusion culling in the new culler.
-#	 This flag enables use of raytraced occlusion culling test
+#	 This flag enables use of raytraced occlusion culling test for
+#    client mesh sizes smaller than 4x4x4 map blocks.
 enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 [*Server]
@@ -1654,11 +1655,10 @@ ignore_world_load_errors (Ignore world errors) bool false
 shader_path (Shader path) path
 
 #    The rendering back-end.
-#    A restart is required after changing this.
-#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended.
-#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
-video_driver (Video driver) enum opengl opengl,ogles1,ogles2
+#    Note: A restart is required after changing this!
+#    OpenGL is the default for desktop, and OGLES2 for Android.
+#    Shaders are supported by OpenGL and OGLES2 (experimental).
+video_driver (Video driver) enum  opengl,ogles1,ogles2,
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
@@ -2109,12 +2109,6 @@ noclip (Noclip) bool false
 #    Press the autoforward key again or the backwards movement to disable.
 continuous_forward (Continuous forward) bool false
 
-#    Formspec default background opacity (between 0 and 255).
-formspec_default_bg_opacity (Formspec Default Background Opacity) int 140 0 255
-
-#    Formspec default background color (R,G,B).
-formspec_default_bg_color (Formspec Default Background Color) string (0,0,0)
-
 #    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
 #    setting names in All Settings.
@@ -2147,11 +2141,13 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 keymap_sneak (Sneak key) key KEY_LSHIFT
 
-#    Key for digging.
-keymap_dig (Dig key) key KEY_LBUTTON
+#    Key for digging, punching or using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_dig (Dig/punch/use key) key KEY_LBUTTON
 
-#    Key for placing.
-keymap_place (Place key) key KEY_RBUTTON
+#    Key for placing an item/block or for using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_place (Place/use key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 keymap_inventory (Inventory key) key KEY_KEY_I
@@ -2175,7 +2171,7 @@ keymap_rangeselect (Range select key) key
 keymap_freemove (Fly key) key KEY_KEY_K
 
 #    Key for toggling pitch move mode.
-keymap_pitchmove (Pitch move key) key KEY_KEY_P
+keymap_pitchmove (Pitch move key) key
 
 #    Key for toggling fast mode.
 keymap_fastmove (Fast key) key KEY_KEY_J

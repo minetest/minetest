@@ -128,6 +128,15 @@ void push_v2s32(lua_State *L, v2s32 p)
 	lua_setfield(L, -2, "y");
 }
 
+void push_v2u32(lua_State *L, v2u32 p)
+{
+	lua_createtable(L, 0, 2);
+	lua_pushinteger(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushinteger(L, p.Y);
+	lua_setfield(L, -2, "y");
+}
+
 v2s32 read_v2s32(lua_State *L, int index)
 {
 	v2s32 p;

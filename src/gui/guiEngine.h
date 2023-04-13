@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 #include "irrlichttypes.h"
 #include "guiFormSpecMenu.h"
+#include "client/clouds.h"
 #include "client/sound.h"
 #include "client/tile.h"
 #include "util/enriched_string.h"
@@ -52,7 +53,6 @@ struct image_definition {
 class GUIEngine;
 class RenderingEngine;
 class MainMenuScripting;
-class Clouds;
 struct MainMenuData;
 
 /******************************************************************************/
@@ -111,8 +111,8 @@ public:
 private:
 	/** driver to get textures from */
 	video::IVideoDriver *m_driver = nullptr;
-	/** set of texture names to delete */
-	std::set<std::string> m_to_delete;
+	/** set of textures to delete */
+	std::vector<video::ITexture*> m_to_delete;
 };
 
 /** GUIEngine specific implementation of OnDemandSoundFetcher */
@@ -164,7 +164,7 @@ public:
 	 */
 	MainMenuScripting *getScriptIface()
 	{
-		return m_script;
+		return m_script.get();
 	}
 
 	/**
@@ -186,38 +186,40 @@ private:
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
 
-	RenderingEngine         *m_rendering_engine = nullptr;
+	RenderingEngine                      *m_rendering_engine = nullptr;
 	/** parent gui element */
-	gui::IGUIElement        *m_parent = nullptr;
+	gui::IGUIElement                     *m_parent = nullptr;
 	/** manager to add menus to */
-	IMenuManager            *m_menumanager = nullptr;
+	IMenuManager                         *m_menumanager = nullptr;
 	/** scene manager to add scene elements to */
-	scene::ISceneManager    *m_smgr = nullptr;
+	scene::ISceneManager                 *m_smgr = nullptr;
 	/** pointer to data beeing transfered back to main game handling */
-	MainMenuData            *m_data = nullptr;
-	/** pointer to texture source */
-	ISimpleTextureSource    *m_texture_source = nullptr;
-	/** pointer to soundmanager*/
-	ISoundManager           *m_sound_manager = nullptr;
+	MainMenuData                         *m_data = nullptr;
+	/** texture source */
+	std::unique_ptr<ISimpleTextureSource> m_texture_source;
+	/** sound fetcher, used by sound manager*/
+	MenuMusicFetcher                      m_soundfetcher{};
+	/** sound manager*/
+	std::unique_ptr<ISoundManager>        m_sound_manager;
 
 	/** representation of form source to be used in mainmenu formspec */
-	FormspecFormSource      *m_formspecgui = nullptr;
+	FormspecFormSource                   *m_formspecgui = nullptr;
 	/** formspec input receiver */
-	TextDestGuiEngine       *m_buttonhandler = nullptr;
+	TextDestGuiEngine                    *m_buttonhandler = nullptr;
 	/** the formspec menu */
-	GUIFormSpecMenu         *m_menu = nullptr;
+	irr_ptr<GUIFormSpecMenu>              m_menu;
 
 	/** reference to kill variable managed by SIGINT handler */
-	bool                    &m_kill;
+	bool                                 &m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
-	bool                     m_startgame = false;
+	bool                                  m_startgame = false;
 
 	/** scripting interface */
-	MainMenuScripting       *m_script = nullptr;
+	std::unique_ptr<MainMenuScripting>    m_script;
 
 	/** script basefolder */
-	std::string              m_scriptdir = "";
+	std::string                           m_scriptdir = "";
 
 	void setFormspecPrepend(const std::string &fs);
 
@@ -281,11 +283,11 @@ private:
 	/** internam data required for drawing clouds */
 	struct clouddata {
 		/** delta time since last cloud processing */
-		f32     dtime;
+		f32 dtime;
 		/** absolute time of last cloud processing */
-		u32     lasttime;
+		u32 lasttime;
 		/** pointer to cloud class */
-		Clouds *clouds = nullptr;
+		irr_ptr<Clouds> clouds;
 		/** camera required for drawing clouds */
 		scene::ICameraSceneNode *camera = nullptr;
 	};

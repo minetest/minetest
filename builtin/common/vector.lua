@@ -369,6 +369,12 @@ function vector.dir_to_rotation(forward, up)
 	return rot
 end
 
+function vector.in_area(pos, min, max)
+	return (pos.x >= min.x) and (pos.x <= max.x) and
+		(pos.y >= min.y) and (pos.y <= max.y) and
+		(pos.z >= min.z) and (pos.z <= max.z)
+end
+
 if rawget(_G, "core") and core.set_read_vector and core.set_push_vector then
 	local function read_vector(v)
 		return v.x, v.y, v.z

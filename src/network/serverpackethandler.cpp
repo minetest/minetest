@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "clientdynamicinfo.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -1341,21 +1342,26 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 {
-	v3s16 p;
-	std::string formname;
-	u16 num;
+	u16 field_count;
+	*pkt >> field_count;
 
-	*pkt >> p >> formname >> num;
-
-	StringMap fields;
-	for (u16 k = 0; k < num; k++) {
+	u64 length = 0;
+	for (u16 k = 0; k < field_count; k++) {
 		std::string fieldname;
 		*pkt >> fieldname;
 		fields[fieldname] = pkt->readLongString();
-	}
 
+		length += fieldname.size();
+		length += fields[fieldname].size();
+	}
+	// 640K ought to be enough for anyone
+	return length < 640 * 1024;
+}
+
+void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+{
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -1373,6 +1379,18 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 			"Server::ProcessData(): Canceling: No player object for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
 		DisconnectPeer(peer_id);
+		return;
+	}
+
+	v3s16 p;
+	std::string formname;
+	StringMap fields;
+
+	*pkt >> p >> formname;
+
+	if (!pkt_read_formspec_fields(pkt, fields)) {
+		warningstream << "Too large formspec fields! Ignoring for pos="
+			<< PP(p) << ", player=" << player->getName() << std::endl;
 		return;
 	}
 
@@ -1396,18 +1414,6 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 {
-	std::string client_formspec_name;
-	u16 num;
-
-	*pkt >> client_formspec_name >> num;
-
-	StringMap fields;
-	for (u16 k = 0; k < num; k++) {
-		std::string fieldname;
-		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
-	}
-
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -1425,6 +1431,17 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 			"Server::ProcessData(): Canceling: No player object for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
 		DisconnectPeer(peer_id);
+		return;
+	}
+
+	std::string client_formspec_name;
+	StringMap fields;
+
+	*pkt >> client_formspec_name;
+
+	if (!pkt_read_formspec_fields(pkt, fields)) {
+		warningstream << "Too large formspec fields! Ignoring for formname=\""
+			<< client_formspec_name << "\", player=" << player->getName() << std::endl;
 		return;
 	}
 
@@ -1840,4 +1857,19 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 				getScriptIface()->on_dynamic_media_added(token, player->getName());
 		}
 	}
+}
+
+void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
+{
+	ClientDynamicInfo info;
+	*pkt >> info.render_target_size.X;
+	*pkt >> info.render_target_size.Y;
+	*pkt >> info.real_gui_scaling;
+	*pkt >> info.real_hud_scaling;
+	*pkt >> info.max_fs_size.X;
+	*pkt >> info.max_fs_size.Y;
+
+	session_t peer_id = pkt->getPeerId();
+	RemoteClient *client = getClient(peer_id, CS_Invalid);
+	client->setDynamicInfo(info);
 }

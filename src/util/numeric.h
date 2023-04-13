@@ -151,10 +151,22 @@ struct MeshGrid {
 
 	u32 getCellVolume() const { return cell_size * cell_size * cell_size; }
 
+	/// @brief returns coordinate of mesh cell given coordinate of a map block
+	s16 getCellPos(s16 p) const
+	{
+		return (p - (p < 0) * (cell_size - 1)) / cell_size;
+	}
+
+	/// @brief returns position of mesh cell in the grid given position of a map block
+	v3s16 getCellPos(v3s16 block_pos) const
+	{
+		return v3s16(getCellPos(block_pos.X), getCellPos(block_pos.Y), getCellPos(block_pos.Z));
+	}
+
 	/// @brief returns closest step of the grid smaller than p
 	s16 getMeshPos(s16 p) const
 	{
-		return ((p - (p < 0) * (cell_size - 1)) / cell_size * cell_size);
+		return getCellPos(p) * cell_size;
 	}
 
 	/// @brief Returns coordinates of the origin of the grid cell containing p
