@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "exceptions.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
 #include "itemstackmetadata.h"
@@ -279,22 +278,18 @@ public:
 	inline bool checkModified() const { return m_dirty; }
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }
 
+	// Problem: C++ keeps references to InventoryList and ItemStack indices
+	// until a better solution is found, this serves as a guard to prevent side-effects
 	struct ResizeUnlocker {
 		void operator()(InventoryList *invlist)
 		{
-			invlist->m_resize_locks -= 1;;
+			invlist->m_resize_locks -= 1;
 		}
 	};
 	using ResizeLocked = std::unique_ptr<InventoryList, ResizeUnlocker>;
 
-	inline void checkResizeLock()
-	{
-		if (m_resize_locks == 0)
-			return; // OK
+	void checkResizeLock();
 
-		throw BaseException("InventoryList '" + m_name
-				+ "' is currently in use and cannot be deleted or resized.");
-	}
 	inline ResizeLocked resizeLock()
 	{
 		m_resize_locks += 1;
@@ -308,7 +303,7 @@ private:
 	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 	bool m_dirty = true;
-	u32 m_resize_locks = 0; // Lua callback sanity
+	int m_resize_locks = 0; // Lua callback sanity
 };
 
 class Inventory
