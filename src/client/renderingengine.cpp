@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "filesys.h"
 #include "../gui/guiSkin.h"
+#include "irr_ptr.h"
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
@@ -188,18 +189,28 @@ bool RenderingEngine::setupTopLevelWindow()
 
 bool RenderingEngine::setWindowIcon()
 {
+	irr_ptr<video::IImage> img;
+	auto try_img_path = [&](const std::string &path) {
+		if (!img)
+			img.reset(driver->createImageFromFile(path.c_str()));
+	};
+
 #if RUN_IN_PLACE
-	return get_raw_device()->setWindowIcon(
-			porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
+	try_img_path(porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #else
 	// We have semi-support for reading in-place data if we are
 	// compiled with RUN_IN_PLACE. Don't break with this and
 	// also try the path_share location.
-	return get_raw_device()->setWindowIcon(
-				ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png")
-			|| get_raw_device()->setWindowIcon(
-				porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
+	try_img_path(ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png");
+	try_img_path(porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #endif
+
+	if (!img) {
+		warningstream << "Could not load icon file." << std::endl;
+		return false;
+	}
+
+	return m_device->setWindowIcon(img.get());
 }
 
 /*
