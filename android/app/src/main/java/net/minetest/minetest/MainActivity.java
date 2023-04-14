@@ -71,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
 	builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
                // no
-               Toast.makeText(this, "PLACE HOLDER", Toast.LENGTH_SHORT).show();
+               Toast.makeText(this, R.string.unzip_confirm_cancelled, Toast.LENGTH_SHORT).show();
            }
        });
 
-	builder.setMessage(R.string.unzip_confirm).setTitle("PLACE HOLDER");
+	builder.setMessage(R.string.unzip_confirm).setTitle(unzip_confirm_title);
 
 	AlertDialog unzipConfirmDialog = builder.create();
 
