@@ -173,7 +173,7 @@ void set_default_settings()
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");
-	settings->setDefault("undersampling", "0");
+	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
@@ -300,7 +300,7 @@ void set_default_settings()
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
-	settings->setDefault("joystick_type", "");
+	settings->setDefault("joystick_type", "auto");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("joystick_deadzone", "2048");
