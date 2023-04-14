@@ -147,19 +147,23 @@ public class MainActivity extends AppCompatActivity {
 
 	private void checkAppVersion() {
 		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			// if no external storage mounted found, Toast a String (see xml file)
 			Toast.makeText(this, R.string.no_external_storage, Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
 
 		if (UnzipService.getIsRunning()) {
+			// if unzipping, make progress bar visible
 			mProgressBar.setVisibility(View.VISIBLE);
 			mProgressBar.setIndeterminate(true);
 			mTextView.setVisibility(View.VISIBLE);
 		} else if (sharedPreferences.getInt(TAG_VERSION_CODE, 0) == versionCode &&
 				Utils.isInstallValid(this)) {
+			// if everything set, start Minetest!
 			startNative();
 		} else {
+			// else UnzipService not running nor everything set, start UnzipService and make progress bar visible
 			mProgressBar.setVisibility(View.VISIBLE);
 			mProgressBar.setIndeterminate(true);
 			mTextView.setVisibility(View.VISIBLE);
