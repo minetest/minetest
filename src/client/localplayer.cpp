@@ -575,11 +575,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 		if (control.sneak) {
 			if (free_move) {
-				// In free movement mode, sneak descends
-				if (fast_move && (control.aux1 || always_fly_fast))
-					speedV.Y = -movement_speed_fast;
-				else
-					speedV.Y = -movement_speed_walk;
+				if (!control.jump) {
+					// In free movement mode, sneak descends if jump key isn't pressed
+					if (fast_move && (control.aux1 || always_fly_fast))
+						speedV.Y = -movement_speed_fast;
+					else
+						speedV.Y = -movement_speed_walk;
+				}
 			} else if (in_liquid || in_liquid_stable) {
 				if (fast_climb)
 					speedV.Y = -movement_speed_fast;
@@ -606,16 +608,19 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	if (control.jump) {
 		if (free_move) {
-			if (player_settings.aux1_descends || always_fly_fast) {
-				if (fast_move)
-					speedV.Y = movement_speed_fast;
-				else
-					speedV.Y = movement_speed_walk;
-			} else {
-				if (fast_move && control.aux1)
-					speedV.Y = movement_speed_fast;
-				else
-					speedV.Y = movement_speed_walk;
+			if (!control.sneak) {
+				// Don't fly up if sneak key is pressed
+				if (player_settings.aux1_descends || always_fly_fast) {
+					if (fast_move)
+						speedV.Y = movement_speed_fast;
+					else
+						speedV.Y = movement_speed_walk;
+				} else {
+					if (fast_move && control.aux1)
+						speedV.Y = movement_speed_fast;
+					else
+						speedV.Y = movement_speed_walk;
+				}
 			}
 		} else if (m_can_jump) {
 			/*
