@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package net.minetest.minetest;
 
 import android.Manifest;
+impott android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private SharedPreferences sharedPreferences;
+
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+	builder.setMessage(R.string.unzip_confirm).setTitle("PLACE HOLDER");
+
+	AlertDialog dialog = builder.create();
 
 	private final BroadcastReceiver myReceiver = new BroadcastReceiver() {
 		@Override
