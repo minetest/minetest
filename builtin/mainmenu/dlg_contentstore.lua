@@ -200,6 +200,9 @@ local function queue_download(package, reason)
 end
 
 local function get_raw_dependencies(package)
+	if package.type ~= "mod" then
+		return {}
+	end
 	if package.raw_deps then
 		return package.raw_deps
 	end
@@ -999,7 +1002,13 @@ function store.handle_submit(this, fields)
 				end
 			end
 
-			if not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+			if package.type == "mod" and #pkgmgr.games == 0 then
+				local dlg = messagebox("install_game",
+					fgettext("You need to install a game before you can install a mod"))
+				dlg:set_parent(this)
+				this:hide()
+				dlg:show()
+			elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
 				local dlg = confirm_overwrite.create(package, on_confirm)
 				dlg:set_parent(this)
 				this:hide()
