@@ -62,9 +62,22 @@ public class MainActivity extends AppCompatActivity {
 
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+	builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+               // yes
+               checkAppVersion();
+           }
+       });
+	builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+               // no
+               Toast.makeText(this, "PLACE HOLDER", Toast.LENGTH_SHORT).show();
+           }
+       });
+
 	builder.setMessage(R.string.unzip_confirm).setTitle("PLACE HOLDER");
 
-	AlertDialog dialog = builder.create();
+	AlertDialog unzipConfirmDialog = builder.create();
 
 	private final BroadcastReceiver myReceiver = new BroadcastReceiver() {
 		@Override
@@ -112,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 				Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
 			checkPermission();
 		else
-			checkAppVersion();
+			unzipConfirmDialog.show();
 	}
 
 	private void checkPermission() {
@@ -148,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 					return;
 				}
 			}
-			checkAppVersion();
+			unzipConfirmDialog.show();
 		}
 	}
 
