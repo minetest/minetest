@@ -955,6 +955,7 @@ function store.handle_submit(this, fields)
 		local new_type = table.indexof(filter_types_titles, fields.type)
 		if new_type ~= filter_type then
 			filter_type = new_type
+			cur_page = 1
 			store.filter_packages(search_string)
 			return true
 		end
