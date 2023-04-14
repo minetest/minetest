@@ -9,6 +9,8 @@
 	<string name="notification_description">Less than 1 minute&#8230;</string>
 	<string name="ime_dialog_done">Done</string>
 	<string name="unzip_confirm">Do you want to unpack necessary files\?</string>
+ 	<string name="unzip_confirm_title">Unpack Files Confirm</string>
+ 	<string name="unzip_cancelled">Minetest require some necessary files to work</string>
  	<string name="yes">Yes</string>
  	<string name="no">No</string>
 	<string name="no_external_storage">External storage isn\'t available. If you use an SDCard, please reinsert it. Otherwise, try restarting your phone or contacting the Minetest developers</string>
