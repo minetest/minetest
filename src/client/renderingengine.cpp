@@ -87,9 +87,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	bool fullscreen = g_settings->getBool("fullscreen");
 #ifdef __ANDROID__
 	u16 screen_w = 0, screen_h = 0;
+	bool window_maximized = false;
 #else
 	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
 	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
+	bool window_maximized = g_settings->getBool("window_maximized");
 #endif
 
 	// bpp, fsaa, vsync
@@ -127,6 +129,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
+	params.WindowMaximized = window_maximized;
+	params.WindowResizable = 1; // 1 means always (required for window_maximized)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
@@ -625,3 +629,33 @@ float RenderingEngine::getDisplayDensity()
 }
 
 #endif // __ANDROID__
+
+
+void RenderingEngine::autosaveScreensizeAndCo(
+		const irr::core::dimension2d<u32> initial_screen_size,
+		const bool initial_window_maximized)
+{
+	if (!g_settings->getBool("autosave_screensize"))
+		return;
+
+	// Note: If the screensize or similar hasn't changed (i.e. it's the same as
+	// the setting was when minetest started, as given by the initial_* parameters),
+	// we do not want to save the thing. This allows users to also manually change
+	// the settings.
+
+	// Screen size
+	const irr::core::dimension2d<u32> current_screen_size =
+		RenderingEngine::get_video_driver()->getScreenSize();
+	// Don't replace good value with (0, 0)
+	if (current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
+			current_screen_size != initial_screen_size) {
+		g_settings->setU16("screen_w", current_screen_size.Width);
+		g_settings->setU16("screen_h", current_screen_size.Height);
+	}
+
+	// Window maximized
+	const bool is_window_maximized = RenderingEngine::get_raw_device()
+			->isWindowMaximized();
+	if (is_window_maximized != initial_window_maximized)
+		g_settings->setBool("window_maximized", is_window_maximized);
+}

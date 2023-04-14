@@ -188,6 +188,7 @@ void set_default_settings()
 	settings->setDefault("client_mesh_chunk", "1");
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
+	settings->setDefault("window_maximized", "false");
 	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("vsync", "false");

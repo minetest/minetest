@@ -136,13 +136,19 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 
 [**Screen]
 
-#    Width component of the initial window size. Ignored in fullscreen mode.
+#    Width component of the initial window size.
 screen_w (Screen width) int 1024 1 65535
 
-#    Height component of the initial window size. Ignored in fullscreen mode.
+#    Height component of the initial window size.
 screen_h (Screen height) int 600 1 65535
 
+#    Whether the window is maximized.
+window_maximized (Window maximized) bool false
+
 #    Save window size automatically when modified.
+#    If true, screen size is saved in screen_w and screen_h, and whether the window
+#    is maximized is stored in window_maximized.
+#    (Autosaving window_maximized only works if compiled with SDL.)
 autosave_screensize (Autosave screen size) bool true
 
 #    Fullscreen mode.
