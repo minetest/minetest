@@ -2103,6 +2103,10 @@ noclip (Noclip) bool false
 #    Press the autoforward key again or the backwards movement to disable.
 continuous_forward (Continuous forward) bool false
 
+#    This can be bound to a key to toggle camera smoothing when looking around.
+#    Useful for recording videos
+cinematic (Cinematic mode) bool false
+
 #    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
 #    setting names in All Settings.
@@ -2124,10 +2128,6 @@ update_last_checked (Last update check) string
 #    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
-
-#    This can be bound to a key to toggle camera smoothing when looking around.
-#    Useful for recording videos
-cinematic (Cinematic mode) bool false
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
