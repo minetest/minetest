@@ -149,6 +149,9 @@ void RemoteClient::GetNextBlocks (
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
 
+	if (sao->getCameraInverted())
+		camera_dir = -camera_dir;
+
 	u16 max_simul_sends_usually = m_max_simul_sends;
 
 	/*
