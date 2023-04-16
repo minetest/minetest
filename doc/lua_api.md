@@ -7379,7 +7379,7 @@ child will follow movement and rotation of that bone.
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
 * `get_armor_groups()`:
-    * returns a table with all the objects's armor group ratings
+    * returns a table with all of the object's armor group ratings
     * syntax: the table keys are the armor group names,
       the table values are the corresponding group ratings
     * see section '`ObjectRef` armor groups' for details
