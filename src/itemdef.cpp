@@ -325,9 +325,12 @@ public:
 
 		const ItemDefinition &def = item.getDefinition(this);
 		std::string inventory_image = item.getInventoryImage(this);
+		std::string inventory_overlay = item.getInventoryOverlay(this);
 		std::string cache_key = def.name;
 		if (!inventory_image.empty())
 			cache_key += "/" + inventory_image;
+		if (!inventory_overlay.empty())
+			cache_key += ":" + inventory_overlay;
 
 		infostream << "Lazily creating item texture and mesh for \""
 				<< cache_key << "\""<<std::endl;

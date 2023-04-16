@@ -84,7 +84,7 @@ minetest.register_craftitem("testitems:image_meta", {
 			meta:set_string("wield_overlay", "default_apple.png")
 		elseif state == 4 then
 			local scale = vector.new(0.5, 0.5, 0.5)
-			meta:set_string("wield_scale", minetest.pos_to_string(scale))
+			meta:set_string("wield_scale", scale:to_string())
 		end
 
 		return itemstack
