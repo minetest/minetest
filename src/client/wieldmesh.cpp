@@ -384,11 +384,12 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	m_colors.clear();
 	m_base_color = idef->getItemstackColor(item, client);
 
-	const auto wield_image = item.getWieldImage(idef);
+	const std::string wield_image = item.getWieldImage(idef);
+	const std::string wield_overlay = item.getWieldOverlay(idef);
 
 	// If wield_image needs to be checked and is defined, it overrides everything else
 	if (!wield_image.empty() && check_wield_image) {
-		setExtruded(wield_image, def.wield_overlay, def.wield_scale, tsrc,
+		setExtruded(wield_image, wield_overlay, def.wield_scale, tsrc,
 			1);
 		m_colors.emplace_back();
 		// overlay is white, if present
@@ -475,8 +476,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 	} else {
 		const std::string inventory_image = item.getInventoryImage(idef);
 		if (!inventory_image.empty()) {
-			setExtruded(inventory_image, def.inventory_overlay,
-				def.wield_scale, tsrc, 1);
+			const std::string inventory_overlay = item.getInventoryOverlay(idef);
+			setExtruded(inventory_image, inventory_overlay, def.wield_scale, tsrc, 1);
 		} else {
 			setExtruded("no_texture.png", "", def.wield_scale, tsrc, 1);
 		}
@@ -582,9 +583,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 	// If inventory_image is defined, it overrides everything else
 	const std::string inventory_image = item.getInventoryImage(idef);
+	const std::string inventory_overlay = item.getInventoryOverlay(idef);
 	if (!inventory_image.empty()) {
-		mesh = getExtrudedMesh(tsrc, inventory_image,
-			def.inventory_overlay);
+		mesh = getExtrudedMesh(tsrc, inventory_image, inventory_overlay);
 		result->buffer_colors.emplace_back();
 		// overlay is white, if present
 		result->buffer_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
@@ -592,8 +593,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE && f.drawtype == NDT_AIRLIKE) {
 		// Fallback image for airlike node
-		mesh = getExtrudedMesh(tsrc, "no_texture_airlike.png",
-			def.inventory_overlay);
+		mesh = getExtrudedMesh(tsrc, "no_texture_airlike.png", inventory_overlay);
 		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
 		switch (f.drawtype) {

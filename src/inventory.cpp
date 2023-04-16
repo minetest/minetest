@@ -281,11 +281,29 @@ std::string ItemStack::getInventoryImage(const IItemDefManager *itemdef) const
 	return texture;
 }
 
+std::string ItemStack::getInventoryOverlay(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("inventory_overlay");
+	if (texture.empty())
+		texture = getDefinition(itemdef).inventory_overlay;
+
+	return texture;
+}
+
 std::string ItemStack::getWieldImage(const IItemDefManager *itemdef) const
 {
 	std::string texture = metadata.getString("wield_image");
 	if (texture.empty())
 		texture = getDefinition(itemdef).wield_image;
+
+	return texture;
+}
+
+std::string ItemStack::getWieldOverlay(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("wield_overlay");
+	if (texture.empty())
+		texture = getDefinition(itemdef).wield_overlay;
 
 	return texture;
 }

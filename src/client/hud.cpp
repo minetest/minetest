@@ -1014,6 +1014,7 @@ void drawItemStack(
 	bool draw_overlay = false;
 
 	const std::string inventory_image = item.getInventoryImage(idef);
+	const std::string inventory_overlay = item.getInventoryOverlay(idef);
 
 	bool has_mesh = false;
 	ItemMesh *imesh;
@@ -1137,9 +1138,9 @@ void drawItemStack(
 	}
 
 	// draw the inventory_overlay
-	if (!def.inventory_overlay.empty() && draw_overlay) {
+	if (!inventory_overlay.empty() && draw_overlay) {
 		ITextureSource *tsrc = client->getTextureSource();
-		video::ITexture *overlay_texture = tsrc->getTexture(def.inventory_overlay);
+		video::ITexture *overlay_texture = tsrc->getTexture(inventory_overlay);
 		core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
 		core::rect<s32> srcrect(0, 0, dimens.Width, dimens.Height);
 		draw2DImageFilterScaled(driver, overlay_texture, rect, srcrect, clip, 0, true);

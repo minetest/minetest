@@ -52,7 +52,9 @@ struct ItemStack
 	std::string getShortDescription(const IItemDefManager *itemdef) const;
 
 	std::string getInventoryImage(const IItemDefManager *itemdef) const;
+	std::string getInventoryOverlay(const IItemDefManager *itemdef) const;
 	std::string getWieldImage(const IItemDefManager *itemdef) const;
+	std::string getWieldOverlay(const IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods
