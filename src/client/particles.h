@@ -115,7 +115,7 @@ private:
 
 	ClientEnvironment *m_env;
 	IGameDef *m_gamedef;
-	aabb3f m_box{v3f()};
+	aabb3f m_box;
 	aabb3f m_collisionbox;
 	ClientParticleTexRef m_texture;
 	video::SMaterial m_material;

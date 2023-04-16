@@ -662,18 +662,17 @@ void ParticleManager::stepSpawners(float dtime)
 	MutexAutoLock lock(m_spawner_list_lock);
 
 	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
-		std::unique_ptr<ParticleSpawner> &ps = it->second;
-		if (ps->getExpired()) {
+		ParticleSpawner &ps = *it->second;
+		if (ps.getExpired()) {
 			// the particlespawner owns the textures, so we need to make
 			// sure there are no active particles before we free it
-			if (!ps->hasActive()) {
-				ps.reset();
+			if (!ps.hasActive()) {
 				it = m_particle_spawners.erase(it);
 			} else {
 				++it;
 			}
 		} else {
-			ps->step(dtime, m_env);
+			ps.step(dtime, m_env);
 			++it;
 		}
 	}
@@ -748,7 +747,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				}
 			} else {
 				// no texpool in use, use fallback texture
-				texpool = { ClientParticleTexture(p.texture, client->tsrc()) };
+				texpool.emplace_back(p.texture, client->tsrc());
 			}
 
 			addParticleSpawner(event->add_particlespawner.id,
