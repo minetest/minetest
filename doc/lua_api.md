@@ -7192,7 +7192,7 @@ child will follow movement and rotation of that bone.
 * `set_detach()`
 * `set_bone_position([bone, position, rotation])`
 	* Shorthand for `set_bone_override(bone, {position = ..., rotation = ...})` using absolute values.
-	* Supports older servers & clients (< 5.6)
+	* Supports older servers & clients (5.7.0 and earlier)
 	* **Deprecated**; use `set_bone_override` instead
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
 	* Shorthand for `get_bone_override(bone).position.vector, get_bone_override(bone).rotation.vector`
