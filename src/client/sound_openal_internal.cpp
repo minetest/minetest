@@ -55,21 +55,21 @@ static const char *getAlErrorString(ALenum err) noexcept
 	}
 }
 
-static ALenum warn_if_al_error(const char *desc) noexcept
+static ALenum warn_if_al_error(const char *desc)
 {
 	ALenum err = alGetError();
 	if (err == AL_NO_ERROR)
 		return err;
-	try {
-		warningstream << "[OpenAL Error] " << desc << ": " << getAlErrorString(err)
-				<< std::endl;
-	} catch (...) { /* ignore */ }
+	warningstream << "[OpenAL Error] " << desc << ": " << getAlErrorString(err)
+			<< std::endl;
 	return err;
 }
 
-// Transforms vectors from a left-handed coordinate system to a right-handed one
-// and vice-versa.
-// (Needed because Minetest uses a left-handed one and OpenAL a right-handed one.)
+/**
+ * Transforms vectors from a left-handed coordinate system to a right-handed one
+ * and vice-versa.
+ * (Needed because Minetest uses a left-handed one and OpenAL a right-handed one.)
+ */
 static inline v3f swap_handedness(v3f v) noexcept
 {
 	return v3f(-v.X, v.Y, v.Z);
@@ -530,6 +530,7 @@ PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> dat
 			return;
 		}
 	} else {
+		// Modulo offset to be within looping time
 		time_offset = time_offset - std::floor(time_offset / len_seconds) * len_seconds;
 	}
 

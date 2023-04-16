@@ -338,7 +338,7 @@ struct SoundDataUnopenBuffer final : ISoundDataUnopen
 
 	explicit SoundDataUnopenBuffer(std::string &&buffer) : m_buffer(std::move(buffer)) {}
 
-	virtual std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && override;
+	std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && override;
 };
 
 /**
@@ -350,7 +350,7 @@ struct SoundDataUnopenFile final : ISoundDataUnopen
 
 	explicit SoundDataUnopenFile(const std::string &path) : m_path(path) {}
 
-	virtual std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && override;
+	std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && override;
 };
 
 /**
@@ -364,9 +364,9 @@ struct SoundDataOpenBuffer final : ISoundDataOpen
 	SoundDataOpenBuffer(std::unique_ptr<RAIIOggFile> oggfile,
 			const OggFileDecodeInfo &decode_info);
 
-	virtual bool isStreaming() const noexcept override { return false; }
+	bool isStreaming() const noexcept override { return false; }
 
-	virtual std::tuple<ALuint, ALuint, ALuint> getOrLoadBufferAt(ALuint offset) override
+	std::tuple<ALuint, ALuint, ALuint> getOrLoadBufferAt(ALuint offset) override
 	{
 		if (offset >= m_decode_info.length_samples)
 			return std::make_tuple(0, m_decode_info.length_samples, 0);
@@ -409,9 +409,9 @@ struct SoundDataOpenStream final : ISoundDataOpen
 	SoundDataOpenStream(std::unique_ptr<RAIIOggFile> oggfile,
 			const OggFileDecodeInfo &decode_info);
 
-	virtual bool isStreaming() const noexcept override { return true; }
+	bool isStreaming() const noexcept override { return true; }
 
-	virtual std::tuple<ALuint, ALuint, ALuint> getOrLoadBufferAt(ALuint offset) override;
+	std::tuple<ALuint, ALuint, ALuint> getOrLoadBufferAt(ALuint offset) override;
 
 private:
 	// offset must be before after_it's m_start and after (after_it-1)'s last m_end
@@ -539,8 +539,6 @@ private:
 	bool m_is_paused = false;
 
 private:
-	sound_handle_t newSoundID();
-
 	void stepStreams(f32 dtime);
 	void doFades(f32 dtime);
 

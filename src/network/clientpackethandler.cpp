@@ -838,12 +838,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	} catch (PacketError &e) {};
 
 	// Generate a new id
-	sound_handle_t client_id = [&] {
-		if (ephemeral && object_id == 0)
-			return 0; // Sound can not be accessed afterwards
-
-		return m_sound->allocateId(2);
-	}();
+	sound_handle_t client_id = (ephemeral && object_id == 0) ? 0 : m_sound->allocateId(2);
 
 	// Start playing
 	switch(type) {
