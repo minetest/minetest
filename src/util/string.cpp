@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hex.h"
 #include "porting.h"
 #include "translation.h"
+#include "strfnd.h"
 
 #include <algorithm>
 #include <array>
@@ -896,4 +897,16 @@ void safe_print_string(std::ostream &os, const std::string &str)
 		}
 	}
 	os.setf(flags);
+}
+
+
+v3f str_to_v3f(const std::string &str)
+{
+	v3f value;
+	Strfnd f(str);
+	f.next("(");
+	value.X = stof(f.next(","));
+	value.Y = stof(f.next(","));
+	value.Z = stof(f.next(")"));
+	return value;
 }

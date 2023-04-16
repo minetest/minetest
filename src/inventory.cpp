@@ -314,13 +314,7 @@ v3f ItemStack::getWieldScale(const IItemDefManager *itemdef) const
 	if (scale.empty())
 		return getDefinition(itemdef).wield_scale;
 
-	v3f value;
-	Strfnd f(scale);
-	f.next("(");
-	value.X = stof(f.next(","));
-	value.Y = stof(f.next(","));
-	value.Z = stof(f.next(")"));
-	return value;
+	return str_to_v3f(scale);
 }
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
