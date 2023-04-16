@@ -1843,6 +1843,9 @@ chatcommand_msg_time_threshold (Chat command time message threshold) float 0.1 0
 #    A message to be displayed to all clients when the server shuts down.
 kick_msg_shutdown (Shutdown message) string Server shutting down.
 
+#    Whether to ask clients to reconnect after a shutdown request.
+ask_reconnect_on_shutdown (Ask to reconnect after shutdown request) bool false
+
 #    A message to be displayed to all clients when the server crashes.
 kick_msg_crash (Crash message) string This server has experienced an internal error. You will now be disconnected.
 

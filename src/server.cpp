@@ -328,6 +328,7 @@ Server::~Server()
 			kick_msg = m_shutdown_state.message;
 		}
 		if (kick_msg.empty()) {
+			reconnect = g_settings->getBool("ask_reconnect_on_shutdown");
 			kick_msg = g_settings->get("kick_msg_shutdown");
 		}
 		m_env->saveLoadedPlayers(true);

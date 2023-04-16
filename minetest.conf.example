@@ -2902,6 +2902,10 @@
 #    type: string
 # kick_msg_shutdown = Server shutting down.
 
+#    Whether to ask clients to reconnect after a shutdown request.
+#    type: bool
+# ask_reconnect_on_shutdown = false
+
 #    A message to be displayed to all clients when the server crashes.
 #    type: string
 # kick_msg_crash = This server has experienced an internal error. You will now be disconnected.

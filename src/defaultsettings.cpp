@@ -380,6 +380,7 @@ void set_default_settings()
 	settings->setDefault("deprecated_lua_api_handling", "log");
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
+	settings->setDefault("ask_reconnect_on_shutdown", "false");
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
 	settings->setDefault("ask_reconnect_on_crash", "false");
 
