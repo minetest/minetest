@@ -325,8 +325,7 @@ public:
 
 		const ItemDefinition &def = item.getDefinition(this);
 		std::string inventory_image = item.getInventoryImage(this);
-		std::string item_name = def.name;
-		std::string cache_key = item_name;
+		std::string cache_key = def.name;
 		if (!inventory_image.empty())
 			cache_key += "/" + inventory_image;
 

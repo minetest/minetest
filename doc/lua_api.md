@@ -2275,7 +2275,7 @@ Some of the values in the key-value store are handled specially:
 * `inventory_overlay`: Override inventory_overlay
 * `wield_image`: Override wield_image
 * `wield_overlay`: Override wield_overlay
-* `wield_scale`: Override wield_scale, use minetest.pos_to_string
+* `wield_scale`: Override wield_scale, use vector.to_string
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
   current color from the palette.

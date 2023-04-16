@@ -1025,7 +1025,7 @@ void drawItemStack(
 
 	// Render as mesh if animated or no inventory image
 	if ((enable_animations && rotation_kind < IT_ROT_NONE) || inventory_image.empty()) {
-		imesh = client->idef()->getWieldMesh(item, client);
+		imesh = idef->getWieldMesh(item, client);
 		has_mesh = imesh && imesh->mesh;
 	}
 	if (has_mesh) {
