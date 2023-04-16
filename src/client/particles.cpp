@@ -356,23 +356,23 @@ ParticleSpawner::ParticleSpawner(
 		m_dying(false),
 		m_gamedef(gamedef),
 		m_player(player),
-		m_params(params),
+		p(params),
 		m_texpool(std::move(texpool)),
 		m_attached_id(attached_id)
 {
-	m_spawntimes.reserve(m_params.amount + 1);
-	for (u16 i = 0; i <= m_params.amount; i++) {
-		float spawntime = myrand_float() * m_params.time;
+	m_spawntimes.reserve(p.amount + 1);
+	for (u16 i = 0; i <= p.amount; i++) {
+		float spawntime = myrand_float() * p.time;
 		m_spawntimes.push_back(spawntime);
 	}
 
 	size_t max_particles = 0; // maximum number of particles likely to be visible at any given time
-	if (m_params.time != 0) {
-		auto maxGenerations = m_params.time / std::min(m_params.exptime.start.min, m_params.exptime.end.min);
-		max_particles = m_params.amount / maxGenerations;
+	if (p.time != 0) {
+		auto maxGenerations = p.time / std::min(p.exptime.start.min, p.exptime.end.min);
+		max_particles = p.amount / maxGenerations;
 	} else {
-		auto longestLife = std::max(m_params.exptime.start.max, m_params.exptime.end.max);
-		max_particles = m_params.amount * longestLife;
+		auto longestLife = std::max(p.exptime.start.max, p.exptime.end.max);
+		max_particles = p.amount * longestLife;
 	}
 
 	p_manager->reserveParticleSpace(max_particles * 1.2);
@@ -390,25 +390,25 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
 	float fac = 0;
-	if (m_params.time != 0) { // ensure safety from divide-by-zeroes
-		fac = m_time / (m_params.time+0.1f);
+	if (p.time != 0) { // ensure safety from divide-by-zeroes
+		fac = m_time / (p.time+0.1f);
 	}
 
-	auto r_pos    = m_params.pos.blend(fac);
-	auto r_vel    = m_params.vel.blend(fac);
-	auto r_acc    = m_params.acc.blend(fac);
-	auto r_drag   = m_params.drag.blend(fac);
-	auto r_radius = m_params.radius.blend(fac);
-	auto r_jitter = m_params.jitter.blend(fac);
-	auto r_bounce = m_params.bounce.blend(fac);
-	v3f  attractor_origin    = m_params.attractor_origin.blend(fac);
-	v3f  attractor_direction = m_params.attractor_direction.blend(fac);
-	auto attractor_obj           = findObjectByID(env, m_params.attractor_attachment);
-	auto attractor_direction_obj = findObjectByID(env, m_params.attractor_direction_attachment);
+	auto r_pos    = p.pos.blend(fac);
+	auto r_vel    = p.vel.blend(fac);
+	auto r_acc    = p.acc.blend(fac);
+	auto r_drag   = p.drag.blend(fac);
+	auto r_radius = p.radius.blend(fac);
+	auto r_jitter = p.jitter.blend(fac);
+	auto r_bounce = p.bounce.blend(fac);
+	v3f  attractor_origin    = p.attractor_origin.blend(fac);
+	v3f  attractor_direction = p.attractor_direction.blend(fac);
+	auto attractor_obj           = findObjectByID(env, p.attractor_attachment);
+	auto attractor_direction_obj = findObjectByID(env, p.attractor_direction_attachment);
 
-	auto r_exp     = m_params.exptime.blend(fac);
-	auto r_size    = m_params.size.blend(fac);
-	auto r_attract = m_params.attract.blend(fac);
+	auto r_exp     = p.exptime.blend(fac);
+	auto r_size    = p.size.blend(fac);
+	auto r_attract = p.attract.blend(fac);
 	auto attract   = r_attract.pickWithin();
 
 	v3f ppos = m_player->getPosition() / BS;
@@ -469,10 +469,10 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pp.pos += ofs * mag;
 	}
 
-	if (m_params.attractor_kind != ParticleParamTypes::AttractorKind::none && attract != 0) {
+	if (p.attractor_kind != ParticleParamTypes::AttractorKind::none && attract != 0) {
 		v3f dir;
 		f32 dist = 0; /* =0 necessary to silence warning */
-		switch (m_params.attractor_kind) {
+		switch (p.attractor_kind) {
 			case ParticleParamTypes::AttractorKind::none:
 				break;
 
@@ -522,7 +522,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		v3f avel = dir * speedTowards;
 		if (attract > 0 && speedTowards > 0) {
 			avel *= -1;
-			if (m_params.attractor_kill) {
+			if (p.attractor_kill) {
 				// make sure the particle dies after crossing the attractor threshold
 				f32 timeToCenter = dist / speedTowards;
 				if (timeToCenter < pp.expirationtime)
@@ -532,17 +532,17 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		pp.vel += avel;
 	}
 
-	m_params.copyCommon(pp);
+	p.copyCommon(pp);
 
 	ClientParticleTexRef texture;
 	v2f texpos, texsize;
 	video::SColor color(0xFFFFFFFF);
 
-	if (m_params.node.getContent() != CONTENT_IGNORE) {
+	if (p.node.getContent() != CONTENT_IGNORE) {
 		const ContentFeatures &f =
-			m_particlemanager->m_env->getGameDef()->ndef()->get(m_params.node);
-		if (!ParticleManager::getNodeParticleParams(m_params.node, f, pp, &texture.ref,
-				texpos, texsize, &color, m_params.node_tile))
+			m_particlemanager->m_env->getGameDef()->ndef()->get(p.node);
+		if (!ParticleManager::getNodeParticleParams(p.node, f, pp, &texture.ref,
+				texpos, texsize, &color, p.node_tile))
 			return;
 	} else {
 		if (m_texpool.size() == 0)
@@ -574,7 +574,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	}
 
 	// Allow keeping default random size
-	if (m_params.size.start.max > 0.0f || m_params.size.end.max > 0.0f)
+	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
 
 	++m_active;
@@ -608,11 +608,11 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if (m_params.time != 0) {
+	if (p.time != 0) {
 		// Spawner exists for a predefined timespan
 		for (auto i = m_spawntimes.begin(); i != m_spawntimes.end(); ) {
-			if ((*i) <= m_time && m_params.amount > 0) {
-				--m_params.amount;
+			if ((*i) <= m_time && p.amount > 0) {
+				--p.amount;
 
 				// Pretend to, but don't actually spawn a particle if it is
 				// attached to an unloaded object or distant from player.
@@ -631,7 +631,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 		if (unloaded)
 			return;
 
-		for (int i = 0; i <= m_params.amount; i++) {
+		for (int i = 0; i <= p.amount; i++) {
 			if (myrand_float() < dtime)
 				spawnParticle(env, radius, attached_absolute_pos_rot_matrix);
 		}

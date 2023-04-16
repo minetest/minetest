@@ -162,7 +162,7 @@ public:
 	void step(float dtime, ClientEnvironment *env);
 
 	bool getExpired() const
-	{ return m_dying || (m_params.amount <= 0 && m_params.time != 0); }
+	{ return m_dying || (p.amount <= 0 && p.time != 0); }
 	void setDying() { m_dying = true; }
 
 	bool hasActive() const { return m_active != 0; }
@@ -178,7 +178,7 @@ private:
 	bool m_dying;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
-	ParticleSpawnerParameters m_params;
+	ParticleSpawnerParameters p;
 	std::vector<ClientParticleTexture> m_texpool;
 	size_t m_texcount;
 	std::vector<float> m_spawntimes;
