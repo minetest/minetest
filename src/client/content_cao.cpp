@@ -1858,7 +1858,7 @@ void GenericCAO::processMessage(const std::string &data)
 		props.rotation.next = core::quaternion(readV3F32(is) * core::DEGTORAD);
 		props.scale.vector = readV3F32(is); // reads past end of string on older cmds
 		if (is.eof()) {
-			// Backwards compatibility for protocol versions <= 40
+			// Backwards compatibility
 			props.scale.vector = v3f(1, 1, 1); // restore the scale which was not sent
 			props.position.absolute = true;
 			props.rotation.absolute = true;
