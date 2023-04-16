@@ -386,10 +386,11 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 	const std::string wield_image = item.getWieldImage(idef);
 	const std::string wield_overlay = item.getWieldOverlay(idef);
+	const v3f wield_scale = item.getWieldScale(idef);
 
 	// If wield_image needs to be checked and is defined, it overrides everything else
 	if (!wield_image.empty() && check_wield_image) {
-		setExtruded(wield_image, wield_overlay, def.wield_scale, tsrc,
+		setExtruded(wield_image, wield_overlay, wield_scale, tsrc,
 			1);
 		m_colors.emplace_back();
 		// overlay is white, if present
@@ -416,7 +417,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_RAILLIKE:
 		case NDT_PLANTLIKE:
 		case NDT_FLOWINGLIQUID: {
-			v3f wscale = def.wield_scale;
+			v3f wscale = wield_scale;
 			if (f.drawtype == NDT_FLOWINGLIQUID)
 				wscale.Z *= 0.1f;
 			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
@@ -432,7 +433,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		}
 		case NDT_PLANTLIKE_ROOTED: {
 			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
-				"", def.wield_scale, tsrc,
+				"", wield_scale, tsrc,
 				f.special_tiles[0].layers[0].animation_frame_count);
 			// Add color
 			const TileLayer &l0 = f.special_tiles[0].layers[0];
@@ -442,7 +443,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		case NDT_NORMAL:
 		case NDT_ALLFACES:
 		case NDT_LIQUID:
-			setCube(f, def.wield_scale);
+			setCube(f, wield_scale);
 			break;
 		default: {
 			// Render non-trivial drawtypes like the actual node
@@ -453,7 +454,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			changeToMesh(mesh);
 			mesh->drop();
 			m_meshnode->setScale(
-				def.wield_scale * WIELD_SCALE_FACTOR
+				wield_scale * WIELD_SCALE_FACTOR
 				/ (BS * f.visual_scale));
 			break;
 		}

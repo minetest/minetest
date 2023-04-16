@@ -55,6 +55,7 @@ struct ItemStack
 	std::string getInventoryOverlay(const IItemDefManager *itemdef) const;
 	std::string getWieldImage(const IItemDefManager *itemdef) const;
 	std::string getWieldOverlay(const IItemDefManager *itemdef) const;
+	v3f getWieldScale(const IItemDefManager *itemdef) const;
 
 	/*
 		Quantity methods

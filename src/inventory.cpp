@@ -308,6 +308,20 @@ std::string ItemStack::getWieldOverlay(const IItemDefManager *itemdef) const
 	return texture;
 }
 
+v3f ItemStack::getWieldScale(const IItemDefManager *itemdef) const
+{
+	std::string scale = metadata.getString("wield_scale");
+	if (scale.empty())
+		return getDefinition(itemdef).wield_scale;
+
+	v3f value;
+	Strfnd f(scale);
+	f.next("(");
+	value.X = stof(f.next(","));
+	value.Y = stof(f.next(","));
+	value.Z = stof(f.next(")"));
+	return value;
+}
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {

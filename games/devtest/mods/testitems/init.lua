@@ -61,7 +61,7 @@ minetest.register_craftitem("testitems:image_meta", {
 	on_use = function(itemstack, player)
 		local meta = itemstack:get_meta()
 		local state = meta:get_int("state")
-		state = (state + 1) % 4
+		state = (state + 1) % 5
 		meta:set_int("state", state)
 		minetest.chat_send_player(player:get_player_name(), "State " .. state)
 
@@ -70,6 +70,7 @@ minetest.register_craftitem("testitems:image_meta", {
 			meta:set_string("wield_image", "")
 			meta:set_string("inventory_overlay", "")
 			meta:set_string("wield_overlay", "")
+			meta:set_string("wield_scale", "")
 		elseif state == 1 then
 			meta:set_string("inventory_image", "default_tree.png")
 			meta:set_string("wield_image", "basetools_firesword.png")
@@ -81,6 +82,9 @@ minetest.register_craftitem("testitems:image_meta", {
 			meta:set_string("wield_image", "basetools_firesword.png")
 			meta:set_string("inventory_overlay", "default_apple.png")
 			meta:set_string("wield_overlay", "default_apple.png")
+		elseif state == 4 then
+			local scale = vector.new(0.5, 0.5, 0.5)
+			meta:set_string("wield_scale", minetest.pos_to_string(scale))
 		end
 
 		return itemstack
