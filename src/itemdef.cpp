@@ -320,18 +320,19 @@ public:
 public:
 	ClientCached* createClientCachedDirect(const ItemStack &item, Client *client) const
 	{
+		// This is not thread-safe
+		sanity_check(std::this_thread::get_id() == m_main_thread);
+
 		IItemDefManager *idef = client->getItemDefManager();
+		const ItemDefinition &def = item.getDefinition(idef);
 		std::string inventory_image = item.getInventoryImage(idef);
-		std::string item_name = item.getDefinition(idef).name;
+		std::string item_name = def.name;
 		std::string cache_key = item_name;
 		if (!inventory_image.empty())
 			cache_key += "/" + inventory_image;
 
 		infostream << "Lazily creating item texture and mesh for \""
 				<< cache_key << "\""<<std::endl;
-
-		// This is not thread-safe
-		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
 		auto it = m_clientcached.find(cache_key);
@@ -345,12 +346,10 @@ public:
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
-		if (inventory_image.empty())
-			getItemMesh(client, item, &(cc->wield_mesh));
-		else
+		if (!inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(inventory_image);
+		getItemMesh(client, item, &(cc->wield_mesh));
 
-		const ItemDefinition &def = get(item_name);
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
@@ -551,7 +550,7 @@ private:
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
 	// Cached textures and meshes
-	mutable std::map<std::string, std::unique_ptr<ClientCached>> m_clientcached;
+	mutable std::unordered_map<std::string, std::unique_ptr<ClientCached>> m_clientcached;
 #endif
 };
 

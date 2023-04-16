@@ -473,7 +473,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
-		const auto inventory_image = item.getInventoryImage(idef);
+		const std::string inventory_image = item.getInventoryImage(idef);
 		if (!inventory_image.empty()) {
 			setExtruded(inventory_image, def.inventory_overlay,
 				def.wield_scale, tsrc, 1);
@@ -581,7 +581,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	bool cull_backface = f.needsBackfaceCulling();
 
 	// If inventory_image is defined, it overrides everything else
-	const auto inventory_image = item.getInventoryImage(idef);
+	const std::string inventory_image = item.getInventoryImage(idef);
 	if (!inventory_image.empty()) {
 		mesh = getExtrudedMesh(tsrc, inventory_image,
 			def.inventory_overlay);

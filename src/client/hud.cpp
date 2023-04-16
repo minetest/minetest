@@ -1013,7 +1013,7 @@ void drawItemStack(
 
 	bool draw_overlay = false;
 
-	const auto inventory_image = item.getInventoryImage(idef);
+	const std::string inventory_image = item.getInventoryImage(idef);
 
 	bool has_mesh = false;
 	ItemMesh *imesh;

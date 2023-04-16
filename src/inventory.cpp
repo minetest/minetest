@@ -272,7 +272,7 @@ std::string ItemStack::getShortDescription(const IItemDefManager *itemdef) const
 	return desc;
 }
 
-std::string ItemStack::getInventoryImage(IItemDefManager *itemdef) const
+std::string ItemStack::getInventoryImage(const IItemDefManager *itemdef) const
 {
 	std::string texture = metadata.getString("inventory_image");
 	if (texture.empty())
@@ -281,7 +281,7 @@ std::string ItemStack::getInventoryImage(IItemDefManager *itemdef) const
 	return texture;
 }
 
-std::string ItemStack::getWieldImage(IItemDefManager *itemdef) const
+std::string ItemStack::getWieldImage(const IItemDefManager *itemdef) const
 {
 	std::string texture = metadata.getString("wield_image");
 	if (texture.empty())
