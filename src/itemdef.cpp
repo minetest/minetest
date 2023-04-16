@@ -323,9 +323,8 @@ public:
 		// This is not thread-safe
 		sanity_check(std::this_thread::get_id() == m_main_thread);
 
-		IItemDefManager *idef = client->getItemDefManager();
-		const ItemDefinition &def = item.getDefinition(idef);
-		std::string inventory_image = item.getInventoryImage(idef);
+		const ItemDefinition &def = item.getDefinition(this);
+		std::string inventory_image = item.getInventoryImage(this);
 		std::string item_name = def.name;
 		std::string cache_key = item_name;
 		if (!inventory_image.empty())
