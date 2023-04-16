@@ -3748,6 +3748,9 @@ translation files.
 Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
 to generate and update translation files automatically from the Lua source.
 
+Use the tool `checktr.py` in the `util` directory of Minetest to test
+translations for syntax errors.
+
 Translating a string
 --------------------
 
