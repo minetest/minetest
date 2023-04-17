@@ -1074,7 +1074,12 @@ Table used to specify how a sound is played:
     -- Overwrites the fade specified in `SimpleSoundSpec`.
 
     time_offset = 0.0,
-    -- Skip a part of the sound. See below for details.
+    -- Start with a time-offset into the sound.
+    -- The behavior is as if the sound was already playing for this many seconds.
+    -- Negative values are relative to the sound's length, so the sound reaches
+    -- its end in `-time_offset` seconds.
+    -- It is unspecified what happens if `loop` is false and `time_offset` is
+    -- smaller than minus the sound's length.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -1102,17 +1107,6 @@ Table used to specify how a sound is played:
     -- `32` is the default.
 }
 ```
-
-Semantics of `time_offset`, with the sound's length in seconds as `max_time`:
-* Nan and inf are illegal.
-* If `-max_time <= time_offset < 0.0`: The behavior is the same as with
-  `time_offset = max_time + time_offset`.
-* If `not loop and time_offset >= max_time`: No sound is played.
-* If `not loop and time_offset < -max_time`: The behavior is unspecified.
-  (In the future this could mean that the sound ends in `-time_offset` seconds.)
-* If `loop and math.abs(time_offset) >= max_time`: The behavior is the same as
-  with `time_offset = time_offset % max_time`. (The `%` operator is here defined
-  as in Lua 5.1.)
 
 Examples:
 
