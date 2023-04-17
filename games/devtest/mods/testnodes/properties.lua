@@ -72,6 +72,22 @@ minetest.register_node("testnodes:attached_wallmounted", {
 	groups = { attached_node = 1, dig_immediate = 3 },
 })
 
+-- This node attaches to the side of a node and drops as item
+-- when the node it attaches to is gone.
+minetest.register_node("testnodes:attached_wallmounted_rot", {
+	description = S("Rotatable Wallmounted Attached Node").."\n"..
+		S("Attaches to wall; drops as item if neighbor node is gone").."\n"..
+		S("param2 = wallmounted rotation (0..7)"),
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_attachedwr_top.png",
+		"testnodes_attachedwr_bottom.png",
+		"testnodes_attachedwr_side.png",
+	},
+	wallmounted_rotate_vertical = true,
+	groups = { attached_node = 1, dig_immediate = 3 },
+})
+
 -- Wallmounted node that always attaches to the floor
 minetest.register_node("testnodes:attached_wallmounted_floor", {
 	description = S("Floor-Attached Wallmounted Node"),
