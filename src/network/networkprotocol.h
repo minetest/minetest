@@ -216,7 +216,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Send forgotten TweenedParameter properties
 		[scheduled bump for 5.7.0]
 	PROTOCOL VERSION 43:
-		"time_offset" added to TOCLIENT_PLAY_SOUND
+		"start_time" added to TOCLIENT_PLAY_SOUND
 		[scheduled bump for 5.8.0]
 */
 
@@ -468,7 +468,7 @@ enum ToClientCommand
 		f32 fade
 		f32 pitch
 		u8 ephemeral (bool)
-		f32 time_offset (in seconds)
+		f32 start_time (in seconds)
 	*/
 
 	TOCLIENT_STOP_SOUND = 0x40,

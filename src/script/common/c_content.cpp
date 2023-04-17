@@ -1071,7 +1071,7 @@ void read_server_sound_params(lua_State *L, int index,
 		// Functional overlap: this may modify SimpleSoundSpec contents
 		getfloatfield(L, index, "fade", params.spec.fade);
 		getfloatfield(L, index, "pitch", params.spec.pitch);
-		getfloatfield(L, index, "time_offset", params.spec.time_offset);
+		getfloatfield(L, index, "start_time", params.spec.start_time);
 		getboolfield(L, index, "loop", params.spec.loop);
 
 		getfloatfield(L, index, "gain", params.gain);

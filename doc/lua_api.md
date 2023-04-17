@@ -1073,12 +1073,12 @@ Table used to specify how a sound is played:
     fade = 0.0,
     -- Overwrites the fade specified in `SimpleSoundSpec`.
 
-    time_offset = 0.0,
+    start_time = 0.0,
     -- Start with a time-offset into the sound.
     -- The behavior is as if the sound was already playing for this many seconds.
     -- Negative values are relative to the sound's length, so the sound reaches
-    -- its end in `-time_offset` seconds.
-    -- It is unspecified what happens if `loop` is false and `time_offset` is
+    -- its end in `-start_time` seconds.
+    -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
 
     loop = false,
@@ -1135,7 +1135,7 @@ Examples:
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0,  -- default
     max_hear_distance = 32,  -- default
-    time_offset = 5.0,
+    start_time = 5.0,
 }
 -- Play connected to an object, looped
 {

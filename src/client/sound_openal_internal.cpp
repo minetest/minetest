@@ -513,30 +513,30 @@ std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::loadBufferAt(ALuint offs
  */
 
 PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data,
-		bool loop, f32 volume, f32 pitch, f32 time_offset,
+		bool loop, f32 volume, f32 pitch, f32 start_time,
 		const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
 	: m_source_id(source_id), m_data(std::move(data)), m_looping(loop),
 	m_is_positional(pos_vel_opt.has_value())
 {
-	// Calculate actual time_offset (see lua_api.txt for specs)
+	// Calculate actual start_time (see lua_api.txt for specs)
 	f32 len_seconds = m_data->m_decode_info.length_seconds;
 	f32 len_samples = m_data->m_decode_info.length_samples;
 	if (!m_looping) {
-		if (time_offset < 0.0f) {
-			time_offset = std::fmax(time_offset + len_seconds, 0.0f);
-		} else if (time_offset >= len_seconds) {
+		if (start_time < 0.0f) {
+			start_time = std::fmax(start_time + len_seconds, 0.0f);
+		} else if (start_time >= len_seconds) {
 			// No sound
 			m_next_sample_pos = len_samples;
 			return;
 		}
 	} else {
 		// Modulo offset to be within looping time
-		time_offset = time_offset - std::floor(time_offset / len_seconds) * len_seconds;
+		start_time = start_time - std::floor(start_time / len_seconds) * len_seconds;
 	}
 
 	// Queue first buffers
 
-	m_next_sample_pos = std::min((time_offset / len_seconds) * len_samples, len_samples);
+	m_next_sample_pos = std::min((start_time / len_seconds) * len_samples, len_samples);
 
 	if (m_looping && m_next_sample_pos == len_samples)
 		m_next_sample_pos = 0;
@@ -848,7 +848,7 @@ std::string OpenALSoundManager::getOrLoadLoadedSoundNameFromGroup(const std::str
 
 std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 		const std::string &sound_name, bool loop, f32 volume, f32 pitch,
-		f32 time_offset, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		f32 start_time, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
 {
 	infostream << "OpenALSoundManager: Creating playing sound \"" << sound_name
 			<< "\"" << std::endl;
@@ -876,7 +876,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 	}
 
 	auto sound = std::make_shared<PlayingSound>(source_id, std::move(lsnd), loop,
-			volume, pitch, time_offset, pos_vel_opt);
+			volume, pitch, start_time, pos_vel_opt);
 
 	sound->play();
 	if (m_is_paused)
@@ -887,7 +887,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 
 void OpenALSoundManager::playSoundGeneric(sound_handle_t id, const std::string &group_name,
 		bool loop, f32 volume, f32 fade, f32 pitch, bool use_local_fallback,
-		f32 time_offset, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		f32 start_time, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
 {
 	if (id == 0)
 		id = allocateId(1);
@@ -915,19 +915,19 @@ void OpenALSoundManager::playSoundGeneric(sound_handle_t id, const std::string &
 
 	if (!(pitch > 0.0f)) {
 		warningstream << "OpenALSoundManager::playSoundGeneric: Illegal pitch value: "
-				<< time_offset << std::endl;
+				<< start_time << std::endl;
 		pitch = 1.0f;
 	}
 
-	if (!std::isfinite(time_offset)) {
-		warningstream << "OpenALSoundManager::playSoundGeneric: Illegal time_offset value: "
-				<< time_offset << std::endl;
-		time_offset = 0.0f;
+	if (!std::isfinite(start_time)) {
+		warningstream << "OpenALSoundManager::playSoundGeneric: Illegal start_time value: "
+				<< start_time << std::endl;
+		start_time = 0.0f;
 	}
 
 	// play it
 	std::shared_ptr<PlayingSound> sound = createPlayingSound(sound_name, loop,
-			volume, pitch, time_offset, pos_vel_opt);
+			volume, pitch, start_time, pos_vel_opt);
 	if (!sound) {
 		reportRemovedSound(id);
 		return;
@@ -1083,7 +1083,7 @@ void OpenALSoundManager::addSoundToGroup(const std::string &sound_name, const st
 void OpenALSoundManager::playSound(sound_handle_t id, const SoundSpec &spec)
 {
 	return playSoundGeneric(id, spec.name, spec.loop, spec.gain, spec.fade, spec.pitch,
-			spec.use_local_fallback, spec.time_offset, nullopt);
+			spec.use_local_fallback, spec.start_time, nullopt);
 }
 
 void OpenALSoundManager::playSoundAt(sound_handle_t id, const SoundSpec &spec,
@@ -1095,7 +1095,7 @@ void OpenALSoundManager::playSoundAt(sound_handle_t id, const SoundSpec &spec,
 		});
 
 	return playSoundGeneric(id, spec.name, spec.loop, spec.gain, spec.fade, spec.pitch,
-			spec.use_local_fallback, spec.time_offset, pos_vel_opt);
+			spec.use_local_fallback, spec.start_time, pos_vel_opt);
 }
 
 void OpenALSoundManager::stopSound(sound_handle_t sound)

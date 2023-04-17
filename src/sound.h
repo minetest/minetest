@@ -35,8 +35,8 @@ struct SoundSpec
 {
 	SoundSpec(const std::string &name = "", float gain = 1.0f,
 			bool loop = false, float fade = 0.0f, float pitch = 1.0f,
-			float time_offset = 0.0f) :
-			name(name), gain(gain), fade(fade), pitch(pitch), time_offset(time_offset),
+			float start_time = 0.0f) :
+			name(name), gain(gain), fade(fade), pitch(pitch), start_time(start_time),
 			loop(loop)
 	{
 	}
@@ -70,7 +70,7 @@ struct SoundSpec
 	float gain = 1.0f;
 	float fade = 0.0f;
 	float pitch = 1.0f;
-	float time_offset = 0.0f;
+	float start_time = 0.0f;
 	bool loop = false;
 	// If true, a local fallback (ie. from the user's sound pack) is used if the
 	// sound-group does not exist.
