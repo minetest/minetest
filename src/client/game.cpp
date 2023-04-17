@@ -1840,7 +1840,6 @@ inline bool Game::handleCallbacks()
 void Game::processQueues()
 {
 	texture_src->processQueue();
-	itemdef_manager->processQueue(client);
 	shader_src->processQueue();
 }
 

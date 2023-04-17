@@ -1008,9 +1008,13 @@ void drawItemStack(
 	const static thread_local bool enable_animations =
 		g_settings->getBool("inventory_items_animations");
 
-	const ItemDefinition &def = item.getDefinition(client->idef());
+	auto *idef = client->idef();
+	const ItemDefinition &def = item.getDefinition(idef);
 
 	bool draw_overlay = false;
+
+	const std::string inventory_image = item.getInventoryImage(idef);
+	const std::string inventory_overlay = item.getInventoryOverlay(idef);
 
 	bool has_mesh = false;
 	ItemMesh *imesh;
@@ -1020,8 +1024,8 @@ void drawItemStack(
 		viewrect.clipAgainst(*clip);
 
 	// Render as mesh if animated or no inventory image
-	if ((enable_animations && rotation_kind < IT_ROT_NONE) || def.inventory_image.empty()) {
-		imesh = client->idef()->getWieldMesh(def.name, client);
+	if ((enable_animations && rotation_kind < IT_ROT_NONE) || inventory_image.empty()) {
+		imesh = idef->getWieldMesh(item, client);
 		has_mesh = imesh && imesh->mesh;
 	}
 	if (has_mesh) {
@@ -1110,9 +1114,9 @@ void drawItemStack(
 		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 		driver->setViewPort(oldViewPort);
 
-		draw_overlay = def.type == ITEM_NODE && def.inventory_image.empty();
+		draw_overlay = def.type == ITEM_NODE && inventory_image.empty();
 	} else { // Otherwise just draw as 2D
-		video::ITexture *texture = client->idef()->getInventoryTexture(def.name, client);
+		video::ITexture *texture = client->idef()->getInventoryTexture(item, client);
 		video::SColor color;
 		if (texture) {
 			color = client->idef()->getItemstackColor(item, client);
@@ -1134,9 +1138,9 @@ void drawItemStack(
 	}
 
 	// draw the inventory_overlay
-	if (!def.inventory_overlay.empty() && draw_overlay) {
+	if (!inventory_overlay.empty() && draw_overlay) {
 		ITextureSource *tsrc = client->getTextureSource();
-		video::ITexture *overlay_texture = tsrc->getTexture(def.inventory_overlay);
+		video::ITexture *overlay_texture = tsrc->getTexture(inventory_overlay);
 		core::dimension2d<u32> dimens = overlay_texture->getOriginalSize();
 		core::rect<s32> srcrect(0, 0, dimens.Width, dimens.Height);
 		draw2DImageFilterScaled(driver, overlay_texture, rect, srcrect, clip, 0, true);

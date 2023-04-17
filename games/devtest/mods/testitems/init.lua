@@ -40,6 +40,7 @@ minetest.register_craftitem("testitems:overlay_meta", {
 	on_place = overlay_on_place,
 	on_secondary_use = overlay_on_place,
 })
+
 minetest.register_craftitem("testitems:overlay_global", {
 	description = S("Texture Overlay Test Item, Global Color") .. "\n" ..
 		S("Image must be an orange square with rainbow cross (inventory and wield)"),
@@ -50,4 +51,42 @@ minetest.register_craftitem("testitems:overlay_global", {
 	inventory_overlay = "testitems_overlay_overlay.png",
 	wield_overlay = "testitems_overlay_overlay.png",
 	color = GLOBAL_COLOR_ARG,
+})
+
+minetest.register_craftitem("testitems:image_meta", {
+	description = S("Image Override Meta Test Item"),
+	inventory_image = "default_apple.png",
+	wield_image = "basetools_icesword.png",
+
+	on_use = function(itemstack, player)
+		local meta = itemstack:get_meta()
+		local state = meta:get_int("state")
+		state = (state + 1) % 5
+		meta:set_int("state", state)
+		minetest.chat_send_player(player:get_player_name(), "State " .. state)
+
+		if state == 0 then
+			meta:set_string("inventory_image", "")
+			meta:set_string("wield_image", "")
+			meta:set_string("inventory_overlay", "")
+			meta:set_string("wield_overlay", "")
+			meta:set_string("wield_scale", "")
+		elseif state == 1 then
+			meta:set_string("inventory_image", "default_tree.png")
+			meta:set_string("wield_image", "basetools_firesword.png")
+		elseif state == 2 then
+			meta:set_string("inventory_image", "default_apple.png^testitems_overridden.png")
+			meta:set_string("wield_image", "basetools_icesword.png^testitems_overridden.png")
+		elseif state == 3 then
+			meta:set_string("inventory_image", "default_tree.png")
+			meta:set_string("wield_image", "basetools_firesword.png")
+			meta:set_string("inventory_overlay", "default_apple.png")
+			meta:set_string("wield_overlay", "default_apple.png")
+		elseif state == 4 then
+			local scale = vector.new(0.5, 0.5, 0.5)
+			meta:set_string("wield_scale", scale:to_string())
+		end
+
+		return itemstack
+	end,
 })
