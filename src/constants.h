@@ -76,10 +76,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BS 10.0f
 
 // This number defines the safe max absolute X/Y/Z coordinate in which
-// collisions are still work safely. Beyond that limit, collisions might
-// break.
-// -0.5 + 127/64
-#define SAFE_NODE_COLLISION_LIMIT (1.484375f)
+// selection boxes still work safely. Beyond that limit, selection boxes
+// might break.
+#define SAFE_SELECTION_BOX_LIMIT (3.5f)
 
 // Dimension of a MapBlock
 #define MAP_BLOCKSIZE 16
