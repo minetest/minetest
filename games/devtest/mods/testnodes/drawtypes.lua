@@ -450,7 +450,9 @@ minetest.register_node("testnodes:plantlike_rooted_leveled", {
 	-- also test the 'leveled_plantlike_rooted' nodebox
 	selection_box = {
 		type = "leveled_plantlike_rooted",
+		-- variable box for plant
 		fixed = { -0.4, 0.5, -0.4, 0.4, 0.5, 0.4 },
+		-- fixed box for the base cube
 		leveled_fixed = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },
 	},
 

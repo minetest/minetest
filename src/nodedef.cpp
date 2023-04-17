@@ -1244,14 +1244,18 @@ void boxVectorUnion(const std::vector<aabb3f> &boxes, aabb3f *box_union)
  */
 void rawUnionFixed(const ContentFeatures &features,
 		aabb3f *box_union,
-		const std::vector<aabb3f> &to_add, bool is_leveled)
+		const std::vector<aabb3f> &to_add, enum NodeBoxType nbt)
 {
 	// Raw union (fixed)
 	aabb3f half_processed(0, 0, 0, 0, 0, 0);
 	boxVectorUnion(to_add, &half_processed);
 	// Set leveled boxes to maximal
-	if (is_leveled) {
-		half_processed.MaxEdge.Y = +BS / 2;
+	if (nbt == NODEBOX_LEVELED) {
+		// -0.5 + 127/64
+		half_processed.MaxEdge.Y = 1.484375f * BS;
+	} else if (nbt == NODEBOX_LEVELED_PLANTLIKE ||
+			nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
+		half_processed.MaxEdge.Y = SAFE_SELECTION_BOX_LIMIT * BS;
 	}
 	if (features.param_type_2 == CPT2_FACEDIR ||
 			features.param_type_2 == CPT2_COLORED_FACEDIR) {
@@ -1326,7 +1330,17 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			if (is_leveled) {
 				rawUnionFixed(features, box_union, nodebox.leveled_fixed, false);
 			}
-			rawUnionFixed(features, box_union, nodebox.fixed, is_leveled);
+		}
+		case NODEBOX_LEVELED:
+		case NODEBOX_LEVELED_PLANTLIKE:
+		case NODEBOX_LEVELED_PLANTLIKE_ROOTED: {
+			NodeBoxType nbt = nodebox.type;
+			if (nbt == NODEBOX_LEVELED ||
+				nbt == NODEBOX_LEVELED_PLANTLIKE ||
+				nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
+				rawUnionFixed(features, box_union, nodebox.leveled_fixed, NODEBOX_FIXED);
+			}
+			rawUnionFixed(features, box_union, nodebox.fixed, nbt);
 			break;
 		}
 		case NODEBOX_WALLMOUNTED: {

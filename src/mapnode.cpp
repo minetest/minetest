@@ -189,8 +189,8 @@ void buildFixedNodeBox(const MapNode &n, const NodeBox &nodebox, const NodeDefMa
 		std::vector<aabb3f> &boxes, std::vector<aabb3f> input_boxes,
 		enum NodeBoxType nbt) {
 	u8 facedir = n.getFaceDir(nodemgr, true);
-	facedir &= 0x03;
 	u8 axisdir = facedir>>2;
+	facedir &= 0x03;
 	for (aabb3f box : input_boxes) {
 		switch (nbt) {
 		case NODEBOX_LEVELED: {
@@ -205,8 +205,8 @@ void buildFixedNodeBox(const MapNode &n, const NodeBox &nodebox, const NodeDefMa
 			} else {
 				box.MaxEdge.Y = (-0.5f + height / 16.0f) * BS;
 			}
-                        if (box.MaxEdge.Y > SAFE_NODE_COLLISION_LIMIT * BS) {
-				box.MaxEdge.Y = SAFE_NODE_COLLISION_LIMIT * BS;
+                        if (box.MaxEdge.Y > SAFE_SELECTION_BOX_LIMIT * BS) {
+				box.MaxEdge.Y = SAFE_SELECTION_BOX_LIMIT * BS;
 			}
 			break;
 		}
