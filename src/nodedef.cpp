@@ -144,8 +144,8 @@ void NodeBox::deSerialize(std::istream &is)
 			break;
 		case NODEBOX_FIXED:
 		case NODEBOX_LEVELED:
-		case NODEBOX_LEVELED_PLANTLIIKE:
-		case NODEBOX_LEVELED_PLANTLIIKE_ROOTED:
+		case NODEBOX_LEVELED_PLANTLIKE:
+		case NODEBOX_LEVELED_PLANTLIKE_ROOTED:
 		{
 			u16 fixed_count = readU16(is);
 			while(fixed_count--) {
@@ -1298,9 +1298,8 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			// Raw union
 			aabb3f half_processed(0, 0, 0, 0, 0, 0);
 			boxVectorUnion(nodebox.fixed, &half_processed);
-			bool is_leveled = nodebox.type == NODEBOX_LEVELED;
 			// Set leveled boxes to maximal
-			if (is_leveled) {
+			if (nodebox.type == NODEBOX_LEVELED) {
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||
@@ -1327,11 +1326,7 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			} else {
 				box_union->addInternalBox(half_processed);
 			}
-			if (is_leveled) {
-				rawUnionFixed(features, box_union, nodebox.leveled_fixed, false);
-			}
 		}
-		case NODEBOX_LEVELED:
 		case NODEBOX_LEVELED_PLANTLIKE:
 		case NODEBOX_LEVELED_PLANTLIKE_ROOTED: {
 			NodeBoxType nbt = nodebox.type;
