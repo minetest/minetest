@@ -29,8 +29,6 @@ echo "Using $toolchain_file"
 find_runtime_dlls i686-w64-mingw32
 
 # Get stuff
-libjpeg_version=2.1.2
-libpng_version=1.6.37
 
 mkdir -p $libdir
 
@@ -51,7 +49,7 @@ download "http://minetest.kitsunemimi.pw/dw2/libleveldb-$leveldb_version-win32.z
 download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win32.zip"
 # Irrlicht dependencies
 download "http://minetest.kitsunemimi.pw/libjpeg-$libjpeg_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/dw2/libpng-$libpng_version-win32.zip"
+download "http://minetest.kitsunemimi.pw/libpng-$libpng_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
 get_sources

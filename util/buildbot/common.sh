@@ -5,6 +5,8 @@ GAME_GIT=https://github.com/minetest/minetest_game
 GAME_BRANCH=master
 GAME_NAME=minetest_game
 
+libjpeg_version=2.1.5.1
+libpng_version=1.6.39
 ogg_version=1.3.5
 openal_version=1.23.0
 vorbis_version=1.3.7
@@ -43,8 +45,8 @@ get_sources () {
 	fi
 	cd $builddir
 	sourcedir=$PWD/$CORE_NAME
-	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull --ff-only; popd; } || \
-		git clone -b $CORE_BRANCH $CORE_GIT $CORE_NAME
+	[ -d $CORE_NAME ] && { pushd $CORE_NAME; git pull --ff-only --recurse-submodules; popd; } || \
+		git clone --recursive -b $CORE_BRANCH $CORE_GIT $CORE_NAME
 	if [ -z "$NO_MINETEST_GAME" ]; then
 		cd $sourcedir
 		[ -d games/$GAME_NAME ] && { pushd games/$GAME_NAME; git pull --ff-only; popd; } || \
@@ -73,7 +75,6 @@ find_runtime_dlls () {
 }
 
 add_cmake_libs () {
-	local irr_dlls=$(echo $libdir/irrlicht/lib/*.dll | tr ' ' ';')
 	local vorbis_dlls=$(echo $libdir/libvorbis/bin/libvorbis{,file}-*.dll | tr ' ' ';')
 	local gettext_dlls=$(echo $libdir/gettext/bin/lib{intl,iconv}-*.dll | tr ' ' ';')
 

@@ -29,9 +29,6 @@ echo "Using $toolchain_file"
 find_runtime_dlls x86_64-w64-mingw32
 
 # Get stuff
-libjpeg_version=2.1.2
-libpng_version=1.6.37
-
 mkdir -p $libdir
 
 cd $libdir
