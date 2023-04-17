@@ -163,7 +163,7 @@ minetest.register_node("testnodes:torchlike", {
 
 minetest.register_node("testnodes:torchlike_wallmounted", {
 	description = S("Wallmounted \"torchlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "torchlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -211,7 +211,7 @@ minetest.register_node("testnodes:signlike", {
 
 minetest.register_node("testnodes:signlike_wallmounted", {
 	description = S("Wallmounted \"signlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "signlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -267,7 +267,7 @@ minetest.register_node("testnodes:plantlike_waving", {
 
 minetest.register_node("testnodes:plantlike_wallmounted", {
 	description = S("Wallmounted \"plantlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "plantlike",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
@@ -398,7 +398,7 @@ minetest.register_node("testnodes:plantlike_rooted", {
 
 minetest.register_node("testnodes:plantlike_rooted_wallmounted", {
 	description = S("Wallmounted \"rooted_plantlike\" Drawtype Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	drawtype = "plantlike_rooted",
 	paramtype = "light",
 	paramtype2 = "wallmounted",

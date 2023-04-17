@@ -80,7 +80,7 @@ minetest.register_node("testnodes:4dir_nodebox", {
 
 minetest.register_node("testnodes:wallmounted", {
 	description = S("Wallmounted Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	paramtype2 = "wallmounted",
 	tiles = {
 		"testnodes_1w.png",
@@ -112,7 +112,7 @@ minetest.register_node("testnodes:wallmounted_rot", {
 
 minetest.register_node("testnodes:wallmounted_nodebox", {
 	description = S("Wallmounted Nodebox Test Node").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("param2 = wallmounted rotation (0..7)"),
 	paramtype2 = "wallmounted",
 	paramtype = "light",
 	tiles = {
@@ -252,7 +252,7 @@ minetest.register_node("testnodes:color4dir_nodebox", {
 
 minetest.register_node("testnodes:colorwallmounted", {
 	description = S("Color Wallmounted Test Node").."\n"..
-		S("param2 = color + wallmounted rotation (0..5, 8..13, ...)"),
+		S("param2 = color + wallmounted rotation (0..7, 8..15, ...)"),
 	paramtype2 = "colorwallmounted",
 	paramtype = "light",
 	palette = "testnodes_palette_wallmounted.png",
@@ -270,7 +270,7 @@ minetest.register_node("testnodes:colorwallmounted", {
 
 minetest.register_node("testnodes:colorwallmounted_nodebox", {
 	description = S("Color Wallmounted Nodebox Test Node").."\n"..
-		S("param2 = color + wallmounted rotation (0..5, 8..13, ...)"),
+		S("param2 = color + wallmounted rotation (0..7, 8..15, ...)"),
 	paramtype2 = "colorwallmounted",
 	paramtype = "light",
 	palette = "testnodes_palette_wallmounted.png",
