@@ -211,20 +211,18 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {
-#              arch: x86,
-#              generator: "-G'Visual Studio 16 2019' -A Win32",
-#              vcpkg_triplet: x86-windows
-#            }
+          - {
+              arch: x86,
+              generator: "-G'Visual Studio 16 2019' -A Win32",
+              vcpkg_triplet: x86-windows
+            }
           - {
               arch: x64,
               generator: "-G'Visual Studio 16 2019' -A x64",
               vcpkg_triplet: x64-windows
             }
-        type: [portable]
-#        type: [portable, installer]
-# The installer type is working, but disabled, to save runner jobs.
-# Enable it, when working on the installer.
+#        type: [portable]
+        type: [portable, installer]
 
     steps:
       - uses: actions/checkout@v3
