@@ -240,7 +240,6 @@ jobs:
           appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
           vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
-          doNotCache: true
 
       - name: Minetest CMake
         run: |
