@@ -205,17 +205,17 @@ jobs:
     runs-on: windows-2019
     env:
       VCPKG_VERSION: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
-      # 2022.02
+      # 2023.04.15
       vcpkg_packages: gettext zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {
-              arch: x86,
-              generator: "-G'Visual Studio 16 2019' -A Win32",
-              vcpkg_triplet: x86-windows
-            }
+#          - {
+#              arch: x86,
+#              generator: "-G'Visual Studio 16 2019' -A Win32",
+#              vcpkg_triplet: x86-windows
+#            }
           - {
               arch: x64,
               generator: "-G'Visual Studio 16 2019' -A x64",
@@ -242,6 +242,7 @@ jobs:
           appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
           vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
+		  doNotCache: true
 
       - name: Minetest CMake
         run: |
