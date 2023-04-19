@@ -8860,7 +8860,7 @@ Used by `minetest.register_node`.
     allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player),
     -- Called when a player wants to move items inside the inventory.
     -- Return value: number of items allowed to move.
-`
+
     allow_metadata_inventory_put = function(pos, listname, index, stack, player),
     -- Called when a player wants to put something into the inventory.
     -- Return value: number of items allowed to put.
