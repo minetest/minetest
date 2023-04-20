@@ -49,8 +49,7 @@ varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
 
-const float fogStart = FOG_START;
-const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
+uniform float fogStart;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
@@ -438,6 +437,8 @@ void main(void)
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 	}
 #endif
+
+	float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the

@@ -7740,6 +7740,18 @@ child will follow movement and rotation of that bone.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
+        * `fog`: A table with following optional fields:
+            * `fog_distance`: integer, override the client's viewing_range.
+               By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
+               When set the client client can no longer set a larger viewing_range (including range_all).
+               Any value >= 0 sets the desired fog_distance.
+               Any value < 0, resets the behavior to being client-controlled.
+               (default: not set)
+            * `fog_start`: float, override the client's fog_start.
+               By default, fog_start is controlled by the client's fog_start setting, and this field is not set.
+               Any value between [0.0, 0.99] set the fog_start as a fraction of fog_distance.
+               Any value < 0, resets the behavior to being client-controlled.
+	       (default: not set)
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
