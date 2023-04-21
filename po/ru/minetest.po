@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-31 09:39+0000\n"
+"PO-Revision-Date: 2023-06-04 12:47+0000\n"
 "Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Больше Модов"
+msgstr "Больше модов"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -425,7 +425,7 @@ msgstr "Парящие острова на небе"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Парящие острова (экспериментальный)"
+msgstr "Парящие острова (пробный)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -659,7 +659,7 @@ msgstr "Содержимое: Дополнения"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr "Отключена"
+msgstr "Отключено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -872,7 +872,7 @@ msgid ""
 "and texture packs in a file manager / explorer."
 msgstr ""
 "Открывает папку, содержащую пользовательские миры, игры, моды,\n"
-"и наборы текстур в файловом менеджере / проводнике."
+"и наборы текстур в проводнике."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -1001,7 +1001,7 @@ msgstr "Режим творчества"
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr "Урон / PvP"
+msgstr "Урон / Сражение"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -1281,7 +1281,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Подробная информация в debug.txt."
+"Подробности в debug.txt."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -1315,7 +1315,7 @@ msgstr "Произошла ошибка сериализации:"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr "Доступ запрещен. Причина: %s"
+msgstr "Доступ запрещён. Причина: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1433,15 +1433,15 @@ msgstr "Создание сервера..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr "Отладочная информация и график профилировщика скрыты"
+msgstr "Отладочные сведения и график профилировщика скрыты"
 
 #: src/client/game.cpp
 msgid "Debug info shown"
-msgstr "Отладочная информация отображена"
+msgstr "Отладочные сведения отображены"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr "Отладочная информация, график профилировщика и каркас скрыты"
+msgstr "Отладочные сведения, график профилировщика и каркас скрыты"
 
 #: src/client/game.cpp
 msgid ""
@@ -1984,7 +1984,7 @@ msgstr "Миникарта в поверхностном режиме, увел�
 
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
-msgstr "Минимальный размер текстуры"
+msgstr "Наименьший размер текстуры"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
@@ -2105,7 +2105,7 @@ msgstr "Клавиша уже используется"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr "Привязки клавиш."
+msgstr "Привязки клавиш"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2398,7 +2398,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr "Сообщение, которое будет отображаться для всех при падении сервера."
+msgstr "Сообщение, которое будет отображаться для всех при сбое сервера."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
@@ -2792,7 +2792,7 @@ msgstr "Уровень журнала чата"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message count limit"
-msgstr "Максимальное количество сообщений в чате"
+msgstr "Предельное количество сообщений в чате"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message format"
@@ -2834,7 +2834,7 @@ msgstr "Клиент"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Размер участка клиентской сетки"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3043,7 +3043,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr "Сообщение при падении"
+msgstr "Сообщение при вылете"
 
 #: src/settings_translation_file.cpp
 msgid "Creative"
@@ -3238,7 +3238,7 @@ msgstr "Задержка отправки блоков после строите
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr "Задержка показа подсказок(в миллисекундах)."
+msgstr "Задержка показа подсказок (в миллисекундах)."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
@@ -4805,9 +4805,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "Задержка в генерации мешей блоков"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "Задержка в генерации мешей блоков"
+msgstr "Потоки образования сеток блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5412,7 +5411,7 @@ msgstr "Расстояние передачи игрока"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus player"
-msgstr "Режим «Игрок против игрока» (PvP)"
+msgstr "Режим сражения"
 
 #: src/settings_translation_file.cpp
 msgid "Poisson filtering"
@@ -5613,7 +5612,7 @@ msgstr "Круглая миникарта"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr "Аккуратное копание и размещение"
+msgstr "Бесповторное копание и размещение"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
@@ -5771,11 +5770,11 @@ msgstr "Безопасность Сервера"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr "URL сервера"
+msgstr "Адрес сервера"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr "Адрес сервера"
+msgstr "Домен сервера"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
@@ -6378,7 +6377,6 @@ msgstr ""
 "Это должно быть настроено вместе с active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6387,11 +6385,10 @@ msgid ""
 msgstr ""
 "Движок отрисовки.\n"
 "После изменения этой настройки требуется перезагрузка.\n"
-"Примечание: На Android, если Вы не уверены, используйте OGLES1! В противном "
+"Примечание: на Android, если вы не уверены, используйте OGLES1! В противном "
 "случае приложение может не запуститься.\n"
 "На других операционных системах желательно использовать OpenGL.\n"
-"Шейдеры поддерживаются OpenGL (только для настольных компьютеров) и OGLES2 "
-"(пробный)"
+"Шейдеры поддерживаются OpenGL (только для компьютеров) и OGLES2 (пробный)"
 
 #: src/settings_translation_file.cpp
 msgid ""
