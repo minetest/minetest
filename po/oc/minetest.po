@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"PO-Revision-Date: 2023-04-23 12:50+0000\n"
 "Last-Translator: Walter Bulbazor <prbulbazor@protonmail.com>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/minetest/"
 "minetest/oc/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -294,9 +294,10 @@ msgid "Failed to download $1"
 msgstr "Error per lo descharjament de $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Installacion: Tipe de fichèir pas supportat o archiva cassada"
+msgstr ""
+"A pas capitat de traire \"$1\" (tipe de fichèir pas supportat o archiva "
+"cassada)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -1368,23 +1369,23 @@ msgstr "Mòda cinematic activat"
 
 #: src/client/game.cpp
 msgid "Client disconnected"
-msgstr ""
+msgstr "Client desconectat"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Lo scriptatge dau costat dau client es desactivat"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Connexion au servidor..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Connexion pas capitada per una rason pas coneguda"
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Contunhar"
 
 #: src/client/game.cpp
 #, c-format
@@ -1404,19 +1405,33 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Contratròles:\n"
+"- %s: bojar davant\n"
+"- %s: bojar darrèir\n"
+"- %s: bojar a gaucha\n"
+"- %s: bojar a dreita\n"
+"- %s: sautar/grimpar en naut\n"
+"- %s: curar/tustar\n"
+"- %s: plaçar/utilizar\n"
+"- %s: s'aclatar/grimpar en bàs\n"
+"- %s: tombar l'objèct\n"
+"- %s: inventari\n"
+"- Mouse: virar/espiar\n"
+"- Mouse wheel: seleccionar un objèct\n"
+"- %s: parlar\n"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Pas possible de trapar l'adreça: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Creacion dau client..."
 
 #: src/client/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Creacion dau servidor..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
