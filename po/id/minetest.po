@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2023-04-26 11:48+0000\n"
+"Last-Translator: Tsaqib Fadhlurrahman Soka <sokatsaqib@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -13,15 +12,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Bersihkan antrean obrolan keluar"
+msgstr "Hapus antrian obrolan keluar"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr "Perintah kosong."
+msgstr "Command kosong."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -29,47 +28,47 @@ msgstr "Kembali ke menu utama"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "Perintah tidak sah: "
+msgstr "Command tidak valid: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "Perintah yang dikeluarkan: "
+msgstr "Command yang dikeluarkan: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "Daftar pemain daring"
+msgstr "Daftar pemain online"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Pemain daring: "
+msgstr "Pemain online: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "Antran obrolan keluar sudah dibersihkan."
+msgstr "Antrian obrolan keluar sekarang kosong."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Perintah ini dimatikan oleh server."
+msgstr "Command ini dinonaktifkan oleh server."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Bangkit kembali"
+msgstr "Respawn"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Anda mati"
+msgstr "Kamu mati"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr "Perintah yang ada:"
+msgstr "Command yang ada:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr "Perintah yang ada: "
+msgstr "Command yang ada: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr "Perintah tidak tersedia: "
+msgstr "Command tidak tersedia: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
@@ -84,19 +83,19 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr "[semua | <perintah>]"
+msgstr "[semua | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "Oke"
+msgstr "OKE"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr "<tiada yang tersedia>"
+msgstr "<tidak ada yang tersedia>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Suatu masalah terjadi pada suatu skrip Lua:"
+msgstr "Terjadi masalah pada skrip Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
