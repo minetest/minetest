@@ -9060,7 +9060,7 @@ Parameters:
 
 #### Example
 
-```
+```lua
 {
     -- Craft a mushroom stew from a bowl, a brown mushroom and a red mushroom
     -- (no matter where in the input grid the items are placed)
