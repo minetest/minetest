@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 #include <type_traits>
+#include <utility>
 #include "irrlichttypes.h"
 #include "IReferenceCounted.h"
 
@@ -195,6 +196,14 @@ template <typename ReferenceCounted>
 bool operator!=(const ReferenceCounted *a, const irr_ptr<ReferenceCounted> &b) noexcept
 {
 	return a != b.get();
+}
+
+/** Same as std::make_unique<T>, but for irr_ptr.
+ */
+template <class T, class... Args>
+irr_ptr<T> make_irr(Args&&... args)
+{
+	return irr_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
 // clang-format on

@@ -81,9 +81,22 @@ public:
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
 
-	Map * getParent()
+	Map *getParent()
 	{
 		return m_parent;
+	}
+
+	// Any server-modding code can "delete" arbitrary blocks (i.e. with
+	// core.delete_area), which makes them orphan. Avoid using orphan blocks for
+	// anything.
+	bool isOrphan() const
+	{
+		return !m_parent;
+	}
+
+	void makeOrphan()
+	{
+		m_parent = nullptr;
 	}
 
 	void reallocate()

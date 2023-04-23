@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <IrrCompileConfig.h>
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
@@ -66,6 +65,7 @@ void set_default_settings()
 	settings->setDefault("max_out_chat_queue_size", "20");
 	settings->setDefault("pause_on_lost_focus", "false");
 	settings->setDefault("enable_split_login_register", "true");
+	settings->setDefault("occlusion_culler", "bfs");
 	settings->setDefault("enable_raytraced_culling", "true");
 	settings->setDefault("chat_weblink_color", "#8888FF");
 
@@ -96,7 +96,7 @@ void set_default_settings()
 	settings->setDefault("keymap_rangeselect", "");
 #endif
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_pitchmove", "KEY_KEY_P");
+	settings->setDefault("keymap_pitchmove", "");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
 	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
@@ -173,7 +173,7 @@ void set_default_settings()
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");
-	settings->setDefault("undersampling", "0");
+	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
@@ -186,11 +186,9 @@ void set_default_settings()
 	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
-#if ENABLE_GLES
-	settings->setDefault("near_plane", "0.1");
-#endif
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
+	settings->setDefault("window_maximized", "false");
 	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("vsync", "false");
@@ -207,15 +205,7 @@ void set_default_settings()
 	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
-#if ENABLE_GLES
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	settings->setDefault("video_driver", "ogles1");
-#else
-	settings->setDefault("video_driver", "ogles2");
-#endif
-#else
-	settings->setDefault("video_driver", "opengl");
-#endif
+	settings->setDefault("video_driver", "");
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
@@ -231,8 +221,6 @@ void set_default_settings()
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("formspec_fullscreen_bg_color", "(0,0,0)");
 	settings->setDefault("formspec_fullscreen_bg_opacity", "140");
-	settings->setDefault("formspec_default_bg_color", "(0,0,0)");
-	settings->setDefault("formspec_default_bg_opacity", "140");
 	settings->setDefault("selectionbox_color", "(0,0,0)");
 	settings->setDefault("selectionbox_width", "2");
 	settings->setDefault("node_highlighting", "box");
@@ -250,11 +238,7 @@ void set_default_settings()
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
-#if ENABLE_GLES
-	settings->setDefault("enable_shaders", "false");
-#else
 	settings->setDefault("enable_shaders", "true");
-#endif
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("arm_inertia", "true");
 	settings->setDefault("show_nametag_backgrounds", "true");
@@ -316,7 +300,7 @@ void set_default_settings()
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
-	settings->setDefault("joystick_type", "");
+	settings->setDefault("joystick_type", "auto");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("joystick_deadzone", "2048");

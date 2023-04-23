@@ -27,34 +27,34 @@ local core_developers = {
 	"Krock/SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"v-rob <robinsonvincent89@gmail.com>",
-	"hecks",
 	"Hugues Ross <hugues.ross@gmail.com>",
 	"Dmitry Kostenko (x2048) <codeforsmile@gmail.com>",
+	"Desour",
 }
+
+-- currently only https://github.com/orgs/minetest/teams/triagers/members
 
 local core_team = {
 	"Zughy [Issue triager]",
+	"wsor [Issue triager]",
+	"Hugo Locurcio (Calinou) [Issue triager]",
 }
 
 -- For updating active/previous contributors, see the script in ./util/gather_git_credits.py
 
 local active_contributors = {
 	"Wuzzy [Features, translations, devtest]",
-	"Lars Müller [Lua optimizations and fixes]",
-	"Jude Melton-Houghton [Optimizations, bugfixes]",
-	"paradust7 [Performance, fixes, Irrlicht refactoring]",
-	"Desour [Fixes]",
-	"ROllerozxa [Main menu]",
-	"savilli [Bugfixes]",
+	"Lars Müller [Bugfixes and entity features]",
+	"paradust7 [Bugfixes]",
+	"ROllerozxa [Bugfixes, Android]",
+	"srifqi [Android, translations]",
 	"Lexi Hale [Particlespawner animation]",
-	"Liso [Shadow Mapping]",
-	"JosiahWI [Fixes, build system]",
-	"numzero [Graphics and rendering]",
-	"HybridDog [Fixes]",
-	"NeroBurner [Joystick]",
-	"pecksin [Clickable web links]",
+	"savilli [Bugfixes]",
+	"fluxionary [Bugfixes]",
+	"Gregor Parzefall [Bugfixes]",
+	"Abdou-31 [Documentation]",
+	"pecksin [Bouncy physics]",
 	"Daroc Alden [Fixes]",
-	"Jean-Patrick Guerrero (kilbith) [Fixes]",
 }
 
 local previous_core_developers = {
@@ -73,21 +73,25 @@ local previous_core_developers = {
 	"Aaron Suen <warr1024@gmail.com>",
 	"paramat",
 	"Pierre-Yves Rollo <dev@pyrollo.com>",
+	"hecks",
+	"Jude Melton-Houghton (TurkeyMcMac) [RIP]",
 }
 
 local previous_contributors = {
 	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest logo]",
 	"red-001 <red-001@outlook.ie>",
 	"Giuseppe Bilotta",
+	"numzero",
+	"HybridDog",
 	"ClobberXD",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
+	"Jean-Patrick Guerrero (kilbith)",
 	"MoNTE48",
 	"Constantin Wenger (SpeedProg)",
 	"Ciaran Gultnieks (CiaranG)",
 	"Paul Ouellette (pauloue)",
 	"stujones11",
-	"srifqi",
 	"Rogier <rogier777@gmail.com>",
 	"Gregory Currie (gregorycu)",
 	"JacobF",
@@ -124,6 +128,12 @@ return {
 
 		local credit_list = {}
 		table.insert_all(credit_list, {
+			core.colorize("#000", "Dedication of the current release"),
+			"The 5.7.0 release is dedicated to the memory of",
+			"Minetest developer Jude Melton-Houghton (TurkeyMcMac)",
+			"who died on February 1, 2023.",
+			"Our thoughts are with his family and friends.",
+			"",
 			core.colorize("#ff0", fgettext("Core Developers"))
 		})
 		prepare_credits(credit_list, core_developers)
@@ -165,7 +175,7 @@ return {
 		fs = fs .. "style[label_button2;border=false]" ..
 			"button[0.1,6;5.3,1;label_button2;" ..
 			fgettext("Active renderer:") .. "\n" ..
-			core.formspec_escape(core.get_screen_info().render_info) .. "]"
+			core.formspec_escape(core.get_active_renderer()) .. "]"
 
 		if PLATFORM == "Android" then
 			fs = fs .. "button[0.5,5.1;4.5,0.8;share_debug;" .. fgettext("Share debug log") .. "]"

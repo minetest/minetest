@@ -282,6 +282,11 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block,
 						continue;
 					for (auto lbmdef : *lbm_list) {
 						lbmdef->trigger(env, pos + pos_of_block, n, dtime_s);
+						if (block->isOrphan())
+							return;
+						n = block->getNodeNoCheck(pos);
+						if (n.getContent() != c)
+							break; // The node was changed and the LBMs no longer apply
 					}
 				}
 	}
@@ -963,6 +968,9 @@ public:
 				aabm.abm->trigger(m_env, p, n,
 					active_object_count, active_object_count_wider);
 
+				if (block->isOrphan())
+					return;
+
 				// Count surrounding objects again if the abms added any
 				if(m_env->m_added_objects > 0) {
 					active_object_count = countObjects(block, map, active_object_count_wider);
@@ -1013,13 +1021,17 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 	// Activate stored objects
 	activateObjects(block, dtime_s);
+	if (block->isOrphan())
+		return;
 
 	/* Handle LoadingBlockModifiers */
 	m_lbm_mgr.applyLBMs(this, block, stamp, (float)dtime_s);
+	if (block->isOrphan())
+		return;
 
 	// Run node timers
 	block->step((float)dtime_s, [&](v3s16 p, MapNode n, f32 d) -> bool {
-		return m_script->node_on_timer(p, n, d);
+		return !block->isOrphan() && m_script->node_on_timer(p, n, d);
 	});
 }
 
@@ -1993,6 +2005,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false, dtime_s);
+		if (block->isOrphan())
+			return;
 	}
 
 	// Clear stored list

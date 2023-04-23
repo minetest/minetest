@@ -272,6 +272,50 @@ std::string ItemStack::getShortDescription(const IItemDefManager *itemdef) const
 	return desc;
 }
 
+std::string ItemStack::getInventoryImage(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("inventory_image");
+	if (texture.empty())
+		texture = getDefinition(itemdef).inventory_image;
+
+	return texture;
+}
+
+std::string ItemStack::getInventoryOverlay(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("inventory_overlay");
+	if (texture.empty())
+		texture = getDefinition(itemdef).inventory_overlay;
+
+	return texture;
+}
+
+std::string ItemStack::getWieldImage(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("wield_image");
+	if (texture.empty())
+		texture = getDefinition(itemdef).wield_image;
+
+	return texture;
+}
+
+std::string ItemStack::getWieldOverlay(const IItemDefManager *itemdef) const
+{
+	std::string texture = metadata.getString("wield_overlay");
+	if (texture.empty())
+		texture = getDefinition(itemdef).wield_overlay;
+
+	return texture;
+}
+
+v3f ItemStack::getWieldScale(const IItemDefManager *itemdef) const
+{
+	std::string scale = metadata.getString("wield_scale");
+	if (scale.empty())
+		return getDefinition(itemdef).wield_scale;
+
+	return str_to_v3f(scale);
+}
 
 ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {
@@ -408,6 +452,9 @@ void InventoryList::setSize(u32 newsize)
 	if (newsize == m_items.size())
 		return;
 
+	if (newsize < m_items.size())
+		checkResizeLock();
+
 	m_items.resize(newsize);
 	m_size = newsize;
 	setModified();
@@ -505,6 +552,8 @@ void InventoryList::deSerialize(std::istream &is)
 
 InventoryList & InventoryList::operator = (const InventoryList &other)
 {
+	checkResizeLock();
+
 	m_items = other.m_items;
 	m_size = other.m_size;
 	m_width = other.m_width;
@@ -752,6 +801,15 @@ u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
 	return (oldcount - item1.count);
 }
 
+void InventoryList::checkResizeLock()
+{
+	if (m_resize_locks == 0)
+		return; // OK
+
+	throw BaseException("InventoryList '" + m_name
+			+ "' is currently in use and cannot be deleted or resized.");
+}
+
 /*
 	Inventory
 */
@@ -763,6 +821,12 @@ Inventory::~Inventory()
 
 void Inventory::clear()
 {
+	for (auto &m_list : m_lists) {
+		// Placing this check within the destructor would be a logical solution
+		// but that's generally a bad idea, thus manual calls beforehand:
+		m_list->checkResizeLock();
+	}
+
 	for (auto &m_list : m_lists) {
 		delete m_list;
 	}
@@ -904,7 +968,9 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 	// Remove existing lists
 	s32 i = getListIndex(name);
 	if (i != -1) {
+		m_lists[i]->checkResizeLock();
 		delete m_lists[i];
+
 		m_lists[i] = new InventoryList(name, size, m_itemdef);
 		m_lists[i]->setModified();
 		return m_lists[i];
@@ -933,6 +999,8 @@ bool Inventory::deleteList(const std::string &name)
 	s32 i = getListIndex(name);
 	if(i == -1)
 		return false;
+
+	m_lists[i]->checkResizeLock();
 
 	setModified();
 	delete m_lists[i];

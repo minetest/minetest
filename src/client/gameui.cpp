@@ -102,6 +102,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 {
 	v2u32 screensize = RenderingEngine::getWindowSize();
 
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
 	s32 minimal_debug_height = 0;
 
 	// Minimal debug text must only contain info that can't give a gameplay advantage
@@ -137,7 +139,6 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 
 	// Basic debug text also shows info that might give a gameplay advantage
 	if (m_flags.show_basic_debug) {
-		LocalPlayer *player = client->getEnv().getLocalPlayer();
 		v3f player_position = player->getPosition();
 
 		std::ostringstream os(std::ios_base::binary);
@@ -208,8 +209,8 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		m_guitext_status->enableOverrideColor(true);
 	}
 
-	// Hide chat when console is visible
-	m_guitext_chat->setVisible(isChatVisible() && !chat_console->isVisible());
+	// Hide chat when disabled by server or when console is visible
+	m_guitext_chat->setVisible(isChatVisible() && !chat_console->isVisible() && (player->hud_flags & HUD_FLAG_CHAT_VISIBLE));
 }
 
 void GameUI::initFlags()
@@ -225,9 +226,7 @@ void GameUI::showMinimap(bool show)
 
 void GameUI::showTranslatedStatusText(const char *str)
 {
-	const wchar_t *wmsg = wgettext(str);
-	showStatusText(wmsg);
-	delete[] wmsg;
+	showStatusText(wstrgettext(str));
 }
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)
@@ -287,13 +286,18 @@ void GameUI::updateProfiler()
 	m_guitext_profiler->setVisible(m_profiler_current_page != 0);
 }
 
-void GameUI::toggleChat()
+void GameUI::toggleChat(Client *client)
 {
-	m_flags.show_chat = !m_flags.show_chat;
-	if (m_flags.show_chat)
-		showTranslatedStatusText("Chat shown");
-	else
-		showTranslatedStatusText("Chat hidden");
+	if (client->getEnv().getLocalPlayer()->hud_flags & HUD_FLAG_CHAT_VISIBLE) {
+		m_flags.show_chat = !m_flags.show_chat;
+		if (m_flags.show_chat)
+			showTranslatedStatusText("Chat shown");
+		else
+			showTranslatedStatusText("Chat hidden");
+	} else {
+		showTranslatedStatusText("Chat currently disabled by game or mod");
+	}
+
 }
 
 void GameUI::toggleHud()

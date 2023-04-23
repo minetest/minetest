@@ -208,12 +208,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	while (m_rendering_engine->run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
-		const wchar_t *text = wgettext("Main Menu");
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + text + L"]").c_str());
-		delete[] text;
+			L" [" + wstrgettext("Main Menu") + L"]").c_str());
 
 		try {	// This is used for catching disconnects
 
@@ -553,12 +551,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
 
 	// Set absolute mouse mode
-#if IRRLICHT_VERSION_MT_REVISION >= 9
 	m_rendering_engine->get_raw_device()->getCursorControl()->setRelativeMode(false);
 #endif
-
-#endif
-
 
 	/* show main menu */
 	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);

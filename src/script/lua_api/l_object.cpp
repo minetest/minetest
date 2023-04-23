@@ -1724,6 +1724,12 @@ int ObjectRef::l_set_sky(lua_State *L)
 			read_color(L, -1, &sky_params.bgcolor);
 		lua_pop(L, 1);
 
+		lua_getfield(L, 2, "body_orbit_tilt");
+		if (!lua_isnil(L, -1)) {
+			sky_params.body_orbit_tilt = rangelim(readParam<float>(L, -1), -60.0f, 60.0f);
+		}
+		lua_pop(L, 1);
+
 		lua_getfield(L, 2, "type");
 		if (!lua_isnil(L, -1))
 			sky_params.type = luaL_checkstring(L, -1);
@@ -1799,7 +1805,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		}
 	} else {
 		// Handle old set_sky calls, and log deprecated:
-		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.txt");
+		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
 
 		// Fix sun, moon and stars showing when classic textured skyboxes are used
 		SunParams sun_params = player->getSunParams();
@@ -1892,7 +1898,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	// handle the deprecated version
 	if (!readParam<bool>(L, 2, false)) {
-		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.txt");
+		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.md");
 
 		push_ARGB8(L, skybox_params.bgcolor);
 		lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
@@ -1912,6 +1918,11 @@ int ObjectRef::l_get_sky(lua_State *L)
 	lua_setfield(L, -2, "base_color");
 	lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());
 	lua_setfield(L, -2, "type");
+
+	if (skybox_params.body_orbit_tilt != SkyboxParams::INVALID_SKYBOX_TILT) {
+		lua_pushnumber(L, skybox_params.body_orbit_tilt);
+		lua_setfield(L, -2, "body_orbit_tilt");
+	}
 
 	lua_newtable(L);
 	s16 i = 1;

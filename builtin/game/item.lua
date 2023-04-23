@@ -390,22 +390,20 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 
 	-- Changing hp might kill the player causing mods to do who-knows-what to the
 	-- inventory, so do this before set_hp().
-	if replace_with_item then
-		if itemstack:is_empty() then
-			itemstack:add_item(replace_with_item)
-		else
-			local inv = user:get_inventory()
-			-- Check if inv is null, since non-players don't have one
-			if inv and inv:room_for_item("main", {name=replace_with_item}) then
-				inv:add_item("main", replace_with_item)
-			else
-				local pos = user:get_pos()
-				pos.y = math.floor(pos.y + 0.5)
-				core.add_item(pos, replace_with_item)
-			end
+	replace_with_item = itemstack:add_item(replace_with_item)
+	user:set_wielded_item(itemstack)
+	if not replace_with_item:is_empty() then
+		local inv = user:get_inventory()
+		-- Check if inv is null, since non-players don't have one
+		if inv then
+			replace_with_item = inv:add_item("main", replace_with_item)
 		end
 	end
-	user:set_wielded_item(itemstack)
+	if not replace_with_item:is_empty() then
+		local pos = user:get_pos()
+		pos.y = math.floor(pos.y + 0.5)
+		core.add_item(pos, replace_with_item)
+	end
 
 	user:set_hp(user:get_hp() + hp_change)
 

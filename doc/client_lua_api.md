@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.7.0
+Minetest Lua Client Modding API Reference 5.8.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -947,7 +947,7 @@ Setting-related
 ---------------
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`). Check lua_api.txt for class reference.
+  main config file (`minetest.conf`). Check lua_api.md for class reference.
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 

@@ -32,7 +32,13 @@ find_package_handle_standard_args(GettextLib DEFAULT_MSG ${GETTEXT_REQUIRED_VARS
 if(GETTEXTLIB_FOUND)
 	# Set up paths for building
 	set(GETTEXT_PO_PATH ${CMAKE_SOURCE_DIR}/po)
-	set(GETTEXT_MO_BUILD_PATH ${CMAKE_BINARY_DIR}/locale/<locale>/LC_MESSAGES)
+	# If the executable is expected to be ran from <source dir>/bin/, also
+	# generate the locale in <source dir>/locale/.
+	if(RUN_IN_PLACE AND NOT CMAKE_CROSSCOMPILING)
+		set(GETTEXT_MO_BUILD_PATH ${CMAKE_SOURCE_DIR}/locale/<locale>/LC_MESSAGES)
+	else()
+		set(GETTEXT_MO_BUILD_PATH ${CMAKE_BINARY_DIR}/locale/<locale>/LC_MESSAGES)
+	endif()
 	set(GETTEXT_MO_DEST_PATH ${LOCALEDIR}/<locale>/LC_MESSAGES)
 	file(GLOB GETTEXT_AVAILABLE_LOCALES RELATIVE ${GETTEXT_PO_PATH} "${GETTEXT_PO_PATH}/*")
 	list(REMOVE_ITEM GETTEXT_AVAILABLE_LOCALES minetest.pot)

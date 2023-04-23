@@ -46,6 +46,7 @@ class RenderingCore;
 class RenderingEngine
 {
 public:
+	static const video::SColor MENU_SKY_COLOR;
 	static const float BASE_BLOOM_STRENGTH;
 
 	RenderingEngine(IEventReceiver *eventReceiver);
@@ -67,6 +68,12 @@ public:
 
 	void removeMesh(const scene::IMesh* mesh);
 
+	/**
+	 * This takes 3d_mode into account - side-by-side will return a
+	 * halved horizontal size.
+	 *
+	 * @return "window" size
+	 */
 	static v2u32 getWindowSize()
 	{
 		sanity_check(s_singleton);
@@ -107,9 +114,8 @@ public:
 
 	void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
-			float dtime = 0, int percent = 0, bool clouds = true);
+			float dtime = 0, int percent = 0, bool sky = true);
 
-	void draw_menu_scene(gui::IGUIEnvironment *guienv, float dtime, bool clouds);
 	void draw_scene(video::SColor skycolor, bool show_hud,
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
 
@@ -129,6 +135,10 @@ public:
 		return nullptr;
 	}
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+
+	static void autosaveScreensizeAndCo(
+			const irr::core::dimension2d<u32> initial_screen_size,
+			const bool initial_window_maximized);
 
 private:
 	v2u32 _getWindowSize() const;

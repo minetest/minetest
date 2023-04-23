@@ -412,7 +412,14 @@ public:
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
 
+	// Blocks are removed from the map but not deleted from memory until
+	// deleteDetachedBlocks() is called, since pointers to them may still exist
+	// when deleteBlock() is called.
 	bool deleteBlock(v3s16 blockpos) override;
+
+	void deleteDetachedBlocks();
+
+	void step();
 
 	void updateVManip(v3s16 pos);
 
@@ -456,6 +463,9 @@ private:
 	int m_map_compression_level;
 
 	std::set<v3s16> m_chunks_in_progress;
+
+	// used by deleteBlock() and deleteDetachedBlocks()
+	MapBlockVect m_detached_blocks;
 
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;

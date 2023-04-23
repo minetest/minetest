@@ -103,7 +103,6 @@ LOCAL_MODULE := Minetest
 LOCAL_CFLAGS += \
 	-DJSONCPP_NO_LOCALE_SUPPORT     \
 	-DHAVE_TOUCHSCREENGUI           \
-	-DENABLE_GLES=1                 \
 	-DUSE_CURL=1                    \
 	-DUSE_SOUND=1                   \
 	-DUSE_LEVELDB=0                 \

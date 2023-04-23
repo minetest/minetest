@@ -562,13 +562,7 @@ v2f Settings::getV2F(const std::string &name) const
 
 v3f Settings::getV3F(const std::string &name) const
 {
-	v3f value;
-	Strfnd f(get(name));
-	f.next("(");
-	value.X = stof(f.next(","));
-	value.Y = stof(f.next(","));
-	value.Z = stof(f.next(")"));
-	return value;
+	return str_to_v3f(get(name));
 }
 
 

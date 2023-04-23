@@ -36,6 +36,7 @@ jobs:
   # Older gcc version (should be close to our minimum supported version)
   gcc_5:
     runs-on: ubuntu-18.04
+    if: "false" # FIXME
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
@@ -78,6 +79,7 @@ jobs:
   # Older clang version (should be close to our minimum supported version)
   clang_3_9:
     runs-on: ubuntu-18.04
+    if: "false" # FIXME
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
