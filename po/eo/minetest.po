@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-11-23 07:47+0000\n"
-"Last-Translator: Emmily <Emmilyrose779@gmail.com>\n"
+"PO-Revision-Date: 2023-04-26 11:48+0000\n"
+"Last-Translator: jolesh <jolesh0815@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -613,14 +613,12 @@ msgid "Password"
 msgstr "Pasvorto"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Pasvortoj ne kongruas!"
+msgstr "Pasvortoj ne kongruas"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Registriĝi kaj aliĝi"
+msgstr "Registri"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
