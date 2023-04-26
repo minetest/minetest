@@ -38,8 +38,7 @@ public:
 
 	T *getActiveObject(u16 id)
 	{
-		typename std::map<u16, T *>::const_iterator n =
-				m_active_objects.find(id);
+		auto n = m_active_objects.find(id);
 		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
 
@@ -62,5 +61,5 @@ protected:
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}
 
-	std::map<u16, T *> m_active_objects;
+	std::map<u16, T *> m_active_objects; // ordered to fix #10985 
 };
