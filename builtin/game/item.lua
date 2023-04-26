@@ -202,6 +202,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	elseif (def.paramtype2 == "wallmounted" or
 			def.paramtype2 == "colorwallmounted") and not param2 then
 		local dir = vector.subtract(under, above)
+		-- If you change this code, also change src/client/game.cpp
 		newnode.param2 = core.dir_to_wallmounted(dir)
 		if def.wallmounted_rotate_vertical and
 				(newnode.param2 == 0 or newnode.param2 == 1) then

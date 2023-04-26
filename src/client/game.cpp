@@ -3704,6 +3704,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		v3s16 dir = nodepos - neighborpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
+			// If you change this code, also change builtin/game/item.lua
 			u8 predicted_param2 = dir.Y < 0 ? 1 : 0;
 			if (selected_def.wallmounted_rotate_vertical) {
 				bool rotate90 = false;
@@ -3754,16 +3755,6 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	// Check attachment if node is in group attached_node
 	int an = itemgroup_get(predicted_f.groups, "attached_node");
 	if (an != 0) {
-		const static v3s16 wallmounted_dirs[8] = {
-			v3s16(0, 1, 0),
-			v3s16(0, -1, 0),
-			v3s16(1, 0, 0),
-			v3s16(-1, 0, 0),
-			v3s16(0, 0, 1),
-			v3s16(0, 0, -1),
-			v3s16(0, 1, 0),
-			v3s16(0, -1, 0),
-		};
 		v3s16 pp;
 
 		if (an == 3) {

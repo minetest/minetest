@@ -151,10 +151,10 @@ core.register_entity(":__builtin:falling_node", {
 		-- Rotate entity
 		if def.drawtype == "torchlike" then
 			if (def.paramtype2 == "wallmounted" or def.paramtype2 == "colorwallmounted")
-					and (node.param2 % 8) ~= 7 then
-				self.object:set_yaw(math.pi*0.25)
-			else
+					and node.param2 % 8 == 7 then
 				self.object:set_yaw(-math.pi*0.25)
+			else
+				self.object:set_yaw(math.pi*0.25)
 			end
 		elseif ((node.param2 ~= 0 or def.drawtype == "nodebox" or def.drawtype == "mesh")
 				and (def.wield_image == "" or def.wield_image == nil))
