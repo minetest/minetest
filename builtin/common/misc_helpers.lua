@@ -601,7 +601,8 @@ function core.translate(textdomain, str, ...)
 	local translated = str:gsub("@(.)", function(matched)
 		local c = string.byte(matched)
 		if string.byte("1") <= c and c <= string.byte("9") then
-			if c - string.byte("0") > arg.n then
+			local a = c - string.byte("0")
+			if a > arg.n then
 				error("Not enough arguments provided to core.translate")
 			end
 			arg_index = arg_index + 1
