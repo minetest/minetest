@@ -601,13 +601,7 @@ function core.translate(textdomain, str, ...)
 	local translated = str:gsub("@(.)", function(matched)
 		local c = string.byte(matched)
 		if string.byte("1") <= c and c <= string.byte("9") then
-			local a = c - string.byte("0")
-			if a ~= arg_index then
-				error("Escape sequences in string given to core.translate " ..
-					"are not in the correct order: got @" .. matched ..
-					"but expected @" .. tostring(arg_index))
-			end
-			if a > arg.n then
+			if c - string.byte("0") > arg.n then
 				error("Not enough arguments provided to core.translate")
 			end
 			arg_index = arg_index + 1
