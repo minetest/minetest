@@ -3809,8 +3809,10 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
-to generate and update translation files automatically from the Lua source.
+Consider using the tool `updatetr.py` in the `util` directory of the
+Minetest repository to generate and update translation files automatically
+from the Lua source. (See `README_updatetr.md` in the same directory
+for a manual.)
 
 Translating a string
 --------------------
