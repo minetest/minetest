@@ -41,7 +41,7 @@ local function add_detached_inventories(player)
 			return 0
 		end,
 		on_put = function(inv, listname, index, stack, player)
-			inv:set_list(listname, {})
+			inv:set_stack(listname, index, "")
 		end,
 	}, name)
 	inv_trash:set_size("main", 1)
