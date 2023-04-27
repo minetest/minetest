@@ -833,7 +833,8 @@ void MapgenBasic::generateCavesNoiseIntersection(s16 max_stone_y)
 	if (node_min.Y > max_stone_y || cave_width >= 10.0f)
 		return;
 
-	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
+	/* biomegen = emerge->biomegen; */
+	CavesNoiseIntersection caves_noise(ndef, m_bmgr, biomegen, csize,
 		&np_cave1, &np_cave2, seed, cave_width);
 
 	caves_noise.generateCaves(vm, node_min, node_max, biomemap);

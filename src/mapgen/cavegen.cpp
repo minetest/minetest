@@ -38,14 +38,16 @@ static NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0
 ////
 
 CavesNoiseIntersection::CavesNoiseIntersection(
-	const NodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
+	const NodeDefManager *nodedef, BiomeManager *biomemgr, BiomeGen *biomegen, v3s16 chunksize,
 	NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed, float cave_width)
 {
 	assert(nodedef);
 	assert(biomemgr);
+	assert(biomegen);
 
 	m_ndef = nodedef;
 	m_bmgr = biomemgr;
+	m_bmgn = biomegen;
 
 	m_csize = chunksize;
 	m_cave_width = cave_width;
@@ -96,6 +98,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		u16 base_filler = depth_top + biome->depth_filler;
 		u16 depth_riverbed = biome->depth_riverbed;
 		u16 nplaced = 0;
+
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
 		// tunnels at mapchunk borders when generating mapchunks upwards.
@@ -103,6 +106,12 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
 				VoxelArea::add_y(em, vi, -1)) {
+			// TODO
+			if (y < biome->min_pos.Y) {
+				// TODO Need to get a biome generator here
+				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z));
+			}
+
 			content_t c = vm->m_data[vi].getContent();
 
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
