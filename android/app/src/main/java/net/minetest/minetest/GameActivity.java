@@ -23,7 +23,6 @@ package net.minetest.minetest;
 import android.app.NativeActivity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -64,11 +63,10 @@ public class GameActivity extends NativeActivity {
 	}
 
 	private void makeFullScreen() {
-		if (Build.VERSION.SDK_INT >= 19)
-			this.getWindow().getDecorView().setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		this.getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 	}
 
 	@Override

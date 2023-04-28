@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-12-13 16:16+0000\n"
+"PO-Revision-Date: 2023-03-28 20:39+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -135,11 +135,11 @@ msgstr "Поддържаме само изданията на протокола
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Включено, има грешки)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Неудовлетворено)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -284,7 +284,7 @@ msgstr "Изтегляне…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Грешка при инсталиране на „$1“: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -452,7 +452,7 @@ msgstr "Инсталиране $1"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Инсталиране на друга игра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -591,11 +591,11 @@ msgstr "Потвърж. на парола"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Присъединяване към $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Липсва име"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -734,7 +734,7 @@ msgstr "Стойността трябва да е най-много $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -742,7 +742,7 @@ msgstr "Разпределение по X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -750,7 +750,7 @@ msgstr "Разпределение по Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -790,6 +790,10 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Инсталирано издание: $1\n"
+"Последно издание: $2\n"
+"За да разберете как да се сдобиете с последното издание и да поличите най-"
+"новите възможности и поправки, посетете $3."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -830,7 +834,7 @@ msgstr "Грешка при инсталиране на $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "$1 не може да бъде инсталирано като пакет с текстури"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -3168,7 +3172,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Полет при двоен скок"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
@@ -3376,7 +3380,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Exposure compensation"
-msgstr ""
+msgstr "Компенсация на експозицията"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3412,7 +3416,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Бързо движение"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3936,6 +3940,8 @@ msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
+"Ако е включено, определя посоката на изкачване/спускане спрямо посоката на "
+"погледа на играча по време на полет или плуване."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4140,11 +4146,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Скорост на скачане"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Клавиатура и мишка"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4436,7 +4442,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation threads"
-msgstr ""
+msgstr "Брой нишки, създаващи мрежата от блокове"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -4753,11 +4759,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чувствителност на мишката"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Множител на чувствителността на мишката."
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -4863,6 +4869,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Брой процесорни нишки, използвани за създаване на мрежа.\n"
+"Стойност 0 (подразбирана) ще остави Minetest автоматично да ооредели броя "
+"налични нишки."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -4937,7 +4946,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
+msgstr "Режим на изкачване/спускане спрямо погледа"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -4948,7 +4957,7 @@ msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
-"Играчът може да лети без да се влияе от гравитацията.\n"
+"Играчът може да лети без влияние от гравитацията.\n"
 "Изисква правото „fly“ от сървъра."
 
 #: src/settings_translation_file.cpp
@@ -5307,6 +5316,9 @@ msgid ""
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
+"Задава компенсация на експозицията в EV единици.\n"
+"Стойност 0.0 (подразбирана) означава липса на компенсация.\n"
+"Обхват: от -1.0 до 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""

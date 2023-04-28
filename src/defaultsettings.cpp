@@ -173,7 +173,7 @@ void set_default_settings()
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");
-	settings->setDefault("undersampling", "0");
+	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
@@ -186,17 +186,15 @@ void set_default_settings()
 	settings->setDefault("fps_max_unfocused", "20");
 	settings->setDefault("viewing_range", "190");
 	settings->setDefault("client_mesh_chunk", "1");
-#if ENABLE_GLES
-	settings->setDefault("near_plane", "0.1");
-#endif
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
+	settings->setDefault("window_maximized", "false");
 	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
 	settings->setDefault("leaves_style", "fancy");
-	settings->setDefault("connected_glass", "true");
+	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("performance_tradeoffs", "false");
 	settings->setDefault("lighting_alpha", "0.0");
@@ -207,11 +205,7 @@ void set_default_settings()
 	settings->setDefault("lighting_boost_spread", "0.2");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
-#if ENABLE_GLES
-	settings->setDefault("video_driver", "ogles2");
-#else
-	settings->setDefault("video_driver", "opengl");
-#endif
+	settings->setDefault("video_driver", "");
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
@@ -227,8 +221,6 @@ void set_default_settings()
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("formspec_fullscreen_bg_color", "(0,0,0)");
 	settings->setDefault("formspec_fullscreen_bg_opacity", "140");
-	settings->setDefault("formspec_default_bg_color", "(0,0,0)");
-	settings->setDefault("formspec_default_bg_opacity", "140");
 	settings->setDefault("selectionbox_color", "(0,0,0)");
 	settings->setDefault("selectionbox_width", "2");
 	settings->setDefault("node_highlighting", "box");
@@ -308,7 +300,7 @@ void set_default_settings()
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
 	settings->setDefault("joystick_id", "0");
-	settings->setDefault("joystick_type", "");
+	settings->setDefault("joystick_type", "auto");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("joystick_deadzone", "2048");

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-03 19:51+0000\n"
+"PO-Revision-Date: 2023-03-10 14:41+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1549,7 +1549,7 @@ msgstr "MiB/秒"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr "ミニマップは現在ゲームまたはMODにより無効"
+msgstr "ミニマップはゲームやMODによって無効化されている"
 
 #: src/client/game.cpp
 msgid "Multiplayer"
@@ -1668,16 +1668,15 @@ msgstr "ワイヤーフレーム 表示"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr "ズームは現在ゲームまたはMODにより無効"
+msgstr "ズームはゲームやMODによって無効化されている"
 
 #: src/client/game.cpp
 msgid "ok"
 msgstr "決定"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "ズームは現在ゲームまたはMODにより無効"
+msgstr "チャットはゲームやMODによって無効化されている"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2349,7 +2348,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "マップチャンクごとのダンジョンの数を決定する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2369,7 +2367,6 @@ msgstr ""
 "-    topbottom: 画面を上下で分割します。\n"
 "-    sidebyside: 画面を左右で分割します。\n"
 "-    crossview: 交差法による3Dです。\n"
-"-    pageflip: クァドバッファベースの3Dです。\n"
 "interlacedはシェーダーが有効である必要があることに注意してください。"
 
 #: src/settings_translation_file.cpp
@@ -2817,7 +2814,7 @@ msgstr "クライアント"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "クライアント メッシュ チャンクサイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3303,7 +3300,7 @@ msgstr "ダンジョンノイズ"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "自動露出の有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3341,7 +3338,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "レイトレース カリングの有効化"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3350,6 +3347,9 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"自動露出補正を有効にすると、後処理エンジンは\n"
+"シーンの明るさに合わせて自動調整し、\n"
+"人間の目の振る舞いをシミュレートします。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3528,9 +3528,8 @@ msgstr ""
 "作成し、密な浮遊大陸層に適しています。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "露出係数"
+msgstr "露出補正"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4756,9 +4755,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "マップブロックのメッシュ生成遅延"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "マップブロックのメッシュ生成遅延"
+msgstr "マップブロックメッシュ生成スレッド数"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5213,10 +5211,9 @@ msgstr ""
 "-    'プロセッサー数 - 2'、下限は 1 です。\n"
 "その他の値:\n"
 "-    出現スレッド数を指定します、下限は 1 です。\n"
-"警告: 出現するスレッド数を増やすとエンジンのマップ生成速度が\n"
-"上がりますが、特にシングルプレイヤーや 'on_generated' で\n"
-"Luaコードを実行している場合、他のプロセスと干渉してゲームの\n"
-"パフォーマンスを低下させる可能性があります。\n"
+"警告: 出現するスレッド数を増やすとエンジンのマップ生成速度が上がりますが、\n"
+"特にシングルプレイヤーや 'on_generated' でLuaコードを実行している場合、\n"
+"他のプロセスと干渉してゲームのパフォーマンスを低下させる可能性があります。\n"
 "多くのユーザーにとって最適な設定は '1' です。"
 
 #: src/settings_translation_file.cpp
@@ -5235,6 +5232,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"メッシュ生成に使用するスレッド数。\n"
+"値 0 (既定値) を指定すると、Minetest "
+"は使用可能なスレッドの数を自動検出します。"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5735,17 +5735,14 @@ msgid "Serverlist file"
 msgstr "サーバー一覧ファイル"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
-"露出補正係数を設定します。\n"
-"この係数は、他のすべての後処理効果の前に線形カラー値に\n"
-"適用されます。\n"
-"値 1.0 (規定値) は露出補正なしを意味します。\n"
-"範囲: 0.1 から 10.0"
+"露出補正をEV単位で設定します。\n"
+"値 0.0 (既定値) は、露出補正なしを意味します。\n"
+"範囲: -1 から 1.0 まで"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5822,7 +5819,6 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
 "In debug mode, the screen is split into 4 quadrants:\n"
@@ -5922,6 +5918,11 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"クライアントがメッシュを生成するときに一緒に考慮するマップ ブロックの\n"
+"立方体の辺の長さ。\n"
+"値が大きいほど描画の回数が減るため、GPU の使用率が高くなり、\n"
+"特にハイエンド GPU にメリットがあります。ローエンドの GPU を搭載した\n"
+"(または GPU を搭載していない) システムでは値を小さくすると効果的です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6280,7 +6281,6 @@ msgstr ""
 "これは active_object_send_range_blocks と一緒に設定する必要があります。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6288,12 +6288,9 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "レンダリングのバックエンドです。\n"
-"変更後は再起動が必要です。\n"
-"注：Androidでは、不明な場合はOGRES1を使用してください！そうしないとアプリの起"
-"動に失敗することがあります。\n"
-"その他のプラットフォームでは、OpenGLを推奨します。\n"
-"シェーダーは、OpenGL (デスクトップのみ) とOGRES2 (実験的) でサポートされてい"
-"ます。"
+"注：これを変更した後は再起動が必要です。\n"
+"デスクトップでは OpenGL が、Android では OGLES2 が規定です。\n"
+"シェーダーは OpenGL と OGLES2 (実験的) でサポートされています。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6555,6 +6552,8 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test"
 msgstr ""
+"新しいカラーでレイトレース オクルージョン カリングを使用します。\n"
+"このフラグは、レイトレース オクルージョン カリング テストの使用を有効にする"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."

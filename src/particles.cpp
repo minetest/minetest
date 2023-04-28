@@ -19,7 +19,121 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "particles.h"
 #include <type_traits>
+
 using namespace ParticleParamTypes;
+
+template<typename T>
+void RangedParameter<T>::serialize(std::ostream &os) const
+{
+	min.serialize(os);
+	max.serialize(os);
+	writeF32(os, bias);
+}
+
+template<typename T>
+void RangedParameter<T>::deSerialize(std::istream &is)
+{
+	min.deSerialize(is);
+	max.deSerialize(is);
+	bias = readF32(is);
+}
+
+
+template<typename T>
+T RangedParameter<T>::pickWithin() const
+{
+	typename T::pickFactors values;
+	auto p = numericAbsolute(bias) + 1;
+	for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
+		if (bias < 0)
+			values[i] = 1.0f - pow(myrand_float(), p);
+		else
+			values[i] = pow(myrand_float(), p);
+	}
+	return T::pick(values, min, max);
+}
+
+
+template<typename T>
+T TweenedParameter<T>::blend(float fac) const
+{
+	// warp time coordinates in accordance w/ settings
+	if (fac > beginning) {
+		// remap for beginning offset
+		auto len = 1 - beginning;
+		fac -= beginning;
+		fac /= len;
+
+		// remap for repetitions
+		fac *= reps;
+		if (fac > 1) // poor man's modulo
+			fac -= (decltype(reps))fac;
+
+		// remap for style
+		switch (style) {
+			case TweenStyle::fwd: /* do nothing */  break;
+			case TweenStyle::rev: fac = 1.0f - fac; break;
+			case TweenStyle::pulse:
+			case TweenStyle::flicker: {
+				if (fac > 0.5f) {
+					fac = 1.f - (fac*2.f - 1.f);
+				} else {
+					fac = fac * 2;
+				}
+				if (style == TweenStyle::flicker) {
+					fac *= myrand_range(0.7f, 1.0f);
+				}
+			}
+		}
+		if (fac>1.f)
+			fac = 1.f;
+		else if (fac<0.f)
+			fac = 0.f;
+	} else {
+		fac = (style == TweenStyle::rev) ? 1.f : 0.f;
+	}
+
+	return start.interpolate(fac, end);
+}
+
+template<typename T>
+void TweenedParameter<T>::serialize(std::ostream &os) const
+{
+	writeU8(os, static_cast<u8>(style));
+	writeU16(os, reps);
+	writeF32(os, beginning);
+	start.serialize(os);
+	end.serialize(os);
+}
+
+template<typename T>
+void TweenedParameter<T>::deSerialize(std::istream &is)
+{
+	style = static_cast<TweenStyle>(readU8(is));
+	reps = readU16(is);
+	beginning = readF32(is);
+	start.deSerialize(is);
+	end.deSerialize(is);
+}
+
+namespace ParticleParamTypes {
+	// For function definitions
+	template struct RangedParameter<v3fParameter>;
+	template struct RangedParameter<f32Parameter>;
+
+	template struct TweenedParameter<v2fParameter>;
+	template struct TweenedParameter<v3fParameter>;
+	template struct TweenedParameter<f32Parameter>;
+	template struct TweenedParameter<v3fRange>;
+	template struct TweenedParameter<f32Range>;
+}
+
+// Linear interpolation
+template <typename T>
+static T numericalBlend(float fac, T min, T max)
+{
+	return min + ((max - min) * fac);
+}
 
 #define PARAM_PVFN(n) ParticleParamTypes::n##ParameterValue
 v2f PARAM_PVFN(pick) (float* f, const v2f a, const v2f b) {

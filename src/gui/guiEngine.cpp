@@ -38,10 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
-
-#if ENABLE_GLES
 #include "client/tile.h"
-#endif
 
 
 /******************************************************************************/
@@ -59,11 +56,15 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 /******************************************************************************/
 MenuTextureSource::~MenuTextureSource()
 {
-	for (const std::string &texture_to_delete : m_to_delete) {
-		const char *tname = texture_to_delete.c_str();
-		video::ITexture *texture = m_driver->getTexture(tname);
-		m_driver->removeTexture(texture);
+	u32 before = m_driver->getTextureCount();
+
+	for (const auto &it: m_to_delete) {
+		m_driver->removeTexture(it);
 	}
+	m_to_delete.clear();
+
+	infostream << "~MenuTextureSource() before cleanup: "<< before
+			<< " after: " << m_driver->getTextureCount() << std::endl;
 }
 
 /******************************************************************************/
@@ -75,7 +76,7 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 	if (name.empty())
 		return NULL;
 
-#if ENABLE_GLES
+	// return if already loaded
 	video::ITexture *retval = m_driver->findTexture(name.c_str());
 	if (retval)
 		return retval;
@@ -86,12 +87,11 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 
 	image = Align2Npot2(image, m_driver);
 	retval = m_driver->addTexture(name.c_str(), image);
-	m_to_delete.insert(name);
 	image->drop();
+
+	if (retval)
+		m_to_delete.push_back(retval);
 	return retval;
-#else
-	return m_driver->getTexture(name.c_str());
-#endif
 }
 
 /******************************************************************************/
@@ -138,26 +138,26 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_data(data),
 	m_kill(kill)
 {
-	//initialize texture pointers
+	// initialize texture pointers
 	for (image_definition &texture : m_textures) {
 		texture.texture = NULL;
 	}
 	// is deleted by guiformspec!
-	m_buttonhandler = new TextDestGuiEngine(this);
+	auto buttonhandler = std::make_unique<TextDestGuiEngine>(this);
+	m_buttonhandler = buttonhandler.get();
 
-	//create texture source
-	m_texture_source = new MenuTextureSource(rendering_engine->get_video_driver());
+	// create texture source
+	m_texture_source = std::make_unique<MenuTextureSource>(rendering_engine->get_video_driver());
 
-	//create soundmanager
-	MenuMusicFetcher soundfetcher;
+	// create soundmanager
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get())
-		m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
+		m_sound_manager.reset(createOpenALSoundManager(g_sound_manager_singleton.get(), &m_soundfetcher));
 #endif
 	if (!m_sound_manager)
-		m_sound_manager = &dummySoundManager;
+		m_sound_manager = std::make_unique<DummySoundManager>();
 
-	//create topleft header
+	// create topleft header
 	m_toplefttext = L"";
 
 	core::rect<s32> rect(0, 0, g_fontengine->getTextWidth(m_toplefttext.c_str()),
@@ -167,20 +167,22 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_irr_toplefttext = gui::StaticText::add(rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
 
-	//create formspecsource
-	m_formspecgui = new FormspecFormSource("");
+	// create formspecsource
+	auto formspecgui = std::make_unique<FormspecFormSource>("");
+	m_formspecgui = formspecgui.get();
 
 	/* Create menu */
-	m_menu = new GUIFormSpecMenu(joystick,
+	m_menu = make_irr<GUIFormSpecMenu>(
+			joystick,
 			m_parent,
 			-1,
 			m_menumanager,
-			NULL /* &client */,
+			nullptr /* &client */,
 			m_rendering_engine->get_gui_env(),
-			m_texture_source,
-			m_sound_manager,
-			m_formspecgui,
-			m_buttonhandler,
+			m_texture_source.get(),
+			m_sound_manager.get(),
+			formspecgui.release(),
+			buttonhandler.release(),
 			"",
 			false);
 
@@ -191,7 +193,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	infostream << "GUIEngine: Initializing Lua" << std::endl;
 
-	m_script = new MainMenuScripting(this);
+	m_script = std::make_unique<MainMenuScripting>(this);
 
 	try {
 		m_script->setMainMenuData(&m_data->script_data);
@@ -209,8 +211,7 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	}
 
 	m_menu->quitMenu();
-	m_menu->drop();
-	m_menu = NULL;
+	m_menu.reset();
 }
 
 /******************************************************************************/
@@ -248,11 +249,6 @@ void GUIEngine::run()
 
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
-
-	static const video::SColor sky_color(255, 140, 186, 250);
-
 	// Reset fog color
 	{
 		video::SColor fog_color;
@@ -265,24 +261,17 @@ void GUIEngine::run()
 		driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 				fog_pixelfog, fog_rangefog);
 
-		driver->setFog(sky_color, fog_type, fog_start, fog_end, fog_density,
-				fog_pixelfog, fog_rangefog);
+		driver->setFog(RenderingEngine::MENU_SKY_COLOR, fog_type, fog_start,
+				fog_end, fog_density, fog_pixelfog, fog_rangefog);
 	}
 
-	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
+	const irr::core::dimension2d<u32> initial_screen_size(
+			g_settings->getU16("screen_w"),
+			g_settings->getU16("screen_h")
+		);
+	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
-		const irr::core::dimension2d<u32> &current_screen_size =
-			m_rendering_engine->get_video_driver()->getScreenSize();
-		// Verify if window size has changed and save it if it's the case
-		// Ensure evaluating settings->getBool after verifying screensize
-		// First condition is cheaper
-		if (previous_screen_size != current_screen_size &&
-				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screen_w", current_screen_size.Width);
-			g_settings->setU16("screen_h", current_screen_size.Height);
-			previous_screen_size = current_screen_size;
-		}
+	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
 
 		//check if we need to update the "upper left corner"-text
 		if (text_height != g_fontengine->getTextHeight()) {
@@ -290,7 +279,7 @@ void GUIEngine::run()
 			text_height = g_fontengine->getTextHeight();
 		}
 
-		driver->beginScene(true, true, sky_color);
+		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 
 		if (m_clouds_enabled)
 		{
@@ -322,18 +311,17 @@ void GUIEngine::run()
 		m_menu->getAndroidUIInput();
 #endif
 	}
+
+	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
-	if (m_sound_manager != &dummySoundManager){
-		delete m_sound_manager;
-		m_sound_manager = NULL;
-	}
+	m_sound_manager.reset();
 
 	infostream<<"GUIEngine: Deinitializing scripting"<<std::endl;
-	delete m_script;
+	m_script.reset();
 
 	m_irr_toplefttext->setText(L"");
 
@@ -343,16 +331,15 @@ GUIEngine::~GUIEngine()
 			m_rendering_engine->get_video_driver()->removeTexture(texture.texture);
 	}
 
-	delete m_texture_source;
+	m_texture_source.reset();
 
-	if (m_cloud.clouds)
-		m_cloud.clouds->drop();
+	m_cloud.clouds.reset();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudInit()
 {
-	m_cloud.clouds = new Clouds(m_smgr, -1, rand());
+	m_cloud.clouds = make_irr<Clouds>(m_smgr, -1, rand());
 	m_cloud.clouds->setHeight(100.0f);
 	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,240,240,255));
 

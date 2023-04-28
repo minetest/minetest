@@ -182,9 +182,9 @@ public class UnzipService extends IntentService {
 		try {
 			Process p = new ProcessBuilder("/system/bin/mv",
 				src.getAbsolutePath(), dst.getAbsolutePath()).start();
-			int exitcode = p.waitFor();
-			if (exitcode != 0)
-				throw new IOException("Move failed with exit code " + exitcode);
+			int exitCode = p.waitFor();
+			if (exitCode != 0)
+				throw new IOException("Move failed with exit code " + exitCode);
 		} catch (InterruptedException e) {
 			throw new IOException("Move operation interrupted");
 		}

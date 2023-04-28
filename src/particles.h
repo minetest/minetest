@@ -49,6 +49,7 @@ namespace ParticleParamTypes
 		type interpolateParameterValue(float  fac,  const type a, const type b); \
 		type pickParameterValue       (float* facs, const type a, const type b);
 
+	// Function definition: see "particles.cpp"
 	DECL_PARAM_OVERLOADS(u8);  DECL_PARAM_OVERLOADS(s8);
 	DECL_PARAM_OVERLOADS(u16); DECL_PARAM_OVERLOADS(s16);
 	DECL_PARAM_OVERLOADS(u32); DECL_PARAM_OVERLOADS(s32);
@@ -83,8 +84,7 @@ namespace ParticleParamTypes
 		k = (E)v;
 	}
 
-	/* this is your brain on C++. */
-
+	// Describes a single value
 	template <typename T, size_t PN>
 	struct Parameter
 	{
@@ -119,9 +119,8 @@ namespace ParticleParamTypes
 
 	};
 
-	template <typename T> T numericalBlend(float fac, T min, T max)
-		{ return min + ((max - min) * fac); }
-
+	// New struct required to differentiate between core::vectorNd-compatible
+	// structs for proper value dumping (debugging)
 	template <typename T, size_t N>
 	struct VectorParameter : public Parameter<T,N> {
 		using This = VectorParameter<T,N>;
@@ -146,15 +145,12 @@ namespace ParticleParamTypes
 		return oss.str();
 	}
 
-	using u8Parameter  = Parameter<u8,  1>; using s8Parameter  = Parameter<s8,  1>;
-	using u16Parameter = Parameter<u16, 1>; using s16Parameter = Parameter<s16, 1>;
-	using u32Parameter = Parameter<u32, 1>; using s32Parameter = Parameter<s32, 1>;
-
 	using f32Parameter = Parameter<f32, 1>;
-
 	using v2fParameter = VectorParameter<v2f, 2>;
 	using v3fParameter = VectorParameter<v3f, 3>;
+	// Add more parameter types here if you need them ...
 
+	// Bound limits information based on "Parameter" types
 	template <typename T>
 	struct RangedParameter
 	{
@@ -168,31 +164,20 @@ namespace ParticleParamTypes
 		RangedParameter(T _min, T _max)            : min(_min),  max(_max)  {}
 		template <typename M> RangedParameter(M b) : min(b),     max(b)     {}
 
-		// these functions handle the old range serialization "format"; bias must
-		// be manually encoded in a separate part of the stream. NEVER ADD FIELDS
-		// TO THESE FUNCTIONS
-		void legacySerialize(std::ostream& os) const
+		// Binary format must not be changed. Function is to be deprecated.
+		void legacySerialize(std::ostream &os) const
 		{
 			min.serialize(os);
 			max.serialize(os);
 		}
-		void legacyDeSerialize(std::istream& is)
+		void legacyDeSerialize(std::istream &is)
 		{
 			min.deSerialize(is);
 			max.deSerialize(is);
 		}
 
-		// these functions handle the format used by new fields. new fields go here
-		void serialize(std::ostream &os) const
-		{
-			legacySerialize(os);
-			writeF32(os, bias);
-		}
-		void deSerialize(std::istream &is)
-		{
-			legacyDeSerialize(is);
-			bias = readF32(is);
-		}
+		void serialize(std::ostream &os) const;
+		void deSerialize(std::istream &is);
 
 		This interpolate(float fac, const This against) const
 		{
@@ -203,19 +188,8 @@ namespace ParticleParamTypes
 			return r;
 		}
 
-		T pickWithin() const
-		{
-			typename T::pickFactors values;
-			auto p = numericAbsolute(bias) + 1;
-			for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); ++i) {
-				if (bias < 0)
-					values[i] = 1.0f - pow(myrand_float(), p);
-				else
-					values[i] = pow(myrand_float(), p);
-			}
-			return T::pick(values, min, max);
-		}
-
+		// Pick a random value (e.g. position) within bounds
+		T pickWithin() const;
 	};
 
 	template <typename T>
@@ -229,8 +203,10 @@ namespace ParticleParamTypes
 		return s.str();
 	}
 
+	// Animation styles (fwd is normal, linear interpolation)
 	enum class TweenStyle : u8 { fwd, rev, pulse, flicker };
 
+	// "Tweened" pretty much means "animated" in this context
 	template <typename T>
 	struct TweenedParameter
 	{
@@ -238,72 +214,21 @@ namespace ParticleParamTypes
 		using This = TweenedParameter<T>;
 
 		TweenStyle style = TweenStyle::fwd;
-		u16 reps = 1;
-		f32 beginning = 0.0f;
+		u16 reps = 1; // Blending repetitions (same pattern)
+		f32 beginning = 0.0f; // Blending start offset
 
 		T start, end;
 
 		TweenedParameter() = default;
 		TweenedParameter(T _start, T _end)          : start(_start),  end(_end) {}
+		// For initializer lists and assignment
 		template <typename M> TweenedParameter(M b) : start(b),       end(b) {}
 
-		T blend(float fac) const
-		{
-			// warp time coordinates in accordance w/ settings
-			if (fac > beginning) {
-				// remap for beginning offset
-				auto len = 1 - beginning;
-				fac -= beginning;
-				fac /= len;
+		// Blend (or animate) the current value
+		T blend(float fac) const;
 
-				// remap for repetitions
-				fac *= reps;
-				if (fac > 1) // poor man's modulo
-					fac -= (decltype(reps))fac;
-
-				// remap for style
-				switch (style) {
-					case TweenStyle::fwd: /* do nothing */  break;
-					case TweenStyle::rev: fac = 1.0f - fac; break;
-					case TweenStyle::pulse:
-					case TweenStyle::flicker: {
-						if (fac > 0.5f) {
-							fac = 1.f - (fac*2.f - 1.f);
-						} else {
-							fac = fac * 2;
-						}
-						if (style == TweenStyle::flicker) {
-							fac *= myrand_range(0.7f, 1.0f);
-						}
-					}
-				}
-				if (fac>1.f)
-					fac = 1.f;
-				else if (fac<0.f)
-					fac = 0.f;
-			} else {
-				fac = (style == TweenStyle::rev) ? 1.f : 0.f;
-			}
-
-			return start.interpolate(fac, end);
-		}
-
-		void serialize(std::ostream &os) const
-		{
-			writeU8(os, static_cast<u8>(style));
-			writeU16(os, reps);
-			writeF32(os, beginning);
-			start.serialize(os);
-			end.serialize(os);
-		}
-		void deSerialize(std::istream &is)
-		{
-			style = static_cast<TweenStyle>(readU8(is));
-			reps = readU16(is);
-			beginning = readF32(is);
-			start.deSerialize(is);
-			end.deSerialize(is);
-		}
+		void serialize(std::ostream &os) const;
+		void deSerialize(std::istream &is);
 	};
 
 	template <typename T>

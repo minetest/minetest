@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <algorithm>
 #include <ICameraSceneNode.h>
+#include <IVideoDriver.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -617,9 +618,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	video::ITexture *tex = NULL;
 
 	if (img != NULL) {
-#if ENABLE_GLES
 		img = Align2Npot2(img, driver);
-#endif
 		// Create texture from resulting image
 		tex = driver->addTexture(name.c_str(), img);
 		guiScalingCache(io::path(name.c_str()), driver, img);
@@ -819,9 +818,7 @@ void TextureSource::rebuildTexture(video::IVideoDriver *driver, TextureInfo &ti)
 	// shouldn't really need to be done, but can't hurt
 	std::set<std::string> source_image_names;
 	video::IImage *img = generateImage(ti.name, source_image_names);
-#if ENABLE_GLES
 	img = Align2Npot2(img, driver);
-#endif
 	// Create texture from resulting image
 	video::ITexture *t = NULL;
 	if (img) {
@@ -1055,8 +1052,6 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 	return baseimg;
 }
 
-#if ENABLE_GLES
-
 /**
  * Check and align image to npot2 if required by hardware
  * @param image image to check for npot2 alignment
@@ -1093,8 +1088,6 @@ video::IImage *Align2Npot2(video::IImage *image,
 	image->drop();
 	return targetimage;
 }
-
-#endif
 
 static std::string unescape_string(const std::string &str, const char esc = '\\')
 {

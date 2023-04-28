@@ -226,9 +226,7 @@ void GameUI::showMinimap(bool show)
 
 void GameUI::showTranslatedStatusText(const char *str)
 {
-	const wchar_t *wmsg = wgettext(str);
-	showStatusText(wmsg);
-	delete[] wmsg;
+	showStatusText(wstrgettext(str));
 }
 
 void GameUI::setChatText(const EnrichedString &chat_text, u32 recent_chat_count)

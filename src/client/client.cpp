@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <cmath>
 #include <IFileSystem.h>
+#include <json/json.h>
 #include "client.h"
 #include "network/clientopcodes.h"
 #include "network/connection.h"
@@ -32,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
+#include "client/mesh_generator_thread.h"
+#include "client/particles.h"
+#include "client/localplayer.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -60,6 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "translation.h"
 #include "content/mod_configuration.h"
+#include "mapnode.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -112,12 +117,12 @@ Client::Client(
 	m_sound(sound),
 	m_event(event),
 	m_rendering_engine(rendering_engine),
-	m_mesh_update_manager(this),
+	m_mesh_update_manager(std::make_unique<MeshUpdateManager>(this)),
 	m_env(
 		new ClientMap(this, rendering_engine, control, 666),
 		tsrc, this
 	),
-	m_particle_manager(&m_env),
+	m_particle_manager(std::make_unique<ParticleManager>(&m_env)),
 	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
 	m_allow_login_or_register(allow_login_or_register),
@@ -314,7 +319,7 @@ void Client::Stop()
 	if (m_mods_loaded)
 		m_script->on_shutdown();
 	//request all client managed threads to stop
-	m_mesh_update_manager.stop();
+	m_mesh_update_manager->stop();
 	// Save local server map
 	if (m_localdb) {
 		infostream << "Local map saving ended." << std::endl;
@@ -327,7 +332,7 @@ void Client::Stop()
 
 bool Client::isShutdown()
 {
-	return m_shutdown || !m_mesh_update_manager.isRunning();
+	return m_shutdown || !m_mesh_update_manager->isRunning();
 }
 
 Client::~Client()
@@ -337,11 +342,11 @@ Client::~Client()
 
 	deleteAuthData();
 
-	m_mesh_update_manager.stop();
-	m_mesh_update_manager.wait();
-	
+	m_mesh_update_manager->stop();
+	m_mesh_update_manager->wait();
+
 	MeshUpdateResult r;
-	while (m_mesh_update_manager.getNextResult(r)) {
+	while (m_mesh_update_manager->getNextResult(r)) {
 		for (auto block : r.map_blocks)
 			if (block)
 				block->refDrop();
@@ -553,7 +558,7 @@ void Client::step(float dtime)
 		std::vector<v3s16> blocks_to_ack;
 		bool force_update_shadows = false;
 		MeshUpdateResult r;
-		while (m_mesh_update_manager.getNextResult(r))
+		while (m_mesh_update_manager->getNextResult(r))
 		{
 			num_processed_meshes++;
 
@@ -1128,12 +1133,14 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 {
 	m_chosen_auth_mech = chosen_auth_mechanism;
 
+	std::string playername = m_env.getLocalPlayer()->getName();
+
 	switch (chosen_auth_mechanism) {
 		case AUTH_MECHANISM_FIRST_SRP: {
 			// send srp verifier to server
 			std::string verifier;
 			std::string salt;
-			generate_srp_verifier_and_salt(getPlayerName(), m_password,
+			generate_srp_verifier_and_salt(playername, m_password,
 				&verifier, &salt);
 
 			NetworkPacket resp_pkt(TOSERVER_FIRST_SRP, 0);
@@ -1147,13 +1154,13 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			u8 based_on = 1;
 
 			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
-				m_password = translate_password(getPlayerName(), m_password);
+				m_password = translate_password(playername, m_password);
 				based_on = 0;
 			}
 
-			std::string playername_u = lowercase(getPlayerName());
+			std::string playername_u = lowercase(playername);
 			m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
-				getPlayerName().c_str(), playername_u.c_str(),
+				playername.c_str(), playername_u.c_str(),
 				(const unsigned char *) m_password.c_str(),
 				m_password.length(), NULL, NULL);
 			char *bytes_A = 0;
@@ -1695,12 +1702,12 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 	if (b == NULL)
 		return;
 
-	m_mesh_update_manager.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
+	m_mesh_update_manager->updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
 }
 
 void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
-	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
+	m_mesh_update_manager->updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, true);
 }
 
 void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
@@ -1714,7 +1721,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 	v3s16 blockpos = getNodeBlockPos(nodepos);
 	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
-	m_mesh_update_manager.updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
+	m_mesh_update_manager->updateBlock(&m_env.getMap(), blockpos, ack_to_server, urgent, false);
 	// Leading edge
 	if (nodepos.X == blockpos_relative.X)
 		addUpdateMeshTask(blockpos + v3s16(-1, 0, 0), false, urgent);
@@ -1722,6 +1729,11 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 		addUpdateMeshTask(blockpos + v3s16(0, -1, 0), false, urgent);
 	if (nodepos.Z == blockpos_relative.Z)
 		addUpdateMeshTask(blockpos + v3s16(0, 0, -1), false, urgent);
+}
+
+void Client::updateCameraOffset(v3s16 camera_offset)
+{
+	m_mesh_update_manager->m_camera_offset = camera_offset;
 }
 
 ClientEvent *Client::getClientEvent()
@@ -1751,7 +1763,7 @@ struct TextureUpdateArgs {
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
-	const wchar_t* text_base;
+	std::wstring text_base;
 	ITextureSource *tsrc;
 };
 
@@ -1775,7 +1787,7 @@ void Client::showUpdateProgressTexture(void *args, u32 progress, u32 max_progres
 			std::wostringstream strm;
 			strm << targs->text_base << L" " << targs->last_percent << L"%...";
 			m_rendering_engine->draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
-				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
+				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
 		}
 }
 
@@ -1786,8 +1798,6 @@ void Client::afterContentReceived()
 	assert(m_nodedef_received); // pre-condition
 	assert(mediaReceived()); // pre-condition
 
-	const wchar_t* text = wgettext("Loading textures...");
-
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
 	// content from previous sessions.
@@ -1795,21 +1805,20 @@ void Client::afterContentReceived()
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 70);
+	m_rendering_engine->draw_load_screen(wstrgettext("Loading textures..."),
+			guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
-	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
-	text = wgettext("Rebuilding shaders...");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 71);
+	m_rendering_engine->draw_load_screen(wstrgettext("Rebuilding shaders..."),
+			guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
-	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
-	text = wgettext("Initializing nodes...");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 72);
+	m_rendering_engine->draw_load_screen(wstrgettext("Initializing nodes..."),
+			guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	for (const auto &path : getTextureDirs()) {
 		TextureOverrideSource override_source(path + DIR_DELIM + "override.txt");
@@ -1818,7 +1827,6 @@ void Client::afterContentReceived()
 	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
-	delete[] text;
 
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
@@ -1826,14 +1834,13 @@ void Client::afterContentReceived()
 	tu_args.guienv = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
-	tu_args.text_base = wgettext("Initializing nodes");
+	tu_args.text_base = wstrgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;
 	m_nodedef->updateTextures(this, &tu_args);
-	delete[] tu_args.text_base;
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
-	m_mesh_update_manager.start();
+	m_mesh_update_manager->start();
 
 	m_state = LC_Ready;
 	sendReady();
@@ -1841,10 +1848,8 @@ void Client::afterContentReceived()
 	if (m_mods_loaded)
 		m_script->on_client_ready(m_env.getLocalPlayer());
 
-	text = wgettext("Done!");
-	m_rendering_engine->draw_load_screen(text, guienv, m_tsrc, 0, 100);
+	m_rendering_engine->draw_load_screen(wstrgettext("Done!"), guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
-	delete[] text;
 }
 
 float Client::getRTT()
@@ -1986,7 +1991,7 @@ MtEventManager* Client::getEventManager()
 
 ParticleManager* Client::getParticleManager()
 {
-	return &m_particle_manager;
+	return m_particle_manager.get();
 }
 
 scene::IAnimatedMesh* Client::getMesh(const std::string &filename, bool cache)
@@ -2084,4 +2089,9 @@ bool Client::sendModChannelMessage(const std::string &channel, const std::string
 ModChannel* Client::getModChannel(const std::string &channel)
 {
 	return m_modchannel_mgr->getModChannel(channel);
+}
+
+const std::string &Client::getFormspecPrepend() const
+{
+	return m_env.getLocalPlayer()->formspec_prepend;
 }

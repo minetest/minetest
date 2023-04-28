@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include <unordered_map>
 #include <unordered_set>
-#include <json/json.h>
+#include <json/json.h> // for Json::Value
 
 class PlayerDatabaseFiles : public PlayerDatabase
 {

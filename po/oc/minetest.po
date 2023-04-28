@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-08-04 10:15+0000\n"
+"PO-Revision-Date: 2023-03-17 11:44+0000\n"
 "Last-Translator: Walter Bulbazor <prbulbazor@protonmail.com>\n"
 "Language-Team: Occitan <https://hosted.weblate.org/projects/minetest/"
 "minetest/oc/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -36,11 +36,11 @@ msgstr "Comanda mandada: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "Listar los jogaires en linha"
+msgstr "Listar los joaires en linha"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Jogaires en linha: "
+msgstr "Joaires en linha: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -56,7 +56,7 @@ msgstr "Tornar"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Setz mòrt·as"
+msgstr "Setz mòrt·a"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -91,7 +91,7 @@ msgstr "D'accòrdi"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr "<pas res disponible>"
+msgstr "<pas gis disponible>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -182,7 +182,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Charchar Mai de Mòds"
+msgstr "Cherchar Mai de Mòds"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -251,7 +251,7 @@ msgstr "Descharjament de $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr "Las dependéncias que fasàn besonh per $1 pòdan pas se trobar."
+msgstr "Las dependéncias que fan besonh per $1 pòdon pas se trobar."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
@@ -283,12 +283,11 @@ msgstr "Descharjament..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Error per installar \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Error per lo descharjament de $1"
+msgstr "Error per lo descharjament de \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -321,7 +320,7 @@ msgstr "Mòds"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Pas ges de paquets poguèron èstre quèrre"
+msgstr "Pas gis de paquets poguèron èsser quèrre"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
@@ -365,15 +364,15 @@ msgstr "Tot metre a jorn [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr "Agachar mai d'informacions dins un navegador wèb"
+msgstr "Espiar mai d'informacions dins un navegador wèb"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Un monde sona \"$1\" exista dejà"
+msgstr "Un monde sòna \"$1\" exista dejà"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr "Tarren en mai"
+msgstr "Terren en mai"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -417,19 +416,19 @@ msgstr "Donjons"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr "Tarren plat"
+msgstr "Terren plat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr "Massas de tarren que flotàn dins lo ciau"
+msgstr "Massas de terren que flotàn dins lo ciau"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Tarrens flotejants (experimentau)"
+msgstr "Terrens flotejants (experimentau)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "Generar un tarren pas fractau: Oceans e sostarrens"
+msgstr "Generar un terren pas fractau: Oceans e sosterrens"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -518,12 +517,12 @@ msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
-"Estructuras aparéisson per le tarren (pas d'efèit per los aubres e l'èrba de "
+"Estructuras aparéisson per le terren (pas d'efèit per los aubres e l'èrba de "
 "jungla creats per la v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr "Estructuras aparéisson per le tarren, en generau d'aubres e de plantas"
+msgstr "Estructuras aparéisson per le terren, en generau d'aubres e de plantas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -551,7 +550,7 @@ msgstr "Variar la plondor de la ribèira"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "Mai grandas caunas plondorosas dins lo sostarren"
+msgstr "Mai grandas caunas plondorosas dins lo sosterren"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -559,7 +558,7 @@ msgstr "Nom dau monde"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no games installed."
-msgstr "Avètz pas ges de juòc installat."
+msgstr "Avètz pas gis de juòc installat."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -593,25 +592,25 @@ msgstr "Jonhar $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Nom absent"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr ""
+msgstr "Senhau"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Los senhaus correspòndon pas"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "S'inscriure"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -626,6 +625,8 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
+"Aqueste mòdpack ten un nom explicita balhat dins son modpack.conf que vai "
+"remplaçar tota tornada de nom aquí."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -649,11 +650,11 @@ msgstr "Mòds dau Client"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
-msgstr ""
+msgstr "Contengut: Juòcs"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr ""
+msgstr "Contengut: Mòds"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -717,11 +718,11 @@ msgstr "Mostrar los noms tecnics"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be at least $1."
-msgstr "Chau que la valor siáge au mens $1."
+msgstr "Fau que la valor siáge au mens $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must not be larger than $1."
-msgstr "Chau pas que la valor siáge mai granda que $1."
+msgstr "Fau pas que la valor siáge mai granda que $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
@@ -772,7 +773,7 @@ msgstr "polit"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr "Una novèla $1 version es disponible"
+msgstr "Una novèla version $1 es disponible"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -783,8 +784,8 @@ msgid ""
 msgstr ""
 "Version installada: $1\n"
 "Version novèla: $2\n"
-"Vos chau visitar $3 per sabèr cossí tenèr la novèla version e gardar una "
-"version mesa a jorn per los foncionalitats e las reparacions de bugs."
+"Vos fau visitar $3 per sabèr cossí tenèr la novèla version e gardar una "
+"version mesa a jorn per las foncionalitats e las reparacions de bugs."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -796,7 +797,7 @@ msgstr "Pas Jamai"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr "Visitar le sit"
+msgstr "Visitar lo site"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -811,21 +812,18 @@ msgid "Failed to install $1 to $2"
 msgstr "Error per installar $1 vès $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
 msgstr ""
 "Installar un Mòd: Pas possible de trobar un nom de dorsèir convenant per lo "
 "mòdpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Se pòt pas trobar un mòd o un mòdpack valide"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Se pòt pas installar un mòd coma un $1"
+msgstr "Se pòt pas installar un $1 coma un $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -863,7 +861,7 @@ msgstr "Developaires Principaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Còla Principala"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -874,6 +872,8 @@ msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Dòbra lo dorsèir que conten los mondes, juòcs, mòds, e packs de textura\n"
+"dins un gestionari de fichèirs."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -885,7 +885,7 @@ msgstr "Ancians Developaires Principaus"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "Partatjar lo jornau de debug"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -909,11 +909,11 @@ msgstr "Paquets Installats:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "Ges de dependéncias"
+msgstr "Gis de dependéncias."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr "Ges de descripcion dau paquet disponible"
+msgstr "Gis de descripcion dau paquet disponible"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
@@ -929,11 +929,11 @@ msgstr "Utilizar un Pack de Textures"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Anonciar lo Servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Adreça Bind"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
@@ -945,11 +945,11 @@ msgstr "Activar los Degats"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "Faire jaire un juòc"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Faire jaire un Servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -961,15 +961,15 @@ msgstr "Novèl"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Pas de monde creat o seleccionat!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr ""
+msgstr "Joar au Juòc"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
-msgstr ""
+msgstr "Pòrt"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
@@ -981,180 +981,180 @@ msgstr "Seleccionar un Monde:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Pòrt dau Servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Començar le Juòc"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
-msgstr ""
+msgstr "Adreça"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Espotir"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Mòde Creatiu"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr ""
+msgstr "Daumatge / JcJ"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
-msgstr ""
+msgstr "Favorits"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Servidors pas compatibles"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Jonhar lo Juòc"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Coneccion"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr ""
+msgstr "Servidors Publics"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Tornar Charjar"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
-msgstr ""
+msgstr "Espotir lo Favorit"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr ""
+msgstr "Descripcion dau Servidor"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(supòrt dau juòc necessari)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "Niolas en 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
-msgstr ""
+msgstr "Totas los Paramètres"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave Screen Size"
-msgstr ""
+msgstr "Sauv. aut. de la Talha d'Ecran"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Colador Bilinear"
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Chanjar las Tòchas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr ""
+msgstr "Veire conectat"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Dynamic shadows"
-msgstr ""
+msgstr "Ombras dinamicas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Dynamic shadows:"
-msgstr ""
+msgstr "Ombras dinamicas:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Fuelhas Gentas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Nautas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Bassas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Meitantas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmapa"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmapa + Colador Aniso."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "Pas de Colador"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "Pas de Mipmapa"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Sobrelusança daus Blòcs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "Sobrelinhament daus Blòcs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "None"
-msgstr ""
+msgstr "Pas gis"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "Fuelhas Opacas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Aiga Opaca"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "Bòrdas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Screen:"
-msgstr ""
+msgstr "Ecran:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
@@ -1162,207 +1162,209 @@ msgstr "Shaders"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
-msgstr ""
+msgstr "Shaders (experimentau)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Shaders (pas disponibles)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Fuelhas Simplas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Esclaire Doç"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Texturatge:"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "Mapatge Tonau"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touch threshold (px):"
-msgstr ""
+msgstr "Sensibilitat tactila (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Colador Trilinear"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very High"
-msgstr ""
+msgstr "Franc Nautas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Franc Bassas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Movament de las Fuelhas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr ""
+msgstr "Movament daus Liquides"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "Movament de las Plantas"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr ""
+msgstr "Connecion abandonada (error de protocòl?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Connecion perduda."
 
 #: src/client/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Achabat!"
 
 #: src/client/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Initialisacion daus blòcs"
 
 #: src/client/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Initialisacion daus blòcs..."
 
 #: src/client/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Charjament de las texturas..."
 
 #: src/client/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Tornat construcion daus shaders..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Error de connecion (perduda?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
-msgstr ""
+msgstr "Se pòt pas trobar o charjar le juòc: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Lo juòc specifiat es pas valide."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Menú Principau"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Pas de monde seleccionat e pas d'adreça prepausada. Pas ren de faire."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Lo nom dau joaire es tròp lòng."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Chausissètz un nom SVP!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Lo fichèir de senhau prepausat a pas capitat de dobrir. "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Lo chamin de monde prepausat exista pas: "
 
 #: src/client/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Espiar debug.txt per los detalhs."
 
 #: src/client/game.cpp
 msgid "- Address: "
-msgstr ""
+msgstr "- Adreça: "
 
 #: src/client/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Mòda: "
 
 #: src/client/game.cpp
 msgid "- Port: "
-msgstr ""
+msgstr "- Pòrt: "
 
 #: src/client/game.cpp
 msgid "- Public: "
-msgstr ""
+msgstr "- Public: "
 
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- JcJ: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
-msgstr ""
+msgstr "- Nom dau Servidor: "
 
 #: src/client/game.cpp
 msgid "A serialization error occurred:"
-msgstr ""
+msgstr "Una error de serializacion aparessèt:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Accès refusat. Rason: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
-msgstr ""
+msgstr "Marcha automatica desactivada"
 
 #: src/client/game.cpp
 msgid "Automatic forward enabled"
-msgstr ""
+msgstr "Marcha automatica activada"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Liams daus Blòcs escònduts"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Liams daus blòcs mostrats per totas los blòcs"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Liams daus blòcs mostrats per aqueste blòc"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Liams daus blòcs mostrats per los blòcs vesins"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
-msgstr ""
+msgstr "Actualizacion de camèra desactivada"
 
 #: src/client/game.cpp
 msgid "Camera update enabled"
-msgstr ""
+msgstr "Actualizacion de camèra activada"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+msgstr "Se pòt pas mostrar los liams de blòcs (desactivat per un mòd o un juòc)"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Chanjar de Senhau"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
-msgstr ""
+msgstr "Mòda cinematic desactivat"
 
 #: src/client/game.cpp
 msgid "Cinematic mode enabled"
-msgstr ""
+msgstr "Mòda cinematic activat"
 
 #: src/client/game.cpp
 msgid "Client disconnected"

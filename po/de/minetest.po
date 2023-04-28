@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-04 17:37+0000\n"
+"PO-Revision-Date: 2023-03-11 15:43+0000\n"
 "Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -1686,9 +1686,8 @@ msgid "ok"
 msgstr "OK"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zoom ist momentan von Spiel oder Mod deaktiviert"
+msgstr "Chat ist momentan von Spiel oder Mod deaktiviert"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2374,7 +2373,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3-D-Rauschen, welches die Anzahl der Verliese je Mapchunk festlegt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2395,7 +2393,6 @@ msgstr ""
 "-    topbottom: Bildschirm horizontal teilen.\n"
 "-    sidebyside: Bildschirm vertikal teilen.\n"
 "-    crossview: Schieläugiges 3-D\n"
-"-    pageflip: Quadbuffer-basiertes 3-D.\n"
 "Beachten Sie, dass der „interlaced“-Modus erfordert, dass Shader aktiviert "
 "sind."
 
@@ -2857,7 +2854,7 @@ msgstr "Client"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Clientseitige Mesh-Chunk-Größe"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3363,7 +3360,7 @@ msgstr "Verliesrauschen"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Automatische Belichtung aktivieren"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3401,7 +3398,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Raytraced Culling aktivieren"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3410,6 +3407,10 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Automatische Belichtungskorrektur aktivieren.\n"
+"Falls aktiviert, wird sich die Post-Processing-Engine automatisch\n"
+"an die Helligkeit der Szene anpassen, was das\n"
+"Verhalten des menschlichen Auges simuliert."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3598,9 +3599,8 @@ msgstr ""
 "geeignet."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Belichtungsfaktor"
+msgstr "Belichtungskorrektur"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4882,9 +4882,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "Kartenblockmesh-Generierungsverzögerung"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "Kartenblockmesh-Generierungsverzögerung"
+msgstr "Kartenblockmesh-Generierungsthreads"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5379,6 +5378,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Anzahl der Threads, die für die Meshgenerierung benutzt werden.\n"
+"Der Wert 0 (Standard) sorgt dafür, dass Minetest die Anzahl verfügbarer "
+"Threads automatisch ermittelt."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5890,17 +5892,14 @@ msgid "Serverlist file"
 msgstr "Serverlistendatei"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
-"Setzt den Belichtungskorrekturfaktor.\n"
-"Dieser Faktor wird zum linearen Farbwert vor\n"
-"allen anderen Nachbearbeitungseffekten angewandt.\n"
-"Der Wert 1.0 (Standard) steht für keine Belichtungskorrektur.\n"
-"Wertebereich: von 0.1 zu 10.0"
+"Setzt die Belichtungskorrektur in EV-Einheiten.\n"
+"Der Wert 0.0 (Standard) steht für keine Belichtungskorrektur.\n"
+"Wertebereich: von -1 zu 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5980,7 +5979,6 @@ msgstr ""
 "Dafür müssen Shader aktiviert sein."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
 "In debug mode, the screen is split into 4 quadrants:\n"
@@ -5988,7 +5986,7 @@ msgid ""
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
 "Aktivieren, um eine Debugzusammenfassung des Bloomeffekts zu rendern.\n"
-"Im Debugmodus wird der Bildschirm in 4 Quadranten geteilt: \n"
+"Im Debugmodus wird der Bildschirm in 4 Quadranten geteilt:\n"
 "Oben links – bearbeitetes Basisbild; oben rechts – fertiges Bild;\n"
 "unten links – rohes Basisbild; unten rechts – Bloomtextur."
 
@@ -6082,6 +6080,12 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"Seitenlänge eines Würfels aus Kartenblöcken, die der Client bei der\n"
+"Erzeugung von Meshes berücksichtigt.\n"
+"Größere Werte erhöhen die Ausnutzung der GPU, indem sie die Anzahl der\n"
+"Zeichnungsaufrufe reduziert, was vor allem High-End-GPUs zugute kommt.\n"
+"Für Systeme mit einer schwachen GPU (oder keiner GPU) sind kleinere Werte "
+"von Vorteil."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6457,7 +6461,6 @@ msgstr ""
 "konfiguriert werden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6465,13 +6468,10 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Das Renderer-Backend.\n"
-"Ein Neustart ist erforderlich, wenn dies geändert wird.\n"
-"Anmerkung: Auf Android belassen Sie dies bei OGLES1, wenn Sie sich unsicher "
-"sind.\n"
-"Die App könnte sonst nicht mehr starten.\n"
-"Auf anderen Plattformen wird OpenGL empfohlen.\n"
-"Shader werden unter OpenGL (nur Desktop) und OGLES2 (experimentell) "
-"unterstützt."
+"Anmerkung: Ein Neustart ist nach einer Änderung notwendig!\n"
+"Auf Desktopsystemen ist OpenGL die Standardeinstellung. Bei Android ist "
+"OGLES2 die Standardeinstellung.\n"
+"Shader werden unter OpenGL und OGLES2 (experimentell) unterstützt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6763,6 +6763,9 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test"
 msgstr ""
+"Raytraced Occlusion Culling im neuen Culler verwenden.\n"
+"Diese Einstellung aktiviert die Verwendung vom „Raytraced Occlusion Culling "
+"Test“"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."

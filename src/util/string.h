@@ -79,10 +79,6 @@ struct FlagDesc {
 std::wstring utf8_to_wide(const std::string &input);
 std::string wide_to_utf8(const std::wstring &input);
 
-// You must free the returned string!
-// The returned string is allocated using new[]
-wchar_t *utf8_to_wide_c(const char *str);
-
 std::string urlencode(const std::string &str);
 std::string urldecode(const std::string &str);
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask);
@@ -769,3 +765,11 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  * brackets (e.g. "a\x1eb" -> "a<1e>b").
  */
 void safe_print_string(std::ostream &os, const std::string &str);
+
+/**
+ * Parses a string of form `(1, 2, 3)` to a v3f
+ *
+ * @param str String
+ * @return
+ */
+v3f str_to_v3f(const std::string &str);

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
+#include "localplayer.h"
 #include "scripting_client.h"
 #include "mapblock_mesh.h"
 #include "mtevent.h"

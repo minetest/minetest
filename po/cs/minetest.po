@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-07-31 17:28+0000\n"
-"Last-Translator: Fjuro <fjuro@seznam.cz>\n"
+"PO-Revision-Date: 2023-03-11 15:43+0000\n"
+"Last-Translator: grreby <grreby@proton.me>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -285,7 +285,7 @@ msgstr "Stahuji..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Chyba při instalování $1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -448,9 +448,8 @@ msgid "Increases humidity around rivers"
 msgstr "Zvyšuje vlhkost v okolí řek"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Instalovat $1"
+msgstr "Instalovat hru"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
@@ -593,7 +592,7 @@ msgstr "Potvrdit heslo"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Připojuji $1"
 
 #: builtin/mainmenu/dlg_register.lua
 #, fuzzy
@@ -917,7 +916,7 @@ msgstr "Informace:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
-msgstr "Instalované balíčky:"
+msgstr "Nainstalované balíčky:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."

@@ -73,6 +73,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-files.h"
 #include "database/database-dummy.h"
 #include "gameparams.h"
+#include "particles.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -119,6 +120,7 @@ void *ServerThread::run()
 	}
 
 	while (!stopRequested()) {
+		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 		try {
 			m_server->AsyncRunStep();
 
@@ -1649,7 +1651,18 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 100, peer_id);
 
 	pkt << p.amount << p.time;
-	{ // serialize legacy fields
+
+	if (protocol_version >= 42) {
+		// Serialize entire thing
+		std::ostringstream os(std::ios_base::binary);
+		p.pos.serialize(os);
+		p.vel.serialize(os);
+		p.acc.serialize(os);
+		p.exptime.serialize(os);
+		p.size.serialize(os);
+		pkt.putRawString(os.str());
+	} else {
+		// serialize legacy fields only (compatibility)
 		std::ostringstream os(std::ios_base::binary);
 		p.pos.start.legacySerialize(os);
 		p.vel.start.legacySerialize(os);
@@ -1672,21 +1685,23 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 	pkt << p.node.param0 << p.node.param2 << p.node_tile;
 
 	{ // serialize new fields
-		// initial bias for older properties
-		pkt << p.pos.start.bias
-			<< p.vel.start.bias
-			<< p.acc.start.bias
-			<< p.exptime.start.bias
-			<< p.size.start.bias;
-
 		std::ostringstream os(std::ios_base::binary);
+		if (protocol_version < 42) {
+			// initial bias for older properties
+			pkt << p.pos.start.bias
+				<< p.vel.start.bias
+				<< p.acc.start.bias
+				<< p.exptime.start.bias
+				<< p.size.start.bias;
 
-		// final tween frames of older properties
-		p.pos.end.serialize(os);
-		p.vel.end.serialize(os);
-		p.acc.end.serialize(os);
-		p.exptime.end.serialize(os);
-		p.size.end.serialize(os);
+			// final tween frames of older properties
+			p.pos.end.serialize(os);
+			p.vel.end.serialize(os);
+			p.acc.end.serialize(os);
+			p.exptime.end.serialize(os);
+			p.size.end.serialize(os);
+		}
+		// else: fields are already written by serialize() very early
 
 		// properties for legacy texture field
 		p.texture.serialize(os, protocol_version, true);

@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.7.0
+Minetest Lua Client Modding API Reference 5.8.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -170,26 +170,28 @@ from the available ones of the following files:
 
 Examples of sound parameter tables:
 
-    -- Play locationless
-    {
-        gain = 1.0, -- default
-    }
-    -- Play locationless, looped
-    {
-        gain = 1.0, -- default
-        loop = true,
-    }
-    -- Play in a location
-    {
-        pos = {x = 1, y = 2, z = 3},
-        gain = 1.0, -- default
-    }
-    -- Play connected to an object, looped
-    {
-        object = <an ObjectRef>,
-        gain = 1.0, -- default
-        loop = true,
-    }
+```lua
+-- Play locationless
+{
+    gain = 1.0, -- default
+}
+-- Play locationless, looped
+{
+    gain = 1.0, -- default
+    loop = true,
+}
+-- Play in a location
+{
+    pos = {x = 1, y = 2, z = 3},
+    gain = 1.0, -- default
+}
+-- Play connected to an object, looped
+{
+    object = <an ObjectRef>,
+    gain = 1.0, -- default
+    loop = true,
+}
+```
 
 Looped sounds must either be connected to an object or played locationless.
 
@@ -205,7 +207,9 @@ Representations of simple things
 
 ### Position/vector
 
-    {x=num, y=num, z=num}
+```lua
+{x=num, y=num, z=num}
+```
 
 For helper functions see "Vector helpers".
 
@@ -231,19 +235,27 @@ is present, mapped to a boolean of any value, the specified flag is unset.
 
 E.g. A flag field of value
 
-    {place_center_x = true, place_center_y=false, place_center_z=true}
+```lua
+{place_center_x = true, place_center_y=false, place_center_z=true}
+```
 
 is equivalent to
 
-    {place_center_x = true, noplace_center_y=true, place_center_z=true}
+```lua
+{place_center_x = true, noplace_center_y=true, place_center_z=true}
+```
 
 which is equivalent to
 
-    "place_center_x, noplace_center_y, place_center_z"
+```lua
+"place_center_x, noplace_center_y, place_center_z"
+```
 
 or even
 
-    "place_center_x, place_center_z"
+```lua
+"place_center_x, place_center_z"
+```
 
 since, by default, no schematic attributes are set.
 
@@ -947,7 +959,7 @@ Setting-related
 ---------------
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`). Check lua_api.txt for class reference.
+  main config file (`minetest.conf`). Check lua_api.md for class reference.
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
@@ -996,14 +1008,14 @@ Please do not try to access the reference until the camera is initialized, other
 * `get_fov()`
     * Returns a table with X, Y, maximum and actual FOV in degrees:
 
-```lua
-     {
-         x = number,
-         y = number,
-         max = number,
-         actual = number
-     }
-```
+        ```lua
+        {
+            x = number,
+            y = number,
+            max = number,
+            actual = number
+        }
+        ```
 
 * `get_pos()`
     * Returns position of camera with view bobbing
@@ -1053,16 +1065,16 @@ Methods:
 * `get_physics_override()`
     * returns:
 
-```lua
-    {
-        speed = float,
-        jump = float,
-        gravity = float,
-        sneak = boolean,
-        sneak_glitch = boolean,
-        new_move = boolean,
-    }
-```
+        ```lua
+        {
+            speed = float,
+            jump = float,
+            gravity = float,
+            sneak = boolean,
+            sneak_glitch = boolean,
+            new_move = boolean,
+        }
+        ```
 
 * `get_override_pos()`
     * returns override position
@@ -1075,38 +1087,38 @@ Methods:
 * `get_movement_acceleration()`
     * returns acceleration of the player in different environments:
 
-```lua
-    {
-       fast = float,
-       air = float,
-       default = float,
-    }
-```
+        ```lua
+        {
+            fast = float,
+            air = float,
+            default = float,
+        }
+        ```
 
 * `get_movement_speed()`
     * returns player's speed in different environments:
 
-```lua
-    {
-       walk = float,
-       jump = float,
-       crouch = float,
-       fast = float,
-       climb = float,
-    }
-```
+        ```lua
+        {
+            walk = float,
+            jump = float,
+            crouch = float,
+            fast = float,
+            climb = float,
+        }
+        ```
 
 * `get_movement()`
     * returns player's movement in different environments:
 
-```lua
-    {
-       liquid_fluidity = float,
-       liquid_sink = float,
-       liquid_fluidity_smooth = float,
-       gravity = float,
-    }
-```
+        ```lua
+        {
+            liquid_fluidity = float,
+            liquid_sink = float,
+            liquid_fluidity_smooth = float,
+            gravity = float,
+        }
+        ```
 
 * `get_last_look_horizontal()`:
     * returns last look horizontal angle
@@ -1115,20 +1127,20 @@ Methods:
 * `get_control()`:
     * returns pressed player controls
 
-```lua
-    {
-       up = boolean,
-       down = boolean,
-       left = boolean,
-       right = boolean,
-       jump = boolean,
-       aux1 = boolean,
-       sneak = boolean,
-       zoom = boolean,
-       dig = boolean,
-       place = boolean,
-    }
-```
+        ```lua
+        {
+            up = boolean,
+            down = boolean,
+            left = boolean,
+            right = boolean,
+            jump = boolean,
+            aux1 = boolean,
+            sneak = boolean,
+            zoom = boolean,
+            dig = boolean,
+            place = boolean,
+        }
+        ```
 
 * `get_armor_groups()`
     * returns a table with the armor group ratings
@@ -1176,10 +1188,12 @@ Can be obtained via `minetest.get_meta(pos)`.
 A raycast on the map. It works with selection boxes.
 Can be used as an iterator in a for loop as:
 
-    local ray = Raycast(...)
-    for pointed_thing in ray do
-        ...
-    end
+```lua
+local ray = Raycast(...)
+for pointed_thing in ray do
+    ...
+end
+```
 
 The map is loaded as the ray advances. If the map is modified after the
 `Raycast` is created, the changes may or may not have an effect on the object.
@@ -1207,97 +1221,100 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 #### Node Definition
 
 ```lua
-	{
-		has_on_construct = bool,        -- Whether the node has the on_construct callback defined
-		has_on_destruct = bool,         -- Whether the node has the on_destruct callback defined
-		has_after_destruct = bool,      -- Whether the node has the after_destruct callback defined
-		name = string,                  -- The name of the node e.g. "air", "default:dirt"
-		groups = table,                 -- The groups of the node
-		paramtype = string,             -- Paramtype of the node
-		paramtype2 = string,            -- ParamType2 of the node
-		drawtype = string,              -- Drawtype of the node
-		mesh = <string>,                -- Mesh name if existent
-		minimap_color = <Color>,        -- Color of node on minimap *May not exist*
-		visual_scale = number,          -- Visual scale of node
-		alpha = number,                 -- Alpha of the node. Only used for liquids
-		color = <Color>,                -- Color of node *May not exist*
-		palette_name = <string>,        -- Filename of palette *May not exist*
-		palette = <{                    -- List of colors
-			Color,
-			Color
-		}>,
-		waving = number,                -- 0 of not waving, 1 if waving
-		connect_sides = number,         -- Used for connected nodes
-		connects_to = {                 -- List of nodes to connect to
-			"node1",
-			"node2"
-		},
-		post_effect_color = Color,      -- Color overlayed on the screen when the player is in the node
-		leveled = number,               -- Max level for node
-		sunlight_propogates = bool,     -- Whether light passes through the block
-		light_source = number,          -- Light emitted by the block
-		is_ground_content = bool,       -- Whether caves should cut through the node
-		walkable = bool,                -- Whether the player collides with the node
-		pointable = bool,               -- Whether the player can select the node
-		diggable = bool,                -- Whether the player can dig the node
-		climbable = bool,               -- Whether the player can climb up the node
-		buildable_to = bool,            -- Whether the player can replace the node by placing a node on it
-		rightclickable = bool,          -- Whether the player can place nodes pointing at this node
-		damage_per_second = number,     -- HP of damage per second when the player is in the node
-		liquid_type = <string>,         -- A string containing "none", "flowing", or "source" *May not exist*
-		liquid_alternative_flowing = <string>, -- Alternative node for liquid *May not exist*
-		liquid_alternative_source = <string>, -- Alternative node for liquid *May not exist*
-		liquid_viscosity = <number>,    -- How slow the liquid flows *May not exist*
-		liquid_renewable = <boolean>,   -- Whether the liquid makes an infinite source *May not exist*
-		liquid_range = <number>,        -- How far the liquid flows *May not exist*
-		drowning = bool,                -- Whether the player will drown in the node
-		floodable = bool,               -- Whether nodes will be replaced by liquids (flooded)
-		node_box = table,               -- Nodebox to draw the node with
-		collision_box = table,          -- Nodebox to set the collision area
-		selection_box = table,          -- Nodebox to set the area selected by the player
-		sounds = {                      -- Table of sounds that the block makes
-			sound_footstep = SimpleSoundSpec,
-			sound_dig = SimpleSoundSpec,
-			sound_dug = SimpleSoundSpec
-		},
-		legacy_facedir_simple = bool,   -- Whether to use old facedir
-		legacy_wallmounted = bool       -- Whether to use old wallmounted
-		move_resistance = <number>,     -- How slow players can move through the node *May not exist*
-	}
+{
+    has_on_construct = bool,        -- Whether the node has the on_construct callback defined
+    has_on_destruct = bool,         -- Whether the node has the on_destruct callback defined
+    has_after_destruct = bool,      -- Whether the node has the after_destruct callback defined
+    name = string,                  -- The name of the node e.g. "air", "default:dirt"
+    groups = table,                 -- The groups of the node
+    paramtype = string,             -- Paramtype of the node
+    paramtype2 = string,            -- ParamType2 of the node
+    drawtype = string,              -- Drawtype of the node
+    mesh = <string>,                -- Mesh name if existent
+    minimap_color = <Color>,        -- Color of node on minimap *May not exist*
+    visual_scale = number,          -- Visual scale of node
+    alpha = number,                 -- Alpha of the node. Only used for liquids
+    color = <Color>,                -- Color of node *May not exist*
+    palette_name = <string>,        -- Filename of palette *May not exist*
+    palette = <{                    -- List of colors
+        Color,
+        Color
+    }>,
+    waving = number,                -- 0 of not waving, 1 if waving
+    connect_sides = number,         -- Used for connected nodes
+    connects_to = {                 -- List of nodes to connect to
+        "node1",
+        "node2"
+    },
+    post_effect_color = Color,      -- Color overlayed on the screen when the player is in the node
+    leveled = number,               -- Max level for node
+    sunlight_propogates = bool,     -- Whether light passes through the block
+    light_source = number,          -- Light emitted by the block
+    is_ground_content = bool,       -- Whether caves should cut through the node
+    walkable = bool,                -- Whether the player collides with the node
+    pointable = bool,               -- Whether the player can select the node
+    diggable = bool,                -- Whether the player can dig the node
+    climbable = bool,               -- Whether the player can climb up the node
+    buildable_to = bool,            -- Whether the player can replace the node by placing a node on it
+    rightclickable = bool,          -- Whether the player can place nodes pointing at this node
+    damage_per_second = number,     -- HP of damage per second when the player is in the node
+    liquid_type = <string>,         -- A string containing "none", "flowing", or "source" *May not exist*
+    liquid_alternative_flowing = <string>, -- Alternative node for liquid *May not exist*
+    liquid_alternative_source = <string>, -- Alternative node for liquid *May not exist*
+    liquid_viscosity = <number>,    -- How slow the liquid flows *May not exist*
+    liquid_renewable = <boolean>,   -- Whether the liquid makes an infinite source *May not exist*
+    liquid_range = <number>,        -- How far the liquid flows *May not exist*
+    drowning = bool,                -- Whether the player will drown in the node
+    floodable = bool,               -- Whether nodes will be replaced by liquids (flooded)
+    node_box = table,               -- Nodebox to draw the node with
+    collision_box = table,          -- Nodebox to set the collision area
+    selection_box = table,          -- Nodebox to set the area selected by the player
+    sounds = {                      -- Table of sounds that the block makes
+        sound_footstep = SimpleSoundSpec,
+        sound_dig = SimpleSoundSpec,
+        sound_dug = SimpleSoundSpec
+    },
+    legacy_facedir_simple = bool,   -- Whether to use old facedir
+    legacy_wallmounted = bool       -- Whether to use old wallmounted
+    move_resistance = <number>,     -- How slow players can move through the node *May not exist*
+}
 ```
 
 #### Item Definition
 
 ```lua
-	{
-		name = string,                  -- Name of the item e.g. "default:stone"
-		description = string,           -- Description of the item e.g. "Stone"
-		type = string,                  -- Item type: "none", "node", "craftitem", "tool"
-		inventory_image = string,       -- Image in the inventory
-		wield_image = string,           -- Image in wieldmesh
-		palette_image = string,         -- Image for palette
-		color = Color,                  -- Color for item
-		wield_scale = Vector,           -- Wieldmesh scale
-		stack_max = number,             -- Number of items stackable together
-		usable = bool,                  -- Has on_use callback defined
-		liquids_pointable = bool,       -- Whether you can point at liquids with the item
-		tool_capabilities = <table>,    -- If the item is a tool, tool capabilities of the item
-		groups = table,                 -- Groups of the item
-		sound_place = SimpleSoundSpec,  -- Sound played when placed
-		sound_place_failed = SimpleSoundSpec, -- Sound played when placement failed
-		node_placement_prediction = string -- Node placed in client until server catches up
-	}
+{
+    name = string,                  -- Name of the item e.g. "default:stone"
+    description = string,           -- Description of the item e.g. "Stone"
+    type = string,                  -- Item type: "none", "node", "craftitem", "tool"
+    inventory_image = string,       -- Image in the inventory
+    wield_image = string,           -- Image in wieldmesh
+    palette_image = string,         -- Image for palette
+    color = Color,                  -- Color for item
+    wield_scale = Vector,           -- Wieldmesh scale
+    stack_max = number,             -- Number of items stackable together
+    usable = bool,                  -- Has on_use callback defined
+    liquids_pointable = bool,       -- Whether you can point at liquids with the item
+    tool_capabilities = <table>,    -- If the item is a tool, tool capabilities of the item
+    groups = table,                 -- Groups of the item
+    sound_place = SimpleSoundSpec,  -- Sound played when placed
+    sound_place_failed = SimpleSoundSpec, -- Sound played when placement failed
+    node_placement_prediction = string -- Node placed in client until server catches up
+}
 ```
 -----------------
 
 ### Chat command definition (`register_chatcommand`)
 
-    {
-        params = "<name> <privilege>", -- Short parameter description
-        description = "Remove privilege from player", -- Full description
-        func = function(param),        -- Called when command is run.
-                                       -- Returns boolean success and text output.
-    }
+```lua
+{
+    params = "<name> <privilege>", -- Short parameter description
+    description = "Remove privilege from player", -- Full description
+    func = function(param),        -- Called when command is run.
+                                   -- Returns boolean success and text output.
+}
+```
+
 ### Server info
 ```lua
 {
@@ -1309,29 +1326,30 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 ```
 
 ### HUD Definition (`hud_add`, `hud_get`)
+
 ```lua
-    {
-        hud_elem_type = "image", -- see HUD element types, default "text"
-    --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
-        position = {x=0.5, y=0.5},
-    --  ^ Left corner position of element, default `{x=0,y=0}`.
-        name = "<name>",    -- default ""
-        scale = {x=2, y=2}, -- default {x=0,y=0}
-        text = "<text>",    -- default ""
-        number = 2,         -- default 0
-        item = 3,           -- default 0
-    --  ^ Selected item in inventory.  0 for no item selected.
-        direction = 0,      -- default 0
-    --  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
-        alignment = {x=0, y=0},   -- default {x=0, y=0}
-    --  ^ See "HUD Element Types"
-        offset = {x=0, y=0},      -- default {x=0, y=0}
-    --  ^ See "HUD Element Types"
-        size = { x=100, y=100 },  -- default {x=0, y=0}
-    --  ^ Size of element in pixels
-        style = 0,
-    --  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
-    }
+{
+    hud_elem_type = "image", -- see HUD element types, default "text"
+--  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+    position = {x=0.5, y=0.5},
+--  ^ Left corner position of element, default `{x=0,y=0}`.
+    name = "<name>",    -- default ""
+    scale = {x=2, y=2}, -- default {x=0,y=0}
+    text = "<text>",    -- default ""
+    number = 2,         -- default 0
+    item = 3,           -- default 0
+--  ^ Selected item in inventory.  0 for no item selected.
+    direction = 0,      -- default 0
+--  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
+    alignment = {x=0, y=0},   -- default {x=0, y=0}
+--  ^ See "HUD Element Types"
+    offset = {x=0, y=0},      -- default {x=0, y=0}
+--  ^ See "HUD Element Types"
+    size = { x=100, y=100 },  -- default {x=0, y=0}
+--  ^ Size of element in pixels
+    style = 0,
+--  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
+}
 ```
 
 Escape sequences
@@ -1478,55 +1496,59 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 
 ### Particle definition (`add_particle`)
 
-    {
-        pos = {x=0, y=0, z=0},
-        velocity = {x=0, y=0, z=0},
-        acceleration = {x=0, y=0, z=0},
+```lua
+{
+    pos = {x=0, y=0, z=0},
+    velocity = {x=0, y=0, z=0},
+    acceleration = {x=0, y=0, z=0},
     --  ^ Spawn particle at pos with velocity and acceleration
-        expirationtime = 1,
+    expirationtime = 1,
     --  ^ Disappears after expirationtime seconds
-        size = 1,
-        collisiondetection = false,
+    size = 1,
+    collisiondetection = false,
     --  ^ collisiondetection: if true collides with physical objects
-        collision_removal = false,
+    collision_removal = false,
     --  ^ collision_removal: if true then particle is removed when it collides,
     --  ^ requires collisiondetection = true to have any effect
-        vertical = false,
+    vertical = false,
     --  ^ vertical: if true faces player using y axis only
-        texture = "image.png",
+    texture = "image.png",
     --  ^ Uses texture (string)
-        animation = {Tile Animation definition},
+    animation = {Tile Animation definition},
     --  ^ optional, specifies how to animate the particle texture
-        glow = 0
+    glow = 0
     --  ^ optional, specify particle self-luminescence in darkness
-    }
+}
+```
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 
-    {
-        amount = 1,
-        time = 1,
+```lua
+{
+    amount = 1,
+    time = 1,
     --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
-        minpos = {x=0, y=0, z=0},
-        maxpos = {x=0, y=0, z=0},
-        minvel = {x=0, y=0, z=0},
-        maxvel = {x=0, y=0, z=0},
-        minacc = {x=0, y=0, z=0},
-        maxacc = {x=0, y=0, z=0},
-        minexptime = 1,
-        maxexptime = 1,
-        minsize = 1,
-        maxsize = 1,
+    minpos = {x=0, y=0, z=0},
+    maxpos = {x=0, y=0, z=0},
+    minvel = {x=0, y=0, z=0},
+    maxvel = {x=0, y=0, z=0},
+    minacc = {x=0, y=0, z=0},
+    maxacc = {x=0, y=0, z=0},
+    minexptime = 1,
+    maxexptime = 1,
+    minsize = 1,
+    maxsize = 1,
     --  ^ The particle's properties are random values in between the bounds:
     --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
     --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
-        collisiondetection = false,
+    collisiondetection = false,
     --  ^ collisiondetection: if true uses collision detection
-        collision_removal = false,
+    collision_removal = false,
     --  ^ collision_removal: if true then particle is removed when it collides,
     --  ^ requires collisiondetection = true to have any effect
-        vertical = false,
+    vertical = false,
     --  ^ vertical: if true faces player using y axis only
-        texture = "image.png",
+    texture = "image.png",
     --  ^ Uses texture (string)
-    }
+}
+```

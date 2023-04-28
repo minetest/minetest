@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
+#include "filesys.h"
 #include "../gui/guiSkin.h"
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
@@ -51,11 +52,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <winuser.h>
 #endif
 
-#if ENABLE_GLES
-#include "filesys.h"
-#endif
-
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
+const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
 const float RenderingEngine::BASE_BLOOM_STRENGTH = 1.0f;
 
 
@@ -89,9 +87,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	bool fullscreen = g_settings->getBool("fullscreen");
 #ifdef __ANDROID__
 	u16 screen_w = 0, screen_h = 0;
+	bool window_maximized = false;
 #else
 	u16 screen_w = std::max<u16>(g_settings->getU16("screen_w"), 1);
 	u16 screen_h = std::max<u16>(g_settings->getU16("screen_h"), 1);
+	bool window_maximized = g_settings->getBool("window_maximized");
 #endif
 
 	// bpp, fsaa, vsync
@@ -99,22 +99,27 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType;
 	const std::string &driverstring = g_settings->get("video_driver");
 	std::vector<video::E_DRIVER_TYPE> drivers =
 			RenderingEngine::getSupportedVideoDrivers();
 	u32 i;
 	for (i = 0; i != drivers.size(); i++) {
-		if (!strcasecmp(driverstring.c_str(),
-				RenderingEngine::getVideoDriverInfo(drivers[i]).name.c_str())) {
+		auto &driverinfo = RenderingEngine::getVideoDriverInfo(drivers[i]);
+		if (!strcasecmp(driverstring.c_str(), driverinfo.name.c_str())) {
 			driverType = drivers[i];
 			break;
 		}
 	}
 	if (i == drivers.size()) {
-		errorstream << "Invalid video_driver specified; "
-			       "defaulting to opengl"
-			    << std::endl;
+		driverType = drivers.at(0);
+		auto &name = RenderingEngine::getVideoDriverInfo(driverType).name;
+		if (driverstring.empty()) {
+			infostream << "Defaulting to video_driver = " << name << std::endl;
+		} else {
+			errorstream << "Invalid video_driver specified; defaulting to "
+				<< name << std::endl;
+		}
 	}
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
@@ -124,6 +129,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
+	params.WindowMaximized = window_maximized;
+	params.WindowResizable = 1; // 1 means always (required for window_maximized)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
@@ -131,12 +138,10 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
-#if ENABLE_GLES
 	// there is no standardized path for these on desktop
 	std::string rel_path = std::string("client") + DIR_DELIM
 			+ "shaders" + DIR_DELIM + "Irrlicht";
 	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
-#endif
 
 	m_device = createDeviceEx(params);
 	driver = m_device->getVideoDriver();
@@ -284,10 +289,8 @@ static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
 	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 
 	switch (driver->getDriverType()) {
-#if ENABLE_GLES
 	case video::EDT_OGLES1:
 	case video::EDT_OGLES2:
-#endif
 	case video::EDT_OPENGL:
 		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
 		break;
@@ -430,7 +433,7 @@ bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
 		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
-		int percent, bool clouds)
+		int percent, bool sky)
 {
 	v2u32 screensize = getWindowSize();
 
@@ -442,14 +445,14 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			guienv->addStaticText(text.c_str(), textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
+	if (sky && g_settings->getBool("menu_clouds")) {
 		g_menuclouds->step(dtime * 3);
 		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
+		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
 		g_menucloudsmgr->drawAll();
-	} else
+	} else if (sky)
+		get_video_driver()->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
+	else
 		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
 	// draw progress bar
@@ -497,40 +500,20 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	guitext->remove();
 }
 
-/*
-	Draws the menu scene including (optional) cloud background.
-*/
-void RenderingEngine::draw_menu_scene(gui::IGUIEnvironment *guienv,
-		float dtime, bool clouds)
+std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 {
-	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
-	if (cloud_menu_background) {
-		g_menuclouds->step(dtime * 3);
-		g_menuclouds->render();
-		get_video_driver()->beginScene(
-				true, true, video::SColor(255, 140, 186, 250));
-		g_menucloudsmgr->drawAll();
-	} else
-		get_video_driver()->beginScene(true, true, video::SColor(255, 0, 0, 0));
-
-	guienv->drawAll();
-	get_video_driver()->endScene();
-}
-
-std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
-{
-	// Only check these drivers.
-	// We do not support software and D3D in any capacity.
-	static const irr::video::E_DRIVER_TYPE glDrivers[4] = {
-		irr::video::EDT_NULL,
-		irr::video::EDT_OPENGL,
-		irr::video::EDT_OGLES1,
-		irr::video::EDT_OGLES2,
+	// Only check these drivers. We do not support software and D3D in any capacity.
+	// Order by preference (best first)
+	static const video::E_DRIVER_TYPE glDrivers[] = {
+		video::EDT_OPENGL,
+		video::EDT_OGLES2,
+		video::EDT_OGLES1,
+		video::EDT_NULL,
 	};
-	std::vector<irr::video::E_DRIVER_TYPE> drivers;
+	std::vector<video::E_DRIVER_TYPE> drivers;
 
-	for (int i = 0; i < 4; i++) {
-		if (irr::IrrlichtDevice::isDriverSupported(glDrivers[i]))
+	for (u32 i = 0; i < ARRLEN(glDrivers); i++) {
+		if (IrrlichtDevice::isDriverSupported(glDrivers[i]))
 			drivers.push_back(glDrivers[i]);
 	}
 
@@ -646,3 +629,33 @@ float RenderingEngine::getDisplayDensity()
 }
 
 #endif // __ANDROID__
+
+
+void RenderingEngine::autosaveScreensizeAndCo(
+		const irr::core::dimension2d<u32> initial_screen_size,
+		const bool initial_window_maximized)
+{
+	if (!g_settings->getBool("autosave_screensize"))
+		return;
+
+	// Note: If the screensize or similar hasn't changed (i.e. it's the same as
+	// the setting was when minetest started, as given by the initial_* parameters),
+	// we do not want to save the thing. This allows users to also manually change
+	// the settings.
+
+	// Screen size
+	const irr::core::dimension2d<u32> current_screen_size =
+		RenderingEngine::get_video_driver()->getScreenSize();
+	// Don't replace good value with (0, 0)
+	if (current_screen_size != irr::core::dimension2d<u32>(0, 0) &&
+			current_screen_size != initial_screen_size) {
+		g_settings->setU16("screen_w", current_screen_size.Width);
+		g_settings->setU16("screen_h", current_screen_size.Height);
+	}
+
+	// Window maximized
+	const bool is_window_maximized = RenderingEngine::get_raw_device()
+			->isWindowMaximized();
+	if (is_window_maximized != initial_window_maximized)
+		g_settings->setBool("window_maximized", is_window_maximized);
+}

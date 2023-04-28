@@ -508,7 +508,7 @@ int ModApiMainMenu::l_check_mod_configuration(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 {
-	GUIEngine* engine = getGuiEngine(L);
+	GUIEngine *engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(
@@ -516,7 +516,7 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 			engine->m_parent,
 			-1,
 			engine->m_menumanager,
-			engine->m_texture_source);
+			engine->m_texture_source.get());
 	kmenu->drop();
 	return 0;
 }
@@ -894,7 +894,7 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 {
-	std::vector<irr::video::E_DRIVER_TYPE> drivers = RenderingEngine::getSupportedVideoDrivers();
+	auto drivers = RenderingEngine::getSupportedVideoDrivers();
 
 	lua_newtable(L);
 	for (u32 i = 0; i != drivers.size(); i++) {
@@ -953,6 +953,13 @@ int ModApiMainMenu::l_get_window_info(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_active_driver(lua_State *L)
+{
+	auto drivertype = RenderingEngine::get_video_driver()->getDriverType();
+	lua_pushstring(L, RenderingEngine::getVideoDriverInfo(drivertype).name.c_str());
+	return 1;
+}
+
 
 int ModApiMainMenu::l_get_active_renderer(lua_State *L)
 {
@@ -1102,6 +1109,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_window_info);
+	API_FCT(get_active_driver);
 	API_FCT(get_active_renderer);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 #include "util/strfnd.h"
 #include "util/basic_macros.h"
+#include "inventory.h"
 
 #define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
 
@@ -277,6 +278,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<< ", to_list=\"" << to_list << "\"" << std::endl;
 		return;
 	}
+
+	auto list_from_lock = list_from->resizeLock();
+	auto list_to_lock = list_to->resizeLock();
 
 	if (move_somewhere) {
 		s16 old_to_i = to_i;
@@ -570,6 +574,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
+	list_to_lock.reset();
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
@@ -683,6 +688,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
+	auto list_from_lock = list_from->resizeLock();
+
 	/*
 		Do not handle rollback if inventory is player's
 	*/
@@ -763,6 +770,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report drop to endpoints
 	*/
+	list_from_lock.reset();
 
 	switch (from_inv.type) {
 	case InventoryLocation::DETACHED:
@@ -878,6 +886,10 @@ void ICraftAction::apply(InventoryManager *mgr,
 				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
+
+	auto list_craft_lock       = list_craft->resizeLock();
+	auto list_craftresult_lock = list_craftresult->resizeLock();
+	auto list_main_lock        = list_main->resizeLock();
 
 	ItemStack crafted;
 	ItemStack craftresultitem;

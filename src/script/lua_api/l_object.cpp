@@ -1805,7 +1805,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		}
 	} else {
 		// Handle old set_sky calls, and log deprecated:
-		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.txt");
+		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
 
 		// Fix sun, moon and stars showing when classic textured skyboxes are used
 		SunParams sun_params = player->getSunParams();
@@ -1898,7 +1898,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	// handle the deprecated version
 	if (!readParam<bool>(L, 2, false)) {
-		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.txt");
+		log_deprecated(L, "Deprecated call to get_sky, please check lua_api.md");
 
 		push_ARGB8(L, skybox_params.bgcolor);
 		lua_pushlstring(L, skybox_params.type.c_str(), skybox_params.type.size());

@@ -599,13 +599,7 @@ void Camera::updateViewingRange()
 {
 	f32 viewing_range = g_settings->getFloat("viewing_range");
 
-	// Ignore near_plane setting on all other platforms to prevent abuse
-#if ENABLE_GLES
-	m_cameranode->setNearValue(rangelim(
-		g_settings->getFloat("near_plane"), 0.0f, 0.25f) * BS);
-#else
 	m_cameranode->setNearValue(0.1f * BS);
-#endif
 
 	m_draw_control.wanted_range = std::fmin(adjustDist(viewing_range, getFovMax()), 4000);
 	if (m_draw_control.range_all) {

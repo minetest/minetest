@@ -84,8 +84,12 @@ private:
 	void drawText();
 	void drawPrompt();
 
-	// If clicked fragment has a web url, send it to the system default web browser
-	void middleClick(s32 col, s32 row);
+	// If clicked fragment has a web url, send it to the system default web browser.
+	// Returns true if, and only if a web url was pressed.
+	bool weblinkClick(s32 col, s32 row);
+
+	// If the selected text changed, we need to update the (X11) primary selection.
+	void updatePrimarySelection();
 
 private:
 	ChatBackend* m_chat_backend;
