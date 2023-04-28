@@ -260,27 +260,22 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	InventoryList *list_from = inv_from->getList(from_list);
-	InventoryList *list_to = inv_to->getList(to_list);
+	auto get_brrow_checked_invlist = [](Inventory *inv, const std::string &listname)
+			-> InventoryList::ResizeLocked
+	{
+		InventoryList *list = inv->getList(listname);
+		if (!list)
+			return nullptr;
+		return list->resizeLock();
+	};
 
-	/*
-		If a list doesn't exist or the source item doesn't exist
-	*/
-	if (!list_from) {
-		infostream << "IMoveAction::apply(): FAIL: source list not found: "
-			<< "from_inv=\"" << from_inv.dump() << "\""
-			<< ", from_list=\"" << from_list << "\"" << std::endl;
-		return;
-	}
+	auto list_to = get_brrow_checked_invlist(inv_to, to_list);
 	if (!list_to) {
 		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
 			<< "to_inv=\"" << to_inv.dump() << "\""
 			<< ", to_list=\"" << to_list << "\"" << std::endl;
 		return;
 	}
-
-	auto list_from_lock = list_from->resizeLock();
-	auto list_to_lock = list_to->resizeLock();
 
 	if (move_somewhere) {
 		s16 old_to_i = to_i;
@@ -303,19 +298,37 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// First try all the non-empty slots
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
 			if (!list_to->getItem(dest_i).empty()) {
+				// release resize lock while the callbacks are happening
+				list_to.reset();
+
 				to_i = dest_i;
 				apply(mgr, player, gamedef);
 				assert(move_count <= count);
 				count -= move_count;
+
+				list_to = get_brrow_checked_invlist(inv_to, to_list);
+				if (!list_to) {
+					return; //TODO: how to handle?
+				}
+				dest_size = list_to->getSize();
 			}
 		}
 
 		// Then try all the empty ones
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
 			if (list_to->getItem(dest_i).empty()) {
+				// release resize lock while the callbacks are happening
+				list_to.reset();
+
 				to_i = dest_i;
 				apply(mgr, player, gamedef);
 				count -= move_count;
+
+				list_to = get_brrow_checked_invlist(inv_to, to_list);
+				if (!list_to) {
+					return; //TODO: how to handle?
+				}
+				dest_size = list_to->getSize();
 			}
 		}
 
@@ -323,6 +336,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		count = old_count;
 		caused_by_move_somewhere = false;
 		move_somewhere = true;
+		return;
+	}
+
+	auto list_from = get_brrow_checked_invlist(inv_from, from_list);
+	if (!list_from) {
+		infostream << "IMoveAction::apply(): FAIL: source list not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", from_list=\"" << from_list << "\"" << std::endl;
 		return;
 	}
 
@@ -482,7 +503,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	bool did_swap = false;
 	move_count = list_from->moveItem(from_i,
-		list_to, to_i, count, allow_swap, &did_swap);
+		list_to.get(), to_i, count, allow_swap, &did_swap);
 	if (caused_by_move_somewhere)
 		count = old_count;
 	assert(allow_swap == did_swap);
@@ -574,7 +595,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
-	list_to_lock.reset();
+	list_to.reset();
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
