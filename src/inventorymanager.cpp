@@ -269,7 +269,15 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return list->resizeLock();
 	};
 
+	auto list_from = get_brrow_checked_invlist(inv_from, from_list);
 	auto list_to = get_brrow_checked_invlist(inv_to, to_list);
+
+	if (!list_from) {
+		infostream << "IMoveAction::apply(): FAIL: source list not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", from_list=\"" << from_list << "\"" << std::endl;
+		return;
+	}
 	if (!list_to) {
 		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
 			<< "to_inv=\"" << to_inv.dump() << "\""
@@ -278,6 +286,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	if (move_somewhere) {
+		list_from.reset();
+
 		s16 old_to_i = to_i;
 		u16 old_count = count;
 		caused_by_move_somewhere = true;
@@ -327,14 +337,6 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		count = old_count;
 		caused_by_move_somewhere = false;
 		move_somewhere = true;
-		return;
-	}
-
-	auto list_from = get_brrow_checked_invlist(inv_from, from_list);
-	if (!list_from) {
-		infostream << "IMoveAction::apply(): FAIL: source list not found: "
-			<< "from_inv=\"" << from_inv.dump() << "\""
-			<< ", from_list=\"" << from_list << "\"" << std::endl;
 		return;
 	}
 
