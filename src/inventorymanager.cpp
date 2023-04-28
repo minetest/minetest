@@ -295,45 +295,32 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 		// Try to add the item to destination list
 		s16 dest_size = list_to->getSize();
+		auto add_to = [&](s16 dest_i) {
+			// release resize lock while the callbacks are happening
+			list_to.reset();
+
+			to_i = dest_i;
+			apply(mgr, player, gamedef);
+			assert(move_count <= count);
+			count -= move_count;
+
+			list_to = get_brrow_checked_invlist(inv_to, to_list);
+			if (!list_to) {
+				// list_to was removed. simulate an empty list
+				dest_size = 0;
+				return;
+			}
+			dest_size = list_to->getSize();
+		};
 		// First try all the non-empty slots
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (!list_to->getItem(dest_i).empty()) {
-				// release resize lock while the callbacks are happening
-				list_to.reset();
-
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				assert(move_count <= count);
-				count -= move_count;
-
-				list_to = get_brrow_checked_invlist(inv_to, to_list);
-				if (!list_to) {
-					// list_to was removed. simulate an empty list
-					dest_size = 0;
-					break;
-				}
-				dest_size = list_to->getSize();
-			}
+			if (!list_to->getItem(dest_i).empty())
+				add_to(dest_i);
 		}
-
 		// Then try all the empty ones
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (list_to->getItem(dest_i).empty()) {
-				// release resize lock while the callbacks are happening
-				list_to.reset();
-
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				count -= move_count;
-
-				list_to = get_brrow_checked_invlist(inv_to, to_list);
-				if (!list_to) {
-					// list_to was removed. simulate an empty list
-					dest_size = 0;
-					break;
-				}
-				dest_size = list_to->getSize();
-			}
+			if (list_to->getItem(dest_i).empty())
+				add_to(dest_i);
 		}
 
 		to_i = old_to_i;
