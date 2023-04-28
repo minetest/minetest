@@ -308,7 +308,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 				list_to = get_brrow_checked_invlist(inv_to, to_list);
 				if (!list_to) {
-					return; //TODO: how to handle?
+					// list_to was removed. simulate an empty list
+					dest_size = 0;
+					break;
 				}
 				dest_size = list_to->getSize();
 			}
@@ -326,7 +328,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 				list_to = get_brrow_checked_invlist(inv_to, to_list);
 				if (!list_to) {
-					return; //TODO: how to handle?
+					// list_to was removed. simulate an empty list
+					dest_size = 0;
+					break;
 				}
 				dest_size = list_to->getSize();
 			}
