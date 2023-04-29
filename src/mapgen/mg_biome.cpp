@@ -280,7 +280,7 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 			float d_humidity = humidity - b->humidity_point;
 			float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
 
-			if (dist < dist_min && b->max_pos.Y > *min_y) { // Biome below will show since it has a better distance
+			if (dist < dist_min && b->max_pos.Y + b->vertical_blend > *min_y) { // Biome below will show since it has a better distance
 				// Returning the maximum height this biome can generate to
 				*min_y = b->max_pos.Y + b->vertical_blend;
 			}
