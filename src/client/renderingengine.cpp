@@ -189,22 +189,8 @@ bool RenderingEngine::setupTopLevelWindow()
 
 bool RenderingEngine::setWindowIcon()
 {
-	irr_ptr<video::IImage> img;
-	auto try_img_path = [&](const std::string &path) {
-		if (!img)
-			img.reset(driver->createImageFromFile(path.c_str()));
-	};
-
-#if RUN_IN_PLACE
-	try_img_path(porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#else
-	// We have semi-support for reading in-place data if we are
-	// compiled with RUN_IN_PLACE. Don't break with this and
-	// also try the path_share location.
-	try_img_path(ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png");
-	try_img_path(porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#endif
-
+	irr_ptr<video::IImage> img(driver->createImageFromFile(
+			(porting::path_user + "/textures/base/pack/logo.png").c_str()));
 	if (!img) {
 		warningstream << "Could not load icon file." << std::endl;
 		return false;
