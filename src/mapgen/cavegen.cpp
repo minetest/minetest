@@ -110,18 +110,8 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				VoxelArea::add_y(em, vi, -1)) {
 			// We need this check to make sure that biomes don't generate too far down
 			if (y < nextBiomeY) {
-				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z));
-				// If the new biome goes to the top of the next biome this will be used
-				nextBiomeY = biome->min_pos.Y;
-
-				// Otherwise we need to make sure that we don't miss a biome because it is ontop of another one
-				for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
-					Biome *b = (Biome *)m_bmgr->getRaw(i);
-
-					if (b->max_pos.Y < y && b->max_pos.Y > nextBiomeY) {
-						nextBiomeY = b->max_pos.Y;
-					}
-				}
+				// We pass in the nextBiomeY float so we know where next to query for the next biome
+				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z), &nextBiomeY);
 			}
 
 			content_t c = vm->m_data[vi].getContent();

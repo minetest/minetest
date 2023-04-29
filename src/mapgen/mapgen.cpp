@@ -676,7 +676,7 @@ void MapgenBasic::generateBiomes()
 
 			if (is_stone_surface || is_water_surface) {
 				// (Re)calculate biome
-				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
+				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z), &biome_y_min);
 
 				// Add biome to biomemap at first stone surface detected
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
@@ -693,18 +693,6 @@ void MapgenBasic::generateBiomes()
 					noise_filler_depth->result[index], 0.0f);
 				depth_water_top = biome->depth_water_top;
 				depth_riverbed = biome->depth_riverbed;
-
-				biome_y_min = biome->min_pos.Y;
-
-				// Trying to make sure we get the correct next min position
-				// We may have run into a biome that overlaps another one entirely
-				for (size_t i = 1; i < this->m_bmgr->getNumObjects(); i++) {
-					Biome *b = (Biome *)this->m_bmgr->getRaw(i);
-
-					if (b->max_pos.Y < y && b->max_pos.Y > biome_y_min) {
-						biome_y_min = b->max_pos.Y;
-					}
-				}
 			}
 
 			if (c == c_stone) {

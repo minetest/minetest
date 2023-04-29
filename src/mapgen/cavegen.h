@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "mapgen.h"
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class GenerateNotifier;
+
+class BiomeGen;
 
 /*
 	CavesNoiseIntersection is a cave digging algorithm that carves smooth,

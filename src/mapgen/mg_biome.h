@@ -126,7 +126,9 @@ public:
 	virtual Biome *getBiomeAtPoint(v3s16 pos) const = 0;
 
 	// Same as above, but uses a raw numeric index correlating to the (x,z) position.
-	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos) const = 0;
+	// It also returns the current biomes minimum y value taking into account any
+	// biomes that are ontop of each other into min_y
+	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos, s16* min_y = nullptr) const = 0;
 
 	// Result of calcBiomes bulk computation.
 	biome_t *biomemap = nullptr;
@@ -183,9 +185,9 @@ public:
 
 	biome_t *getBiomes(s16 *heightmap, v3s16 pmin);
 	Biome *getBiomeAtPoint(v3s16 pos) const;
-	Biome *getBiomeAtIndex(size_t index, v3s16 pos) const;
+	Biome *getBiomeAtIndex(size_t index, v3s16 pos, s16* min_y = nullptr) const;
 
-	Biome *calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const;
+	Biome *calcBiomeFromNoise(float heat, float humidity, v3s16 pos, s16* min_y = nullptr) const;
 
 	float *heatmap;
 	float *humidmap;
