@@ -99,6 +99,8 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		u16 depth_riverbed = biome->depth_riverbed;
 		u16 nplaced = 0;
 
+		s16 nextBiomeY = biome->min_pos.Y;
+
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
 		// tunnels at mapchunk borders when generating mapchunks upwards.
@@ -106,10 +108,20 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
 				VoxelArea::add_y(em, vi, -1)) {
-			// TODO
-			if (y < biome->min_pos.Y) {
-				// TODO Need to get a biome generator here
+			// We need this check to make sure that biomes don't generate too far down
+			if (y < nextBiomeY) {
 				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z));
+				// If the new biome goes to the top of the next biome this will be used
+				nextBiomeY = biome->min_pos.Y;
+
+				// Otherwise we need to make sure that we don't miss a biome because it is ontop of another one
+				for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
+					Biome *b = (Biome *)m_bmgr->getRaw(i);
+
+					if (b->max_pos.Y < y && b->max_pos.Y > nextBiomeY) {
+						nextBiomeY = b->max_pos.Y;
+					}
+				}
 			}
 
 			content_t c = vm->m_data[vi].getContent();
