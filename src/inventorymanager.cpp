@@ -260,7 +260,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	auto get_brrow_checked_invlist = [](Inventory *inv, const std::string &listname)
+	auto get_borrow_checked_invlist = [](Inventory *inv, const std::string &listname)
 			-> InventoryList::ResizeLocked
 	{
 		InventoryList *list = inv->getList(listname);
@@ -269,8 +269,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return list->resizeLock();
 	};
 
-	auto list_from = get_brrow_checked_invlist(inv_from, from_list);
-	auto list_to = get_brrow_checked_invlist(inv_to, to_list);
+	auto list_from = get_borrow_checked_invlist(inv_from, from_list);
+	auto list_to = get_borrow_checked_invlist(inv_to, to_list);
 
 	if (!list_from) {
 		infostream << "IMoveAction::apply(): FAIL: source list not found: "
@@ -314,7 +314,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			assert(move_count <= count);
 			count -= move_count;
 
-			list_to = get_brrow_checked_invlist(inv_to, to_list);
+			list_to = get_borrow_checked_invlist(inv_to, to_list);
 			if (!list_to) {
 				// list_to was removed. simulate an empty list
 				dest_size = 0;
