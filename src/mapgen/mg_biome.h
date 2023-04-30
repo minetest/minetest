@@ -127,7 +127,9 @@ public:
 
 	// Same as above, but uses a raw numeric index correlating to the (x,z) position.
 	// It also returns the current biomes minimum y value taking into account any
-	// biomes that are ontop of each other into min_y
+	// biomes that are ontop of each other into min_y.
+	// The minimum y value accounts for biome blending so if you query for a y value
+	// you may get a large y value than requested.
 	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos, s16* min_y = nullptr) const = 0;
 
 	// Result of calcBiomes bulk computation.
