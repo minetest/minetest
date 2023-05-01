@@ -377,7 +377,8 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 				end
 
 				table.insert(settings, {
-					name = game.name,
+					name = game.path,
+					readable_name = game.title,
 					level = 1,
 					type = "category",
 				})
@@ -409,7 +410,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 				end
 
 				table.insert(settings, {
-					name = mod.name,
+					name = mod.path,
 					readable_name = mod.title,
 					level = 1,
 					type = "category",
@@ -440,7 +441,8 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 				end
 
 				table.insert(settings, {
-					name = mod.name,
+					name = mod.path,
+					readable_name = mod.title,
 					level = 1,
 					type = "category",
 				})
