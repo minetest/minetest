@@ -35,10 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #ifdef _WIN32
-// Without this some of the network functions are not found on mingw
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -149,30 +145,10 @@ void Address::Resolve(const char *name)
 // IP address -> textual representation
 std::string Address::serializeString() const
 {
-// windows XP doesnt have inet_ntop, maybe use better func
-#ifdef _WIN32
-	if (m_addr_family == AF_INET) {
-		return inet_ntoa(m_address.ipv4);
-	} else if (m_addr_family == AF_INET6) {
-		std::ostringstream os;
-		os << std::hex;
-		for (int i = 0; i < 16; i += 2) {
-			u16 section = (m_address.ipv6.s6_addr[i] << 8) |
-					(m_address.ipv6.s6_addr[i + 1]);
-			os << section;
-			if (i < 14)
-				os << ":";
-		}
-		return os.str();
-	} else {
-		return "";
-	}
-#else
 	char str[INET6_ADDRSTRLEN];
 	if (inet_ntop(m_addr_family, (void*) &m_address, str, sizeof(str)) == nullptr)
 		return "";
 	return str;
-#endif
 }
 
 struct in_addr Address::getAddress() const
