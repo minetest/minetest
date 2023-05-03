@@ -81,7 +81,8 @@ return {
 			if video_driver == "opengl" then
 				fs = fs ..
 					"label[0,2.2;" .. fgettext("Dynamic shadows") .. "]" ..
-					"dropdown[0,2.4;3,0.8;dd_shadows;" .. table.concat(shadow_levels_labels, ",") .. ";" .. get_shadow_mapping_idx() .. "]" ..
+					"dropdown[0,2.4;3,0.8;dd_shadows;" .. table.concat(shadow_levels_labels, ",") .. ";" ..
+						get_shadow_mapping_idx() .. "]" ..
 					"label[0,3.5;" .. core.colorize("#bbb", fgettext("(The game will need to enable shadows as well)")) .. "]"
 			else
 				fs = fs ..
