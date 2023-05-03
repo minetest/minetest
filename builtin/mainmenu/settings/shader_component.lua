@@ -1,5 +1,7 @@
 --Minetest
---Copyright (C) 2022 rubenwardy
+--Copyright (C) 2013 sapier
+--Copyright (C) 2021-2 x2048
+--Copyright (C) 2022-3 rubenwardy
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -26,20 +28,18 @@ local shadow_levels_labels = {
 }
 
 
-local shadow_levels_options = {
-	table.concat(shadow_levels_labels, ","),
-	{ "0", "1", "2", "3", "4", "5" }
-}
-
-
-local function get_shadow_mapping_id()
-	local shadow_setting = core.settings:get("shadow_levels")
-	for i = 1, #shadow_levels_options[2] do
-		if shadow_setting == shadow_levels_options[2][i] then
-			return i
-		end
+local function get_shadow_mapping_idx()
+	local level = tonumber(core.settings:get("shadow_levels"))
+	if level and level >= 0 and level < #shadow_levels_labels then
+		return level + 1
 	end
 	return 1
+end
+
+
+local function set_shadow_mapping_idx(v)
+	assert(v >= 1 and v <= #shadow_levels_labels)
+	core.settings:set("shadow_levels", tostring(v - 1))
 end
 
 
@@ -81,7 +81,7 @@ return {
 			if video_driver == "opengl" then
 				fs = fs ..
 					"label[0,2.2;" .. fgettext("Dynamic shadows") .. "]" ..
-					"dropdown[0,2.4;3,0.8;dd_shadows;" .. shadow_levels_options[1] .. ";" .. get_shadow_mapping_id() .. "]" ..
+					"dropdown[0,2.4;3,0.8;dd_shadows;" .. table.concat(shadow_levels_labels, ",") .. ";" .. get_shadow_mapping_idx() .. "]" ..
 					"label[0,3.5;" .. core.colorize("#bbb", fgettext("(The game will need to enable shadows as well)")) .. "]"
 			else
 				fs = fs ..
@@ -129,15 +129,15 @@ return {
 			return true
 		end
 
-		for i = 1, #shadow_levels_labels do
-			if fields.dd_shadows == shadow_levels_labels[i] then
-				core.settings:set("shadow_levels", shadow_levels_options[2][i])
+		if fields.dd_shadows then
+			local old_shadow_level_idx = get_shadow_mapping_idx()
+			local shadow_level_idx = table.indexof(shadow_levels_labels, fields.dd_shadows)
+			if shadow_level_idx == -1 or shadow_level_idx == old_shadow_level_idx then
+				return false
 			end
-		end
 
-		if fields.dd_shadows == shadow_levels_labels[1] then
-			core.settings:set("enable_dynamic_shadows", "false")
-		else
+			set_shadow_mapping_idx(shadow_level_idx)
+
 			local shadow_presets = {
 				[2] = { 62,  512,  "true", 0, "false" },
 				[3] = { 93,  1024, "true", 0, "false" },
@@ -145,15 +145,18 @@ return {
 				[5] = { 210, 4096, "true", 2,  "true" },
 				[6] = { 300, 8192, "true", 2,  "true" },
 			}
-			local s = shadow_presets[table.indexof(shadow_levels_labels, fields.dd_shadows)]
-			if s then
+			local preset = shadow_presets[shadow_level_idx]
+			if preset then
 				core.settings:set("enable_dynamic_shadows", "true")
-				core.settings:set("shadow_map_max_distance", s[1])
-				core.settings:set("shadow_map_texture_size", s[2])
-				core.settings:set("shadow_map_texture_32bit", s[3])
-				core.settings:set("shadow_filters", s[4])
-				core.settings:set("shadow_map_color", s[5])
+				core.settings:set("shadow_map_max_distance", preset[1])
+				core.settings:set("shadow_map_texture_size", preset[2])
+				core.settings:set("shadow_map_texture_32bit", preset[3])
+				core.settings:set("shadow_filters", preset[4])
+				core.settings:set("shadow_map_color", preset[5])
+			else
+				core.settings:set("enable_dynamic_shadows", "false")
 			end
+			return true
 		end
 	end,
 }
