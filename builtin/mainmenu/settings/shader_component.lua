@@ -82,7 +82,7 @@ return {
 				fs = fs ..
 					"label[0,2.2;" .. fgettext("Dynamic shadows") .. "]" ..
 					"dropdown[0,2.4;3,0.8;dd_shadows;" .. table.concat(shadow_levels_labels, ",") .. ";" ..
-						get_shadow_mapping_idx() .. "]" ..
+						get_shadow_mapping_idx() .. ";true]" ..
 					"label[0,3.5;" .. core.colorize("#bbb", fgettext("(The game will need to enable shadows as well)")) .. "]"
 			else
 				fs = fs ..
@@ -132,8 +132,8 @@ return {
 
 		if fields.dd_shadows then
 			local old_shadow_level_idx = get_shadow_mapping_idx()
-			local shadow_level_idx = table.indexof(shadow_levels_labels, fields.dd_shadows)
-			if shadow_level_idx == -1 or shadow_level_idx == old_shadow_level_idx then
+			local shadow_level_idx = tonumber(fields.dd_shadows)
+			if shadow_level_idx == nil or shadow_level_idx == old_shadow_level_idx then
 				return false
 			end
 
