@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
+#include "network/networkprotocol.h"
 #include "serialization.h"
 #include <json/json.h>
 #include <zstd.h>
