@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-11 15:43+0000\n"
-"Last-Translator: grreby <grreby@proton.me>\n"
+"PO-Revision-Date: 2023-05-06 20:50+0000\n"
+"Last-Translator: Šimon Brandner <simon.bra.ag@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2695,7 +2695,7 @@ msgstr "Cesta k tučnému proporcionálnímu písmu s kurzívou"
 
 #: src/settings_translation_file.cpp
 msgid "Bold font path"
-msgstr "Cesta k tučnému písmu"
+msgstr "Cesta k tlustému písmu"
 
 #: src/settings_translation_file.cpp
 msgid "Bold monospace font path"
@@ -2724,11 +2724,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr "Plynulost pohybu kamery"
+msgstr "Vyhlazení pohybu kamery"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr "Plynulost pohybu kamery ve filmovém režimu"
+msgstr "Vyhlazení pohybu kamery ve filmovém režimu"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise"
