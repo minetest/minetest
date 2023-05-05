@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2020-08-15 23:32+0000\n"
-"Last-Translator: Milos <milosfilic97@gmail.com>\n"
+"PO-Revision-Date: 2023-05-06 20:50+0000\n"
+"Last-Translator: Sava Kujundžić <savakujunszic@gmail.com>\n"
 "Language-Team: Serbian (latin) <https://hosted.weblate.org/projects/minetest/"
 "minetest/sr_Latn/>\n"
 "Language: sr_Latn\n"
@@ -13,15 +13,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Obriši red za ćaskanje"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "Prazna komanda."
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -30,27 +30,27 @@ msgstr "Nazad na Glavni meni"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr ""
+msgstr "Nevažeća komanda "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Izdana komanda "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Prikaži povezane igrače"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Povezani igrači "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Red za ćaskanje je sada prazan."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Ova komanda je ugašena od strane servera."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -62,28 +62,30 @@ msgstr "Umro/la si."
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Dostupne komande:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Dostupne komande: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Komanda je nedostupna: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Dobij pomoć u vezi komanda"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Koristi '.help <cmd>' da dobijes više informacija,ili '.help all' da "
+"pogledaš listu svega."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -91,7 +93,7 @@ msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<nijedan/na/no nije dostupno >"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -135,7 +137,7 @@ msgstr "Mi podrzavamo protokol verzija izmedju verzije $1 i $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Uključeno,ima grešaka)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
