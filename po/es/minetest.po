@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-05-05 05:55+0000\n"
-"Last-Translator: José Muñoz <dr.cabra@disroot.org>\n"
+"PO-Revision-Date: 2023-05-06 20:50+0000\n"
+"Last-Translator: Mimi Kush <kushmimi33@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1686,9 +1686,8 @@ msgid "ok"
 msgstr "Aceptar"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "El zoom está actualmente desactivado por el juego o un mod"
+msgstr "Chat deshabilitado por el juego o un mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2668,20 +2667,19 @@ msgstr "Optimizar la distancia del envío de bloques"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Destello de lente"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Intensidad del destello de lente"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Radio de nube"
+msgstr "Radio del destello de lente"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Intensidad del destello de lente"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2790,9 +2788,8 @@ msgstr ""
 "Cuando 0.0 es el nivel mínimo de luz, 1.0 es el nivel de luz máximo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat command time message threshold"
-msgstr "Umbral de expulsión por mensajes"
+msgstr "Umbral de tiempo para el comando en el chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat commands"
@@ -2852,7 +2849,7 @@ msgstr "Cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Tamaño de los Chunks del cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3354,16 +3351,15 @@ msgstr "Ruido de mazmorra"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Habilitar Exposición Automática"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Activar todos"
+msgstr "Activar Destello de Lente"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Habilitar Debug del Destello de Lente"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3393,7 +3389,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Habilitar Culling por Trazado de Rayos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3402,6 +3398,10 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Habilitar corrección de exposición automática\n"
+"Si la opción está activada, el motor de post-procesado ajustará\n"
+"automáticamente el brillo de la escena, simulando\n"
+"el comportamiento del ojo humano."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3586,9 +3586,8 @@ msgstr ""
 "tierras bajas más planas, apropiada para una capa de tierra flotante sólida."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Factor de exposición"
+msgstr "Compensación de la Exposición"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4728,6 +4727,9 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"Valor lógico que controla la lejanía de la dispersión del destello de lente\n"
+"de los objetos brillantes.\n"
+"Rango: desde 0.1 hasta 8, por defecto: 1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -4841,9 +4843,8 @@ msgid "Map save interval"
 msgstr "Intervalo de guardado de mapa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Map shadows update frames"
-msgstr "Tiempo de actualización de mapa"
+msgstr "Intervalo de actualización de las sombras del mapa"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
