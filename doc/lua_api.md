@@ -5159,6 +5159,8 @@ Utilities
    engine version.  Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
+    * `proto_min`: The minimum supported protocol version
+    * `proto_max`: The maximum supported protocol version
     * `hash`: Full git version (only set if available),
       eg, "1.2.3-dev-01234567-dirty".
     * `is_dev`: Boolean value indicating whether it's a development build
