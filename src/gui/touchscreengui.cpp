@@ -466,6 +466,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 {
 	assert(tsrc);
 
+	m_initialized   = true;
 	m_visible       = true;
 	m_texturesource = tsrc;
 
@@ -1071,6 +1072,9 @@ void TouchScreenGUI::applyJoystickStatus()
 
 TouchScreenGUI::~TouchScreenGUI()
 {
+	if (!m_initialized)
+		return;
+
 	for (auto &button : m_buttons) {
 		if (button.guibutton) {
 			button.guibutton->drop();
