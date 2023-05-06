@@ -1287,8 +1287,7 @@ void Game::shutdown()
 		formspec->quitMenu();
 
 #ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui->isInitialized())
-		g_touchscreengui->hide();
+	g_touchscreengui->hide();
 #endif
 
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);

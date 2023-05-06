@@ -171,7 +171,6 @@ public:
 	void translateEvent(const SEvent &event);
 
 	void init(ISimpleTextureSource *tsrc);
-	bool isInitialized() { return m_initialized; }
 
 	double getYawChange()
 	{
