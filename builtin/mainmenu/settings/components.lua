@@ -69,9 +69,10 @@ end
 
 --- Used for string and numeric style fields
 ---
---- @param converter Function to coerce values
+--- @param converter Function to coerce values from strings.
 --- @param validator Validator function, optional. Returns true when valid.
-local function make_field(converter, validator)
+--- @param stringifier Function to convert values to strings, optional.
+local function make_field(converter, validator, stringifier)
 	return function(setting)
 		return {
 			info_text = setting.comment,
@@ -101,7 +102,7 @@ local function make_field(converter, validator)
 					if setting.max then
 						value = math.min(value, setting.max)
 					end
-					core.settings:set(setting.name, tostring(value))
+					core.settings:set(setting.name, (stringifier or tostring)(value))
 					return true
 				end
 			end,
@@ -110,7 +111,13 @@ local function make_field(converter, validator)
 end
 
 
-make.float = make_field(tonumber, is_valid_number)
+make.float = make_field(tonumber, is_valid_number, function(x)
+	local str = tostring(x)
+	if str:match("^%d+$") then
+		str = str .. ".0"
+	end
+	return str
+end)
 make.int = make_field(function(x)
 	local value = tonumber(x)
 	return value and math.floor(value)
