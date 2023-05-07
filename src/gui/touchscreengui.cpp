@@ -466,7 +466,6 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 {
 	assert(tsrc);
 
-	m_initialized   = true;
 	m_visible       = true;
 	m_texturesource = tsrc;
 
@@ -564,6 +563,8 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	m_rarecontrolsbar.addButton(chat_id,      L"Chat", "chat_btn.png");
 	m_rarecontrolsbar.addButton(inventory_id, L"inv",  "inventory_btn.png");
 	m_rarecontrolsbar.addButton(drop_id,      L"drop", "drop_btn.png");
+
+	m_initialized = true;
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
