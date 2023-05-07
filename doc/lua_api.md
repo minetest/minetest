@@ -7898,6 +7898,7 @@ It can be created via `Settings(filename)`.
     * Also, see documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
+* `has(key)`: returns a boolean indicating whether `key` exists
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
