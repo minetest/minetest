@@ -7898,7 +7898,9 @@ It can be created via `Settings(filename)`.
     * Also, see documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
-* `has(key)`: returns a boolean indicating whether `key` exists
+* `has(key)`:
+    * Returns a boolean indicating whether `key` exists.
+    * Note that for the main settings object (`minetest.settings`), `get(key)` might return a value even if `has(key)` returns `false`. That's because `get` returns default values for most settings if they are not set.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
