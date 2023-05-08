@@ -414,7 +414,7 @@ local function get_formspec(dialogdata)
 
 		fs[#fs + 1] = "style_type[image_button;border=false;padding=]"
 
-		local show_reset = comp.changed and comp.setting and comp.setting.default
+		local show_reset = comp.resettable and comp.setting and comp.setting.default
 		local show_info = comp.info_text and comp.info_text ~= ""
 		if show_reset or show_info then
 			-- ensure there's enough space for reset/info
@@ -506,7 +506,7 @@ local function buttonhandler(this, fields)
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
-			core.settings:set(comp.setting.name, comp.setting.default)
+			core.settings:remove(comp.setting.name)
 			return true
 		end
 	end

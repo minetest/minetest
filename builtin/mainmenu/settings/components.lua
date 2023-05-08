@@ -30,7 +30,7 @@ local make = {}
 -- * `info_text`: (Optional) string, informational text shown in an info icon.
 -- * `setting`: (Optional) the setting.
 -- * `max_w`: (Optional) maximum width, `avail_w` will never exceed this.
--- * `changed`: (Optional) true if the setting has changed from its default value.
+-- * `resettable`: (Optional) if this is true, a reset button is shown.
 -- * `get_formspec = function(self, avail_w)`:
 --     * `avail_w` is the available width for the component.
 --     * Returns `fs, used_height`.
@@ -79,7 +79,7 @@ local function make_field(converter, validator)
 
 			get_formspec = function(self, avail_w)
 				local value = core.settings:get(setting.name) or setting.default
-				self.changed = converter(value) ~= converter(setting.default)
+				self.resettable = core.settings:has(setting.name)
 
 				local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
 					avail_w - 1.5, setting.name, get_label(setting), core.formspec_escape(value))
@@ -125,7 +125,7 @@ function make.bool(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get_bool(setting.name, core.is_yes(setting.default))
-			self.changed = tostring(value) ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("checkbox[0,0.25;%s;%s;%s]"):format(
 				setting.name, get_label(setting), tostring(value))
@@ -152,7 +152,7 @@ function make.enum(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local items = {}
 			for i, option in ipairs(setting.values) do
@@ -189,7 +189,7 @@ function make.path(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
 				avail_w - 3, setting.name, get_label(setting), value)
@@ -233,7 +233,7 @@ function make.v3f(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = vector.from_string(core.settings:get(setting.name) or setting.default)
-			self.changed = value ~= vector.from_string(setting.default)
+			self.resettable = core.settings:has(setting.name)
 
 			-- Allocate space for "Set" button
 			avail_w = avail_w - 1
@@ -287,7 +287,7 @@ function make.flags(setting)
 			}
 
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value:gsub(" ", "") ~= setting.default:gsub(" ", "")
+			self.resettable = core.settings:has(setting.name)
 
 			checkboxes = {}
 			for _, name in ipairs(value:split(",")) do
