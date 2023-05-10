@@ -2594,12 +2594,13 @@ ClientDynamicInfo Game::getCurrentDynamicInfo() const
 {
 	v2u32 screen_size = RenderingEngine::getWindowSize();
 	f32 density = RenderingEngine::getDisplayDensity();
-	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
-	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
+	f32 gui_scaling = g_settings->getFloat("gui_scaling");
+	f32 real_gui_scaling = gui_scaling * density;
+	f32 real_hud_scaling = g_settings->getFloat("hud_scaling") * density;
 
 	return {
-		screen_size, gui_scaling, hud_scaling,
-		ClientDynamicInfo::calculateMaxFSSize(screen_size)
+		screen_size, real_gui_scaling, real_hud_scaling,
+		ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
 	};
 }
 

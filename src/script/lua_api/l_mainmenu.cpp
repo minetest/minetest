@@ -930,23 +930,24 @@ int ModApiMainMenu::l_get_window_info(lua_State *L)
 
 	const v2u32 &window_size = RenderingEngine::getWindowSize();
 	f32 density = RenderingEngine::getDisplayDensity();
-	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
-	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
+	f32 gui_scaling = g_settings->getFloat("gui_scaling");
+	f32 real_gui_scaling = gui_scaling * density;
+	f32 real_hud_scaling = g_settings->getFloat("hud_scaling") * density;
 
 	lua_pushstring(L, "size");
 	push_v2u32(L, window_size);
 	lua_settable(L, top);
 
 	lua_pushstring(L, "max_formspec_size");
-	push_v2f(L, ClientDynamicInfo::calculateMaxFSSize(window_size));
+	push_v2f(L, ClientDynamicInfo::calculateMaxFSSize(window_size, gui_scaling));
 	lua_settable(L, top);
 
 	lua_pushstring(L, "real_gui_scaling");
-	lua_pushnumber(L, gui_scaling);
+	lua_pushnumber(L, real_gui_scaling);
 	lua_settable(L, top);
 
 	lua_pushstring(L, "real_hud_scaling");
-	lua_pushnumber(L, hud_scaling);
+	lua_pushnumber(L, real_hud_scaling);
 	lua_settable(L, top);
 
 	return 1;

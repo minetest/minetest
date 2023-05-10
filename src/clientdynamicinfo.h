@@ -35,12 +35,12 @@ struct ClientDynamicInfo
 				abs(real_hud_scaling - other.real_hud_scaling) < 0.001f;
 	}
 
-	static v2f32 calculateMaxFSSize(v2u32 render_target_size) {
+	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling) {
 		f32 factor =
 #ifdef HAVE_TOUCHSCREENGUI
-				10;
+				10 / gui_scaling;
 #else
-				15;
+				15 / gui_scaling;
 #endif
 		f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
 		if (ratio < 1)
