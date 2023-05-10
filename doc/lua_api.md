@@ -7900,7 +7900,10 @@ It can be created via `Settings(filename)`.
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
     * Returns a boolean indicating whether `key` exists.
-    * Note that for the main settings object (`minetest.settings`), `get(key)` might return a value even if `has(key)` returns `false`. That's because `get` returns default values for most settings if they are not set.
+    * Note that for the main settings object (`minetest.settings`), `get(key)`
+      might return a value even if `has(key)` returns `false`. That's because
+      `get` can fall back to the so-called parent of the `Settings` object, i.e.
+      the default values.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
