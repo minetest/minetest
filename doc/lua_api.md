@@ -41,6 +41,8 @@ the build directory. For system-wide builds on Linux the share path is usually a
 `/usr/share/minetest` while the user path resides in `.minetest` in the home directory.
 Paths on other operating systems will differ.
 
+
+
 # Games
 
 Games are looked up from:
@@ -115,6 +117,8 @@ The music files are named `theme.ogg`.
 If you want to specify multiple music files for one game, add additional
 images named like `theme.$n.ogg`, with an ascending number $n starting
 with 1 (max 10), and a random music file will be chosen from the provided ones.
+
+
 
 # Mods
 
@@ -290,6 +294,8 @@ Any mod can redefine `experimental:tnt` by using the name
 when registering it. For this to work correctly, that mod must have
 `experimental` as a dependency.
 
+
+
 # Aliases
 
 Aliases of itemnames can be added by using
@@ -387,6 +393,8 @@ Deprecated, define dungeon nodes in biome definitions instead.
 By default the world is filled with air nodes. To set a different node use e.g.:
 
     minetest.register_alias("mapgen_singlenode", "default:stone")
+
+
 
 # Textures
 
@@ -779,7 +787,7 @@ minetest.register_node("mod:stone", {
     drop = {
         items = {
             -- assume that mod:cobblestone also has the same palette
-            {items = {"mod:cobblestone"}, inherit_color = true}
+            {items = {"mod:cobblestone"}, inherit_color = true},
         }
     }
 })
@@ -796,8 +804,8 @@ minetest.register_craft({
     type = "shapeless",
     recipe = {
         "wool:block",
-        "dye:red"
-    }
+        "dye:red",
+    },
 })
 ```
 
@@ -847,9 +855,11 @@ minetest.register_node("default:dirt_with_grass", {
     color = "green",
     -- Palette in the world
     paramtype2 = "color",
-    palette = "default_foilage.png"
+    palette = "default_foilage.png",
 })
 ```
+
+
 
 # Sounds
 
@@ -883,39 +893,39 @@ Examples of sound parameter tables:
 {
     gain = 1.0,   -- default
     fade = 0.0,   -- default, change to a value > 0 to fade the sound in
-    pitch = 1.0   -- default
+    pitch = 1.0,  -- default
 }
 -- Play locationless to one player
 {
     to_player = name,
     gain = 1.0,   -- default
     fade = 0.0,   -- default, change to a value > 0 to fade the sound in
-    pitch = 1.0   -- default
+    pitch = 1.0,  -- default
 }
 -- Play locationless to one player, looped
 {
     to_player = name,
     gain = 1.0,  -- default
-    loop = true
+    loop = true,
 }
 -- Play at a location
 {
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0,  -- default
-    max_hear_distance = 32   -- default, uses a Euclidean metric
+    max_hear_distance = 32,  -- default, uses a Euclidean metric
 }
 -- Play connected to an object, looped
 {
     object = <an ObjectRef>,
     gain = 1.0,  -- default
     max_hear_distance = 32,  -- default, uses a Euclidean metric
-    loop = true
+    loop = true,
 }
 -- Play at a location, heard by anyone *but* the given player
 {
     pos = {x = 32, y = 0, z = 100},
     max_hear_distance = 40,
-    exclude_player = name
+    exclude_player = name,
 }
 ```
 
@@ -964,6 +974,8 @@ These sound files are played back by the engine if provided.
  * `default_dig_<groupname>`: Default node digging sound (gain = 0.5)
    (see node sound definition for details)
 
+
+
 # Registered efinitions
 
 Anything added using certain [Registration functions] gets added to one or more
@@ -984,6 +996,8 @@ If you want to check the drawtype of a node, you could do it like this:
 local def = minetest.registered_nodes[nodename]
 local drawtype = def and def.drawtype
 ```
+
+
 
 # Nodes
 
@@ -1345,6 +1359,8 @@ To avoid collision issues, keep each value within the range of +/- 1.45.
 This also applies to leveled nodeboxes, where the final height shall not
 exceed this soft limit.
 
+
+
 # Map Terminology and Coordinates
 
 ## Nodes, mapblocks, mapchunks
@@ -1396,6 +1412,8 @@ for each axis:
   nodepos = blockpos * 16
 * Maximum:
   nodepos = blockpos * 16 + 15
+
+
 
 # HUD
 
@@ -1555,6 +1573,8 @@ Displays a minimap on the HUD.
 * `alignment`: The alignment of the minimap.
 * `offset`: offset in pixels from position.
 
+
+
 # Representations of Simple Things
 
 ## Vector (ie. a position)
@@ -1586,6 +1606,8 @@ Exact pointing location (currently only `Raycast` supports these fields):
   Is a null vector `vector.zero()` when the pointer is inside the selection box.
   For entities with rotated selection boxes, this will be rotated properly
   by the entity's rotation - it will always be in absolute world space.
+
+
 
 # Flag Specifier Format
 
@@ -1627,6 +1649,8 @@ or even
 ```
 
 since, by default, no schematic attributes are set.
+
+
 
 # Items
 
@@ -1749,6 +1773,8 @@ An apple:
 A native C++ format with many helper methods. Useful for converting
 between formats. See the [Class reference] section for details.
 
+
+
 # Groups
 
 In a number of places, there is a group table. Groups define the
@@ -1838,8 +1864,8 @@ An example recipe: Craft a raw meat soup from any meat, any water and any bowl:
     recipe = {
         {"group:meat"},
         {"group:water"},
-        {"group:bowl"}
-    }
+        {"group:bowl"},
+,    }
 }
 ```
 
@@ -1851,7 +1877,7 @@ Another example: Craft red wool from white wool and red dye
 {
     type = "shapeless",
     output = "wool:red",
-    recipe = {"wool:white", "group:dye,basecolor_red"}
+    recipe = {"wool:white", "group:dye,basecolor_red"},
 }
 ```
 
@@ -1975,6 +2001,8 @@ Items define their properties by a list of parameters for groups. They
 cannot dig other groups; thus it is important to use a standard bunch of
 groups to enable interaction with items.
 
+
+
 # Tool Capabilities
 
 'Tool capabilities' is a property of items that defines two things:
@@ -2070,7 +2098,7 @@ For non-tools, this has no effect.
 tool_capabilities = {
     groupcaps={
         crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
-    }
+    },
 }
 ```
 
@@ -2102,6 +2130,8 @@ Table of resulting tool uses:
 * At `crumbly==3`, the level difference digging time divider kicks in and makes
   easy nodes to be quickly breakable.
 * At `level > 2`, the node is not diggable, because it's `level > maxlevel`
+
+
 
 # Entity Damage Mechanism
 
@@ -2159,6 +2189,8 @@ object:punch(puncher, time_from_last_punch, tool_capabilities, direction)
 * Parameters are equal to the above callback.
 * If `direction` equals `nil` and `puncher` does not equal `nil`, `direction`
   will be automatically filled in based on the location of `puncher`.
+
+
 
 # Metadata
 
@@ -2276,6 +2308,8 @@ print(stack:get_short_description()) --> Short
 print(ItemStack("mod:item_with_no_desc"):get_description()) --> mod:item_with_no_desc
 ```
 
+
+
 # Formspec
 
 Formspec defines a menu. This supports inventories and some of the
@@ -2311,10 +2345,12 @@ For colored text you can use `minetest.colorize`.
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
 
-**WARNING**: do _not_ use an element name starting with `key_`; those names are
+> **Warning**:
+Do _not_ use an element name starting with `key_`; those names are
 reserved to pass key press events to formspec!
 
-**WARNING**: Minetest allows you to add elements to every single formspec instance
+> **Warning**:
+Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to, or why things are styled differently
 to normal. See [`no_prepend[]`] and [Styling Formspecs].
@@ -3283,6 +3319,8 @@ rotation speeds in percent of standard speed (-1000 to 1000). Works only if
 X, Y and Z being angles around each three axes. Works only if
 `inventory_items_animations` is set to true.
 
+
+
 # Inventory
 
 ## Inventory locations
@@ -3302,6 +3340,8 @@ X, Y and Z being angles around each three axes. Works only if
 * `hand`: list containing an override for the empty hand
     * Is not created automatically, use `InvRef:set_size`
     * Is only used to enhance the empty hand's tool capabilities
+
+
 
 # Colors
 
@@ -3332,6 +3372,8 @@ forms:
 * string form: A ColorString (defined above):
     * `colorspec = "green"`
 
+
+
 # Escape Sequences
 
 Most text can contain escape sequences, that can for example color the text.
@@ -3356,6 +3398,8 @@ The following functions provide escape sequences:
     * Removes background colors added by `get_background_escape_sequence`.
 * `minetest.strip_colors(str)`
     * Removes all color escape sequences.
+
+
 
 # Spatial Vectors
 
@@ -3556,6 +3600,8 @@ For example:
 * `minetest.hash_node_position` (Only works on node positions.)
 * `minetest.dir_to_wallmounted` (Involves wallmounted param2 values.)
 
+
+
 # Helper Functions
 
 * `dump2(obj, name, dumped)`: returns a string which makes `obj`
@@ -3672,6 +3718,8 @@ For example:
     * `time_from_last_punch`: time in seconds since last punch action
     * `wear`: Amount of wear the item starts with (default: 0)
 
+
+
 # Translations
 
 Texts can be translated client-side with the help of `minetest.translate` and
@@ -3786,6 +3834,8 @@ the table returned by `minetest.get_player_information(name)`.
 IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
 You do not need to use this to get translated strings to show up on the client.
 
+
+
 # Perlin Noise
 
 Perlin noise creates a continuously-varying value depending on the input values.
@@ -3872,7 +3922,8 @@ size of the finest detail you require. For example:
 if `spread` is 512 nodes, `lacunarity` is 2.0 and finest detail required is 16
 nodes, octaves will be 6 because the 'wavelengths' of the octaves will be
 512, 256, 128, 64, 32, 16 nodes.
-Warning: If the 'wavelength' of any octave falls below 1 an error will occur.
+> **Warning**:
+If the 'wavelength' of any octave falls below 1 an error will occur.
 
 ### `persistence`
 
@@ -3943,12 +3994,14 @@ np_terrain = {
     octaves = 5,
     persistence = 0.63,
     lacunarity = 2.0,
-    flags = "defaults, absvalue"
+    flags = "defaults, absvalue",
 }
 ```
 
 For 2D noise the Z component of `spread` is still defined but is ignored.
 A single noise parameter table can be used for 2D or 3D noise.
+
+
 
 # Ores
 
@@ -4036,8 +4089,9 @@ noise_params = {
 noise_threshold = 1.6
 ```
 
-**WARNING**: Use this ore type *very* sparingly since it is ~200x more
-computationally expensive than any other ore.
+> **Warning**:
+Use this ore type *very* sparingly since it is ~200x more computationally
+expensive than any other ore.
 
 ### `stratum`
 
@@ -4090,6 +4144,8 @@ this attribute set, puff ore generation will instead generate the absolute
 difference in noise displacement values. This flag has no effect for ore types
 other than `puff`.
 
+
+
 # Decoration Types
 
 The varying types of decorations that can be placed.
@@ -4109,6 +4165,8 @@ Copies a box of `MapNodes` from a specified schematic file (or raw description).
 Can specify a probability of a node randomly appearing when placed.
 This decoration type is intended to be used for multi-node sized discrete
 structures, such as trees, cave spikes, rocks, and so on.
+
+
 
 # Schematics
 
@@ -4158,6 +4216,8 @@ Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
 * `place_center_z`: Placement of this decoration is centered along the Z axis.
 * `force_placement`: Schematic nodes other than "ignore" will replace existing
   nodes.
+
+
 
 # Lua Voxel Manipulator
 
@@ -4476,6 +4536,8 @@ If, for example:
 The values of `ystride` and `zstride` can be obtained using `area.ystride` and
 `area.zstride`.
 
+
+
 # Mapgen Objects
 
 A mapgen object is a construct used in map generation. Mapgen objects can be
@@ -4536,6 +4598,8 @@ For example, `decoration#123`.
 The returned positions are the ground surface 'place_on' nodes,
 not the decorations themselves. A 'simple' type decoration is often 1
 node above the returned position and possibly displaced by 'place_offset_y'.
+
+
 
 # Registered Entities
 
@@ -4620,6 +4684,8 @@ Collision info passed to `on_step` (`moveresult` argument):
 }
 ```
 
+
+
 # L-System Trees
 
 ## Tree definition
@@ -4693,6 +4759,8 @@ apple_tree={
 }
 minetest.spawn_tree(pos,apple_tree)
 ```
+
+
 
 # Privileges
 
@@ -4775,6 +4843,8 @@ Minetest includes the following settings to control behavior of privileges:
     the `basic_privs` privilege. This can be used, for example, to give
     limited moderation powers to selected users.
 
+
+
 # 'minetest' Namespace Reference
 
 ## Utilities
@@ -4799,7 +4869,7 @@ Minetest includes the following settings to control behavior of privileges:
       title = string,
       author = string,
       -- The root directory of the game
-      path = string
+      path = string,
   }
   ```
 
@@ -4869,7 +4939,7 @@ Minetest includes the following settings to control behavior of privileges:
       -- the amount of RAM available. (5.7.0)
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
-      compress_zstd = true
+      compress_zstd = true,
   }
   ```
 
@@ -4941,7 +5011,7 @@ Minetest includes the following settings to control behavior of privileges:
 
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
-      real_hud_scaling = 1
+      real_hud_scaling = 1,
   }
   ```
 
@@ -5052,9 +5122,10 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
-    * Warning: This alters the biome to biome ID correspondences, so any
-      decorations or ores using the 'biomes' field must afterwards be cleared
-      and re-registered.
+    > **Warning**:
+      This alters the biome to biome ID correspondences, so any decorations
+      or ores using the 'biomes' field must afterwards be cleared and
+      re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -5071,7 +5142,8 @@ Call these functions only at load time!
       filename.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
-    * Warning: Clearing and re-registering biomes alters the biome to biome ID
+    > **Warning**:
+      Clearing and re-registering biomes alters the biome to biome ID
       correspondences, so any decorations or ores using the 'biomes' field must
       afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
@@ -5092,9 +5164,10 @@ Call these functions only at load time!
       `minetest.register_craft(recipe)`. For output specify only the item,
       without a quantity.
     * Returns false if no erase candidate could be found, otherwise returns true.
-    * **Warning**! The type field ("shaped", "cooking" or any other) will be
-      ignored if the recipe contains output. Erasing is then done independently
-      from the crafting method.
+    > **Warning**:
+      The type field ("shaped", "cooking" or any other) will be ignored if
+      the recipe contains output. Erasing is then done independently from
+      the crafting method.
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
 * `minetest.override_chatcommand(name, redefinition)`
     * Overrides fields of a chatcommand registered with `register_chatcommand`.
@@ -5122,9 +5195,10 @@ Call these functions only at load time!
       aliases handled.
 * `minetest.register_on_shutdown(function())`
     * Called before server shutdown
-    * **Warning**: If the server terminates abnormally (i.e. crashes), the
-      registered callbacks **will likely not be run**. Data should be saved at
-      semi-frequent intervals as well as on server shutdown.
+    > **Warning**:
+      If the server terminates abnormally (i.e. crashes), the registered
+      callbacks **will likely not be run**. Data should be saved at semi-
+      frequent intervals as well as on server shutdown.
 * `minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
@@ -6217,11 +6291,12 @@ Variables:
     * `force_placement` is a boolean indicating whether nodes other than `air`
       and `ignore` are replaced by the schematic.
     * Returns nil if the schematic could not be loaded.
-    * **Warning**: Once you have loaded a schematic from a file, it will be
-      cached. Future calls will always use the cached version and the
-      replacement list defined for it, regardless of whether the file or the
-      replacement list parameter have changed. The only way to load the file
-      anew is to restart the server.
+    > **Warning**:
+      Once you have loaded a schematic from a file, it will be cached.
+      Future calls will always use the cached version and the replacement
+      list defined for it, regardless of whether the file or the replacement
+      list parameters have changed. The only way to load the file anew is to
+      restart the server.
     * `flags` is a flag field with the available flags:
         * place_center_x
         * place_center_y
@@ -6356,7 +6431,8 @@ Variables:
     * styled: Outputs in a human-readable format if this is set, defaults to
       false.
     * Unserializable things like functions and userdata will cause an error.
-    * **Warning**: JSON is more strict than the Lua table format.
+    > **Warning**:
+      JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as
            keys.
         2. You cannot mix string and integer keys.
@@ -6588,6 +6664,8 @@ Variables:
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
 
+
+
 # Class Reference
 
 Sorted alphabetically.
@@ -6653,7 +6731,7 @@ use the provided load and write functions for this.
           block_radius = int,  -- The radius (in nodes) of the areas the cache
                                -- generates prefiltered lists for, minimum 16,
                                -- default 64
-          limit = int          -- The cache size, minimum 20, default 1000
+          limit = int,         -- The cache size, minimum 20, default 1000
       }
       ```
 * `to_string()`: Experimental. Returns area store serialized as a (binary)
@@ -6881,7 +6959,7 @@ metadata_table = {
     -- metadata fields (key/value store)
     fields = {
         infotext = "Container",
-        another_key = "Another Value"
+        another_key = "Another Value",
     },
 
     -- inventory data (for nodes)
@@ -6892,13 +6970,13 @@ metadata_table = {
             [1] = "example:dirt",
             [2] = "example:stone 25",
             [3] = "", -- empty slot
-            [4] = "example:pickaxe"
+            [4] = "example:pickaxe",
         },
         -- inventory list "hidden" with 1 slot
         hidden = {
-            [1] = "example:diamond"
-        }
-    }
+            [1] = "example:diamond",
+        },
+    },
 }
 ```
 
@@ -7085,7 +7163,7 @@ child will follow movement and rotation of that bone.
           text = "My Nametag",
           color = ColorSpec,
           -- ^ Text color
-          bgcolor = ColorSpec or false
+          bgcolor = ColorSpec or false,
           -- ^ Sets background color of nametag
           -- `false` will cause the background to be set automatically based on user settings
           -- Default: false
@@ -7318,19 +7396,23 @@ child will follow movement and rotation of that bone.
             * `dawn_sky`: ColorSpec, for the top half of the sky during dawn/sunset.
               (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              Warning: The darkening of the ColorSpec is subject to change.
+              > **Warning**:
+              The darkening of the ColorSpec is subject to change.
             * `dawn_horizon`: ColorSpec, for the bottom half of the sky during dawn/sunset.
               (default: `#bac1f0`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              Warning: The darkening of the ColorSpec is subject to change.
+              > **Warning**:
+              The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the sky during the night.
               (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              Warning: The darkening of the ColorSpec is subject to change.
+              > **Warning**:
+              The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the sky during the night.
               (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              Warning: The darkening of the ColorSpec is subject to change.
+              > **Warning**:
+              The darkening of the ColorSpec is subject to change.
             * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
@@ -7684,12 +7766,15 @@ The settings have the format `key = value`. Example:
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
 
-WARNING: This storage backend is incapable of saving raw binary data due
-to restrictions of JSON.
+> **Warning**:
+This storage backend is incapable of saving raw binary data due to
+restrictions of JSON.
 
 ### Methods
 
 * All methods in MetaDataRef
+
+
 
 # Definition Tables
 
@@ -7860,7 +7945,7 @@ Player properties need to be saved manually.
     shaded = true,
     -- Setting this to 'false' disables diffuse lighting of entity
 
-    show_on_minimap = false
+    show_on_minimap = false,
     -- Defaults to true for players, false for other entities.
     -- If set to true the entity will show as a marker on the minimap.
 }
@@ -7893,7 +7978,7 @@ Used by `minetest.register_entity`.
     on_detach = function(self, parent) end,
     get_staticdata = function(self) end,
 
-    _custom_field = whatever
+    _custom_field = whatever,
     -- You can define arbitrary member variables here (see Item definition
     -- for more info) by using a '_' prefix
 }
@@ -7936,7 +8021,7 @@ Used by `minetest.register_abm`.
     -- by the area being unattended. Note that the `chance` value can often
     -- be reduced to 1.
 
-    action = function(pos, node, active_object_count, active_object_count_wider)
+    action = function(pos, node, active_object_count, active_object_count_wider),
     -- Function triggered for each qualifying node.
     -- `active_object_count` is number of active objects in the node's
     -- mapblock.
@@ -7974,7 +8059,7 @@ gets activated (not loaded!)
     -- and not only the first time the block gets activated after the LBM
     -- was introduced.
 
-    action = function(pos, node, dtime_s) end
+    action = function(pos, node, dtime_s) end,
     -- Function triggered for each qualifying node.
     -- `dtime_s` is the in-game time (in seconds) elapsed since the block
     -- was last active
@@ -8027,7 +8112,7 @@ gets activated (not loaded!)
     frames_h = 3,
     -- Height in number of frames
 
-    frame_length = 0.5
+    frame_length = 0.5,
     -- Length of a single frame
 }
 ```
@@ -8207,7 +8292,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     --   end
     -- The user may be any ObjectRef or nil.
 
-    _custom_field = whatever
+    _custom_field = whatever,
     -- Add your own custom fields. By convention, all custom field names
     -- should start with `_` to avoid naming collisions with future engine
     -- usage.
@@ -8642,7 +8727,7 @@ Used by `minetest.register_node`.
     -- If defined, called when an explosion touches the node, instead of
     -- removing the node.
 
-    mod_origin = "modname"
+    mod_origin = "modname",
     -- stores which mod actually registered a node
     -- If the source could not be determined it contains "??"
     -- Useful for getting which mod truly registered something
@@ -8723,9 +8808,9 @@ A typical shaped recipe:
     recipe = {
         {"example:stone", "example:stone", "example:stone"}, -- row 1
         {"",              "example:stick", ""             }, -- row 2
-        {"",              "example:stick", ""             }  -- row 3
+        {"",              "example:stick", ""             }, -- row 3
     --   ^ column 1       ^ column 2       ^ column 3
-    }
+    },
     -- There is no replacements table, so every input item
     -- will be consumed.
 }
@@ -8740,14 +8825,14 @@ Simple replacement example:
     -- 1x2 recipe with a water bucket above a dry sponge
     recipe = {
         {"example:water_bucket"},
-        {"example:dry_sponge"}
+        {"example:dry_sponge"},
     },
     -- When the wet sponge is crafted, the water bucket
     -- in the input slot is replaced with an empty
     -- bucket
     replacements = {
-        {"example:water_bucket", "example:empty_bucket"}
-    }
+        {"example:water_bucket", "example:empty_bucket"},
+    },
 }
 ```
 
@@ -8762,7 +8847,7 @@ Complex replacement example 1:
     recipe = {
         {"","example:water_bucket",""},
         {"example:water_bucket","example:wet_sponge","example:water_bucket"},
-        {"","example:water_bucket",""}
+        {"","example:water_bucket",""},
     },
     -- When the wet sponge is crafted, all water buckets
     -- in the input slot become empty
@@ -8772,8 +8857,8 @@ Complex replacement example 1:
         {"example:water_bucket", "example:empty_bucket"},
         {"example:water_bucket", "example:empty_bucket"},
         {"example:water_bucket", "example:empty_bucket"},
-        {"example:water_bucket", "example:empty_bucket"}
-    }
+        {"example:water_bucket", "example:empty_bucket"},
+    },
 }
 ```
 
@@ -8789,15 +8874,15 @@ Complex replacement example 2:
     recipe = {
         -- 3 items in the group `magic_orb` on top of a book in the middle
         {"group:magic_orb", "group:magic_orb", "group:magic_orb"},
-        {"", "example:book", ""}
+        {"", "example:book", ""},
     },
     -- When the book is crafted, the 3 magic orbs will be turned into
     -- 3 runes: ice rune, earth rune and fire rune (from left to right)
     replacements = {
         {"group:magic_orb", "example:ice_rune"},
         {"group:magic_orb", "example:earth_rune"},
-        {"group:magic_orb", "example:fire_rune"}
-    }
+        {"group:magic_orb", "example:fire_rune"},
+    },
 }
 ```
 
@@ -8827,8 +8912,8 @@ Parameters:
     recipe = {
         "example:bowl",
         "example:mushroom_brown",
-        "example:mushroom_red"
-    }
+        "example:mushroom_red",
+    },
 }
 ```
 
@@ -8836,10 +8921,12 @@ Parameters:
 
 Syntax:
 
-    {
-        type = "toolrepair",
-        additional_wear = -0.02 -- multiplier of 65536
-    }
+```lua
+{
+    type = "toolrepair",
+    additional_wear = -0.02, -- multiplier of 65536
+}
+```
 
 Adds a shapeless recipe for *every* tool that doesn't have the `disable_repair=1`
 group. If this recipe is used, repairing is possible with any crafting grid
@@ -8891,7 +8978,7 @@ Cooking sand to glass in 3 seconds:
     type = "cooking",
     output = "example:glass",
     recipe = "example:sand",
-    cooktime = 3.0
+    cooktime = 3.0,
 }
 ```
 
@@ -8927,7 +9014,7 @@ Coal lump with a burntime of 20 seconds. Will be consumed when used.
 {
     type = "fuel",
     recipe = "example:coal_lump",
-    burntime = 20.0
+    burntime = 20.0,
 }
 ```
 
@@ -8939,7 +9026,7 @@ if used:
     type = "fuel",
     recipe = "example:lava_bucket",
     burntime = 60.0,
-    replacements = {{"example:lava_bucket", "example:empty_bucket"}}
+    replacements = {{"example:lava_bucket", "example:empty_bucket"}},
 }
 ```
 
@@ -9045,7 +9132,7 @@ See [Ores] section above for essential information.
         octaves = 3,
         persistence = 0.7
     },
-    stratum_thickness = 8 -- only used if no noise defined
+    stratum_thickness = 8, -- only used if no noise defined
 }
 ```
 
@@ -9132,7 +9219,7 @@ performance and computing power the practical limit is much lower.
     -- Set to 0 for no vertical blend. Defaults to 0.
 
     heat_point = 0,
-    humidity_point = 50
+    humidity_point = 50,
     -- Characteristic temperature and humidity for the biome.
     -- These values create 'biome points' on a voronoi diagram with heat and
     -- humidity as axes. The resulting voronoi cells determine the
@@ -9289,7 +9376,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     rotation = "90",
     -- Rotation can be "0", "90", "180", "270", or "random"
 
-    place_offset_y = 0
+    place_offset_y = 0,
     -- If the flag 'place_center_y' is set this parameter is ignored.
     -- Y offset of the schematic base node layer relative to the 'place_on'
     -- node.
@@ -9320,7 +9407,7 @@ description fields is shown when the "/help" chatcommand is issued.
     -- Required privileges to run. See `minetest.check_player_privs()` for
     -- the format and see [Privileges] for an overview of privileges.
 
-    func = function(name, param)
+    func = function(name, param),
     -- Called when command is run.
     -- * `name` is the name of the player who issued the command.
     -- * `param` is a string with the full arguments to the command.
@@ -9352,7 +9439,7 @@ Example:
 
     privs = {privs=true},  -- Require the "privs" privilege to run
 
-    func = function(name, param)
+    func = function(name, param),
 }
 ```
 
@@ -9376,7 +9463,7 @@ Used by `minetest.register_privilege`.
     -- Called when given to player 'name' by 'granter_name'.
     -- 'granter_name' will be nil if the priv was granted by a mod.
 
-    on_revoke = function(name, revoker_name)
+    on_revoke = function(name, revoker_name),
     -- Called when taken from player 'name' by 'revoker_name'.
     -- 'revoker_name' will be nil if the priv was revoked by a mod.
 
@@ -9410,7 +9497,7 @@ Used by `minetest.create_detached_inventory`.
 
     on_move = function(inv, from_list, from_index, to_list, to_index, count, player),
     on_put = function(inv, listname, index, stack, player),
-    on_take = function(inv, listname, index, stack, player)
+    on_take = function(inv, listname, index, stack, player),
     -- Called after the actual action has happened, according to what was
     -- allowed.
     -- No return value.
@@ -9459,7 +9546,7 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
     z_index = 0,
     -- Z index: lower z-index HUDs are displayed behind higher z-index HUDs
 
-    style = 0
+    style = 0,
 }
 ```
 
@@ -9527,7 +9614,7 @@ Used by `minetest.add_particle`.
     drag = {x=0, y=0, z=0},
     -- v5.6.0 and later: Optional drag value, consult the following section
 
-    bounce = {min = ..., max = ..., bias = 0}
+    bounce = {min = ..., max = ..., bias = 0},
     -- v5.6.0 and later: Optional bounce range, consult the following section
 }
 ```
@@ -9617,7 +9704,7 @@ will be ignored.
     minexptime = 1,
     maxexptime = 1,
     minsize = 1,
-    maxsize = 1
+    maxsize = 1,
     -- The particles' properties are random values between the min and max
     -- values.
     -- applies to: pos, velocity, acceleration, expirationtime, size
@@ -9725,8 +9812,8 @@ degradation in older clients).
             { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
 
             -- mixed
-            0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 }
-    }
+            0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+    },
 }
 ```
 
@@ -9861,7 +9948,7 @@ texture = {
     -- it black; a black pixel will be "transparent". useful for creating
     -- darkening effects
 
-    animation = {Tile Animation definition}
+    animation = {Tile Animation definition},
     -- overrides the particlespawner's global animation property for a single
     -- specific texture
 }
@@ -9889,7 +9976,7 @@ texpool = {
 
             length = 3,
             -- the animation lasts for 3s and then repeats
-            length = -3
+            length = -3,
             -- repeat the animation three times over the particle's lifetime
             -- (post-v5.6.0 clients only)
       }
@@ -9907,7 +9994,7 @@ particles spawned with that texture. So a particle with the texture property
 alpha_tween = {
     0.0, 1.0,
     style = "pulse",
-    reps = 4
+    reps = 4,
 }
 ```
 
@@ -9951,7 +10038,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     -- Default is false.
     -- Post only, data must be array
 
-    post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"}
+    post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
     -- Deprecated, use `data` instead. Forces `method = "POST"`.
 }
 ```
@@ -9976,7 +10063,7 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
     code = 200,
     -- HTTP status code
 
-    data = "response"
+    data = "response",
 }
 ```
 
@@ -10017,7 +10104,7 @@ Used by `minetest.register_authentication_handler`.
     record_login = function(name),
     -- Called when player joins, used for keeping track of last_login
 
-    iterate = function()
+    iterate = function(),
     -- Returns an iterator (use with `for` loops) for all player names
     -- currently in the auth database
 }
