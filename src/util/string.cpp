@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef _WIN32
 	#include <iconv.h>
 #else
-	#define _WIN32_WINNT 0x0501
 	#include <windows.h>
 #endif
 
