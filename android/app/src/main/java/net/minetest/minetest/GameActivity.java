@@ -106,9 +106,10 @@ public class GameActivity extends NativeActivity {
 		}
 		container.addView(editText);
 		editText.setMaxLines(8);
-		editText.requestFocus();
+		editText.setMaxLength(65536);
 		editText.setHint(hint);
 		editText.setText(current);
+		editText.requestFocus();
 		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED,
 				InputMethodManager.HIDE_IMPLICIT_ONLY);
