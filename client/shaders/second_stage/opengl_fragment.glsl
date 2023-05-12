@@ -83,11 +83,7 @@ void main(void)
 {
 	vec2 uv = varTexCoord.st;
 #ifdef ENABLE_SSAA	
-	vec4 color = 0.25 * (
-			texture2D(rendered, uv + vec2(-1., -1.) * 0.25 * texelSize0).rgba +
-			texture2D(rendered, uv + vec2(1., -1.) * 0.25 * texelSize0).rgba +
-			texture2D(rendered, uv + vec2(-1., 1.) * 0.25 * texelSize0).rgba +
-			texture2D(rendered, uv + vec2(1., 1.) * 0.25 * texelSize0).rgba);
+	vec4 color = texture2D(rendered, uv + texelSize0 * 1.).rgba;
 #else
 	vec4 color = texture2D(rendered, uv).rgba;
 #endif
