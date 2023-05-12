@@ -964,14 +964,11 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 {
 	setModified();
 
-	// Remove existing lists
+	// Resize and clear existing list
 	s32 i = getListIndex(name);
 	if (i != -1) {
-		m_lists[i]->checkResizeLock();
-		delete m_lists[i];
-
-		m_lists[i] = new InventoryList(name, size, m_itemdef);
-		m_lists[i]->setModified();
+		m_lists[i]->setSize(size);
+		m_lists[i]->clearItems();
 		return m_lists[i];
 	}
 
