@@ -4,6 +4,8 @@
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
 
+[Table of Contents](#table-of-contents)
+
 ## Introduction
 
 Content and functionality can be added to Minetest using Lua scripting
@@ -983,7 +985,7 @@ These sound files are played back by the engine if provided.
 
 
 
-# Registered efinitions
+# Registered Definitions
 
 Anything added using certain [Registration functions] gets added to one or more
 of the global [Registered definition tables].
@@ -10109,3 +10111,229 @@ error objects so long as you give them `__tostring` metamethods.
 
 You can override `minetest.error_handler`. You should call the previous handler
 with the correct stack level in your implementation.
+
+# Table of Contents
+
+* [Introduction](#introduction)
+
+* [Programming in Lua](#programming-in-lua)
+
+* [Startup](#startup)
+
+* [Paths](#paths)
+
+* [Games](#games)
+    * [Menu Images](#menu-images)
+    * [Menu Music](#menu-music)
+
+* [Mods](#mods)
+    * [Mod Load Path](#mod-load-path)
+    * [World-Specific Games](#world-specific-games)
+    * [Modpacks](#modpacks)
+    * [Mod Directory Structure](#mod-directory-structure)
+    * [Naming conventions](#naming-conventions)
+
+* [Aliases](#aliases)
+
+* [Textures](#textures)
+    * [Texture modifiers](#texture-modifiers)
+    * [Hardware coloring](#hardware-coloring)
+    * [Soft texture overlay](#soft-texture-overlay)
+
+* [Sounds](#sounds)
+    * [`SimpleSoundSpec`](#simplesoundspec)
+    * [Special sound files](#special-sound-files)
+
+* [Registered Definitions](#registered-definitions)
+
+* [Nodes](#nodes)
+    * [Node paramtypes](#node-paramtypes)
+    * [Node drawtypes](#node-drawtypes)
+    * [Node boxes](#node-boxes)
+
+* [Map Terminology and Coordinates](#map-terminology-and-coordinates)
+    * [Nodes, mapblocks, mapchunks](#nodes-mapblocks-mapchunks)
+    * [Coordinates](#coordinates)
+
+* [HUD](#hud)
+    * [HUD element types](#hud-element-types)
+
+* [Representations of Simple Things](#representations-of-simple-things)
+    * [Vector](#vector-ie-a-position)
+    * [`pointed_thing`](#pointed_thing)
+
+* [Flag Specifier Format](#flag-specifier-format)
+
+* [Items](#items)
+    * [Item types](#item-types)
+    * [Amount and wear](#amount-and-wear)
+    * [Item formats](#item-formats)
+
+* [Groups](#groups)
+    * [Usage](#usage)
+    * [Groups of items](#groups-of-items)
+    * [Groups of nodes](#groups-of-nodes)
+    * [Groups of entities](#groups-of-entities)
+    * [Groups of tool capabilities](#groups-of-tool-capabilities)
+    * [Groups in crafting recipes](#groups-in-crafting-recipes)
+    * [Special groups](#special-groups)
+    * [Known damage and digging time defining groups](#known-damage-and-digging-time-defining-groups)
+    * [Examples of custom groups](#examples-of-custom-groups)
+    * [Digging time calculation specifics](#digging-time-calculation-specifics)
+
+* [Tool Capabilities](#tool-capabilities)
+    * [Tool capabilities definition](#tool-capabilities-definition)
+    * [Example definition of the capabilities of an item](#example-definition-of-the-capabilities-of-an-item)
+
+* [Entity Damage Mechanism](#entity-damage-mechanism)
+
+* [Metadata](#metadata)
+    * [Node Metadata](#node-metadata)
+    * [Item Metadata](#item-metadata)
+
+* [Formspec](#formspec)
+    * [Examples](#examples)
+    * [Version History](#version-history)
+    * [Elements](#elements)
+    * [Migrating to Real Coordinates](#migrating-to-real-coordinates)
+    * [Styling Formspecs](#styling-formspecs)
+    * [Markup Language](#markup-language)
+
+* [Inventory](#inventory)
+    * [Inventory locations](#inventory-locations)
+    * [Player Inventory lists](#player-inventory-lists)
+
+* [Colors](#colors)
+    * [`ColorString`](#colorstring)
+    * [`ColorSpec`](#colorspec)
+
+* [Escape Sequences](#escape-sequences)
+
+* [Spatial Vectors](#spatial-vectors)
+    * [Compatibility notes](#compatibility-notes)
+    * [Special properties of the class](#special-properties-of-the-class)
+    * [Common functions and methods](#common-functions-and-methods)
+    * [Operators](#operators)
+    * [Rotation-related functions](#rotation-related-functions)
+    * [Further helpers](#further-helpers)
+
+* [Helper Functions](#helper-functions)
+
+* [Translations](#translations)
+    * [Translating a string](#translating-a-string)
+    * [Operations on translated strings](#operations-on-translated-strings)
+    * [Translation file format](#translation-file-format)
+    * [Escapes](#escapes)
+    * [Server side translations](#server-side-translations)
+
+* [Perlin Noise](#perlin-noise)
+    * [Structure of perlin noise](#structure-of-perlin-noise)
+    * [Noise Parameters](#noise-parameters)
+
+* [Ores](#ores)
+    * [Ore types](#ore-types)
+    * [Ore attributes](#ore-attributes)
+
+* [Decoration Types](#decoration-types)
+    * [`simple`](#simple)
+    * [`schematic`](#schematic)
+
+* [Schematics](#schematics)
+    * [Schematic specifier](#schematic-specifier)
+    * [Schematic attributes](#schematic-attributes)
+
+* [Lua Voxel Manipulator](#lua-voxel-manipulator)
+    * [About VoxelManip](#about-voxelmanip)
+    * [Using VoxelManip](#using-voxelmanip)
+    * [Methods](#methods)
+    * [`VoxelArea`](#voxelarea)
+
+* [Mapgen Objects](#mapgen-objects)
+
+* [Registered Entities](#registered-entities)
+
+* [L-System Trees](#l-system-trees)
+    * [Tree definition](#tree-definition)
+    * [Key for special L-System symbols used in axioms](#key-for-special-l-system-symbols-used-in-axioms)
+    * [Example](#example)
+
+* [Privileges](#privileges)
+    * [Registering privileges](#registering-privileges)
+    * [Checking privileges](#checking-privileges)
+    * [Managing player privileges](#managing-player-privileges)
+    * [Built-in privileges](#built-in-privileges)
+    * [Related settings](#related-settings)
+
+* ['minetest' Namespace Reference](#minetest-namespace-reference)
+    * [Utilities](#utilities)
+    * [Logging](#logging)
+    * [Registration functions](#registration-functions)
+    * [Global callback registration functions](#global-callback-registration-functions)
+    * [Setting-related](#setting-related)
+    * [Authentication](#authentication)
+    * [Chat](#chat)
+    * [Environment access](#environment-access)
+    * [Mod channels](#mod-channels)
+    * [Inventory](#inventory-1)
+    * [Formspec](#formspec-1)
+    * [Item handling](#item-handling)
+    * [Rollback](#rollback)
+    * [Defaults for the `on_place` and `on_drop` item definition functions](#defaults-for-the-on_place-and-on_drop-item-definition-functions)
+    * [Defaults for the `on_punch` and `on_dig` node definition callbacks](#defaults-for-the-on_punch-and-on_dig-node-definition-callbacks)
+    * [Sounds](#sounds-1)
+    * [Timing](#timing)
+    * [Async environment](#async-environment)
+    * [Server](#server)
+    * [Bans](#bans)
+    * [Particles](#particles)
+    * [Schematics](#schematics-1)
+    * [HTTP requests](#http-requests)
+    * [Storage API](#storage-api)
+    * [Misc.](#misc)
+    * [Global objects](#global-objects)
+    * [Global tables](#global-tables)
+
+* [Class Reference](#class-reference)
+    * [`AreaStore`](#areastore)
+    * [`InvRef`](#invref)
+    * [`ItemStack`](#itemstack)
+    * [`ItemStackMetaRef`](#itemstackmetaref)
+    * [`MetaDataRef`](#metadataref)
+    * [`ModChannel`](#modchannel)
+    * [`NodeMetaRef`](#nodemetaref)
+    * [`NodeTimerRef`](#nodetimerref)
+    * [`ObjectRef`](#objectref)
+    * [`PcgRandom`](#pcgrandom)
+    * [`PerlinNoise`](#perlinnoise)
+    * [`PerlinNoiseMap`](#perlinnoisemap)
+    * [`PlayerMetaRef`](#playermetaref)
+    * [`PseudoRandom`](#pseudorandom)
+    * [`Raycast`](#raycast)
+    * [`SecureRandom`](#securerandom)
+    * [`Settings`](#settings)
+    * [`StorageRef`](#storageref)
+
+* [Definition Tables](#definition-tables)
+    * [Object properties](#object-properties)
+    * [Entity definition](#entity-definition)
+    * [ABM  definition](#abm-activeblockmodifier-definition)
+    * [LBM  definition](#lbm-loadingblockmodifier-definition)
+    * [Tile definition](#tile-definition)
+    * [Tile animation definition](#tile-animation-definition)
+    * [Item definition](#item-definition)
+    * [Node definition](#node-definition)
+    * [Crafting recipes](#crafting-recipes)
+    * [Ore definition](#ore-definition)
+    * [Biome definition](#biome-definition)
+    * [Decoration definition](#decoration-definition)
+    * [Chat command definition](#chat-command-definition)
+    * [Privilege definition](#privilege-definition)
+    * [Detached inventory callbacks](#detached-inventory-callbacks)
+    * [HUD definition](#hud-definition)
+    * [Particle definition](#particle-definition)
+    * [`ParticleSpawner` definition](#particlespawner-definition)
+    * [`HTTPRequest` definition](#httprequest-definition)
+    * [`HTTPRequestResult` definition](#httprequestresult-definition)
+    * [Authentication handler definition](#authentication-handler-definition)
+    * [Bit Library](#bit-library)
+    * [Error Handling](#error-handling)
