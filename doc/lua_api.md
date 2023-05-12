@@ -5418,7 +5418,7 @@ Call these functions only at load time!
 * `minetest.string_to_privs(str[, delim])`:
     * Converts string representation of privs into table form
     * `delim`: String separating the privs. Defaults to `","`.
-    * Returns `{ priv1 = true, ... }`
+    * Returns `{priv1 = true, ... }`
 * `minetest.privs_to_string(privs[, delim])`:
     * Returns the string representation of `privs`
     * `delim`: String to delimit privs. Defaults to `","`.
@@ -5428,7 +5428,7 @@ Call these functions only at load time!
     * A quickhand for checking privileges.
     * `player_or_name`: Either a Player object or the name of a player.
     * `...` is either a list of strings, e.g. `"priva", "privb"` or
-      a table, e.g. `{ priva = true, privb = true }`.
+      a table, e.g. `{priva = true, privb = true}`.
 
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "password entry" for a player with name matches given
@@ -6430,7 +6430,7 @@ Variables:
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
-    * Example: `serialize({foo="bar"})`, returns `'return { ["foo"] = "bar" }'`
+    * Example: `serialize({foo="bar"})`, returns `'return {["foo"] = "bar" }'`
 * `minetest.deserialize(string[, safe])`: returns a table
     * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
@@ -6441,7 +6441,7 @@ Variables:
     * This function should not be used on untrusted data, regardless of the
      value of `safe`. It is fine to serialize then deserialize user-provided
      data, but directly providing user input to deserialize is always unsafe.
-    * Example: `deserialize('return { ["foo"] = "bar" }')`,
+    * Example: `deserialize('return {["foo"] = "bar" }')`,
       returns `{foo="bar"}`
     * Example: `deserialize('print("foo")')`, returns `nil`
       (function call fails), returns
@@ -7793,9 +7793,9 @@ Player properties need to be saved manually.
     collide_with_objects = true,
     -- Collide with other objects if physical = true
 
-    collisionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },  -- default
-    selectionbox = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, rotate = false },
-    -- { xmin, ymin, zmin, xmax, ymax, zmax } in nodes from object position.
+    collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },  -- default
+    selectionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, rotate = false},
+    -- {xmin, ymin, zmin, xmax, ymax, zmax} in nodes from object position.
     -- Collision boxes cannot rotate, setting `rotate = true` on it has no effect.
     -- If not set, the selection box copies the collision box, and will also not rotate.
     -- If `rotate = false`, the selection box will not rotate with the object itself, remaining fixed to the axes.
@@ -8760,7 +8760,7 @@ Parameters:
     * Empty slots *must* be filled with the empty string
 * `replacements`: (optional) Allows you to replace input items with some other items
       when something is crafted
-    * Provided as a list of item pairs of the form `{ old_item, new_item }` where
+    * Provided as a list of item pairs of the form `{old_item, new_item}` where
       `old_item` is the input item to replace (same syntax as for a regular input
       slot; groups are allowed) and `new_item` is an itemstring for the item stack
       it will become
@@ -9789,11 +9789,11 @@ degradation in older clients).
             vector.new(0,0,0),
 
             -- vec3 ranges
-            { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
-            { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+            {min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+            {min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
 
             -- mixed
-            0, { min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
+            0, {min = vector.new(0,0,0), max = vector.new(0,0,0), bias = 0 },
     },
 }
 ```
@@ -9806,7 +9806,7 @@ section, along with the datatypes they accept.
 All of the properties in this list can be animated with `*_tween` tables
 unless otherwise specified. For example, `jitter` can be tweened by setting
 a `jitter_tween` table instead of (or in addition to) a `jitter` table/value.
-In this section, a float range is a table defined as so: { min = A, max = B }
+In this section, a float range is a table defined as so: {min = A, max = B}
 A and B are your supplemented values. For a vec3 range this means they are vectors.
 Types used are defined in the previous section.
 
@@ -10009,7 +10009,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     -- Optional, if specified replaces the default minetest user agent with
     -- given string
 
-    extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+    extra_headers = {"Accept-Language: en-us", "Accept-Charset: utf-8" },
     -- Optional, if specified adds additional headers to the HTTP request.
     -- You must make sure that the header strings follow HTTP specification
     -- ("Key: Value").
