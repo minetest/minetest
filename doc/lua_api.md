@@ -315,7 +315,9 @@ This can be used for maintaining backwards compatibility.
 This can also set quick access names for things, e.g. if
 you have an item called `epiclylongmodname:stuff`, you could do
 
-    minetest.register_alias("stuff", "epiclylongmodname:stuff")
+```lua
+minetest.register_alias("stuff", "epiclylongmodname:stuff")
+```
 
 and be able to use `/giveme stuff`.
 
@@ -325,7 +327,9 @@ Mapgen aliases
 In a game, a certain number of these must be set to tell core mapgens which
 of the game's nodes are to be used for core mapgen generation. For example:
 
-    minetest.register_alias("mapgen_stone", "default:stone")
+```lua
+minetest.register_alias("mapgen_stone", "default:stone")
+```
 
 ### Aliases for non-V6 mapgens
 
@@ -392,7 +396,9 @@ Deprecated, define dungeon nodes in biome definitions instead.
 
 By default the world is filled with air nodes. To set a different node use e.g.:
 
-    minetest.register_alias("mapgen_singlenode", "default:stone")
+```lua
+minetest.register_alias("mapgen_singlenode", "default:stone")
+```
 
 
 
@@ -552,14 +558,16 @@ Rotates and/or flips the image.
 `<t>` can be a number (between 0 and 7) or a transform name.
 Rotations are counter-clockwise.
 
-    0  I      identity
-    1  R90    rotate by 90 degrees
-    2  R180   rotate by 180 degrees
-    3  R270   rotate by 270 degrees
-    4  FX     flip X
-    5  FXR90  flip X then rotate by 90 degrees
-    6  FY     flip Y
-    7  FYR90  flip Y then rotate by 90 degrees
+| t | transform name | action                           |
+|---|----------------|----------------------------------|
+| 0 | I              | identity                         |
+| 1 | R90            | rotate by 90 degrees             |
+| 2 | R180           | rotate by 180 degrees            |
+| 3 | R270           | rotate by 270 degrees            |
+| 4 | FX             | flip X                           |
+| 5 | FXR90          | flip X then rotate by 90 degrees |
+| 6 | FY             | flip Y                           |
+| 7 | FYR90          | flip Y then rotate by 90 degrees |
 
 Example:
 
@@ -640,12 +648,11 @@ You can use this to send disposable images such as captchas
 to individual clients, or render things that would be too
 expensive to compose with `[combine:`.
 
-IMPORTANT: Avoid sending large images this way.
-This is not a replacement for asset files, do not use it to do anything
-that you could instead achieve by just using a file.
-In particular consider `minetest.dynamic_add_media` and test whether
-using other texture modifiers could result in a shorter string than
-embedding a whole image, this may vary by use case.
+> **Warning**: Avoid sending large images this way. This is not a replacement
+for asset files, do not use it to do anything that you could instead achieve
+by just using a file. In particular consider `minetest.dynamic_add_media` and
+test whether using other texture modifiers could result in a shorter string
+than embedding a whole image, this may vary by use case.
 
 ## Hardware coloring
 
@@ -967,11 +974,11 @@ Examples:
 
 These sound files are played back by the engine if provided.
 
- * `player_damage`: Played when the local player takes damage (gain = 0.5)
- * `player_falling_damage`: Played when the local player takes
+* `player_damage`: Played when the local player takes damage (gain = 0.5)
+* `player_falling_damage`: Played when the local player takes
    damage by falling (gain = 0.5)
- * `player_jump`: Played when the local player jumps
- * `default_dig_<groupname>`: Default node digging sound (gain = 0.5)
+* `player_jump`: Played when the local player jumps
+* `default_dig_<groupname>`: Default node digging sound (gain = 0.5)
    (see node sound definition for details)
 
 
@@ -1439,7 +1446,7 @@ The `offset` field specifies a pixel offset from the position. Contrary to
 position, the offset is not scaled to screen size. This allows for some
 precisely positioned items in the HUD.
 
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
+> **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
 factor!
 
 The `z_index` field specifies the order of HUD elements from back to front.
@@ -1737,10 +1744,12 @@ You should ideally use the `ItemStack` format to build complex item strings
 (especially if they use item metadata)
 without relying on the serialization format. Example:
 
-    local stack = ItemStack("default:pick_wood")
-    stack:set_wear(21323)
-    stack:get_meta():set_string("description", "My worn out pick")
-    local itemstring = stack:to_string()
+```lua
+local stack = ItemStack("default:pick_wood")
+stack:set_wear(21323)
+stack:get_meta():set_string("description", "My worn out pick")
+local itemstring = stack:to_string()
+```
 
 Additionally the methods `minetest.itemstring_with_palette(item, palette_index)`
 and `minetest.itemstring_with_color(item, colorstring)` may be used to create
@@ -2124,12 +2133,11 @@ Table of resulting tool uses:
         2   180    60    20     -     -
         3   180    60    20     -     -
 
-**Notes**:
-
-* At `crumbly==0`, the node is not diggable.
-* At `crumbly==3`, the level difference digging time divider kicks in and makes
-  easy nodes to be quickly breakable.
-* At `level > 2`, the node is not diggable, because it's `level > maxlevel`
+> **Note**:
+>   * At `crumbly==0`, the node is not diggable.
+>   * At `crumbly==3`, the level difference digging time divider kicks in and makes
+>    easy nodes to be quickly breakable.
+>   * At `level > 2`, the node is not diggable, because it's `level > maxlevel`
 
 
 
@@ -2321,7 +2329,7 @@ like buttons but also can be used to set stuff like background color.
 
 Many formspec elements have a `name`, which is a unique identifier which
 is used when the server receives user input. You must not use the name
-"quit" for formspec elements.
+`quit` for formspec elements.
 
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
@@ -2332,8 +2340,8 @@ of the menu or container. `W` and `H` are its width and height values.
 
 If the new system is enabled, all elements have unified coordinates for all
 elements with no padding or spacing in between. This is highly recommended
-for new forms. See `real_coordinates[<bool>]` and `Migrating to Real
-Coordinates`.
+for new forms. See `real_coordinates[<bool>]` and [Migrating to Real
+Coordinates].
 
 Inventories with a `player:<name>` inventory location are only sent to the
 player named `<name>`.
@@ -2345,15 +2353,13 @@ For colored text you can use `minetest.colorize`.
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
 
-> **Warning**:
-Do _not_ use an element name starting with `key_`; those names are
-reserved to pass key press events to formspec!
+> **Warning**: Do _not_ use an element name starting with `key_`; those names are
+  reserved to pass key press events to formspec!
 
-> **Warning**:
-Minetest allows you to add elements to every single formspec instance
-using `player:set_formspec_prepend()`, which may be the reason backgrounds are
-appearing when you don't expect them to, or why things are styled differently
-to normal. See [`no_prepend[]`] and [Styling Formspecs].
+> **Warning**: Minetest allows you to add elements to every single formspec instance
+  using `player:set_formspec_prepend()`, which may be the reason backgrounds are
+  appearing when you don't expect them to, or why things are styled differently
+  to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 ## Examples
 
@@ -2385,25 +2391,25 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
   * (too much)
 * Formspec version 2 (5.1.0):
   * Forced real coordinates
-  * background9[]: 9-slice scaling parameters
+  * `background9[]`: 9-slice scaling parameters
 * Formspec version 3 (5.2.0):
   * Formspec elements are drawn in the order of definition
-  * bgcolor[]: use 3 parameters (bgcolor, formspec (now an enum), fbgcolor)
-  * box[] and image[] elements enable clipping by default
-  * new element: scroll_container[]
+  * `bgcolor[]`: use 3 parameters (`bgcolor`, `formspec` (now an enum), `fbgcolor`)
+  * `box[]` and `image[]` elements enable clipping by default
+  * new element: `scroll_container[]`
 * Formspec version 4 (5.4.0):
   * Allow dropdown indexing events
 * Formspec version 5 (5.5.0):
-  * Added padding[] element
+  * Added `padding[]` element
 * Formspec version 6 (5.6.0):
-  * Add nine-slice images, animated_image, and fgimg_middle
+  * Add nine-slice images, `animated_image`, and `fgimg_middle`
 
 ## Elements
 
 ### `formspec_version[<version>]`
 
-* Set the formspec version to a certain number. If not specified,
-  version 1 is assumed.
+* Set the formspec version to a certain number. If not specified, version 1
+  is assumed.
 * Must be specified before `size` element.
 * Clients older than this version can neither show newer elements nor display
   elements with new arguments correctly.
@@ -2420,21 +2426,21 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 * Must be used after `size` element.
 * Defines the position on the game window of the formspec's `anchor` point.
-* For X and Y, 0.0 and 1.0 represent opposite edges of the game window,
+* For X and Y, `0.0` and `1.0` represent opposite edges of the game window,
   for example:
-    * [0.0, 0.0] sets the position to the top left corner of the game window.
-    * [1.0, 1.0] sets the position to the bottom right of the game window.
-* Defaults to the center of the game window [0.5, 0.5].
+    * `[0.0, 0.0]` sets the position to the top left corner of the game window.
+    * `[1.0, 1.0]` sets the position to the bottom right of the game window.
+* Defaults to `[0.5, 0.5]`, the center of the game window.
 
 ### `anchor[<X>,<Y>]`
 
 * Must be used after both `size` and `position` (if present) elements.
 * Defines the location of the anchor point within the formspec.
-* For X and Y, 0.0 and 1.0 represent opposite edges of the formspec,
+* For X and Y, `0.0` and `1.0` represent opposite edges of the formspec,
   for example:
-    * [0.0, 1.0] sets the anchor to the bottom left corner of the formspec.
-    * [1.0, 0.0] sets the anchor to the top right of the formspec.
-* Defaults to the center of the formspec [0.5, 0.5].
+    * `[0.0, 1.0]` sets the anchor to the bottom left corner of the formspec.
+    * `[1.0, 0.0]` sets the anchor to the top right of the formspec.
+* Defaults to `[0.5, 0.5]`, the center of the formspec.
 
 * `position` and `anchor` elements need suitable values to avoid a formspec
   extending off the game window due to particular game window sizes.
@@ -2444,35 +2450,35 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * Must be used after the `size`, `position`, and `anchor` elements (if present).
 * Defines how much space is padded around the formspec if the formspec tries to
   increase past the size of the screen and coordinates have to be shrunk.
-* For X and Y, 0.0 represents no padding (the formspec can touch the edge of the
-  screen), and 0.5 represents half the screen (which forces the coordinate size
-  to 0). If negative, the formspec can extend off the edge of the screen.
-* Defaults to [0.05, 0.05].
+* For X and Y, `0.0` represents no padding (the formspec can touch the edge of the
+  screen), and `0.5` represents half the screen (which forces the coordinate size
+  to `0`). If negative, the formspec can extend off the edge of the screen.
+* Defaults to `[0.05, 0.05]`.
 
 ### `no_prepend[]`
 
 * Must be used after the `size`, `position`, `anchor`, and `padding` elements
   (if present).
-* Disables player:set_formspec_prepend() from applying to this formspec.
+* Disables `set_formspec_prepend` from applying to this formspec.
 
 ### `real_coordinates[<bool>]`
 
-* INFORMATION: Enable it automatically using `formspec_version` version 2 or newer.
+> **Note**: Enable it automatically using formspec version 2 or higher.
 * When set to true, all following formspec elements will use the new coordinate system.
 * If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
   (if present), the form size will use the new coordinate system.
-* **Note**: Formspec prepends are not affected by the coordinates in the main form.
-  They must enable it explicitly.
+  > **Note**: Formspec prepends are not affected by the coordinates in the main form.
+    They must enable it explicitly.
 * For information on converting forms to the new coordinate system, see `Migrating
-  to Real Coordinates`.
+   to Real Coordinates`.
 
 ### `container[<X>,<Y>]`
 
 * Start of a container block, moves all physical elements in the container by
-  (X, Y).
+  `(X, Y)`.
 * Must have matching `container_end`
-* Containers can be nested, in which case the offsets are added
-  (child containers are relative to parent containers)
+* Containers can be nested, in which case the offsets are added (child containers are
+  relative to parent containers)
 
 ### `container_end[]`
 
@@ -2481,22 +2487,22 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 ### `scroll_container[<X>,<Y>;<W>,<H>;<scrollbar name>;<orientation>;<scroll factor>]`
 
-* Start of a scroll_container block. All contained elements will ...
-  * take the scroll_container coordinate as position origin,
-  * be additionally moved by the current value of the scrollbar with the name
+* Start of a scroll_container block. All contained elements will:
+  * Take the scroll_container coordinate as position origin,
+  * Be additionally moved by the current value of the scrollbar with the name
     `scrollbar name` times `scroll factor` along the orientation `orientation` and
-  * be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
+  * Be clipped to the rectangle defined by `X`, `Y`, `W` and `H`.
 * `orientation`: possible values are `vertical` and `horizontal`.
 * `scroll factor`: optional, defaults to `0.1`.
 * Nesting is possible.
-* Some elements might work a little different if they are in a scroll_container.
-* Note: If you want the scroll_container to actually work, you also need to add a
+* Some elements might work a little different if they are in a `scroll_container`.
+* Note: If you want the `scroll_container` to actually work, you also need to add a
   scrollbar element with the specified name. Furthermore, it is highly recommended
-  to use a scrollbaroptions element on this scrollbar.
+  to use a `scrollbaroptions` element on this scrollbar.
 
 ### `scroll_container_end[]`
 
-* End of a scroll_container, following elements are no longer bound to this
+* End of a `scroll_container`, following elements are no longer bound to this
   container.
 
 ### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
@@ -2512,9 +2518,9 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
   Indices start at `0`. Default is `0`.
 * The number of shown slots is the minimum of `W*H` and the inventory list's size minus
   `starting item index`.
-* **Note**: With the new coordinate system, the spacing between inventory
-  slots is one-fourth the size of an inventory slot by default. Also see
-  [Styling Formspecs] for changing the size of slots and spacing.
+  > **Note**: With the new coordinate system, the spacing between inventory slots is 1/4 the
+    size of an inventory slot by default. Also see [Styling Formspecs] for changing the size
+    of slots and spacing.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2569,7 +2575,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 ### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>;<middle>]`
 
-* Show an animated image. The image is drawn like a "vertical_frames" tile
+* Show an animated image. The image is drawn like a `vertical_frames` tile
   animation (See [Tile animation definition]), but uses a frame count/duration for simplicity
 * `name`: Element name to send when an event occurs. The event value is the index of the current frame.
 * `texture name`: The image to use.
@@ -2594,7 +2600,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `frame loop range` (Optional): Range of the animation frames.
     * Defaults to the full range of all available frames.
     * Syntax: `<begin>,<end>`
-* `animation speed` (Optional): Sets the animation speed. Default 0 FPS.
+* `animation speed` (Optional): Sets the animation speed. Default `0` FPS.
 
 ### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 
@@ -2606,7 +2612,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `bgcolor` and `fbgcolor` (optional) are `ColorString`s, they define the color
   of the non-fullscreen and the fullscreen background.
 * `fullscreen` (optional) can be one of the following:
-  * `false`: Only the non-fullscreen background color is drawn. (default)
+  * `false`: Default, only the non-fullscreen background color is drawn.
   * `true`: Only the fullscreen background color is drawn.
   * `both`: The non-fullscreen and the fullscreen background color are drawn.
   * `neither`: No background color is drawn.
@@ -2617,12 +2623,12 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 
 * Example for formspec 8x4 in 16x resolution: image shall be sized
-  8 times 16px  times  4 times 16px.
+  `(8 * 16px) * (4 * 16px)`
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 
-* Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
+* Example for formspec 8x4 in 16x resolution: image shall be sized
+  `(8 * 16px) * (4 * 16px)`
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
@@ -2630,11 +2636,11 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 * 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
 * Middle is a rect which defines the middle of the 9-slice.
-    * `x` - The middle will be x pixels from all sides.
-    * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
-    * `x,y,x2,y2` - The middle will start at x,y, and end at x2, y2. Negative x2 and y2 values
-        will be added to the width and height of the texture, allowing it to be used as the
-        distance from the far end.
+    * `x` - The middle will be `x` pixels from all sides.
+    * `x,y` - The middle will be `x` pixels from the horizontal and `y` from the vertical.
+    * `x,y,x2,y2` - The middle will start at `(x, y)` and end at `(x2, y2)`. Negative `x2`
+      and `y2` values will be added to the width and height of the texture, allowing it to
+      be used as the distance from the far end.
     * All numbers in middle are integers.
 * If `auto_clip` is `true`, the background is clipped to the formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
@@ -2643,7 +2649,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the
+* When enter is pressed in field, `fields.key_enter_field` will be sent with the
   name of this field.
 * With the old coordinate system, fields are a set height, but will be vertically
   centered on `H`. With the new coordinate system, `H` will modify the height.
@@ -2663,7 +2669,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `default` is the default value of the field
     * `default` may contain variable references such as `${text}` which
       will fill the value from the metadata value `text`
-    * **Note**: no extra text or more than a single variable is supported ATM.
+    > **Note**: No extra text or more than a single variable is supported at the moment.
 * See `field_close_on_enter` to stop enter closing the formspec
 
 ### `field[<name>;<label>;<default>]`
@@ -2678,8 +2684,8 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 ### `field_close_on_enter[<name>;<close_on_enter>]`
 
-* <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the
+* `<name>` is the name of the field
+* if `<close_on_enter>` is false, pressing enter in the field will submit the
   form but not close it.
 * defaults to true when not specified (ie: no tag for a field)
 
@@ -2694,18 +2700,17 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 * The label formspec element displays the text set in `label`
   at the specified position.
-* **Note**: If the new coordinate system is enabled, labels are
-  positioned from the center of the text, not the top.
+> **Note**: If the new coordinate system is enabled, labels are positioned
+  from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
-  so label should not be used for big text chunks.  Newlines can be
+  so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
-* **Note**: With the new coordinate system, newlines are spaced with
-  half a coordinate.  With the old system, newlines are spaced 2/5 of
-  an inventory slot.
+> **Note**: With the new coordinate system, newlines are spaced with half a
+  coordinate.  With the old system, newlines are spaced 2/5 of an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 * Displays a static formatted text with hyperlinks.
-* **Note**: This element is currently unstable and subject to change.
+> **Warning**: This element is currently unstable and subject to change.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
 * `text` is the formatted text using `Markup Language` described below.
@@ -2713,8 +2718,8 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
 * `label` is the text on the label
-* **Note**: If the new coordinate system is enabled, vertlabels are
-  positioned from the center of the text, not the left.
+> **Note**: If the new coordinate system is enabled, vertlabels are positioned
+  from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
@@ -2726,8 +2731,7 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
-* **Note**: Height is supported on both the old and new coordinate systems
-  for image_buttons.
+> **Note**: Height is supported on both the old and new coordinate systems for `image_buttons`.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2759,9 +2763,8 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * Scrollable item list showing arbitrary text elements
 * `name` fieldname sent to server on doubleclick value is current selected
   element.
-* `listelements` can be prepended by #color in hexadecimal format RRGGBB
-  (only).
-    * if you want a listelement to start with "#" write "##".
+* `listelements` can be prepended by #color in hexadecimal format RRGGBB (only).
+    * if you want a listelement to start with `#` write `##`.
 
 ### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 
@@ -2769,46 +2772,43 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `name` fieldname sent to server on doubleclick value is current selected
   element.
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
-    * if you want a listelement to start with "#" write "##"
+    * if you want a listelement to start with `#` write `##`
 * Index to be selected within textlist
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event`
-  (main menu: `core.explode_textlist_event`).
 
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
-* Show a tab**header** at specific position (ignores formsize)
+* Show a tab **header** at specific position (ignores formsize)
 * `X` and `Y`: position of the tabheader
-* *Note*: Width and height are automatically chosen with this syntax
+> **Info**: Width and height are automatically chosen with this syntax
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
-* `current_tab`: index of selected tab 1...
-* `transparent` (optional): if true, tabs are semi-transparent
-* `draw_border` (optional): if true, draw a thin line at tab base
+* `current_tab`: index of selected tab 1
+* `transparent` (optional): if `true`, tabs are semi-transparent
+* `draw_border` (optional): if `true`, draw a thin line at tab base
 
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
-* Show a tab**header** at specific position (ignores formsize)
-* **Important note**: This syntax for tabheaders can only be used with the
-  new coordinate system.
+* Show a tab **header** at specific position (ignores formsize)
+> **Warning**: This syntax for tabheaders can only be used with the new coordinate system.
 * `X` and `Y`: position of the tabheader
 * `H`: height of the tabheader. Width is automatically determined with this syntax.
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
-* `current_tab`: index of selected tab 1...
+* `current_tab`: index of selected tab 1
 * `transparent` (optional): show transparent
 * `draw_border` (optional): draw border
 
 ### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
-* Show a tab**header** at specific position (ignores formsize)
-* **Important note**: This syntax for tabheaders can only be used with the
-  new coordinate system.
+* Show a tab **header** at specific position (ignores formsize)
+> **Warning**: This syntax for tabheaders can only be used with the new coordinate system.
 * `X` and `Y`: position of the tabheader
 * `W` and `H`: width and height of the tabheader
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
-* `current_tab`: index of selected tab 1...
+* `current_tab`: index of selected tab 1
 * `transparent` (optional): show transparent
 * `draw_border` (optional): draw border
 
@@ -2823,9 +2823,9 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
-* **Important note**: There are two different operation modes:
-    1. handle directly on change (only changed dropdown is submitted)
-    2. read the value on pressing a button (all dropdown values are available)
+> **Info**: There are two different operation modes:
+>  1. handle directly on change (only changed dropdown is submitted)
+>  2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
 * `W`: width of the dropdown. Height is automatically chosen with this syntax.
 * Fieldname data is transferred to Lua
@@ -2839,11 +2839,10 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
-* **Important note**: This syntax for dropdowns can only be used with the
-  new coordinate system.
-* **Important note**: There are two different operation modes:
-    1. handle directly on change (only changed dropdown is submitted)
-    2. read the value on pressing a button (all dropdown values are available)
+> **Warning**: This syntax for dropdowns can only be used with the new coordinate system. \
+> **Info**: There are two different operation modes:
+>  1. handle directly on change (only changed dropdown is submitted)
+>  2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
 * `W` and `H`: width and height of the dropdown
 * Fieldname data is transferred to Lua
@@ -2860,8 +2859,8 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
-* **Note**: If the new coordinate system is enabled, checkboxes are
-  positioned from the center of the checkbox, not the top.
+> **Note**: If the new coordinate system is enabled, checkboxes are positioned from
+  the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 
@@ -2873,7 +2872,6 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * Fieldname data is transferred to Lua
 * Value of this trackbar is set to (`0`-`1000`) by default
 * See also `minetest.explode_scrollbar_event`
-  (main menu: `core.explode_scrollbar_event`).
 
 ### `scrollbaroptions[opt1;opt2;...]`
 * Sets options for all following `scrollbar[]` elements
@@ -2907,7 +2905,6 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event`
-  (main menu: `core.explode_table_event`).
 
 ### `tableoptions[<opt 1>;<opt 2>;...]`
 
@@ -2930,15 +2927,11 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 
 * Sets columns for `table[]`
 * Types: `text`, `image`, `color`, `indent`, `tree`
-    * `text`:   show cell contents as text
-    * `image`:  cell contents are an image index, use column options to define
-                images.
-    * `color`:  cell contents are a ColorString and define color of following
-                cell.
-    * `indent`: cell contents are a number and define indentation of following
-                cell.
-    * `tree`:   same as indent, but user can open and close subtrees
-                (treeview-like).
+    * `text`: show cell contents as text
+    * `image`: cell contents are an image index, use column options to define images.
+    * `color`: cell contents are a ColorString and define color of following cell.
+    * `indent`: cell contents are a number and define indentation of following cell.
+    * `tree`: same as indent, but user can open and close subtrees (treeview-like).
 * Column options:
     * `align=<value>`
         * for `text` and `image`: content alignment within cells.
@@ -2950,9 +2943,9 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
       Exception: defaults to 0 for indent columns
     * `tooltip=<value>`: tooltip text (default: empty)
     * `image` column options:
-        * `0=<value>` sets image for image index 0
-        * `1=<value>` sets image for image index 1
-        * `2=<value>` sets image for image index 2
+        * `0=<value>` sets image for image index `0`
+        * `1=<value>` sets image for image index `1`
+        * `2=<value>` sets image for image index `2`
         * and so on; defined indices need not be contiguous empty or
           non-numeric cells are treated as `0`.
     * `color` column options:
@@ -2985,24 +2978,24 @@ to normal. See [`no_prepend[]`] and [Styling Formspecs].
 ### `set_focus[<name>;<force>]`
 
 * Sets the focus to the element with the same `name` parameter.
-* **Note**: This element must be placed before the element it focuses.
+> **Note**: This element must be placed before the element it focuses.
 * `force` (optional, default `false`): By default, focus is not applied for
   re-sent formspecs with the same name so that player-set focus is kept.
   `true` sets the focus to the specified element for every sent formspec.
 * The following elements have the ability to be focused:
-    * checkbox
-    * button
-    * button_exit
-    * image_button
-    * image_button_exit
-    * item_image_button
-    * table
-    * textlist
-    * dropdown
-    * field
-    * pwdfield
-    * textarea
-    * scrollbar
+    * `checkbox`
+    * `button`
+    * `button_exit`
+    * `image_button`
+    * `image_button_exit`
+    * `item_image_button`
+    * `table`
+    * `textlist`
+    * `dropdown`
+    * `field`
+    * `pwdfield`
+    * `textarea`
+    * `scrollbar`
 
 ## Migrating to Real Coordinates
 
@@ -3080,61 +3073,61 @@ Setting a property to nothing will reset it to the default value. For example:
 
 Some types may inherit styles from parent types.
 
-* animated_image, inherits from image
-* box
-* button
-* button_exit, inherits from button
-* checkbox
-* dropdown
-* field
-* image
-* image_button
-* item_image_button
-* label
-* list
-* model
-* pwdfield, inherits from field
-* scrollbar
-* tabheader
-* table
-* textarea
-* textlist
-* vertlabel, inherits from label
+* `animated_image`, inherits from image
+* `box`
+* `button`
+* `button_exit`, inherits from button
+* `checkbox`
+* `dropdown`
+* `field`
+* `image`
+* `image_button`
+* `item_image_button`
+* `label`
+* `list`
+* `model`
+* `pwdfield`, inherits from field
+* `scrollbar`
+* `tabheader`
+* `table`
+* `textarea`
+* `textlist`
+* `vertlabel`, inherits from label
 
 ### Valid Properties
 
-* animated_image
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* box
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Defaults to false in formspec_version version 3 or higher
-    * **Note**: `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
-        * Single value (e.g. `#FF0`): All corners/borders.
-        * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
-          top and bottom,left and right.
-        * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
-        * These work similarly to CSS borders.
-    * colors - `ColorString`. Sets the color(s) of the box corners. Default `black`.
-    * bordercolors - `ColorString`. Sets the color(s) of the borders. Default `black`.
-    * borderwidths - Integer. Sets the width(s) of the borders in pixels. If the width is
+* `animated_image`
+    * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
+* `box`
+    * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
+        * Defaults to `false` in formspec version 3 or higher
+    > **Note**: `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
+      * Single value (e.g. `#FF0`): All corners/borders.
+      * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
+        top and bottom,left and right.
+      * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
+      * These work similarly to CSS borders.
+    * `colors` - `ColorString`. Sets the color(s) of the box corners. Default `black`.
+    * `bordercolors` - `ColorString`. Sets the color(s) of the borders. Default `black`.
+    * `borderwidths` - Integer. Sets the width(s) of the borders in pixels. If the width is
       negative, the border will extend inside the box, whereas positive extends outside
       the box. A width of zero results in no border; this is default.
-* button, button_exit, image_button, item_image_button
-    * alpha - boolean, whether to draw alpha in bgimg. Default true.
-    * bgcolor - color, sets button tint.
-    * bgcolor_hovered - color when hovered. Defaults to a lighter bgcolor when not provided.
+* `button`, `button_exit`, `image_button`, `item_image_button`
+    * `alph`a - boolean, whether to draw alpha in bgimg. Default `true`.
+    * `bgcolor` - color, sets button tint.
+    * `bgcolor_hovered` - color when hovered. Defaults to a lighter bgcolor when not provided.
         * This is deprecated, use states instead.
-    * bgcolor_pressed - color when pressed. Defaults to a darker bgcolor when not provided.
+    * `bgcolor_pressed` - color when pressed. Defaults to a darker bgcolor when not provided.
         * This is deprecated, use states instead.
-    * bgimg - standard background image. Defaults to none.
-    * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
+    * `bgimg` - standard background image. Defaults to none.
+    * `bgimg_hovered` - background image when hovered. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
-    * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details. This property also pads the
+    * `bgimg_middle` - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
+                     See `background9[]` documentation for more details. This property also pads the
                      button's content when set.
-    * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
+    * `bgimg_pressed` - background image when pressed. Defaults to `bgimg` when not provided.
         * This is deprecated, use states instead.
-    * font - Sets font type. This is a comma separated list of options. Valid options:
+    * `font` - Sets font type. This is a comma separated list of options. Valid options:
       * Main font type options. These cannot be combined with each other:
         * `normal`: Default font
         * `mono`: Monospaced font
@@ -3142,75 +3135,75 @@ Some types may inherit styles from parent types.
         * `bold`: Makes font bold.
         * `italic`: Makes font italic.
       Default `normal`.
-    * font_size - Sets font size. Default is user-set. Can have multiple values:
+    * `font_size` - Sets font size. Default is user-set. Can have multiple values:
       * `<number>`: Sets absolute font size to `number`.
       * `+<number>`/`-<number>`: Offsets default font size by `number` points.
       * `*<number>`: Multiplies default font size by `number`, similar to CSS `em`.
-    * border - boolean, draw border. Set to false to hide the bevelled button pane. Default true.
-    * content_offset - 2d vector, shifts the position of the button's content without resizing it.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * padding - rect, adds space between the edges of the button and the content. This value is
+    * `border` - boolean, draw border. Set to `false` to hide the bevelled button pane. Default `true`.
+    * `content_offset` - 2d vector, shifts the position of the button's content without resizing it.
+    * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
+    * `padding` - rect, adds space between the edges of the button and the content. This value is
                 relative to bgimg_middle.
-    * sound - a sound to be played when triggered.
-    * textcolor - color, default white.
-* checkbox
+    * `sound` - a sound to be played when triggered.
+    * `textcolor` - color, default `white`.
+* `checkbox`
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * sound - a sound to be played when triggered.
-* dropdown
+* `dropdown`
     * noclip - boolean, set to true to allow the element to exceed formspec bounds.
     * sound - a sound to be played when the entry is changed.
-* field, pwdfield, textarea
-    * border - set to false to hide the textbox background and border. Default true.
-    * font - Sets font type. See button `font` property for more information.
-    * font_size - Sets font size. See button `font_size` property for more information.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * textcolor - color. Default white.
-* model
-    * bgcolor - color, sets background color.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
-* image
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-        * Default to false in formspec_version version 3 or higher
-* item_image
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds. Default to false.
-* label, vertlabel
-    * font - Sets font type. See button `font` property for more information.
-    * font_size - Sets font size. See button `font_size` property for more information.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* list
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * size - 2d vector, sets the size of inventory slots in coordinates.
-    * spacing - 2d vector, sets the space between inventory slots in coordinates.
-* image_button (additional properties)
-    * fgimg - standard image. Defaults to none.
-    * fgimg_hovered - image when hovered. Defaults to fgimg when not provided.
+* `field`, `pwdfield`, `textarea`
+    * `border` - set to `false` to hide the textbox background and border. Default `true`.
+    * `font` - Sets font type. See button `font` property for more information.
+    * `font_size` - Sets font size. See button `font_size` property for more information.
+    * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
+    * `textcolor` - color. Default `white`.
+* `model`
+    * `bgcolor` - color, sets background color.
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+        * Default to `false` since formspec version 3
+* `image`
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+        * Default to `false` since formspec version 3
+* `item_image`
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds. Default to `false`.
+* `label, vertlabel`
+    * `font` - Sets font type. See button `font` property for more information.
+    * `font_size` - Sets font size. See button `font_size` property for more information.
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+* `list`
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+    * `size` - 2d vector, sets the size of inventory slots in coordinates.
+    * `spacing` - 2d vector, sets the space between inventory slots in coordinates.
+* `image_button (additional properties)`
+    * `fgimg` - standard image. Defaults to none.
+    * `fgimg_hovered` - image when hovered. Defaults to `fgimg` when not provided.
         * This is deprecated, use states instead.
-    * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
+    * `fgimg_pressed` - image when pressed. Defaults to `fgimg` when not provided.
         * This is deprecated, use states instead.
-    * fgimg_middle - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details.
-    * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
-    * sound - a sound to be played when triggered.
-* scrollbar
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-* tabheader
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
-    * sound - a sound to be played when a different tab is selected.
-    * textcolor - color. Default white.
-* table, textlist
-    * font - Sets font type. See button `font` property for more information.
-    * font_size - Sets font size. See button `font_size` property for more information.
-    * noclip - boolean, set to true to allow the element to exceed formspec bounds.
+    * `fgimg_middle` - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
+                     See `background9[]` documentation for more details.
+    > **Info**: The parameters of any given `image_button` will take precedence over `fgimg`/`fgimg_pressed`
+    * `sound` - a sound to be played when triggered.
+* `scrollbar`
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+* `tabheader`
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
+    * `sound` - a sound to be played when a different tab is selected.
+    * `textcolor` - color. Default `white`.
+* `table, textlist`
+    * `font` - Sets font type. See button `font` property for more information.
+    * `font_size` - Sets font size. See button `font_size` property for more information.
+    * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
 
 ### Valid States
 
 * *all elements*
-    * default - Equivalent to providing no states
-* button, button_exit, image_button, item_image_button
-    * focused - Active when button has focus
-    * hovered - Active when the mouse is hovering over the element
-    * pressed - Active when the button is pressed
+    * `default` - Equivalent to providing no states
+* `button`, `button_exit`, `image_button`, `item_image_button`
+    * `focused` - Active when button has focus
+    * `hovered` - Active when the mouse is hovering over the element
+    * `pressed` - Active when the button is pressed
 
 ## Markup Language
 
@@ -3831,8 +3824,9 @@ was translated by the client.
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
 
-IMPORTANT: This functionality should only be used for sorting, filtering or similar purposes.
-You do not need to use this to get translated strings to show up on the client.
+> **Warning**: This functionality should only be used for sorting, filtering or
+similar purposes. You do not need to use this to get translated strings to show
+up on the client.
 
 
 
@@ -3922,8 +3916,7 @@ size of the finest detail you require. For example:
 if `spread` is 512 nodes, `lacunarity` is 2.0 and finest detail required is 16
 nodes, octaves will be 6 because the 'wavelengths' of the octaves will be
 512, 256, 128, 64, 32, 16 nodes.
-> **Warning**:
-If the 'wavelength' of any octave falls below 1 an error will occur.
+> **Warning**: If the 'wavelength' of any octave falls below 1 an error will occur.
 
 ### `persistence`
 
@@ -4089,9 +4082,8 @@ noise_params = {
 noise_threshold = 1.6
 ```
 
-> **Warning**:
-Use this ore type *very* sparingly since it is ~200x more computationally
-expensive than any other ore.
+> **Warning**: Use this ore type *very* sparingly since it is ~200x more computationally
+  expensive than any other ore.
 
 ### `stratum`
 
@@ -4417,8 +4409,7 @@ inside the VoxelManip.
     * returns actual emerged `pmin`, actual emerged `pmax`
 * `write_to_map([light])`: Writes the data loaded from the `VoxelManip` back to
   the map.
-    * **important**: data must be set using `VoxelManip:set_data()` before
-      calling this.
+    > **Info**: Data must be set using `VoxelManip:set_data()` before calling this.
     * if `light` is true, then lighting is automatically recalculated.
       The default value is true.
       If `light` is false, no light calculations happen, and you should correct
@@ -4521,17 +4512,20 @@ it is often useful to know the index of a neighboring or nearby position.
 The table below shows the changes of index required for 1 node movements along
 the axes in a voxel area:
 
-    Movement    Change of index
-    +x          +1
-    -x          -1
-    +y          +ystride
-    -y          -ystride
-    +z          +zstride
-    -z          -zstride
+| Movement | Change of index |
+|----------|-----------------|
+| +x       | +1              |
+| -x       | -1              |
+| +y       | +ystride        |
+| -y       | -ystride        |
+| +z       | +zstride        |
+| -z       | -zstride        |
 
 If, for example:
 
-    local area = VoxelArea(emin, emax)
+```lua
+local area = VoxelArea(emin, emax)
+```
 
 The values of `ystride` and `zstride` can be obtained using `area.ystride` and
 `area.zstride`.
@@ -5122,10 +5116,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
-    > **Warning**:
-      This alters the biome to biome ID correspondences, so any decorations
-      or ores using the 'biomes' field must afterwards be cleared and
-      re-registered.
+    > **Warning**: This alters the biome to biome ID correspondences, so any
+      decorations or ores using the 'biomes' field must afterwards be cleared
+      and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -5142,8 +5135,7 @@ Call these functions only at load time!
       filename.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
-    > **Warning**:
-      Clearing and re-registering biomes alters the biome to biome ID
+    > **Warning**: Clearing and re-registering biomes alters the biome to biome ID
       correspondences, so any decorations or ores using the 'biomes' field must
       afterwards be cleared and re-registered.
 * `minetest.clear_registered_decorations()`
@@ -5164,10 +5156,9 @@ Call these functions only at load time!
       `minetest.register_craft(recipe)`. For output specify only the item,
       without a quantity.
     * Returns false if no erase candidate could be found, otherwise returns true.
-    > **Warning**:
-      The type field ("shaped", "cooking" or any other) will be ignored if
-      the recipe contains output. Erasing is then done independently from
-      the crafting method.
+    > **Warning**: The type field ("shaped", "cooking" or any other) will be ignored
+      if the recipe contains output. Erasing is then done independently from the
+      crafting method.
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
 * `minetest.override_chatcommand(name, redefinition)`
     * Overrides fields of a chatcommand registered with `register_chatcommand`.
@@ -5195,10 +5186,8 @@ Call these functions only at load time!
       aliases handled.
 * `minetest.register_on_shutdown(function())`
     * Called before server shutdown
-    > **Warning**:
-      If the server terminates abnormally (i.e. crashes), the registered
-      callbacks **will likely not be run**. Data should be saved at semi-
-      frequent intervals as well as on server shutdown.
+    > **Warning**: If the server terminates abnormally (i.e. crashes), the registered
+      callbacks **will likely not be run**. Data should be saved at semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
@@ -6033,11 +6022,11 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
     * returns the leftover itemstack
-    * **Note**: This function is deprecated and will never be called.
+    > **Warning**: This function is deprecated and will never be called.
 * `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
     * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
-    * **Note**: is not called when wielded item overrides `on_place`
+    > **Note**: Is not called when wielded item overrides `on_place`
     * `param2` overrides facedir and wallmounted `param2`
     * returns `itemstack, position`
       * `position`: the location the node was placed to. `nil` if nothing was placed.
@@ -6291,12 +6280,11 @@ Variables:
     * `force_placement` is a boolean indicating whether nodes other than `air`
       and `ignore` are replaced by the schematic.
     * Returns nil if the schematic could not be loaded.
-    > **Warning**:
-      Once you have loaded a schematic from a file, it will be cached.
-      Future calls will always use the cached version and the replacement
-      list defined for it, regardless of whether the file or the replacement
-      list parameters have changed. The only way to load the file anew is to
-      restart the server.
+    > **Warning**: Once you have loaded a schematic from a file, it will be cached.
+      Future calls will always use the cached version and the replacement list
+      defined for it, regardless of whether the file or the replacement list
+      parameters have changed. The only way to load the file anew is to restart the
+      server.
     * `flags` is a flag field with the available flags:
         * place_center_x
         * place_center_y
@@ -6431,8 +6419,7 @@ Variables:
     * styled: Outputs in a human-readable format if this is set, defaults to
       false.
     * Unserializable things like functions and userdata will cause an error.
-    > **Warning**:
-      JSON is more strict than the Lua table format.
+    > **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as
            keys.
         2. You cannot mix string and integer keys.
@@ -6908,10 +6895,10 @@ Can be obtained via `item:get_meta()`.
 Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
 and [`PlayerMetaRef`].
 
-Note: If a metadata value is in the format `${k}`, an attempt to get the value
-will return the value associated with key `k`. There is a low recursion limit.
-This behavior is **deprecated** and will be removed in a future version. Usage
-of the `${k}` syntax in formspecs is not deprecated.
+> **Info**: If a metadata value is in the format `${k}`, an attempt to get the value
+will return the value associated with key `k`. There is a low recursion limit. This
+behavior is **deprecated** and will be removed in a future version. Usage of the
+`${k}` syntax in formspecs is not deprecated.
 
 ### Methods
 
@@ -7067,8 +7054,8 @@ values and changes via their setter counterparts are ignored.
 
 To change position or rotation call `set_attach` again with the new values.
 
-**Note**: Just like model dimensions, the relative position in `set_attach`
-must be multiplied by 10 compared to world positions.
+> **Note**: Just like model dimensions, the relative position in `set_attach` must
+  be multiplied by 10 compared to world positions.
 
 It is also possible to attach to a bone of the parent object. In that case the
 child will follow movement and rotation of that bone.
@@ -7203,21 +7190,23 @@ child will follow movement and rotation of that bone.
     * `framelength`: Time per animated frame in seconds, default: `0.2`
     * `select_x_by_camera`: Only for visual = `sprite`. Changes the frame `x`
       position according to the view direction. default: `false`.
-        * First column:  subject facing the camera
+        * First column: subject facing the camera
         * Second column: subject looking to the left
-        * Third column:  subject backing the camera
+        * Third column: subject backing the camera
         * Fourth column: subject looking to the right
-        * Fifth column:  subject viewed from above
-        * Sixth column:  subject viewed from below
-* `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
+        * Fifth column: subject viewed from above
+        * Sixth column: subject viewed from below
+* `get_entity_name()`
+  > **Warning**: Deprecated, will be removed in a future version, use the field `self.name` instead
 * `get_luaentity()`
 
 #### Player only (no-op for other objects)
 
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
-  table {x, y, z} representing the player's instantaneous velocity in nodes/s
-* `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
+* `get_player_velocity()`: table {x, y, z} representing the player's instantaneous velocity in nodes/s
+  > **Warning**: Deprecated, use `get_velocity` instead
+* `add_player_velocity(vel)`:
+  > **Warning**: Deprecated, use `add_velocity(vel)` instead
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
@@ -7232,13 +7221,13 @@ child will follow movement and rotation of that bone.
   `get_look_vertical`.
     * Angle ranges between -pi/2 and pi/2, which are straight down and up
       respectively.
-* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use
-  `get_look_horizontal`.
+* `get_look_yaw()`: get yaw in radians
     * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use
-  `set_look_vertical`.
-* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use
-  `set_look_horizontal`.
+  > **Warning**: Deprecated as broken, use `get_look_horizontal` instead
+* `set_look_pitch(radians)`: sets look pitch
+  > **Warning**: Deprecated, use `set_look_vertical` instead
+* `set_look_yaw(radians)`: sets look yaw
+  > **Warning**: Deprecated, use `set_look_horizontal` instead
 * `get_breath()`: returns player's breath
 * `set_breath(value)`: sets player's breath
     * values:
@@ -7258,11 +7247,12 @@ child will follow movement and rotation of that bone.
     * Server-sent FOV value. Returns 0 if an FOV override doesn't exist.
     * Boolean indicating whether the FOV value is a multiplier.
     * Time (in seconds) taken for the FOV transition. Set by `set_fov`.
-* `set_attribute(attribute, value)`:  DEPRECATED, use get_meta() instead
+* `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
     * `value` must be a string, or a number which will be converted to a
       string.
     * If `value` is `nil`, remove attribute from player.
+    > **Warning**: Deprecated, use `get_meta` instead
 * `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
     * Returns value (a string) for extra attribute.
     * Returns `nil` if no attribute found.
@@ -7289,16 +7279,16 @@ child will follow movement and rotation of that bone.
 * `get_player_control_bits()`: returns integer with bit packed player pressed
   keys.
     * Bits:
-        * 0 - up
-        * 1 - down
-        * 2 - left
-        * 3 - right
-        * 4 - jump
-        * 5 - aux1
-        * 6 - sneak
-        * 7 - dig
-        * 8 - place
-        * 9 - zoom
+        * `0` - up
+        * `1` - down
+        * `2` - left
+        * `3` - right
+        * `4` - jump
+        * `5` - aux1
+        * `6` - sneak
+        * `7` - dig
+        * `8` - place
+        * `9` - zoom
     * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
@@ -7396,23 +7386,19 @@ child will follow movement and rotation of that bone.
             * `dawn_sky`: ColorSpec, for the top half of the sky during dawn/sunset.
               (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              > **Warning**:
-              The darkening of the ColorSpec is subject to change.
+              > **Warning**: The darkening of the ColorSpec is subject to change.
             * `dawn_horizon`: ColorSpec, for the bottom half of the sky during dawn/sunset.
               (default: `#bac1f0`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              > **Warning**:
-              The darkening of the ColorSpec is subject to change.
+              > **Warning**: The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the sky during the night.
               (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              > **Warning**:
-              The darkening of the ColorSpec is subject to change.
+              > **Warning**: The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the sky during the night.
               (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              > **Warning**:
-              The darkening of the ColorSpec is subject to change.
+              > **Warning**: The darkening of the ColorSpec is subject to change.
             * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
@@ -7459,8 +7445,7 @@ child will follow movement and rotation of that bone.
         * `scale`: Float controlling the overall size of the sun. (default: `1`)
             Note: For legacy reasons, the sun is bigger than the moon by a factor
             of about `1.57` for equal `scale` values.
-* `get_sun()`: returns a table with the current sun parameters as in
-    `set_sun`.
+* `get_sun()`: returns a table with the current sun parameters as in `set_sun`.
 * `set_moon(moon_parameters)`:
     * Passing no arguments resets the moon to its default values.
     * `moon_parameters` is a table with the following optional fields:
@@ -7477,8 +7462,7 @@ child will follow movement and rotation of that bone.
         * `scale`: Float controlling the overall size of the moon (default: `1`)
             Note: For legacy reasons, the sun is bigger than the moon by a factor
             of about `1.57` for equal `scale` values.
-* `get_moon()`: returns a table with the current moon parameters as in
-    `set_moon`.
+* `get_moon()`: returns a table with the current moon parameters as in `set_moon`.
 * `set_stars(star_parameters)`:
     * Passing no arguments resets stars to their default values.
     * `star_parameters` is a table with the following optional fields:
@@ -7494,8 +7478,7 @@ child will follow movement and rotation of that bone.
             alpha channel is used to set overall star brightness.
             (default: `#ebebff69`)
         * `scale`: Float controlling the overall size of the stars (default: `1`)
-* `get_stars()`: returns a table with the current stars parameters as in
-    `set_stars`.
+* `get_stars()`: returns a table with the current stars parameters as in `set_stars`.
 * `set_clouds(cloud_parameters)`: set cloud parameters
     * Passing no arguments resets clouds to their default values.
     * `cloud_parameters` is a table with the following optional fields:
@@ -7509,8 +7492,7 @@ child will follow movement and rotation of that bone.
         * `thickness`: cloud thickness in nodes (default `16`)
         * `speed`: 2D cloud speed + direction in nodes per second
           (default `{x=0, z=-2}`).
-* `get_clouds()`: returns a table with the current cloud parameters as in
-  `set_clouds`.
+* `get_clouds()`: returns a table with the current cloud parameters as in `set_clouds`.
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
@@ -7766,9 +7748,8 @@ The settings have the format `key = value`. Example:
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
 
-> **Warning**:
-This storage backend is incapable of saving raw binary data due to
-restrictions of JSON.
+> **Warning**: This storage backend is incapable of saving raw binary
+  data due to restrictions of JSON.
 
 ### Methods
 
