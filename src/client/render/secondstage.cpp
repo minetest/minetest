@@ -130,8 +130,10 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 	const bool enable_ssaa = antialiasing == "ssaa";
 	const bool enable_fxaa = antialiasing == "fxaa";
 
-	if (enable_ssaa)
-		scale *= 2.0;
+	if (enable_ssaa) {
+		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
+		scale *= ssaa_scale;
+	}
 
 	buffer->setTexture(TEXTURE_COLOR, scale, "3d_render", color_format);
 	buffer->setTexture(TEXTURE_EXPOSURE_1, core::dimension2du(1,1), "exposure_1", color_format, /*clear:*/ true);
