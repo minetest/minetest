@@ -1,7 +1,4 @@
 # Minetest Lua Mainmenu API Reference 5.8.0
-
-[Table of Contents](#table-of-contents)
-
 ## Introduction
 
 The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
@@ -387,43 +384,3 @@ It looks for a `main_menu` sound in `$USER_PATH/sounds`. The same naming
 conventions as for normal sounds apply.
 This means the player can add a custom sound.
 It will be played in the main menu (gain = 1.0), looped.
-
-
-
-# Table of Contents
-
-* [Introduction](#introduction)
-
-* [Callbacks](#callbacks)
-
-* [Gamedata](#gamedata)
-
-* [Functions](#functions)
-    * [Filesystem](#filesystem)
-    * [Network](#network)
-    * [Media](#media)
-
-* [Misc.](#misc)
-
-* [HTTP Requests](#http-requests)
-    * [`HTTPRequest` Definition](#httprequest-definition)
-    * [`HTTPRequestResult` Definition](#httprequestresult-definition)
-
-* [Formspec](#formspec)
-
-* [GUI](#gui)
-
-* [Content and Packages](#content-and-packages)
-
-* [Logging](#logging)
-
-* [Settings](#settings)
-
-* [Worlds](#worlds)
-
-* [Helpers](#helpers)
-
-* [Async](#async)
-    * [Limitations of Async Operations](#limitations-of-async-operations)
-
-* [Background Music](#background-music)

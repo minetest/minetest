@@ -3,8 +3,6 @@
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
-[Table of Contents](#table-of-contents)
-
 ## Introduction
 
 > **Warning**: The client API is currently unstable, and may break/change without warning.
@@ -1568,81 +1566,3 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 * `alignment`: The alignment of the image.
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
-
-
-
-# Table of Contents
-
-* [Introduction](#introduction)
-
-* [Programming in Lua](#programming-in-lua)
-
-* [Startup](#startup)
-
-* [Paths](#paths)
-    * [Mod load path](#mod-load-path)
-    * [Modpack support](#modpack-support)
-
-* [Naming convention for registered textual names](#naming-convention-for-registered-textual-names)
-    * [Example](#example)
-
-* [Sounds](#sounds)
-    * [SimpleSoundSpec](#simplesoundspec)
-
-* [Representations of simple things](#representations-of-simple-things)
-    * [Position/vector](#positionvector)
-    * [pointed_thing](#pointed_thing)
-
-* [Flag Specifier Format](#flag-specifier-format)
-
-* [Formspec](#formspec)
-    * [Examples](#examples)
-    * [Elements](#elements)
-
-* [Spatial Vectors](#spatial-vectors)
-
-* [Helper functions](#helper-functions)
-
-* [Minetest namespace reference](#minetest-namespace-reference)
-    * [Utilities](#utilities)
-    * [Logging](#logging)
-    * [Global callback registration functions](#global-callback-registration-functions)
-    * [Sounds](#sounds-1)
-    * [Timing](#timing)
-    * [Map](#map)
-    * [Player](#player)
-    * [Privileges](#privileges)
-    * [Client Environment](#client-environment)
-    * [Storage API](#storage-api)
-    * [Mod channels](#mod-channels)
-    * [Particles](#particles)
-    * [Misc.](#misc)
-    * [UI](#ui)
-
-* [Setting-Related](#setting-related)
-
-* [Class Reference](#class-reference)
-    * [ModChannel](#modchannel)
-    * [Minimap](#minimap)
-    * [Camera](#camera)
-    * [`LocalPlayer`](#localplayer)
-    * [`Settings`](#settings)
-    * [`NodeMetaRef`](#nodemetaref)
-    * [`Raycast`](#raycast)
-
-* [Definitions](#definitions)
-    * [Node Definition](#node-definition)
-    * [Item Definition](#item-definition)
-    * [Chat Command Definition](#chat-command-definition-register_chatcommand)
-    * [Server Information](#server-information)
-    * [HUD Definition](#hud-definition-hud_add-hud_get)
-    * [Particle Definition](#particle-definition-add_particle)
-    * [`ParticleSpawner` Definition](#particlespawner-definition-add_particlespawner)
-
-* [Escape Sequences](#escape-sequences)
-
-* [`ColorString`](#colorstring)
-    * [`Color`](#color)
-
-* [HUD Element Types](#hud-element-types)
-    * [List of Elements](#list-of-elements)

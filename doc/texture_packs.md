@@ -3,8 +3,6 @@
 Texture packs allow you to replace textures provided by a mod with your own
 textures.
 
-[Table of Contents](#table-of-contents)
-
 
 
 # Texture pack directory structure
@@ -266,24 +264,3 @@ faces for any solid volume of leaves, not the internal faces.
 Due to this the `tiles` texture might appear lacking in density, so optionally a
 `special_tiles` texture can be used to provide a texture with fewer transparent
 pixels for a denser appearance.
-
-
-
-# Table of Contents
-
-* [Texture pack directory structure](#texture-pack-directory-structure)
-
-* [Files](#files)
-
-* [Texture modifiers](#texture-modifiers)
-
-* [Special textures](#special-textures)
-    * [Gameplay textures](#gameplay-textures)
-    * [Mainmenu textures](#mainmenu-textures)
-    * [Android textures](#android-textures)
-
-* [Texture Overrides](#texture-overrides)
-    * [Using the special targets](#using-the-special-targets)
-    * [Fancy](#fancy)
-    * [Opaque](#opaque)
-    * [Simple](#simple)
