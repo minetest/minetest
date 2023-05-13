@@ -246,7 +246,7 @@ struct PlayerHPChangeReason
 	ServerActiveObject *object = nullptr;
 	// For NODE_DAMAGE
 	std::string node;
-    v3s16 node_pos;
+	v3s16 node_pos;
 
 	inline bool hasLuaReference() const { return lua_reference >= 0; }
 
