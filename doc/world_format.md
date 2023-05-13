@@ -1,7 +1,5 @@
 # Minetest World Format 22...29
 
-[Table of Contents](#table-of-contents)
-
 This applies to a world format carrying the block serialization version
 22...27, used at least in
 * `0.4.dev-20120322` ... `0.4.dev-20120606` (22...23)
@@ -616,43 +614,3 @@ The wear value in tools is 0...65535
     Empty
     EndInventoryList
     EndInventory
-
-# Table of Contents
-
-* [Files](#files)
-
-* [`auth.txt`](#authtxt)
-
-* [`auth.sqlite`](#authsqlite)
-
-* [`env_meta.txt`](#env_metatxt)
-    * [`ipban.txt`](#ipbantxt)
-    * [`map_meta.txt`](#map_metatxt)
-    * [`map.sqlite`](#mapsqlite)
-    * [`player1`, `Foo`](#player1-foo)
-    * [`world.mt`](#worldmt)
-
-* [Player File Format](#player-file-format)
-
-* [Map File Format](#map-file-format)
-    * [History](#history)
-    * [`map.sqlite`](#mapsqlite-1)
-    * [Position Hashing](#position-hashing)
-    * [Blob](#blob)
-
-* [MapBlock Serialization Format](#mapblock-serialization-format)
-    * [Node Data](#node-data)
-    * [Node Timers](#node-timers)
-
-* [Format of Nodes](#format-of-nodes)
-
-* [Name-ID-Mapping](#name-id-mapping)
-
-* [Node Metadata Format](#node-metadata-format-before-map-format-version-23)
-
-* [Static Objects](#static-objects)
-
-* [Itemstring Format](#itemstring-format)
-
-* [Inventory Serialization Format](#inventory-serialization-format)
-    * [Example](#example)
