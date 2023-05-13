@@ -10,32 +10,28 @@ due to limited capabilities of common devices. What can be done is described bel
 
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
-* Look around: touch screen and slide finger
+* Look around: Touch screen and slide finger
 * Double tap: Place a node
 * Long tap: Dig node or use the holding item
 * Press back: Pause menu
 * Touch buttons: Press button
 * Buttons:
-
-1. Left upper corner: Chat
-2. Right lower corner: Jump
-3. Right lower corner: Crouch
-4. Left lower corner (Joystick): Walk/step...
-5. Left lower corner: Display inventory
+  1. Upper left corner: Chat
+  2. Lower right corner: Jump/Crouch
+  4. Lower left corner (Joystick): Walk/step/Display inventory
 
 When a menu or inventory is displayed:
-* Double tap outside menu area: Close menu
-* Press back: Close menu
+* Double tap outside menu area/Press back: Close menu
 * Tap on an item stack: Select that stack
-* Tap on an empty slot: If a stack are selected already, that stack is placed here
+* Tap on an empty slot: If a stack is selected already, that stack is placed here
 * Drag and drop: Touch stack and hold finger down, move the stack to another
   slot, tap another finger while keeping first finger on screen
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
 
 ### Limitations
-* Android player have to double tap to place node, this can be annoying in some game/mod
-* Some old Android device only support 2 touch at a time, some game/mod contain button combination that need 3 touch (example: jump + Aux1 + hold)
-* Complicated control like pick up an cart in MTG can be difficult or impossible on Android device
+* Android players have to double tap to place node, this can be annoying in some games/mods
+* Some old Android devices only support 2 touches at a time, some games/mods contain button combinations that need 3 touches (example: jump + Aux1 + hold)
+* Complicated controls like picking up a cart in MTG can be difficult or impossible on Android device
 
 ## File Path
 There are some settings especially useful for Android users. The Minetest-wide
@@ -49,16 +45,18 @@ configuration file can usually be found at:
     * `/storage/emulated/(varying folder name)/Android/data/net.minetest.minetest/` if stored on the SD card
 * [Learn more about Android directory](https://wiki.minetest.net/Accessing_Android_Data_Directory)
 
-## Useful settings
+## Useful Settings
 
-### gui_scaling
-this is a user-specified scaling factor for the GUI in case main menu is too big or small on your device, try changing this value.
+### `gui_scaling`
+This is a user-specified scaling factor for the GUI. If the main menu is too big or small on your device, try changing
+this value.
 
-### mapblock_limit
-Mobile device generally have less RAM than PC, this setting limit how many mapblock can keep in RAM
+### `mapblock_limit`
+Mobile devices generally have less RAM than PC, this setting limits how many mapblock can be kept in RAM.
 
-### fps_limit
-this setting limit max FPS (Frame per second). Default value is 60, which lowest Android device screen refresh rate commonly found, but if you're using an device have lower refresh rate, change this
+### `fps_limit`
+This setting limits maximum FPS (frames per second). The default value is `60`, which is the lowest commonly found
+Android refresh rate, but if you're using a device that has a lower refresh rate, change this.
 
 ## Requirements
 The minimal and recommended system requirements for Minetest are listed below.
@@ -117,13 +115,12 @@ When using gradlew, the newest NDK will be downloaded and installed
 automatically. Or you can create a `local.properties` file and specify
 `sdk.dir` and `ndk.dir` yourself.
 
-* In order to make a release build you'll have to have a keystore setup to sign
-  the resulting apk package. How this is done is not part of this README. There
-  are different tutorials on the web explaining how to do it
-  - choose one yourself.
+* In order to make a release build, you'll have to have a keystore setup to sign
+  the resulting APK package. How this is done is not part of this README. There
+  are different tutorials on the web explaining how to do it, choose one yourself.
 
 * Once your keystore is setup, enter the android subdirectory and create a new
-  file "ant.properties" there. Add following lines to that file:
+  file called `ant.properties` there. Add the following lines to that file:
 
   > key.store=<path to your keystore>
   > key.alias=Minetest
