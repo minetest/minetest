@@ -2,31 +2,28 @@
 
 ## Requirements
 
-- [Visual Studio 2015 or newer](https://visualstudio.microsoft.com)
-- [CMake](https://cmake.org/download/)
-- [vcpkg](https://github.com/Microsoft/vcpkg)
-- [Git](https://git-scm.com/downloads)
-
+* [Visual Studio 2015 or newer](https://visualstudio.microsoft.com)
+* [CMake](https://cmake.org/download/)
+* [vcpkg](https://github.com/Microsoft/vcpkg)
+* [Git](https://git-scm.com/downloads)
 
 ## Compiling and installing the dependencies
 
 It is highly recommended to use vcpkg as package manager.
 
 After you successfully built vcpkg you can easily install the required libraries:
-```powershell
-vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry --triplet x64-windows
-```
 
-- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
-- `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
-- `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
-- `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
-- `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
+	vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry --triplet x64-windows
+
+* **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
+* `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
+* `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
+* `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
+* `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
 
 There are other optional libraries, but they are not tested if they can build and link correctly.
 
 Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-windows`.
-
 
 ## Compile Minetest
 
@@ -51,10 +48,9 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 
 Run the following script in PowerShell:
 
-```powershell
-cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
-cmake --build . --config Release
-```
+	cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
+	cmake --build . --config Release
+
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
 
 
