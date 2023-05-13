@@ -108,7 +108,7 @@ public class GameActivity extends NativeActivity {
 		editText.setMaxLines(8);
 		editText.setHint(hint);
 		editText.setText(current);
-		editText.setBackgroundColor("#55ffffff");
+		editText.setBackgroundColor(0x55ffffff);
 		editText.requestFocus();
 		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED,
