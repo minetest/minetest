@@ -106,7 +106,6 @@ public class GameActivity extends NativeActivity {
 		}
 		container.addView(editText);
 		editText.setMaxLines(8);
-		editText.setMaxLength(65536);
 		editText.setHint(hint);
 		editText.setText(current);
 		editText.setBackgroundColor("#55ffffff");
