@@ -18,7 +18,7 @@ shown), the following controls are available:
 * Buttons:
   1. Upper left corner: Chat
   2. Lower right corner: Jump/Crouch
-  4. Lower left corner (Joystick): Walk/step/Display inventory
+  3. Lower left corner (Joystick): Walk/step/Display inventory
 
 When a menu or inventory is displayed:
 * Double tap outside menu area/Press back: Close menu
