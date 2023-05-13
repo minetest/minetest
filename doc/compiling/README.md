@@ -1,42 +1,41 @@
 # Compiling Minetest
 
-- [Compiling on GNU/Linux](linux.md)
-- [Compiling on Windows](windows.md)
-- [Compiling on MacOS](macos.md)
-
+* [Compiling on GNU/Linux](linux.md)
+* [Compiling on Windows](windows.md)
+* [Compiling on MacOS](macos.md)
 
 ## CMake options
 
 General options and their default values:
 
-    BUILD_CLIENT=TRUE          - Build Minetest client
-    BUILD_SERVER=FALSE         - Build Minetest server
-    BUILD_UNITTESTS=TRUE       - Build unittest sources
-    BUILD_BENCHMARKS=FALSE     - Build benchmark sources
-    CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
-        Release                - Release build
-        Debug                  - Debug build
-        SemiDebug              - Partially optimized debug build
-        RelWithDebInfo         - Release build with debug information
-        MinSizeRel             - Release build with -Os passed to compiler to make executable as small as possible
-    ENABLE_CURL=ON             - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
-    ENABLE_CURSES=ON           - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
-    ENABLE_GETTEXT=ON          - Build with Gettext; Allows using translations
-    ENABLE_LEVELDB=ON          - Build with LevelDB; Enables use of LevelDB map backend
-    ENABLE_POSTGRESQL=ON       - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
-    ENABLE_REDIS=ON            - Build with libhiredis; Enables use of Redis map backend
-    ENABLE_SPATIAL=ON          - Build with LibSpatial; Speeds up AreaStores
-    ENABLE_SOUND=ON            - Build with OpenAL, libogg & libvorbis; in-game sounds
-    ENABLE_LUAJIT=ON           - Build with LuaJIT (much faster than non-JIT Lua)
-    ENABLE_PROMETHEUS=OFF      - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
-    ENABLE_SYSTEM_GMP=ON       - Use GMP from system (much faster than bundled mini-gmp)
-    ENABLE_SYSTEM_JSONCPP=ON   - Use JsonCPP from system
-    RUN_IN_PLACE=FALSE         - Create a portable install (worlds, settings etc. in current directory)
-    ENABLE_UPDATE_CHECKER=TRUE - Whether to enable update checks by default
-    INSTALL_DEVTEST=FALSE      - Whether the Development Test game should be installed alongside Minetest
-    USE_GPROF=FALSE            - Enable profiling using GProf
-    VERSION_EXTRA=             - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
-    ENABLE_TOUCH=FALSE         - Enable Touchscreen support (requires support by IrrlichtMt)
+    BUILD_CLIENT=TRUE               - Build Minetest client
+    BUILD_SERVER=FALSE              - Build Minetest server
+    BUILD_UNITTESTS=TRUE            - Build unittest sources
+    BUILD_BENCHMARKS=FALSE          - Build benchmark sources
+    CMAKE_BUILD_TYPE=Release        - Type of build (Release vs. Debug)
+        Release                     - Release build
+        Debug                       - Debug build
+        SemiDebug                   - Partially optimized debug build
+        RelWithDebInfo              - Release build with debug information
+        MinSizeRel                  - Release build with -Os passed to compiler to make executable as small as possible
+    ENABLE_CURL=ON                  - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
+    ENABLE_CURSES=ON                - Build with (n)curses; Enables a server side terminal (command line option: --terminal)
+    ENABLE_GETTEXT=ON               - Build with Gettext; Allows using translations
+    ENABLE_LEVELDB=ON               - Build with LevelDB; Enables use of LevelDB map backend
+    ENABLE_POSTGRESQL=ON            - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
+    ENABLE_REDIS=ON                 - Build with libhiredis; Enables use of Redis map backend
+    ENABLE_SPATIAL=ON               - Build with LibSpatial; Speeds up AreaStores
+    ENABLE_SOUND=ON                 - Build with OpenAL, libogg & libvorbis; in-game sounds
+    ENABLE_LUAJIT=ON                - Build with LuaJIT (much faster than non-JIT Lua)
+    ENABLE_PROMETHEUS=OFF           - Build with Prometheus metrics exporter (listens on tcp/30000 by default)
+    ENABLE_SYSTEM_GMP=ON            - Use GMP from system (much faster than bundled mini-gmp)
+    ENABLE_SYSTEM_JSONCPP=ON        - Use JsonCPP from system
+    RUN_IN_PLACE=FALSE              - Create a portable install (worlds, settings etc. in current directory)
+    ENABLE_UPDATE_CHECKER=TRUE      - Whether to enable update checks by default
+    INSTALL_DEVTEST=FALSE           - Whether the Development Test game should be installed alongside Minetest
+    USE_GPROF=FALSE                 - Enable profiling using GProf
+    VERSION_EXTRA=                  - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+    ENABLE_TOUCH=FALSE              - Enable Touchscreen support (requires support by IrrlichtMt)
 
 Library specific options:
 
