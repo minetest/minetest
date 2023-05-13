@@ -1,11 +1,17 @@
-Minetest Texture Pack Reference
-===============================
+# Minetest Texture Pack Reference
 
 Texture packs allow you to replace textures provided by a mod with your own
 textures.
 
-Texture pack directory structure
---------------------------------
+[Table of Contents](#table-of-contents)
+
+
+
+# Texture pack directory structure
+
+This is a directory containing the entire contents of a single texture pack.
+It can be chosen more or less freely and will also become the name of the
+texture pack. The name must not be “base”.
 
     textures
     |-- Texture Pack
@@ -17,11 +23,7 @@ Texture pack directory structure
     |   |-- your_texture_2.png
     `-- Another Texture Pack
 
-### Texture Pack
-This is a directory containing the entire contents of a single texture pack.
-It can be chosen more or less freely and will also become the name of the
-texture pack. The name must not be “base”.
-
+## Files
 ### `texture_pack.conf`
 A key-value config file with the following keys:
 
@@ -48,19 +50,21 @@ The custom textures do not necessarily require the same size as their
 originals, but this might be required for a few particular textures. When
 unsure, just test your texture pack in-game.
 
-Texture modifiers
------------------
 
-See lua_api.md for texture modifiers
 
-Special textures
-----------------
+# Texture modifiers
+
+See `lua_api.md` for information texture modifier information
+
+
+
+# Special textures
 
 These texture names are hardcoded into the engine but can also be overwritten
 by texture packs. All existing fallback textures can be found in the directory
 `textures/base/pack`.
 
-### Gameplay textures
+## Gameplay textures
 
 * `bubble.png`: the bubble texture when the player is drowning
                 (default size: 12×12)
@@ -118,7 +122,7 @@ by texture packs. All existing fallback textures can be found in the directory
 Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
 are placeholders intended to be overwritten by the game.
 
-### Mainmenu textures
+## Mainmenu textures
 
 * `menu_bg.png`: used as mainmenu background when the clouds are disabled
 * `menu_header.png`: header texture when no texture pack is selected
@@ -131,7 +135,7 @@ are placeholders intended to be overwritten by the game.
 * `server_flags_favorite.png`: icon for your favorite servers
 * `server_flags_pvp.png`: icon for enabled PvP on servers
 
-### Android textures
+## Android textures
 
 * `down_arrow.png`
 * `left_arrow.png`
@@ -153,8 +157,9 @@ are placeholders intended to be overwritten by the game.
 * `gear_icon.png`
 * `rare_controls.png`
 
-Texture Overrides
------------------
+
+
+# Texture Overrides
 
 You can override the textures of nodes and items from a
 texture pack using texture overrides. To do this, create one or
@@ -209,9 +214,9 @@ Here are targets you can choose from:
 Nodes support all targets, but other items only support 'inventory'
 and 'wield'.
 
-¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.md for details.
+¹: `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to `lua_api.md` for details.
 
-### Using the special targets
+## Using the special targets
 
 The special* targets only apply to specific drawtypes:
 
@@ -227,7 +232,7 @@ Designing leaves textures for the leaves rendering options
 Minetest has three modes for rendering leaves nodes if the node has the
 `allfaces_optional` drawtype.
 
-### Fancy
+## Fancy
 
 Uses the texture specified in the `tiles` nodedef field.
 The texture should have some transparent pixels and be in the RGBA format so
@@ -235,7 +240,7 @@ that the transparent pixels can have color information.
 Faces of every leaves node are rendered even if they are inside a solid volume
 of leaves; this gives a dense appearance.
 
-### Opaque
+## Opaque
 
 Uses the texture specified in `tiles` but makes it opaque by converting each
 transparent pixel into an opaque pixel that uses the color information of that
@@ -248,7 +253,7 @@ The colors of the transparent pixels should be set for a good appearance in
 erasing them. Then when saving the texture, use the 'save color information from
 transparent pixels' option (or equivalent).
 
-### Simple
+## Simple
 
 Uses the texture specified in the `special_tiles` nodedef field if it exists, if
 not, the `tiles` texture.
@@ -261,3 +266,24 @@ faces for any solid volume of leaves, not the internal faces.
 Due to this the `tiles` texture might appear lacking in density, so optionally a
 `special_tiles` texture can be used to provide a texture with fewer transparent
 pixels for a denser appearance.
+
+
+
+# Table of Contents
+
+* [Texture pack directory structure](#texture-pack-directory-structure)
+
+* [Files](#files)
+
+* [Texture modifiers](#texture-modifiers)
+
+* [Special textures](#special-textures)
+    * [Gameplay textures](#gameplay-textures)
+    * [Mainmenu textures](#mainmenu-textures)
+    * [Android textures](#android-textures)
+
+* [Texture Overrides](#texture-overrides)
+    * [Using the special targets](#using-the-special-targets)
+    * [Fancy](#fancy)
+    * [Opaque](#opaque)
+    * [Simple](#simple)

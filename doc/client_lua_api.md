@@ -1,12 +1,13 @@
-Minetest Lua Client Modding API Reference 5.8.0
-================================================
+# Minetest Lua Client Modding API Reference 5.8.0
+
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
-Introduction
-------------
+[Table of Contents](#table-of-contents)
 
-** WARNING: The client API is currently unstable, and may break/change without warning. **
+## Introduction
+
+> **Warning**: The client API is currently unstable, and may break/change without warning.
 
 Content and functionality can be added to Minetest 0.4.15-dev+ by using Lua
 scripting in run-time loaded mods.
@@ -20,13 +21,13 @@ If you see a deficiency in the API, feel free to attempt to add the
 functionality in the engine and API. You can send such improvements as
 source code patches on GitHub (https://github.com/minetest/minetest).
 
-Programming in Lua
-------------------
+## Programming in Lua
+
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
-Startup
--------
+## Startup
+
 Mods are loaded during client startup from the mod load paths by running
 the `init.lua` scripts in a shared environment.
 
@@ -37,11 +38,13 @@ In order to load client-side mods, the following conditions need to be satisfied
 2) The client-side mod located in `$path_user/clientmods/<modname>` is added to
     `$path_user/clientmods/mods.conf` as `load_mod_<modname> = true`.
 
-Note: Depending on the remote server's settings, client-side mods might not
+> **Note**: Depending on the remote server's settings, client-side mods might not
 be loaded or have limited functionality. See setting `csm_restriction_flags` for reference.
 
-Paths
------
+
+
+# Paths
+
 * `RUN_IN_PLACE=1` (Windows release, local build)
     * `$path_user`: `<build directory>`
     * `$path_share`: `<build directory>`
@@ -53,8 +56,8 @@ Paths
         * Linux: `$HOME/.minetest`
         * Windows: `C:/users/<user>/AppData/minetest` (maybe)
 
-Mod load path
--------------
+## Mod load path
+
 Generic:
 
 * `$path_share/clientmods/`
@@ -69,8 +72,7 @@ On an installed version on Linux:
 * `/usr/share/minetest/clientmods/`
 * `$HOME/.minetest/clientmods/` (User-installed mods)
 
-Modpack support
-----------------
+## Modpack support
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -85,8 +87,8 @@ Mod directory structure
 
     clientmods
     ├── modname
-    │   ├── mod.conf
-    │   ├── init.lua
+    │   ├── mod.conf
+    │   ├── init.lua
     └── another
 
 ### modname
@@ -112,12 +114,14 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-**NOTE**: Client mods currently can't provide textures, sounds, or models by
-themselves. Any media referenced in function calls must already be loaded
-(provided by mods that exist on the server).
+> **Note**: Client mods currently can't provide textures, sounds, or models by
+  themselves. Any media referenced in function calls must already be loaded
+  (provided by mods that exist on the server).
 
-Naming convention for registered textual names
-----------------------------------------------
+
+
+# Naming convention for registered textual names
+
 Registered names should generally be in this format:
 
     "modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
@@ -125,7 +129,7 @@ Registered names should generally be in this format:
 This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
 
-### Example
+## Example
 In the mod `experimental`, there is the ideal item/node/entity name `tnt`.
 So the name should be `experimental:tnt`.
 
@@ -141,9 +145,11 @@ when registering it.
 
 The `:` prefix can also be used for maintaining backwards compatibility.
 
-Sounds
-------
-**NOTE: Connecting sounds to objects is not implemented.**
+
+
+# Sounds
+
+> **Note**: Connecting sounds to objects is not implemented.
 
 Only Ogg Vorbis files are supported.
 
@@ -195,17 +201,18 @@ Examples of sound parameter tables:
 
 Looped sounds must either be connected to an object or played locationless.
 
-### SimpleSoundSpec
+## SimpleSoundSpec
 * e.g. `""`
 * e.g. `"default_place_node"`
 * e.g. `{}`
 * e.g. `{name = "default_place_node"}`
 * e.g. `{name = "default_place_node", gain = 1.0}`
 
-Representations of simple things
---------------------------------
 
-### Position/vector
+
+# Representations of simple things
+
+## Position/vector
 
 ```lua
 {x=num, y=num, z=num}
@@ -213,13 +220,15 @@ Representations of simple things
 
 For helper functions see "Vector helpers".
 
-### pointed_thing
+## pointed_thing
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
 * `{type="object", id=ObjectID}`
 
-Flag Specifier Format
----------------------
+
+
+# Flag Specifier Format
+
 Flags using the standardized flag specifier format can be specified in either of
 two ways, by string or table.
 
@@ -259,22 +268,24 @@ or even
 
 since, by default, no schematic attributes are set.
 
-Formspec
---------
+
+
+# Formspec
+
 Formspec defines a menu. It is a string, with a somewhat strange format.
 
 Spaces and newlines can be inserted between the blocks, as is used in the
 examples.
 
-### Examples
+## Examples
 
-#### Chest
+### Chest
 
     size[8,9]
     list[context;main;0,0;8,4;]
     list[current_player;main;0,5;8,4;]
 
-#### Furnace
+### Furnace
 
     size[8,9]
     list[context;fuel;2,3;1,1;]
@@ -282,7 +293,7 @@ examples.
     list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 
-#### Minecraft-like player inventory
+### Minecraft-like player inventory
 
     size[8,7.5]
     image[1,0.6;1,2;player.png]
@@ -290,79 +301,79 @@ examples.
     list[current_player;craft;3,0;3,3;]
     list[current_player;craftpreview;7,1;1,1;]
 
-### Elements
+## Elements
 
-#### `size[<W>,<H>,<fixed_size>]`
+### `size[<W>,<H>,<fixed_size>]`
 * Define the size of the menu in inventory slots
 * `fixed_size`: `true`/`false` (optional)
 * deprecated: `invsize[<W>,<H>;]`
 
-#### `container[<X>,<Y>]`
+### `container[<X>,<Y>]`
 * Start of a container block, moves all physical elements in the container by (X, Y)
 * Must have matching container_end
 * Containers can be nested, in which case the offsets are added
   (child containers are relative to parent containers)
 
-#### `container_end[]`
+### `container_end[]`
 * End of a container, following elements are no longer relative to this container
 
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
+### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 * Show an inventory list
 
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
+### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 * Show an inventory list
 
-#### `listring[<inventory location>;<list name>]`
+### `listring[<inventory location>;<list name>]`
 * Allows to create a ring of inventory lists
 * Shift-clicking on items in one element of the ring
   will send them to the next inventory list inside the ring
 * The first occurrence of an element inside the ring will
   determine the inventory where items will be sent to
 
-#### `listring[]`
+### `listring[]`
 * Shorthand for doing `listring[<inventory location>;<list name>]`
   for the last two inventory lists added by list[...]
 
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
+### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
 * Sets background color of slots as `ColorString`
 * Sets background color of slots on mouse hovering
 
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]`
+### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]`
 * Sets background color of slots as `ColorString`
 * Sets background color of slots on mouse hovering
 * Sets color of slots border
 
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]`
+### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]`
 * Sets background color of slots as `ColorString`
 * Sets background color of slots on mouse hovering
 * Sets color of slots border
 * Sets default background color of tooltips
 * Sets default font color of tooltips
 
-#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
+### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
 * Adds tooltip for an element
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
 
-#### `image[<X>,<Y>;<W>,<H>;<texture name>]`
+### `image[<X>,<Y>;<W>,<H>;<texture name>]`
 * Show an image
 * Position and size units are inventory slots
 
-#### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
+### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
 * Show an inventory image of registered item/node
 * Position and size units are inventory slots
 
-#### `bgcolor[<color>;<fullscreen>]`
+### `bgcolor[<color>;<fullscreen>]`
 * Sets background color of formspec as `ColorString`
 * If `true`, the background color is drawn fullscreen (does not affect the size of the formspec)
 
-#### `background[<X>,<Y>;<W>,<H>;<texture name>]`
+### `background[<X>,<Y>;<W>,<H>;<texture name>]`
 * Use a background. Inventory rectangles are not drawn then.
 * Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution: image shall be sized
   8 times 16px  times  4 times 16px.
 
-#### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
+### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 * Use a background. Inventory rectangles are not drawn then.
 * Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution:
@@ -370,7 +381,7 @@ examples.
 * If `true` the background is clipped to formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
-#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
+### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
@@ -382,7 +393,7 @@ examples.
 * `label`, if not blank, will be text printed on the top left above the field
 * See field_close_on_enter to stop enter closing the formspec
 
-#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
+### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
@@ -395,10 +406,10 @@ examples.
 * `default` is the default value of the field
     * `default` may contain variable references such as `${text}'` which
       will fill the value from the metadata value `text`
-    * **Note**: no extra text or more than a single variable is supported ATM.
+    > **Note**: No extra text or more than a single variable is supported at the moment.
 * See field_close_on_enter to stop enter closing the formspec
 
-#### `field[<name>;<label>;<default>]`
+### `field[<name>;<label>;<default>]`
 * As above, but without position/size units
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
@@ -407,26 +418,26 @@ examples.
 * A "Proceed" button will be added automatically
 * See field_close_on_enter to stop enter closing the formspec
 
-#### `field_close_on_enter[<name>;<close_on_enter>]`
+### `field_close_on_enter[<name>;<close_on_enter>]`
 * <name> is the name of the field
 * if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
 * defaults to true when not specified (ie: no tag for a field)
 
-#### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
+### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
 
-#### `label[<X>,<Y>;<label>]`
+### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field
 * `label` is the text on the label
 * Position and size units are inventory slots
 
-#### `vertlabel[<X>,<Y>;<label>]`
+### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
 * `x` and `y` work as per field
 * `label` is the text on the label
 * Position and size units are inventory slots
 
-#### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
+### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Clickable button. When clicked, fields will be sent.
 * `x`, `y` and `name` work as per field
 * `w` and `h` are the size of the button
@@ -434,12 +445,12 @@ examples.
 * `label` is the text on the button
 * Position and size units are inventory slots
 
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
+### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 * `x`, `y`, `w`, `h`, and `name` work as per button
 * `texture name` is the filename of an image
 * Position and size units are inventory slots
 
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
+### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 * `x`, `y`, `w`, `h`, and `name` work as per button
 * `texture name` is the filename of an image
 * Position and size units are inventory slots
@@ -447,20 +458,20 @@ examples.
 * `drawborder`: draw button border or not
 * `pressed texture name` is the filename of an image on pressed state
 
-#### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
+### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
 * `x`, `y`, `w`, `h`, `name` and `label` work as per button
 * `item name` is the registered name of an item/node,
    tooltip will be made out of its description
    to override it use tooltip element
 * Position and size units are inventory slots
 
-#### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
+### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * When clicked, fields will be sent and the form will quit.
 
-#### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
+### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 * When clicked, fields will be sent and the form will quit.
 
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
+### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 * Scrollable item list showing arbitrary text elements
 * `x` and `y` position the itemlist relative to the top left of the menu
 * `w` and `h` are the size of the itemlist
@@ -468,7 +479,7 @@ examples.
 * `listelements` can be prepended by #color in hexadecimal format RRGGBB (only),
      * if you want a listelement to start with "#" write "##".
 
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
+### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
 * Scrollable itemlist showing arbitrary text elements
 * `x` and `y` position the item list relative to the top left of the menu
 * `w` and `h` are the size of the item list
@@ -479,7 +490,7 @@ examples.
 * `true`/`false`: draw transparent background
 * See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
 
-#### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
+### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 * Show a tab**header** at specific position (ignores formsize)
 * `x` and `y` position the itemlist relative to the top left of the menu
 * `name` fieldname data is transferred to Lua
@@ -488,31 +499,31 @@ examples.
 * `transparent` (optional): show transparent
 * `draw_border` (optional): draw border
 
-#### `box[<X>,<Y>;<W>,<H>;<color>]`
+### `box[<X>,<Y>;<W>,<H>;<color>]`
 * Simple colored semitransparent box
 * `x` and `y` position the box relative to the top left of the menu
 * `w` and `h` are the size of box
 * `color` is color specified as a `ColorString`
 
-#### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
 * Show a dropdown field
-* **Important note**: There are two different operation modes:
-     1. handle directly on change (only changed dropdown is submitted)
-     2. read the value on pressing a button (all dropdown values are available)
+> **Info**: There are two different operation modes:
+>  1. handle directly on change (only changed dropdown is submitted)
+>  2. read the value on pressing a button (all dropdown values are available)
 * `x` and `y` position of dropdown
 * Width of dropdown
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
 
-#### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
+### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 * Show a checkbox
 * `x` and `y`: position of checkbox
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
 
-#### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
+### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 * Show a scrollbar
 * There are two ways to use it:
      1. handle the changed event (only changed scrollbar is available)
@@ -524,7 +535,7 @@ examples.
 * Value this trackbar is set to (`0`-`1000`)
 * See also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
 
-#### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
+### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
 * Show scrollable table using options defined by the previous `tableoptions[]`
 * Displays cells as defined by the previous `tablecolumns[]`
 * `x` and `y`: position the itemlist relative to the top left of the menu
@@ -534,7 +545,7 @@ examples.
 * `selected idx`: index of row to be selected within table (first row = `1`)
 * See also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
 
-#### `tableoptions[<opt 1>;<opt 2>;...]`
+### `tableoptions[<opt 1>;<opt 2>;...]`
 * Sets options for `table[]`
 * `color=#RRGGBB`
      * default text color (`ColorString`), defaults to `#FFFFFF`
@@ -550,7 +561,7 @@ examples.
      * all subtrees up to `depth < value` are open (default value = `0`)
      * only useful when there is a column of type "tree"
 
-#### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
+### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
 * Sets columns for `table[]`
 * Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
@@ -577,11 +588,13 @@ examples.
     * `color` column options:
         * `span=<value>`: number of following columns to affect (default: infinite)
 
-**Note**: do _not_ use an element name starting with `key_`; those names are reserved to
-pass key press events to formspec!
+> **Note**: Do _not_ use an element name starting with `key_`; those names are reserved to
+  pass key press events to formspec!
 
-Spatial Vectors
----------------
+
+
+# Spatial Vectors
+
 * `vector.new(a[, b, c])`: returns a vector:
     * A copy of `a` if `a` is a vector.
     * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
@@ -602,8 +615,9 @@ For the following functions `x` can be either a vector or a number:
 * `vector.multiply(v, x)`: returns a scaled vector or Schur product
 * `vector.divide(v, x)`: returns a scaled vector or Schur quotient
 
-Helper functions
-----------------
+
+
+# Helper functions
 * `dump2(obj, name="_", dumped={})`
      * Return object serialized as a string, handles reference loops
 * `dump(obj, dumped={})`
@@ -637,10 +651,11 @@ Helper functions
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
-Minetest namespace reference
-------------------------------
 
-### Utilities
+
+# Minetest namespace reference
+
+## Utilities
 
 * `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
 * `minetest.get_modpath(modname)`: returns virtual path of given mod including
@@ -673,14 +688,14 @@ Minetest namespace reference
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 
-### Logging
+## Logging
 * `minetest.debug(...)`
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
 * `minetest.log([level,] text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`.  Default is `"none"`.
 
-### Global callback registration functions
+## Global callback registration functions
 Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
@@ -689,7 +704,7 @@ Call these functions only at load time!
     * Called just after mods have finished loading.
 * `minetest.register_on_shutdown(function())`
     * Called before client shutdown
-    * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
+    > **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_receiving_chat_message(function(message))`
@@ -738,19 +753,20 @@ Call these functions only at load time!
     * If message comes from a server mod, `sender` field is an empty string.
 * `minetest.register_on_modchannel_signal(function(channel_name, signal))`
     * Called when a valid incoming mod channel signal is received
-    * Signal id permit to react to server mod channel events
+    * Signal ID permit to react to server mod channel events
     * Possible values are:
-      0: join_ok
-      1: join_failed
-      2: leave_ok
-      3: leave_failed
-      4: event_on_not_joined_channel
-      5: state_changed
+      0: `join_ok`
+      1: `join_failed`
+      2: `leave_ok`
+      3: `leave_failed`
+      4: `event_on_not_joined_channel`
+      5: `state_changed`
 * `minetest.register_on_inventory_open(function(inventory))`
     * Called when the local player open inventory
     * Newest functions are called first
     * If any function returns true, inventory doesn't open
-### Sounds
+
+## Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
@@ -763,7 +779,7 @@ Call these functions only at load time!
       the sound volume.
     * `gain` the target gain for the fade.
 
-### Timing
+## Timing
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
@@ -772,7 +788,7 @@ Call these functions only at load time!
 * `minetest.get_timeofday()`
     * Returns the time of day: `0` for midnight, `0.5` for midday
 
-### Map
+## Map
 * `minetest.get_node_or_nil(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
@@ -827,7 +843,7 @@ Call these functions only at load time!
 * `minetest.get_node_max_level(pos)`
     * get max available level for leveled node
 
-### Player
+## Player
 * `minetest.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
 * `minetest.run_server_chatcommand(cmd, param)`
@@ -837,14 +853,14 @@ Call these functions only at load time!
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
-### Privileges
+## Privileges
 * `minetest.get_privilege_list()`
     * Returns a list of privileges the current player has in the format `{priv1=true,...}`
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
 
-### Client Environment
+## Client Environment
 * `minetest.get_player_names()`
     * Returns list of player names on server (nil if CSM_RF_READ_PLAYERINFO is enabled by server)
 * `minetest.disconnect()`
@@ -855,20 +871,21 @@ Call these functions only at load time!
 * `minetest.send_respawn()`
     * Sends a respawn request to the server.
 
-### Storage API
+## Storage API
 * `minetest.get_mod_storage()`:
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
 
-### Mod channels
+## Mod channels
 ![Mod channels communication scheme](docs/mod channels.png)
 
 * `minetest.mod_channel_join(channel_name)`
     * Client joins channel `channel_name`, and creates it, if necessary. You
       should listen from incoming messages with `minetest.register_on_modchannel_message`
-      call to receive incoming messages. Warning, this function is asynchronous.
+      call to receive incoming messages.
+    > **Warning**: This function is asynchronous.
 
-### Particles
+## Particles
 * `minetest.add_particle(particle definition)`
 
 * `minetest.add_particlespawner(particlespawner definition)`
@@ -878,7 +895,7 @@ Call these functions only at load time!
 * `minetest.delete_particlespawner(id)`
     * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
 
-### Misc.
+## Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
@@ -889,10 +906,10 @@ Call these functions only at load time!
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
     * Unserializable things like functions and userdata are saved as null.
-    * **Warning**: JSON is more strict than the Lua table format.
-        1. You can only use strings and positive integers of at least one as keys.
-        2. You cannot mix string and integer keys.
-           This is due to the fact that JSON has two distinct array and object values.
+    > **Warning**: JSON is more strict than the Lua table format.
+    >  1. You can only use strings and positive integers of at least one as keys.
+    >  2. You cannot mix string and integer keys. This is due to the fact that JSON has
+    >     two distinct array and object values.
     * Example: `write_json({10, {a = false}})`, returns `"[10, {\"a\": false}]"`
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
@@ -944,7 +961,7 @@ Call these functions only at load time!
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
 
-### UI
+## UI
 * `minetest.ui.minimap`
     * Reference to the minimap object. See [`Minimap`](#minimap) class reference for methods.
     * If client disabled minimap (using enable_minimap setting) this reference will be nil.
@@ -955,22 +972,24 @@ Call these functions only at load time!
 * `minetest.display_chat_message(message)` returns true on success
 	* Shows a chat message to the current player.
 
-Setting-related
----------------
+
+
+# Setting-Related
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`). Check lua_api.md for class reference.
+  main config file (`minetest.conf`). Check `lua_api.md` for class reference.
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
-Class reference
----------------
 
-### ModChannel
+
+# Class Reference
+
+## ModChannel
 
 An interface to use mod channels on client and server
 
-#### Methods
+### Methods
 * `leave()`: leave the mod channel.
     * Client leaves channel `channel_name`.
     * No more incoming or outgoing messages can be sent to this channel from client mods.
@@ -981,10 +1000,10 @@ An interface to use mod channels on client and server
     * If mod channel is not writable or invalid, message will be dropped.
     * Message size is limited to 65535 characters by protocol.
 
-### Minimap
+## Minimap
 An interface to manipulate minimap on client UI
 
-#### Methods
+### Methods
 * `show()`: shows the minimap (if not disabled by server)
 * `hide()`: hides the minimap
 * `set_pos(pos)`: sets the minimap position on screen
@@ -996,11 +1015,11 @@ An interface to manipulate minimap on client UI
 * `set_shape(shape)`: Sets the minimap shape. (0 = square, 1 = round)
 * `get_shape()`: Gets the minimap shape. (0 = square, 1 = round)
 
-### Camera
+## Camera
 An interface to get or set information about the camera and camera-node.
 Please do not try to access the reference until the camera is initialized, otherwise the reference will be nil.
 
-#### Methods
+### Methods
 * `set_camera_mode(mode)`
     * Pass `0` for first-person, `1` for third person, and `2` for third person front
 * `get_camera_mode()`
@@ -1030,7 +1049,7 @@ Please do not try to access the reference until the camera is initialized, other
 * `get_aspect_ratio()`
     * Returns aspect ratio of screen
 
-### LocalPlayer
+## `LocalPlayer`
 An interface to retrieve information about the player.
 This object will only be available after the client is initialized. Earlier accesses will yield a `nil` value.
 
@@ -1064,7 +1083,6 @@ Methods:
     * returns true if player is swimming in vertical
 * `get_physics_override()`
     * returns:
-
         ```lua
         {
             speed = float,
@@ -1075,7 +1093,6 @@ Methods:
             new_move = boolean,
         }
         ```
-
 * `get_override_pos()`
     * returns override position
 * `get_last_pos()`
@@ -1086,7 +1103,6 @@ Methods:
     * returns the player's breath
 * `get_movement_acceleration()`
     * returns acceleration of the player in different environments:
-
         ```lua
         {
             fast = float,
@@ -1094,10 +1110,8 @@ Methods:
             default = float,
         }
         ```
-
 * `get_movement_speed()`
     * returns player's speed in different environments:
-
         ```lua
         {
             walk = float,
@@ -1107,10 +1121,8 @@ Methods:
             climb = float,
         }
         ```
-
 * `get_movement()`
     * returns player's movement in different environments:
-
         ```lua
         {
             liquid_fluidity = float,
@@ -1119,14 +1131,12 @@ Methods:
             gravity = float,
         }
         ```
-
 * `get_last_look_horizontal()`:
     * returns last look horizontal angle
 * `get_last_look_vertical()`:
     * returns last look vertical angle
 * `get_control()`:
     * returns pressed player controls
-
         ```lua
         {
             up = boolean,
@@ -1141,7 +1151,6 @@ Methods:
             place = boolean,
         }
         ```
-
 * `get_armor_groups()`
     * returns a table with the armor group ratings
 * `hud_add(definition)`
@@ -1150,18 +1159,18 @@ Methods:
 * `hud_get(id)`
     * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
 * `hud_remove(id)`
-    * remove the HUD element of the specified id, returns `true` on success
+    * remove the HUD element of the specified ID, returns `true` on success
 * `hud_change(id, stat, value)`
     * change a value of a previously added HUD element
     * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
     * Returns `true` on success, otherwise returns `nil`
 
-### Settings
+## `Settings`
 An interface to read config files in the format of `minetest.conf`.
 
 It can be created via `Settings(filename)`.
 
-#### Methods
+### Methods
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
 * `set(key, value)`
@@ -1171,11 +1180,11 @@ It can be created via `Settings(filename)`.
     * write changes to file
 * `to_table()`: returns `{[key1]=value1,...}`
 
-### NodeMetaRef
+## `NodeMetaRef`
 Node metadata: reference extra data and functionality stored in a node.
 Can be obtained via `minetest.get_meta(pos)`.
 
-#### Methods
+### Methods
 * `get_string(name)`
 * `get_int(name)`
 * `get_float(name)`
@@ -1183,7 +1192,7 @@ Can be obtained via `minetest.get_meta(pos)`.
     * `fields`: key-value storage
     * `inventory`: `{list1 = {}, ...}}`
 
-### `Raycast`
+## `Raycast`
 
 A raycast on the map. It works with selection boxes.
 Can be used as an iterator in a for loop as:
@@ -1206,19 +1215,18 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 * `objects`: if false, only nodes will be returned. Default is true.
 * `liquids`: if false, liquid nodes won't be returned. Default is false.
 
-#### Methods
+### Methods
 
 * `next()`: returns a `pointed_thing` with exact pointing location
     * Returns the next thing pointed by the ray or nil.
 
------------------
-### Definitions
+# Definitions
 * `minetest.get_node_def(nodename)`
 	* Returns [node definition](#node-definition) table of `nodename`
 * `minetest.get_item_def(itemstring)`
 	* Returns item definition table of `itemstring`
 
-#### Node Definition
+## Node Definition
 
 ```lua
 {
@@ -1280,7 +1288,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 }
 ```
 
-#### Item Definition
+## Item Definition
 
 ```lua
 {
@@ -1302,9 +1310,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
     node_placement_prediction = string -- Node placed in client until server catches up
 }
 ```
------------------
 
-### Chat command definition (`register_chatcommand`)
+## Chat Command Definition (`register_chatcommand`)
 
 ```lua
 {
@@ -1315,7 +1322,8 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 }
 ```
 
-### Server info
+## Server Information
+
 ```lua
 {
 	address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
@@ -1325,7 +1333,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 }
 ```
 
-### HUD Definition (`hud_add`, `hud_get`)
+## HUD Definition (`hud_add`, `hud_get`)
 
 ```lua
 {
@@ -1352,8 +1360,69 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 }
 ```
 
-Escape sequences
-----------------
+## Particle Definition (`add_particle`)
+
+```lua
+{
+    pos = {x=0, y=0, z=0},
+    velocity = {x=0, y=0, z=0},
+    acceleration = {x=0, y=0, z=0},
+    --  ^ Spawn particle at pos with velocity and acceleration
+    expirationtime = 1,
+    --  ^ Disappears after expirationtime seconds
+    size = 1,
+    collisiondetection = false,
+    --  ^ collisiondetection: if true collides with physical objects
+    collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
+    vertical = false,
+    --  ^ vertical: if true faces player using y axis only
+    texture = "image.png",
+    --  ^ Uses texture (string)
+    animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+    glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
+}
+```
+
+## `ParticleSpawner` Definition (`add_particlespawner`)
+
+```lua
+{
+    amount = 1,
+    time = 1,
+    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
+    minpos = {x=0, y=0, z=0},
+    maxpos = {x=0, y=0, z=0},
+    minvel = {x=0, y=0, z=0},
+    maxvel = {x=0, y=0, z=0},
+    minacc = {x=0, y=0, z=0},
+    maxacc = {x=0, y=0, z=0},
+    minexptime = 1,
+    maxexptime = 1,
+    minsize = 1,
+    maxsize = 1,
+    --  ^ The particle's properties are random values in between the bounds:
+    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
+    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+    collisiondetection = false,
+    --  ^ collisiondetection: if true uses collision detection
+    collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
+    vertical = false,
+    --  ^ vertical: if true faces player using y axis only
+    texture = "image.png",
+    --  ^ Uses texture (string)
+}
+```
+
+
+
+# Escape Sequences
+
 Most text can contain escape sequences that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
@@ -1376,8 +1445,10 @@ The following functions provide escape sequences:
 * `minetest.strip_colors(str)`
     * Removes all color escape sequences.
 
-`ColorString`
--------------
+
+
+# `ColorString`
+
 `#RGB` defines a color in hexadecimal format.
 
 `#RGBA` defines a color in hexadecimal format and alpha channel.
@@ -1391,12 +1462,14 @@ Named colors are also supported and are equivalent to
 To specify the value of the alpha channel, append `#A` or `#AA` to the end of
 the color name (e.g. `colorname#08`).
 
-`Color`
--------------
+## `Color`
+
 `{a = alpha, r = red, g = green, b = blue}` defines an ARGB8 color.
 
-HUD element types
------------------
+
+
+# HUD Element Types
+
 The position field is used for all element types.
 
 To account for differing resolutions, the position coordinates are the percentage
@@ -1417,12 +1490,14 @@ The `offset` field specifies a pixel offset from the position. Contrary to posit
 the offset is not scaled to screen size. This allows for some precisely-positioned
 items in the HUD.
 
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
+> **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
 
 Below are the specific uses for fields in each type; fields not listed for that type are ignored.
 
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
+> **Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
 in the experimental stages.
+
+## List of Elements
 
 ### `image`
 Displays an image on the HUD.
@@ -1494,61 +1569,80 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
 
-### Particle definition (`add_particle`)
 
-```lua
-{
-    pos = {x=0, y=0, z=0},
-    velocity = {x=0, y=0, z=0},
-    acceleration = {x=0, y=0, z=0},
-    --  ^ Spawn particle at pos with velocity and acceleration
-    expirationtime = 1,
-    --  ^ Disappears after expirationtime seconds
-    size = 1,
-    collisiondetection = false,
-    --  ^ collisiondetection: if true collides with physical objects
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-    animation = {Tile Animation definition},
-    --  ^ optional, specifies how to animate the particle texture
-    glow = 0
-    --  ^ optional, specify particle self-luminescence in darkness
-}
-```
 
-### `ParticleSpawner` definition (`add_particlespawner`)
+# Table of Contents
 
-```lua
-{
-    amount = 1,
-    time = 1,
-    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
-    minpos = {x=0, y=0, z=0},
-    maxpos = {x=0, y=0, z=0},
-    minvel = {x=0, y=0, z=0},
-    maxvel = {x=0, y=0, z=0},
-    minacc = {x=0, y=0, z=0},
-    maxacc = {x=0, y=0, z=0},
-    minexptime = 1,
-    maxexptime = 1,
-    minsize = 1,
-    maxsize = 1,
-    --  ^ The particle's properties are random values in between the bounds:
-    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
-    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
-    collisiondetection = false,
-    --  ^ collisiondetection: if true uses collision detection
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-}
-```
+* [Introduction](#introduction)
+
+* [Programming in Lua](#programming-in-lua)
+
+* [Startup](#startup)
+
+* [Paths](#paths)
+    * [Mod load path](#mod-load-path)
+    * [Modpack support](#modpack-support)
+
+* [Naming convention for registered textual names](#naming-convention-for-registered-textual-names)
+    * [Example](#example)
+
+* [Sounds](#sounds)
+    * [SimpleSoundSpec](#simplesoundspec)
+
+* [Representations of simple things](#representations-of-simple-things)
+    * [Position/vector](#positionvector)
+    * [pointed_thing](#pointed_thing)
+
+* [Flag Specifier Format](#flag-specifier-format)
+
+* [Formspec](#formspec)
+    * [Examples](#examples)
+    * [Elements](#elements)
+
+* [Spatial Vectors](#spatial-vectors)
+
+* [Helper functions](#helper-functions)
+
+* [Minetest namespace reference](#minetest-namespace-reference)
+    * [Utilities](#utilities)
+    * [Logging](#logging)
+    * [Global callback registration functions](#global-callback-registration-functions)
+    * [Sounds](#sounds-1)
+    * [Timing](#timing)
+    * [Map](#map)
+    * [Player](#player)
+    * [Privileges](#privileges)
+    * [Client Environment](#client-environment)
+    * [Storage API](#storage-api)
+    * [Mod channels](#mod-channels)
+    * [Particles](#particles)
+    * [Misc.](#misc)
+    * [UI](#ui)
+
+* [Setting-Related](#setting-related)
+
+* [Class Reference](#class-reference)
+    * [ModChannel](#modchannel)
+    * [Minimap](#minimap)
+    * [Camera](#camera)
+    * [`LocalPlayer`](#localplayer)
+    * [`Settings`](#settings)
+    * [`NodeMetaRef`](#nodemetaref)
+    * [`Raycast`](#raycast)
+
+* [Definitions](#definitions)
+    * [Node Definition](#node-definition)
+    * [Item Definition](#item-definition)
+    * [Chat Command Definition](#chat-command-definition-register_chatcommand)
+    * [Server Information](#server-information)
+    * [HUD Definition](#hud-definition-hud_add-hud_get)
+    * [Particle Definition](#particle-definition-add_particle)
+    * [`ParticleSpawner` Definition](#particlespawner-definition-add_particlespawner)
+
+* [Escape Sequences](#escape-sequences)
+
+* [`ColorString`](#colorstring)
+    * [`Color`](#color)
+
+* [HUD Element Types](#hud-element-types)
+    * [List of Elements](#list-of-elements)
