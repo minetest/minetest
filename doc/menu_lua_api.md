@@ -1,15 +1,15 @@
-Minetest Lua Mainmenu API Reference 5.8.0
-=========================================
+# Minetest Lua Mainmenu API Reference 5.8.0
 
-Introduction
--------------
+[Table of Contents](#table-of-contents)
+
+## Introduction
 
 The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
 Description of formspec language to show your menu is in `lua_api.md`
 
 
-Callbacks
----------
+
+# Callbacks
 
 * `core.button_handler(fields)`: called when a button is pressed.
   * `fields` = `{name1 = value1, name2 = value2, ...}`
@@ -17,8 +17,8 @@ Callbacks
   * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
 
 
-Gamedata
---------
+
+# Gamedata
 
 The "gamedata" table is read when calling `core.start()`. It should contain:
 
@@ -34,31 +34,20 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 ```
 
 
-Functions
----------
+
+# Functions
 
 * `core.start()`
 * `core.close()`
-* `core.get_min_supp_proto()`
-  * returns the minimum supported network protocol version
-* `core.get_max_supp_proto()`
-  * returns the maximum supported network protocol version
-* `core.open_url(url)`
-  * opens the URL in a web browser, returns false on failure.
-  * Must begin with http:// or https://
+* `core.get_version()` (possible in async calls)
+  * returns current core version
+## Filesystem
+
 * `core.open_dir(path)`
   * opens the path in the system file browser/explorer, returns false on failure.
   * Must be an existing directory.
 * `core.share_file(path)`
   * Android only. Shares file using the share popup
-* `core.get_version()` (possible in async calls)
-  * returns current core version
-
-
-
-Filesystem
-----------
-
 * `core.get_builtin_path()`
   * returns path to builtin root
 * `core.create_dir(absolute_path)` (possible in async calls)
@@ -78,6 +67,18 @@ Filesystem
   * `zipfile` to extract
   * `destination` folder to extract to
   * returns true/false
+* `core.get_cache_path()` -> path of cache
+* `core.get_temp_path([param])` (possible in async calls)
+  * `param`=true: returns path to a temporary file
+    otherwise: returns path to the temporary folder
+
+## Network
+
+* `core.get_min_supp_proto()`
+  * returns the minimum supported network protocol version
+* `core.get_max_supp_proto()`
+  * returns the maximum supported network protocol version
+## Media
 * `core.sound_play(spec, looped)` -> handle
   * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
   * `looped` = bool
@@ -85,19 +86,22 @@ Filesystem
 * `core.get_video_drivers()`
   * get list of video drivers supported by engine (not all modes are guaranteed to work)
   * returns list of available video drivers' settings name and 'friendly' display name
-    e.g. `{ {name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"} }`
+    e.g. `{{name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"}}`
   * first element of returned list is guaranteed to be the NULL driver
+
+
+
+# Misc.
 * `core.get_mapgen_names([include_hidden=false])` -> table of map generator algorithms
     registered in the core (possible in async calls)
-* `core.get_cache_path()` -> path of cache
-* `core.get_temp_path([param])` (possible in async calls)
-  * `param`=true: returns path to a temporary file
-    otherwise: returns path to the temporary folder
 
 
-HTTP Requests
--------------
 
+# HTTP Requests
+
+* `core.open_url(url)`
+  * opens the URL in a web browser, returns false on failure.
+  * Must begin with http:// or https://
 * `core.download_file(url, target)` (possible in async calls)
     * `url` to download, and `target` to store to
     * returns true/false
@@ -114,7 +118,7 @@ HTTP Requests
 * `HTTPApiTable.fetch_async_get(handle)`: returns `HTTPRequestResult`
     * Return response data for given asynchronous HTTP request
 
-### `HTTPRequest` definition
+## `HTTPRequest` Definition
 
 Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
@@ -146,7 +150,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 }
 ```
 
-### `HTTPRequestResult` definition
+## `HTTPRequestResult` Definition
 
 Passed to `HTTPApiTable.fetch` callback. Returned by
 `HTTPApiTable.fetch_async_get`.
@@ -171,8 +175,8 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
 ```
 
 
-Formspec
---------
+
+# Formspec
 
 * `core.update_formspec(formspec)`
 * `core.get_table_index(tablename)` -> index
@@ -189,8 +193,8 @@ Formspec
   * `formspec`: string to be added to every mainmenu formspec, to be used for theming.
 
 
-GUI
----
+
+# GUI
 
 * `core.set_background(type,texturepath,[tile],[minsize])`
   * `type`: "background", "overlay", "header" or "footer"
@@ -215,45 +219,9 @@ GUI
   * name of current renderer, e.g. "OpenGL 4.6"
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
 
-  ```lua
-  -- Note that none of these things are constant, they are likely to change
-  -- as the player resizes the window and moves it between monitors
-  --
-  -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
-  -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
-  -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
-  {
-      -- Current size of the in-game render target.
-      --
-      -- This is usually the window size, but may be smaller in certain situations,
-      -- such as side-by-side mode.
-      size = {
-          x = 1308,
-          y = 577,
-      },
-
-      -- Estimated maximum formspec size before Minetest will start shrinking the
-      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-      -- this and `padding[-0.01,-0.01]`.
-      max_formspec_size = {
-          x = 20,
-          y = 11.25
-      },
-
-      -- GUI Scaling multiplier
-      -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
-      real_gui_scaling = 1,
-
-      -- HUD Scaling multiplier
-      -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
-      real_hud_scaling = 1,
-  }
-  ```
 
 
-
-Content and Packages
---------------------
+# Content and Packages
 
 Content - an installed mod, modpack, game, or texture pack (txt)
 Package - content which is downloadable from the content db, may or may not be installed.
@@ -266,10 +234,7 @@ Package - content which is downloadable from the content db, may or may not be i
 * `core.get_modpaths()` (possible in async calls)
     * returns table of virtual path to global modpaths, where mods have been installed
       The difference with `core.get_modpath` is that no mods should be installed in these
-      directories by Minetest -- they might be read-only.
-
-      Ex:
-
+      directories by Minetest -- they might be read-only. Example:
       ```lua
       {
           mods = "/home/user/.minetest/mods",
@@ -279,7 +244,6 @@ Package - content which is downloadable from the content db, may or may not be i
           ["/path/to/custom/dir"] = "/path/to/custom/dir",
       }
       ```
-
 * `core.get_clientmodpath()` (possible in async calls)
     * returns path to global client-side modpath
 * `core.get_gamepath()` (possible in async calls)
@@ -288,7 +252,7 @@ Package - content which is downloadable from the content db, may or may not be i
     * returns path to default textures
 * `core.get_games()` -> table of all games (possible in async calls)
     * `name` in return value is deprecated, use `title` instead.
-    * returns a table (ipairs) with values:
+    * returns:
       ```lua
       {
           id               = <id>,
@@ -302,7 +266,7 @@ Package - content which is downloadable from the content db, may or may not be i
       }
       ```
 * `core.get_content_info(path)`
-    * returns
+    * returns:
       ```lua
       {
           name             = "technical_id",
@@ -329,8 +293,9 @@ Package - content which is downloadable from the content db, may or may not be i
       }
       ```
 
-Logging
--------
+
+
+# Logging
 
 * `core.debug(line)` (possible in async calls)
   * Always printed to `stderr` and logfile (`print()` is redirected here)
@@ -339,8 +304,8 @@ Logging
   * `loglevel` one of "error", "action", "info", "verbose"
 
 
-Settings
---------
+
+# Settings
 
 * `core.settings:set(name, value)`
 * `core.settings:get(name)` -> string or nil (possible in async calls)
@@ -348,12 +313,11 @@ Settings
 * `core.settings:get_bool(name)` -> bool or nil (possible in async calls)
 * `core.settings:save()` -> nil, save all settings to config file
 
-For a complete list of methods of the `Settings` object see
-[lua_api.md](https://github.com/minetest/minetest/blob/master/doc/lua_api.md)
+For a complete list of methods of the `Settings` object see `lua_api.md`
 
 
-Worlds
-------
+
+# Worlds
 
 * `core.get_worlds()` -> list of worlds (possible in async calls)
   * returns
@@ -370,8 +334,8 @@ Worlds
 * `core.delete_world(index)`
 
 
-Helpers
--------
+
+# Helpers
 
 * `core.get_us_time()`
   * returns time with microsecond precision
@@ -398,8 +362,8 @@ Helpers
   * Decodes a string encoded in base64.
 
 
-Async
------
+
+# Async
 
 * `core.handle_async(async_job,parameters,finished)`
   * execute a function asynchronously
@@ -408,18 +372,58 @@ Async
   * `finished` function to be called once `async_job` has finished
     the result of `async_job` is passed to this function
 
-### Limitations of Async operations
+## Limitations of Async Operations
  * No access to global lua variables, don't even try
  * Limited set of available functions
     e.g. No access to functions modifying menu like `core.start`, `core.close`,
     `core.show_path_select_dialog`
 
 
-Background music
-----------------
+
+# Background Music
 
 The main menu supports background music.
 It looks for a `main_menu` sound in `$USER_PATH/sounds`. The same naming
 conventions as for normal sounds apply.
 This means the player can add a custom sound.
 It will be played in the main menu (gain = 1.0), looped.
+
+
+
+# Table of Contents
+
+* [Introduction](#introduction)
+
+* [Callbacks](#callbacks)
+
+* [Gamedata](#gamedata)
+
+* [Functions](#functions)
+    * [Filesystem](#filesystem)
+    * [Network](#network)
+    * [Media](#media)
+
+* [Misc.](#misc)
+
+* [HTTP Requests](#http-requests)
+    * [`HTTPRequest` Definition](#httprequest-definition)
+    * [`HTTPRequestResult` Definition](#httprequestresult-definition)
+
+* [Formspec](#formspec)
+
+* [GUI](#gui)
+
+* [Content and Packages](#content-and-packages)
+
+* [Logging](#logging)
+
+* [Settings](#settings)
+
+* [Worlds](#worlds)
+
+* [Helpers](#helpers)
+
+* [Async](#async)
+    * [Limitations of Async Operations](#limitations-of-async-operations)
+
+* [Background Music](#background-music)

@@ -183,12 +183,12 @@ Note: to support 0.4.x, please also create an empty modpack.txt file.
     │   └── <custom data>
     └── another
 
-### modname
+### `modname`
 
 The location of this directory can be fetched by using
 `minetest.get_modpath(modname)`.
 
-### mod.conf
+### `mod.conf`
 
 A `Settings` file that provides meta information about the mod.
 
@@ -266,7 +266,7 @@ in one of its parents, the parent's file is used.
 Although it is discouraged, a mod can overwrite a media file of any mod that it
 depends on by supplying a file with an equal name.
 
-## Naming conventions
+## Naming Conventions
 
 Registered names should generally be in this format:
 
@@ -323,8 +323,7 @@ minetest.register_alias("stuff", "epiclylongmodname:stuff")
 
 and be able to use `/giveme stuff`.
 
-Mapgen aliases
---------------
+## Mapgen aliases
 
 In a game, a certain number of these must be set to tell core mapgens which
 of the game's nodes are to be used for core mapgen generation. For example:
@@ -333,9 +332,9 @@ of the game's nodes are to be used for core mapgen generation. For example:
 minetest.register_alias("mapgen_stone", "default:stone")
 ```
 
-### Aliases for non-V6 mapgens
+### Aliases for non-V6 Mapgens
 
-#### Essential aliases
+#### Essential Aliases
 
 * `mapgen_stone`
 * `mapgen_water_source`
@@ -345,7 +344,7 @@ minetest.register_alias("mapgen_stone", "default:stone")
 it is necessary to have a river liquid node with a short `liquid_range` and
 `liquid_renewable = false` to avoid flooding.
 
-#### Optional aliases
+#### Optional Aliases
 
 * `mapgen_lava_source`
 
@@ -394,7 +393,7 @@ Deprecated, define dungeon nodes in biome definitions instead.
 * `mapgen_mossycobble` (falls back to cobble)
 * `mapgen_stair_desert_stone` (falls back to desert_stone)
 
-### Setting the node used in Mapgen Singlenode
+### Setting the Node Used in Mapgen Singlenode
 
 By default the world is filled with air nodes. To set a different node use e.g.:
 
@@ -421,14 +420,14 @@ Supported texture formats are PNG (`.png`), JPEG (`.jpg`), Bitmap (`.bmp`)
 and Targa (`.tga`).
 Since better alternatives exist, the latter two may be removed in the future.
 
-## Texture modifiers
+## Texture Modifiers
 
 There are various texture modifiers that can be used
 to let the client generate textures on-the-fly.
 The modifiers are applied directly in sRGB colorspace,
 i.e. without gamma-correction.
 
-### Texture overlaying
+### Texture Overlaying
 
 Textures can be overlaid by putting a `^` between them.
 
@@ -440,7 +439,7 @@ Example:
 The texture with the lower resolution will be automatically upscaled to
 the higher resolution texture.
 
-### Texture grouping
+### Texture Grouping
 
 Textures can be grouped together by enclosing them in `(` and `)`.
 
@@ -461,7 +460,7 @@ Or as a Lua string: `"cobble.png^[lowpart:50:color.png\\^[mask\\:trans.png"`
 The lower 50 percent of `color.png^[mask:trans.png` are overlaid
 on top of `cobble.png`.
 
-### Advanced texture modifiers
+### Advanced Texture Modifiers
 
 #### Crack
 
@@ -656,7 +655,7 @@ by just using a file. In particular consider `minetest.dynamic_add_media` and
 test whether using other texture modifiers could result in a shorter string
 than embedding a whole image, this may vary by use case.
 
-## Hardware coloring
+## Hardware Coloring
 
 The goal of hardware coloring is to simplify the creation of
 colorful nodes. If your textures use the same pattern, and they only
@@ -665,12 +664,12 @@ coloring instead of creating and managing many texture files.
 All of these methods use color multiplication (so a white-black texture
 with red coloring will result in red-black color).
 
-### Static coloring
+### Static Coloring
 
 This method is useful if you wish to create nodes/items with
 the same texture, in different colors, each in a new node/item definition.
 
-#### Global color
+#### Global Color
 
 When you register an item or node, set its `color` field (which accepts a
 `ColorSpec`) to the desired color.
@@ -678,7 +677,7 @@ When you register an item or node, set its `color` field (which accepts a
 An `ItemStack`'s static color can be overwritten by the `color` metadata
 field. If you set that field to a `ColorString`, that color will be used.
 
-#### Tile color
+#### Tile Color
 
 Each tile may have an individual static color, which overwrites every
 other coloring method. To disable the coloring of a face,
@@ -693,7 +692,7 @@ suitable. A palette is a texture, which can contain up to 256 pixels.
 Each pixel is one possible color for the node/item.
 You can register one node/item, which can have up to 256 colors.
 
-#### Palette indexing
+#### Palette Indexing
 
 When using palettes, you always provide a pixel index for the given
 node or `ItemStack`. The palette is read from left to right and from
@@ -714,7 +713,7 @@ Examples:
 * 2x4 palette, index = 63: the top right corner
 * 2x4 palette, index = 64: the pixel below the top left corner
 
-#### Using palettes with items
+#### Using Palettes with Items
 
 When registering an item, set the item definition's `palette` field to
 a texture. You can also use texture modifiers.
@@ -723,7 +722,7 @@ The `ItemStack`'s color depends on the `palette_index` field of the
 stack's metadata. `palette_index` is an integer, which specifies the
 index of the pixel to use.
 
-#### Linking palettes with nodes
+#### Linking Palettes with Nodes
 
 When registering a node, set the item definition's `palette` field to
 a texture. You can also use texture modifiers.
@@ -770,7 +769,7 @@ appropriate `paramtype2`:
 To colorize a node on the map, set its `param2` value (according
 to the node's paramtype2).
 
-### Conversion between nodes in the inventory and on the map
+### Conversion Between Nodes in the Inventory and on the Map
 
 Static coloring is the same for both cases, there is no need
 for conversion.
@@ -802,7 +801,7 @@ minetest.register_node("mod:stone", {
 })
 ```
 
-### Colored items in craft recipes
+### Colored Items in Craft Recipes
 
 Craft recipes only support item strings, but fortunately item strings
 can also contain metadata. Example craft recipe registration:
@@ -823,7 +822,7 @@ To set the `color` field, you can use `minetest.itemstring_with_color`.
 Metadata field filtering in the `recipe` field are not supported yet,
 so the craft output is independent of the color of the ingredients.
 
-## Soft texture overlay
+## Soft Texture Overlay
 
 Sometimes hardware coloring is not enough, because it affects the
 whole tile. Soft texture overlays were added to Minetest to allow
@@ -972,7 +971,7 @@ Examples:
 * `{name = "default_place_node", gain = 0.5}`: 50% volume
 * `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
 
-## Special sound files
+## Special Sound Files
 
 These sound files are played back by the engine if provided.
 
@@ -1033,7 +1032,7 @@ They are represented by a table:
 them for certain automated functions. If you don't use these functions, you can
 use them to store arbitrary values.
 
-## Node paramtypes
+## Node `paramtype`s
 
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition.
@@ -1179,7 +1178,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
 
 Nodes can also contain extra data. See [Node Metadata].
 
-## Node drawtypes
+## Node `drawtype`s
 
 There are a bunch of different looking node types.
 
@@ -1294,7 +1293,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 `*_optional` drawtypes need less rendering time if deactivated
 (always client-side).
 
-## Node boxes
+## Node Boxes
 
 Node selection boxes are defined using "node boxes".
 
@@ -1372,7 +1371,7 @@ exceed this soft limit.
 
 # Map Terminology and Coordinates
 
-## Nodes, mapblocks, mapchunks
+## Nodes, Mapblocks, and Mapchunks
 
 A 'node' is the fundamental cubic unit of a world and appears to a player as
 roughly 1x1x1 meters in size.
@@ -1390,29 +1389,29 @@ The size in mapblocks has been chosen to optimize map generation.
 
 ## Coordinates
 
-### Orientation of axes
+### Orientation of Axes
 
 For node and mapblock coordinates, +X is East, +Y is up, +Z is North.
 
-### Node coordinates
+### Node Coordinates
 
 Almost all positions used in the API use node coordinates.
 
-### Mapblock coordinates
+### Mapblock Coordinates
 
 Occasionally the API uses 'blockpos' which refers to mapblock coordinates that
 specify a particular mapblock.
 For example blockpos (0,0,0) specifies the mapblock that extends from
 node position (0,0,0) to node position (15,15,15).
 
-#### Converting node position to the containing blockpos
+#### Converting Node Position to the Containing `blockpos`
 
 To calculate the blockpos of the mapblock that contains the node at 'nodepos',
 for each axis:
 
 * blockpos = math.floor(nodepos / 16)
 
-#### Converting blockpos to min/max node positions
+#### Converting `blockpos` to Minimum/Maximum Node Positions
 
 To calculate the min/max node positions contained in the mapblock at 'blockpos',
 for each axis:
@@ -1426,7 +1425,7 @@ for each axis:
 
 # HUD
 
-## HUD element types
+## HUD Element Types
 
 The position field is used for all element types.
 To account for differing resolutions, the position coordinates are the
@@ -1448,8 +1447,7 @@ The `offset` field specifies a pixel offset from the position. Contrary to
 position, the offset is not scaled to screen size. This allows for some
 precisely positioned items in the HUD.
 
-> **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling
-factor!
+> **Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
 
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
@@ -1586,7 +1584,7 @@ Displays a minimap on the HUD.
 
 # Representations of Simple Things
 
-## Vector (ie. a position)
+## Vector (ie. a Position)
 
 ```lua
 vector.new(x, y, z)
@@ -1668,7 +1666,7 @@ stored in inventories.
 Items come in the form of item stacks, which are collections of equal
 items that occupy a single inventory slot.
 
-## Item types
+## Item Types
 
 There are three kinds of items: nodes, tools and craftitems.
 
@@ -1694,7 +1692,7 @@ that acts as tool in a gameplay sense as a craftitem, and vice-versa.
 Craftitems can be used for items that neither need to be a node
 nor a tool.
 
-## Amount and wear
+## Amount and Wear
 
 All item stacks have an amount between 0 and 65535. It is 1 by
 default. Tool item stacks cannot have an amount greater than 1.
@@ -1706,7 +1704,7 @@ a higher wear. Non-tools technically also have a wear property,
 but it is always 0. There is also a special 'toolrepair' crafting
 recipe that is only available to tools.
 
-## Item formats
+## Item Formats
 
 Items and item stacks can exist in three formats: Serializes, table format
 and `ItemStack`.
@@ -1757,7 +1755,7 @@ Additionally the methods `minetest.itemstring_with_palette(item, palette_index)`
 and `minetest.itemstring_with_color(item, colorstring)` may be used to create
 item strings encoding color information in their metadata.
 
-### Table format
+### Table Format
 
 Examples:
 
@@ -1819,16 +1817,16 @@ You can read the rating of a group for an item or a node by using
 minetest.get_item_group(itemname, groupname)
 ```
 
-## Groups of items
+## Groups of Items
 
 Groups of items can define what kind of an item it is (e.g. wool).
 
-## Groups of nodes
+## Groups of Nodes
 
 In addition to the general item things, groups are used to define whether
 a node is destroyable and how long it takes to destroy by a tool.
 
-## Groups of entities
+## Groups of Entities
 
 For entities, groups are, as of now, used only for calculating damage.
 The rating is the percentage of damage caused by items with this damage group.
@@ -1839,12 +1837,12 @@ object:get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
 object:set_armor_groups({fleshy=30, cracky=80})
 ```
 
-## Groups of tool capabilities
+## Groups of Tool Capabilities
 
 Groups in tool capabilities define which groups of nodes and entities they
 are effective towards.
 
-## Groups in crafting recipes
+## Groups in Crafting Recipes
 
 In crafting recipes, you can specify a group as an input item.
 This means that any item in that group will be accepted as input.
@@ -1892,18 +1890,18 @@ Another example: Craft red wool from white wool and red dye
 }
 ```
 
-## Special groups
+## Special Groups
 
 The asterisk `(*)` after a group name describes that there is no engine
 functionality bound to it, and implementation is left up as a suggestion
 to games.
 
-### Node and item groups
+### Node and Item Groups
 
 * `not_in_creative_inventory`: (*) Special group for inventory mods to indicate
   that the item should be hidden in item lists.
 
-### Node-only groups
+### Node-Only Groups
 
 * `attached_node`: the node is 'attached' to a neighboring node. It checks
                    whether the node it is attached to is walkable. If it
@@ -1946,12 +1944,12 @@ to games.
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
 
-### Tool-only groups
+### Tool-Only Groups
 
 * `disable_repair`: If set to 1 for a tool, it cannot be repaired using the
   `"toolrepair"` crafting recipe
 
-### `ObjectRef` armor groups
+### `ObjectRef` Armor Groups
 
 * `immortal`: Skips all damage and breath handling for an object. This group
   will also hide the integrated HUD status bars for players. It is
@@ -1964,7 +1962,7 @@ to games.
   players punching it by hand or a non-tool item, so that it can do something
   else than take damage.
 
-## Known damage and digging time defining groups
+## Known Damage and Digging Time Defining Groups
 
 * `crumbly`: dirt, sand
 * `cracky`: tough but crackable stuff like stone.
@@ -1981,7 +1979,7 @@ to games.
    digging speed of an item if it can dig at a faster speed than this
    suggests for the hand.
 
-## Examples of custom groups
+## Examples of Custom Groups
 
 Item groups are often used for defining, well, _groups of items_.
 
@@ -1996,7 +1994,7 @@ Item groups are often used for defining, well, _groups of items_.
 * `weapon`: any weapon
 * `heavy`: anything considerably heavy
 
-## Digging time calculation specifics
+## Digging Time Calculation Specifics
 
 Groups such as `crumbly`, `cracky` and `snappy` are used for this
 purpose. Rating is `1`, `2` or `3`. A higher rating for such a group implies
@@ -2027,7 +2025,7 @@ But only tools can receive wear from digging and punching.
 Missing or incomplete tool capabilities will default to the
 player's hand.
 
-## Tool capabilities definition
+## Tool Capabilities Definition
 
 Tool capabilities define:
 
@@ -2040,13 +2038,13 @@ Tool capabilities define:
 * Damage groups
 * Punch attack uses (until the tool breaks)
 
-### Full punch interval `full_punch_interval`
+### `full_punch_interval`
 
 When used as a weapon, the item will do full damage if this time is spent
 between punches. If e.g. half the time is spent, the item will do half
 damage.
 
-### Maximum drop level `max_drop_level`
+### `max_drop_level`
 
 Suggests the maximum level of node, when dug with the item, that will drop
 its useful item. (e.g. iron ore to drop a lump of iron).
@@ -2054,7 +2052,7 @@ its useful item. (e.g. iron ore to drop a lump of iron).
 This value is not used in the engine; it is the responsibility of the game/mod
 code to implement this.
 
-### Uses `uses` (tools only)
+### `uses` (Tools Only)
 
 Determines how many uses the tool has when it is used for digging a node,
 of this group, of the maximum level. The maximum supported number of
@@ -2069,12 +2067,12 @@ node's `level` group. The node cannot be dug if `leveldiff` is less than zero.
 
 For non-tools, this has no effect.
 
-### Maximum level `maxlevel`
+### `maxlevel`
 
 Tells what is the maximum level of a node of this group that the item will
 be able to dig.
 
-### Digging times `times`
+### `times`
 
 List of digging times for different ratings of the group, for nodes of the
 maximum level.
@@ -2088,11 +2086,11 @@ If the result digging time is 0, a delay of 0.15 seconds is added between
 digging nodes; If the player releases LMB after digging, this delay is set to 0,
 i.e. players can more quickly click the nodes away instead of holding LMB.
 
-### Damage groups
+### Damage Groups
 
 List of damage for groups of entities. See [Entity damage mechanism].
 
-### Punch attack uses (tools only)
+### Punch Attack Uses (Tools Only)
 
 Determines how many uses (before breaking) the tool has when dealing damage
 to an object, when the full punch interval (see above) was always
@@ -2103,7 +2101,7 @@ the full punch interval.
 
 For non-tools, this has no effect.
 
-## Example definition of the capabilities of an item
+## Example Definition of the Capabilities of an Item
 
 ```lua
 tool_capabilities = {
@@ -2379,7 +2377,7 @@ background elements are drawn before all other elements.
     list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 
-### Minecraft-like player inventory
+### Minecraft-Like Player Inventory
 
     size[8,7.5]
     image[1,0.6;1,2;player.png]
@@ -3318,7 +3316,7 @@ X, Y and Z being angles around each three axes. Works only if
 
 # Inventory
 
-## Inventory locations
+## Inventory Locations
 
 * `"context"`: Selected node metadata (deprecated: `"current_name"`)
 * `"current_player"`: Player to whom the menu is shown
@@ -3421,7 +3419,7 @@ by any of the following notations:
 * `vector.new(x, y, z)`
 * `{x=num, y=num, z=num}` (Even here you are still supposed to use `vector.new`.)
 
-## Compatibility notes
+## Compatibility Notes
 
 Vectors used to be defined as tables of the form `{x = num, y = num, z = num}`.
 Since Minetest 5.5.0, vectors additionally have a metatable to enable easier use.
@@ -3440,7 +3438,7 @@ other representations of vectors.
 Vectors provided by API functions will provide an instance of this class if not
 stated otherwise. Mods should adapt this for convenience reasons.
 
-## Special properties of the class
+## Special Properties of the Class
 
 Vectors can be indexed with numbers and allow method and operator syntax.
 
@@ -3459,7 +3457,7 @@ Do not modify it!
 All `vector.*` functions allow vectors `{x = X, y = Y, z = Z}` without metatables.
 Returned vectors always have a metatable set.
 
-## Common functions and methods
+## Common Functions and Methods
 
 For the following functions (and subchapters),
 `v`, `v1`, `v2` are vectors,
@@ -3564,7 +3562,7 @@ Operators can be used if all of the involved vectors have metatables:
 * `v / s`:
     * Returns `v` scaled by `1 / s`.
 
-## Rotation-related functions
+## Rotation-Related Functions
 
 For the following functions `a` is an angle in radians and `r` is a rotation
 vector (`{x = <pitch>, y = <yaw>, z = <roll>}`) where pitch, yaw and roll are
@@ -3584,7 +3582,7 @@ angles in radians.
     * If `up` is omitted, the roll of the returned vector defaults to zero.
     * Otherwise `direction` and `up` need to be vectors in a 90 degree angle to each other.
 
-## Further helpers
+## Further Helpers
 
 There are more helper functions involving vectors, but they are listed elsewhere
 because they only work on specific sorts of vectors or involve things that are not
@@ -3723,7 +3721,7 @@ translation files.
 Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
 to generate and update translation files automatically from the Lua source.
 
-## Translating a string
+## Translating a String
 
 Two functions are provided to translate strings: `minetest.translate` and
 `minetest.get_translator`.
@@ -3770,7 +3768,7 @@ Two functions are provided to translate strings: `minetest.translate` and
 
   this will be displayed as "Laine Rouge" on clients with a French locale.
 
-## Operations on translated strings
+## Operations on Translated Strings
 
 The output of `minetest.translate` is a string, with escape sequences adding
 additional information to that string so that it can be translated on the
@@ -3781,7 +3779,7 @@ expected manner. However, string concatenation will still work as expected
 sentences by breaking them into parts; arguments should be used instead), and
 operations such as `minetest.colorize` which are also concatenation.
 
-## Translation file format
+## Translation File Format
 
 A translation file has the suffix `.[lang].tr`, where `[lang]` is the language
 it corresponds to. It must be put into the `locale` subdirectory of the mod.
@@ -3813,7 +3811,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   `minetest.translate`, but is in translation files.
 * `@n` acts as a literal newline as well.
 
-## Server side translations
+## Server-Side Translations
 
 On some specific cases, server translation could be useful. For example, filter
 a list on labels and send results to client. A method is supplied to achieve
@@ -3840,7 +3838,7 @@ The result is used during map generation to create the terrain shape, vary heat
 and humidity to distribute biomes, vary the density of decorations or vary the
 structure of ores.
 
-## Structure of perlin noise
+## Structure of Perlin Noise
 
 An 'octave' is a simple noise generator that outputs a value between -1 and 1.
 The smooth wavy noise it generates has a single characteristic scale, almost
@@ -3976,7 +3974,7 @@ noise = offset + scale * (abs(octave1) +
                           abs(octave4) * persistence ^ 3 +
                           ...)
 
-### Format example
+### Format Example
 
 For 2D or 3D perlin noise or perlin noise maps:
 
@@ -4000,7 +3998,7 @@ A single noise parameter table can be used for 2D or 3D noise.
 
 # Ores
 
-## Ore types
+## Ore Types
 
 These tell in what manner the ore is generated.
 
@@ -4117,7 +4115,7 @@ solid-ore stratum would require a `clust_scarcity` of 1.
 The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
 `random_factor` are ignored by this ore type.
 
-## Ore attributes
+## Ore Attributes
 
 See section [Flag Specifier Format].
 
@@ -4164,7 +4162,7 @@ structures, such as trees, cave spikes, rocks, and so on.
 
 # Schematics
 
-## Schematic specifier
+## Schematic Specifier
 
 A schematic specifier identifies a schematic by either a filename to a
 Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
@@ -4198,7 +4196,7 @@ About probability values:
   `(p / 256 * 100)` percent chance that node will appear when the schematic is
   placed on the map.
 
-## Schematic attributes
+## Schematic Attributes
 
 See section [Flag Specifier Format].
 
@@ -4293,7 +4291,7 @@ to be a table retrieved from `get_data()`.
 Once the internal VoxelManip state has been modified to your liking, the
 changes can be committed back to the map by calling `VoxelManip:write_to_map()`
 
-### Flat array format
+### Flat Array Format
 
 Let
     `Nx = p2.X - p1.X + 1`,
@@ -4344,7 +4342,7 @@ The following builtin node types have their Content IDs defined as constants:
 * `minetest.CONTENT_AIR`:     ID for "air" nodes
 * `minetest.CONTENT_IGNORE`:  ID for "ignore" nodes
 
-### Mapgen VoxelManip objects
+### Mapgen VoxelManip Objects
 
 Inside of `on_generated()` callbacks, it is possible to retrieve the same
 VoxelManip object used by the core's Map Generator (commonly abbreviated
@@ -4369,7 +4367,7 @@ differences:
   necessary to update lighting information using either:
   `VoxelManip:calc_lighting()` or `VoxelManip:set_lighting()`.
 
-### Other API functions operating on a VoxelManip
+### Other API Functions Operating on a `VoxelManip`
 
 If any VoxelManip contents were set to a liquid node (`liquidtype ~= "none"`),
 `VoxelManip:update_liquids()` must be called for these liquid nodes to begin
@@ -4507,7 +4505,7 @@ The coordinates are *inclusive*, like most other things in Minetest.
       `[z [y [x]]]`.
 * `iterp(minp, maxp)`: same as above, except takes a vector
 
-### Y stride and z stride of a flat array
+### Y and Z Strides of a Flat Array
 
 For a particular position in a voxel area, whose flat array index is known,
 it is often useful to know the index of a neighboring or nearby position.
@@ -4684,7 +4682,7 @@ Collision info passed to `on_step` (`moveresult` argument):
 
 # L-System Trees
 
-## Tree definition
+## Tree Definition
 
 ```lua
 treedef={
@@ -4709,7 +4707,7 @@ treedef={
 }
 ```
 
-## Key for special L-System symbols used in axioms
+## Key for Special L-System Symbols Used in Axioms
 
 * `G`: move forward one unit with the pen up
 * `F`: move forward one unit with the pen down drawing trunks and branches
@@ -4765,7 +4763,7 @@ access to special abilities in the engine, games or mods.
 For example, game moderators may need to travel instantly to any place in the world,
 this ability is implemented in `/teleport` command which requires `teleport` privilege.
 
-## Registering privileges
+## Registering Privileges
 
 A mod can register a custom privilege using `minetest.register_privilege` function
 to give server administrators fine-grained access control over mod functionality.
@@ -4773,7 +4771,7 @@ to give server administrators fine-grained access control over mod functionality
 For consistency and practical reasons, privileges should strictly increase the abilities of the user.
 Do not register custom privileges that e.g. restrict the player from certain in-game actions.
 
-## Checking privileges
+## Checking Privileges
 
 A mod can call `minetest.check_player_privs` to test whether a player has privileges
 to perform an operation.
@@ -4781,7 +4779,7 @@ Also, when registering a chat command with `minetest.register_chatcommand` a mod
 declare privileges that the command requires using the `privs` field of the command
 definition.
 
-## Managing player privileges
+## Managing Player Privileges
 
 A mod can update player privileges using `minetest.set_player_privs` function.
 Players holding the `privs` privilege can see and manage privileges for all
@@ -4790,7 +4788,7 @@ players on the server.
 A mod can subscribe to changes in player privileges using `minetest.register_on_priv_grant`
 and `minetest.register_on_priv_revoke` functions.
 
-## Built-in privileges
+## Built-in Privileges
 
 Minetest includes a set of built-in privileges that control capabilities
 provided by the Minetest engine and can be used by mods:
@@ -4830,7 +4828,7 @@ provided by the Minetest engine and can be used by mods:
         commands. Can clear inventory of other players using `/clearinv` command.
       * `rollback`: can use `/rollback_check` and `/rollback` commands.
 
-## Related settings
+## Related Settings
 
 Minetest includes the following settings to control behavior of privileges:
 
@@ -5083,7 +5081,7 @@ Minetest includes the following settings to control behavior of privileges:
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`.  Default is `"none"`.
 
-## Registration functions
+## Registration Functions
 
 Call these functions only at load time!
 
@@ -5177,7 +5175,7 @@ Call these functions only at load time!
     * Registers an auth handler that overrides the builtin one.
     * This function can be called by a single mod once only.
 
-## Global callback registration functions
+## Global Callback Registration Functions
 
 Call these functions only at load time!
 
@@ -5408,7 +5406,7 @@ Call these functions only at load time!
     * `modified_block_count` is the number of entries in the set.
     * Note: callbacks must be registered at mod load time.
 
-## Setting-related
+## Settings-Related
 
 * `minetest.settings`: Settings object containing all of the settings from the
   main config file (`minetest.conf`).
@@ -5481,7 +5479,7 @@ handler.
     * Can be redefined by mods if required, for things like colored names or messages.
     * **Only** the first occurrence of each placeholder will be replaced.
 
-## Environment access
+## Environment Access
 
 * `minetest.set_node(pos, node)`
 * `minetest.add_node(pos, node)`: alias to `minetest.set_node`
@@ -5626,7 +5624,7 @@ handler.
     * Returns the humidity at the position, or `nil` on failure.
 * `minetest.get_biome_data(pos)`
     * Returns a table containing:
-        * `biome` the biome id of the biome at that position
+        * `biome` the biome ID of the biome at that position
         * `heat` the heat at the position
         * `humidity` the humidity at the position
     * Or returns `nil` on failure.
@@ -5821,7 +5819,7 @@ handler.
     * The spawn level is intentionally above terrain level to cope with
       full-node biome 'dust' nodes.
 
-## Mod channels
+## Mod Channels
 
 You can find mod channels communication scheme in `doc/mod_channels.png`.
 
@@ -5891,7 +5889,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
         * `"CHG"`: has been changed
         * `"VAL"`: not changed
 
-## Item handling
+## Item Handling
 
 * `minetest.inventorycube(img1, img2, img3)`
     * Returns a string for making an image of a cube (useful as an item image)
@@ -6012,7 +6010,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
     * Revert latest actions of someone
     * `actor`: `"player:<name>"`, also `"liquid"`.
 
-## Defaults for the `on_place` and `on_drop` item definition functions
+## Defaults for the `on_place` and `on_drop` Item Definition Functions
 
 * `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
     * Place item as a node
@@ -6047,7 +6045,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
       If the player is eating a stack and `replace_with_item` doesn't fit onto
       the eaten stack, then the remainings go to a different spot, or are dropped.
 
-## Defaults for the `on_punch` and `on_dig` node definition callbacks
+## Defaults for the `on_punch` and `on_dig` Node Definition Callbacks
 
 * `minetest.node_punch(pos, node, puncher, pointed_thing)`
     * Calls functions registered by `minetest.register_on_punchnode()`
@@ -6085,7 +6083,7 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 * `job:cancel()`
     * Cancels the job function from being called
 
-## Async environment
+## Async Environment
 
 The engine allows you to submit jobs to be ran in an isolated environment
 concurrently with normal server operation.
@@ -6114,7 +6112,7 @@ This allows you easy interoperability for delegating work to jobs.
       is initialized. You can use this to preload code which you can then call
       later using `minetest.handle_async()`.
 
-### List of APIs available in an async environment
+### List of APIs Available in an Async Environment
 
 Classes:
 * `ItemStack`
@@ -6335,7 +6333,7 @@ Variables:
             * The default for this option is `all`.
             * Any invalid value will be interpreted as `all`.
 
-## HTTP requests
+## HTTP Requests
 
 * `minetest.request_http_api()`:
     * returns `HTTPApiTable` containing http functions if the calling mod has
@@ -6404,7 +6402,7 @@ Variables:
 * `minetest.raillike_group(name)`: returns a rating
     * Returns rating of the connect_to_raillike group corresponding to name
     * If name is not yet the name of a connect_to_raillike group, a new group
-      id is created, with that name.
+      ID is created, with that name.
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
@@ -6591,7 +6589,7 @@ Variables:
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
 
-## Global objects
+## Global Objects
 
 * `minetest.env`: `EnvRef` of the server environment and world.
     * Any function in the minetest namespace can be called using the syntax
@@ -6599,9 +6597,9 @@ Variables:
       instead of `minetest.somefunction(somearguments)`
     * Deprecated, but support is not to be dropped soon
 
-## Global tables
+## Global Tables
 
-### Registered definition tables
+### Registered Definition Tables
 
 * `minetest.registered_items`
     * Map of registered items, indexed by name
@@ -6617,9 +6615,9 @@ Variables:
       Note: changes to initial properties will only affect entities spawned afterwards,
       as they are only read when spawning.
 * `minetest.object_refs`
-    * Map of object references, indexed by active object id
+    * Map of object references, indexed by active object ID
 * `minetest.luaentities`
-    * Map of Lua entities, indexed by active object id
+    * Map of Lua entities, indexed by active object ID
 * `minetest.registered_abms`
     * List of ABM definitions
 * `minetest.registered_lbms`
@@ -6648,7 +6646,7 @@ Variables:
     * Map of registered privilege definitions, indexed by name
     * Registered privileges can be modified directly in this table.
 
-### Registered callback tables
+### Registered Callback Tables
 
 All callbacks registered with [Global callback registration functions] are added
 to corresponding `minetest.registered_*` tables.
@@ -6708,7 +6706,7 @@ use the provided load and write functions for this.
     * Reserves resources for `count` many contained areas to improve
       efficiency when working with many area entries. Additional areas can still
       be inserted afterwards at the usual complexity.
-* `remove_area(id)`: removes the area with the given id from the store, returns
+* `remove_area(id)`: removes the area with the given ID from the store, returns
   success.
 * `set_cache_params(params)`: sets params for the included prefiltering cache.
   Calling invalidates the cache, so that its elements have to be newly
@@ -6926,7 +6924,7 @@ behavior is **deprecated** and will be removed in a future version. Usage of the
 * `equals(other)`
     * returns `true` if this metadata has the same key-value pairs as `other`
 
-### Metadata tables
+### Metadata Tables
 
 Metadata tables represent MetaDataRef in a Lua table form (see `from_table`/`to_table`).
 
@@ -7033,7 +7031,7 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 Moving things in the game are generally these.
 This is basically a reference to a C++ `ServerActiveObject`.
 
-### Advice on handling `ObjectRefs`
+### Advice on Handling `ObjectRefs`
 
 When you receive an `ObjectRef` as a callback argument or from another API
 function, it is possible to store the reference somewhere and keep it around.
@@ -7159,7 +7157,7 @@ child will follow movement and rotation of that bone.
       }
       ```
 
-#### Lua entity only (no-op for other objects)
+#### Lua Entity Only (No-Op for Other Objects)
 
 * `remove()`: remove object
     * The object is removed after returning from Lua. However the `ObjectRef`
@@ -7202,7 +7200,7 @@ child will follow movement and rotation of that bone.
   > **Warning**: Deprecated, will be removed in a future version, use the field `self.name` instead
 * `get_luaentity()`
 
-#### Player only (no-op for other objects)
+#### Player Only (No-Op for Other Objects)
 
 * `get_player_name()`: returns `""` if is not a player
 * `get_player_velocity()`: table {x, y, z} representing the player's instantaneous velocity in nodes/s
@@ -7306,7 +7304,7 @@ child will follow movement and rotation of that bone.
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
-* `hud_remove(id)`: remove the HUD element of the specified id
+* `hud_remove(id)`: remove the HUD element of the specified ID
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
@@ -7761,7 +7759,7 @@ Can be obtained via `minetest.get_mod_storage()` during load time.
 
 # Definition Tables
 
-## Object properties
+## Object Properties
 
 Used by `ObjectRef` methods. Part of an Entity definition.
 These properties are not persistent, but are applied automatically to the
@@ -7934,7 +7932,7 @@ Player properties need to be saved manually.
 }
 ```
 
-## Entity definition
+## Entity Definition
 
 Used by `minetest.register_entity`.
 
@@ -7967,7 +7965,7 @@ Used by `minetest.register_entity`.
 }
 ```
 
-## ABM (ActiveBlockModifier) definition
+## ABM (`ActiveBlockModifier`) Definition
 
 Used by `minetest.register_abm`.
 
@@ -8015,7 +8013,7 @@ Used by `minetest.register_abm`.
 }
 ```
 
-## LBM (LoadingBlockModifier) definition
+## LBM (`LoadingBlockModifier`) Definition
 
 Used by `minetest.register_lbm`.
 
@@ -8049,7 +8047,7 @@ gets activated (not loaded!)
 }
 ```
 
-## Tile definition
+## Tile Definition
 
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
@@ -8070,7 +8068,7 @@ gets activated (not loaded!)
 * deprecated, yet still supported field names:
     * `image` (name)
 
-## Tile animation definition
+## Tile Animation Definition
 
 ```lua
 {
@@ -8100,7 +8098,7 @@ gets activated (not loaded!)
 }
 ```
 
-## Item definition
+## Item Definition
 
 Used by `minetest.register_node`, `minetest.register_craftitem`, and
 `minetest.register_tool`.
@@ -8282,7 +8280,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 }
 ```
 
-## Node definition
+## Node Definition
 
 Used by `minetest.register_node`.
 
@@ -8719,7 +8717,7 @@ Used by `minetest.register_node`.
 }
 ```
 
-## Crafting recipes
+## Crafting Recipes
 
 Crafting converts one or more inputs to one output itemstack of arbitrary
 count (except for fuels, which don't have an output). The conversion reduces
@@ -8900,7 +8898,7 @@ Parameters:
 }
 ```
 
-### Tool repair
+### Tool Repair
 
 Syntax:
 
@@ -9013,7 +9011,7 @@ if used:
 }
 ```
 
-## Ore definition
+## Ore Definition
 
 Used by `minetest.register_ore`.
 
@@ -9119,7 +9117,7 @@ See [Ores] section above for essential information.
 }
 ```
 
-## Biome definition
+## Biome Definition
 
 Used by `minetest.register_biome`.
 
@@ -9212,7 +9210,7 @@ performance and computing power the practical limit is much lower.
 }
 ```
 
-## Decoration definition
+## Decoration Definition
 
 See [Decoration types]. Used by `minetest.register_decoration`.
 
@@ -9370,7 +9368,7 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 }
 ```
 
-## Chat command definition
+## Chat Command Definition
 
 Used by `minetest.register_chatcommand`.
 
@@ -9426,7 +9424,7 @@ Example:
 }
 ```
 
-## Privilege definition
+## Privilege Definition
 
 Used by `minetest.register_privilege`.
 
@@ -9458,7 +9456,7 @@ Used by `minetest.register_privilege`.
 }
 ```
 
-## Detached inventory callbacks
+## Detached Inventory Callbacks
 
 Used by `minetest.create_detached_inventory`.
 
@@ -9487,7 +9485,7 @@ Used by `minetest.create_detached_inventory`.
 }
 ```
 
-## HUD definition
+## HUD Definition
 
 Since most values have multiple different functions, please see the
 documentation in [HUD] section.
@@ -9533,7 +9531,7 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 }
 ```
 
-## Particle definition
+## Particle Definition
 
 Used by `minetest.add_particle`.
 
@@ -9602,7 +9600,7 @@ Used by `minetest.add_particle`.
 }
 ```
 
-## `ParticleSpawner` definition
+## `ParticleSpawner` Definition
 
 Used by `minetest.add_particlespawner`.
 
@@ -9696,7 +9694,7 @@ will be ignored.
 }
 ```
 
-### Modern definition fields
+### Modern Definition Fields
 
 After v5.6.0, spawner properties can be defined in several different ways depending
 on the level of control you need. `pos` for instance can be set as a single vector,
@@ -9803,7 +9801,7 @@ degradation in older clients).
 All of the properties that can be defined in this way are listed in the next
 section, along with the datatypes they accept.
 
-#### List of particlespawner properties
+#### List of `ParticleSpawner` properties
 
 All of the properties in this list can be animated with `*_tween` tables
 unless otherwise specified. For example, `jitter` can be tweened by setting
@@ -9967,7 +9965,7 @@ texpool = {
 }
 ```
 
-#### List of animatable texture properties
+#### List of Animatable Texure Properties
 
 While animated particlespawner values vary over the course of the particlespawner's
 lifetime, animated texture properties vary over the lifespans of the individual
@@ -9988,7 +9986,7 @@ lifespan, and then vanish again before expiring.
 * vec2 `scale`: controls the size of the displayed billboard onscreen. Its units
   are multiples of the parent particle's assigned size (see the `size` property above)
 
-## `HTTPRequest` definition
+## `HTTPRequest` Definition
 
 Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
@@ -10026,7 +10024,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 }
 ```
 
-## `HTTPRequestResult` definition
+## `HTTPRequestResult` Definition
 
 Passed to `HTTPApiTable.fetch` callback. Returned by
 `HTTPApiTable.fetch_async_get`.
@@ -10050,7 +10048,7 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
 }
 ```
 
-## Authentication handler definition
+## Authentication Handler Definition
 
 Used by `minetest.register_authentication_handler`.
 
@@ -10093,13 +10091,13 @@ Used by `minetest.register_authentication_handler`.
 }
 ```
 
-## Bit Library
+# Bit Library
 
 Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
 
 See http://bitop.luajit.org/ for advanced information.
 
-## Error Handling
+# Error Handling
 
 When an error occurs that is not caught, Minetest calls the function
 `minetest.error_handler` with the error object as its first argument. The second
@@ -10111,6 +10109,8 @@ error objects so long as you give them `__tostring` metamethods.
 
 You can override `minetest.error_handler`. You should call the previous handler
 with the correct stack level in your implementation.
+
+
 
 # Table of Contents
 
@@ -10131,32 +10131,33 @@ with the correct stack level in your implementation.
     * [World-Specific Games](#world-specific-games)
     * [Modpacks](#modpacks)
     * [Mod Directory Structure](#mod-directory-structure)
-    * [Naming conventions](#naming-conventions)
+    * [Naming Conventions](#naming-conventions)
 
 * [Aliases](#aliases)
+    * [Mapgen aliases](#mapgen-aliases)
 
 * [Textures](#textures)
-    * [Texture modifiers](#texture-modifiers)
-    * [Hardware coloring](#hardware-coloring)
-    * [Soft texture overlay](#soft-texture-overlay)
+    * [Texture Modifiers](#texture-modifiers)
+    * [Hardware Coloring](#hardware-coloring)
+    * [Soft Texture Overlay](#soft-texture-overlay)
 
 * [Sounds](#sounds)
     * [`SimpleSoundSpec`](#simplesoundspec)
-    * [Special sound files](#special-sound-files)
+    * [Special Sound Files](#special-sound-files)
 
 * [Registered Definitions](#registered-definitions)
 
 * [Nodes](#nodes)
-    * [Node paramtypes](#node-paramtypes)
-    * [Node drawtypes](#node-drawtypes)
-    * [Node boxes](#node-boxes)
+    * [Node `paramtype`s](#node-paramtypes)
+    * [Node `drawtype`s](#node-drawtypes)
+    * [Node Boxes](#node-boxes)
 
 * [Map Terminology and Coordinates](#map-terminology-and-coordinates)
-    * [Nodes, mapblocks, mapchunks](#nodes-mapblocks-mapchunks)
+    * [Nodes, Mapblocks, and Mapchunks](#nodes-mapblocks-and-mapchunks)
     * [Coordinates](#coordinates)
 
 * [HUD](#hud)
-    * [HUD element types](#hud-element-types)
+    * [HUD Element Types](#hud-element-types)
 
 * [Representations of Simple Things](#representations-of-simple-things)
     * [Vector](#vector-ie-a-position)
@@ -10165,25 +10166,25 @@ with the correct stack level in your implementation.
 * [Flag Specifier Format](#flag-specifier-format)
 
 * [Items](#items)
-    * [Item types](#item-types)
-    * [Amount and wear](#amount-and-wear)
-    * [Item formats](#item-formats)
+    * [Item Types](#item-types)
+    * [Amount and Wear](#amount-and-wear)
+    * [Item Formats](#item-formats)
 
 * [Groups](#groups)
     * [Usage](#usage)
-    * [Groups of items](#groups-of-items)
-    * [Groups of nodes](#groups-of-nodes)
-    * [Groups of entities](#groups-of-entities)
-    * [Groups of tool capabilities](#groups-of-tool-capabilities)
-    * [Groups in crafting recipes](#groups-in-crafting-recipes)
-    * [Special groups](#special-groups)
-    * [Known damage and digging time defining groups](#known-damage-and-digging-time-defining-groups)
-    * [Examples of custom groups](#examples-of-custom-groups)
-    * [Digging time calculation specifics](#digging-time-calculation-specifics)
+    * [Groups of Items](#groups-of-items)
+    * [Groups of Nodes](#groups-of-nodes)
+    * [Groups of Entities](#groups-of-entities)
+    * [Groups of Tool Capabilities](#groups-of-tool-capabilities)
+    * [Groups in Crafting Recipes](#groups-in-crafting-recipes)
+    * [Special Groups](#special-groups)
+    * [Known Damage and Digging Time Defining Groups](#known-damage-and-digging-time-defining-groups)
+    * [Examples of Custom Groups](#examples-of-custom-groups)
+    * [Digging Time Calculation Specifics](#digging-time-calculation-specifics)
 
 * [Tool Capabilities](#tool-capabilities)
-    * [Tool capabilities definition](#tool-capabilities-definition)
-    * [Example definition of the capabilities of an item](#example-definition-of-the-capabilities-of-an-item)
+    * [Tool Capabilities Definition](#tool-capabilities-definition)
+    * [Example Definition of the Capabilities of an Item](#example-definition-of-the-capabilities-of-an-item)
 
 * [Entity Damage Mechanism](#entity-damage-mechanism)
 
@@ -10200,7 +10201,7 @@ with the correct stack level in your implementation.
     * [Markup Language](#markup-language)
 
 * [Inventory](#inventory)
-    * [Inventory locations](#inventory-locations)
+    * [Inventory Locations](#inventory-locations)
     * [Player Inventory lists](#player-inventory-lists)
 
 * [Colors](#colors)
@@ -10210,37 +10211,37 @@ with the correct stack level in your implementation.
 * [Escape Sequences](#escape-sequences)
 
 * [Spatial Vectors](#spatial-vectors)
-    * [Compatibility notes](#compatibility-notes)
-    * [Special properties of the class](#special-properties-of-the-class)
-    * [Common functions and methods](#common-functions-and-methods)
+    * [Compatibility Notes](#compatibility-notes)
+    * [Special Properties of the Class](#special-properties-of-the-class)
+    * [Common Functions and Methods](#common-functions-and-methods)
     * [Operators](#operators)
-    * [Rotation-related functions](#rotation-related-functions)
-    * [Further helpers](#further-helpers)
+    * [Rotation-Related Functions](#rotation-related-functions)
+    * [Further Helpers](#further-helpers)
 
 * [Helper Functions](#helper-functions)
 
 * [Translations](#translations)
-    * [Translating a string](#translating-a-string)
-    * [Operations on translated strings](#operations-on-translated-strings)
-    * [Translation file format](#translation-file-format)
+    * [Translating a String](#translating-a-string)
+    * [Operations on Translated Strings](#operations-on-translated-strings)
+    * [Translation File Format](#translation-file-format)
     * [Escapes](#escapes)
-    * [Server side translations](#server-side-translations)
+    * [Server-Side Translations](#server-side-translations)
 
 * [Perlin Noise](#perlin-noise)
-    * [Structure of perlin noise](#structure-of-perlin-noise)
+    * [Structure of Perlin Noise](#structure-of-perlin-noise)
     * [Noise Parameters](#noise-parameters)
 
 * [Ores](#ores)
-    * [Ore types](#ore-types)
-    * [Ore attributes](#ore-attributes)
+    * [Ore Types](#ore-types)
+    * [Ore Attributes](#ore-attributes)
 
 * [Decoration Types](#decoration-types)
     * [`simple`](#simple)
     * [`schematic`](#schematic)
 
 * [Schematics](#schematics)
-    * [Schematic specifier](#schematic-specifier)
-    * [Schematic attributes](#schematic-attributes)
+    * [Schematic Specifier](#schematic-specifier)
+    * [Schematic Attributes](#schematic-attributes)
 
 * [Lua Voxel Manipulator](#lua-voxel-manipulator)
     * [About VoxelManip](#about-voxelmanip)
@@ -10253,45 +10254,45 @@ with the correct stack level in your implementation.
 * [Registered Entities](#registered-entities)
 
 * [L-System Trees](#l-system-trees)
-    * [Tree definition](#tree-definition)
-    * [Key for special L-System symbols used in axioms](#key-for-special-l-system-symbols-used-in-axioms)
+    * [Tree Definition](#tree-definition)
+    * [Key for Special L-System Symbols Used in Axioms](#key-for-special-l-system-symbols-used-in-axioms)
     * [Example](#example)
 
 * [Privileges](#privileges)
-    * [Registering privileges](#registering-privileges)
-    * [Checking privileges](#checking-privileges)
-    * [Managing player privileges](#managing-player-privileges)
-    * [Built-in privileges](#built-in-privileges)
-    * [Related settings](#related-settings)
+    * [Registering Privileges](#registering-privileges)
+    * [Checking Privileges](#checking-privileges)
+    * [Managing Player Privileges](#managing-player-privileges)
+    * [Built-in Privileges](#built-in-privileges)
+    * [Related Settings](#related-settings)
 
 * ['minetest' Namespace Reference](#minetest-namespace-reference)
     * [Utilities](#utilities)
     * [Logging](#logging)
-    * [Registration functions](#registration-functions)
-    * [Global callback registration functions](#global-callback-registration-functions)
-    * [Setting-related](#setting-related)
+    * [Registration Functions](#registration-functions)
+    * [Global Callback Registration Functions](#global-callback-registration-functions)
+    * [Settings-Related](#settings-related)
     * [Authentication](#authentication)
     * [Chat](#chat)
-    * [Environment access](#environment-access)
-    * [Mod channels](#mod-channels)
+    * [Environment Access](#environment-access)
+    * [Mod Channels](#mod-channels)
     * [Inventory](#inventory-1)
     * [Formspec](#formspec-1)
-    * [Item handling](#item-handling)
+    * [Item Handling](#item-handling)
     * [Rollback](#rollback)
-    * [Defaults for the `on_place` and `on_drop` item definition functions](#defaults-for-the-on_place-and-on_drop-item-definition-functions)
-    * [Defaults for the `on_punch` and `on_dig` node definition callbacks](#defaults-for-the-on_punch-and-on_dig-node-definition-callbacks)
+    * [Defaults for the `on_place` and `on_drop` Item Definition Functions](#defaults-for-the-on_place-and-on_drop-item-definition-functions)
+    * [Defaults for the `on_punch` and `on_dig` Node Definition Callbacks](#defaults-for-the-on_punch-and-on_dig-node-definition-callbacks)
     * [Sounds](#sounds-1)
     * [Timing](#timing)
-    * [Async environment](#async-environment)
+    * [Async Environment](#async-environment)
     * [Server](#server)
     * [Bans](#bans)
     * [Particles](#particles)
     * [Schematics](#schematics-1)
-    * [HTTP requests](#http-requests)
+    * [HTTP Requests](#http-requests)
     * [Storage API](#storage-api)
     * [Misc.](#misc)
-    * [Global objects](#global-objects)
-    * [Global tables](#global-tables)
+    * [Global Objects](#global-objects)
+    * [Global Tables](#global-tables)
 
 * [Class Reference](#class-reference)
     * [`AreaStore`](#areastore)
@@ -10314,26 +10315,28 @@ with the correct stack level in your implementation.
     * [`StorageRef`](#storageref)
 
 * [Definition Tables](#definition-tables)
-    * [Object properties](#object-properties)
-    * [Entity definition](#entity-definition)
-    * [ABM  definition](#abm-activeblockmodifier-definition)
-    * [LBM  definition](#lbm-loadingblockmodifier-definition)
-    * [Tile definition](#tile-definition)
-    * [Tile animation definition](#tile-animation-definition)
-    * [Item definition](#item-definition)
-    * [Node definition](#node-definition)
-    * [Crafting recipes](#crafting-recipes)
-    * [Ore definition](#ore-definition)
-    * [Biome definition](#biome-definition)
-    * [Decoration definition](#decoration-definition)
-    * [Chat command definition](#chat-command-definition)
-    * [Privilege definition](#privilege-definition)
-    * [Detached inventory callbacks](#detached-inventory-callbacks)
-    * [HUD definition](#hud-definition)
-    * [Particle definition](#particle-definition)
-    * [`ParticleSpawner` definition](#particlespawner-definition)
-    * [`HTTPRequest` definition](#httprequest-definition)
-    * [`HTTPRequestResult` definition](#httprequestresult-definition)
-    * [Authentication handler definition](#authentication-handler-definition)
-    * [Bit Library](#bit-library)
-    * [Error Handling](#error-handling)
+    * [Object Properties](#object-properties)
+    * [Entity Definition](#entity-definition)
+    * [ABM  Definition](#abm-activeblockmodifier-definition)
+    * [LBM  Definition](#lbm-loadingblockmodifier-definition)
+    * [Tile Definition](#tile-definition)
+    * [Tile Animation Definition](#tile-animation-definition)
+    * [Item Definition](#item-definition)
+    * [Node Definition](#node-definition)
+    * [Crafting Recipes](#crafting-recipes)
+    * [Ore Definition](#ore-definition)
+    * [Biome Definition](#biome-definition)
+    * [Decoration Definition](#decoration-definition)
+    * [Chat Command Definition](#chat-command-definition)
+    * [Privilege Definition](#privilege-definition)
+    * [Detached Inventory Callbacks](#detached-inventory-callbacks)
+    * [HUD Definition](#hud-definition)
+    * [Particle Definition](#particle-definition)
+    * [`ParticleSpawner` Definition](#particlespawner-definition)
+    * [`HTTPRequest` Definition](#httprequest-definition)
+    * [`HTTPRequestResult` Definition](#httprequestresult-definition)
+    * [Authentication Handler Definition](#authentication-handler-definition)
+
+* [Bit Library](#bit-library)
+
+* [Error Handling](#error-handling)
