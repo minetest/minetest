@@ -37,11 +37,11 @@ extern "C" {
 }
 
 std::string getstringfield_default (lua_State *L, int table, const char *fieldname, const std::string &default_);
-bool getboolfield_default          (lua_State *L, int table, const char *fieldname, bool default_);
-float getfloatfield_default		   (lua_State *L, int table, const char *fieldname, float default_);
-int getintfield_default			   (lua_State *L, int table, const char *fieldname, int default_);
+bool        getboolfield_default   (lua_State *L, int table, const char *fieldname, bool default_);
+float       getfloatfield_default  (lua_State *L, int table, const char *fieldname, float default_);
+int         getintfield_default    (lua_State *L, int table, const char *fieldname, int default_);
 
-bool check_field_or_nil(lua_State *L, int index, int type, const char *fieldname);
+bool        check_field_or_nil     (lua_State *L, int index, int type, const char *fieldname);
 
 template<typename T>
 bool getintfield(lua_State *L, int table,
@@ -60,32 +60,32 @@ bool getintfield(lua_State *L, int table,
 // Retrieve an v3s16 where all components are optional (falls back to default)
 v3s16 getv3s16field_default(lua_State *L, int table, const char *fieldname, v3s16 default_);
 
-bool getstringfield		   (lua_State *L, int table, const char *fieldname, std::string &result);
-size_t getstringlistfield  (lua_State *L, int table, const char *fieldname, std::vector<std::string> *result);
-void read_groups		   (lua_State *L, int index, std::unordered_map<std::string, int> &result);
-bool getboolfield		   (lua_State *L, int table, const char *fieldname, bool &result);
-bool getfloatfield		   (lua_State *L, int table, const char *fieldname, float &result);
+bool                getstringfield     (lua_State *L, int table, const char *fieldname, std::string &result);
+size_t              getstringlistfield (lua_State *L, int table, const char *fieldname, std::vector<std::string> *result);
+void                read_groups        (lua_State *L, int index, std::unordered_map<std::string, int> &result);
+bool                getboolfield       (lua_State *L, int table, const char *fieldname, bool &result);
+bool                getfloatfield      (lua_State *L, int table, const char *fieldname, float &result);
 
-void setstringfield		   (lua_State *L, int table, const char *fieldname, const std::string &value);
-void setintfield		   (lua_State *L, int table, const char *fieldname, int value);
-void setfloatfield		   (lua_State *L, int table, const char *fieldname, float value);
-void setboolfield		   (lua_State *L, int table, const char *fieldname, bool value);
+void                setstringfield     (lua_State *L, int table, const char *fieldname, const std::string &value);
+void                setintfield        (lua_State *L, int table, const char *fieldname, int value);
+void                setfloatfield      (lua_State *L, int table, const char *fieldname, float value);
+void                setboolfield       (lua_State *L, int table, const char *fieldname, bool value);
 
-v3f checkFloatPos		   (lua_State *L, int index);
-v2f check_v2f			   (lua_State *L, int index);
-v3f check_v3f			   (lua_State *L, int index);
-v3s16 check_v3s16		   (lua_State *L, int index);
+v3f                 checkFloatPos      (lua_State *L, int index);
+v2f                 check_v2f          (lua_State *L, int index);
+v3f                 check_v3f          (lua_State *L, int index);
+v3s16               check_v3s16		   (lua_State *L, int index);
 
-v3f read_v3f			   (lua_State *L, int index);
-v2f read_v2f			   (lua_State *L, int index);
-v2s16 read_v2s16		   (lua_State *L, int index);
-v2s32 read_v2s32		   (lua_State *L, int index);
-video::SColor read_ARGB8   (lua_State *L, int index);
-bool read_color			   (lua_State *L, int index, video::SColor *color);
-bool is_color_table		   (lua_State *L, int index);
+v3f                 read_v3f           (lua_State *L, int index);
+v2f                 read_v2f           (lua_State *L, int index);
+v2s16               read_v2s16         (lua_State *L, int index);
+v2s32               read_v2s32         (lua_State *L, int index);
+video::SColor       read_ARGB8         (lua_State *L, int index);
+bool                read_color         (lua_State *L, int index, video::SColor *color);
+bool                is_color_table     (lua_State *L, int index);
 
-aabb3f read_aabb3f		   (lua_State *L, int index, f32 scale);
-v3s16 read_v3s16		   (lua_State *L, int index);
+aabb3f              read_aabb3f        (lua_State *L, int index, f32 scale);
+v3s16               read_v3s16         (lua_State *L, int index);
 std::vector<aabb3f> read_aabb3f_vector (lua_State *L, int index, f32 scale);
 size_t read_stringlist	   (lua_State *L, int index, std::vector<std::string> *result);
 
