@@ -93,8 +93,8 @@ ItemStack read_item           (lua_State *L, int index, IItemDefManager *idef);
 
 struct TileAnimationParams read_animation_definition(lua_State *L, int index);
 
-ToolCapabilities read_tool_capabilities	(lua_State *L, int table);
-void push_tool_capabilities				(lua_State *L, const ToolCapabilities &prop);
+ToolCapabilities read_tool_capabilities (lua_State *L, int table);
+void push_tool_capabilities             (lua_State *L, const ToolCapabilities &prop);
 
 void read_item_definition (lua_State *L, int index,
 		const ItemDefinition &default_def, ItemDefinition &def);

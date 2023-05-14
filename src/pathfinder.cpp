@@ -128,12 +128,12 @@ public:
 	/* debug values */
 	bool      is_element = false;          /**< node is element of path detected      */
 	char      type = 'u';                  /**< Type of pathfinding node.
-											* u = unknown
-											* i = invalid
-											* s = surface (walkable node)
-											* - = non-walkable node (e.g. air) above surface
-											* g = other non-walkable node
-											*/
+	                                        * u = unknown
+	                                        * i = invalid
+	                                        * s = surface (walkable node)
+	                                        * - = non-walkable node (e.g. air) above surface
+	                                        * g = other non-walkable node
+	                                        */
 };
 
 class Pathfinder;
