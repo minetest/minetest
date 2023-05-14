@@ -25,16 +25,16 @@ Contributions are welcome! Here's how you can help:
    the work, to avoid disappointment.
 
    You may also benefit from discussing on our IRC development channel
-   [#minetest-dev](http://www.minetest.net/irc/). Note that a proper IRC client
+   [#minetest-dev](https://www.minetest.net/irc/). Note that a proper IRC client
    is required to speak on this channel.
 
 3. Start coding!
 	* Refer to the
       [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.md),
-      [Developer Wiki](http://dev.minetest.net/Main_Page) and other
+      [Developer Wiki](https://dev.minetest.net/Main_Page) and other
       [documentation](https://github.com/minetest/minetest/tree/master/doc).
-    * Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and
-      [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
+    * Follow the [C/C++](https://dev.minetest.net/Code_style_guidelines) and
+      [Lua](https://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     * Check your code works as expected and document any changes to the Lua API.
 
 4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
@@ -61,8 +61,8 @@ Contributions are welcome! Here's how you can help:
    picture of the project.
 2. It works.
 3. It follows the code style for
-   [C/C++](http://dev.minetest.net/Code_style_guidelines) or
-   [Lua](http://dev.minetest.net/Lua_code_style_guidelines).
+   [C/C++](https://dev.minetest.net/Code_style_guidelines) or
+   [Lua](https://dev.minetest.net/Lua_code_style_guidelines).
 4. The code's interfaces are well designed, regardless of other aspects that
    might need more work in the future.
 5. It uses protocols and formats which include the required compatibility.
@@ -88,7 +88,7 @@ a stable release is on the way.
 
 1. Do a quick search on GitHub to check if the issue has already been reported.
 2. Is it an issue with the Minetest *engine*? If not, report it.
-   [elsewhere](http://www.minetest.net/development/#reporting-issues).
+   [elsewhere](https://www.minetest.net/development/#reporting-issues).
 3. [Open an issue](https://github.com/minetest/minetest/issues/new) and describe
    the issue you are having - you could include:
     * Error logs (check the bottom of the `debug.txt` file).
@@ -122,16 +122,16 @@ translated by editing a `.tr` text file. See
 ## Donations
 
 If you'd like to monetarily support Minetest development, you can find donation
-methods on [our website](http://www.minetest.net/development/#donate).
+methods on [our website](https://www.minetest.net/development/#donate).
 
 # Maintaining
 
 * This is a concise version of the
-  [Rules & Guidelines](http://dev.minetest.net/Category:Rules_and_Guidelines) on the developer wiki.*
+  [Rules & Guidelines](https://dev.minetest.net/Category:Rules_and_Guidelines) on the developer wiki.*
 
 These notes are for those who have push access Minetest (core developers / maintainers).
 
-* See the [project organization](http://dev.minetest.net/Organisation) for the people involved.
+* See the [project organization](https://dev.minetest.net/Organisation) for the people involved.
 
 ## Concept Approvals and Roadmaps
 
@@ -180,4 +180,4 @@ Submit a :+1: (+1) or "Looks good" comment to show you believe the pull request 
 
 ## Releasing a New Version
 
-*Refer to [dev.minetest.net/Releasing_Minetest](http://dev.minetest.net/Releasing_Minetest)*
+*Refer to [dev.minetest.net/Releasing_Minetest](https://dev.minetest.net/Releasing_Minetest)*

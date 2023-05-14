@@ -1,7 +1,7 @@
 # Minetest Lua Client Modding API Reference 5.8.0
 
-* More information at <http://www.minetest.net/>
-* Developer Wiki: <http://dev.minetest.net/>
+* More information at <https://www.minetest.net/>
+* Developer Wiki: <https://dev.minetest.net/>
 
 ## Introduction
 
@@ -1456,7 +1456,7 @@ The following functions provide escape sequences:
 `#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
 
 Named colors are also supported and are equivalent to
-[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
+[CSS Color Module Level 4](https://dev.w3.org/csswg/css-color/#named-colors).
 To specify the value of the alpha channel, append `#A` or `#AA` to the end of
 the color name (e.g. `colorname#08`).
 
