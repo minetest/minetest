@@ -585,7 +585,7 @@
 # gui_scaling_filter = false
 
 #    When gui_scaling_filter_txr2img is true, copy those images
-#    from hardware to software for scaling.  When false, fall back
+#    from hardware to software for scaling. When false, fall back
 #    to the old scaling method, for video drivers that don't
 #    properly support downloading textures back from hardware.
 #    type: bool
@@ -2992,7 +2992,7 @@
 
 #    The time (in seconds) that the liquids queue may grow beyond processing
 #    capacity until an attempt is made to decrease its size by dumping old queue
-#    items.  A value of 0 disables the functionality.
+#    items. A value of 0 disables the functionality.
 #    type: int min: 0 max: 65535
 # liquid_queue_purge_time = 0
 

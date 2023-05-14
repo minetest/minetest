@@ -84,7 +84,7 @@ u32 ObjDefManager::addRaw(ObjDef *obj)
 	obj->index = nobjects;
 
 	// Ensure UID is nonzero so that a valid handle == OBJDEF_INVALID_HANDLE
-	// is not possible.  The slight randomness bias isn't very significant.
+	// is not possible. The slight randomness bias isn't very significant.
 	obj->uid = myrand() & OBJDEF_UID_MASK;
 	if (obj->uid == 0)
 		obj->uid = 1;

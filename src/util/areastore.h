@@ -78,7 +78,7 @@ public:
 	void getAreasForPos(std::vector<Area *> *result, v3s16 pos);
 
 	/// Finds areas that are completely contained inside the area defined
-	/// by the passed edges.  If @p accept_overlap is true this finds any
+	/// by the passed edges. If @p accept_overlap is true this finds any
 	/// areas that intersect with the passed area at any point.
 	virtual void getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap) = 0;

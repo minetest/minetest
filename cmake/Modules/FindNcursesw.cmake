@@ -74,9 +74,9 @@
 # ------------------------------------------------------------------------------
 #
 # The above copyright and license notice applies to distributions of
-# CMake in source and binary form.  Some source files contain additional
+# CMake in source and binary form. Some source files contain additional
 # notices of original copyright by their contributors; see each source
-# for details.  Third-party software packages supplied with CMake under
+# for details. Third-party software packages supplied with CMake under
 # compatible licenses provide their own copyright notices documented in
 # corresponding subdirectories.
 #

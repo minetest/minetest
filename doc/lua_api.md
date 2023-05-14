@@ -646,7 +646,7 @@ Colorize the textures with the given color.
 `<ratio>` is an int ranging from 0 to 255 or the word "`alpha`". If
 it is an int, then it specifies how far to interpolate between the
 colors where 0 is only the texture color and 255 is only `<color>`. If
-omitted, the alpha of `<color>` will be used as the ratio.  If it is
+omitted, the alpha of `<color>` will be used as the ratio. If it is
 the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
@@ -2813,7 +2813,7 @@ background elements are drawn before all other elements.
   so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
 > **Note**: With the new coordinate system, newlines are spaced with half a
-  coordinate.  With the old system, newlines are spaced 2/5 of an inventory slot.
+  coordinate. With the old system, newlines are spaced 2/5 of an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 * Displays a static formatted text with hyperlinks.
@@ -4273,7 +4273,7 @@ structures, such as trees, cave spikes, rocks, and so on.
 
 A schematic specifier identifies a schematic by either a filename to a
 Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
-in the form of a table.  This table specifies the following fields:
+in the form of a table. This table specifies the following fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided
   schematic. (required field)
@@ -5142,7 +5142,7 @@ Minetest includes the following settings to control behavior of privileges:
       way. Use this instead of below code when writing e.g. database files:
       `local f = io.open(path, "wb"); f:write(content); f:close()`
 * `minetest.get_version()`: returns a table containing components of the
-   engine version.  Components:
+   engine version. Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `proto_min`: The minimum supported protocol version
@@ -5186,7 +5186,7 @@ Minetest includes the following settings to control behavior of privileges:
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
 * `minetest.log([level,] text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
-      `"info"`, or `"verbose"`.  Default is `"none"`.
+      `"info"`, or `"verbose"`. Default is `"none"`.
 
 ## Registration Functions
 
@@ -7800,7 +7800,7 @@ In multiplayer mode, the error may be arbitrarily large.
 
 Interface for the operating system's crypto-secure PRNG.
 
-It can be created via `SecureRandom()`.  The constructor returns nil if a
+It can be created via `SecureRandom()`. The constructor returns nil if a
 secure random device cannot be found on the system.
 
 ### Methods
@@ -9487,13 +9487,13 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 Used by `minetest.register_chatcommand`.
 
 Specifies the function to be called and the privileges required when a player
-issues the command.  A help message that is the concatenation of the params and
+issues the command. A help message that is the concatenation of the params and
 description fields is shown when the "/help" chatcommand is issued.
 
 ```lua
 {
     params = "",
-    -- Short parameter description.  See the below note.
+    -- Short parameter description. See the below note.
 
     description = "",
     -- General description of the command's purpose.
@@ -9931,7 +9931,7 @@ Types used are defined in the previous section.
 * vec3 range `jitter`: offsets the velocity of each particle by a random
   amount within the specified range each frame. used to create Brownian motion.
 * vec3 range `drag`: the amount by which absolute particle velocity along
-  each axis is decreased per second.  a value of 1.0 means that the particle
+  each axis is decreased per second. a value of 1.0 means that the particle
   will be slowed to a stop over the space of a second; a value of -1.0 means
   that the particle speed will be doubled every second. to avoid interfering
   with gravity provided by `acc`, a drag vector like `vector.new(1,0,1)` can
@@ -9939,7 +9939,7 @@ Types used are defined in the previous section.
 * float range `bounce`: how bouncy the particles are when `collisiondetection`
   is turned on. values less than or equal to `0` turn off particle bounce;
   `1` makes the particles bounce without losing any velocity, and `2` makes
-  them double their velocity with every bounce.  `bounce` is not bounded but
+  them double their velocity with every bounce. `bounce` is not bounded but
   values much larger than `1.0` probably aren't very useful.
 * float range `exptime`: the number of seconds after which the particle
   disappears.

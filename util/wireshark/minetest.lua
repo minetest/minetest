@@ -778,7 +778,7 @@ do
 			for index = 0, removed_count - 1 do
 				pos = removed_count_pos + 2 + 2 * index
 				t2 = t:add(f_removed, buffer(pos, 2))
-				t2:set_text("Removed object, ID = " ..  buffer(pos, 2):uint())
+				t2:set_text("Removed object, ID = " .. buffer(pos, 2):uint())
 				t2:add(f_removed_id, buffer(pos, 2))
 			end
 
@@ -859,7 +859,7 @@ do
 				message_length = buffer(pos + 2, 2):uint()
 
 				t2 = t:add(f_object, buffer(pos, 4 + message_length))
-				t2:set_text("Object, ID = " ..  buffer(pos, 2):uint())
+				t2:set_text("Object, ID = " .. buffer(pos, 2):uint())
 				t2:add(f_object_id, buffer(pos, 2))
 				t2:add(f_message_length, buffer(pos + 2, 2))
 				t2:add(f_message, buffer(pos + 4, message_length))

@@ -746,7 +746,7 @@ void MapgenV6::addMud()
 		if ((bt == BT_DESERT || bt == BT_TUNDRA) && surface_y > 20)
 			mud_add_amount = MYMAX(0, mud_add_amount - (surface_y - 20) / 5);
 
-		/* If topmost node is grass, change it to mud.  It might be if it was
+		/* If topmost node is grass, change it to mud. It might be if it was
 		// flown to there from a neighboring chunk and then converted.
 		u32 i = vm->m_area.index(x, surface_y, z);
 		if (vm->m_data[i].getContent() == c_dirt_with_grass)
@@ -942,7 +942,7 @@ void MapgenV6::placeTreesAndJungleGrass()
 	s16 sidelen = central_area_size.X / div;
 	double area = sidelen * sidelen;
 
-	// N.B.  We must add jungle grass first, since tree leaves will
+	// N.B. We must add jungle grass first, since tree leaves will
 	// obstruct the ground, giving us a false ground level
 	for (s16 z0 = 0; z0 < div; z0++)
 	for (s16 x0 = 0; x0 < div; x0++) {
@@ -1048,7 +1048,7 @@ void MapgenV6::growGrass() // Add surface nodes
 	for (s16 z = full_node_min.Z; z <= full_node_max.Z; z++)
 	for (s16 x = full_node_min.X; x <= full_node_max.X; x++, index++) {
 		// Find the lowest surface to which enough light ends up to make
-		// grass grow.  Basically just wait until not air and not leaves.
+		// grass grow. Basically just wait until not air and not leaves.
 		s16 surface_y = 0;
 		{
 			u32 i = vm->m_area.index(x, node_max.Y, z);

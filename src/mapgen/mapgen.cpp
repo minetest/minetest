@@ -118,7 +118,7 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
 
 	/*
 		We are losing half our entropy by doing this, but it is necessary to
-		preserve reverse compatibility.  If the top half of our current 64 bit
+		preserve reverse compatibility. If the top half of our current 64 bit
 		seeds ever starts getting used, existing worlds will break due to a
 		different hash outcome and no way to differentiate between versions.
 
@@ -126,7 +126,7 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
 		the seed value should be used, essentially a 1-bit version code, but
 		this would require increasing the total size of a seed to 9 bytes (yuck)
 
-		It's probably okay if this never gets fixed.  4.2 billion possibilities
+		It's probably okay if this never gets fixed. 4.2 billion possibilities
 		ought to be enough for anyone.
 	*/
 	seed = (s32)params->seed;
@@ -573,7 +573,7 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeParams *emerg
 	//// an adjacent element for that coordinate in noise/height/biome maps
 	//// (*not* vmanip content map!)
 
-	// Note there is no X stride explicitly defined.  Items adjacent in the X
+	// Note there is no X stride explicitly defined. Items adjacent in the X
 	// coordinate are assumed to be adjacent in memory as well (i.e. stride of 1).
 
 	// Number of elements to skip to get to the next Y coordinate

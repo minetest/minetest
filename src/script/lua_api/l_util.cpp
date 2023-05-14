@@ -73,7 +73,7 @@ int ModApiUtil::l_log(lua_State *L)
 		level = Logger::stringToLevel(name);
 		if (level == LL_MAX) {
 			warningstream << "Tried to log at unknown level '" << name
-				<< "'.  Defaulting to \"none\"." << std::endl;
+				<< "'. Defaulting to \"none\"." << std::endl;
 			level = LL_NONE;
 		}
 	}

@@ -109,7 +109,7 @@ inline std::string padStringRight(std::string str, size_t len)
  *
  * @param str
  * @param ends A NULL- or ""- terminated array of strings to remove from s in
- *	the copy produced.  Note that once one of these strings is removed
+ *	the copy produced. Note that once one of these strings is removed
  *	that no further postfixes contained within this array are removed.
  *
  * @return If no end could be removed then "" is returned.
@@ -132,7 +132,7 @@ inline std::string removeStringEnd(const std::string &str,
 
 
 /**
- * Check two strings for equivalence.  If \p case_insensitive is true
+ * Check two strings for equivalence. If \p case_insensitive is true
  * then the case of the strings is ignored (default is false).
  *
  * @param s1
@@ -314,8 +314,8 @@ inline std::string trim(const std::string &str)
 
 
 /**
- * Returns whether \p str should be regarded as (bool) true.  Case and leading
- * and trailing whitespace are ignored.  Values that will return
+ * Returns whether \p str should be regarded as (bool) true. Case and leading
+ * and trailing whitespace are ignored. Values that will return
  * true are "y", "yes", "true" and any number that is not 0.
  * @param str
  */
@@ -513,7 +513,7 @@ inline bool string_allowed_blacklist(const std::string &str,
  * every \p row_len characters.
  *
  * @note This function does not honour word wraps and blindy inserts a newline
- *	every \p row_len characters whether it breaks a word or not.  It is
+ *	every \p row_len characters whether it breaks a word or not. It is
  *	intended to be used for, for example, showing paths in the GUI.
  *
  * @note This function doesn't wrap inside utf-8 multibyte sequences and also

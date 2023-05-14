@@ -348,7 +348,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	if (result < 0 && (e == EINTR || e == EBADF)) {
 #endif
 		// N.B. select() fails when sockets are destroyed on Connection's dtor
-		// with EBADF.  Instead of doing tricky synchronization, allow this
+		// with EBADF. Instead of doing tricky synchronization, allow this
 		// thread to exit but don't throw an exception.
 		return false;
 	}

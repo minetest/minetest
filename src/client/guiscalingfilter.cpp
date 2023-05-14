@@ -25,13 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 
 /* Maintain a static cache to store the images that correspond to textures
- * in a format that's manipulable by code.  Some platforms exhibit issues
+ * in a format that's manipulable by code. Some platforms exhibit issues
  * converting textures back into images repeatedly, and some don't even
  * allow it at all.
  */
 std::map<io::path, video::IImage *> g_imgCache;
 
-/* Maintain a static cache of all pre-scaled textures.  These need to be
+/* Maintain a static cache of all pre-scaled textures. These need to be
  * cleared as well when the cached images.
  */
 std::map<io::path, video::ITexture *> g_txrCache;
@@ -68,8 +68,8 @@ void guiScalingCacheClear()
 	g_txrCache.clear();
 }
 
-/* Get a cached, high-quality pre-scaled texture for display purposes.  If the
- * texture is not already cached, attempt to create it.  Returns a pre-scaled texture,
+/* Get a cached, high-quality pre-scaled texture for display purposes. If the
+ * texture is not already cached, attempt to create it. Returns a pre-scaled texture,
  * or the original texture if unable to pre-scale it.
  */
 video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,

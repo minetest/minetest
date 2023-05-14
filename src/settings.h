@@ -141,11 +141,11 @@ public:
 	 * Reading and writing *
 	 ***********************/
 
-	// Read configuration file.  Returns success.
+	// Read configuration file. Returns success.
 	bool readConfigFile(const char *filename);
-	//Updates configuration file.  Returns success.
+	//Updates configuration file. Returns success.
 	bool updateConfigFile(const char *filename);
-	// NOTE: Types of allowed_options are ignored.  Returns success.
+	// NOTE: Types of allowed_options are ignored. Returns success.
 	bool parseCommandLine(int argc, char *argv[],
 			std::map<std::string, ValueSpec> &allowed_options);
 	bool parseConfigLines(std::istream &is);

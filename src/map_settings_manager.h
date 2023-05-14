@@ -38,7 +38,7 @@ struct MapgenParams;
 	- Manually view and modify the current configuration as desired through a
 	  Settings-like interface
 	- When all modifications are finished, create a 'Parameters' object
-	  containing the finalized, active parameters.  This could be passed along
+	  containing the finalized, active parameters. This could be passed along
 	  to whichever Map-related objects that may require it.
 	- Save these active settings to the metadata file when requested
 */
@@ -56,7 +56,7 @@ public:
 		const std::string &name, NoiseParams *value_out);
 
 	// Note: Map config becomes read-only after makeMapgenParams() gets called
-	// (i.e. mapgen_params is non-NULL).  Attempts to set map config after
+	// (i.e. mapgen_params is non-NULL). Attempts to set map config after
 	// params have been finalized will result in failure.
 	bool setMapSetting(const std::string &name,
 		const std::string &value, bool override_meta = false);

@@ -71,7 +71,7 @@ function dump2(o, name, dumped)
 	name = name or "_"
 	-- "dumped" is used to keep track of serialized tables to handle
 	-- multiple references and circular tables properly.
-	-- It only contains tables as keys.  The value is the name that
+	-- It only contains tables as keys. The value is the name that
 	-- the table has in the dump, eg:
 	-- {x = {"y"}} -> dumped[{"y"}] = '_["x"]'
 	dumped = dumped or {}

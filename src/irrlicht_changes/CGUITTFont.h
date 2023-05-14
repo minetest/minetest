@@ -82,7 +82,7 @@ namespace gui
 		//! Preload the glyph.
 		//!	The preload process occurs when the program tries to cache the glyph from FT_Library.
 		//! However, it simply defines the SGUITTGlyph's properties and will only create the page
-		//! textures if necessary.  The actual creation of the textures should only occur right
+		//! textures if necessary. The actual creation of the textures should only occur right
 		//! before the batch draw call.
 		void preload(u32 char_index, FT_Face face, video::IVideoDriver* driver, u32 font_size, const FT_Int32 loadFlags);
 
@@ -107,7 +107,7 @@ namespace gui
 		//! Glyph advance information.
 		FT_Vector advance;
 
-		//! This is just the temporary image holder.  After this glyph is paged,
+		//! This is just the temporary image holder. After this glyph is paged,
 		//! it will be dropped.
 		mutable video::IImage* surface;
 
@@ -221,13 +221,13 @@ namespace gui
 	class CGUITTFont : public IGUIFont
 	{
 		public:
-			//! Creates a new TrueType font and returns a pointer to it.  The pointer must be drop()'ed when finished.
+			//! Creates a new TrueType font and returns a pointer to it. The pointer must be drop()'ed when finished.
 			//! \param env The IGUIEnvironment the font loads out of.
 			//! \param filename The filename of the font.
-			//! \param size The size of the font glyphs in pixels.  Since this is the size of the individual glyphs, the true height of the font may change depending on the characters used.
+			//! \param size The size of the font glyphs in pixels. Since this is the size of the individual glyphs, the true height of the font may change depending on the characters used.
 			//! \param antialias set the use_monochrome (opposite to antialias) flag
 			//! \param transparency set the use_transparency flag
-			//! \return Returns a pointer to a CGUITTFont.  Will return 0 if the font failed to load.
+			//! \return Returns a pointer to a CGUITTFont. Will return 0 if the font failed to load.
 			static CGUITTFont* createTTFont(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias = true, const bool transparency = true, const u32 shadow = 0, const u32 shadow_alpha = 255);
 			static CGUITTFont* createTTFont(IrrlichtDevice *device, const io::path& filename, const u32 size, const bool antialias = true, const bool transparency = true);
 			static CGUITTFont* create(IGUIEnvironment *env, const io::path& filename, const u32 size, const bool antialias = true, const bool transparency = true);
@@ -266,13 +266,13 @@ namespace gui
 
 			//! Tells the font to use monochrome rendering.
 			//! Default: false.
-			//! \param flag If true, the font draws using a monochrome image.  If false, the font uses a grayscale image.
+			//! \param flag If true, the font draws using a monochrome image. If false, the font uses a grayscale image.
 			virtual void setMonochrome(const bool flag);
 
 			//! Enables or disables font hinting.
 			//! Default: Hinting and auto-hinting true.
 			//! \param enable If false, font hinting is turned off. If true, font hinting is turned on.
-			//! \param enable_auto_hinting If true, FreeType uses its own auto-hinting algorithm.  If false, it tries to use the algorithm specified by the font.
+			//! \param enable_auto_hinting If true, FreeType uses its own auto-hinting algorithm. If false, it tries to use the algorithm specified by the font.
 			virtual void setFontHinting(const bool enable, const bool enable_auto_hinting = true);
 
 			//! Draws some text and clips it to the specified rectangle if wanted.

@@ -774,8 +774,8 @@ public:
   // Assumes that UInt64 is a 64 bits integer.
   static constexpr double maxUInt64AsDouble = 18446744073709551615.0;
 // Workaround for bug in the NVIDIAs CUDA 9.1 nvcc compiler
-// when using gcc and clang backend compilers.  CZString
-// cannot be defined as private.  See issue #486
+// when using gcc and clang backend compilers. CZString
+// cannot be defined as private. See issue #486
 #ifdef __NVCC__
 public:
 #else
@@ -1543,7 +1543,7 @@ public:
    *                             was successfully parsed.
    * \param      collectComments \c true to collect comment and allow writing
    *                             them back during serialization, \c false to
-   *                             discard comments.  This parameter is ignored
+   *                             discard comments. This parameter is ignored
    *                             if Features::allowComments_ is \c false.
    * \return \c true if the document was successfully parsed, \c false if an
    * error occurred.
@@ -1557,12 +1557,12 @@ public:
    * \param      beginDoc        Pointer on the beginning of the UTF-8 encoded
    *                             string of the document to read.
    * \param      endDoc          Pointer on the end of the UTF-8 encoded string
-   *                             of the document to read.  Must be >= beginDoc.
+   *                             of the document to read. Must be >= beginDoc.
    * \param[out] root            Contains the root value of the document if it
    *                             was successfully parsed.
    * \param      collectComments \c true to collect comment and allow writing
    *                             them back during serialization, \c false to
-   *                             discard comments.  This parameter is ignored
+   *                             discard comments. This parameter is ignored
    *                             if Features::allowComments_ is \c false.
    * \return \c true if the document was successfully parsed, \c false if an
    * error occurred.
@@ -1598,7 +1598,7 @@ public:
    *
    * \return A (possibly empty) vector of StructuredError objects. Currently
    * only one error can be returned, but the caller should tolerate multiple
-   * errors.  This can occur if the parser recovers from a non-fatal parse
+   * errors. This can occur if the parser recovers from a non-fatal parse
    * error and then encounters additional errors.
    */
   std::vector<StructuredError> getStructuredErrors() const;
@@ -1769,7 +1769,7 @@ public:
    * Available settings (case-sensitive):
    * - `"collectComments": false or true`
    *   - true to collect comment and allow writing them back during
-   *     serialization, false to discard comments.  This parameter is ignored
+   *     serialization, false to discard comments. This parameter is ignored
    *     if allowComments is false.
    * - `"allowComments": false or true`
    *   - true if comments are allowed.

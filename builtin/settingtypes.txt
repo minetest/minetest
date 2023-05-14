@@ -546,7 +546,7 @@ formspec_fullscreen_bg_color (Formspec Full-Screen Background Color) string (0,0
 gui_scaling_filter (GUI scaling filter) bool false
 
 #    When gui_scaling_filter_txr2img is true, copy those images
-#    from hardware to software for scaling.  When false, fall back
+#    from hardware to software for scaling. When false, fall back
 #    to the old scaling method, for video drivers that don't
 #    properly support downloading textures back from hardware.
 gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
@@ -1921,7 +1921,7 @@ liquid_loop_max (Liquid loop max) int 100000 1 4294967295
 
 #    The time (in seconds) that the liquids queue may grow beyond processing
 #    capacity until an attempt is made to decrease its size by dumping old queue
-#    items.  A value of 0 disables the functionality.
+#    items. A value of 0 disables the functionality.
 liquid_queue_purge_time (Liquid queue purge time) int 0 0 65535
 
 #    Liquid update interval in seconds.
