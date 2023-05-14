@@ -646,7 +646,7 @@ union luai_Cast { double l_d; long l_l; };
 @* temporary name.
 @@ LUA_TMPNAMBUFSIZE is the maximum size of a name created by lua_tmpnam.
 ** CHANGE them if you have an alternative to tmpnam (which is considered
-** insecure) or if you want the original tmpnam anyway.  By default, Lua
+** insecure) or if you want the original tmpnam anyway. By default, Lua
 ** uses tmpnam except when POSIX is available, where it uses mkstemp.
 */
 #if defined(loslib_c) || defined(luaall_c)
@@ -697,9 +697,9 @@ union luai_Cast { double l_d; long l_l; };
 ** dynamic-library system for your platform (either Windows' DLL, Mac's
 ** dyld, or Unix's dlopen). If your system is some kind of Unix, there
 ** is a good chance that it has dlopen, so LUA_DL_DLOPEN will work for
-** it.  To use dlopen you also need to adapt the src/Makefile (probably
+** it. To use dlopen you also need to adapt the src/Makefile (probably
 ** adding -ldl to the linker options), so Lua does not select it
-** automatically.  (When you change the makefile to add -ldl, you must
+** automatically. (When you change the makefile to add -ldl, you must
 ** also add -DLUA_USE_DLOPEN.)
 ** If you do not want any kind of dynamic library, undefine all these
 ** options.

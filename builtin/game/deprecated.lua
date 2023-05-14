@@ -36,7 +36,7 @@ local settings = core.settings
 local function setting_proxy(name)
 	return function(...)
 		core.log("deprecated", "WARNING: minetest.setting_* "..
-			"functions are deprecated.  "..
+			"functions are deprecated. "..
 			"Use methods on the minetest.settings object.")
 		return settings[name](settings, ...)
 	end

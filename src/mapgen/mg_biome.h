@@ -106,12 +106,12 @@ public:
 		FATAL_ERROR_IF(m_csize != expect, "Chunk size mismatches");
 	}
 
-	// Calculates the biome at the exact position provided.  This function can
+	// Calculates the biome at the exact position provided. This function can
 	// be called at any time, but may be less efficient than the latter methods,
 	// depending on implementation.
 	virtual Biome *calcBiomeAtPoint(v3s16 pos) const = 0;
 
-	// Computes any intermediate results needed for biome generation.  Must be
+	// Computes any intermediate results needed for biome generation. Must be
 	// called before using any of: getBiomes, getBiomeAtPoint, or getBiomeAtIndex.
 	// Calling this invalidates the previous results stored in biomemap.
 	virtual void calcBiomeNoise(v3s16 pmin) = 0;

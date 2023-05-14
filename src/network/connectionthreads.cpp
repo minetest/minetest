@@ -1271,7 +1271,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 		is_future_packet = seqnum_higher(seqnum, channel->readNextIncomingSeqNum());
 		is_old_packet = seqnum_higher(channel->readNextIncomingSeqNum(), seqnum);
 
-		/* packet is not within receive window, don't send ack.           *
+		/* packet is not within receive window, don't send ack.          *
 		 * if this was a valid packet it's gonna be retransmitted         */
 		if (is_future_packet)
 			throw ProcessedSilentlyException(

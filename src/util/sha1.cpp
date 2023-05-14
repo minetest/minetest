@@ -44,7 +44,7 @@ void SHA1::hexPrinter( unsigned char* c, int l )
 	}
 }
 
-// circular left bit rotation.  MSB wraps around to LSB
+// circular left bit rotation. MSB wraps around to LSB
 Uint32 SHA1::lrot( Uint32 x, int bits )
 {
 	return (x<<bits) | (x>>(32 - bits));

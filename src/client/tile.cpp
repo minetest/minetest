@@ -347,7 +347,7 @@ public:
 	/*
 		Get a texture specifically intended for mesh
 		application, i.e. not HUD, compositing, or other 2D
-		use.  This texture may be a different size and may
+		use. This texture may be a different size and may
 		have had additional filters applied.
 	*/
 	video::ITexture* getTextureForMesh(const std::string &name, u32 *id);
@@ -545,7 +545,7 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
 
-// Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
+// Apply a color to an image. Uses an int (0-255) to calculate the ratio.
 // If the ratio is 255 or -1 and keep_alpha is true, then it multiples the
 // color alpha with the destination alpha.
 // Otherwise, any pixels that are not fully transparent get the color alpha.
@@ -1659,9 +1659,9 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			if (m_setting_mipmap || g_settings->getBool("texture_clean_transparent"))
 				imageCleanTransparent(baseimg, 127);
 
-			/* Upscale textures to user's requested minimum size.  This is a trick to make
+			/* Upscale textures to user's requested minimum size. This is a trick to make
 			 * filters look as good on low-res textures as on high-res ones, by making
-			 * low-res textures BECOME high-res ones.  This is helpful for worlds that
+			 * low-res textures BECOME high-res ones. This is helpful for worlds that
 			 * mix high- and low-res textures, or for mods with least-common-denominator
 			 * textures that don't have the resources to offer high-res alternatives.
 			 */
@@ -1671,7 +1671,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				const core::dimension2d<u32> dim = baseimg->getDimension();
 
 				/* Calculate scaling needed to make the shortest texture dimension
-				 * equal to the target minimum.  If e.g. this is a vertical frames
+				 * equal to the target minimum. If e.g. this is a vertical frames
 				 * animation, the short dimension will be the real size.
 				 */
 				if ((dim.Width == 0) || (dim.Height == 0)) {
@@ -1890,7 +1890,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 	Calculate the color of a single pixel drawn on top of another pixel.
 
 	This is a little more complicated than just video::SColor::getInterpolated
-	because getInterpolated does not handle alpha correctly.  For example, a
+	because getInterpolated does not handle alpha correctly. For example, a
 	pixel with alpha=64 drawn atop a pixel with alpha=128 should yield a
 	pixel with alpha=160, while getInterpolated would yield alpha=96.
 */

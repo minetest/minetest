@@ -135,7 +135,7 @@ std::string RemoveLastPathComponent(const std::string &path,
 std::string RemoveRelativePathComponents(std::string path);
 
 // Returns the absolute path for the passed path, with "." and ".." path
-// components and symlinks removed.  Returns "" on error.
+// components and symlinks removed. Returns "" on error.
 std::string AbsolutePath(const std::string &path);
 
 // Returns the filename from a path or the entire path if no directory

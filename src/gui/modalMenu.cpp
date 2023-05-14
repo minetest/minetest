@@ -119,7 +119,7 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 	 * -- which closes the form -- under some circumstances.
 	 *
 	 * There have been many github issues reporting this as a bug even though it
-	 * was an intended feature.  For this reason, remapping the double-click as
+	 * was an intended feature. For this reason, remapping the double-click as
 	 * an ESC must be explicitly set when creating this class via the
 	 * /p remap_dbl_click parameter of the constructor.
 	 */

@@ -1594,7 +1594,7 @@ void ServerMap::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 }
 
-// N.B.  This requires no synchronization, since data will not be modified unless
+// N.B. This requires no synchronization, since data will not be modified unless
 // the VoxelManipulator being updated belongs to the same thread.
 void ServerMap::updateVManip(v3s16 pos)
 {

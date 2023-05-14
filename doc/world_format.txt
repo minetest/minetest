@@ -325,7 +325,7 @@ u8 flags
     on day and night. Only blocks that have this bit set are updated when
     day transforms to night.
   - 0x04: lighting_expired: Not used in version 27 and above. If true,
-    lighting is invalid and should be updated.  If you can't calculate
+    lighting is invalid and should be updated. If you can't calculate
     lighting in your generator properly, you could try setting this 1 to
     everything and setting the uppermost block in every sector as
     is_underground=0. I am quite sure it doesn't work properly, though.

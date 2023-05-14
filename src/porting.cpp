@@ -699,10 +699,10 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 
 bool secure_rand_fill_buf(void *buf, size_t len)
 {
-	// N.B.  This function checks *only* for /dev/urandom, because on most
+	// N.B. This function checks *only* for /dev/urandom, because on most
 	// common OSes it is non-blocking, whereas /dev/random is blocking, and it
 	// is exceptionally uncommon for there to be a situation where /dev/random
-	// exists but /dev/urandom does not.  This guesswork is necessary since
+	// exists but /dev/urandom does not. This guesswork is necessary since
 	// random devices are not covered by any POSIX standard...
 	FILE *fp = fopen("/dev/urandom", "rb");
 	if (!fp)

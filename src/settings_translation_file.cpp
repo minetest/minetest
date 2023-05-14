@@ -224,7 +224,7 @@ fake_function() {
 	gettext("GUI scaling filter");
 	gettext("When gui_scaling_filter is true, all GUI images need to be\nfiltered in software, but some images are generated directly\nto hardware (e.g. render-to-texture for nodes in inventory).");
 	gettext("GUI scaling filter txr2img");
-	gettext("When gui_scaling_filter_txr2img is true, copy those images\nfrom hardware to software for scaling.  When false, fall back\nto the old scaling method, for video drivers that don't\nproperly support downloading textures back from hardware.");
+	gettext("When gui_scaling_filter_txr2img is true, copy those images\nfrom hardware to software for scaling. When false, fall back\nto the old scaling method, for video drivers that don't\nproperly support downloading textures back from hardware.");
 	gettext("Tooltip delay");
 	gettext("Delay showing tooltips, stated in milliseconds.");
 	gettext("Append item name");
@@ -946,7 +946,7 @@ fake_function() {
 	gettext("Liquid loop max");
 	gettext("Max liquids processed per step.");
 	gettext("Liquid queue purge time");
-	gettext("The time (in seconds) that the liquids queue may grow beyond processing\ncapacity until an attempt is made to decrease its size by dumping old queue\nitems.  A value of 0 disables the functionality.");
+	gettext("The time (in seconds) that the liquids queue may grow beyond processing\ncapacity until an attempt is made to decrease its size by dumping old queue\nitems. A value of 0 disables the functionality.");
 	gettext("Liquid update tick");
 	gettext("Liquid update interval in seconds.");
 	gettext("Block send optimize distance");

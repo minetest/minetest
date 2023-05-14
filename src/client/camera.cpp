@@ -68,7 +68,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *re
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
 	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
+	 *       changes. At this point in time it doesn't matter (e.g. /set
 	 *       is documented to change server settings only)
 	 *
 	 * TODO: Local caching of settings is not optimal and should at some stage

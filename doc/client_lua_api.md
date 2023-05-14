@@ -664,7 +664,7 @@ For the following functions `x` can be either a vector or a number:
    * the current gettext locale
    * the current language code (the same as used for client-side translations)
 * `minetest.get_version()`: returns a table containing components of the
-   engine version.  Components:
+   engine version. Components:
     * `project`: Name of the project, eg, "Minetest"
     * `string`: Simple version, eg, "1.2.3-dev"
     * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
@@ -691,7 +691,7 @@ For the following functions `x` can be either a vector or a number:
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
 * `minetest.log([level,] text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
-      `"info"`, or `"verbose"`.  Default is `"none"`.
+      `"info"`, or `"verbose"`. Default is `"none"`.
 
 ## Global callback registration functions
 Call these functions only at load time!
@@ -1344,7 +1344,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
     text = "<text>",    -- default ""
     number = 2,         -- default 0
     item = 3,           -- default 0
---  ^ Selected item in inventory.  0 for no item selected.
+--  ^ Selected item in inventory. 0 for no item selected.
     direction = 0,      -- default 0
 --  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
     alignment = {x=0, y=0},   -- default {x=0, y=0}

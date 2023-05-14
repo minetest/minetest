@@ -145,7 +145,7 @@ private:
 
 
 /*
-	Generic interface for map generators.  All mapgens must inherit this class.
+	Generic interface for map generators. All mapgens must inherit this class.
 	If a feature exposed by a public member pointer is not supported by a
 	certain mapgen, it must be set to NULL.
 
@@ -270,7 +270,7 @@ private:
 	dungeons, etc.)
 
 	Inherit MapgenBasic instead of Mapgen to add this basic functionality to
-	your mapgen without having to reimplement it.  Feel free to override any of
+	your mapgen without having to reimplement it. Feel free to override any of
 	these methods if you desire different or more advanced behavior.
 
 	Note that you must still create your own generateTerrain implementation when

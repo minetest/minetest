@@ -77,7 +77,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
-// strlcpy is missing from glibc.  thanks a lot, drepper.
+// strlcpy is missing from glibc. thanks a lot, drepper.
 // strlcpy is also missing from AIX and HP-UX because they aim to be weird.
 // We can't simply alias strlcpy to MSVC's strcpy_s, since strcpy_s by
 // default raises an assertion error and aborts the program if the buffer is

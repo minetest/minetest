@@ -66,7 +66,7 @@ scene::SMesh CGUITTFont::shared_plane_;
 
 //
 
-/** Checks that no dimension of the FT_BitMap object is negative.  If either is
+/** Checks that no dimension of the FT_BitMap object is negative. If either is
  * negative, abort execution.
  */
 inline void checkFontBitmapSize(const FT_Bitmap &bits)
@@ -111,7 +111,7 @@ video::IImage* SGUITTGlyph::createGlyphImage(const FT_Bitmap& bits, video::IVide
 				u16* row = image_data;
 				for (s32 x = 0; x < (s32)bits.width; ++x)
 				{
-					// Monochrome bitmaps store 8 pixels per byte.  The left-most pixel is the bit 0x80.
+					// Monochrome bitmaps store 8 pixels per byte. The left-most pixel is the bit 0x80.
 					// So, we go through the data each bit at a time.
 					if ((glyph_data[y * bits.pitch + (x / 8)] & (0x80 >> (x % 8))) != 0)
 						*row = 0xFFFF;
@@ -416,7 +416,7 @@ CGUITTFont::~CGUITTFont()
 	{
 		SGUITTFace* f = n->second;
 
-		// Drop our face.  If this was the last face, the destructor will clean up.
+		// Drop our face. If this was the last face, the destructor will clean up.
 		if (f->drop())
 			c_faces.erase(filename);
 
@@ -717,12 +717,12 @@ core::dimension2d<u32> CGUITTFont::getDimension(const wchar_t* text) const
 
 core::dimension2d<u32> CGUITTFont::getDimension(const core::ustring& text) const
 {
-	// Get the maximum font height.  Unfortunately, we have to do this hack as
-	// Irrlicht will draw things wrong.  In FreeType, the font size is the
+	// Get the maximum font height. Unfortunately, we have to do this hack as
+	// Irrlicht will draw things wrong. In FreeType, the font size is the
 	// maximum size for a single glyph, but that glyph may hang "under" the
 	// draw line, increasing the total font height to beyond the set size.
-	// Irrlicht does not understand this concept when drawing fonts.  Also, I
-	// add +1 to give it a 1 pixel blank border.  This makes things like
+	// Irrlicht does not understand this concept when drawing fonts. Also, I
+	// add +1 to give it a 1 pixel blank border. This makes things like
 	// tooltips look nicer.
 	s32 test1 = getHeightFromCharacter((uchar32_t)'g') + 1;
 	s32 test2 = getHeightFromCharacter((uchar32_t)'j') + 1;

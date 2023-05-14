@@ -465,7 +465,7 @@ void Noise::resizeNoiseBuf(bool is3d)
 
 
 /*
- * NB:  This algorithm is not optimal in terms of space complexity.  The entire
+ * NB:  This algorithm is not optimal in terms of space complexity. The entire
  * integer lattice of noise points could be done as 2 lines instead, and for 3D,
  * 2 lines + 2 planes.
  * However, this would require the noise calls to be interposed with the

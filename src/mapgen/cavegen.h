@@ -29,11 +29,11 @@ class GenerateNotifier;
 /*
 	CavesNoiseIntersection is a cave digging algorithm that carves smooth,
 	web-like, continuous tunnels at points where the density of the intersection
-	between two separate 3d noises is above a certain value.  This value,
+	between two separate 3d noises is above a certain value. This value,
 	cave_width, can be modified to set the effective width of these tunnels.
 
 	This algorithm is relatively heavyweight, taking ~80ms to generate an
-	80x80x80 chunk of map on a modern processor.  Use sparingly!
+	80x80x80 chunk of map on a modern processor. Use sparingly!
 
 	TODO(hmmmm): Remove dependency on biomes
 	TODO(hmmmm): Find alternative to overgeneration as solution for sunlight issue

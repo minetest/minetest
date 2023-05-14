@@ -68,12 +68,12 @@ int script_error_handler(lua_State *L)
 
 /*
  * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
- * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will
+ * hacking Lua internals). For LUA_ERRMEM, this is because memory errors will
  * not execute the error handler, and by the time lua_pcall returns the
- * execution stack will have already been unwound.  For LUA_ERRERR, there was
- * another error while trying to generate a backtrace from a LUA_ERRRUN.  It is
+ * execution stack will have already been unwound. For LUA_ERRERR, there was
+ * another error while trying to generate a backtrace from a LUA_ERRRUN. It is
  * presumed there is an error with the internal Lua state and thus not possible
- * to gather a coherent backtrace.  Realistically, the best we can do here is
+ * to gather a coherent backtrace. Realistically, the best we can do here is
  * print which C function performed the failing pcall.
  */
 void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn)

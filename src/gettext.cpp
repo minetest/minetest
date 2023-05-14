@@ -145,7 +145,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 #ifndef SERVER
 		// Hack to force gettext to see the right environment
 		if (current_language != configured_language) {
-			errorstream << "MSVC localization workaround active.  "
+			errorstream << "MSVC localization workaround active. "
 				"Restarting " PROJECT_NAME_C " in a new environment!" << std::endl;
 
 			std::string parameters;

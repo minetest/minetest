@@ -6130,7 +6130,7 @@ msgstr ""
 msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
-"items.  A value of 0 disables the functionality."
+"items. A value of 0 disables the functionality."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6528,7 +6528,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
-"from hardware to software for scaling.  When false, fall back\n"
+"from hardware to software for scaling. When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""

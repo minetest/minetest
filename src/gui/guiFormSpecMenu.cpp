@@ -1757,7 +1757,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		if (data->real_coordinates) {
 			// Lines are spaced at the distance of 1/2 imgsize.
 			// This alows lines that line up with the new elements
-			// easily without sacrificing good line distance.  If
+			// easily without sacrificing good line distance. If
 			// it was one whole imgsize, it would have too much
 			// spacing.
 			v2s32 pos = getRealCoordinateBasePos(v_pos);
@@ -1773,7 +1773,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 		} else {
 			// Lines are spaced at the nominal distance of
 			// 2/5 inventory slot, even if the font doesn't
-			// quite match that.  This provides consistent
+			// quite match that. This provides consistent
 			// form layout, at the expense of sometimes
 			// having sub-optimal spacing for the font.
 			// We multiply by 2 and then divide by 5, rather
@@ -3216,7 +3216,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		if (m_lock) {
 			// In fixed-size mode, inventory image size
 			// is 0.53 inch multiplied by the gui_scaling
-			// config parameter.  This magic size is chosen
+			// config parameter. This magic size is chosen
 			// to make the main menu (15.5 inventory images
 			// wide, including border) just fit into the
 			// default window (800 pixels wide) at 96 DPI
@@ -3262,7 +3262,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 
 		// Everything else is scaled in proportion to the
-		// inventory image size.  The inventory slot spacing
+		// inventory image size. The inventory slot spacing
 		// is 5/4 image size horizontally and 15/13 image size
 		// vertically.	The padding around the form (incorporating
 		// the border of the outer inventory slots) is 3/8
@@ -3296,7 +3296,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		);
 	} else {
 		// Non-size[] form must consist only of text fields and
-		// implicit "Proceed" button.  Use default font, and
+		// implicit "Proceed" button. Use default font, and
 		// temporary form size which will be recalculated below.
 		m_font = g_fontengine->getFont();
 		m_btn_height = font_line_height(m_font) * 0.875;

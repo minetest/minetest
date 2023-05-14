@@ -48,9 +48,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // 0x7FFFFFFF / 1000.0f is not serializable.
 // The limited float precision at this magnitude may cause the result to round
 // to a greater value than can be represented by a 32 bit integer when increased
-// by a factor of FIXEDPOINT_FACTOR.  As a result, [F1000_MIN..F1000_MAX] does
+// by a factor of FIXEDPOINT_FACTOR. As a result, [F1000_MIN..F1000_MAX] does
 // not represent the full range, but rather the largest safe range, of values on
-// all supported architectures.  Note: This definition makes assumptions on
+// all supported architectures. Note: This definition makes assumptions on
 // platform float-to-int conversion behavior.
 #define F1000_MIN ((float)(s32)((float)(-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
 #define F1000_MAX ((float)(s32)((float)(0x7FFFFFFF) / FIXEDPOINT_FACTOR))

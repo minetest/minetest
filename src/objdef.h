@@ -64,7 +64,7 @@ protected:
 };
 
 // WARNING: Ownership of ObjDefs is transferred to the ObjDefManager it is
-// added/set to.  Note that ObjDefs managed by ObjDefManager are NOT refcounted,
+// added/set to. Note that ObjDefs managed by ObjDefManager are NOT refcounted,
 // so the same ObjDef instance must not be referenced multiple
 // TODO: const correctness for getter methods
 class ObjDefManager {

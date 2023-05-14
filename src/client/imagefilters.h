@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 
 /* Fill in RGB values for transparent pixels, to correct for odd colors
- * appearing at borders when blending.  This is because many PNG optimizers
+ * appearing at borders when blending. This is because many PNG optimizers
  * like to discard RGB values of transparent pixels, but when blending then
  * with non-transparent neighbors, their RGB values will show up nonetheless.
  *
@@ -35,7 +35,7 @@ void imageCleanTransparent(video::IImage *src, u32 threshold);
 
 /* Scale a region of an image into another image, using nearest-neighbor with
  * anti-aliasing; treat pixels as crisp rectangles, but blend them at boundaries
- * to prevent non-integer scaling ratio artifacts.  Note that this may cause
+ * to prevent non-integer scaling ratio artifacts. Note that this may cause
  * some blending at the edges where pixels don't line up perfectly, but this
  * filter is designed to produce the most accurate results for both upscaling
  * and downscaling.

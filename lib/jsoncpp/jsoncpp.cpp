@@ -2469,7 +2469,7 @@ static std::unique_ptr<T> cloneUnique(const std::unique_ptr<T>& p) {
 }
 
 // This is a walkaround to avoid the static initialization of Value::null.
-// kNull must be word-aligned to avoid crashing on ARM.  We use an alignment of
+// kNull must be word-aligned to avoid crashing on ARM. We use an alignment of
 // 8 (instead of 4) as a bit of future-proofing.
 #if defined(__ARMEL__)
 #define ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))

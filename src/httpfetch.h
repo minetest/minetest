@@ -63,7 +63,7 @@ struct HTTPFetchRequest
 	long connect_timeout;
 
 	// Indicates if this is multipart/form-data or
-	// application/x-www-form-urlencoded.  POST-only.
+	// application/x-www-form-urlencoded. POST-only.
 	bool multipart = false;
 
 	//  The Method to use default = GET
