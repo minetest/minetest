@@ -20,6 +20,7 @@ local path = core.get_mainmenu_path() .. DIR_DELIM .. "settings"
 dofile(path .. DIR_DELIM .. "settingtypes.lua")
 dofile(path .. DIR_DELIM .. "dlg_change_mapgen_flags.lua")
 dofile(path .. DIR_DELIM .. "dlg_settings.lua")
+dofile(path .. DIR_DELIM .. "dlg_file_browser.lua")
 
 -- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.

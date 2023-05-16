@@ -200,15 +200,6 @@ GUI
 * `core.set_clouds(<true/false>)`
 * `core.set_topleft_text(text)`
 * `core.show_keys_menu()`
-* `core.show_path_select_dialog(formname, caption, is_file_select)`
-  * shows a path select dialog
-  * `formname` is base name of dialog response returned in fields
-     - if dialog was accepted `"_accepted"`
-        will be added to fieldname containing the path
-     - if dialog was canceled `"_cancelled"`
-        will be added to fieldname value is set to formname itself
-  * if `is_file_select` is `true`, a file and not a folder will be selected
-  * returns nil or selected file/folder
 * `core.get_active_driver()`:
   * technical name of active video driver, e.g. "opengl"
 * `core.get_active_renderer()`:
@@ -411,8 +402,7 @@ Async
 ### Limitations of Async operations
  * No access to global lua variables, don't even try
  * Limited set of available functions
-    e.g. No access to functions modifying menu like `core.start`, `core.close`,
-    `core.show_path_select_dialog`
+    e.g. No access to functions modifying menu like `core.start`, `core.close`
 
 
 Background music

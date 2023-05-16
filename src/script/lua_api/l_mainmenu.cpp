@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gui/guiEngine.h"
 #include "gui/guiMainMenu.h"
 #include "gui/guiKeyChangeMenu.h"
-#include "gui/guiPathSelectMenu.h"
 #include "version.h"
 #include "porting.h"
 #include "filesys.h"
@@ -847,29 +846,6 @@ int ModApiMainMenu::l_may_modify_path(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);
-
-	const char *formname= luaL_checkstring(L, 1);
-	const char *title	= luaL_checkstring(L, 2);
-	bool is_file_select = readParam<bool>(L, 3);
-
-	GUIFileSelectMenu* fileOpenMenu =
-		new GUIFileSelectMenu(engine->m_rendering_engine->get_gui_env(),
-				engine->m_parent,
-				-1,
-				engine->m_menumanager,
-				title,
-				formname,
-				is_file_select);
-	fileOpenMenu->setTextDest(engine->m_buttonhandler);
-	fileOpenMenu->drop();
-	return 0;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_download_file(lua_State *L)
 {
 	const char *url    = luaL_checkstring(L, 1);
@@ -1104,7 +1080,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(extract_zip);
 	API_FCT(may_modify_path);
 	API_FCT(get_mainmenu_path);
-	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);

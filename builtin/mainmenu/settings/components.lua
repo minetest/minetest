@@ -199,21 +199,16 @@ function make.path(setting)
 			return fs, 1.1
 		end,
 
-		on_submit = function(self, fields)
-			local dialog_name = "dlg_path_" .. setting.name
+		on_submit = function(self, fields, tabview)
 			if fields["pick_" .. setting.name] then
-				local is_file = setting.type ~= "path"
-				core.show_path_select_dialog(dialog_name,
-					is_file and fgettext_ne("Select file") or fgettext_ne("Select directory"), is_file)
+				local dlgtype = setting.type ~= "path" and 'file' or 'folder'
+				local file_browser_dlg = create_file_browser_dlg(setting.name, dlgtype)
+				file_browser_dlg:set_parent(tabview)
+				tabview:hide()
+				file_browser_dlg:show()
 				return true
 			end
-			if fields[dialog_name .. "_accepted"] then
-				local value = fields[dialog_name .. "_accepted"]
-				if value ~= nil then
-					core.settings:set(setting.name, value)
-				end
-				return true
-			end
+
 			if fields["set_" .. setting.name] or fields.key_enter_field == setting.name then
 				local value = fields[setting.name]
 				if value ~= nil then

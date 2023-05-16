@@ -72,6 +72,8 @@ erlehmann, Warr1024, rollerozxa:
   textures/base/pack/no_screenshot.png
 
 kilbith:
+  textures/base/pack/file.png
+  textures/base/pack/folder.png
   textures/base/pack/server_favorite.png
   textures/base/pack/progress_bar.png
   textures/base/pack/progress_bar_bg.png
