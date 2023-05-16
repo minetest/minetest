@@ -1667,7 +1667,7 @@ enable_vbo (VBO) bool true
 cloud_radius (Cloud radius) int 12 1 62
 
 #    Whether node texture animations should be desynchronized per mapblock.
-desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
+desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
