@@ -61,9 +61,10 @@ MainMenuSoundHandle *MainMenuSoundHandle::checkobject(lua_State *L, int narg)
 
 int MainMenuSoundHandle::gc_object(lua_State *L)
 {
-	std::unique_ptr<MainMenuSoundHandle> o(*(MainMenuSoundHandle **)(lua_touserdata(L, 1)));
+	MainMenuSoundHandle *o = *(MainMenuSoundHandle **)(lua_touserdata(L, 1));
 	if (getGuiEngine(L) && getGuiEngine(L)->m_sound_manager)
 		getGuiEngine(L)->m_sound_manager->freeId(o->m_handle);
+	delete o;
 	return 0;
 }
 
