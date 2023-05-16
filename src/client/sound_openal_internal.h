@@ -326,6 +326,8 @@ struct ISoundDataUnopen
 {
 	virtual ~ISoundDataUnopen() = default;
 
+	// Note: The ISoundDataUnopen is moved (see &&). It is not meant to be kept
+	// after opening.
 	virtual std::shared_ptr<ISoundDataOpen> open(const std::string &sound_name) && = 0;
 };
 
