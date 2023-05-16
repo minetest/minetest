@@ -463,6 +463,7 @@ local function buttonhandler(this, fields)
 	dialogdata.query = fields.search_query
 
 	if fields.back then
+		dialogdata.page_id = update_filtered_pages("")
 		this:delete()
 		return true
 	end
