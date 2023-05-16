@@ -725,9 +725,9 @@ void Client::step(float dtime)
 	if(m_removed_sounds_check_timer >= 2.32) {
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
-		std::vector<sound_handle_t> removed_cliend_ids = m_sound->pollRemovedSounds();
+		std::vector<sound_handle_t> removed_client_ids = m_sound->pollRemovedSounds();
 		std::vector<s32> removed_server_ids;
-		for (sound_handle_t client_id : removed_cliend_ids) {
+		for (sound_handle_t client_id : removed_client_ids) {
 			auto client_to_server_id_it = m_sounds_client_to_server.find(client_id);
 			if (client_to_server_id_it == m_sounds_client_to_server.end())
 				continue;
