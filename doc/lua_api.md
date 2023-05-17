@@ -6562,6 +6562,7 @@ Variables:
   `registered_craftitems` and `registered_aliases`
     * with all functions and userdata values replaced by `true`, calling any
       callbacks here is obviously not possible
+* `minetest.registered_biomes`, `registered_ores`, `registered_decorations`
 
 Server
 ------
@@ -7064,10 +7065,6 @@ Global tables
     * Map of registered decoration definitions, indexed by the `name` field.
     * If `name` is nil, the key is the object handle returned by
       `minetest.register_decoration`.
-* `minetest.registered_schematics`
-    * Map of registered schematic definitions, indexed by the `name` field.
-    * If `name` is nil, the key is the object handle returned by
-      `minetest.register_schematic`.
 * `minetest.registered_chatcommands`
     * Map of registered chat command definitions, indexed by name
 * `minetest.registered_privileges`
