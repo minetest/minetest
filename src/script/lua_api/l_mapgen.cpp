@@ -1945,6 +1945,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(get_mapgen_params);
 	API_FCT(get_mapgen_edges);
 	API_FCT(get_mapgen_setting);
+	API_FCT(get_mapgen_setting_noiseparams);
 	API_FCT(get_noiseparams);
 	API_FCT(get_decoration_id);
 
