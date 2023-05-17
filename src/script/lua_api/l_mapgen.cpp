@@ -1449,20 +1449,26 @@ int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
 }
 
 
-// generate_ores(vm, p1, p2, [ore_id])
+// generate_ores(vm, p1, p2)
 int ModApiMapgen::l_generate_ores(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	auto *emerge = getEmergeManager(L);
 	if (!emerge || !emerge->mgparams)
 		return 0;
+
+	OreManager *oremgr;
+	if (auto mg = getMapgen(L))
+		oremgr = mg->m_emerge->oremgr;
+	else
+		oremgr = emerge->oremgr;
 
 	Mapgen mg;
 	// Intentionally truncates to s32, see Mapgen::Mapgen()
 	mg.seed = (s32)emerge->mgparams->seed;
 	mg.vm   = checkObject<LuaVoxelManip>(L, 1)->vm;
-	mg.ndef = getServer(L)->getNodeDefManager();
+	mg.ndef = emerge->ndef;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
@@ -1472,26 +1478,32 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
+	oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
 
 
-// generate_decorations(vm, p1, p2, [deco_id])
+// generate_decorations(vm, p1, p2)
 int ModApiMapgen::l_generate_decorations(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
+	auto *emerge = getEmergeManager(L);
 	if (!emerge || !emerge->mgparams)
 		return 0;
+
+	DecorationManager *decomgr;
+	if (auto mg = getMapgen(L))
+		decomgr = mg->m_emerge->decomgr;
+	else
+		decomgr = emerge->decomgr;
 
 	Mapgen mg;
 	// Intentionally truncates to s32, see Mapgen::Mapgen()
 	mg.seed = (s32)emerge->mgparams->seed;
 	mg.vm   = checkObject<LuaVoxelManip>(L, 1)->vm;
-	mg.ndef = getServer(L)->getNodeDefManager();
+	mg.ndef = emerge->ndef;
 
 	v3s16 pmin = lua_istable(L, 2) ? check_v3s16(L, 2) :
 			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
@@ -1501,7 +1513,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
-	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
+	decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
@@ -1626,7 +1638,11 @@ int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	SchematicManager *schemmgr;
+	if (auto mg = getMapgen(L))
+		schemmgr = mg->m_emerge->schemmgr;
+	else
+		schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read VoxelManip object
 	MMVManip *vm = checkObject<LuaVoxelManip>(L, 1)->vm;
@@ -1859,11 +1875,9 @@ const BiomeGen *ModApiMapgen::getBiomeGen(lua_State *L)
 	// path 1: we're in the emerge environment
 	auto emerge = getEmergeThread(L);
 	if (emerge)
-		return emerge->getMapgen()->biomegen;
+		return emerge->getMapgen()->m_emerge->biomegen;
 	// path 2: we're in the server environment
 	auto manager = getServer(L)->getEmergeManager();
-	if (auto mg = manager->getCurrentMapgen())
-		return mg->biomegen;
 	return manager->getBiomeGen();
 }
 
@@ -1934,9 +1948,9 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(get_noiseparams);
 	API_FCT(get_decoration_id);
 
-	//API_FCT(generate_ores); TODO
-	//API_FCT(generate_decorations); TODO
-	//API_FCT(place_schematic_on_vmanip); TODO
+	API_FCT(generate_ores);
+	API_FCT(generate_decorations);
+	API_FCT(place_schematic_on_vmanip);
 	API_FCT(serialize_schematic);
 	API_FCT(read_schematic);
 }
