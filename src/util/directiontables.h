@@ -75,10 +75,10 @@ enum DirectionWallmounted {
 	DWM_XN,
 	DWM_ZP,
 	DWM_ZN,
-	DWM_END,
+	DWM_COUNT,
 };
 
-extern const v3s16 g_6dirs[DWM_END];
+extern const v3s16 g_6dirs[DWM_COUNT];
 
 extern const v3s16 g_7dirs[7];
 
