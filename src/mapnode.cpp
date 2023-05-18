@@ -64,8 +64,10 @@ u8 MapNode::getFaceDir(const NodeDefManager *nodemgr,
 			f.param_type_2 == CPT2_COLORED_4DIR)
 		return getParam2() & 0x03;
 	if (allow_wallmounted && (f.param_type_2 == CPT2_WALLMOUNTED ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
-		return wallmounted_to_facedir[getParam2() & 0x07];
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
+		u8 wmountface = MYMIN(getParam2() & 0x07, DWM_COUNT - 1);
+		return wallmounted_to_facedir[wmountface];
+	}
 	return 0;
 }
 
@@ -73,9 +75,9 @@ u8 MapNode::getWallMounted(const NodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.param_type_2 == CPT2_WALLMOUNTED ||
-			f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		return getParam2() & 0x07;
-	} else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
+		return MYMIN(getParam2() & 0x07, DWM_COUNT - 1);
+	else if (f.drawtype == NDT_SIGNLIKE || f.drawtype == NDT_TORCHLIKE ||
 			f.drawtype == NDT_PLANTLIKE ||
 			f.drawtype == NDT_PLANTLIKE_ROOTED) {
 		return 1;
@@ -160,7 +162,7 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 		}
 	} else if (cpt2 == CPT2_WALLMOUNTED ||
 			cpt2 == CPT2_COLORED_WALLMOUNTED) {
-		u8 wmountface = (param2 & 7);
+		u8 wmountface = MYMIN(param2 & 0x07, DWM_COUNT - 1);
 		if (wmountface <= 1)
 			return;
 
