@@ -411,7 +411,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 
 				table.insert(settings, {
 					name = mod.path,
-					readable_name = mod.title,
+					readable_name = mod.title or mod.name,
 					level = 1,
 					type = "category",
 				})
@@ -442,7 +442,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 
 				table.insert(settings, {
 					name = mod.path,
-					readable_name = mod.title,
+					readable_name = mod.title or mod.name,
 					level = 1,
 					type = "category",
 				})

@@ -30,7 +30,7 @@ class PostProcessingStep : public RenderStep
 public:
 	/**
 	 * Construct a new PostProcessingStep object
-	 * 
+	 *
 	 * @param shader_id ID of the shader in IShaderSource
 	 * @param texture_map Map of textures to be chosen from the render source
 	 */
@@ -44,7 +44,7 @@ public:
 
 	/**
 	 * Configure bilinear filtering for a specific texture layer
-	 * 
+	 *
 	 * @param index Index of the texture layer
 	 * @param value true to enable the bilinear filter, false to disable
 	 */
