@@ -414,7 +414,7 @@ local function get_formspec(dialogdata)
 
 		fs[#fs + 1] = "style_type[image_button;border=false;padding=]"
 
-		local show_reset = comp.changed and comp.setting and comp.setting.default
+		local show_reset = comp.resettable and comp.setting
 		local show_info = comp.info_text and comp.info_text ~= ""
 		if show_reset or show_info then
 			-- ensure there's enough space for reset/info
@@ -423,10 +423,13 @@ local function get_formspec(dialogdata)
 		local info_reset_y = used_h / 2 - 0.25
 
 		if show_reset then
+			local default = comp.setting.default
+			local reset_tooltip = default and
+					fgettext("Reset setting to default ($1)", tostring(default)) or
+					fgettext("Reset setting to default")
 			fs[#fs + 1] = ("image_button[%f,%f;0.5,0.5;%s;%s;]"):format(
 					right_pane_width - 1.4, info_reset_y, reset_icon_path, "reset_" .. i)
-			fs[#fs + 1] = ("tooltip[%s;%s]"):format(
-					"reset_" .. i, fgettext("Reset setting to default ($1)", tostring(comp.setting.default)))
+			fs[#fs + 1] = ("tooltip[%s;%s]"):format("reset_" .. i, reset_tooltip)
 		end
 
 		if show_info then
@@ -506,7 +509,7 @@ local function buttonhandler(this, fields)
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
-			core.settings:set(comp.setting.name, comp.setting.default)
+			core.settings:remove(comp.setting.name)
 			return true
 		end
 	end

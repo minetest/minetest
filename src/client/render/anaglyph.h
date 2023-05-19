@@ -37,7 +37,7 @@ private:
 
 /**
  * Resets depth buffer of the current render target
- * 
+ *
  */
 class ClearDepthBufferTarget : public RenderTarget
 {
@@ -53,7 +53,7 @@ private:
 
 /**
  * Enables or disables override material when activated
- * 
+ *
  */
 class ConfigureOverrideMaterialTarget : public RenderTarget
 {
