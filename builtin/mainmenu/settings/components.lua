@@ -30,7 +30,7 @@ local make = {}
 -- * `info_text`: (Optional) string, informational text shown in an info icon.
 -- * `setting`: (Optional) the setting.
 -- * `max_w`: (Optional) maximum width, `avail_w` will never exceed this.
--- * `changed`: (Optional) true if the setting has changed from its default value.
+-- * `resettable`: (Optional) if this is true, a reset button is shown.
 -- * `get_formspec = function(self, avail_w)`:
 --     * `avail_w` is the available width for the component.
 --     * Returns `fs, used_height`.
@@ -69,9 +69,10 @@ end
 
 --- Used for string and numeric style fields
 ---
---- @param converter Function to coerce values
+--- @param converter Function to coerce values from strings.
 --- @param validator Validator function, optional. Returns true when valid.
-local function make_field(converter, validator)
+--- @param stringifier Function to convert values to strings, optional.
+local function make_field(converter, validator, stringifier)
 	return function(setting)
 		return {
 			info_text = setting.comment,
@@ -79,7 +80,7 @@ local function make_field(converter, validator)
 
 			get_formspec = function(self, avail_w)
 				local value = core.settings:get(setting.name) or setting.default
-				self.changed = converter(value) ~= converter(setting.default)
+				self.resettable = core.settings:has(setting.name)
 
 				local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
 					avail_w - 1.5, setting.name, get_label(setting), core.formspec_escape(value))
@@ -101,7 +102,7 @@ local function make_field(converter, validator)
 					if setting.max then
 						value = math.min(value, setting.max)
 					end
-					core.settings:set(setting.name, tostring(value))
+					core.settings:set(setting.name, (stringifier or tostring)(value))
 					return true
 				end
 			end,
@@ -110,7 +111,13 @@ local function make_field(converter, validator)
 end
 
 
-make.float = make_field(tonumber, is_valid_number)
+make.float = make_field(tonumber, is_valid_number, function(x)
+	local str = tostring(x)
+	if str:match("^%d+$") then
+		str = str .. ".0"
+	end
+	return str
+end)
 make.int = make_field(function(x)
 	local value = tonumber(x)
 	return value and math.floor(value)
@@ -125,7 +132,7 @@ function make.bool(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get_bool(setting.name, core.is_yes(setting.default))
-			self.changed = tostring(value) ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("checkbox[0,0.25;%s;%s;%s]"):format(
 				setting.name, get_label(setting), tostring(value))
@@ -152,7 +159,7 @@ function make.enum(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local items = {}
 			for i, option in ipairs(setting.values) do
@@ -189,7 +196,7 @@ function make.path(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value ~= setting.default
+			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
 				avail_w - 3, setting.name, get_label(setting), value)
@@ -233,7 +240,7 @@ function make.v3f(setting)
 
 		get_formspec = function(self, avail_w)
 			local value = vector.from_string(core.settings:get(setting.name) or setting.default)
-			self.changed = value ~= vector.from_string(setting.default)
+			self.resettable = core.settings:has(setting.name)
 
 			-- Allocate space for "Set" button
 			avail_w = avail_w - 1
@@ -287,7 +294,7 @@ function make.flags(setting)
 			}
 
 			local value = core.settings:get(setting.name) or setting.default
-			self.changed = value:gsub(" ", "") ~= setting.default:gsub(" ", "")
+			self.resettable = core.settings:has(setting.name)
 
 			checkboxes = {}
 			for _, name in ipairs(value:split(",")) do

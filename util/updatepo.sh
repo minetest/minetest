@@ -70,7 +70,7 @@ xgettext --package-name=minetest \
 
 # Gettext collects a bunch of bogus comments for the "Available commands: " string
 # I couldn't figure out how to avoid that so get rid of them afterwards
-sed '/^#\. ~<number>.*relative_to/,/^#: /{ /^#: /!d; }' -i $potfile 
+sed '/^#\. ~<number>.*relative_to/,/^#: /{ /^#: /!d; }' -i $potfile
 
 # Now iterate on all languages and create the po file if missing, or update it
 # if it exists already

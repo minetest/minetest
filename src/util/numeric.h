@@ -174,7 +174,7 @@ struct MeshGrid {
 	{
 		return v3s16(getMeshPos(p.X), getMeshPos(p.Y), getMeshPos(p.Z));
 	}
-	
+
 	/// @brief Returns true if p is an origin of a cell in the grid.
 	bool isMeshPos(v3s16 &p) const
 	{
