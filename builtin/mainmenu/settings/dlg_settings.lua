@@ -463,7 +463,6 @@ local function buttonhandler(this, fields)
 	dialogdata.query = fields.search_query
 
 	if fields.back then
-		dialogdata.page_id = update_filtered_pages("")
 		this:delete()
 		return true
 	end
@@ -517,5 +516,9 @@ end
 
 
 function create_settings_dlg()
-	return dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+
+	dlg.data.page_id = update_filtered_pages("")
+
+	return dlg
 end
