@@ -111,7 +111,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 	// Delete the obj before erasing, as the destructor may indirectly access
 	// m_active_objects.
 	it->second.reset();
-	m_active_objects.erase(it);
+	m_active_objects.erase(id); // `it` can be invalid now
 }
 
 // clang-format on
