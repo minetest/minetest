@@ -14,7 +14,7 @@ Contributions are welcome! Here's how you can help:
    [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 
 2. Before you start coding, consider opening an
-   [issue at Github](https://github.com/minetest/minetest/issues) to discuss the
+   [issue at GitHub](https://github.com/minetest/minetest/issues) to discuss the
    suitability and implementation of your intended contribution with the core
    developers.
 
