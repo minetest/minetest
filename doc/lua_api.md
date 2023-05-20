@@ -7741,10 +7741,9 @@ child will follow movement and rotation of that bone.
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
         * `fog`: A table with following optional fields:
-            * `fog_distance`: integer, override the client's viewing_range.
+            * `fog_distance`: integer, set an upper bound the client's viewing_range (inluding range_all).
                By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
-               When set the client client can no longer set a larger viewing_range (including range_all).
-               Any value >= 0 sets the desired fog_distance.
+               Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
                Any value < 0, resets the behavior to being client-controlled.
                (default: not set)
             * `fog_start`: float, override the client's fog_start.
