@@ -150,7 +150,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	// is disabled.
 	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
 
-	// Calculating the max position of each biome so we know when we might switch
+	// Calculating the bounding position of each biome so we know when we might switch
 	biomeTransitions = new s16[m_bmgr->getNumObjects() * 2];
 	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
 		Biome *b = (Biome *)m_bmgr->getRaw(i);
@@ -158,8 +158,10 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 		biomeTransitions[2 * (i - 1) + 1] = b->min_pos.Y;
 	}
 
+	// Sorting the biome transition points
 	std::sort(biomeTransitions, biomeTransitions + m_bmgr->getNumObjects() * 2, std::greater<int>());
 
+	// Getting rid of duplicate biome transition points
 	std::vector<s16> t;
 	s16 last = biomeTransitions[0];
 	t.push_back(last);
@@ -170,7 +172,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 		}
 	}
 	t.push_back(-MAX_MAP_GENERATION_LIMIT);
-	delete biomeTransitions;
+	delete []biomeTransitions;
 
 	biomeTransitions = new s16[t.size()];
 	memcpy(biomeTransitions, t.data(), sizeof(s16) * t.size());
