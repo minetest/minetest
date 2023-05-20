@@ -18,7 +18,7 @@ Contributions are welcome! Here's how you can help:
    suitability and implementation of your intended contribution with the core
    developers.
 
-   Any Pull Request that isn't a bug fix and isn't covered by
+   Any pull request that isn't a bug fix and isn't covered by
    [the roadmap](../doc/direction.md) will be closed within a week unless it
    receives a concept approval from a Core Developer. For this reason, it is
    recommended that you open an issue for any such pull requests before doing
@@ -55,7 +55,7 @@ Contributions are welcome! Here's how you can help:
       work-in-progress - what you need to do).
     * Make sure to fill out the pull request template.
 
-### A Pull Request is Considered Mergeable When:
+### A pull request is Considered Mergeable When:
 
 1. It follows [the roadmap](../doc/direction.md) in some way and fits the whole
    picture of the project.
@@ -135,7 +135,7 @@ These notes are for those who have push access Minetest (core developers / maint
 
 ## Concept Approvals and Roadmaps
 
-If a Pull Request is not a bug fix:
+If a pull request is not a bug fix:
 
 * If it matches a goal in [the roadmap](../doc/direction.md), then the PR should
   be labeled as "Roadmap" and the goal stated by number in the description.
@@ -145,7 +145,7 @@ If a Pull Request is not a bug fix:
   closed as needed. Use the "Concept Approved" label. Issues can be marked as
   "Concept Approved" to give preapproval to future PRs.
 
-## Reviewing Pull Requests
+## Reviewing pull requests
 
 Pull requests should be reviewed and, if appropriate, checked if they achieve
 their intended purpose. You can show that you are in the process of, or will
