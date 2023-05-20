@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mg_biome.h"
+#include <algorithm>
+#include <functional>
 #include "mg_decoration.h"
 #include "emerge.h"
 #include "server.h"
@@ -147,16 +149,47 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	// fallback biome when biome generation (which calculates the biomemap IDs)
 	// is disabled.
 	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
+
+	// Calculating the max position of each biome so we know when we might switch
+	biomeTransitions = new s16[m_bmgr->getNumObjects() * 2];
+	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
+		Biome *b = (Biome *)m_bmgr->getRaw(i);
+		biomeTransitions[2 * (i - 1)] = b->max_pos.Y;
+		biomeTransitions[2 * (i - 1) + 1] = b->min_pos.Y;
+	}
+
+	std::sort(biomeTransitions, biomeTransitions + m_bmgr->getNumObjects() * 2, std::greater<int>());
+
+	std::vector<s16> t;
+	s16 last = biomeTransitions[0];
+	t.push_back(last);
+	for (size_t i = 1; i < m_bmgr->getNumObjects() * 2; i++){
+		if (biomeTransitions[i] != last) {
+			last = biomeTransitions[i];
+			t.push_back(last);
+		}
+	}
+	t.push_back(-MAX_MAP_GENERATION_LIMIT);
+	delete biomeTransitions;
+
+	biomeTransitions = new s16[t.size()];
+	memcpy(biomeTransitions, t.data(), sizeof(s16) * t.size());
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
 {
 	delete []biomemap;
+	delete []biomeTransitions;
 
 	delete noise_heat;
 	delete noise_humidity;
 	delete noise_heat_blend;
 	delete noise_humidity_blend;
+}
+
+s16* BiomeGenOriginal::getBiomeTransitions() const
+{
+	return biomeTransitions;
 }
 
 BiomeGen *BiomeGenOriginal::clone(BiomeManager *biomemgr) const
@@ -223,17 +256,16 @@ Biome *BiomeGenOriginal::getBiomeAtPoint(v3s16 pos) const
 }
 
 
-Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, v3s16 pos, s16 *min_y) const
+Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, v3s16 pos) const
 {
 	return calcBiomeFromNoise(
 		noise_heat->result[index],
 		noise_humidity->result[index],
-		pos,
-		min_y);
+		pos);
 }
 
 
-Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 pos, s16 *min_y) const
+Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const
 {
 	Biome *biome_closest = nullptr;
 	Biome *biome_closest_blend = nullptr;
@@ -260,30 +292,6 @@ Biome *BiomeGenOriginal::calcBiomeFromNoise(float heat, float humidity, v3s16 po
 		} else if (dist < dist_min_blend) { // Blend area above biome b
 			dist_min_blend = dist;
 			biome_closest_blend = b;
-		}
-	}
-
-	// If we have a pointer to a place to store the next biomes largest Y then we get and store it
-	if (min_y) {
-		*min_y = pos.Y;
-
-		// Doing a check to see if there is a biome that is hidden in the current biome
-		for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
-			Biome *b = (Biome *)m_bmgr->getRaw(i);
-			if (!b ||
-					pos.Y < b->max_pos.Y ||
-					pos.X < b->min_pos.X || pos.X > b->max_pos.X ||
-					pos.Z < b->min_pos.Z || pos.Z > b->max_pos.Z)
-				continue;
-
-			float d_heat = heat - b->heat_point;
-			float d_humidity = humidity - b->humidity_point;
-			float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
-
-			if (dist < dist_min && b->max_pos.Y + b->vertical_blend > *min_y) { // Biome below will show since it has a better distance
-				// Returning the maximum height this biome can generate to
-				*min_y = b->max_pos.Y + b->vertical_blend;
-			}
 		}
 	}
 

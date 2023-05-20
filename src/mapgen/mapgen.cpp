@@ -636,6 +636,9 @@ void MapgenBasic::generateBiomes()
 
 	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
+	s16* biome_transitions = biomegen->getBiomeTransitions();
+	int cur_biome_depth;
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = NULL;
@@ -644,8 +647,10 @@ void MapgenBasic::generateBiomes()
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
 		u16 depth_riverbed = 0;
-		s16 biome_y_min = -MAX_MAP_GENERATION_LIMIT;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
+
+		cur_biome_depth = 0;
+		s16 biome_y_min = biome_transitions[cur_biome_depth];
 
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
@@ -675,8 +680,19 @@ void MapgenBasic::generateBiomes()
 				(air_above || !biome || y < biome_y_min); // 2, 3, 4
 
 			if (is_stone_surface || is_water_surface) {
-				// (Re)calculate biome
-				biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z), &biome_y_min);
+				if (!biome || y < biome_y_min) {
+					// (Re)calculate biome
+					biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
+
+					cur_biome_depth++;
+					biome_y_min = biome_transitions[cur_biome_depth];
+
+					while (y < biome_y_min) {
+						biome_y_min = biome_transitions[++cur_biome_depth];
+					}
+					/* if (x == node_min.X && z == node_min.Z) */
+					/* 	printf("Map: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), biome_y_min); */
+				}
 
 				// Add biome to biomemap at first stone surface detected
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)

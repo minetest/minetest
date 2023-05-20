@@ -82,6 +82,9 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 index2d = 0;  // Biomemap index
 
+	s16* biome_transitions = m_bmgn->getBiomeTransitions();
+	int cur_biome_depth;
+
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
 	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
@@ -99,7 +102,8 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		u16 depth_riverbed = biome->depth_riverbed;
 		u16 nplaced = 0;
 
-		s16 nextBiomeY = biome->min_pos.Y;
+		cur_biome_depth = 0;
+		s16 nextBiomeY = biome_transitions[cur_biome_depth];
 
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
@@ -110,8 +114,15 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				VoxelArea::add_y(em, vi, -1)) {
 			// We need this check to make sure that biomes don't generate too far down
 			if (y < nextBiomeY) {
-				// We pass in the nextBiomeY float so we know where next to query for the next biome
-				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z), &nextBiomeY);
+				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z));
+				cur_biome_depth++;
+				nextBiomeY = biome_transitions[cur_biome_depth];
+
+				while (y < nextBiomeY) {
+					nextBiomeY = biome_transitions[++cur_biome_depth];
+				}
+				/* if (x == nmin.X && z == nmin.Z) */
+				/* 	printf("Cave: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), nextBiomeY); */
 			}
 
 			content_t c = vm->m_data[vi].getContent();
