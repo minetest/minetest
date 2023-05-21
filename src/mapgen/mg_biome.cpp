@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mg_biome.h"
-#include <algorithm>
-#include <functional>
 #include "mg_decoration.h"
 #include "emerge.h"
 #include "server.h"
@@ -151,38 +149,37 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
 
 	// Calculating the bounding position of each biome so we know when we might switch
-	biomeTransitions = new s16[m_bmgr->getNumObjects() * 2];
-	for (size_t i = 1; i < m_bmgr->getNumObjects(); i++) {
+	// First gathering all heights where we might switch
+	std::vector<s16> temp_transition_heights;
+	temp_transition_heights.reserve(m_bmgr->getNumObjects() * 2);
+	for (size_t i = 0; i < m_bmgr->getNumObjects(); i++) {
 		Biome *b = (Biome *)m_bmgr->getRaw(i);
-		biomeTransitions[2 * (i - 1)] = b->max_pos.Y;
-		biomeTransitions[2 * (i - 1) + 1] = b->min_pos.Y;
+		temp_transition_heights.push_back(b->max_pos.Y);
+		temp_transition_heights.push_back(b->min_pos.Y);
 	}
 
 	// Sorting the biome transition points
-	std::sort(biomeTransitions, biomeTransitions + m_bmgr->getNumObjects() * 2, std::greater<int>());
+	std::sort(temp_transition_heights.begin(), temp_transition_heights.end(), std::greater<int>());
 
 	// Getting rid of duplicate biome transition points
-	std::vector<s16> t;
-	s16 last = biomeTransitions[0];
-	t.push_back(last);
-	for (size_t i = 1; i < m_bmgr->getNumObjects() * 2; i++){
-		if (biomeTransitions[i] != last) {
-			last = biomeTransitions[i];
-			t.push_back(last);
+	s16 last = temp_transition_heights[0];
+	size_t out_pos = 1;
+	for (size_t i = 1; i < temp_transition_heights.size(); i++){
+		if (temp_transition_heights[i] != last) {
+			last = temp_transition_heights[i];
+			temp_transition_heights[out_pos++] = last;
 		}
 	}
-	t.push_back(-MAX_MAP_GENERATION_LIMIT);
-	delete []biomeTransitions;
 
-	biomeTransitions = new s16[t.size()];
-	memcpy(biomeTransitions, t.data(), sizeof(s16) * t.size());
+	biome_transitions = new s16[out_pos];
+	memcpy(biome_transitions, temp_transition_heights.data(), sizeof(s16) * out_pos);
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
 {
 	delete []biomemap;
-	delete []biomeTransitions;
 
+	delete []biome_transitions;
 	delete noise_heat;
 	delete noise_humidity;
 	delete noise_heat_blend;
@@ -191,7 +188,7 @@ BiomeGenOriginal::~BiomeGenOriginal()
 
 s16* BiomeGenOriginal::getBiomeTransitions() const
 {
-	return biomeTransitions;
+	return biome_transitions;
 }
 
 BiomeGen *BiomeGenOriginal::clone(BiomeManager *biomemgr) const
