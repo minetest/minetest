@@ -651,9 +651,6 @@ void MapgenBasic::generateBiomes()
 
 		cur_biome_depth = 0;
 		s16 biome_y_min = biome_transitions[cur_biome_depth];
-		while (node_max.Y < biome_y_min) {
-			biome_y_min = biome_transitions[++cur_biome_depth];
-		}
 
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
@@ -686,7 +683,12 @@ void MapgenBasic::generateBiomes()
 				if (!biome || y < biome_y_min) {
 					// (Re)calculate biome
 					biome = biomegen->getBiomeAtIndex(index, v3s16(x, y, z));
-					biome_y_min = biome_transitions[++cur_biome_depth];
+
+					// Finding the height of the next biome
+					// On first iteration this may loop a couple times after than it should just run once
+					while (node_max.Y < biome_y_min) {
+						biome_y_min = biome_transitions[++cur_biome_depth];
+					}
 
 					/* if (x == node_min.X && z == node_min.Z) */
 					/* 	printf("Map: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), biome_y_min); */

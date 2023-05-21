@@ -104,9 +104,6 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 
 		cur_biome_depth = 0;
 		s16 nextBiomeY = biome_transitions[cur_biome_depth];
-		while (nmax.Y < nextBiomeY) {
-			nextBiomeY = biome_transitions[++cur_biome_depth];
-		}
 
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
@@ -118,7 +115,12 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 			// We need this check to make sure that biomes don't generate too far down
 			if (y < nextBiomeY) {
 				biome = m_bmgn->getBiomeAtIndex(index2d, v3s16(x, y, z));
-				nextBiomeY = biome_transitions[++cur_biome_depth];
+
+				// Finding the height of the next biome
+				// On first iteration this may loop a couple times after than it should just run once
+				while (nmax.Y < nextBiomeY) {
+					nextBiomeY = biome_transitions[++cur_biome_depth];
+				}
 
 				/* if (x == nmin.X && z == nmin.Z) */
 				/* 	printf("Cave: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), nextBiomeY); */
