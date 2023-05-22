@@ -3778,39 +3778,40 @@ void GUIFormSpecMenu::updateSelectedItem()
 			s.i = 0;
 			s.slotsize = e->getSlotSize();
 
-			if (m_shift_craft) {
-				// Try to shift-move the crafted item somewhere,
-				// but not back into the crafting grid
-				for (u32 i = 0; i < m_inventory_rings.size(); i++) {
-					const ListRingSpec &lr = m_inventory_rings[i];
-
-					if (lr.listname == "craft")
-						continue;
-					Inventory *inv_to = m_invmgr->getInventory(lr.inventoryloc);
-					if (!inv_to)
-						continue;
-					InventoryList *list_to = inv_to->getList(lr.listname);
-					if (!list_to)
-						continue;
-
-					IMoveAction *a = new IMoveAction();
-					a->count = item.count;
-					a->from_inv = s.inventoryloc;
-					a->from_list = s.listname;
-					a->from_i = s.i;
-					a->to_inv = lr.inventoryloc;
-					a->to_list = lr.listname;
-					a->move_somewhere = true;
-					m_invmgr->inventoryAction(a);
-
-					m_shift_craft = false;
-					break;
-				}
-			} else {
+			if (!m_shift_craft) {
 				// Grab selected item from the crafting result list
 				m_selected_item = new GUIInventoryList::ItemSpec(s);
 				m_selected_amount = item.count;
 				m_selected_dragging = false;
+				break;
+			}
+
+			// Try to shift-move the crafted item somewhere,
+			// but not back into the crafting grid
+			for (u32 i = 0; i < m_inventory_rings.size(); i++) {
+				const ListRingSpec &lr = m_inventory_rings[i];
+
+				if (lr.listname == "craft")
+					continue;
+				Inventory *inv_to = m_invmgr->getInventory(lr.inventoryloc);
+				if (!inv_to)
+					continue;
+				InventoryList *list_to = inv_to->getList(lr.listname);
+				if (!list_to)
+					continue;
+
+				IMoveAction *a = new IMoveAction();
+				a->count = item.count;
+				a->from_inv = s.inventoryloc;
+				a->from_list = s.listname;
+				a->from_i = s.i;
+				a->to_inv = lr.inventoryloc;
+				a->to_list = lr.listname;
+				a->move_somewhere = true;
+				m_invmgr->inventoryAction(a);
+
+				m_shift_craft = false;
+				break;
 			}
 			break;
 		}
@@ -4323,7 +4324,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			} else if (!m_selected_item && button != BET_WHEEL_UP && !empty) {
 				// Non-empty stack has been clicked: select or shift-move it
-				u32 count;
+				u32 count = 0;
 				if (button == BET_RIGHT)
 					count = (s_count + 1) / 2;
 				else if (button == BET_MIDDLE)
@@ -4351,8 +4352,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					pickup_amount = MYMIN(s_count, 1);
 				else if (button == BET_MIDDLE)
 					move_amount = MYMIN(m_selected_amount, 10);
-				else if (button == BET_WHEEL_UP)
-					move_amount = 1;
 				else if (button == BET_LEFT)
 					move_amount = m_selected_amount;
 
@@ -4407,10 +4406,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					// the item, so assume that they are left-dragging,
 					// and wait for the next event before moving the item
 					m_left_dragging = true;
-					m_client->m_inhibit_inventory_revert = true;
+					m_client->inhibit_inventory_revert = true;
 					m_left_drag_stack = list_selected->getItem(m_selected_item->i);
 					m_left_drag_amount = m_selected_amount;
-					m_left_drag_stacks[new GUIInventoryList::ItemSpec(s)] = list_s->getItem(s.i);
+					m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i));
 					move_amount = 0;
 
 				} else if (identical) {
@@ -4455,16 +4454,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			if (m_left_dragging && button == BET_LEFT) {
 				m_left_dragging = false;
-				m_client->m_inhibit_inventory_revert = false;
+				m_client->inhibit_inventory_revert = false;
 
 				if (m_left_drag_stacks.size() > 1) {
 					// Finalize the left-dragging
 					for (auto &ds : m_left_drag_stacks) {
 						// Check how many items we should move to this slot,
 						// it may be less than the full split
-						Inventory *inv_to = m_invmgr->getInventory(ds.first->inventoryloc);
-						InventoryList *list_to = inv_to->getList(ds.first->listname);
-						ItemStack stack_to = list_to->getItem(ds.first->i);
+						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
+						InventoryList *list_to = inv_to->getList(ds.first.listname);
+						ItemStack stack_to = list_to->getItem(ds.first.i);
 						u16 amount = stack_to.count - ds.second.count;
 
 						IMoveAction *a = new IMoveAction();
@@ -4472,9 +4471,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						a->from_inv = m_selected_item->inventoryloc;
 						a->from_list = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
-						a->to_inv = ds.first->inventoryloc;
-						a->to_list = ds.first->listname;
-						a->to_i = ds.first->i;
+						a->to_inv = ds.first.inventoryloc;
+						a->to_list = ds.first.listname;
+						a->to_i = ds.first.i;
 						m_invmgr->inventoryAction(a);
 					}
 
@@ -4488,8 +4487,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				// Cleanup
 				if (m_left_drag_stacks.size() > 0) {
-					for (auto &ds : m_left_drag_stacks)
-						delete ds.first;
 					m_left_drag_stacks.clear();
 				}
 			}
@@ -4526,14 +4523,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					// Add the slot to the left-drag list if it doesn't exist
 					bool found = false;
 					for (auto &ds : m_left_drag_stacks) {
-						if (s.inventoryloc == ds.first->inventoryloc &&
-								s.listname == ds.first->listname && s.i == ds.first->i) {
+						if (s.inventoryloc == ds.first.inventoryloc &&
+								s.listname == ds.first.listname && s.i == ds.first.i) {
 							found = true;
+							break;
 						}
 					}
 					if (!found) {
-						m_left_drag_stacks[new GUIInventoryList::ItemSpec(s)] =
-								list_s->getItem(s.i);
+						m_left_drag_stacks.emplace_back(s, list_s->getItem(s.i));
 					}
 
 				} else if (m_selected_dragging && matching && !identical) {
@@ -4619,22 +4616,22 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_selected_amount = m_left_drag_amount;
 
 			for (auto &ds : m_left_drag_stacks) {
-				Inventory *inv_to = m_invmgr->getInventory(ds.first->inventoryloc);
-				InventoryList *list_to = inv_to->getList(ds.first->listname);
+				Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
+				InventoryList *list_to = inv_to->getList(ds.first.listname);
 
 				if (inv_to == inv_selected && list_to == list_selected &&
-						ds.first->i == m_selected_item->i) {
+						ds.first.i == m_selected_item->i) {
 					// Adding to the source stack, just change the selected amount
 					m_selected_amount -= split_amount;
 
 				} else {
 					// Reset the stack to it's original state
-					list_to->changeItem(ds.first->i, ds.second);
+					list_to->changeItem(ds.first.i, ds.second);
 
 					// Add the new split to the stack
 					ItemStack add_stack = stack_from;
 					add_stack.count = split_amount;
-					ItemStack leftover = list_to->addItem(ds.first->i, add_stack);
+					ItemStack leftover = list_to->addItem(ds.first.i, add_stack);
 
 					// Remove the split items from the source stack
 					u16 moved = split_amount - leftover.count;

@@ -337,7 +337,7 @@ protected:
 
 	u16 m_left_drag_amount;
 	ItemStack m_left_drag_stack;
-	std::map<GUIInventoryList::ItemSpec *, ItemStack> m_left_drag_stacks;
+	std::vector<std::pair<GUIInventoryList::ItemSpec, ItemStack>> m_left_drag_stacks;
 	bool m_left_dragging = false;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;

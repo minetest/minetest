@@ -442,8 +442,8 @@ public:
 	{
 		return m_mesh_grid;
 	}
-  
-  bool m_inhibit_inventory_revert = false;
+
+	bool inhibit_inventory_revert = false;
 
 private:
 	void loadMods();
