@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
-#include "mapgen/mapgen.h"
 
 class Map;
 class NodeMetadataList;

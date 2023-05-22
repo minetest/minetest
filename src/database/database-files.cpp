@@ -17,15 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <cassert>
-#include "convert_json.h"
 #include "database-files.h"
+#include "convert_json.h"
 #include "remoteplayer.h"
 #include "settings.h"
 #include "porting.h"
 #include "filesys.h"
 #include "server/player_sao.h"
 #include "util/string.h"
+#include <cassert>
 
 // !!! WARNING !!!
 // This backend is intended to be used on Minetest 0.4.16 only for the transition backend

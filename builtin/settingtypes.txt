@@ -2051,7 +2051,7 @@ joystick_deadzone (Joystick dead zone) int 2048 0 65535
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
-[*Temporary Settings]
+[*Hide: Temporary Settings]
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path

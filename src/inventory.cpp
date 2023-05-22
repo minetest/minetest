@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <sstream>
 #include "log.h"
-#include "itemdef.h"
 #include "util/strfnd.h"
 #include "content_mapnode.h" // For loading legacy MaterialItems
 #include "nameidmapping.h" // For loading legacy MaterialItems
@@ -965,15 +964,16 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 {
 	setModified();
 
-	// Remove existing lists
+	// Reset existing lists instead of re-creating if possible.
+	// InventoryAction::apply() largely caches InventoryList pointers which must not be
+	// invalidated by Lua API calls (e.g. InvRef:set_list), hence do resize & clear which
+	// also include the neccessary resize lock checks.
 	s32 i = getListIndex(name);
 	if (i != -1) {
-		m_lists[i]->checkResizeLock();
-		delete m_lists[i];
-
-		m_lists[i] = new InventoryList(name, size, m_itemdef);
-		m_lists[i]->setModified();
-		return m_lists[i];
+		InventoryList *list = m_lists[i];
+		list->setSize(size);
+		list->clearItems();
+		return list;
 	}
 
 	//don't create list with invalid name

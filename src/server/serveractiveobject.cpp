@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serveractiveobject.h"
 #include <fstream>
 #include "inventory.h"
+#include "inventorymanager.h"
 #include "constants.h" // BS
 #include "log.h"
 
@@ -88,4 +89,9 @@ void ServerActiveObject::markForDeactivation()
 		onMarkedForDeactivation();
 		m_pending_deactivation = true;
 	}
+}
+
+InventoryLocation ServerActiveObject::getInventoryLocation() const
+{
+	return InventoryLocation();
 }

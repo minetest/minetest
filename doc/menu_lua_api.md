@@ -22,14 +22,16 @@ Gamedata
 
 The "gamedata" table is read when calling `core.start()`. It should contain:
 
-    {
-        playername     = <name>,
-        password       = <password>,
-        address        = <IP/address>,
-        port           = <port>,
-        selected_world = <index>, -- 0 for client mode
-        singleplayer   = <true/false>,
-    }
+```lua
+{
+    playername     = <name>,
+    password       = <password>,
+    address        = <IP/address>,
+    port           = <port>,
+    selected_world = <index>, -- 0 for client mode
+    singleplayer   = <true/false>,
+}
+```
 
 
 Functions
@@ -116,53 +118,57 @@ HTTP Requests
 
 Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
-    {
-        url = "http://example.org",
+```lua
+{
+    url = "http://example.org",
 
-        timeout = 10,
-        -- Timeout for connection in seconds. Default is 3 seconds.
+    timeout = 10,
+    -- Timeout for connection in seconds. Default is 3 seconds.
 
-        post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
-        -- Optional, if specified a POST request with post_data is performed.
-        -- Accepts both a string and a table. If a table is specified, encodes
-        -- table as x-www-form-urlencoded key-value pairs.
-        -- If post_data is not specified, a GET request is performed instead.
+    post_data = "Raw POST request data string" OR {field1 = "data1", field2 = "data2"},
+    -- Optional, if specified a POST request with post_data is performed.
+    -- Accepts both a string and a table. If a table is specified, encodes
+    -- table as x-www-form-urlencoded key-value pairs.
+    -- If post_data is not specified, a GET request is performed instead.
 
-        user_agent = "ExampleUserAgent",
-        -- Optional, if specified replaces the default minetest user agent with
-        -- given string
+    user_agent = "ExampleUserAgent",
+    -- Optional, if specified replaces the default minetest user agent with
+    -- given string
 
-        extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
-        -- Optional, if specified adds additional headers to the HTTP request.
-        -- You must make sure that the header strings follow HTTP specification
-        -- ("Key: Value").
+    extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+    -- Optional, if specified adds additional headers to the HTTP request.
+    -- You must make sure that the header strings follow HTTP specification
+    -- ("Key: Value").
 
-        multipart = boolean
-        -- Optional, if true performs a multipart HTTP request.
-        -- Default is false.
-    }
+    multipart = boolean
+    -- Optional, if true performs a multipart HTTP request.
+    -- Default is false.
+}
+```
 
 ### `HTTPRequestResult` definition
 
 Passed to `HTTPApiTable.fetch` callback. Returned by
 `HTTPApiTable.fetch_async_get`.
 
-    {
-        completed = true,
-        -- If true, the request has finished (either succeeded, failed or timed
-        -- out)
+```lua
+{
+    completed = true,
+    -- If true, the request has finished (either succeeded, failed or timed
+    -- out)
 
-        succeeded = true,
-        -- If true, the request was successful
+    succeeded = true,
+    -- If true, the request was successful
 
-        timeout = false,
-        -- If true, the request timed out
+    timeout = false,
+    -- If true, the request timed out
 
-        code = 200,
-        -- HTTP status code
+    code = 200,
+    -- HTTP status code
 
-        data = "response"
-    }
+    data = "response"
+}
+```
 
 
 Formspec
@@ -209,38 +215,40 @@ GUI
   * name of current renderer, e.g. "OpenGL 4.6"
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
 
-      -- Note that none of these things are constant, they are likely to change
-      -- as the player resizes the window and moves it between monitors
+  ```lua
+  -- Note that none of these things are constant, they are likely to change
+  -- as the player resizes the window and moves it between monitors
+  --
+  -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
+  -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
+  -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
+  {
+      -- Current size of the in-game render target.
       --
-      -- real_gui_scaling and real_hud_scaling can be used instead of DPI.
-      -- OSes don't necessarily give the physical DPI, as they may allow user configuration.
-      -- real_*_scaling is just OS DPI / 96 but with another level of user configuration.
-      {
-          -- Current size of the in-game render target.
-          --
-          -- This is usually the window size, but may be smaller in certain situations,
-          -- such as side-by-side mode.
-          size = {
-              x = 1308,
-              y = 577,
-          },
+      -- This is usually the window size, but may be smaller in certain situations,
+      -- such as side-by-side mode.
+      size = {
+          x = 1308,
+          y = 577,
+      },
 
-          -- Estimated maximum formspec size before Minetest will start shrinking the
-          -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
-          -- this and `padding[-0.01,-0.01]`.
-          max_formspec_size = {
-              x = 20,
-              y = 11.25
-          },
+      -- Estimated maximum formspec size before Minetest will start shrinking the
+      -- formspec to fit. For a fullscreen formspec, use a size 10-20% larger than
+      -- this and `padding[-0.01,-0.01]`.
+      max_formspec_size = {
+          x = 20,
+          y = 11.25
+      },
 
-          -- GUI Scaling multiplier
-          -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
-          real_gui_scaling = 1,
+      -- GUI Scaling multiplier
+      -- Equal to the setting `gui_scaling` multiplied by `dpi / 96`
+      real_gui_scaling = 1,
 
-          -- HUD Scaling multiplier
-          -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
-          real_hud_scaling = 1,
-      }
+      -- HUD Scaling multiplier
+      -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
+      real_hud_scaling = 1,
+  }
+  ```
 
 
 
@@ -262,7 +270,7 @@ Package - content which is downloadable from the content db, may or may not be i
 
       Ex:
 
-      ```
+      ```lua
       {
           mods = "/home/user/.minetest/mods",
           share = "/usr/share/minetest/mods",
@@ -281,42 +289,45 @@ Package - content which is downloadable from the content db, may or may not be i
 * `core.get_games()` -> table of all games (possible in async calls)
     * `name` in return value is deprecated, use `title` instead.
     * returns a table (ipairs) with values:
-
-          {
-              id               = <id>,
-              path             = <full path to game>,
-              gamemods_path    = <path>,
-              title            = <title of game>,
-              menuicon_path    = <full path to menuicon>,
-              author           = "author",
-              DEPRECATED:
-              addon_mods_paths = {[1] = <path>,},
-          }
+      ```lua
+      {
+          id               = <id>,
+          path             = <full path to game>,
+          gamemods_path    = <path>,
+          title            = <title of game>,
+          menuicon_path    = <full path to menuicon>,
+          author           = "author",
+          --DEPRECATED:
+          addon_mods_paths = {[1] = <path>,},
+      }
+      ```
 * `core.get_content_info(path)`
     * returns
-
-          {
-              name             = "technical_id",
-              type             = "mod" or "modpack" or "game" or "txp",
-              title            = "Human readable title",
-              description      = "description",
-              author           = "author",
-              path             = "path/to/content",
-              depends          = {"mod", "names"}, -- mods only
-              optional_depends = {"mod", "names"}, -- mods only
-          }
+      ```lua
+      {
+          name             = "technical_id",
+          type             = "mod" or "modpack" or "game" or "txp",
+          title            = "Human readable title",
+          description      = "description",
+          author           = "author",
+          path             = "path/to/content",
+          depends          = {"mod", "names"}, -- mods only
+          optional_depends = {"mod", "names"}, -- mods only
+      }
+      ```
 * `core.check_mod_configuration(world_path, mod_paths)`
     * Checks whether configuration is valid.
     * `world_path`: path to the world
     * `mod_paths`: list of enabled mod paths
     * returns:
-
-          {
-              is_consistent = true,  -- true is consistent, false otherwise
-              unsatisfied_mods = {},  -- list of mod specs
-              satisfied_mods = {}, -- list of mod specs
-              error_message = "",  -- message or nil
-          }
+      ```lua
+      {
+          is_consistent = true,  -- true is consistent, false otherwise
+          unsatisfied_mods = {},  -- list of mod specs
+          satisfied_mods = {}, -- list of mod specs
+          error_message = "",  -- message or nil
+      }
+      ```
 
 Logging
 -------
@@ -346,14 +357,15 @@ Worlds
 
 * `core.get_worlds()` -> list of worlds (possible in async calls)
   * returns
-
-        {
-           [1] = {
-           path   = <full path to world>,
-           name   = <name of world>,
-           gameid = <gameid of world>,
-           },
-        }
+    ```lua
+    {
+        [1] = {
+            path   = <full path to world>,
+            name   = <name of world>,
+            gameid = <gameid of world>,
+        },
+    }
+    ```
 * `core.create_world(worldname, gameid, init_settings)`
 * `core.delete_world(index)`
 

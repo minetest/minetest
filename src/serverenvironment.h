@@ -41,6 +41,8 @@ struct StaticObject;
 class ServerActiveObject;
 class Server;
 class ServerScripting;
+enum AccessDeniedCode : u8;
+typedef u16 session_t;
 
 /*
 	{Active, Loading} block modifier interface.

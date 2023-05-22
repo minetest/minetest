@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "mapblock.h"
 #include "map.h"
+#include "noise.h"
 #include "profiler.h"
 #include "shader.h"
 #include "mesh.h"
@@ -31,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include <array>
 #include <algorithm>
+#include <cmath>
 
 /*
 	MeshMakeData

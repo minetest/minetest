@@ -19,10 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <cassert>
 #include <unordered_set>
 #include "irrlichttypes_bloated.h"
 #include "activeobject.h"
-#include "inventorymanager.h"
 #include "itemgroup.h"
 #include "util/container.h"
 
@@ -47,6 +47,8 @@ struct ItemStack;
 struct ToolCapabilities;
 struct ObjectProperties;
 struct PlayerHPChangeReason;
+class Inventory;
+struct InventoryLocation;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -184,8 +186,7 @@ public:
 	// Inventory and wielded item
 	virtual Inventory *getInventory() const
 	{ return NULL; }
-	virtual InventoryLocation getInventoryLocation() const
-	{ return InventoryLocation(); }
+	virtual InventoryLocation getInventoryLocation() const;
 	virtual void setInventoryModified()
 	{}
 	virtual std::string getWieldList() const

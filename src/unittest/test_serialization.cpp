@@ -170,7 +170,7 @@ void TestSerialization::testDeSerializeLongString()
 void TestSerialization::testSerializeJsonString()
 {
 	std::istringstream is(std::ios::binary);
-	const auto reset_is = [&] (const std::string &s) { 
+	const auto reset_is = [&] (const std::string &s) {
 		is.clear();
 		is.str(s);
 	};
