@@ -2207,7 +2207,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	bool do_override = false;
 	float ratio = 0.0f;
 
-	if (!lua_isnil(L, 2)) {
+	if (!lua_isnoneornil(L, 2)) {
 		do_override = true;
 		ratio = readParam<float>(L, 2);
 		luaL_argcheck(L, ratio >= 0.0f && ratio <= 1.0f, 1,
