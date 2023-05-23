@@ -1208,7 +1208,7 @@ void Game::run()
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime);
 
-		auto current_dynamic_info = ClientDynamicInfo::get_current();
+		auto current_dynamic_info = ClientDynamicInfo::getCurrent();
 		if (!current_dynamic_info.equal(client_display_info)) {
 			client_display_info = current_dynamic_info;
 			dynamic_info_send_timer = 0.2f;

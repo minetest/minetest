@@ -20,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrTypes.h"
+#ifndef SERVER
 #include "settings.h"
 #include "client/renderingengine.h"
+#endif
 
 
 struct ClientDynamicInfo
@@ -32,7 +34,8 @@ public:
 	f32 real_hud_scaling;
 	v2f32 max_fs_size;
 
-	static const ClientDynamicInfo get_current() {
+#ifndef SERVER
+	static const ClientDynamicInfo getCurrent() {
 		v2u32 screen_size = RenderingEngine::getWindowSize();
 		f32 density = RenderingEngine::getDisplayDensity();
 		f32 gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
@@ -45,6 +48,7 @@ public:
 			ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
 		};
 	}
+#endif
 
 	bool equal(const ClientDynamicInfo &other) const {
 		return render_target_size == other.render_target_size &&
