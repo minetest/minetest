@@ -3859,6 +3859,24 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
+s16 GUIFormSpecMenu::getNextInventoryRing(const GUIInventoryList::ItemSpec &from)
+{
+	u16 rings = m_inventory_rings.size();
+	if (rings <= 1)
+		return -1;
+	// Look for the source ring
+	s16 index = -1;
+	for (u16 i = 0; i < rings; i++) {
+		ListRingSpec &lr = m_inventory_rings[i];
+		if (lr.inventoryloc == from.inventoryloc && lr.listname == from.listname) {
+			// Set the index to the next ring
+			index = (i + 1) % rings;
+			break;
+		}
+	}
+	return index;
+}
+
 void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 {
 	if(m_text_dst)
@@ -4217,10 +4235,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		} while(0);
 
 		// True if the hovered slot is the selected slot
-		bool identical = m_selected_item && s.isValid() &&
-			(inv_selected == inv_s) &&
-			(m_selected_item->listname == s.listname) &&
-			(m_selected_item->i == s.i);
+		bool identical = m_selected_item && s.isValid() && (*m_selected_item == s);
 
 		// True if the hovered slot is empty
 		bool empty = s.isValid() && list_s->getItem(s.i).empty();
@@ -4360,17 +4375,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					move_amount = 0;
 
 					// Try to find somewhere to move the items to
-					u32 rings = m_inventory_rings.size();
-					u32 r = 0;
-					for (; r < rings; r++) {
-						const ListRingSpec &lr = m_inventory_rings[r];
-						if (lr.inventoryloc == s.inventoryloc &&
-								lr.listname == s.listname)
-							break;
-					}
-					if (r >= rings) // Not found
+					s16 r = getNextInventoryRing(s);
+					if (r < 0) // Not found
 						break;
-					r = (r + 1) % rings;
 
 					const ListRingSpec &to_ring = m_inventory_rings[r];
 					Inventory *inv_to = m_invmgr->getInventory(to_ring.inventoryloc);
@@ -4523,8 +4530,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					// Add the slot to the left-drag list if it doesn't exist
 					bool found = false;
 					for (auto &ds : m_left_drag_stacks) {
-						if (s.inventoryloc == ds.first.inventoryloc &&
-								s.listname == ds.first.listname && s.i == ds.first.i) {
+						if (s == ds.first) {
 							found = true;
 							break;
 						}
@@ -4619,8 +4625,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
 				InventoryList *list_to = inv_to->getList(ds.first.listname);
 
-				if (inv_to == inv_selected && list_to == list_selected &&
-						ds.first.i == m_selected_item->i) {
+				if (ds.first == *m_selected_item) {
 					// Adding to the source stack, just change the selected amount
 					m_selected_amount -= split_amount;
 
@@ -4732,23 +4737,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				m_invmgr->inventoryAction(a);
 			}
 		} else if (shift_move_amount > 0) {
-			// Try to find the list ring for the inventory
-			// the hovered item belongs to
-			u32 rings = m_inventory_rings.size();
-			u32 i = 0;
-			for (; i < rings; i++) {
-				const ListRingSpec &lr = m_inventory_rings[i];
-				if (lr.inventoryloc == s.inventoryloc && lr.listname == s.listname)
-					break;
-			}
-			// If we found it, try moving the item to
-			// the next inventory ring in the loop
+			// Try to shift-move the item
 			do {
-				if (i >= rings) // Not found
+				s16 r = getNextInventoryRing(s);
+				if (r < 0) // Not found
 					break;
-				i = (i + 1) % rings;
 
-				const ListRingSpec &to_ring = m_inventory_rings[i];
+				const ListRingSpec &to_ring = m_inventory_rings[r];
 				InventoryList *list_from = list_s;
 				if (!s.isValid())
 					break;

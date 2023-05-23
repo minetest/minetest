@@ -258,6 +258,8 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
+	s16 getNextInventoryRing(const GUIInventoryList::ItemSpec &from);
+
 	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
@@ -266,6 +268,7 @@ public:
 
 	GUITable* getTable(const std::string &tablename);
 	std::vector<std::string>* getDropDownValues(const std::string &name);
+
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
