@@ -3754,7 +3754,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 
 	// If craftresult is not empty and nothing else is selected,
 	// move it somewhere or select it now
-	if (!m_selected_item || m_shift_craft) {
+	if (!m_selected_item || m_shift_move_after_craft) {
 		for (const GUIInventoryList *e : m_inventorylists) {
 			if (e->getListname() != "craftpreview")
 				continue;
@@ -3778,7 +3778,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 			s.i = 0;
 			s.slotsize = e->getSlotSize();
 
-			if (!m_shift_craft) {
+			if (!m_shift_move_after_craft) {
 				// Grab selected item from the crafting result list
 				m_selected_item = new GUIInventoryList::ItemSpec(s);
 				m_selected_amount = item.count;
@@ -3810,7 +3810,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 				a->move_somewhere = true;
 				m_invmgr->inventoryAction(a);
 
-				m_shift_craft = false;
+				m_shift_move_after_craft = false;
 				break;
 			}
 			break;
@@ -4108,19 +4108,6 @@ void GUIFormSpecMenu::tryClose()
 	}
 }
 
-enum ButtonEventType : u8
-{
-	BET_LEFT,
-	BET_RIGHT,
-	BET_MIDDLE,
-	BET_WHEEL_UP,
-	BET_WHEEL_DOWN,
-	BET_UP,
-	BET_DOWN,
-	BET_MOVE,
-	BET_OTHER
-};
-
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
 	if (event.EventType==EET_KEY_INPUT_EVENT) {
@@ -4245,8 +4232,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (m_selected_item && s.isValid()) {
 			ItemStack a = list_selected->getItem(m_selected_item->i);
 			ItemStack b = list_s->getItem(s.i);
-			if (a.name == b.name && a.wear == a.wear && a.metadata == a.metadata)
-				matching = true;
+			matching = a.stacksWith(b);
 		}
 
 		ButtonEventType button = BET_OTHER;
@@ -4305,10 +4291,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_DOWN: {
 			// Some mouse button has been pressed
 
-			if (m_held_button >= 0)
+			if (m_held_mouse_button != BET_OTHER)
 				break;
 			if (button == BET_LEFT || button == BET_RIGHT || button == BET_MIDDLE)
-				m_held_button = button;
+				m_held_mouse_button = button;
 
 			if (!s.isValid()) {
 				if (m_selected_item && !getAbsoluteClippingRect().isPointInside(m_pointer)) {
@@ -4335,7 +4321,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					craft_amount = 1;
 
 				// Holding shift moves the crafted item to the inventory
-				m_shift_craft = event.MouseInput.Shift;
+				m_shift_move_after_craft = event.MouseInput.Shift;
 
 			} else if (!m_selected_item && button != BET_WHEEL_UP && !empty) {
 				// Non-empty stack has been clicked: select or shift-move it
@@ -4371,7 +4357,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					move_amount = m_selected_amount;
 
 				if (event.MouseInput.Shift && !identical && matching) {
-					// Shift-move all of the selected item
+					// Shift-move all items the same as the selected item to the next list
 					move_amount = 0;
 
 					// Try to find somewhere to move the items to
@@ -4395,8 +4381,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							continue;
 						ItemStack item = list_s->getItem(i);
 
-						if (slct.name == item.name && slct.wear == item.wear &&
-								slct.metadata == item.metadata) {
+						if (slct.stacksWith(item)) {
 							IMoveAction *a = new IMoveAction();
 							a->count = item.count;
 							a->from_inv = s.inventoryloc;
@@ -4442,9 +4427,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_UP: {
 			// Some mouse button has been released
 
-			if (m_held_button >= 0 && m_held_button != button)
+			if (m_held_mouse_button != BET_OTHER && m_held_mouse_button != button)
 				break;
-			m_held_button = -1;
+			m_held_mouse_button = BET_OTHER;
 
 			if (m_selected_dragging && m_selected_item) {
 				if (s.isValid() && !identical && (empty || matching)) {
@@ -4507,21 +4492,21 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			if (!m_selected_item && event.MouseInput.Shift) {
 				// Shift-move items while dragging
-				if (m_held_button == BET_RIGHT)
+				if (m_held_mouse_button == BET_RIGHT)
 					shift_move_amount = 1;
-				else if (m_held_button == BET_MIDDLE)
+				else if (m_held_mouse_button == BET_MIDDLE)
 					shift_move_amount = MYMIN(s_count, 10);
-				else if (m_held_button == BET_LEFT)
+				else if (m_held_mouse_button == BET_LEFT)
 					shift_move_amount = s_count;
 
 			} else if (m_selected_item) {
-				if (m_held_button != BET_LEFT) {
+				if (m_held_mouse_button != BET_LEFT) {
 					// Move items if the destination slot is empty
 					// or contains the same item type as what is going to be moved
 					if (!m_selected_dragging && (empty || matching)) {
-						if (m_held_button == BET_RIGHT)
+						if (m_held_mouse_button == BET_RIGHT)
 							move_amount = 1;
-						else if (m_held_button == BET_MIDDLE)
+						else if (m_held_mouse_button == BET_MIDDLE)
 							move_amount = MYMIN(m_selected_amount, 10);
 					}
 
@@ -4544,7 +4529,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					pickup_amount = s_count;
 				}
 
-			} else if (m_held_button == BET_LEFT) {
+			} else if (m_held_mouse_button == BET_LEFT) {
 				// Start picking up items
 				m_selected_item = new GUIInventoryList::ItemSpec(s);
 				m_selected_amount = s_count;
@@ -4575,8 +4560,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					ItemStack item = list_s->getItem(i);
 
-					if (slct.name == item.name && slct.wear == item.wear &&
-							slct.metadata == item.metadata) {
+					if (slct.stacksWith(item)) {
 						// Found a match, check if we can pick it up
 						bool full = false;
 						u16 amount = item.count;

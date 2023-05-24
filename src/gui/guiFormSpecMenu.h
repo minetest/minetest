@@ -64,6 +64,19 @@ enum FormspecQuitMode {
 	quit_mode_cancel
 };
 
+enum ButtonEventType : u8
+{
+	BET_LEFT,
+	BET_RIGHT,
+	BET_MIDDLE,
+	BET_WHEEL_UP,
+	BET_WHEEL_DOWN,
+	BET_UP,
+	BET_DOWN,
+	BET_MOVE,
+	BET_OTHER
+};
+
 struct TextDest
 {
 	virtual ~TextDest() = default;
@@ -335,8 +348,8 @@ protected:
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
-	int m_held_button = -1;
-	bool m_shift_craft = false;
+	ButtonEventType m_held_mouse_button = BET_OTHER;
+	bool m_shift_move_after_craft = false;
 
 	u16 m_left_drag_amount;
 	ItemStack m_left_drag_stack;
