@@ -1003,7 +1003,10 @@ private:
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
-	bool m_invert_mouse = false;
+	bool m_invert_mouse;
+	bool m_enable_hotbar_mouse_wheel;
+	bool m_invert_hotbar_mouse_wheel;
+
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
 	bool m_game_focused;
@@ -1034,7 +1037,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("doubletap_joysticks",
+	g_settings->registerChangedCallback("enable_joysticks",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
@@ -1050,11 +1053,21 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -1095,11 +1108,15 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_joysticks",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_particles",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_fog",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
@@ -1107,11 +1124,21 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
 	if (m_rendering_engine)
 		m_rendering_engine->finalize();
@@ -1149,7 +1176,6 @@ bool Game::startup(bool *kill,
 
 	m_game_ui->initFlags();
 
-	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -2135,9 +2161,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 	/* Item selection using mouse wheel
 	 */
 	*new_playeritem = player->getWieldIndex();
-	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		    player->hud_hotbar_itemcount - 1);
+
+	s32 wheel = input->getMouseWheel();
+	if (!m_enable_hotbar_mouse_wheel)
+		wheel = 0;
+	if (m_invert_hotbar_mouse_wheel)
+		wheel *= -1;
 
 	s32 dir = wheel;
 
@@ -4298,6 +4329,10 @@ void Game::readSettings()
 	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+
+	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_enable_hotbar_mouse_wheel = g_settings->getBool("enable_hotbar_mouse_wheel");
+	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
 }

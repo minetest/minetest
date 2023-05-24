@@ -285,6 +285,8 @@ void set_default_settings()
 
 	// Input
 	settings->setDefault("invert_mouse", "false");
+	settings->setDefault("enable_hotbar_mouse_wheel", "true");
+	settings->setDefault("invert_hotbar_mouse_wheel", "false");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("repeat_place_time", "0.25");
 	settings->setDefault("safe_dig_and_place", "false");
