@@ -105,15 +105,6 @@ set_dev_build() {
 		sed -i -re 's/^set\(DEVELOPMENT_BUILD [A-Z]+\)$/set(DEVELOPMENT_BUILD FALSE)/' CMakeLists.txt
 	fi
 
-	# Update Android versions
-	if [ "$is_dev" -eq 1 ]; then
-		sed -i 's/set("versionExtra", "")/set("versionExtra", "-dev")/' android/build.gradle
-		sed -i 's/project.ext.set("developmentBuild", 0)/project.ext.set("developmentBuild", 1)/' android/build.gradle
-	else
-		sed -i 's/set("versionExtra", "-dev")/set("versionExtra", "")/' android/build.gradle
-		sed -i 's/project.ext.set("developmentBuild", 1)/project.ext.set("developmentBuild", 0)/' android/build.gradle
-	fi
-
 	git add -f CMakeLists.txt android/build.gradle
 }
 
