@@ -271,7 +271,7 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
-	s16 getNextInventoryRing(const GUIInventoryList::ItemSpec &from);
+	s16 getNextInventoryRing(const InventoryLocation &inventoryloc, const std::string &listname);
 
 	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);

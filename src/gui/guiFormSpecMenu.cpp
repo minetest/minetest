@@ -3753,7 +3753,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	verifySelectedItem();
 
 	// If craftresult is not empty and nothing else is selected,
-	// move it somewhere or select it now
+	// try to move it somewhere or select it now
 	if (!m_selected_item || m_shift_move_after_craft) {
 		for (const GUIInventoryList *e : m_inventorylists) {
 			if (e->getListname() != "craftpreview")
@@ -3778,40 +3778,41 @@ void GUIFormSpecMenu::updateSelectedItem()
 			s.i = 0;
 			s.slotsize = e->getSlotSize();
 
-			if (!m_shift_move_after_craft) {
+			if (m_shift_move_after_craft) {
+				// Try to shift-move the crafted item to the next list in the ring after the "craft" list.
+				// We don't look for the "craftresult" list because it's a hidden list,
+				// and shouldn't be part of the formspec, thus it won't be in the list ring.
+				do {
+					s16 r = getNextInventoryRing(s.inventoryloc, "craft");
+					if (r < 0) // Not found
+						break;
+
+					const ListRingSpec &to_ring = m_inventory_rings[r];
+					Inventory *inv_to = m_invmgr->getInventory(to_ring.inventoryloc);
+					if (!inv_to)
+						break;
+					InventoryList *list_to = inv_to->getList(to_ring.listname);
+					if (!list_to)
+						break;
+
+					IMoveAction *a = new IMoveAction();
+					a->count = item.count;
+					a->from_inv = s.inventoryloc;
+					a->from_list = s.listname;
+					a->from_i = s.i;
+					a->to_inv = to_ring.inventoryloc;
+					a->to_list = to_ring.listname;
+					a->move_somewhere = true;
+					m_invmgr->inventoryAction(a);
+				} while (0);
+
+				m_shift_move_after_craft = false;
+
+			} else {
 				// Grab selected item from the crafting result list
 				m_selected_item = new GUIInventoryList::ItemSpec(s);
 				m_selected_amount = item.count;
 				m_selected_dragging = false;
-				break;
-			}
-
-			// Try to shift-move the crafted item somewhere,
-			// but not back into the crafting grid
-			for (u32 i = 0; i < m_inventory_rings.size(); i++) {
-				const ListRingSpec &lr = m_inventory_rings[i];
-
-				if (lr.listname == "craft")
-					continue;
-				Inventory *inv_to = m_invmgr->getInventory(lr.inventoryloc);
-				if (!inv_to)
-					continue;
-				InventoryList *list_to = inv_to->getList(lr.listname);
-				if (!list_to)
-					continue;
-
-				IMoveAction *a = new IMoveAction();
-				a->count = item.count;
-				a->from_inv = s.inventoryloc;
-				a->from_list = s.listname;
-				a->from_i = s.i;
-				a->to_inv = lr.inventoryloc;
-				a->to_list = lr.listname;
-				a->move_somewhere = true;
-				m_invmgr->inventoryAction(a);
-
-				m_shift_move_after_craft = false;
-				break;
 			}
 			break;
 		}
@@ -3859,16 +3860,17 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	return ItemStack();
 }
 
-s16 GUIFormSpecMenu::getNextInventoryRing(const GUIInventoryList::ItemSpec &from)
+s16 GUIFormSpecMenu::getNextInventoryRing(
+		const InventoryLocation &inventoryloc, const std::string &listname)
 {
 	u16 rings = m_inventory_rings.size();
-	if (rings <= 1)
+	if (rings < 2)
 		return -1;
 	// Look for the source ring
 	s16 index = -1;
 	for (u16 i = 0; i < rings; i++) {
 		ListRingSpec &lr = m_inventory_rings[i];
-		if (lr.inventoryloc == from.inventoryloc && lr.listname == from.listname) {
+		if (lr.inventoryloc == inventoryloc && lr.listname == listname) {
 			// Set the index to the next ring
 			index = (i + 1) % rings;
 			break;
@@ -4361,7 +4363,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					move_amount = 0;
 
 					// Try to find somewhere to move the items to
-					s16 r = getNextInventoryRing(s);
+					s16 r = getNextInventoryRing(s.inventoryloc, s.listname);
 					if (r < 0) // Not found
 						break;
 
@@ -4723,7 +4725,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		} else if (shift_move_amount > 0) {
 			// Try to shift-move the item
 			do {
-				s16 r = getNextInventoryRing(s);
+				s16 r = getNextInventoryRing(s.inventoryloc, s.listname);
 				if (r < 0) // Not found
 					break;
 
