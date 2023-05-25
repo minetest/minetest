@@ -4479,10 +4479,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					move_amount = m_selected_amount;
 				}
 
-				// Cleanup
-				if (m_left_drag_stacks.size() > 0) {
-					m_left_drag_stacks.clear();
-				}
+				m_left_drag_stacks.clear();
 			}
 			break;
 		}
@@ -4544,6 +4541,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Currently only left-double-click should trigger this
 			if (!s.isValid() || event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
 				break;
+
+			// Abort left-dragging
+			m_left_dragging = false;
+			m_client->inhibit_inventory_revert = false;
+			m_left_drag_stacks.clear();
 
 			// Both the selected item and the hovered item need to be checked
 			// because we don't know exactly when the double-click happened
@@ -4701,9 +4703,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				// Check how many items can be moved
 				pickup_amount = stack_from.count = MYMIN(pickup_amount, stack_from.count);
 				ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
-				if (!leftover.empty()) {
-					pickup_amount -= leftover.count;
-				}
+				pickup_amount -= leftover.count;
 			} else {
 				pickup_amount = 0;
 			}
