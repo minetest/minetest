@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-04-13 15:47+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"PO-Revision-Date: 2023-05-26 16:49+0000\n"
+"Last-Translator: nyommer <jishnu.ifeoluwa@fullangle.org>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -282,11 +282,11 @@ msgid "Downloading..."
 msgstr "Letöltés…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Hiba a telepítésben \"$1\":$2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
 msgstr "$1 letöltése nem sikerült"
 
@@ -822,9 +822,8 @@ msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Nem található érvényes mod, modcsomag vagy játék"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "$1 mod telepítése meghiúsult"
+msgstr "Nem lehet telepíteni $1 et $2 ként"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -846,7 +845,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Névjegy"
+msgstr "ról/ről"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -1684,9 +1683,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Nagyítás letiltva (szerver, vagy mod által)"
+msgstr "A chat letiltva (szerver, vagy mod által)"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2000,12 +1998,16 @@ msgstr "%s hiányzik:"
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Telepítse és engedélyezze a szükséges modokat, vagy tiltsa le a hibákat "
+"okozó modokat."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Megjegyzés: ezt egy függőségi ciklus okozhatja, ebben az esetben próbálja "
+"meg frissíteni a modokat."
 
 #: src/content/mod_configuration.cpp
 msgid "Some mods have unsatisfied dependencies:"
@@ -2361,7 +2363,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-s zaj, amely meghatározza a tömlöcök számát egy térképdarabkánként."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2381,7 +2382,6 @@ msgstr ""
 "-    topbottom: osztott képernyő fent/lent.\n"
 "-    sidebyside: osztott képernyő kétoldalt.\n"
 "-    crossview: bandzsítva nézendő 3d\n"
-"-    pageflip: quadbuffer alapú 3d.\n"
 "Ne feledje, hogy az interlaced üzemmód, igényli az árnyalók használatát."
 
 #: src/settings_translation_file.cpp
@@ -2654,7 +2654,7 @@ msgstr "Max blokk küldési távolság"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Virágzik"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
