@@ -108,11 +108,11 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
+#    Enable mouse wheel (scroll) for item selection in hotbar.
+enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
+
 #    Invert mouse wheel (scroll) direction for item selection in hotbar.
 invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
-
-#    Disable mouse wheel (scroll) for item selection in hotbar.
-disable_hotbar_mouse_wheel (Hotbar: Disable mouse wheel for selection) bool false
 
 [*Touchscreen]
 

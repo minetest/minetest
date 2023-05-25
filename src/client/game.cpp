@@ -1003,9 +1003,10 @@ private:
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
-	bool m_invert_mouse = false;
-	bool m_invert_hotbar_mouse_wheel = false;
-	bool m_disable_hotbar_mouse_wheel = false;
+	bool m_invert_mouse;
+	bool m_enable_hotbar_mouse_wheel;
+	bool m_invert_hotbar_mouse_wheel;
+
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
 	bool m_game_focused;
@@ -1151,9 +1152,6 @@ bool Game::startup(bool *kill,
 
 	m_game_ui->initFlags();
 
-	m_invert_mouse = g_settings->getBool("invert_mouse");
-	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
-	m_disable_hotbar_mouse_wheel = g_settings->getBool("disable_hotbar_mouse_wheel");
 	m_first_loop_after_window_activation = true;
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -2143,10 +2141,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 		    player->hud_hotbar_itemcount - 1);
 
 	s32 wheel = input->getMouseWheel();
+	if (!m_enable_hotbar_mouse_wheel)
+		wheel = 0;
 	if (m_invert_hotbar_mouse_wheel)
 		wheel *= -1;
-	if (m_disable_hotbar_mouse_wheel)
-		wheel = 0;
 
 	s32 dir = wheel;
 
@@ -4307,6 +4305,10 @@ void Game::readSettings()
 	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+
+	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_enable_hotbar_mouse_wheel = g_settings->getBool("enable_hotbar_mouse_wheel");
+	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
 }
