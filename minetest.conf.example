@@ -2681,7 +2681,7 @@
 
 #    Whether node texture animations should be desynchronized per mapblock.
 #    type: bool
-# desynchronize_mapblock_texture_animation = true
+# desynchronize_mapblock_texture_animation = false
 
 #    Enables caching of facedir rotated meshes.
 #    type: bool
