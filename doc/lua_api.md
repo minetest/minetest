@@ -7657,7 +7657,7 @@ child will follow movement and rotation of that bone.
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
-    * `nil`: Disables override, defaulting to sunlight based on day-night cycle
+    * Passing no arguments disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
   set animation for player model in third person view.
