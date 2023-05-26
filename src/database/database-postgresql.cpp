@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-postgresql.h"
 
 #ifdef _WIN32
-        #include <windows.h>
-        #include <winsock2.h>
+	#include <windows.h>
+	#include <winsock2.h>
 #else
 #include <netinet/in.h>
 #endif

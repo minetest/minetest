@@ -233,8 +233,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
-#define PASSWORD_SIZE 28       // Maximum password length. Allows for
-                               // base64-encoded SHA-1 (27+\0).
+#define PASSWORD_SIZE 28    // Maximum password length. Allows for
+                            // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
 #define FORMSPEC_API_VERSION 6
