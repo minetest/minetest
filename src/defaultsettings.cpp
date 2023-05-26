@@ -207,7 +207,7 @@ void set_default_settings()
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "");
 	settings->setDefault("cinematic", "false");
-	settings->setDefault("camera_smoothing", "0");
+	settings->setDefault("camera_smoothing", "0.0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("view_bobbing_amount", "1.0");
@@ -231,7 +231,7 @@ void set_default_settings()
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
-	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
+	settings->setDefault("desynchronize_mapblock_texture_animation", "false");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");

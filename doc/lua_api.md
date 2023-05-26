@@ -7657,7 +7657,7 @@ child will follow movement and rotation of that bone.
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific
       amount.
-    * `nil`: Disables override, defaulting to sunlight based on day-night cycle
+    * Passing no arguments disables override, defaulting to sunlight based on day-night cycle
 * `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
 * `set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)`:
   set animation for player model in third person view.
@@ -7676,8 +7676,9 @@ child will follow movement and rotation of that bone.
       the client already has the block)
     * Resource intensive - use sparsely
 * `set_lighting(light_definition)`: sets lighting for the player
+    * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
-      * `saturation` sets the saturation (vividness).
+      * `saturation` sets the saturation (vividness; default: `1.0`).
           values > 1 increase the saturation
           values in [0,1) decrease the saturation
             * This value has no effect on clients who have the "Tone Mapping" shader disabled.
@@ -7686,12 +7687,12 @@ child will follow movement and rotation of that bone.
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
       * `exposure` is a table that controls automatic exposure.
         The basic exposure factor equation is `e = 2^exposure_correction / clamp(luminance, 2^luminance_min, 2^luminance_max)`
-        * `luminance_min` set the lower luminance boundary to use in the calculation
-        * `luminance_max` set the upper luminance boundary to use in the calculation
-        * `exposure_correction` correct observed exposure by the given EV value
-        * `speed_dark_bright` set the speed of adapting to bright light
-        * `speed_bright_dark` set the speed of adapting to dark scene
-        * `center_weight_power` set the power factor for center-weighted luminance measurement
+        * `luminance_min` set the lower luminance boundary to use in the calculation (default: `-3.0`)
+        * `luminance_max` set the upper luminance boundary to use in the calculation (default: `-3.0`)
+        * `exposure_correction` correct observed exposure by the given EV value (default: `0.0`)
+        * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
+        * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
+        * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
@@ -7898,6 +7899,12 @@ It can be created via `Settings(filename)`.
     * Also, see documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
+* `has(key)`:
+    * Returns a boolean indicating whether `key` exists.
+    * Note that for the main settings object (`minetest.settings`), `get(key)`
+      might return a value even if `has(key)` returns `false`. That's because
+      `get` can fall back to the so-called parent of the `Settings` object, i.e.
+      the default values.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
