@@ -689,7 +689,7 @@ void MapgenBasic::generateBiomes()
 						biome_y_min = biome_transitions[++cur_biome_depth];
 					}
 
-					/*if (x == node_min.X && z == node_min.Z) */
+					/*if (x == node_min.X && z == node_min.Z)
 						printf("Map: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), biome_y_min);*/
 				}
 
