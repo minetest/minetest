@@ -562,12 +562,9 @@ static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color);
 
 // Adjust the hue, saturation, and lightness of destination. Like
-// "Hue-Saturation" in GIMP, but with 0 being the mid-point.
-// If colorize is true then all pixels will be converted to the specified hue,
-// but retain their saturation and lightness, like "Colorize" in GIMP.
-// Hue should be from -180 to +180, or from 0 to 360.
-// Lightness is from - 100 to + 100.
-// Saturation goes down to - 100 (fully desaturated) but can go above 100
+// "Hue-Saturation" in GIMP.
+// If colorize is true then the image will be converted to a grayscale
+// image as though seen through a colored glass, like "Colorize" in GIMP.
 static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		s32 hue, s32 saturation, s32 lightness, bool colorize);
 
@@ -1971,12 +1968,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			Adjust the hue, saturation, and lightness of the base image. Like
 			"Hue-Saturation" in GIMP, but with 0 as the mid-point.
-			If colorize is true then all pixels will be converted to the
-			specified hue, but retain their saturation and lightness, like
-			"Colorize" in GIMP.
 			Hue should be from -180 to +180, though 0 to 360 is also supported.
 			Saturation and lightness are optional, with lightness from -100 to
 			+100, and sauration from -100 to +100-or-higher.
+
+			If colorize is true then saturation is from 0 to 100, and the image
+			will be converted to a grayscale image as though seen through a
+			colored glass, like	"Colorize" in GIMP.
 		*/
 		else if (str_starts_with(part_of_name, "[hsl:") || 
 		         str_starts_with(part_of_name, "[colorizehsl:")) {
@@ -1988,13 +1986,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return false;
 			}
 
+			bool colorize = str_starts_with(part_of_name, "[colorizehsl:");
+
+			// saturation range is 0 to 100 when colorize is true
+			s32 defaultSaturation = colorize ? 50 : 0;
+
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			s32 hue = mystoi(sf.next(":"), -180, 360); 
-			s32 saturation = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 1000);
+			s32 saturation = sf.at_end() ? defaultSaturation : mystoi(sf.next(":"), -100, 1000);
 			s32 lightness  = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
 
-			bool colorize = str_starts_with(part_of_name, "[colorizehsl:");
 
 			apply_hue_saturation(baseimg, v2u32(0, 0), baseimg->getDimension(),
 				hue, saturation, lightness, colorize);
@@ -2258,13 +2260,15 @@ static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 /*
 	Adjust the hue, saturation, and lightness of destination. Like
 	"Hue-Saturation" in GIMP, but with 0 as the mid-point.
-	If colorize is true then all pixels will be converted to the specified hue,
-	but retain their saturation and lightness, like "Colorize" in GIMP.
 	Hue should be from -180 to +180, or from 0 to 360.
 	Saturation and Lightness are percentages.
 	Lightness is from -100 to +100.
 	Saturation goes down to -100 (fully desaturated) but can go above 100,
 	allowing for even muted colors to become saturated.
+
+	If colorize is true then saturation is from 0 to 100, and destination will
+	be converted to a grayscale image as seen through a colored glass, like
+	"Colorize" in GIMP.
 */
 static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 	s32 hue, s32 saturation, s32 lightness, bool colorize)
@@ -2280,32 +2284,41 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 			colorf = video::SColorf(dst->getPixel(x, y));
 			hsl.fromRGB(colorf);
 
-			if (colorize)
+			if (colorize) {
+				if (norm_l < 0) {
+					hsl.Luminance = hsl.Luminance * (norm_l + 1.0);
+				} else {
+					hsl.Luminance = hsl.Luminance * (1.0 - norm_l) + (100 * norm_l);
+				}
 				hsl.Hue = 0;
+				hsl.Saturation = core::clamp((f32)saturation, 0.0f, 100.0f);
+
+			} else {
+
+				if (norm_l < 0) {
+					hsl.Luminance *= norm_l + 1.0f;
+				} else{
+					hsl.Luminance = hsl.Luminance + norm_l * (100.0f - hsl.Luminance);
+				}
+
+				// Adjusting saturation in the same manner as lightness resulted in
+				// muted colours being affected too much and bright colours not
+				// affected enough, so I'm borrowing a leaf out of gimp's book and
+				// using a different scaling approach for saturation.
+				// https://github.com/GNOME/gimp/blob/6cc1e035f1822bf5198e7e99a53f7fa6e281396a/app/operations/gimpoperationhuesaturation.c#L139-L145=
+				// This difference is why values over 100% are not necessary for
+				// lightness but are very useful with saturation. An alternative UI
+				// approach would be to have an upper saturation limit of 100, but
+				// multiply positive values by ~3 to make it a more useful positive
+				// range scale.
+				hsl.Saturation *= norm_s + 1.0f;
+				hsl.Saturation = core::clamp(hsl.Saturation, 0.0f, 100.0f);
+			}
 
 			// Apply the specified HSL adjustments
 			hsl.Hue = fmod(hsl.Hue + hue, 360);
 			if (hsl.Hue < 0)
 				hsl.Hue += 360;
-
-			if (norm_l < 0) {
-				hsl.Luminance *= norm_l + 1.0f;
-			} else{
-				hsl.Luminance = hsl.Luminance + norm_l * (100.0f - hsl.Luminance);
-			}
-
-			// Adjusting saturation in the same manner as lightness resulted in
-			// muted colours being affected too much and bright colours not
-			// affected enough, so I'm borrowing a leaf out of gimp's book and
-			// using a different scaling approach for saturation.
-			// https://github.com/GNOME/gimp/blob/6cc1e035f1822bf5198e7e99a53f7fa6e281396a/app/operations/gimpoperationhuesaturation.c#L139-L145=
-			// This difference is why values over 100% are not necessary for
-			// lightness but are very useful with saturation. An alternative UI
-			// approach would be to have an upper saturation limit of 100, but
-			// multiply positive values by ~3 to make it a more useful positive
-			// range scale.
-			hsl.Saturation *= norm_s + 1.0f;
-			hsl.Saturation = core::clamp(hsl.Saturation, 0.0f, 100.0f);
 
 			// Convert back to RGB
 			hsl.toRGB(colorf);
