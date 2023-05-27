@@ -636,8 +636,7 @@ void MapgenBasic::generateBiomes()
 
 	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
-	s16* biome_transitions = biomegen->getBiomeTransitions();
-	int cur_biome_depth;
+	s16 *biome_transitions = biomegen->getBiomeTransitions();
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
@@ -649,7 +648,7 @@ void MapgenBasic::generateBiomes()
 		u16 depth_riverbed = 0;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
 
-		cur_biome_depth = 0;
+		int cur_biome_depth = 0;
 		s16 biome_y_min = biome_transitions[cur_biome_depth];
 
 		// Check node at base of mapchunk above, either a node of a previously
@@ -686,12 +685,12 @@ void MapgenBasic::generateBiomes()
 
 					// Finding the height of the next biome
 					// On first iteration this may loop a couple times after than it should just run once
-					while (node_max.Y < biome_y_min) {
+					while (y < biome_y_min) {
 						biome_y_min = biome_transitions[++cur_biome_depth];
 					}
 
-					/* if (x == node_min.X && z == node_min.Z) */
-					/* 	printf("Map: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), biome_y_min); */
+					/*if (x == node_min.X && z == node_min.Z) */
+						printf("Map: check @ %i -> %s -> again at %i\n", y, biome->name.c_str(), biome_y_min);*/
 				}
 
 				// Add biome to biomemap at first stone surface detected
