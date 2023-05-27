@@ -2286,9 +2286,9 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 
 			if (colorize) {
 				if (norm_l < 0) {
-					hsl.Luminance = hsl.Luminance * (norm_l + 1.0);
+					hsl.Luminance *= norm_l + 1.0f;
 				} else {
-					hsl.Luminance = hsl.Luminance * (1.0 - norm_l) + (100 * norm_l);
+					hsl.Luminance = hsl.Luminance * (1.0f - norm_l) + (100 * norm_l);
 				}
 				hsl.Hue = 0;
 				hsl.Saturation = core::clamp((f32)saturation, 0.0f, 100.0f);
