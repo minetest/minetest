@@ -1037,7 +1037,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("doubletap_joysticks",
+	g_settings->registerChangedCallback("enable_joysticks",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
@@ -1053,11 +1053,21 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -1098,11 +1108,15 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_joysticks",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_particles",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_fog",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
@@ -1110,11 +1124,21 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
 	if (m_rendering_engine)
 		m_rendering_engine->finalize();
