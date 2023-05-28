@@ -3490,12 +3490,11 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		}
 	}
 
-	if ((wasKeyPressed(KeyType::PLACE) ||
-			runData.repeat_place_timer >= m_repeat_place_time) &&
+    if ((wasKeyPressed(KeyType::PLACE) ||
+			(runData.repeat_place_timer >= (g_settings->getBool("fast_place") ? 0.001 : m_repeat_place_time))) &&
 			client->checkPrivilege("interact")) {
 		runData.repeat_place_timer = 0;
-		infostream << "Place button pressed while looking at ground" << std::endl;
-
+		infostream << "Place button pressed while looking at ground" << std::endl; 
 		// Placing animation (always shown for feedback)
 		camera->setDigging(1);
 
