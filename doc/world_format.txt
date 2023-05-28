@@ -1,3 +1,0 @@
-Moved to world_format.md
-
-URL: https://github.com/minetest/minetest/blob/master/doc/world_format.md
