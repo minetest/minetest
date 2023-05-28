@@ -80,6 +80,7 @@ enum
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
 	GUI_ID_CB_AUTOJUMP,
+	GUI_ID_CD_FASTPLACE,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -194,6 +195,18 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 		offset += v2s32(0, 25);
 	}
+	
+	{	s32 option_x = offset.X;
+		s32 option_y = offset.Y + 5 * s;
+		u32 option_w = 280;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30 * s);
+			rect += topleft + v2s32(option_x, option_y);
+			Environment->addCheckBox(g_settings->getBool("fast_place"), rect, this,
+					GUI_ID_CD_FASTPLACE, wstrgettext("Fast placing").c_str());
+		}
+		offset += v2s32(0, 25);
+	}
 
 	{
 		core::rect<s32> rect(0, 0, 100 * s, 30 * s);
@@ -249,6 +262,12 @@ bool GUIKeyChangeMenu::acceptInput()
 		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CD_FASTPLACE);
+		if(e && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("fast_place", ((gui::IGUICheckBox*)e)->isChecked());
+    }
+
 
 	clearKeyCache();
 
