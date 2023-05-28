@@ -2278,22 +2278,28 @@ static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 	f32 norm_s = core::clamp(saturation, -100, 1000) / 100.0f;
 	f32 norm_l = core::clamp(lightness,  -100, 100) / 100.0f;
 
+	if (colorize) {
+		hsl.Saturation = core::clamp((f32)saturation, 0.0f, 100.0f);
+	}
+
 	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
 		for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
-			// convert the RGB to HSL
-			colorf = video::SColorf(dst->getPixel(x, y));
-			hsl.fromRGB(colorf);
 
 			if (colorize) {
+				f32 lum = dst->getPixel(x, y).getLuminance() / 255.0f;
+
 				if (norm_l < 0) {
-					hsl.Luminance *= norm_l + 1.0f;
+					lum *= norm_l + 1.0f;
 				} else {
-					hsl.Luminance = hsl.Luminance * (1.0f - norm_l) + (100 * norm_l);
+					lum = lum * (1.0f - norm_l) + norm_l;
 				}
 				hsl.Hue = 0;
-				hsl.Saturation = core::clamp((f32)saturation, 0.0f, 100.0f);
+				hsl.Luminance = lum * 100;
 
 			} else {
+				// convert the RGB to HSL
+				colorf = video::SColorf(dst->getPixel(x, y));
+				hsl.fromRGB(colorf);
 
 				if (norm_l < 0) {
 					hsl.Luminance *= norm_l + 1.0f;
