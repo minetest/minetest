@@ -1014,7 +1014,7 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 bytes
+// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool camera_inverted)
 {
 	v3f pf           = myplayer->getPosition() * 100;
@@ -1078,7 +1078,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 	pkt.putLongString(tmp_os.str());
 
-	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_FIRST);
+	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
 	Send(&pkt);
 }

@@ -478,7 +478,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	f32 fov = 0;
 	u8 wanted_range = 0;
-	u8 bits; // bits instead of bool so it is extensible later
+	u8 bits = 0; // bits instead of bool so it is extensible later
 
 	*pkt >> keyPressed;
 	*pkt >> f32fov;
@@ -503,7 +503,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
-	playersao->setCameraInverted(bits && 0x01);
+	playersao->setCameraInverted(bits & 0x01);
 
 	player->control.unpackKeysPressed(keyPressed);
 
