@@ -420,10 +420,27 @@ minetest.register_tool("basetools:dagger_steel", {
 	}
 })
 
--- Test tool uses and punch_attack_uses
+-- Test tool uses, punch_attack_uses, and wear bar coloring
 local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
+local wear_colors = { nil, nil, nil, "#5865f2", "slateblue", {blend=true, default="#ff00ff", [0.0]="red", [0.5]="yellow", [1.0]="blue"}, {
+                                                                                                                                               {
+                                                                                                                                                   color="#ff00ff",
+                                                                                                                                                   min_durability=0.2, -- minimum durability is inclusive
+                                                                                                                                                   max_durability=0.3  -- maximum durability is exclusive
+                                                                                                                                               },
+                                                                                                                                               {
+                                                                                                                                                   color="#c0ffee",
+                                                                                                                                                   min_durability=0.45,
+                                                                                                                                                   max_durability=0.6
+                                                                                                                                               },
+                                                                                                                                               default="#ffff00",      -- color to use if no other ranges match the durability
+                                                                                                                                               blend=false
+                                                                                                                                           }, nil, nil, nil }
+local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Range from thistle to blue to red", "Random blocks", nil, nil, nil }
 for i=1, #uses do
 	local u = uses[i]
+	local wc = wear_colors[i]
+	local wcd = wear_color_desc[i] or "Default"
 	local ustring
 	if i == 1 then
 		ustring = u.."-Use"
@@ -433,7 +450,8 @@ for i=1, #uses do
 	local color = string.format("#FF00%02X", math.floor(((i-1)/#uses) * 255))
 	minetest.register_tool("basetools:pick_uses_"..string.format("%05d", u), {
 		description = ustring.." Pickaxe".."\n"..
-			"Digs cracky=3",
+			"Digs cracky=3".."\n"..
+			"Wear bar: "..wcd,
 		inventory_image = "basetools_usespick.png^[colorize:"..color..":127",
 		tool_capabilities = {
 			max_drop_level=0,
@@ -441,6 +459,7 @@ for i=1, #uses do
 				cracky={times={[3]=0.1, [2]=0.2, [1]=0.3}, uses=u, maxlevel=0}
 			},
 		},
+		wear_color = wc
 	})
 
 	minetest.register_tool("basetools:sword_uses_"..string.format("%05d", u), {
@@ -453,3 +472,61 @@ for i=1, #uses do
 		},
 	})
 end
+
+minetest.register_chatcommand("wear_color", {
+	params = "[idx]",
+	description = "Set wear bar color override",
+	func = function(player_name, param)
+		local player = minetest.get_player_by_name(player_name);
+		if not player then return end
+
+		local wear_color = nil
+		local wear_desc = "Reset override"
+
+		if param ~= "" then
+		    wear_color = wear_colors[tonumber(param)]
+		    wear_desc = "Set override: "..(wear_color_desc[tonumber(param)] or "Default behavior")
+		end
+		local tool = player:get_wielded_item()
+		if tool:get_count() == 0 then
+			return false, "Tool not found"
+		end
+		tool:get_meta():set_wear_bar_params(wear_color)
+		player:set_wielded_item(tool)
+		return true, wear_desc
+	end
+})
+
+-- Punch handler to set random color with "color" argument in item metadata
+local wear_on_use = function(itemstack, user, pointed_thing)
+	local meta = itemstack:get_meta()
+	local color = math.random(0x0, 0xFFFFFF)
+	local colorstr = string.format("#%06x", color)
+	meta:set_wear_bar_params(colorstr)
+	minetest.log("action", "[basetool] Wear bar color of "..itemstack:get_name().." changed to "..colorstr)
+	return itemstack
+end
+-- Place handler to clear item metadata color
+local wear_on_place = function(itemstack, user, pointed_thing)
+	local meta = itemstack:get_meta()
+	meta:set_wear_bar_params(nil)
+	return itemstack
+end
+
+minetest.register_tool("basetools:random_wear_bar", {
+	description = "Wear Bar Color Test\n" ..
+			"Punch: Set random color\n" ..
+			"Place: Clear color",
+	-- Base texture: A grayscale square (can be colorized)
+	inventory_image = "basetools_usespick.png^[colorize:#FFFFFF:127",
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			cracky={times={[3]=0.1, [2]=0.2, [1]=0.3}, uses=1000, maxlevel=0}
+		},
+	},
+
+	on_use = wear_on_use,
+	on_place = wear_on_place,
+	on_secondary_use = wear_on_place,
+})

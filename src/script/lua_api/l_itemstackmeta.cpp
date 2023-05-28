@@ -58,6 +58,25 @@ int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
 	return 0;
 }
 
+int ItemStackMetaRef::l_set_wear_bar_params(lua_State *L)
+{
+	ItemStackMetaRef *metaref = checkObject<ItemStackMetaRef>(L, 1);
+	if (lua_isnoneornil(L, 2)) {
+		metaref->clearWearBarParams();
+	} else if (lua_istable(L, 2)) {
+		WearBarParams params = read_wear_bar_params(L, 2);
+		metaref->setWearBarParams(params);
+	} else if (lua_isstring(L, 2)) {
+		WearBarParams params;
+		parseColorString(luaL_checkstring(L, 2), params.defaultColor, false);
+		metaref->setWearBarParams(params);
+	} else {
+		luaL_typerror(L, 2, "table, ColorString, or nil");
+	}
+
+	return 0;
+}
+
 ItemStackMetaRef::ItemStackMetaRef(LuaItemStack *istack): istack(istack)
 {
 	istack->grab();
@@ -102,5 +121,6 @@ const luaL_Reg ItemStackMetaRef::methods[] = {
 	luamethod(MetaDataRef, from_table),
 	luamethod(MetaDataRef, equals),
 	luamethod(ItemStackMetaRef, set_tool_capabilities),
+	luamethod(ItemStackMetaRef, set_wear_bar_params),
 	{0,0}
 };

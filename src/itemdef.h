@@ -33,6 +33,7 @@ class IGameDef;
 class Client;
 struct ToolCapabilities;
 struct PointedThing;
+struct WearBarParams;
 #ifndef SERVER
 #include "client/tile.h"
 struct ItemMesh;
@@ -102,6 +103,8 @@ struct ItemDefinition
 
 	// They may be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
+	// May be NULL. If non-NULL, deleted by destructor
+	WearBarParams *wear_bar_params;
 
 	ItemGroupList groups;
 	SoundSpec sound_place;

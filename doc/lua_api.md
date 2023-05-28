@@ -2387,6 +2387,75 @@ Table of resulting tool uses:
 
 
 
+Wear Bar Color
+==============
+
+'Wear Bar' is a property of items that defines the coloring
+of the bar that appears under damaged tools.
+If it is absent, the old behavior of green, yellow, red is
+used.
+
+Wear bar colors definition
+--------------------------
+
+### Syntax
+
+For non-blending mode:
+```lua
+{
+    {
+        color="#ff00ff",
+        min_durability=0.2, -- minimum durability is inclusive
+        max_durability=0.3  -- maximum durability is exclusive
+    },
+    {
+        color="#c0ffee",
+        min_durability=0.45,
+        max_durability=0.6
+    },
+    default="#ffff00",      -- color to use if no other ranges match the durability
+    blend=false
+}
+```
+
+For blending mode:
+```lua
+{
+    [0.2] = "#ff00ff",      -- specify color for a specific durability percent, and blend between them
+    [0.45] = "#c0ffee",
+    default="#ffff00",      -- used for 0.0% and 100.0% durability if no color explicitly specified
+    blend=true
+}
+```
+
+### Blend Mode `blend`
+
+When true, blends smoothly between each defined color point.
+When false, no interpolation is used, and instead colors are defined for ranges of durabilities.
+`blend` is optional and defaults false.
+
+### Default Color `default`
+
+When `blend` is false, the color to use if the percentage of remaining durability does not match any values.
+When `blend` is true, the color to use on the 'outside' of the range of colors, if no such color is defined
+
+### Color values
+
+In blending mode, specified as `float` keys assigned to a `ColorString` values.
+In non-blending mode, specified as tables containing the following keys:
+* `min_durability`: `float`, minimum durability to show color at (inclusive)
+* `max_durability`: `float`, maximum durability to show color at (exclusive)
+* `color`:          `ColorString`, color to use for bar in the specified range
+
+### Shortcut usage
+
+Wear bar color can also be specified as a single `ColorString` instead of a table.
+In this case, it is automatically converted to a table, where there are no color points,
+`blend` is false, and `default` is the specified `ColorString`.
+
+
+
+
 Entity damage mechanism
 =======================
 
@@ -7314,6 +7383,10 @@ Can be obtained via `item:get_meta()`.
     * Overrides the item's tool capabilities
     * A nil value will clear the override data and restore the original
       behavior.
+* `set_wear_bar_params([wear_bar_params])`
+    * Overrides the item's wear bar parameters (see "Wear Bar Color" section)
+    * A nil value will clear the override data and restore the original
+      behavior.
 
 `MetaDataRef`
 -------------
@@ -8814,13 +8887,29 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- fallback behavior.
     },
 
-    node_placement_prediction = nil,
-    -- If nil and item is node, prediction is made automatically.
-    -- If nil and item is not a node, no prediction is made.
-    -- If "" and item is anything, no prediction is made.
-    -- Otherwise should be name of node which the client immediately places
-    -- on ground when the player places the item. Server will always update
-    -- with actual result shortly.
+    -- See "Wear Bar Color" section for an example including explanation
+        wear_color = {
+            {
+                color="#ff00ff",
+                min_durability=0.2,
+                max_durability=0.3
+            },
+            {
+                color="#c0ffee",
+                min_durability=0.45,
+                max_durability=0.6
+            },
+            default="#ffff00",
+            blend=false
+        }
+
+        node_placement_prediction = nil,
+        -- If nil and item is node, prediction is made automatically.
+        -- If nil and item is not a node, no prediction is made.
+        -- If "" and item is anything, no prediction is made.
+        -- Otherwise should be name of node which the client immediately places
+        -- on ground when the player places the item. Server will always update
+        -- with actual result shortly.
 
     node_dig_prediction = "air",
     -- if "", no prediction is made.

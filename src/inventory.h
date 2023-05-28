@@ -131,6 +131,21 @@ struct ItemStack
 		return metadata.getToolCapabilities(*item_cap); // Check for override
 	}
 
+	// Get wear bar parameters, returning true if they exist
+	bool getWearBarParams(
+			const IItemDefManager *itemdef,
+			WearBarParams &params
+			) const
+	{
+		WearBarParams *params_ = itemdef->get(name).wear_bar_params;
+
+		if (params_ == NULL)
+			return metadata.getWearBarParamOverride(params);
+
+		params = metadata.getWearBarParams(*params_);
+		return true;
+	}
+
 	// Wear out (only tools)
 	// Returns true if the item is (was) a tool
 	bool addWear(s32 amount, const IItemDefManager *itemdef)

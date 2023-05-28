@@ -94,6 +94,14 @@ void read_item_definition(lua_State* L, int index,
 		def.tool_capabilities = new ToolCapabilities(
 				read_tool_capabilities(L, -1));
 	}
+	lua_getfield(L, index, "wear_color");
+	if (lua_istable(L, -1)) {
+		def.wear_bar_params = new WearBarParams(
+				read_wear_bar_params(L, -1));
+	} else if (lua_isstring(L, -1)) {
+		def.wear_bar_params = new WearBarParams();
+		parseColorString(luaL_checkstring(L, -1), def.wear_bar_params->defaultColor, false);
+	}
 
 	// If name is "" (hand), ensure there are ToolCapabilities
 	// because it will be looked up there whenever any other item has
@@ -212,6 +220,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	if (i.tool_capabilities) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
+	}
+	if (i.wear_bar_params) {
+		push_wear_bar_params(L, *i.wear_bar_params);
+		lua_setfield(L, -2, "wear_color");
 	}
 	push_groups(L, i.groups);
 	lua_setfield(L, -2, "groups");
@@ -1455,6 +1467,34 @@ void push_tool_capabilities(lua_State *L,
 }
 
 /******************************************************************************/
+void push_wear_bar_params(lua_State *L,
+		const WearBarParams &params)
+{
+		lua_newtable(L);
+		setstringfield(L, -1, "default", encodeHexColorString(params.defaultColor));
+		if (params.blend) {
+			// insert into table using minPercent as key, and the ColorString as the value
+			for (const WearBarParam &param : params.params)
+				setstringfield(L, -1, std::to_string(param.minPercent).c_str(), encodeHexColorString(param.color));
+		} else {
+			// For each value
+			int i = 0;
+			for (const WearBarParam &param : params.params) {
+				i++;
+				// Create value table
+				lua_newtable(L);
+				// Set simple parameters
+				setfloatfield(L, -1, "min_durability", param.minPercent);
+				setfloatfield(L, -1, "max_durability", param.maxPercent);
+				setstringfield(L, -1, "color", encodeHexColorString(param.color));
+				// Insert value table
+				lua_setfield(L, -2, std::to_string(i).c_str());
+			}
+		}
+		setboolfield(L, -1, "blend", params.blend);
+}
+
+/******************************************************************************/
 void push_inventory_list(lua_State *L, const InventoryList &invlist)
 {
 	push_items(L, invlist.getItems());
@@ -1730,6 +1770,49 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 		}
 		lua_setfield(L, -2, "objects");
 	}
+}
+
+/******************************************************************************/
+WearBarParams read_wear_bar_params(
+		lua_State *L, int table)
+{
+	WearBarParams params;
+	std::basic_string<char> default_color_string;
+	if (getstringfield(L, table, "default", default_color_string))
+		parseColorString(default_color_string, params.defaultColor, false);
+	bool blend;
+	if (!getboolfield(L, table, "blend", blend))
+		blend = false;
+	params.blend = blend;
+
+	int table_values = lua_gettop(L);
+	lua_pushnil(L);
+	while(lua_next(L, table_values) != 0) {
+		// key at index -2 and value at index -1=
+		// values are stored in a flat table along with the default color,
+		// but values can be distinguished by them being a table
+		// (in blend mode, they can be distinguished by having a numerical key)
+		if (lua_istable(L, -1)) {
+			int value_table = lua_gettop(L);
+			WearBarParam param;
+			getfloatfield(L, value_table, "min_durability", param.minPercent);
+			getfloatfield(L, value_table, "max_durability", param.maxPercent);
+			std::basic_string<char> color_string;
+			if (getstringfield(L, value_table, "color", color_string))
+				parseColorString(color_string, param.color, false);
+			params.params.push_back(param);
+		} else if (blend && lua_isnumber(L, -2) && lua_isstring(L, -1)) {
+			WearBarParam param;
+			float point = luaL_checknumber(L, -2);
+			std::string color_string = luaL_checkstring(L, -1);
+			param.minPercent = param.maxPercent = point;
+			parseColorString(color_string, param.color, false);
+			params.params.push_back(param);
+		}
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return params;
 }
 
 /******************************************************************************/

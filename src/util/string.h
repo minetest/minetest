@@ -88,6 +88,7 @@ char *mystrtok_r(char *s, const char *sep, char **lasts) noexcept;
 u64 read_seed(const char *str);
 bool parseColorString(const std::string &value, video::SColor &color, bool quiet,
 		unsigned char default_alpha = 0xff);
+std::string encodeHexColorString(const video::SColor &color);
 
 
 /**

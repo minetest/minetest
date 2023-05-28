@@ -1179,17 +1179,68 @@ void drawItemStack(
 			(1 - wear) * progressrect.LowerRightCorner.X;
 
 		// Compute progressbar color
+		// old scheme:
 		//   wear = 0.0: green
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
-		video::SColor color(255, 255, 255, 255);
-		int wear_i = MYMIN(std::floor(wear * 600), 511);
-		wear_i = MYMIN(wear_i + 10, 511);
 
-		if (wear_i <= 255)
-			color.set(255, wear_i, 255, 0);
-		else
-			color.set(255, 255, 511 - wear_i, 0);
+		video::SColor color;
+		WearBarParams barParams;
+		if (item.getWearBarParams(client->idef(), barParams)) {
+			float durabilityPercent = 1.0 - wear;
+			color = barParams.defaultColor;
+			if (barParams.blend) {
+				const video::SColor *upperBoundColor = &barParams.defaultColor;
+				const video::SColor *lowerBoundColor = &barParams.defaultColor;
+				float upperBound = 2.0f;
+				float lowerBound = -1.0f;
+				for (const WearBarParam &param : barParams.params) {
+					if (param.minPercent <= durabilityPercent && param.minPercent > lowerBound) {
+						lowerBound = param.minPercent;
+						lowerBoundColor = &param.color;
+					}
+					if (durabilityPercent < param.minPercent && param.minPercent < upperBound) {
+						upperBound = param.minPercent;
+						upperBoundColor = &param.color;
+					}
+				}
+				if (upperBound == 2.0f && lowerBound == -1.0f) {
+					color = *upperBoundColor;
+				} else {
+					if (upperBound == 2.0f) {
+						upperBound = 1.0f;
+					} else if (lowerBound == -1.0f) {
+						lowerBound = 0.0f;
+					}
+					float progress = (durabilityPercent-lowerBound)/(upperBound-lowerBound); //from lower to upper
+					u32 alpha = (progress * upperBoundColor->getAlpha()) + ((1.0f - progress) * lowerBoundColor->getAlpha());
+					u32 lb_red = lowerBoundColor->getRed();
+					u32 ub_red = upperBoundColor->getRed();
+					u32 red = (progress * ub_red) + ((1.0f - progress) * lb_red);
+					color = video::SColor(
+							alpha, // A
+							red,     // R
+							(progress * upperBoundColor->getGreen()) + ((1.0f - progress) * lowerBoundColor->getGreen()), // G
+							(progress * upperBoundColor->getBlue()) + ((1.0f - progress) * lowerBoundColor->getBlue()));  // B
+				}
+			} else {
+				for (const WearBarParam &param : barParams.params) {
+					if (param.matches(durabilityPercent)) {
+						color = param.color;
+						break;
+					}
+				}
+			}
+		} else {
+			color = video::SColor(255, 255, 255, 255);
+			int wear_i = MYMIN(std::floor(wear * 600), 511);
+			wear_i = MYMIN(wear_i + 10, 511);
+
+			if (wear_i <= 255)
+				color.set(255, wear_i, 255, 0);
+			else
+				color.set(255, 255, 511 - wear_i, 0);
+		}
 
 		core::rect<s32> progressrect2 = progressrect;
 		progressrect2.LowerRightCorner.X = progressmid;

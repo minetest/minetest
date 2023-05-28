@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
+#include "util/hex.h"
 #include <json/json.h>
 
 void ToolGroupCap::toJson(Json::Value &object) const
@@ -179,6 +180,94 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 					damageGroups[dgiter.key().asString()] =
 						value.asInt();
 			}
+		}
+	}
+}
+
+void WearBarParam::fromJson(Json::Value &value)
+{
+	if (value["min_durability"].isNumeric())
+		minPercent = value["min_durability"].asFloat();
+
+	if (value["max_durability"].isNumeric())
+		maxPercent = value["max_durability"].asFloat();
+
+	if (value["color"].isString())
+		parseColorString(value["color"].asString(), color, false);
+}
+
+void WearBarParam::toJson(Json::Value &value) const
+{
+	value["color"] = encodeHexColorString(color);
+	value["min_durability"] = minPercent;
+	value["max_durability"] = maxPercent;
+}
+
+void WearBarParams::serialize(std::ostream &os, u16 version) const
+{
+	writeU8(os, 1); // Version for future-proofing
+	writeARGB8(os, defaultColor);
+	writeU8(os, blend);
+	writeU16(os, params.size());
+	for (size_t i = 0; i < params.size(); i++) {
+		writeARGB8(os, params[i].color);
+		writeF32(os, params[i].minPercent);
+		writeF32(os, params[i].maxPercent);
+	}
+}
+
+void WearBarParams::deSerialize(std::istream &is)
+{
+	int version = readU8(is);
+	if (version > 1)
+		throw SerializationError("unsupported WearBarParams version");
+
+	defaultColor = readARGB8(is);
+	blend = readU8(is);
+	int count = readU16(is);
+	params.clear();
+	for (int i = 0; i < count; i++) {
+		video::SColor color = readARGB8(is);
+		float minPercent = readF32(is);
+		float maxPercent = readF32(is);
+		params.emplace_back(color, minPercent, maxPercent);
+	}
+}
+void WearBarParams::serializeJson(std::ostream &os) const
+{
+	Json::Value root;
+	Json::Value values;
+	for (unsigned int i = 0; i < params.size(); i++) {
+		params[i].toJson(values[i]);
+	}
+	root["values"] = values;
+	root["default"] = encodeHexColorString(defaultColor);
+	root["blend"] = blend;
+
+	fastWriteJson(root, os);
+}
+void WearBarParams::deserializeJson(std::istream &is)
+{
+	Json::Value root;
+	is >> root;
+	if (root.isObject()) {
+		if (root["values"].isArray()) {
+			Json::Value &values_array = root["values"];
+			params.clear();
+			for (unsigned int i = 0; i < values_array.size(); i++) {
+				Json::Value &value = values_array[i];
+				if (value.isObject()) {
+					WearBarParam param;
+					param.fromJson(value);
+					params.push_back(param);
+				}
+			}
+		}
+		if (root["default"].isString()) {
+			parseColorString(root["default"].asString(), defaultColor, false);
+		}
+		if (root["blend"].isBool()) {
+			blend = root["blend"].asBool();
 		}
 	}
 }

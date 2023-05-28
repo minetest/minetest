@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "itemgroup.h"
 #include "json-forwards.h"
+#include <json/json.h>
+#include <SColor.h>
 
 struct ItemDefinition;
 
@@ -82,6 +84,52 @@ struct ToolCapabilities
 	void deserializeJson(std::istream &is);
 };
 
+struct WearBarParam
+{
+	video::SColor color;
+	float minPercent; // minimum percentage *durability* to apply color for (inclusive)
+	float maxPercent; // maximum percentage *durability* to apply color for (exclusive)
+	WearBarParam(
+			const video::SColor &color_ = video::SColor(255, 255, 255, 255),
+			float minPercent_ = 0.0f,
+			float maxPercent_ = 0.0f
+			):
+			color(color_),
+			minPercent(minPercent_),
+			maxPercent(maxPercent_)
+	{}
+
+	void fromJson(Json::Value &value);
+	void toJson(Json::Value &value) const;
+
+	bool matches(float percent) const
+	{
+		return minPercent <= percent && percent < maxPercent;
+	}
+};
+
+struct WearBarParams
+{
+	video::SColor defaultColor;
+	std::vector<WearBarParam> params;
+	bool blend;
+
+	WearBarParams(
+			const video::SColor &defaultColor_ = video::SColor(255, 255, 255, 255),
+			const std::vector<WearBarParam> &params_ = std::vector<WearBarParam>(),
+			const bool blend_ = false
+			):
+			defaultColor(defaultColor_),
+			params(params_),
+			blend(blend_)
+	{}
+
+	void serialize(std::ostream &os, u16 version) const;
+	void deSerialize(std::istream &is);
+	void serializeJson(std::ostream &os) const;
+	void deserializeJson(std::istream &is);
+};
+Wear Bar
 struct DigParams
 {
 	bool diggable;

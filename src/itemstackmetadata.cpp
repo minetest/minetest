@@ -31,11 +31,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DESERIALIZE_PAIR_DELIM_STR "\x03"
 
 #define TOOLCAP_KEY "tool_capabilities"
+#define WEAR_BAR_KEY "wear_color"
 
 void ItemStackMetadata::clear()
 {
 	SimpleMetadata::clear();
 	updateToolCapabilities();
+	updateWearBarParams();
 }
 
 static void sanitize_string(std::string &str)
@@ -55,6 +57,8 @@ bool ItemStackMetadata::setString(const std::string &name, const std::string &va
 	bool result = SimpleMetadata::setString(clean_name, clean_var);
 	if (clean_name == TOOLCAP_KEY)
 		updateToolCapabilities();
+	else if (clean_name == WEAR_BAR_KEY)
+		updateWearBarParams();
 	return result;
 }
 
@@ -91,6 +95,7 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 		}
 	}
 	updateToolCapabilities();
+	updateWearBarParams();
 }
 
 void ItemStackMetadata::updateToolCapabilities()
@@ -115,4 +120,27 @@ void ItemStackMetadata::setToolCapabilities(const ToolCapabilities &caps)
 void ItemStackMetadata::clearToolCapabilities()
 {
 	setString(TOOLCAP_KEY, "");
+}
+
+void ItemStackMetadata::updateWearBarParams()
+{
+	if (contains(WEAR_BAR_KEY)) {
+		wear_bar_overridden = true;
+		wear_bar_override = WearBarParams();
+		std::istringstream is(getString(WEAR_BAR_KEY));
+		wear_bar_override.deserializeJson(is);
+	} else {
+		wear_bar_overridden = false;
+	}
+}
+
+void ItemStackMetadata::setWearBarParams(const WearBarParams &params)
+{
+	std::ostringstream os;
+	params.serializeJson(os);
+	setString(WEAR_BAR_KEY, os.str());
+}
+void ItemStackMetadata::clearWearBarParams()
+{
+	setString(WEAR_BAR_KEY, "");
 }
