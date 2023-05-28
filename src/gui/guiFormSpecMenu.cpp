@@ -4377,7 +4377,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					ItemStack slct = list_selected->getItem(m_selected_item->i);
 
-					for (u32 i = 0; i < list_s->getSize(); i++) {
+					for (s32 i = 0; i < list_s->getSize(); i++) {
 						// Skip the selected slot
 						if (i == m_selected_item->i)
 							continue;
@@ -4557,7 +4557,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// Pickup all of the item from the list
 			if (slct.count > 0) {
-				for (u32 i = 0; i < list_s->getSize(); i++) {
+				for (s32 i = 0; i < list_s->getSize(); i++) {
 					// Skip the selected slot
 					if (i == s.i)
 						continue;

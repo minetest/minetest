@@ -351,7 +351,7 @@ protected:
 	ButtonEventType m_held_mouse_button = BET_OTHER;
 	bool m_shift_move_after_craft = false;
 
-	u16 m_left_drag_amount;
+	u16 m_left_drag_amount = 0;
 	ItemStack m_left_drag_stack;
 	std::vector<std::pair<GUIInventoryList::ItemSpec, ItemStack>> m_left_drag_stacks;
 	bool m_left_dragging = false;
