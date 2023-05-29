@@ -2495,8 +2495,7 @@ void Game::increaseViewRange()
 		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
 		m_game_ui->showStatusText(msg);
 	} else if (sky->getFogDistance() >= 0 && range_new > sky->getFogDistance()) {
-		range_new = sky->getFogDistance();
-		std::wstring msg = fwgettext("Viewing range is at maximum set by server: %d", range_new);
+		std::wstring msg = fwgettext("Viewing range changed to %d, but limited to %d set by server", range_new, sky->getFogDistance());
 		m_game_ui->showStatusText(msg);
 	} else {
 		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
@@ -2514,6 +2513,9 @@ void Game::decreaseViewRange()
 	if (range_new < 20) {
 		range_new = 20;
 		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
+		m_game_ui->showStatusText(msg);
+	} else if (sky->getFogDistance() >= 0 && range_new > sky->getFogDistance()) {
+		std::wstring msg = fwgettext("Viewing range changed to %d, but limited to %d set by server", range_new, sky->getFogDistance());
 		m_game_ui->showStatusText(msg);
 	} else {
 		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
@@ -3012,6 +3014,10 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	// fog
 	// do not override a potentially smaller client setting.
 	sky->setFogDistance(event->set_sky->fog_distance);
+
+	// if the fog distance is reset, switch back to the client's viewing_range
+	if (event->set_sky->fog_distance < 0)
+		draw_control->wanted_range = g_settings->getS16("viewing_range");
 
 	if (event->set_sky->fog_start >= 0)
 		sky->setFogStart(rangelim(event->set_sky->fog_start, 0.0f, 0.99f));
