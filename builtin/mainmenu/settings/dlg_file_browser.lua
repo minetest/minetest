@@ -17,7 +17,9 @@
 -- with this program; if not, write to the Free Software Foundation, Inc.,
 -- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local PATH = os.getenv("HOME") or os.getenv("HOMEPATH") or core.get_user_path()
+local PATH = os.getenv("HOME") -- Linux & similar
+		or os.getenv("HOMEDRIVE") .. os.getenv("HOMEPATH") -- Windows
+		or core.get_user_path() -- If nothing else works
 
 tabdata = {}
 
@@ -70,7 +72,7 @@ local function make_fs(dialogdata)
 		"formspec_version[4]",
 		"size[14,9.2]",
 		"image_button[0.2,0.2;0.65,0.65;", texture('up_icon'), ";updir;]",
-		"field[1,0.2;12,0.65;path;;", PATH, "]",
+		"field[1,0.2;12,0.65;path;;", core.formspec_escape(PATH), "]",
 		"tablecolumns[image,",
 			"0=", texture('folder'), ",",
 			"1=", texture('file'), ",",
@@ -129,7 +131,9 @@ local function fields_handler(this, fields)
 		PATH = string.split(PATH, DIR_DELIM)
 		PATH[#PATH] = nil
 		PATH = table.concat(PATH, DIR_DELIM)
-		PATH = DIR_DELIM .. PATH
+		if PLATFORM ~= "Windows" then
+			PATH = DIR_DELIM .. PATH
+		end
 
 		tabdata.selected = 1
 
