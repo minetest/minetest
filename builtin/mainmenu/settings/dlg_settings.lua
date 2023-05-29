@@ -519,5 +519,9 @@ end
 
 
 function create_settings_dlg()
-	return dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+
+	dlg.data.page_id = update_filtered_pages("")
+
+	return dlg
 end

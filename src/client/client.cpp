@@ -1014,8 +1014,8 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 bytes
-void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
+// Will fill up 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1 bytes
+void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt, bool camera_inverted)
 {
 	v3f pf           = myplayer->getPosition() * 100;
 	v3f sf           = myplayer->getSpeed() * 100;
@@ -1039,9 +1039,11 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4] u32 keyPressed
 		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
+		[12+12+4+4+4+1+1] u8 camera_inverted (bool)
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
+	*pkt << camera_inverted;
 }
 
 void Client::interact(InteractAction action, const PointedThing& pointed)
@@ -1076,7 +1078,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 	pkt.putLongString(tmp_os.str());
 
-	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
+	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
 	Send(&pkt);
 }
@@ -1378,28 +1380,31 @@ void Client::sendPlayerPos()
 	u8 wanted_range = map.getControl().wanted_range;
 
 	u32 keyPressed = player->control.getKeysPressed();
+	bool camera_inverted = m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT;
 
 	if (
-			player->last_position     == player->getPosition() &&
-			player->last_speed        == player->getSpeed()    &&
-			player->last_pitch        == player->getPitch()    &&
-			player->last_yaw          == player->getYaw()      &&
-			player->last_keyPressed   == keyPressed            &&
-			player->last_camera_fov   == camera_fov            &&
-			player->last_wanted_range == wanted_range)
+			player->last_position        == player->getPosition() &&
+			player->last_speed           == player->getSpeed()    &&
+			player->last_pitch           == player->getPitch()    &&
+			player->last_yaw             == player->getYaw()      &&
+			player->last_keyPressed      == keyPressed            &&
+			player->last_camera_fov      == camera_fov            &&
+			player->last_camera_inverted == camera_inverted       &&
+			player->last_wanted_range    == wanted_range)
 		return;
 
-	player->last_position     = player->getPosition();
-	player->last_speed        = player->getSpeed();
-	player->last_pitch        = player->getPitch();
-	player->last_yaw          = player->getYaw();
-	player->last_keyPressed   = keyPressed;
-	player->last_camera_fov   = camera_fov;
-	player->last_wanted_range = wanted_range;
+	player->last_position        = player->getPosition();
+	player->last_speed           = player->getSpeed();
+	player->last_pitch           = player->getPitch();
+	player->last_yaw             = player->getYaw();
+	player->last_keyPressed      = keyPressed;
+	player->last_camera_fov      = camera_fov;
+	player->last_camera_inverted = camera_inverted;
+	player->last_wanted_range    = wanted_range;
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 1);
 
-	writePlayerPos(player, &map, &pkt);
+	writePlayerPos(player, &map, &pkt, camera_inverted);
 
 	Send(&pkt);
 }

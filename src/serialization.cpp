@@ -27,29 +27,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* report a zlib or i/o error */
 static void zerr(int ret)
 {
-    dstream<<"zerr: ";
-    switch (ret) {
-    case Z_ERRNO:
-        if (ferror(stdin))
-            dstream<<"error reading stdin"<<std::endl;
-        if (ferror(stdout))
-            dstream<<"error writing stdout"<<std::endl;
-        break;
-    case Z_STREAM_ERROR:
-        dstream<<"invalid compression level"<<std::endl;
-        break;
-    case Z_DATA_ERROR:
-        dstream<<"invalid or incomplete deflate data"<<std::endl;
-        break;
-    case Z_MEM_ERROR:
-        dstream<<"out of memory"<<std::endl;
-        break;
-    case Z_VERSION_ERROR:
-        dstream<<"zlib version mismatch!"<<std::endl;
+	dstream<<"zerr: ";
+	switch (ret) {
+	case Z_ERRNO:
+		if (ferror(stdin))
+			dstream<<"error reading stdin"<<std::endl;
+		if (ferror(stdout))
+			dstream<<"error writing stdout"<<std::endl;
+		break;
+	case Z_STREAM_ERROR:
+		dstream<<"invalid compression level"<<std::endl;
+		break;
+	case Z_DATA_ERROR:
+		dstream<<"invalid or incomplete deflate data"<<std::endl;
+		break;
+	case Z_MEM_ERROR:
+		dstream<<"out of memory"<<std::endl;
+		break;
+	case Z_VERSION_ERROR:
+		dstream<<"zlib version mismatch!"<<std::endl;
 		break;
 	default:
 		dstream<<"return value = "<<ret<<std::endl;
-    }
+	}
 }
 
 // Make sure that z is deleted in case of exception

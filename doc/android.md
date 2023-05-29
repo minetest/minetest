@@ -1,5 +1,3 @@
-**This document is based on the Minetest 5.6.1 version for Android**
-
 # Minetest Android build
 All Minetest builds, including the Android variant, are based on the same code.
 However, additional Java code is used for proper Android integration.
@@ -11,8 +9,8 @@ due to limited capabilities of common devices. What can be done is described bel
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
 * Look around: touch screen and slide finger
-* Double tap: Place a node
-* Long tap: Dig node or use the holding item
+* Tap: Place a node
+* Long tap: Dig node or use the held item
 * Press back: Pause menu
 * Touch buttons: Press button
 * Buttons:
@@ -33,9 +31,8 @@ When a menu or inventory is displayed:
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
 
 ### Limitations
-* Android player have to double tap to place node, this can be annoying in some game/mod
 * Some old Android device only support 2 touch at a time, some game/mod contain button combination that need 3 touch (example: jump + Aux1 + hold)
-* Complicated control like pick up an cart in MTG can be difficult or impossible on Android device
+* Complicated control can be difficult or impossible on Android device
 
 ## File Path
 There are some settings especially useful for Android users. The Minetest-wide

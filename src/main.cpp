@@ -708,9 +708,9 @@ static void uninit_common()
 static void startup_message()
 {
 	infostream << PROJECT_NAME << " " << _("with")
-	           << " SER_FMT_VER_HIGHEST_READ="
-               << (int)SER_FMT_VER_HIGHEST_READ << ", "
-               << g_build_info << std::endl;
+		<< " SER_FMT_VER_HIGHEST_READ="
+		<< (int)SER_FMT_VER_HIGHEST_READ << ", "
+		<< g_build_info << std::endl;
 }
 
 static bool read_config_file(const Settings &cmd_args)
