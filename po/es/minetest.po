@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-05-06 20:50+0000\n"
-"Last-Translator: Mimi Kush <kushmimi33@gmail.com>\n"
+"PO-Revision-Date: 2023-05-30 11:27+0000\n"
+"Last-Translator: José Muñoz <dr.cabra@disroot.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1020,7 +1020,7 @@ msgstr "Unirse al juego"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr "Unirse"
+msgstr "Iniciar sesión"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
