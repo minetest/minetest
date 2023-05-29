@@ -130,6 +130,9 @@ public:
 	// step handler
 	void step(float dtime);
 
+	// return whether the button bar is active
+	bool active() { return m_active; }
+
 	// deactivate button bar
 	void deactivate();
 
@@ -284,8 +287,8 @@ private:
 	// handle pressed hud buttons
 	bool isHUDButton(const SEvent &event);
 
-	// handle double taps
-	bool doubleTapDetection();
+	// do a right-click
+	bool doRightClick();
 
 	// handle release event
 	void handleReleaseEvent(size_t evt_id);
@@ -293,19 +296,8 @@ private:
 	// apply joystick status
 	void applyJoystickStatus();
 
-	// double-click detection variables
-	struct key_event
-	{
-		u64 down_time;
-		s32 x;
-		s32 y;
-	};
-
 	// array for saving last known position of a pointer
 	std::map<size_t, v2s32> m_pointerpos;
-
-	// array for double tap detection
-	key_event m_key_events[2];
 
 	// settings bar
 	AutoHideButtonBar m_settingsbar;

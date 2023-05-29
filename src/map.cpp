@@ -513,7 +513,7 @@ struct NodeNeighbor {
 };
 
 void ServerMap::transforming_liquid_add(v3s16 p) {
-        m_transforming_liquid.push_back(p);
+		m_transforming_liquid.push_back(p);
 }
 
 void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,

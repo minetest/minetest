@@ -127,7 +127,7 @@ bool PathStartsWith(const std::string &path, const std::string &prefix);
 // removed: If non-NULL, receives the removed component(s).
 // count: Number of components to remove
 std::string RemoveLastPathComponent(const std::string &path,
-               std::string *removed = NULL, int count = 1);
+		std::string *removed = NULL, int count = 1);
 
 // Remove "." and ".." path components and for every ".." removed, remove
 // the last normal path component before it. Unlike AbsolutePath,

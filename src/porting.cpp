@@ -58,7 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #if defined(__HAIKU__)
-        #include <FindDirectory.h>
+	#include <FindDirectory.h>
 #endif
 
 #include "config.h"

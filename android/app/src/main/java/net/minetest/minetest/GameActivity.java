@@ -48,7 +48,7 @@ import java.util.Objects;
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
-		System.loadLibrary("Minetest");
+		System.loadLibrary("minetest");
 	}
 
 	private int messageReturnCode = -1;

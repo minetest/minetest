@@ -233,8 +233,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
-#define PASSWORD_SIZE 28       // Maximum password length. Allows for
-                               // base64-encoded SHA-1 (27+\0).
+#define PASSWORD_SIZE 28    // Maximum password length. Allows for
+                            // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
 #define FORMSPEC_API_VERSION 6
@@ -920,8 +920,10 @@ enum ToServerCommand
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
 		[2+12+12+4+4] u32 keyPressed
-		[2+12+12+4+4+1] u8 fov*80
+		[2+12+12+4+4+4] u8 fov*80
 		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
+		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
+
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,
