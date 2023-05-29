@@ -594,6 +594,29 @@ Example:
 Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
 `dirt.png^grass_side.png` textures
 
+#### `[fill:<w>x<h>:<x>,<y>:<color>`
+
+* `<w>`: width
+* `<h>`: height
+* `<x>`: x position
+* `<y>`: y position
+* `<color>`: a `ColorString`.
+
+Creates a texture of the given size and color, optionally with an <x>,<y>
+position. An alpha value may be specified in the `Colorstring`.
+
+The optional <x>,<y> position is only used if the [fill is being overlaid
+onto another texture with '^'.
+
+When [fill is overlaid onto another texture it will not upscale or change
+the resolution of the texture, the base texture will determine the output
+resolution.
+
+Examples:
+
+    [fill:16x16:#20F02080
+    texture.png^[fill:8x8:4,4:red
+
 #### `[lowpart:<percent>:<file>`
 
 Blit the lower `<percent>`% part of `<file>` on the texture.
@@ -628,13 +651,29 @@ which it assumes to be a tilesheet with dimensions w,h.
 
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
-`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
+`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`". If
 it is an int, then it specifies how far to interpolate between the
 colors where 0 is only the texture color and 255 is only `<color>`. If
 omitted, the alpha of `<color>` will be used as the ratio.  If it is
 the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
+
+#### `[colorizehsl:<hue>:<saturation>:<lightness>`
+
+Colorize the texture to the given hue. The texture will be converted into a
+greyscale image as seen through a colored glass, like "Colorize" in GIMP.
+Saturation and lightness can optionally be adjusted.
+
+`<hue>` should be from -180 to +180. The hue at 0° on an HSL color wheel is
+red, 60° is yellow, 120° is green, and 180° is cyan, while -60° is magenta
+and -120° is blue.
+
+`<saturation>` and `<lightness>` are optional adjustments.
+
+`<lightness>` is from -100 to +100, with a default of 0
+
+`<saturation>` is from 0 to 100, with a default of 50
 
 #### `[multiply:<color>`
 
@@ -643,6 +682,76 @@ Multiplies texture colors with the given color.
 Result is more like what you'd expect if you put a color on top of another
 color, meaning white surfaces get a lot of your new color while black parts
 don't change very much.
+
+A Multiply blend can be applied between two textures by using the overlay
+modifier with a brightness adjustment:
+
+    textureA.png^[contrast:0:-64^[overlay:textureB.png
+
+#### `[screen:<color>`
+
+Apply a Screen blend with the given color. A Screen blend is the inverse of
+a Multiply blend, lightening images instead of darkening them.
+
+`<color>` is specified as a `ColorString`.
+
+A Screen blend can be applied between two textures by using the overlay
+modifier with a brightness adjustment:
+
+    textureA.png^[contrast:0:64^[overlay:textureB.png
+
+#### `[hsl:<hue>:<saturation>:<lightness>`
+
+Adjust the hue, saturation, and lightness of the texture. Like
+"Hue-Saturation" in GIMP, but with 0 as the mid-point.
+
+`<hue>` should be from -180 to +180
+
+`<saturation>` and `<lightness>` are optional, and both percentages.
+
+`<lightness>` is from -100 to +100.
+
+`<saturation>` goes down to -100 (fully desaturated) but may go above 100,
+allowing for even muted colors to become highly saturated.
+
+#### `[contrast:<contrast>:<brightness>`
+
+Adjust the brightness and contrast of the texture. Conceptually like
+GIMP's "Brightness-Contrast" feature but allows brightness to be wound
+all the way up to white or down to black.
+
+`<contrast>` is a value from -127 to +127.
+
+`<brightness>` is an optional value, from -127 to +127.
+
+If only a boost in contrast is required, an alternative technique is to
+hardlight blend the texture with itself, this increases contrast in the same
+way as an S-shaped color-curve, which avoids dark colors clipping to black
+and light colors clipping to white:
+
+    texture.png^[hardlight:texture.png
+
+#### `[overlay:<file>`
+
+Applies an Overlay blend with the two textures, like the Overlay layer mode
+in GIMP. Overlay is the same as Hard light but with the role of the two
+textures swapped, see the `[hardlight` modifier description for more detail
+about these blend modes.
+
+#### `[hardlight:<file>`
+
+Applies a Hard light blend with the two textures, like the Hard light layer
+mode in GIMP.
+
+Hard light combines Multiply and Screen blend modes. Light parts of the
+`<file>` texture will lighten (screen) the base texture, and dark parts of the
+`<file>` texture will darken (multiply) the base texture. This can be useful
+for applying embossing or chiselled effects to textures. A Hard light with the
+same texture acts like applying an S-shaped color-curve, and can be used to
+increase contrast without clipping.
+
+Hard light is the same as Overlay but with the roles of the two textures
+swapped, i.e. `A.png^[hardlight:B.png` is the same as `B.png^[overlay:A.png`
 
 #### `[png:<base64>`
 
