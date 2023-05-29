@@ -133,7 +133,7 @@ public:
 	                                        * s = surface (walkable node)
 	                                        * - = non-walkable node (e.g. air) above surface
 	                                        * g = other non-walkable node
-                                                */
+	                                        */
 };
 
 class Pathfinder;

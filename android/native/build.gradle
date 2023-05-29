@@ -9,20 +9,18 @@ android {
 		minSdkVersion 21
 		targetSdkVersion 33
 		externalNativeBuild {
-			ndkBuild {
-				arguments '-j' + Runtime.getRuntime().availableProcessors(),
-						"versionMajor=${versionMajor}",
-						"versionMinor=${versionMinor}",
-						"versionPatch=${versionPatch}",
-						"versionExtra=${versionExtra}",
-						"developmentBuild=${developmentBuild}"
+            cmake {
+				arguments "-DANDROID_STL=c++_shared",
+					"-DENABLE_CURL=1", "-DENABLE_SOUND=1",
+					"-DENABLE_TOUCH=1", "-DENABLE_GETTEXT=1",
+					"-DBUILD_UNITTESTS=0", "-DENABLE_UPDATE_CHECKER=0"
 			}
 		}
 	}
 
 	externalNativeBuild {
-		ndkBuild {
-			path file('jni/Android.mk')
+		cmake {
+			path file("../../CMakeLists.txt")
 		}
 	}
 
@@ -37,12 +35,6 @@ android {
 
 	buildTypes {
 		release {
-			externalNativeBuild {
-				ndkBuild {
-					arguments 'NDEBUG=1'
-				}
-			}
-
 			ndk {
 				debugSymbolLevel 'SYMBOL_TABLE'
 			}

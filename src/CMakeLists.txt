@@ -285,10 +285,8 @@ if(WIN32)
 	endif()
 else()
 	# Unix probably
-	if(BUILD_CLIENT)
-		if(NOT HAIKU AND NOT APPLE)
-			find_package(X11 REQUIRED)
-		endif(NOT HAIKU AND NOT APPLE)
+	if(BUILD_CLIENT AND NOT (HAIKU OR APPLE OR ANDROID))
+		find_package(X11 REQUIRED)
 	endif()
 
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_DL_LIBS})
@@ -309,6 +307,14 @@ else()
 
 	if (HAIKU)
 		set(PLATFORM_LIBS ${PLATFORM_LIBS} network)
+	endif()
+
+	if (ANDROID)
+		include_directories(${ANDROID_NDK}/sources/android/native_app_glue)
+		add_library(native_app_glue OBJECT ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} native_app_glue)
+
+		set(PLATFORM_LIBS ${PLATFORM_LIBS} android log)
 	endif()
 endif()
 
@@ -419,6 +425,10 @@ set(common_SRCS
 	${UTIL_SRCS}
 )
 
+if(ANDROID)
+	set(common_SRCS ${common_SRCS} porting_android.cpp)
+endif()
+
 if(BUILD_UNITTESTS)
 	set(common_SRCS ${common_SRCS} ${UNITTEST_SRCS})
 endif()
@@ -524,7 +534,11 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if(BUILD_CLIENT)
-	add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
+	if(ANDROID)
+		add_library(${PROJECT_NAME} SHARED ${client_SRCS})
+	else()
+		add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
+	endif()
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
 	target_link_libraries(
 		${PROJECT_NAME}
@@ -874,7 +888,7 @@ if(WIN32)
 	endif()
 endif()
 
-if(BUILD_CLIENT)
+if(BUILD_CLIENT AND NOT ANDROID)
 	install(TARGETS ${PROJECT_NAME}
 		RUNTIME DESTINATION ${BINDIR}
 		LIBRARY DESTINATION ${BINDIR}
@@ -900,13 +914,16 @@ if(BUILD_CLIENT)
 
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}"
 			FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
-endif(BUILD_CLIENT)
+endif()
 
 if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif()
 
-if (USE_GETTEXT)
+if (ANDROID)
+	# Android does this manually in app/build.gradle -> prepareAssets
+	# for now!
+elseif (USE_GETTEXT)
 	set(MO_FILES)
 
 	foreach(LOCALE ${GETTEXT_USED_LOCALES})
