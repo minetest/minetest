@@ -84,6 +84,7 @@ public:
 	u32 last_keyPressed = 0;
 	u8 last_camera_fov = 0;
 	u8 last_wanted_range = 0;
+	bool last_camera_inverted = false;
 
 	float camera_impact = 0.0f;
 
