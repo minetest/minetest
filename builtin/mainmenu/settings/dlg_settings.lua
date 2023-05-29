@@ -110,12 +110,6 @@ add_page({
 })
 
 
-local tabsize = {
-	width = 15.5,
-	height= 12,
-}
-
-
 local function load_settingtypes()
 	local page = nil
 	local section = nil
@@ -316,10 +310,12 @@ local function get_formspec(dialogdata)
 	local page_id = dialogdata.page_id or "most_used"
 	local page = filtered_page_by_id[page_id]
 
-	local scrollbar_w = 0.4
-	if PLATFORM == "Android" then
-		scrollbar_w = 0.6
-	end
+	local tabsize = {
+		width = 15.5,
+		height = TOUCHSCREEN_GUI and 10 or 12,
+	}
+
+	local scrollbar_w = TOUCHSCREEN_GUI and 0.6 or 0.4
 
 	local left_pane_width = 4.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
@@ -331,6 +327,7 @@ local function get_formspec(dialogdata)
 	local fs = {
 		"formspec_version[6]",
 		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + 1), "]",
+		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "", -- makes a noticeable difference
 		"bgcolor[#0000]",
 
 		-- HACK: this is needed to allow resubmitting the same formspec
