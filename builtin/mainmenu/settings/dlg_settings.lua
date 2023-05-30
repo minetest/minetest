@@ -310,14 +310,15 @@ local function get_formspec(dialogdata)
 	local page_id = dialogdata.page_id or "most_used"
 	local page = filtered_page_by_id[page_id]
 
+	local extra_h = 1 -- not included in tabsize.height
 	local tabsize = {
-		width = 15.5,
-		height = TOUCHSCREEN_GUI and 10 or 12,
+		width = TOUCHSCREEN_GUI and 16.5 or 15.5,
+		height = TOUCHSCREEN_GUI and (10 - extra_h) or 12,
 	}
 
 	local scrollbar_w = TOUCHSCREEN_GUI and 0.6 or 0.4
 
-	local left_pane_width = 4.25
+	local left_pane_width = TOUCHSCREEN_GUI and 4.5 or 4.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
 	local show_technical_names = core.settings:get_bool("show_technical_names")
@@ -326,8 +327,8 @@ local function get_formspec(dialogdata)
 
 	local fs = {
 		"formspec_version[6]",
-		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + 1), "]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "", -- makes a noticeable difference
+		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + extra_h), "]",
+		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "",
 		"bgcolor[#0000]",
 
 		-- HACK: this is needed to allow resubmitting the same formspec
