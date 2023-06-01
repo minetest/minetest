@@ -305,8 +305,9 @@ end
 
 function core.item_place(itemstack, placer, pointed_thing, param2)
 	-- Call on_rightclick if the pointed node defines it
-	if pointed_thing.type == "node" and placer and
-			not placer:get_player_control().sneak then
+	if pointed_thing.type == "node" and (placer and
+			not placer:get_player_control().sneak or
+			itemstack:get_definition().type ~= "node") then
 		local n = core.get_node(pointed_thing.under)
 		local nn = n.name
 		if core.registered_nodes[nn] and core.registered_nodes[nn].on_rightclick then
