@@ -735,7 +735,26 @@ function store.filter_packages(query)
 	end
 end
 
+local function get_no_pkgs_formspec(dlgdata)
+	local W = 15.75
+	local H = 9.5
+	return table.concat({
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
+
+		"label[3.875,4.35;", fgettext("No packages could be retrieved"), "]",
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
+		"container_end[]",
+	})
+end
+
 function store.get_formspec(dlgdata)
+	if #store.packages_full == 0 then
+		return get_no_pkgs_formspec(dlgdata)
+	end
+
 	store.update_paths()
 
 	dlgdata.pagemax = math.max(math.ceil(#store.packages / num_per_page), 1)
@@ -745,82 +764,70 @@ function store.get_formspec(dlgdata)
 
 	local W = 15.75
 	local H = 9.5
-	local formspec
-	if #store.packages_full > 0 then
-		formspec = {
-			"formspec_version[3]",
-			"size[15.75,9.5]",
-			"position[0.5,0.55]",
+	local formspec = {
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
 
-			"style[status,downloading,queued;border=false]",
+		"style[status,downloading,queued;border=false]",
 
-			"container[0.375,0.375]",
-			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
-			"field_close_on_enter[search_string;false]",
-			"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
-			"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
-			"dropdown[9.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
-			"container_end[]",
+		"container[0.375,0.375]",
+		"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
+		"field_close_on_enter[search_string;false]",
+		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
+		"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
+		"dropdown[9.175,0;2.7875,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+		"container_end[]",
 
-			-- Page nav buttons
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+		-- Page nav buttons
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 
-			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
-			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
-			"style[pagenum;border=false]",
-			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
-			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
-			"container_end[]",
+		"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+		"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+		"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
+		"style[pagenum;border=false]",
+		"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+		"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+		"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
+		"container_end[]",
 
-			"container_end[]",
-		}
+		"container_end[]",
+	}
 
-		if number_downloading > 0 then
-			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;downloading;"
-			if #download_queue > 0 then
-				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
-			else
-				formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+	if number_downloading > 0 then
+		formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;downloading;"
+		if #download_queue > 0 then
+			formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
+		else
+			formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+		end
+		formspec[#formspec + 1] = "]"
+	else
+		local num_avail_updates = 0
+		for i=1, #store.packages_full do
+			local package = store.packages_full[i]
+			if package.path and package.installed_release < package.release and
+					not (package.downloading or package.queued) then
+				num_avail_updates = num_avail_updates + 1
 			end
+		end
+
+		if num_avail_updates == 0 then
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;status;"
+			formspec[#formspec + 1] = fgettext("No updates")
 			formspec[#formspec + 1] = "]"
 		else
-			local num_avail_updates = 0
-			for i=1, #store.packages_full do
-				local package = store.packages_full[i]
-				if package.path and package.installed_release < package.release and
-						not (package.downloading or package.queued) then
-					num_avail_updates = num_avail_updates + 1
-				end
-			end
-
-			if num_avail_updates == 0 then
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
-				formspec[#formspec + 1] = fgettext("No updates")
-				formspec[#formspec + 1] = "]"
-			else
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;update_all;"
-				formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
-				formspec[#formspec + 1] = "]"
-			end
-		end
-
-		if #store.packages == 0 then
-			formspec[#formspec + 1] = "label[4,3;"
-			formspec[#formspec + 1] = fgettext("No results")
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;update_all;"
+			formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
 			formspec[#formspec + 1] = "]"
 		end
-	else
-		formspec = {
-			"size[12,7]",
-			"position[0.5,0.55]",
-			"label[4,3;", fgettext("No packages could be retrieved"), "]",
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
-			"container_end[]",
-		}
+	end
+
+	if #store.packages == 0 then
+		formspec[#formspec + 1] = "label[5.375,4.75;"
+		formspec[#formspec + 1] = fgettext("No results")
+		formspec[#formspec + 1] = "]"
 	end
 
 	-- download/queued tooltips always have the same message
@@ -891,7 +898,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
-		local description_width = W - 0.375*5 - 0.85 - 2*0.7
+		local description_width = W - 0.375*5 - 0.85 - 2*0.7 - 0.15
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
@@ -901,7 +908,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 	end
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function store.handle_submit(this, fields)
