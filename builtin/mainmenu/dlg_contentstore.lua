@@ -763,7 +763,6 @@ function store.filter_packages(query)
 end
 
 local function get_info_formspec(offset, text)
-	local W = 15.75
 	local H = 9.5
 	return table.concat({
 		"formspec_version[6]",
