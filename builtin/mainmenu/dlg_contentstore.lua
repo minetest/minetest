@@ -65,7 +65,7 @@ local REASON_DEPENDENCY = "dependency"
 -- encodes for use as URL parameter or path component
 local function urlencode(str)
 	return str:gsub("[^%a%d()._~-]", function(char)
-		return string.format("%%%02X", string.byte(char))
+		return ("%%%02X"):format(char:byte())
 	end)
 end
 assert(urlencode("sample text?") == "sample%20text%3F")
@@ -577,29 +577,33 @@ local function get_screenshot(package)
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-function store.load()
+local function fetch_pkgs(param)
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. urlencode(version.string)
+		core.get_max_supp_proto() .. "&engine_version=" .. param.urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. urlencode(item)
+			url = url .. "&hide=" .. param.urlencode(item)
 		end
 	end
 
+	local http = core.get_http_api()
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
 
-	store.packages_full = core.parse_json(response.data) or {}
-	store.aliases = {}
+	local packages = core.parse_json(response.data)
+	if not packages then
+		return
+	end
+	local aliases = {}
 
-	for _, package in pairs(store.packages_full) do
+	for _, package in pairs(packages) do
 		local name_len = #package.name
 		-- This must match what store.update_paths() does!
 		package.id = package.author:lower() .. "/"
@@ -609,22 +613,45 @@ function store.load()
 			package.id = package.id .. package.name
 		end
 
-		package.url_part = urlencode(package.author) .. "/" .. urlencode(package.name)
+		package.url_part = param.urlencode(package.author) .. "/" .. param.urlencode(package.name)
 
 		if package.aliases then
 			for _, alias in ipairs(package.aliases) do
 				-- We currently don't support name changing
 				local suffix = "/" .. package.name
 				if alias:sub(-#suffix) == suffix then
-					store.aliases[alias:lower()] = package.id
+					aliases[alias:lower()] = package.id
 				end
 			end
 		end
 	end
 
-	store.packages_full_unordered = store.packages_full
-	store.packages = store.packages_full
-	store.loaded = true
+	return { packages = packages, aliases = aliases }
+end
+
+function store.load()
+	if store.load_ok or store.loading then
+		return
+	end
+	core.handle_async(
+		fetch_pkgs,
+		{ urlencode = urlencode },
+		function(result)
+			if result and #result.packages > 0 then
+				store.packages = result.packages
+				store.packages_full = result.packages
+				store.packages_full_unordered = result.packages
+				store.aliases = result.aliases
+				store.load_ok = true
+				store.load_error = false
+			else
+				store.load_error = true
+			end
+			store.loading = false
+			core.event_handler("Refresh")
+		end
+	)
+	store.loading = true
 end
 
 function store.update_paths()
@@ -735,7 +762,7 @@ function store.filter_packages(query)
 	end
 end
 
-local function get_no_pkgs_formspec(dlgdata)
+local function get_info_formspec(offset, text)
 	local W = 15.75
 	local H = 9.5
 	return table.concat({
@@ -743,7 +770,7 @@ local function get_no_pkgs_formspec(dlgdata)
 		"size[15.75,9.5]",
 		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
 
-		"label[3.875,4.35;", fgettext("No packages could be retrieved"), "]",
+		"label[" .. tostring(offset) .. ",4.35;", text, "]",
 		"container[0,", H - 0.8 - 0.375, "]",
 		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 		"container_end[]",
@@ -751,9 +778,13 @@ local function get_no_pkgs_formspec(dlgdata)
 end
 
 function store.get_formspec(dlgdata)
-	if #store.packages_full == 0 then
-		return get_no_pkgs_formspec(dlgdata)
+	if store.loading then
+		return get_info_formspec(5.375, fgettext("Loading..."))
 	end
+	if store.load_error then
+		return get_info_formspec(3.875, fgettext("No packages could be retrieved"))
+	end
+	assert(store.load_ok)
 
 	store.update_paths()
 
@@ -1049,9 +1080,7 @@ function store.handle_submit(this, fields)
 end
 
 function create_store_dlg(type)
-	if not store.loaded or #store.packages_full == 0 then
-		store.load()
-	end
+	store.load()
 
 	store.update_paths()
 	store.sort_packages()
