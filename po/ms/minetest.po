@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-17 11:44+0000\n"
+"PO-Revision-Date: 2023-08-20 14:53+0000\n"
 "Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -369,7 +369,7 @@ msgstr "Lihat maklumat lanjut dalam pelayar sesawang"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Dunia bernama \"$1\" telah wujud"
+msgstr "Dunia bernama \"$1\" sudah wujud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -3467,7 +3467,7 @@ msgid ""
 "This should greatly improve graphics performance."
 msgstr ""
 "Membolehkan objek penimbal bucu.\n"
-"Ia patut meningkatkan prestasi grafik dengan banyak."
+"Ini patut meningkatkan prestasi grafik dengan banyak."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4379,7 +4379,7 @@ msgstr ""
 "Lelaran fungsi rekursif.\n"
 "Menaikkan nilai ini meningkatkan jumlah perincian halus, tetapi turut\n"
 "meningkatkan muatan pemprosesan.\n"
-"Pada lelaran = 20 janapeta ini mempunyai muatan sama dengan janapeta V7."
+"Pada lelaran = 20 janapeta ini mempunyai muatan serupa dengan janapeta V7."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
@@ -4993,7 +4993,7 @@ msgid ""
 msgstr ""
 "Jumlah maksimum muat turun serempak. Muat turun melebihi had ini akan "
 "ditunggu giliran.\n"
-"Ini mestilah lebih rendah dari curl_parallel_limit."
+"Nilai ini patut lebih rendah daripada curl_parallel_limit."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6116,8 +6116,8 @@ msgid ""
 "Files that are not present will be fetched the usual way."
 msgstr ""
 "Menetapkan URL dari mana klien mengambil media, menggantikan UDP.\n"
-"$filename mestilah boleh dicapai daripada $remote_media$filename melalui\n"
-"cURL (sudah tentu, remote_media mesti berakhir dengan tanda condong).\n"
+"$filename patut boleh dicapai daripada $remote_media$filename melalui\n"
+"cURL (sudah tentu, remote_media patut berakhir dengan tanda condong).\n"
 "Fail yang tidak wujud akan diambil dengan cara biasa."
 
 #: src/settings_translation_file.cpp
@@ -6385,9 +6385,8 @@ msgstr ""
 "blok\n"
 "aktif, dinyatakan dalam blokpeta (16 nod).\n"
 "Dalam blok aktif, objek dimuatkan dan ABM dijalankan.\n"
-"Ini juga jarak minimum di mana objek aktif (mob) dikekalkan.\n"
-"Ini perlu ditetapkan bersama nilai blok jarak penghantaran objek aktif "
-"(active_object_send_range_blocks)."
+"Nilai ini juga jarak minimum di mana objek aktif (mob) dikekalkan.\n"
+"Nilai ini patut ditetapkan bersama nilai active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6585,7 +6584,8 @@ msgstr ""
 "Pensampelan pengurangan serupa seperti menggunakan resolusi skrin rendah,\n"
 "tetapi ia hanya diaplikasikan kepada dunia permainan sahaja, tidak mengubah "
 "GUI.\n"
-"Ia boleh meningkatkan prestasi dengan mengorbankan perincian imej.\n"
+"Ia patut meningkatkan prestasi dengan banyak sambil mengorbankan perincian "
+"imej.\n"
 "Nilai lebih tinggi membuatkan imej yang kurang perincian."
 
 #: src/settings_translation_file.cpp
@@ -6939,7 +6939,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
-"Sama ada animasi tekstur nod perlu dinyahsegerakkan pada setiap blok peta."
+"Sama ada animasi tekstur nod patut dinyahsegerakkan pada setiap blok peta."
 
 #: src/settings_translation_file.cpp
 msgid ""
