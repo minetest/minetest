@@ -363,7 +363,7 @@ local function create_world_buttonhandler(this, fields)
 
 		local message
 		if game == nil then
-			message = fgettext("No game selected")
+			message = fgettext_ne("No game selected")
 		end
 
 		if message == nil then
@@ -382,7 +382,7 @@ local function create_world_buttonhandler(this, fields)
 			end
 
 			if menudata.worldlist:uid_exists_raw(worldname) then
-				message = fgettext("A world named \"$1\" already exists", worldname)
+				message = fgettext_ne("A world named \"$1\" already exists", worldname)
 			end
 		end
 
