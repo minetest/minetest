@@ -432,7 +432,7 @@ function install_dialog.get_formspec()
 		"container_end[]",
 	}
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function install_dialog.handle_submit(this, fields)
@@ -1095,6 +1095,8 @@ function create_store_dlg(type)
 				break
 			end
 		end
+	else
+		filter_type = 1
 	end
 
 	store.filter_packages(search_string)
