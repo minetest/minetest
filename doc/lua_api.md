@@ -9454,8 +9454,10 @@ performance and computing power the practical limit is much lower.
     -- default:river_water
 
     node_riverbed = "default:gravel",
+    node_riverbed = {"default:gravel", "default:stone"},
     depth_riverbed = 2,
-    -- Node placed under river water and thickness of this layer
+    -- Nodes placed under river water and thickness of this layer
+    -- Multiple nodes can be specified, they will be chosen at random.
 
     node_cave_liquid = "default:lava_source",
     node_cave_liquid = {"default:water_source", "default:lava_source"},
