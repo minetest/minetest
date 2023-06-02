@@ -497,6 +497,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
+
+bool was_jump_key_held = false;
+
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {
 	// Clear stuff
@@ -621,7 +624,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 						speedV.Y = movement_speed_walk;
 				}
 			}
-		} else if (m_can_jump) {
+		} else if (m_can_jump && !was_jump_key_held) {
 			/*
 				NOTE: The d value in move() affects jump height by
 				raising the height at which the jump speed is kept
@@ -645,6 +648,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			else
 				speedV.Y = movement_speed_climb;
 		}
+	}
+
+	if (player_settings.jump_on_key_held){
+		was_jump_key_held = false;
+	}
+	else{
+		was_jump_key_held = control.jump;
 	}
 
 	// The speed of the player (Y is ignored)

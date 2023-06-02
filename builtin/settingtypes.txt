@@ -96,6 +96,9 @@ repeat_place_time (Place repetition interval) float 0.25 0.16 2
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
 
+#    Jump while the jump key is held down.
+jump_on_key_held (Jump on key held) bool true
+
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
 safe_dig_and_place (Safe digging and placing) bool false

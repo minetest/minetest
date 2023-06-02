@@ -294,6 +294,7 @@ void set_default_settings()
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
+	settings->setDefault("jump_on_key_held", "true");
 #ifdef HAVE_TOUCHSCREENGUI
 	settings->setDefault("autojump", "true");
 #else

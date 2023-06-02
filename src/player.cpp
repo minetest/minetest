@@ -229,6 +229,7 @@ void PlayerSettings::readGlobalSettings()
 	aux1_descends = g_settings->getBool("aux1_descends");
 	noclip = g_settings->getBool("noclip");
 	autojump = g_settings->getBool("autojump");
+	jump_on_key_held = g_settings->getBool("jump_on_key_held");
 }
 
 void Player::settingsChangedCallback(const std::string &name, void *data)

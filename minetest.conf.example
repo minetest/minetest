@@ -54,6 +54,10 @@
 #    type: bool
 # autojump = false
 
+#    Jump while the jump key is held down.
+#    type: bool
+# jump_on_key_held = true;
+
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
 #    type: bool
