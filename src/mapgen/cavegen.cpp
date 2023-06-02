@@ -74,6 +74,8 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	assert(vm);
 	assert(biomemap);
 
+	PseudoRandom ps(86219);
+
 	noise_cave1->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
@@ -136,7 +138,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				// Tunnel entrance floor, place biome surface nodes
 				if (is_under_river) {
 					if (nplaced < depth_riverbed) {
-						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						vm->m_data[vi] = MapNode(biome->c_riverbed[ps.range(0, biome->c_riverbed.size() - 1)]);
 						is_top_filler_above = true;
 						nplaced++;
 					} else {

@@ -403,10 +403,17 @@ Biome *read_biome_def(lua_State *L, int index, const NodeDefManager *ndef)
 	nn.push_back(getstringfield_default(L, index, "node_water_top",     ""));
 	nn.push_back(getstringfield_default(L, index, "node_water",         ""));
 	nn.push_back(getstringfield_default(L, index, "node_river_water",   ""));
-	nn.push_back(getstringfield_default(L, index, "node_riverbed",      ""));
+
+	size_t nnames = getstringlistfield(L, index, "node_riverbed", &nn);
+	if (nnames == 0) {
+		nn.emplace_back("mapgen_stone");
+		nnames = 1;
+	}
+	b->m_nnlistsizes.push_back(nnames);
+
 	nn.push_back(getstringfield_default(L, index, "node_dust",          ""));
 
-	size_t nnames = getstringlistfield(L, index, "node_cave_liquid", &nn);
+	nnames = getstringlistfield(L, index, "node_cave_liquid", &nn);
 	// If no cave liquids defined, set list to "ignore" to trigger old hardcoded
 	// cave liquid behavior.
 	if (nnames == 0) {

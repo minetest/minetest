@@ -52,7 +52,7 @@ public:
 	content_t c_water_top;
 	content_t c_water;
 	content_t c_river_water;
-	content_t c_riverbed;
+	std::vector<content_t> c_riverbed;
 	content_t c_dust;
 	std::vector<content_t> c_cave_liquid;
 	content_t c_dungeon;

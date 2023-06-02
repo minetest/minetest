@@ -631,6 +631,8 @@ void MapgenBasic::generateBiomes()
 	assert(biomegen);
 	assert(biomemap);
 
+	PseudoRandom ps(blockseed + 88535);
+
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
@@ -710,7 +712,7 @@ void MapgenBasic::generateBiomes()
 
 				if (river_water_above) {
 					if (nplaced < depth_riverbed) {
-						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						vm->m_data[vi] = MapNode(biome->c_riverbed[ps.range(0, biome->c_riverbed.size() - 1)]);
 						nplaced++;
 					} else {
 						nplaced = U16_MAX;  // Disable top/filler placement
