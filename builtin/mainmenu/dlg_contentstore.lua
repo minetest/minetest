@@ -629,8 +629,18 @@ local function fetch_pkgs(param)
 	return { packages = packages, aliases = aliases }
 end
 
+local function sort_and_filter_pkgs()
+	store.update_paths()
+	store.sort_packages()
+	store.filter_packages(search_string)
+end
+
 function store.load()
-	if store.load_ok or store.loading then
+	if store.load_ok then
+		sort_and_filter_pkgs()
+		return
+	end
+	if store.loading then
 		return
 	end
 	core.handle_async(
@@ -642,11 +652,14 @@ function store.load()
 				store.packages_full = result.packages
 				store.packages_full_unordered = result.packages
 				store.aliases = result.aliases
+				sort_and_filter_pkgs()
+
 				store.load_ok = true
 				store.load_error = false
 			else
 				store.load_error = true
 			end
+
 			store.loading = false
 			core.event_handler("Refresh")
 		end
@@ -1079,14 +1092,8 @@ function store.handle_submit(this, fields)
 end
 
 function create_store_dlg(type)
-	store.load()
-
-	store.update_paths()
-	store.sort_packages()
-
 	search_string = ""
 	cur_page = 1
-
 	if type then
 		-- table.indexof does not work on tables that contain `nil`
 		for i, v in pairs(filter_types_type) do
@@ -1099,7 +1106,7 @@ function create_store_dlg(type)
 		filter_type = 1
 	end
 
-	store.filter_packages(search_string)
+	store.load()
 
 	return dialog_create("store",
 			store.get_formspec,
