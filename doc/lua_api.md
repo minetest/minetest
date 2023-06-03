@@ -2392,7 +2392,7 @@ Wear Bar Color
 
 'Wear Bar' is a property of items that defines the coloring
 of the bar that appears under damaged tools.
-If it is absent, the old behavior of green, yellow, red is
+If it is absent, the old behavior of green-yellow-red is
 used.
 
 Wear bar colors definition
