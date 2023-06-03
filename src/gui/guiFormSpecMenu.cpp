@@ -4510,7 +4510,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					}
 
 				} else if (m_left_dragging && (empty || matching) &&
-						   m_left_drag_amount > m_left_drag_stacks.size()) {
+						m_left_drag_amount > m_left_drag_stacks.size()) {
 					// Add the slot to the left-drag list if it doesn't exist
 					bool found = false;
 					for (auto &ds : m_left_drag_stacks) {
@@ -4618,7 +4618,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					m_selected_amount -= split_amount;
 
 				} else {
-					// Reset the stack to it's original state
+					// Reset the stack to its original state
 					list_to->changeItem(ds.first.i, ds.second);
 
 					// Add the new split to the stack

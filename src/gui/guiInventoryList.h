@@ -46,7 +46,7 @@ public:
 		bool operator==(const ItemSpec& other)
 		{
 			return inventoryloc == other.inventoryloc &&
-				listname == other.listname && i == other.i;
+					listname == other.listname && i == other.i;
 		}
 
 		bool isValid() const { return i != -1; }

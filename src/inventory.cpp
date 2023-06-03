@@ -395,7 +395,7 @@ bool ItemStack::itemFits(ItemStack newitem,
 bool ItemStack::stacksWith(ItemStack other) const
 {
 	return (this->name == other.name &&
-		    this->wear == other.wear &&
+			this->wear == other.wear &&
 			this->metadata == other.metadata);
 }
 
