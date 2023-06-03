@@ -4165,12 +4165,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	  field while holding left, right, or middle mouse button
 	 */
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
-			 (event.MouseInput.Event == EMIE_MOUSE_MOVED &&
-				 (event.MouseInput.isLeftPressed()
-			   || event.MouseInput.isRightPressed()
-			   || event.MouseInput.isMiddlePressed()) &&
-			  getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
+		(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
+			((event.MouseInput.isLeftPressed() ||
+				event.MouseInput.isRightPressed() ||
+				event.MouseInput.isMiddlePressed()) &&
+			getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
 
 		// Get selected item and hovered/clicked item (s)
 
