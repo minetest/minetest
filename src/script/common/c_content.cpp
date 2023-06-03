@@ -1787,10 +1787,10 @@ WearBarParams read_wear_bar_params(
 	int table_values = lua_gettop(L);
 	lua_pushnil(L);
 	while(lua_next(L, table_values) != 0) {
-		// key at index -2 and value at index -1=
-		// values are stored in a flat table along with the default color,
-		// but values can be distinguished by them being a table
-		// (in blend mode, they can be distinguished by having a numerical key)
+		// key at index -2 and value at index -1 within table_values
+		// color value entries are stored in a flat 'list' along with the default color,
+		// but in non-blend mode color entries can be distinguished by that value being a table
+		// (in blend mode, color entries can be distinguished by having a numerical key)
 		if (lua_istable(L, -1)) {
 			int value_table = lua_gettop(L);
 			WearBarParam param;

@@ -8910,13 +8910,13 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- whether to blend the colors
     }
 
-        node_placement_prediction = nil,
-        -- If nil and item is node, prediction is made automatically.
-        -- If nil and item is not a node, no prediction is made.
-        -- If "" and item is anything, no prediction is made.
-        -- Otherwise should be name of node which the client immediately places
-        -- on ground when the player places the item. Server will always update
-        -- with actual result shortly.
+    node_placement_prediction = nil,
+    -- If nil and item is node, prediction is made automatically.
+    -- If nil and item is not a node, no prediction is made.
+    -- If "" and item is anything, no prediction is made.
+    -- Otherwise should be name of node which the client immediately places
+    -- on ground when the player places the item. Server will always update
+    -- with actual result shortly.
 
     node_dig_prediction = "air",
     -- if "", no prediction is made.

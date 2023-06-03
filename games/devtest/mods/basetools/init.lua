@@ -423,20 +423,20 @@ minetest.register_tool("basetools:dagger_steel", {
 -- Test tool uses, punch_attack_uses, and wear bar coloring
 local uses = { 1, 2, 3, 5, 10, 50, 100, 1000, 10000, 65535 }
 local wear_colors = { nil, nil, nil, "#5865f2", "slateblue",
-    {blend=true, default="#ff00ff", [0.0]="red", [0.5]="yellow", [1.0]="blue"},
+    {blend = true, default = "#ff00ff", [0.0] = "red", [0.5] = "yellow", [1.0] = "blue"},
     {
         {
-           color="#ff00ff",
-           min_durability=0.2, -- minimum durability is inclusive
-           max_durability=0.3  -- maximum durability is exclusive
+           color = "#ff00ff",
+           min_durability = 0.2, -- minimum durability is inclusive
+           max_durability = 0.3  -- maximum durability is exclusive
        },
        {
-           color="#c0ffee",
-           min_durability=0.45,
-           max_durability=0.6
+           color = "#c0ffee",
+           min_durability = 0.45,
+           max_durability = 0.6
        },
-       default="#ffff00",      -- color to use if no other ranges match the durability
-       blend=false
+       default=  "#ffff00",      -- color to use if no other ranges match the durability
+       blend = false
     }, nil, nil, nil }
 local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Ranges from blue to yellow to red", "Random blocks", nil, nil, nil }
 for i=1, #uses do
