@@ -26,10 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace client
 {
-class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
+class ActiveObjectMgr final : public ::ActiveObjectMgr<ClientActiveObject>
 {
 public:
-	void clear();
+	virtual ~ActiveObjectMgr() override;
+
 	void step(float dtime,
 			const std::function<void(ClientActiveObject *)> &f) override;
 	bool registerObject(std::unique_ptr<ClientActiveObject> obj) override;

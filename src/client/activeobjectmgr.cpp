@@ -25,19 +25,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace client
 {
 
-void ActiveObjectMgr::clear()
+ActiveObjectMgr::~ActiveObjectMgr()
 {
-	// delete active objects
-
-	// This loop is required, as ~ClientActiveObject() can access m_active_objects,
-	// which is invalid while m_active_objects.clear() is being executed.
-	for (auto &active_object : m_active_objects) {
-		// By resetting to null, the object is also marked as gone, which is
-		// required when children try to detach.
-		active_object.second.reset();
+	if (!m_active_objects.empty()) {
+		errorstream << "client::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+				<< std::endl;
+		clear();
+		// if still not cleared, the base class will terminate
 	}
-
-	m_active_objects.clear();
 }
 
 void ActiveObjectMgr::step(

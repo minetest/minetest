@@ -1234,7 +1234,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		return true;
 	};
 
-	m_ao_manager.clear(cb_removal);
+	m_ao_manager.clearIf(cb_removal);
 
 	// Get list of loaded blocks
 	std::vector<v3s16> loaded_blocks;
@@ -1927,7 +1927,7 @@ void ServerEnvironment::removeRemovedObjects()
 		return true;
 	};
 
-	m_ao_manager.clear(clear_cb);
+	m_ao_manager.clearIf(clear_cb);
 }
 
 static void print_hexdump(std::ostream &o, const std::string &data)
@@ -2171,7 +2171,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		return true;
 	};
 
-	m_ao_manager.clear(cb_deactivate);
+	m_ao_manager.clearIf(cb_deactivate);
 }
 
 void ServerEnvironment::deleteStaticFromBlock(

@@ -25,7 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace server
 {
 
-void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)> &cb)
+ActiveObjectMgr::~ActiveObjectMgr()
+{
+	if (!m_active_objects.empty()) {
+		errorstream << "server::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+				<< std::endl;
+		clear();
+		// if still not cleared, the base class will terminate
+	}
+}
+
+void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb)
 {
 	// Make a defensive copy of the ids in case the passed callback changes the
 	// set of active objects.
@@ -43,7 +53,7 @@ void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)>
 			continue; // obj was already removed
 		if (cb(it->second.get(), id)) {
 			// erase by id, `it` can be invalid now
-			m_active_objects.erase(id);
+			removeObject(id);
 		}
 	}
 }

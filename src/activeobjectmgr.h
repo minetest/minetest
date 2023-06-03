@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include <memory>
+#include "debug.h"
 #include "irrlichttypes.h"
+#include "util/basic_macros.h"
 
 class TestClientActiveObjectMgr;
 class TestServerActiveObjectMgr;
@@ -33,9 +35,25 @@ class ActiveObjectMgr
 	friend class ::TestServerActiveObjectMgr;
 
 public:
+	ActiveObjectMgr() = default;
+	DISABLE_CLASS_COPY(ActiveObjectMgr);
+
+	virtual ~ActiveObjectMgr()
+	{
+		SANITY_CHECK(m_active_objects.empty());
+		// Note: Do not call clear() here. The derived class is already half
+		// destructed.
+	}
+
 	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
 	virtual bool registerObject(std::unique_ptr<T> obj) = 0;
 	virtual void removeObject(u16 id) = 0;
+
+	void clear()
+	{
+		while (!m_active_objects.empty())
+			removeObject(m_active_objects.begin()->first);
+	}
 
 	T *getActiveObject(u16 id)
 	{
@@ -63,7 +81,7 @@ protected:
 	}
 
 	// ordered to fix #10985
-	// Note: Be careful when erasing elements. ActiveObjects can access the
-	// ActiveObjectMgr. Please always reset the unique_ptr first.
+	// Note: ActiveObjects can access the ActiveObjectMgr. Only erase objects using
+	// removeObject()!
 	std::map<u16, std::unique_ptr<T>> m_active_objects;
 };

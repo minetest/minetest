@@ -53,15 +53,6 @@ void TestServerActiveObjectMgr::runTests(IGameDef *gamedef)
 	TEST(testGetAddedActiveObjectsAroundPos);
 }
 
-void clearSAOMgr(server::ActiveObjectMgr *saomgr)
-{
-	auto clear_cb = [](ServerActiveObject *obj, u16 id) {
-		// Delete it
-		return true;
-	};
-	saomgr->clear(clear_cb);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestServerActiveObjectMgr::testFreeID()
@@ -88,7 +79,7 @@ void TestServerActiveObjectMgr::testFreeID()
 				aoids.end());
 	}
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testRegisterObject()
@@ -110,7 +101,7 @@ void TestServerActiveObjectMgr::testRegisterObject()
 	UASSERT(saomgr.getActiveObject(sao->getId()) == sao);
 	UASSERT(saomgr.getActiveObject(sao->getId()) != saoToCompare);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testRemoveObject()
@@ -126,7 +117,7 @@ void TestServerActiveObjectMgr::testRemoveObject()
 	saomgr.removeObject(sao->getId());
 	UASSERT(saomgr.getActiveObject(id) == nullptr);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
@@ -164,7 +155,7 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	saomgr.getObjectsInsideRadius(v3f(), 750000, result, include_obj_cb);
 	UASSERTCMP(int, ==, result.size(), 4);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
@@ -192,5 +183,5 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 2);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
