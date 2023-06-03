@@ -2422,10 +2422,10 @@ For non-blending mode:
 For blending mode:
 ```lua
 {
-	-- specify color for a specific durability percent, and blend between them
+    -- specify color for a specific durability percent, and blend between them
     [0.2] = "#ff00ff",
     [0.45] = "#c0ffee",
-	-- used for 0% and 100% durability if no color explicitly specified
+    -- used for 0% and 100% durability if no color explicitly specified
     default = "#ffff00",
     blend = true
 }

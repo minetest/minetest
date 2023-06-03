@@ -435,7 +435,7 @@ local wear_colors = { nil, nil, nil, "#5865f2", "slateblue",
            min_durability = 0.45,
            max_durability = 0.6
        },
-       default=  "#ffff00",      -- color to use if no other ranges match the durability
+       default = "#ffff00",      -- color to use if no other ranges match the durability
        blend = false
     }, nil, nil, nil }
 local wear_color_desc = { nil, nil, nil, "Solid color: #5865f2", "Solid color: slateblue", "Ranges from blue to yellow to red", "Random blocks", nil, nil, nil }
