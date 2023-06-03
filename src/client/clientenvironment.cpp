@@ -219,7 +219,8 @@ void ClientEnvironment::step(float dtime)
 				// increase affects other liquid attributes.
 				static const f32 resistance_factor = 0.3f;
 				float fluidity = lplayer->movement_liquid_fluidity;
-				fluidity *= lplayer->physics_override.liquid_fluidity;
+				fluidity *= MYMAX(1.0f, lplayer->physics_override.liquid_fluidity);
+				fluidity = MYMAX(0.001f, fluidity); // prevent division by 0
 				float fluidity_smooth = lplayer->movement_liquid_fluidity_smooth;
 				fluidity_smooth *= lplayer->physics_override.liquid_fluidity_smooth;
 
