@@ -775,14 +775,14 @@ function store.filter_packages(query)
 	end
 end
 
-local function get_info_formspec(offset, text)
+local function get_info_formspec(text)
 	local H = 9.5
 	return table.concat({
 		"formspec_version[6]",
 		"size[15.75,9.5]",
 		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
 
-		"label[" .. tostring(offset) .. ",4.35;", text, "]",
+		"label[4,4.35;", text, "]",
 		"container[0,", H - 0.8 - 0.375, "]",
 		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 		"container_end[]",
@@ -791,10 +791,10 @@ end
 
 function store.get_formspec(dlgdata)
 	if store.loading then
-		return get_info_formspec(5.375, fgettext("Loading..."))
+		return get_info_formspec(fgettext("Loading..."))
 	end
 	if store.load_error then
-		return get_info_formspec(3.875, fgettext("No packages could be retrieved"))
+		return get_info_formspec(fgettext("No packages could be retrieved"))
 	end
 	assert(store.load_ok)
 
@@ -868,7 +868,7 @@ function store.get_formspec(dlgdata)
 	end
 
 	if #store.packages == 0 then
-		formspec[#formspec + 1] = "label[5.375,4.75;"
+		formspec[#formspec + 1] = "label[4,4.75;"
 		formspec[#formspec + 1] = fgettext("No results")
 		formspec[#formspec + 1] = "]"
 	end
