@@ -508,6 +508,7 @@ local wear_on_use = function(itemstack, user, pointed_thing)
 	minetest.log("action", "[basetool] Wear bar color of "..itemstack:get_name().." changed to "..colorstr)
 	return itemstack
 end
+
 -- Place handler to clear item metadata color
 local wear_on_place = function(itemstack, user, pointed_thing)
 	local meta = itemstack:get_meta()

@@ -233,6 +233,7 @@ void WearBarParams::deSerialize(std::istream &is)
 		params.emplace_back(color, minPercent, maxPercent);
 	}
 }
+
 void WearBarParams::serializeJson(std::ostream &os) const
 {
 	Json::Value root;
@@ -246,6 +247,7 @@ void WearBarParams::serializeJson(std::ostream &os) const
 
 	fastWriteJson(root, os);
 }
+
 void WearBarParams::deserializeJson(std::istream &is)
 {
 	Json::Value root;

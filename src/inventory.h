@@ -134,8 +134,7 @@ struct ItemStack
 	// Get wear bar parameters, returning true if they exist
 	bool getWearBarParams(
 			const IItemDefManager *itemdef,
-			WearBarParams &params
-			) const
+			WearBarParams &params) const
 	{
 		WearBarParams *params_ = itemdef->get(name).wear_bar_params;
 

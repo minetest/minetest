@@ -1212,7 +1212,7 @@ void drawItemStack(
 					} else if (lowerBound == -1.0f) {
 						lowerBound = 0.0f;
 					}
-					float progress = (durabilityPercent-lowerBound)/(upperBound-lowerBound); //from lower to upper
+					float progress = (durabilityPercent - lowerBound) / (upperBound - lowerBound); //from lower to upper
 					u32 alpha = (progress * upperBoundColor->getAlpha()) + ((1.0f - progress) * lowerBoundColor->getAlpha());
 					u32 lb_red = lowerBoundColor->getRed();
 					u32 ub_red = upperBoundColor->getRed();

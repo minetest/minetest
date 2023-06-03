@@ -96,8 +96,7 @@ void read_item_definition(lua_State* L, int index,
 	}
 	lua_getfield(L, index, "wear_color");
 	if (lua_istable(L, -1)) {
-		def.wear_bar_params = new WearBarParams(
-				read_wear_bar_params(L, -1));
+		def.wear_bar_params = new WearBarParams(read_wear_bar_params(L, -1));
 	} else if (lua_isstring(L, -1)) {
 		def.wear_bar_params = new WearBarParams();
 		parseColorString(luaL_checkstring(L, -1), def.wear_bar_params->defaultColor, false);

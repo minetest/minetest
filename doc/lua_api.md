@@ -2404,48 +2404,52 @@ For non-blending mode:
 ```lua
 {
     {
-        color="#ff00ff",
-        min_durability=0.2, -- minimum durability is inclusive
-        max_durability=0.3  -- maximum durability is exclusive
+        color = "#ff00ff",
+        min_durability = 0.2, -- inclusive
+        max_durability = 0.3  -- exclusive
     },
     {
-        color="#c0ffee",
-        min_durability=0.45,
-        max_durability=0.6
+        color = "#c0ffee",
+        min_durability = 0.45,
+        max_durability = 0.6
     },
-    default="#ffff00",      -- color to use if no other ranges match the durability
-    blend=false
+    -- color to use if no other ranges match the durability
+    default = "#ffff00",
+    blend = false
 }
 ```
 
 For blending mode:
 ```lua
 {
-    [0.2] = "#ff00ff",      -- specify color for a specific durability percent, and blend between them
+	-- specify color for a specific durability percent, and blend between them
+    [0.2] = "#ff00ff",
     [0.45] = "#c0ffee",
-    default="#ffff00",      -- used for 0.0% and 100.0% durability if no color explicitly specified
-    blend=true
+	-- used for 0% and 100% durability if no color explicitly specified
+    default = "#ffff00",
+    blend = true
 }
 ```
 
-### Blend Mode `blend`
+### Blend mode `blend`
 
-When true, blends smoothly between each defined color point.
-When false, no interpolation is used, and instead colors are defined for ranges of durabilities.
+* If true, it blends smoothly between each defined color point.
+* If false, no interpolation is used and instead colors are defined for ranges of durabilities.
 `blend` is optional and defaults false.
 
-### Default Color `default`
+### Default color `default`
 
-When `blend` is false, the color to use if the percentage of remaining durability does not match any values.
-When `blend` is true, the color to use on the 'outside' of the range of colors, if no such color is defined
+* If `blend` is false, the color to use if the percentage of remaining durability does not match any values.
+* If `blend` is true, the color to use on the outside of the range of colors if no such color is defined.
 
 ### Color values
 
 In blending mode, specified as `float` keys assigned to a `ColorString` values.
+
 In non-blending mode, specified as tables containing the following keys:
 * `min_durability`: `float`, minimum durability to show color at (inclusive)
 * `max_durability`: `float`, maximum durability to show color at (exclusive)
-* `color`:          `ColorString`, color to use for bar in the specified range
+* `color`: `ColorString`, color to use for bar in the specified range
 
 ### Shortcut usage
 
@@ -8887,21 +8891,24 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- fallback behavior.
     },
 
-    -- See "Wear Bar Color" section for an example including explanation
-        wear_color = {
-            {
-                color="#ff00ff",
-                min_durability=0.2,
-                max_durability=0.3
-            },
-            {
-                color="#c0ffee",
-                min_durability=0.45,
-                max_durability=0.6
-            },
-            default="#ffff00",
-            blend=false
-        }
+    -- Set wear bar color of the tool by setting color points or ranges
+    -- See "Wear Bar Color" section for further explanation including example
+    wear_color = {
+        {
+            color = "#ff00ff",
+            min_durability = 0.2,
+            max_durability = 0.3
+        },
+        {
+            color = "#c0ffee",
+            min_durability = 0.45,
+            max_durability = 0.6
+        },
+        default = "#ffff00",
+        -- default color for fallback
+        blend = false
+        -- whether to blend the colors
+    }
 
         node_placement_prediction = nil,
         -- If nil and item is node, prediction is made automatically.

@@ -140,6 +140,7 @@ void ItemStackMetadata::setWearBarParams(const WearBarParams &params)
 	params.serializeJson(os);
 	setString(WEAR_BAR_KEY, os.str());
 }
+
 void ItemStackMetadata::clearWearBarParams()
 {
 	setString(WEAR_BAR_KEY, "");
