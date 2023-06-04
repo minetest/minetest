@@ -478,11 +478,14 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	f32 fov = 0;
 	u8 wanted_range = 0;
+	u8 bits = 0; // bits instead of bool so it is extensible later
 
 	*pkt >> keyPressed;
 	*pkt >> f32fov;
 	fov = (f32)f32fov / 80.0f;
 	*pkt >> wanted_range;
+	if (pkt->getRemainingBytes() >= 1)
+		*pkt >> bits;
 
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
@@ -500,6 +503,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setPlayerYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
+	playersao->setCameraInverted(bits & 0x01);
 
 	player->control.unpackKeysPressed(keyPressed);
 
@@ -1342,21 +1346,26 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+static bool pkt_read_formspec_fields(NetworkPacket *pkt, StringMap &fields)
 {
-	v3s16 p;
-	std::string formname;
-	u16 num;
+	u16 field_count;
+	*pkt >> field_count;
 
-	*pkt >> p >> formname >> num;
-
-	StringMap fields;
-	for (u16 k = 0; k < num; k++) {
+	u64 length = 0;
+	for (u16 k = 0; k < field_count; k++) {
 		std::string fieldname;
 		*pkt >> fieldname;
 		fields[fieldname] = pkt->readLongString();
-	}
 
+		length += fieldname.size();
+		length += fields[fieldname].size();
+	}
+	// 640K ought to be enough for anyone
+	return length < 640 * 1024;
+}
+
+void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
+{
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -1374,6 +1383,18 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 			"Server::ProcessData(): Canceling: No player object for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
 		DisconnectPeer(peer_id);
+		return;
+	}
+
+	v3s16 p;
+	std::string formname;
+	StringMap fields;
+
+	*pkt >> p >> formname;
+
+	if (!pkt_read_formspec_fields(pkt, fields)) {
+		warningstream << "Too large formspec fields! Ignoring for pos="
+			<< PP(p) << ", player=" << player->getName() << std::endl;
 		return;
 	}
 
@@ -1397,18 +1418,6 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 {
-	std::string client_formspec_name;
-	u16 num;
-
-	*pkt >> client_formspec_name >> num;
-
-	StringMap fields;
-	for (u16 k = 0; k < num; k++) {
-		std::string fieldname;
-		*pkt >> fieldname;
-		fields[fieldname] = pkt->readLongString();
-	}
-
 	session_t peer_id = pkt->getPeerId();
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 
@@ -1426,6 +1435,17 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 			"Server::ProcessData(): Canceling: No player object for peer_id=" <<
 			peer_id << " disconnecting peer!" << std::endl;
 		DisconnectPeer(peer_id);
+		return;
+	}
+
+	std::string client_formspec_name;
+	StringMap fields;
+
+	*pkt >> client_formspec_name;
+
+	if (!pkt_read_formspec_fields(pkt, fields)) {
+		warningstream << "Too large formspec fields! Ignoring for formname=\""
+			<< client_formspec_name << "\", player=" << player->getName() << std::endl;
 		return;
 	}
 

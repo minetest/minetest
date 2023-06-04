@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/mods.h"
 #include "inventorymanager.h"
 #include "content/subgames.h"
-#include "tileanimation.h" // TileAnimationParams
-#include "particles.h" // ParticleParams
 #include "network/peerhandler.h"
 #include "network/address.h"
 #include "util/numeric.h"
@@ -38,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "clientiface.h"
 #include "chatmessage.h"
+#include "sound.h"
 #include "translation.h"
 #include <string>
 #include <list>
@@ -74,6 +73,8 @@ class ServerThread;
 class ServerModManager;
 class ServerInventoryManager;
 struct PackedValue;
+struct ParticleParameters;
+struct ParticleSpawnerParameters;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,

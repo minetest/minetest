@@ -43,7 +43,7 @@ protected:
 	v2u32 virtual_size { 0, 0 };
 
 public:
-	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud, 
+	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud,
 			ShadowRenderer *shadow_renderer, RenderPipeline *pipeline,
 			v2f virtual_size_scale);
 	RenderingCore(const RenderingCore &) = delete;

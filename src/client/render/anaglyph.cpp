@@ -85,7 +85,7 @@ void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client)
 	// reset
 	pipeline->addStep<OffsetCameraStep>(0.0f);
 	pipeline->addStep<SetColorMaskStep>(video::ECP_ALL);
-	
+
 	pipeline->addStep<DrawWield>();
 	pipeline->addStep<MapPostFxStep>();
 	pipeline->addStep<DrawHUD>();

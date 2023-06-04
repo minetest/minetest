@@ -23,18 +23,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <ostream>
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 #include <unordered_set>
 #include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
-#include "localplayer.h"
 #include "client/hud.h"
-#include "particles.h"
-#include "mapnode.h"
 #include "tileanimation.h"
-#include "mesh_generator_thread.h"
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include "gameparams.h"
@@ -61,10 +58,14 @@ struct MapDrawControl;
 class ModChannelMgr;
 class MtEventManager;
 struct PointedThing;
+struct MapNode;
 class MapDatabase;
 class Minimap;
 struct MinimapMapblock;
+class MeshUpdateManager;
+class ParticleManager;
 class Camera;
+struct PlayerControl;
 class NetworkPacket;
 namespace con {
 class Connection;
@@ -315,8 +316,7 @@ public:
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
-	void updateCameraOffset(v3s16 camera_offset)
-	{ m_mesh_update_manager.m_camera_offset = camera_offset; }
+	void updateCameraOffset(v3s16 camera_offset);
 
 	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
@@ -436,10 +436,7 @@ public:
 			const std::string &message) override;
 	ModChannel *getModChannel(const std::string &channel) override;
 
-	const std::string &getFormspecPrepend() const
-	{
-		return m_env.getLocalPlayer()->formspec_prepend;
-	}
+	const std::string &getFormspecPrepend() const;
 	inline MeshGrid getMeshGrid()
 	{
 		return m_mesh_grid;
@@ -470,10 +467,6 @@ private:
 	void sendGotBlocks(const std::vector<v3s16> &blocks);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
-	// Helper function
-	inline std::string getPlayerName()
-	{ return m_env.getLocalPlayer()->getName(); }
-
 	bool canSendChatMessage() const;
 
 	float m_packetcounter_timer = 0.0f;
@@ -491,9 +484,9 @@ private:
 	RenderingEngine *m_rendering_engine;
 
 
-	MeshUpdateManager m_mesh_update_manager;
+	std::unique_ptr<MeshUpdateManager> m_mesh_update_manager;
 	ClientEnvironment m_env;
-	ParticleManager m_particle_manager;
+	std::unique_ptr<ParticleManager> m_particle_manager;
 	std::unique_ptr<con::Connection> m_con;
 	std::string m_address_name;
 	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;

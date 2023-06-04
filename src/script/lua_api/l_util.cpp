@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
+#include "network/networkprotocol.h"
 #include "serialization.h"
 #include <json/json.h>
 #include <zstd.h>
@@ -43,6 +44,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/sha1.h"
 #include "util/png.h"
 #include <cstdio>
+
+// only available in zstd 1.3.5+
+#ifndef ZSTD_CLEVEL_DEFAULT
+#define ZSTD_CLEVEL_DEFAULT 3
+#endif
 
 // log([level,] text)
 // Writes a line to the logger.
@@ -521,6 +527,12 @@ int ModApiUtil::l_get_version(lua_State *L)
 
 	lua_pushstring(L, g_version_string);
 	lua_setfield(L, table, "string");
+
+	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MIN);
+	lua_setfield(L, table, "proto_min");
+
+	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MAX);
+	lua_setfield(L, table, "proto_max");
 
 	if (strcmp(g_version_string, g_version_hash) != 0) {
 		lua_pushstring(L, g_version_hash);

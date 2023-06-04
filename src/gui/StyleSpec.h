@@ -61,13 +61,16 @@ public:
 		NUM_PROPERTIES,
 		NONE
 	};
-	enum State
+
+	// State is a bitfield, it's possible to have multiple of these at once
+	enum State : u8
 	{
 		STATE_DEFAULT = 0,
-		STATE_HOVERED = 1 << 0,
-		STATE_PRESSED = 1 << 1,
-		NUM_STATES = 1 << 2,
-		STATE_INVALID = 1 << 3,
+		STATE_FOCUSED = 1 << 0,
+		STATE_HOVERED = 1 << 1,
+		STATE_PRESSED = 1 << 2,
+		NUM_STATES = 1 << 3, // This includes all permutations
+		STATE_INVALID = 1 << 4,
 	};
 
 private:
@@ -150,6 +153,8 @@ public:
 	{
 		if (name == "default") {
 			return STATE_DEFAULT;
+		} else if (name == "focused") {
+			return STATE_FOCUSED;
 		} else if (name == "hovered") {
 			return STATE_HOVERED;
 		} else if (name == "pressed") {

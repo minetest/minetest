@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-11 22:58+0000\n"
+"PO-Revision-Date: 2023-03-18 18:53+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -199,7 +199,7 @@ msgstr "Pas de description du jeu fournie."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "Pas de dépendances"
+msgstr "Pas de dépendances obligatoires"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -658,7 +658,7 @@ msgstr "Contenu : Jeux"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
-msgstr "Contenu : Mods"
+msgstr "Contenu : Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -1178,7 +1178,7 @@ msgstr "Feuilles simples"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr "Lumière douce"
+msgstr "Lissage de l'éclairage"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
@@ -1218,7 +1218,7 @@ msgstr "Plantes ondulantes"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Connexion interrompue (erreur de protocole ?)."
+msgstr "Connexion interrompue (erreur de protocole ?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1629,7 +1629,9 @@ msgstr "Le système audio est désactivé"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr "Cette compilation ne gère pas l'audio du système"
+msgstr ""
+"Le système audio n’est pas pris en charge par la configuration de cette "
+"version"
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
@@ -1683,9 +1685,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zoom actuellement désactivé par un jeu ou un mod"
+msgstr "Tchat actuellement désactivé par un jeu ou un mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2007,7 +2008,7 @@ msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
-"Note : cela peut être dû à un cycle de dépendance, dans ce cas essayer de "
+"Note : cela peut être dû à un cycle de dépendances, dans ce cas essayer de "
 "mettre à jour les mods."
 
 #: src/content/mod_configuration.cpp
@@ -2251,8 +2252,8 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) de décalage du fractal à partir du centre du monde en unités "
-"« échelle ».\n"
+"Décalage (X, Y, Z) de la fractale à partir du centre du monde en unités « "
+"échelle ».\n"
 "Peut être utilisé pour déplacer un point désiré à (0, 0) pour créer une zone "
 "d'apparition convenable, ou pour autoriser à « zoomer » sur un point désiré "
 "en augmentant l'« échelle ».\n"
@@ -2272,11 +2273,11 @@ msgid ""
 "Default is for a vertically-squashed shape suitable for\n"
 "an island, set all 3 numbers equal for the raw shape."
 msgstr ""
-"Échelle (X,Y,Z) de la fractale en nœuds.\n"
+"Échelle (X, Y, Z) de la fractale en nœuds.\n"
 "La taille réelle de la fractale est 2 à 3 fois plus grande.\n"
 "Ces nombres peuvent être très grands, la fractale n'a pas à être contenue "
-"dans le monde. Les augmenter pour « zoomer » dans les détails de la "
-"fractale.\n"
+"dans le monde. Les augmenter pour « zoomer » dans les détails de la fractale."
+"\n"
 "Le valeur par défaut est pour une forme verticalement écrasée convenant pour "
 "une île, définir les 3 nombres égaux pour la forme brute."
 
@@ -2363,7 +2364,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Bruit 3D qui détermine le nombre de donjons par tranche de carte."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2375,15 +2375,15 @@ msgid ""
 "-    crossview: Cross-eyed 3d\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
-"Support 3D.\n"
-"Actuellement supporté :\n"
+"Prise en charge de la 3D.\n"
+"Actuellement disponible :\n"
 "– aucun : pas de sortie 3D.\n"
-"– anaglyphe : couleur 3D bleu turquoise/violet.\n"
-"– entrelacé : polarisation basée sur des lignes avec support de l'écran.\n"
-"– horizontal : partage haut/bas de l'écran.\n"
-"– vertical : séparation côte à côte de l'écran.\n"
-"– vue mixte : 3D binoculaire.\n"
-"– « pageflip » : 3D basé sur « quadbuffer ».\n"
+"– anaglyphe : 3D en couleur cyan/magenta.\n"
+"– entrelacé : prise en charge de l'écran avec polarisation basée sur les "
+"lignes paires/impaires.\n"
+"– haut-bas : partage haut et bas de l'écran.\n"
+"– côte-à-côte : partage côte à côte de l'écran.\n"
+"– vision croisée : vision croisée 3D.\n"
 "Noter que le mode entrelacé nécessite que les shaders soient activés."
 
 #: src/settings_translation_file.cpp
@@ -2429,7 +2429,7 @@ msgstr "Accélération de la gravité, en nœuds par seconde par seconde."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr "Modificateurs de bloc actif"
+msgstr "Modificateurs de Blocs Actif"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
@@ -2839,7 +2839,7 @@ msgstr "Client"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Taille des tranches de maillage du client"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -2855,7 +2855,7 @@ msgstr "Restrictions du modding côté client"
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr "Restriction de distance de recherche des noeuds côté client"
+msgstr "Restriction de la distance de recherche de blocs côté client"
 
 #: src/settings_translation_file.cpp
 msgid "Client-side Modding"
@@ -2912,9 +2912,8 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Liste des mods de confiance séparés par des virgules qui sont autorisés à "
-"accéder\n"
-"aux API HTTP, leur permettant d'envoyer et de télécharger des données vers/"
+"Liste des mods de confiance séparés par des virgules autorisés à accéder aux "
+"APIs HTTP, leur permettant d'envoyer et de télécharger des données vers/"
 "depuis Internet."
 
 #: src/settings_translation_file.cpp
@@ -3017,8 +3016,8 @@ msgid ""
 msgstr ""
 "Contrôle la durée complet du cycle jour/nuit.\n"
 "Exemples :\n"
-"72 = 20 minutes, 360 = 4 minutes, 1 = 24 heures, 0 = jour/nuit/n'importe "
-"quoi éternellement."
+"72 = 20 minutes, 360 = 4 minutes, 1 = 24 heures, 0 = jour/nuit/quoi que ce "
+"soit reste inchangé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3172,8 +3171,8 @@ msgstr "Définit la répartition des zones de hauts reliefs."
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
-"Définit la taille totale des cavernes, une valeur plus petite crée des "
-"cavernes plus larges."
+"Définit la taille totale des cavernes, une valeur plus faible crée des "
+"cavernes plus grandes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3182,7 +3181,7 @@ msgid ""
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
 "Définit la quantité de flou lumineux appliquée à l'image rendue\n"
-"Des valeurs plus petites rendent le flou lumineux plus subtil\n"
+"Des valeurs plus faibles rendent le flou lumineux plus subtil\n"
 "Plage : de 0,01 à 1,0, par défaut : 0,05"
 
 #: src/settings_translation_file.cpp
@@ -3255,7 +3254,7 @@ msgstr "Profondeur en-dessous de laquelle se trouvent les grandes cavernes."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr "Profondeur en-dessous duquel se trouvent les grandes grottes."
+msgstr "Profondeur en-dessous de laquelle se trouvent les grandes grottes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3342,7 +3341,7 @@ msgstr "Bruit de donjons"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Activer l'exposition automatique"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3380,7 +3379,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Activer l'élimination des blocs invisibles par Ray Tracing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3389,6 +3388,9 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Activer la correction automatique de l'exposition, lorsque cette option est "
+"activée, le moteur de post-traitement s'adapte automatiquement à la "
+"luminosité de la scène, simulant le comportement de l’œil humain."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3421,7 +3423,7 @@ msgstr "Activer le support des canaux de mods."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "Activer la sécurisation des mods"
+msgstr "Activer la sécurité des mods"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -3437,7 +3439,7 @@ msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
-"Active l'éclairage doux avec une occlusion ambiante simple.\n"
+"Activer le lissage de l'éclairage avec une occlusion ambiante simple.\n"
 "Désactiver pour davantage de performances ou pour un visuel différent."
 
 #: src/settings_translation_file.cpp
@@ -3515,7 +3517,7 @@ msgstr "Active la rotation des items d'inventaire."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr "Active la mise en cache des maillages orientés."
+msgstr "Active la mise en cache des mailles orientés « facedir »."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -3552,7 +3554,7 @@ msgstr "Intervalle d'impression des données du moteur de profilage"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr "Systèmes d'entité"
+msgstr "Méthodes des entités"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3573,9 +3575,8 @@ msgstr ""
 "flottant."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Facteur d'exposition"
+msgstr "Compensation de l'exposition"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3803,36 +3804,36 @@ msgstr "Format de captures d'écran."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Color"
-msgstr "Couleur de l'arrière-plan par défaut des formspec"
+msgstr "Couleur de l'arrière-plan par défaut des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Default Background Opacity"
-msgstr "Opacité de l'arrière-plan par défaut des formspec"
+msgstr "Opacité de l'arrière-plan par défaut des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
-msgstr "Couleur de l'arrière-plan en plein écran des formspec"
+msgstr "Couleur de l'arrière-plan en plein écran des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr "Opacité de l'arrière-plan en plein écran des formspec"
+msgstr "Opacité de l'arrière-plan en plein écran des formspecs"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background color (R,G,B)."
-msgstr "Couleur de l'arrière-plan par défaut des formspec (R,V,B)."
+msgstr "Couleur de l'arrière-plan par défaut des formspecs (R,V,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "Opacité de l'arrière-plan par défaut des formspec (entre 0 et 255)."
+msgstr "Opacité de l'arrière-plan par défaut des formspecs (entre 0 et 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Couleur de l'arrière-plan en plein écran des formspec (R,V,B)."
+msgstr "Couleur de l'arrière-plan en plein écran des formspecs (R,V,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background opacity (between 0 and 255)."
 msgstr ""
-"Opacité de l'arrière-plan en plein écran des formspec (entre 0 et 255)."
+"Opacité de l'arrière-plan en plein écran des formspecs (entre 0 et 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3842,7 +3843,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fractal type"
-msgstr "Type fractal"
+msgstr "Type de fractale"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
@@ -3893,19 +3894,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "Taille du GUI"
+msgstr "Taille de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "Filtrage des images du GUI"
+msgstr "Filtrage des images de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "Filtrage de mise à l'échelle txr2img du GUI"
+msgstr "Filtrage de mise à l'échelle txr2img de l'interface"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr "GUIs"
+msgstr "Interfaces graphiques"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -3948,7 +3949,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr "Graphiques"
+msgstr "Graphismes"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics Effects"
@@ -3956,7 +3957,7 @@ msgstr "Effets graphiques"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics and Audio"
-msgstr "Graphiques et audio"
+msgstr "Graphismes et audio"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -3976,11 +3977,11 @@ msgstr "Mods HTTP"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr "HUD"
+msgstr "ATH"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
-msgstr "Taille du HUD"
+msgstr "Taille de l'ATH"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4003,12 +4004,11 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Auto-instrumentaliser le profileur :\n"
-"* Instrumentalise une fonction vide.\n"
-"La surcharge est évaluée (l'auto-instrumentalisation ajoute 1 appel de "
-"fonction à chaque fois).\n"
-"* Instrumentalise l’échantillonneur utilisé pour mettre à jour les "
-"statistiques."
+"Auto-instrumenter le profileur :\n"
+"* Instrumente une fonction vide.\n"
+"La surcharge est évaluée (l'auto-instrumentation ajoute 1 appel de fonction "
+"à chaque fois).\n"
+"* Instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -4256,7 +4256,7 @@ msgid ""
 "to this distance from the player to the node."
 msgstr ""
 "Si la restriction « CSM » pour la distance des blocs est activée, les appels "
-"« get_node » sont limités à la distance entre le joueur et le bloc."
+"« get_node » sont limités à cette distance entre le joueur et le bloc."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4311,39 +4311,39 @@ msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
-"Instrument d'intégration.\n"
-"Ceci est habituellement nécessaire pour les contributeurs d'intégration au "
-"noyau."
+"Instrumenter « Intégré » (« builtin »).\n"
+"Ceci est habituellement nécessaire seulement pour les développeurs "
+"principaux."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chat commands on registration."
-msgstr "Instrument d'enregistrement des commandes de tchat."
+msgstr "Instrumenter les commandes de tchat à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Instrument des fonctions de rappel global enregistrées.\n"
-"(tout ce que vous passez dans une fonction minetest.register_*())"
+"Instrumenter les fonctions de rappel global à l'enregistrement (tout ce que "
+"vous passez à une fonction « minetest.register_*() »)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
-"Instrumentalise la fonction d'action des modificateurs de bloc actif lors de "
-"l'enregistrement."
+"Instrumenter la fonction action des Modificateurs de Blocs Actif (« Active "
+"Block Modifiers ») à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
-"Instrumentalise la fonction d'action des modificateurs de blocs de "
-"chargement à l'enregistrement."
+"Instrumenter la fonction action du Chargement des Modificateurs de Blocs (« "
+"Loading Block Modifiers ») à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr "Instrumentalise les systèmes d'entités lors de l'enregistrement."
+msgstr "Instrumenter les méthodes des entités à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
@@ -4406,7 +4406,7 @@ msgstr "Intervalle de répétition des boutons de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick dead zone"
-msgstr "Zone morte de la manette."
+msgstr "Zone morte de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -4414,7 +4414,7 @@ msgstr "Sensibilité tronconique de la manette"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
-msgstr "Type de manette."
+msgstr "Type de manette"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4631,7 +4631,7 @@ msgstr "Faible gradient de la courbe de lumière"
 
 #: src/settings_translation_file.cpp
 msgid "Lighting"
-msgstr "Lumière"
+msgstr "Éclairage"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4640,7 +4640,7 @@ msgid ""
 "Value is stored per-world."
 msgstr ""
 "Limite du générateur de terrain, en nœuds, dans les 6 directions à partir de "
-"(0,0,0).\n"
+"(0, 0, 0).\n"
 "Seules les tranches de la carte totalement comprises dans cette limite sont "
 "générées.\n"
 "Valeur différente pour chaque monde."
@@ -4703,7 +4703,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr "Chargement des modificateurs de blocs"
+msgstr "Chargement des Modificateurs de Blocs"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4836,12 +4836,11 @@ msgstr "Limite des blocs de carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
-msgstr "Délai de génération des maillages de blocs de carte"
+msgstr "Délai de génération du maillage de blocs de carte"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "Délai de génération des maillages de blocs de carte"
+msgstr "Fils de génération du maillage de blocs de carte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -5151,7 +5150,7 @@ msgstr "Divers"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
-msgstr "Profileur des mods"
+msgstr "Profileur de mods"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Security"
@@ -5290,7 +5289,7 @@ msgstr "Bruits"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr "Nombre de tâches en cours"
+msgstr "Nombre de fils émergents"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5305,19 +5304,17 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
-"Nombre de processus « emerge » à utiliser.\n"
+"Nombre de fils émergents à utiliser.\n"
 "Valeur 0 :\n"
-"– Sélection automatique. Le nombre de processus est le\n"
-"– « nombre de processeurs - 2 », avec un minimum de 1.\n"
+"– Sélection automatique. Le nombre de fils émergents est le « nombre de "
+"processeurs - 2 », avec un minimum de 1.\n"
 "Toute autre valeur :\n"
-"– Spécifie le nombre de processus, avec un minimum de 1.\n"
-"ATTENTION : augmenter le nombre de processus « emerge » accélère bien la\n"
-"création de terrain, mais cela peut nuire à la performance du jeu en "
-"interférant\n"
-"avec d’autres processus, en particulier en mode solo et/ou lors de "
-"l’exécution de\n"
-"code Lua en mode « on_generated ». Pour beaucoup, le réglage optimal peut "
-"être « 1 »."
+"– Spécifie le nombre de fils émergents, avec un minimum de 1.\n"
+"ATTENTION : augmenter le nombre de fils émergents accélère bien la création "
+"de terrain, mais cela peut nuire à la performance du jeu en interférant avec "
+"d’autres processus, en particulier en mode solo et/ou lors de l’exécution de "
+"code Lua dans « on_generated ». Pour beaucoup d'utilisateurs, le réglage "
+"optimal peut être « 1 »."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5337,6 +5334,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Nombre de fils à utiliser pour la génération du maillage.\n"
+"La valeur 0 (par défaut) permet à Minetest de détecter automatiquement le "
+"nombre de fils disponibles."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5682,8 +5682,9 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
-"Met à l'échelle l'interface par une valeur spécifiée par l'utilisateur, à "
-"l'aide d'un filtre au plus proche voisin avec anticrénelage.\n"
+"Met à l'échelle l'interface graphique par une valeur spécifiée par "
+"l'utilisateur, à l'aide d'un filtre au plus proche voisin avec anticrénelage."
+"\n"
 "Cela lisse certains bords grossiers, et mélange les pixels en réduisant "
 "l'échelle au détriment d'un effet de flou sur des pixels en bordure quand "
 "les images sont mises à l'échelle par des valeurs fractionnelles."
@@ -5804,7 +5805,7 @@ msgstr "Serveur"
 
 #: src/settings_translation_file.cpp
 msgid "Server Gameplay"
-msgstr "Jeu du serveur"
+msgstr "Jouabilité du serveur"
 
 #: src/settings_translation_file.cpp
 msgid "Server Security"
@@ -5851,18 +5852,15 @@ msgid "Serverlist file"
 msgstr "Fichier de la liste des serveurs"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
-"Définit le facteur de compensation de l'exposition. Ce facteur est appliqué "
-"à la valeur de couleur linéaire avant tous les autres effets de post-"
-"traitement.\n"
-"La valeur de 1,0 (par défaut) signifie qu'il n'y a pas de compensation "
+"Définit la compensation de l'exposition en unités EV.\n"
+"La valeur de 0,0 (par défaut) signifie qu'il n'y a pas de compensation "
 "d'exposition.\n"
-"Plage : de 0,1 à 10,0"
+"Plage : de -1 à 1,0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5942,7 +5940,6 @@ msgstr ""
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
 "In debug mode, the screen is split into 4 quadrants:\n"
@@ -6045,6 +6042,13 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"Longueur du côté d'un cube de blocs de carte que le client considère "
+"ensemble lors de la génération du maillage.\n"
+"Des valeurs plus grandes augmentent l'utilisation du GPU en réduisant le "
+"nombre d'appels de dessin, bénéficiant en particulier aux GPUs haut de gamme."
+"\n"
+"Les systèmes avec un GPU bas de gamme (ou sans GPU) bénéficient de valeurs "
+"plus faibles."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6104,7 +6108,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
-msgstr "Lumière douce"
+msgstr "Lissage de l'éclairage"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6148,8 +6152,8 @@ msgid ""
 msgstr ""
 "Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
 "d'utiliser le port UDP.\n"
-"$filename doit être accessible depuis $remote_media$filename via cURL "
-"(évidemment, remote_media devrait se terminer avec un slash).\n"
+"« $filename » doit être accessible depuis « $remote_media$filename » via "
+"cURL (évidemment, « remote_media » doit se terminer par une barre oblique).\n"
 "Les fichiers qui ne sont pas présents sont récupérés de la manière "
 "habituelle."
 
@@ -6416,14 +6420,13 @@ msgid ""
 msgstr ""
 "Le rayon du volume de blocs autour de chaque joueur soumis au bloc actif, "
 "établi en blocs de carte (16 nœuds).\n"
-"Dans les blocs actifs, les objets sont chargés et les « ABMs » sont "
-"exécutés.\n"
+"Dans les blocs actifs, les objets sont chargés et les « ABMs » sont exécutés."
+"\n"
 "C'est également la distance minimale dans laquelle les objets actifs (mobs) "
 "sont conservés.\n"
-"Ceci devrait être configuré avec « active_object_send_range_blocks »."
+"Ceci doit être configuré avec « active_object_send_range_blocks »."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6431,12 +6434,10 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Le moteur de rendu.\n"
-"Un redémarrage est nécessaire après cette modification.\n"
-"Remarque : Sur Android, rester avec OGLES1 en cas de doute ! Autrement, "
-"l'application peut ne pas démarrer.\n"
-"Sur les autres plateformes, OpenGL est recommandé.\n"
-"Les shaders sont pris en charge par OpenGL (ordinateur de bureau uniquement) "
-"et OGLES2 (expérimental)."
+"Remarque : un redémarrage est nécessaire après cette modification !\n"
+"OpenGL est la valeur par défaut pour les ordinateurs de bureau et OGLES2 "
+"pour Android.\n"
+"Les shaders sont pris en charge par OpenGL et OGLES2 (expérimental)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6531,7 +6532,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr "Intervalle d'envoi du temps"
+msgstr "Intervalle d'envoi de l'heure"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
@@ -6624,7 +6625,7 @@ msgid ""
 msgstr ""
 "Le sous-échantillonnage ressemble à l'utilisation d'une résolution d'écran "
 "inférieure, mais il ne s'applique qu'au rendu 3D, gardant l'interface "
-"intacte.\n"
+"graphique intacte.\n"
 "Cela doit donner un bonus de performance conséquent, au détriment de la "
 "qualité d'image.\n"
 "Les valeurs plus élevées réduisent la qualité du détail des images."
@@ -6725,6 +6726,10 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test"
 msgstr ""
+"Utiliser l'élimination des blocs de carte invisibles par Ray Tracing dans le "
+"nouvel algorithme.\n"
+"Ce drapeau active l'utilisation de l'élimination des blocs de carte "
+"invisibles par Ray Tracing"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6921,9 +6926,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
-"Quand « gui_scaling_filter » est activé, tous les images du GUI sont "
-"filtrées par le logiciel, mais certaines sont générées directement par le "
-"matériel (ex. : textures des blocs dans l'inventaire)."
+"Quand « gui_scaling_filter » est activé, tous les images de l'interface "
+"graphique sont filtrées par le logiciel, mais certaines sont générées "
+"directement par le matériel (ex. : textures des blocs dans l'inventaire)."
 
 #: src/settings_translation_file.cpp
 msgid ""

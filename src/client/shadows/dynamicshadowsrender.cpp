@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientmap.h"
 #include "profiler.h"
+#include "EShaderTypes.h"
+#include "IGPUProgrammingServices.h"
+#include "IMaterialRenderer.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
@@ -53,6 +56,9 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadow_map_colored = g_settings->getBool("shadow_map_color");
 	m_shadow_samples = g_settings->getS32("shadow_filters");
 	m_map_shadow_update_frames = g_settings->getS16("shadow_update_frames");
+
+	// add at least one light
+	addDirectionalLight();
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -157,11 +163,8 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 
 f32 ShadowRenderer::getMaxShadowFar() const
 {
-	if (!m_light_list.empty()) {
-		float zMax = m_light_list[0].getFarValue();
-		return zMax;
-	}
-	return 0.0f;
+	float zMax = m_light_list[0].getFarValue();
+	return zMax;
 }
 
 void ShadowRenderer::setShadowIntensity(float shadow_intensity)
@@ -258,7 +261,7 @@ void ShadowRenderer::updateSMTextures()
 			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	}
 
-	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
+	if (!m_shadow_node_array.empty()) {
 		bool reset_sm_texture = false;
 
 		// detect if SM should be regenerated
@@ -344,7 +347,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 	}
 
 
-	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
+	if (!m_shadow_node_array.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values for entities are set in updateSMTextures
@@ -700,7 +703,7 @@ ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
 {
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
-		g_settings->get("video_driver") != "opengl" ||
+		device->getVideoDriver()->getDriverType() != video::EDT_OPENGL ||
 		!g_settings->getBool("enable_shaders"))) {
 		g_settings->setBool("enable_dynamic_shadows", false);
 	}

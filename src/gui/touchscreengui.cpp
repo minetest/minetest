@@ -563,6 +563,8 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 	m_rarecontrolsbar.addButton(chat_id,      L"Chat", "chat_btn.png");
 	m_rarecontrolsbar.addButton(inventory_id, L"inv",  "inventory_btn.png");
 	m_rarecontrolsbar.addButton(drop_id,      L"drop", "drop_btn.png");
+
+	m_initialized = true;
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
@@ -690,9 +692,8 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 			}
 			m_receiver->OnEvent(*translated);
 			delete translated;
-		} else {
-			// do double tap detection
-			doubleTapDetection();
+		} else if (!m_move_has_really_moved) {
+			doRightClick();
 		}
 	}
 
@@ -725,6 +726,8 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 
 void TouchScreenGUI::translateEvent(const SEvent &event)
 {
+	if (!m_initialized)
+		return;
 	if (!m_visible) {
 		infostream
 			<< "TouchScreenGUI::translateEvent got event but not visible!"
@@ -769,8 +772,11 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			// already handled in isSettingsBarButton()
 		} else {
 			// handle non button events
-			m_settingsbar.deactivate();
-			m_rarecontrolsbar.deactivate();
+			if (m_settingsbar.active() || m_rarecontrolsbar.active()) {
+				m_settingsbar.deactivate();
+				m_rarecontrolsbar.deactivate();
+				return;
+			}
 
 			s32 dxj = event.TouchInput.X - button_size * 5.0f / 2.0f;
 			s32 dyj = event.TouchInput.Y - (s32)m_screensize.Y + button_size * 5.0f / 2.0f;
@@ -995,29 +1001,9 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 				event.TouchInput.ID, true);
 }
 
-bool TouchScreenGUI::doubleTapDetection()
+bool TouchScreenGUI::doRightClick()
 {
-	m_key_events[0].down_time = m_key_events[1].down_time;
-	m_key_events[0].x         = m_key_events[1].x;
-	m_key_events[0].y         = m_key_events[1].y;
-	m_key_events[1].down_time = m_move_downtime;
-	m_key_events[1].x         = m_move_downlocation.X;
-	m_key_events[1].y         = m_move_downlocation.Y;
-
-	u64 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
-	if (delta > 400)
-		return false;
-
-	double distance = sqrt(
-			(m_key_events[0].x - m_key_events[1].x) *
-			(m_key_events[0].x - m_key_events[1].x) +
-			(m_key_events[0].y - m_key_events[1].y) *
-			(m_key_events[0].y - m_key_events[1].y));
-
-	if (distance > (20 + m_touchscreen_threshold))
-		return false;
-
-	v2s32 mPos = v2s32(m_key_events[0].x, m_key_events[0].y);
+	v2s32 mPos = v2s32(m_move_downlocation.X, m_move_downlocation.Y);
 	if (m_draw_crosshair) {
 		mPos.X = m_screensize.X / 2;
 		mPos.Y = m_screensize.Y / 2;
@@ -1071,6 +1057,9 @@ void TouchScreenGUI::applyJoystickStatus()
 
 TouchScreenGUI::~TouchScreenGUI()
 {
+	if (!m_initialized)
+		return;
+
 	for (auto &button : m_buttons) {
 		if (button.guibutton) {
 			button.guibutton->drop();
@@ -1096,14 +1085,13 @@ TouchScreenGUI::~TouchScreenGUI()
 
 void TouchScreenGUI::step(float dtime)
 {
+	if (!m_initialized)
+		return;
+
 	// simulate keyboard repeats
 	for (auto &button : m_buttons) {
 		if (!button.ids.empty()) {
 			button.repeatcounter += dtime;
-
-			// in case we're moving around digging does not happen
-			if (m_has_move_id)
-				m_move_has_really_moved = true;
 
 			if (button.repeatcounter < button.repeatdelay)
 				continue;
@@ -1180,6 +1168,9 @@ void TouchScreenGUI::registerHudItem(int index, const rect<s32> &rect)
 
 void TouchScreenGUI::Toggle(bool visible)
 {
+	if (!m_initialized)
+		return;
+
 	m_visible = visible;
 	for (auto &button : m_buttons) {
 		if (button.guibutton)

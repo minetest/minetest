@@ -23,14 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef _WIN32_WINNT
-		#undef _WIN32_WINNT
-	#endif
-	#define _WIN32_WINNT 0x0501 // We need to do this before any other headers
-		// because those might include sdkddkver.h which defines _WIN32_WINNT if not already set
-#endif
-
 #include <string>
 #include <vector>
 #include "irrlicht.h"

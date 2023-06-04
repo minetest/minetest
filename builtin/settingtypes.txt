@@ -68,19 +68,15 @@
 
 [*General]
 
-#    If enabled, you can place blocks at the position (feet + eye level) where you stand.
-#    This is helpful when working with nodeboxes in small areas.
-enable_build_where_you_stand (Build inside player) bool false
-
-#    Smooths camera when looking around. Also called look or mouse smoothing.
-#    Useful for recording videos.
-cinematic (Cinematic mode) bool false
-
-#    Smooths rotation of camera. 0 to disable.
+#    Smooths rotation of camera, also called look or mouse smoothing. 0 to disable.
 camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
-#    Smooths rotation of camera in cinematic mode. 0 to disable.
+#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
+
+#    If enabled, you can place nodes at the position (feet + eye level) where you stand.
+#    This is helpful when working with nodeboxes in small areas.
+enable_build_where_you_stand (Build inside player) bool false
 
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
@@ -112,6 +108,12 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
+#    Enable mouse wheel (scroll) for item selection in hotbar.
+enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
+
+#    Invert mouse wheel (scroll) direction for item selection in hotbar.
+invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
+
 [*Touchscreen]
 
 #    The length in pixels it takes for touch screen interaction to start.
@@ -136,14 +138,20 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 
 [**Screen]
 
-#    Width component of the initial window size. Ignored in fullscreen mode.
+#    Width component of the initial window size.
 screen_w (Screen width) int 1024 1 65535
 
-#    Height component of the initial window size. Ignored in fullscreen mode.
+#    Height component of the initial window size.
 screen_h (Screen height) int 600 1 65535
 
+#    Whether the window is maximized.
+window_maximized (Window maximized) bool false
+
 #    Save window size automatically when modified.
-autosave_screensize (Autosave screen size) bool true
+#    If true, screen size is saved in screen_w and screen_h, and whether the window
+#    is maximized is stored in window_maximized.
+#    (Autosaving window_maximized only works if compiled with SDL.)
+autosave_screensize (Remember screen size) bool true
 
 #    Fullscreen mode.
 fullscreen (Full screen) bool false
@@ -158,7 +166,7 @@ pause_on_lost_focus (Pause on lost window focus) bool false
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60 1 4294967295
 
-#    Vertical screen synchronization.
+#    Vertical screen synchronization. Your system may still force VSync on even if this is disabled.
 vsync (VSync) bool false
 
 #    Maximum FPS when the window is not focused, or when the game is paused.
@@ -185,7 +193,7 @@ opaque_water (Opaque liquids) bool false
 leaves_style (Leaves style) enum fancy fancy,simple,opaque
 
 #    Connects glass if supported by node.
-connected_glass (Connect glass) bool true
+connected_glass (Connect glass) bool false
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
@@ -230,12 +238,6 @@ fall_bobbing_amount (Fall bobbing factor) float 0.03 0.0 100.0
 
 [**Camera]
 
-#   Camera 'near clipping plane' distance in nodes, between 0 and 0.25
-#   Only works on GLES platforms. Most users will not need to change this.
-#   Increasing can reduce artifacting on weaker GPUs.
-#   0.1 = Default, 0.25 = Good value for weaker tablets.
-near_plane (Near plane) float 0.1 0 0.25
-
 #    Field of view in degrees.
 fov (Field of view) int 72 45 160
 
@@ -250,7 +252,7 @@ display_gamma (Light curve gamma) float 1.0 0.33 3.0
 #    Lower is darker, Higher is lighter. The valid range of values for this
 #    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
 #    set to the nearest valid value.
-ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
+ambient_occlusion_gamma (Ambient occlusion gamma) float 1.8 0.25 4.0
 
 [**Screenshots]
 
@@ -349,6 +351,22 @@ texture_min_size (Minimum texture size) int 64 1 32768
 #    A restart is required after changing this option.
 fsaa (FSAA) enum 0 0,1,2,4,8,16
 
+[**Occlusion Culling]
+
+#    Type of occlusion_culler
+#
+#    "loops" is the legacy algorithm with nested loops and O(n³) complexity
+#    "bfs" is the new algorithm based on breadth-first-search and side culling
+#
+#    This setting should only be changed if you have performance problems.
+occlusion_culler (Occlusion Culler) enum bfs bfs,loops
+
+#    Use raytraced occlusion culling in the new culler.
+#	 This flag enables use of raytraced occlusion culling test for
+#    client mesh sizes smaller than 4x4x4 map blocks.
+enable_raytraced_culling (Enable Raytraced Culling) bool true
+
+
 
 [*Shaders]
 
@@ -356,14 +374,6 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 #    cards.
 #    This only works with the OpenGL video backend.
 enable_shaders (Shaders) bool true
-
-[**Tone Mapping]
-
-#    Enables Hable's 'Uncharted 2' filmic tone mapping.
-#    Simulates the tone curve of photographic film and how this approximates the
-#    appearance of high dynamic range images. Mid-range contrast is slightly
-#    enhanced, highlights and shadows are gradually compressed.
-tone_mapping (Filmic tone mapping) bool false
 
 [**Waving Nodes]
 
@@ -407,12 +417,12 @@ enable_dynamic_shadows (Dynamic shadows) bool false
 shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
-shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 120.0 10.0 1000.0
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 200.0 10.0 1000.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
 #    Bigger numbers create better shadows but it is also more expensive.
-shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
+shadow_map_texture_size (Shadow map texture size) int 2048 128 8192
 
 #    Sets shadow texture quality to 32 bits.
 #    On false, 16 bits texture will be used.
@@ -446,15 +456,15 @@ shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 #    Set the default tilt of Sun/Moon orbit in degrees.
 #    Games may change orbit tilt via API.
 #    Value of 0 means no tilt / vertical orbit.
-#    type: float min: -60 max: 60
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 
-[**Post processing]
+[**Post Processing]
 
-#    Set the exposure compensation in EV units.
-#    Value of 0.0 (default) means no exposure compensation.
-#    Range: from -1 to 1.0
-exposure_compensation	(Exposure compensation) float 0.0 -1.0 1.0
+#    Enables Hable's 'Uncharted 2' filmic tone mapping.
+#    Simulates the tone curve of photographic film and how this approximates the
+#    appearance of high dynamic range images. Mid-range contrast is slightly
+#    enhanced, highlights and shadows are gradually compressed.
+tone_mapping (Filmic tone mapping) bool false
 
 #    Enable automatic exposure correction
 #    When enabled, the post-processing engine will
@@ -462,6 +472,10 @@ exposure_compensation	(Exposure compensation) float 0.0 -1.0 1.0
 #    simulating the behavior of human eye.
 enable_auto_exposure (Enable Automatic Exposure) bool false
 
+#    Set the exposure compensation in EV units.
+#    Value of 0.0 (default) means no exposure compensation.
+#    Range: from -1 to 1.0
+exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
 [**Bloom]
 
@@ -494,7 +508,7 @@ bloom_radius (Bloom Radius) float 1 0.1 8
 
 #    Volume of all sounds.
 #    Requires the sound system to be enabled.
-sound_volume (Volume) float 0.7 0.0 1.0
+sound_volume (Volume) float 0.8 0.0 1.0
 
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
@@ -577,7 +591,7 @@ hud_hotbar_max_width (Maximum hotbar width) float 1.0 0.001 1.0
 clickable_chat_weblinks (Chat weblinks) bool true
 
 #    Optional override for chat weblink color.
-chat_weblink_color (Weblink color) string
+chat_weblink_color (Weblink color) string #8888FF
 
 #    Font size of the recent chat text and chat prompt in point (pt).
 #    Value 0 will use the default font size.
@@ -618,26 +632,6 @@ enable_split_login_register (Enable split login/register) bool true
 
 #    URL to JSON file which provides information about the newest Minetest release
 update_information_url (Update information URL) string https://www.minetest.net/release_info.json
-
-#    Unix timestamp (integer) of when the client last checked for an update
-#    Set this value to "disabled" to never check for updates.
-update_last_checked (Last update check) string
-
-#    Version number which was last seen during an update check.
-#
-#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
-#    Ex: 5.5.0 is 005005000
-update_last_known (Last known version update) int 0
-
-#    Type of occlusion_culler
-#    "loops" is the legacy algorithm with nested loops and O(N^3) complexity
-#    "bfs" is the new algorithm based on breadth-first-search and side culling
-occlusion_culler (Occlusion Culler) enum bfs bfs,loops
-
-#    Use raytraced occlusion culling in the new culler.
-#	 This flag enables use of raytraced occlusion culling test for
-#    client mesh sizes smaller than 4x4x4 map blocks.
-enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 [*Server]
 
@@ -750,7 +744,7 @@ strip_color_codes (Strip color codes) bool false
 chat_message_max_size (Chat message max length) int 500 10 65535
 
 #    Amount of messages a player may send per 10 seconds.
-chat_message_limit_per_10sec (Chat message count limit) float 10.0 1.0
+chat_message_limit_per_10sec (Chat message count limit) float 8.0 1.0
 
 #    Kick players who sent more than X messages per 10 seconds.
 chat_message_limit_trigger_kick (Chat message kick threshold) int 50 1 65535
@@ -1664,7 +1658,7 @@ shader_path (Shader path) path
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
 #    Shaders are supported by OpenGL and OGLES2 (experimental).
-video_driver (Video driver) enum opengl opengl,ogles1,ogles2
+video_driver (Video driver) enum  ,opengl,ogles1,ogles2
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
@@ -1679,7 +1673,7 @@ enable_vbo (VBO) bool true
 cloud_radius (Cloud radius) int 12 1 62
 
 #    Whether node texture animations should be desynchronized per mapblock.
-desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
+desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
@@ -2063,7 +2057,7 @@ joystick_deadzone (Joystick dead zone) int 2048 0 65535
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
-[*Temporary Settings]
+[*Hide: Temporary Settings]
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path
@@ -2115,11 +2109,9 @@ noclip (Noclip) bool false
 #    Press the autoforward key again or the backwards movement to disable.
 continuous_forward (Continuous forward) bool false
 
-#    Formspec default background opacity (between 0 and 255).
-formspec_default_bg_opacity (Formspec Default Background Opacity) int 140 0 255
-
-#    Formspec default background color (R,G,B).
-formspec_default_bg_color (Formspec Default Background Color) string (0,0,0)
+#    This can be bound to a key to toggle camera smoothing when looking around.
+#    Useful for recording videos
+cinematic (Cinematic mode) bool false
 
 #    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
@@ -2132,6 +2124,16 @@ show_technical_names (Show technical names) bool false
 #    sound controls will be non-functional.
 #    Changing this setting requires a restart.
 enable_sound (Sound) bool true
+
+#    Unix timestamp (integer) of when the client last checked for an update
+#    Set this value to "disabled" to never check for updates.
+update_last_checked (Last update check) string
+
+#    Version number which was last seen during an update check.
+#
+#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
+#    Ex: 5.5.0 is 005005000
+update_last_known (Last known version update) int 0
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
@@ -2153,11 +2155,13 @@ keymap_jump (Jump key) key KEY_SPACE
 #    Also used for climbing down and descending in water if aux1_descends is disabled.
 keymap_sneak (Sneak key) key KEY_LSHIFT
 
-#    Key for digging.
-keymap_dig (Dig key) key KEY_LBUTTON
+#    Key for digging, punching or using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_dig (Dig/punch/use key) key KEY_LBUTTON
 
-#    Key for placing.
-keymap_place (Place key) key KEY_RBUTTON
+#    Key for placing an item/block or for using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
+keymap_place (Place/use key) key KEY_RBUTTON
 
 #    Key for opening the inventory.
 keymap_inventory (Inventory key) key KEY_KEY_I

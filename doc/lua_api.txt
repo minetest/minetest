@@ -1,6 +1,3 @@
-Minetest Lua Modding API Reference
-==================================
-
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 * (Unofficial) Minetest Modding Book by rubenwardy: <https://rubenwardy.com/minetest_modding_book/>
@@ -10143,3 +10140,5 @@ error objects so long as you give them `__tostring` metamethods.
 
 You can override `minetest.error_handler`. You should call the previous handler
 with the correct stack level in your implementation.
+=======
+URL: https://github.com/minetest/minetest/blob/master/doc/lua_api.md

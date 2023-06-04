@@ -27,17 +27,15 @@ namespace server
 
 void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)> &cb)
 {
-	std::vector<u16> objects_to_remove;
-	for (auto &it : m_active_objects) {
-		if (cb(it.second, it.first)) {
-			// Id to be removed from m_active_objects
-			objects_to_remove.push_back(it.first);
-		}
-	}
+	// make a defensive copy in case the
+	// passed callback changes the set of active objects
+	auto cloned_map(m_active_objects);
 
-	// Remove references from m_active_objects
-	for (u16 i : objects_to_remove) {
-		m_active_objects.erase(i);
+	for (auto &it : cloned_map) {
+		if (cb(it.second, it.first)) {
+			// Remove reference from m_active_objects
+			m_active_objects.erase(it.first);
+		}
 	}
 }
 

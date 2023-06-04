@@ -33,9 +33,9 @@ enum ToClientConnectionState {
 
 struct ToClientCommandHandler
 {
-    const char* name;
-    ToClientConnectionState state;
-    void (Client::*handler)(NetworkPacket* pkt);
+	const char* name;
+	ToClientConnectionState state;
+	void (Client::*handler)(NetworkPacket* pkt);
 };
 
 struct ServerCommandFactory

@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "lua_api/l_item.h"
+#include "itemdef.h"
 #include "s_item.h"
 
 void ScriptApiClient::on_mods_loaded()

@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-22 15:28+0000\n"
-"Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi <translation@mnh48.moe>\n"
+"PO-Revision-Date: 2023-03-10 14:41+0000\n"
+"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
 "minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
@@ -13,48 +13,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.1\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "ساٴيز مکسيموم باريس ݢيلير کلوار سيمبڠ"
+msgstr "ڤادم باريس ݢيلير سيمبڠ کلوار"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
 msgstr ""
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "کلوار کمينو"
+msgstr "کلوار کمينو اوتام"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته تيدق صح: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "ڤرينته دکلوارکن: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "ڤماٴين ڤرسأورڠن"
+msgstr "سنارايکن ڤماٴين دالم تالين"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "ڤماٴين ڤرسأورڠن"
+msgstr "ڤماٴين دالم تالين: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "باريس ݢيلير سيمبڠ کلوار کيني کوسوڠ."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "ڤرينته اين دلومڤوهکن اوليه ڤلاين."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -65,14 +60,12 @@ msgid "You died"
 msgstr "اندا تله منيڠݢل"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته ترسديا:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته ترسديا: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -80,16 +73,18 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "داڤتکن بنتوان اونتوق ڤرينته"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"ݢوناکن ‭'.help <ڤرينته>'‬ اونتوق داڤتکن معلومت لنجوت⹁ اتاو ‭'.help all'‬ "
+"اونتوق سنارايکن کسمواڽ."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <ڤرينته>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -141,11 +136,11 @@ msgstr "کامي مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(دبوليهکن⹁ اد رالت)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(تيدق دڤنوهي)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -233,11 +228,11 @@ msgstr "دبوليهکن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" سوده وجود. اداکه اندا ايڠين توليس ݢنتيڽ؟"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "کبرݢنتوڠن $1 دان $2 اکن دڤاسڠکن."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -248,37 +243,36 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 سدڠ موات تورون⹁\n"
+"$2 منوڠݢو ݢيليرن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "مموات تورون..."
+msgstr "$1 مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 ممرلوکن کبرݢنتوڠن يڠ تيدق دجومڤاٴي."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 اکن دڤاسڠکن⹁ دان $2 کبرݢنتوڠن اکن دلڠکاو."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "سموا ڤاکيج"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "ککونچي تله دݢوناکن اونتوق فوڠسي لاٴين"
+msgstr "سوده دڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "کمبالي کمينو اوتام"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "هوس ڤرماٴينن"
+msgstr "ڤرماٴينن اساس:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -290,21 +284,19 @@ msgstr "مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "رالت کتيک مماسڠ \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "ݢاݢل مموات تورون $1"
+msgstr "ݢاݢل اونتوق مموات تورون \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "ݢاݢل مموات تورون $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "ڤاسڠ: جنيس فايل \"$1\" تيدق دسوکوڠ اتاو ارکيب روسق"
+msgstr "ݢاݢل اونتوق مڽاري \"$1\" (جنيس فاٴيل تيدق دسوکوڠ اتاو ارکيب روسق)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -315,14 +307,12 @@ msgid "Install"
 msgstr "ڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "ڤاسڠ"
+msgstr "ڤاسڠ $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "کبرݢنتوڠن ڤيليهن:"
+msgstr "ڤاسڠ کبرݢنتوڠن يڠ هيلڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -337,26 +327,24 @@ msgid "No results"
 msgstr "تيادا حاصيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "کمس کيني"
+msgstr "تياد کمس کيني"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "بيسوکن بوڽي"
+msgstr "تيدق دجومڤاٴي"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "توليس ݢنتي"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "سيلا ڤريقسا دان ڤستيکن ڤرماٴينن اساس ايت بتول."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "منوڠݢو ݢيليرن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -372,11 +360,11 @@ msgstr "کمس کيني"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "کمس کيني سموا [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "ليهت معلومت لنجوت دالم ڤلاير سساوڠ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -419,9 +407,8 @@ msgid "Decorations"
 msgstr "هياسن"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "امرن: The Development Test هاڽله اونتوق کݢوناٴن ڤمباڠون."
+msgstr "Development Test هاڽاله اونتوق کݢوناٴن ڤمباڠون."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -456,9 +443,8 @@ msgid "Increases humidity around rivers"
 msgstr "تيڠکتکن کلمبڤن سکيتر سوڠاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "ڤاسڠ"
+msgstr "ڤاسڠ سواتو ڤرماٴينن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"

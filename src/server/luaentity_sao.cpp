@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "luaentity_sao.h"
 #include "collision.h"
 #include "constants.h"
+#include "inventory.h"
 #include "player_sao.h"
 #include "scripting_server.h"
 #include "server.h"
@@ -409,7 +410,7 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 			m_env->getScriptIface()->luaentity_on_death(m_id, killer);
 		}
 		markForRemoval();
-	}	
+	}
 }
 
 u16 LuaEntitySAO::getHP() const

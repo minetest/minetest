@@ -1101,17 +1101,18 @@ void GUIFormSpecMenu::parseBackground(parserData* data, const std::string &eleme
 		258 + m_fields.size()
 	);
 
-	core::rect<s32> rect;
+	core::rect<s32> rect{};
+	v2s32 autoclip_offset{};
 	if (!clip) {
 		// no auto_clip => position like normal image
 		rect = core::rect<s32>(pos, pos + geom);
 	} else {
-		// it will be auto-clipped when drawing
-		rect = core::rect<s32>(-pos, pos);
+		// element will be auto-clipped when drawing
+		autoclip_offset = pos;
 	}
 
 	GUIBackgroundImage *e = new GUIBackgroundImage(Environment, data->background_parent.get(),
-			spec.fid, rect, name, middle, m_tsrc, clip);
+			spec.fid, rect, name, middle, m_tsrc, clip, autoclip_offset);
 
 	FATAL_ERROR_IF(!e, "Failed to create background formspec element");
 
@@ -3090,16 +3091,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_bgfullscreen = false;
 
 	m_formspec_version = 1;
-
-	{
-		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
-		m_bgcolor = video::SColor(
-			(u8) clamp_u8(g_settings->getS32("formspec_default_bg_opacity")),
-			clamp_u8(myround(formspec_bgcolor.X)),
-			clamp_u8(myround(formspec_bgcolor.Y)),
-			clamp_u8(myround(formspec_bgcolor.Z))
-		);
-	}
+	m_bgcolor = video::SColor(140, 0, 0, 0);
 
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
@@ -3405,9 +3397,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					size.X / 2 - 70,       pos.Y,
 					size.X / 2 - 70 + 140, pos.Y + m_btn_height * 2
 			);
-			const wchar_t *text = wgettext("Proceed");
-			GUIButton::addButton(Environment, mydata.rect, m_tsrc, this, 257, text);
-			delete[] text;
+			GUIButton::addButton(Environment, mydata.rect, m_tsrc, this, 257,
+					wstrgettext("Proceed").c_str());
 		}
 	}
 
