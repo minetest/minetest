@@ -170,7 +170,7 @@ Submit a :+1: (+1) or "Looks good" comment to show you believe the pull request 
     * The title should follow the commit guidelines (title starts with a capital letter, present tense, descriptive).
     * Don't modify history older than 10 minutes.
     * Use rebase, not merge to get linear history:
-    * `curl https://github.com/minetest/minetest/pull/1.patch | git am`
+      `curl https://github.com/minetest/minetest/pull/1.patch | git am`
 
 ## Reviewing Issues and Feature Requests
 
