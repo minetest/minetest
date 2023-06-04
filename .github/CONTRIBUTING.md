@@ -29,7 +29,7 @@ Contributions are welcome! Here's how you can help:
    is required to speak on this channel.
 
 3. Start coding!
-	* Refer to the
+    * Refer to the
       [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.md),
       [Developer Wiki](https://dev.minetest.net/Main_Page) and other
       [documentation](https://github.com/minetest/minetest/tree/master/doc).
@@ -46,7 +46,7 @@ Contributions are welcome! Here's how you can help:
         * Be a compact summary of the commit.
         * Preferably have less than 70 characters.
         * Have no full stop at the end.
-	* The second line should be empty.
+    * The second line should be empty.
     * The following lines should describe the commit, starting a new line for each point.
 
 5. Once you are happy with your changes, submit a pull request.
@@ -167,10 +167,10 @@ Submit a :+1: (+1) or "Looks good" comment to show you believe the pull request 
 
 * Two core developers must agree to the merge before it is carried out and both should +1 the pull request.
 * Who intends to merge the pull request should follow the commit rules:
-	* The title should follow the commit guidelines (title starts with a capital letter, present tense, descriptive).
-	* Don't modify history older than 10 minutes.
-	* Use rebase, not merge to get linear history:
-	* `curl https://github.com/minetest/minetest/pull/1.patch | git am`
+    * The title should follow the commit guidelines (title starts with a capital letter, present tense, descriptive).
+    * Don't modify history older than 10 minutes.
+    * Use rebase, not merge to get linear history:
+    * `curl https://github.com/minetest/minetest/pull/1.patch | git am`
 
 ## Reviewing Issues and Feature Requests
 

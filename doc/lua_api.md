@@ -3610,8 +3610,8 @@ vectors are written like this: `(x, y, z)`:
     * Returns a vector where the function `func` has been applied to each
       component.
 * `vector.combine(v, w, func)`:
-	* Returns a vector where the function `func` has combined both components of `v` and `w`
-	  for each component
+    * Returns a vector where the function `func` has combined both components of `v` and `w`
+      for each component
 * `vector.equals(v1, v2)`:
     * Returns a boolean, `true` if the vectors are identical.
 * `vector.sort(v1, v2)`:
@@ -3629,10 +3629,10 @@ vectors are written like this: `(x, y, z)`:
       by a `vector.*` function.
     * Returns `false` for anything else, including tables like `{x=3,y=1,z=4}`.
 * `vector.in_area(pos, min, max)`:
-	* Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
-	* `min` and `max` are inclusive.
-	* If `min` is bigger than `max` on some axis, function always returns false.
-	* You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
+    * Returns a boolean value indicating if `pos` is inside area formed by `min` and `max`.
+    * `min` and `max` are inclusive.
+    * If `min` is bigger than `max` on some axis, function always returns false.
+    * You can use `vector.sort` if you have two vectors and don't know which are the minimum and the maximum.
 
 For the following functions `x` can be either a vector or a number:
 
@@ -4718,12 +4718,12 @@ Callbacks:
       used for updating the entity state.
 * `on_deactivate(self, removal)`
     * Called when the object is about to get removed or unloaded.
-	* `removal`: boolean indicating whether the object is about to get removed.
-	  Calling `object:remove()` on an active object will call this with `removal=true`.
-	  The mapblock the entity resides in being unloaded will call this with `removal=false`.
-	* Note that this won't be called if the object hasn't been activated in the first place.
-	  In particular, `minetest.clear_objects({mode = "full"})` won't call this,
-	  whereas `minetest.clear_objects({mode = "quick"})` might call this.
+    * `removal`: boolean indicating whether the object is about to get removed.
+      Calling `object:remove()` on an active object will call this with `removal=true`.
+      The mapblock the entity resides in being unloaded will call this with `removal=false`.
+    * Note that this won't be called if the object hasn't been activated in the first place.
+      In particular, `minetest.clear_objects({mode = "full"})` won't call this,
+      whereas `minetest.clear_objects({mode = "quick"})` might call this.
 * `on_step(self, dtime, moveresult)`
     * Called on every server tick, after movement and collision processing.
     * `dtime`: elapsed time since last call

@@ -165,23 +165,23 @@ more files in a texture pack called override.txt
 
 Each line in an override.txt file is a rule. It consists of
 
-	itemname target texture
+    itemname target texture
 
 For example,
 
-	default:dirt_with_grass sides default_stone.png
+    default:dirt_with_grass sides default_stone.png
 
 or
 
-	default:sword_steel inventory my_steel_sword.png
+    default:sword_steel inventory my_steel_sword.png
 
 You can list multiple targets on one line as a comma-separated list:
 
-	default:tree top,bottom my_special_tree.png
+    default:tree top,bottom my_special_tree.png
 
 You can use texture modifiers, as usual:
 
-	default:dirt_with_grass sides default_stone.png^[brighten
+    default:dirt_with_grass sides default_stone.png^[brighten
 
 Finally, if a line is empty or starts with '#' it will be considered
 a comment and not read as a rule. You can use this to better organize
