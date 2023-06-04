@@ -91,8 +91,10 @@ The game directory can contain the following files:
                 ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
                  an internal ID used to track versions.
-    * `website`: The mod's website, it must start with either "http://" or "https://" to be displayed
-    * `license`: The mods license, should be a SPDX identifier if possible.
+    * `website`: The game's website. It must start with either "http://" or
+                 "https://" in order to be displayed.
+    * `license`: The game's license. It should be an SPDX identifier if possible.
+                 See https://spdx.org/licenses/
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
