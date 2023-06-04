@@ -167,8 +167,10 @@ The file is a key-value store of modpack details.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
 * `title`: A human-readable title to address the modpack.
-* `website`: The mod's website, it must start with either "http://" or "https://" to be displayed
-* `license`: The mods license, should be a SPDX identifier if possible.
+* `website`: The modpack's website. It must start with either "http://" or
+             "https://" in order to be displayed.
+* `license`: The modpack's license. It should be an SPDX identifier if possible.
+             See https://spdx.org/licenses/
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
 Mod directory structure
