@@ -5,7 +5,7 @@ textures.
 
 
 
-# Texture pack directory structure
+# Texture Pack Directory Structure
 
 This is a directory containing the entire contents of a single texture pack.
 It can be chosen more or less freely and will also become the name of the
@@ -50,19 +50,19 @@ unsure, just test your texture pack in-game.
 
 
 
-# Texture modifiers
+# Texture Modifiers
 
 See `lua_api.md` for information texture modifier information
 
 
 
-# Special textures
+# Special Textures
 
 These texture names are hardcoded into the engine but can also be overwritten
 by texture packs. All existing fallback textures can be found in the directory
 `textures/base/pack`.
 
-## Gameplay textures
+## Gameplay Textures
 
 * `bubble.png`: the bubble texture when the player is drowning
                 (default size: 12×12)
@@ -120,7 +120,7 @@ by texture packs. All existing fallback textures can be found in the directory
 Note: The default textures of `player.png`, `player_back.png` and `wieldhand.png`
 are placeholders intended to be overwritten by the game.
 
-## Mainmenu textures
+## Mainmenu Textures
 
 * `menu_bg.png`: used as mainmenu background when the clouds are disabled
 * `menu_header.png`: header texture when no texture pack is selected
@@ -133,7 +133,7 @@ are placeholders intended to be overwritten by the game.
 * `server_flags_favorite.png`: icon for your favorite servers
 * `server_flags_pvp.png`: icon for enabled PvP on servers
 
-## Android textures
+## Android Textures
 
 * `down_arrow.png`
 * `left_arrow.png`
@@ -214,7 +214,7 @@ and 'wield'.
 
 ¹: `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to `lua_api.md` for details.
 
-## Using the special targets
+## Using the Special Targets
 
 The special* targets only apply to specific drawtypes:
 
@@ -224,22 +224,19 @@ The special* targets only apply to specific drawtypes:
 * `glasslike_framed_optional`: Same as `glasslike_framed`
 * `plantlike_rooted`: special1 sets the plant's texture
 
-Designing leaves textures for the leaves rendering options
-----------------------------------------------------------
+## Designing leaves textures for the leaves rendering options
 
 Minetest has three modes for rendering leaves nodes if the node has the
 `allfaces_optional` drawtype.
 
-## Fancy
-
+### Fancy
 Uses the texture specified in the `tiles` nodedef field.
 The texture should have some transparent pixels and be in the RGBA format so
 that the transparent pixels can have color information.
 Faces of every leaves node are rendered even if they are inside a solid volume
 of leaves; this gives a dense appearance.
 
-## Opaque
-
+### Opaque
 Uses the texture specified in `tiles` but makes it opaque by converting each
 transparent pixel into an opaque pixel that uses the color information of that
 transparent pixel.
@@ -251,8 +248,7 @@ The colors of the transparent pixels should be set for a good appearance in
 erasing them. Then when saving the texture, use the 'save color information from
 transparent pixels' option (or equivalent).
 
-## Simple
-
+### Simple
 Uses the texture specified in the `special_tiles` nodedef field if it exists, if
 not, the `tiles` texture.
 The `special_tiles` texture should have fewer transparent pixels than the
