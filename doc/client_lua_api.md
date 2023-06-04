@@ -69,7 +69,7 @@ On an installed version on Linux:
 * `/usr/share/minetest/clientmods/`
 * `$HOME/.minetest/clientmods/` (User-installed mods)
 
-## Modpack support
+## Modpack Support
 
 Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.conf`.
@@ -117,7 +117,7 @@ registered callbacks.
 
 
 
-# Naming convention for registered textual names
+# Naming Convention For Registered Textual Names
 
 Registered names should generally be in this format:
 
