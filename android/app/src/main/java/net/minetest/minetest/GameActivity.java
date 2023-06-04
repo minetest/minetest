@@ -204,6 +204,26 @@ public class GameActivity extends NativeActivity {
 	}
 
 	public String getLanguage() {
-		return Locale.getDefault().getLanguage();
+		String langCode = Locale.getDefault().getLanguage();
+
+		// getLanguage() still uses old language codes to preserve compatibility.
+		// List of code changes in ISO 639-2:
+		// https://www.loc.gov/standards/iso639-2/php/code_changes.php
+		switch (langCode) {
+			case "in":
+				langCode = "id"; // Indonesian
+				break;
+			case "iw":
+				langCode = "he"; // Hebrew
+				break;
+			case "ji":
+				langCode = "yi"; // Yiddish
+				break;
+			case "jw":
+				langCode = "jv"; // Japanese
+				break;
+		}
+
+		return langCode;
 	}
 }
