@@ -161,7 +161,7 @@ pull request merge-able.
 * If no response is made from the author within 1 month (when improvements are
   suggested or a question is asked), it can be closed.
 
-**If the pull request is [mergeable](#a-pull-request-is-considered-merge-able-when):**
+**If the pull request is [mergeable](#a-pull-request-is-considered-mergeable-when):**
 
 Submit a :+1: (+1) or "Looks good" comment to show you believe the pull request should be merged. "Looks good" comments often signify that the patch might require (more) testing.
 
