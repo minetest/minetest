@@ -55,7 +55,7 @@ this value.
 Mobile devices generally have less RAM than PC, this setting limits how many mapblock can be kept in RAM.
 
 ### `fps_limit`
-This setting limits maximum FPS (frames per second). The default value is `60`, which is the lowest commonly found
+This setting limits maximum FPS. The default value is `60`, which is the lowest commonly found
 Android refresh rate, but if you're using a device that has a lower refresh rate, change this.
 
 ## Requirements
