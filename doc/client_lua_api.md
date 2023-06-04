@@ -127,6 +127,7 @@ This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
 
 ## Example
+
 In the mod `experimental`, there is the ideal item/node/entity name `tnt`.
 So the name should be `experimental:tnt`.
 
@@ -199,6 +200,7 @@ Examples of sound parameter tables:
 Looped sounds must either be connected to an object or played locationless.
 
 ## SimpleSoundSpec
+
 * e.g. `""`
 * e.g. `"default_place_node"`
 * e.g. `{}`
@@ -217,7 +219,8 @@ Looped sounds must either be connected to an object or played locationless.
 
 For helper functions see "Vector helpers".
 
-## pointed_thing
+## `pointed_thing`
+
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
 * `{type="object", id=ObjectID}`
@@ -686,6 +689,7 @@ For the following functions `x` can be either a vector or a number:
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
 
 ## Logging
+
 * `minetest.debug(...)`
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
 * `minetest.log([level,] text)`
@@ -693,6 +697,7 @@ For the following functions `x` can be either a vector or a number:
       `"info"`, or `"verbose"`. Default is `"none"`.
 
 ## Global callback registration functions
+
 Call these functions only at load time!
 
 * `minetest.register_globalstep(function(dtime))`
@@ -764,6 +769,7 @@ Call these functions only at load time!
     * If any function returns true, inventory doesn't open
 
 ## Sounds
+
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
@@ -777,6 +783,7 @@ Call these functions only at load time!
     * `gain` the target gain for the fade.
 
 ## Timing
+
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
@@ -786,6 +793,7 @@ Call these functions only at load time!
     * Returns the time of day: `0` for midnight, `0.5` for midday
 
 ## Map
+
 * `minetest.get_node_or_nil(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
@@ -841,6 +849,7 @@ Call these functions only at load time!
     * get max available level for leveled node
 
 ## Player
+
 * `minetest.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
 * `minetest.run_server_chatcommand(cmd, param)`
@@ -851,6 +860,7 @@ Call these functions only at load time!
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
 ## Privileges
+
 * `minetest.get_privilege_list()`
     * Returns a list of privileges the current player has in the format `{priv1=true,...}`
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
@@ -858,6 +868,7 @@ Call these functions only at load time!
     * Convert between two privilege representations
 
 ## Client Environment
+
 * `minetest.get_player_names()`
     * Returns list of player names on server (nil if CSM_RF_READ_PLAYERINFO is enabled by server)
 * `minetest.disconnect()`
@@ -869,11 +880,13 @@ Call these functions only at load time!
     * Sends a respawn request to the server.
 
 ## Storage API
+
 * `minetest.get_mod_storage()`:
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
 
 ## Mod channels
+
 ![Mod channels communication scheme](docs/mod channels.png)
 
 * `minetest.mod_channel_join(channel_name)`
@@ -883,6 +896,7 @@ Call these functions only at load time!
     > **Warning**: This function is asynchronous.
 
 ## Particles
+
 * `minetest.add_particle(particle definition)`
 
 * `minetest.add_particlespawner(particlespawner definition)`
@@ -893,6 +907,7 @@ Call these functions only at load time!
     * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
 
 ## Misc.
+
 * `minetest.parse_json(string[, nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
@@ -959,6 +974,7 @@ Call these functions only at load time!
     * Checks if a global variable has been set, without triggering a warning.
 
 ## UI
+
 * `minetest.ui.minimap`
     * Reference to the minimap object. See [`Minimap`](#minimap) class reference for methods.
     * If client disabled minimap (using enable_minimap setting) this reference will be nil.
@@ -987,6 +1003,7 @@ Call these functions only at load time!
 An interface to use mod channels on client and server
 
 ### Methods
+
 * `leave()`: leave the mod channel.
     * Client leaves channel `channel_name`.
     * No more incoming or outgoing messages can be sent to this channel from client mods.
@@ -998,9 +1015,11 @@ An interface to use mod channels on client and server
     * Message size is limited to 65535 characters by protocol.
 
 ## Minimap
+
 An interface to manipulate minimap on client UI
 
 ### Methods
+
 * `show()`: shows the minimap (if not disabled by server)
 * `hide()`: hides the minimap
 * `set_pos(pos)`: sets the minimap position on screen
@@ -1013,10 +1032,12 @@ An interface to manipulate minimap on client UI
 * `get_shape()`: Gets the minimap shape. (0 = square, 1 = round)
 
 ## Camera
+
 An interface to get or set information about the camera and camera-node.
 Please do not try to access the reference until the camera is initialized, otherwise the reference will be nil.
 
 ### Methods
+
 * `set_camera_mode(mode)`
     * Pass `0` for first-person, `1` for third person, and `2` for third person front
 * `get_camera_mode()`
@@ -1168,6 +1189,7 @@ An interface to read config files in the format of `minetest.conf`.
 It can be created via `Settings(filename)`.
 
 ### Methods
+
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
 * `set(key, value)`
@@ -1182,6 +1204,7 @@ Node metadata: reference extra data and functionality stored in a node.
 Can be obtained via `minetest.get_meta(pos)`.
 
 ### Methods
+
 * `get_string(name)`
 * `get_int(name)`
 * `get_float(name)`
@@ -1218,6 +1241,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
     * Returns the next thing pointed by the ray or nil.
 
 # Definitions
+
 * `minetest.get_node_def(nodename)`
     * Returns [node definition](#node-definition) table of `nodename`
 * `minetest.get_item_def(itemstring)`
