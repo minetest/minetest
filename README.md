@@ -123,12 +123,12 @@ Images are built on each commit and available using the following tag scheme:
 
 If you want to test it on a Docker server you can easily run:
 
-	sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
+    sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
 
 If you want to use it in a production environment you should use volumes bound to the Docker host
 to persist data and modify the configuration:
 
-	sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
+    sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
 
 Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
 
