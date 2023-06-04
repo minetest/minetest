@@ -7,7 +7,7 @@
 * [vcpkg](https://github.com/Microsoft/vcpkg)
 * [Git](https://git-scm.com/downloads)
 
-## Compiling and installing the dependencies
+## Compiling and Installing the Dependencies
 
 It is highly recommended to use vcpkg as package manager.
 
@@ -44,7 +44,7 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 13. Click **Open Project**
 14. Compile Minetest inside Visual studio.
 
-### b) Using the vcpkg toolchain and the commandline
+### b) Using the Vcpkg Toolchain and the Command Line
 
 Run the following script in PowerShell:
 
@@ -52,7 +52,6 @@ Run the following script in PowerShell:
     cmake --build . --config Release
 
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
-
 
 ## Windows Installer using WiX Toolset
 

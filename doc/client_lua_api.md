@@ -209,9 +209,9 @@ Looped sounds must either be connected to an object or played locationless.
 
 
 
-# Representations of simple things
+# Representations of Simple Things
 
-## Position/vector
+## Position/Vector
 
 ```lua
 {x=num, y=num, z=num}
@@ -293,7 +293,7 @@ examples.
     list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 
-### Minecraft-like player inventory
+### Minecraft-Like Player Inventory
 
     size[8,7.5]
     image[1,0.6;1,2;player.png]
@@ -371,13 +371,13 @@ examples.
 * Use a background. Inventory rectangles are not drawn then.
 * Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution: image shall be sized
-  8 times 16px  times  4 times 16px.
+  8 * 16px  *  4 * 16px.
 
 ### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
 * Use a background. Inventory rectangles are not drawn then.
 * Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
+  image shall be sized 8 * 16px  *  4 * 16px
 * If `true` the background is clipped to formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
@@ -491,7 +491,7 @@ examples.
 * See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
 
 ### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
-* Show a tab**header** at specific position (ignores formsize)
+* Show a tab **header** at specific position (ignores formsize)
 * `x` and `y` position the itemlist relative to the top left of the menu
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
@@ -696,7 +696,7 @@ For the following functions `x` can be either a vector or a number:
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`. Default is `"none"`.
 
-## Global callback registration functions
+## Global Callback Registration Functions
 
 Call these functions only at load time!
 

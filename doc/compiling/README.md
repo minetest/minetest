@@ -4,7 +4,7 @@
 * [Compiling on Windows](windows.md)
 * [Compiling on MacOS](macos.md)
 
-## CMake options
+## CMake Options
 
 General options and their default values:
 
