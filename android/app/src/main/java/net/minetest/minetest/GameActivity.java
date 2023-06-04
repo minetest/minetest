@@ -55,8 +55,6 @@ public class GameActivity extends NativeActivity {
 	private int messageReturnCode = -1;
 	private String messageReturnValue = "";
 
-	public static native void putMessageBoxResult(String text);
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
