@@ -38,6 +38,7 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 * `core.close()`
 * `core.get_version()` (possible in async calls)
   * returns current core version
+
 ## Filesystem
 
 * `core.open_dir(path)`
@@ -76,6 +77,7 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 * `core.get_max_supp_proto()`
   * returns the maximum supported network protocol version
 ## Media
+
 * `core.sound_play(spec, looped)` -> handle
   * `spec` = `SimpleSoundSpec` (see `lua_api.md`)
   * `looped` = bool
@@ -89,6 +91,7 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 
 
 # Misc.
+
 * `core.get_mapgen_names([include_hidden=false])` -> table of map generator algorithms
     registered in the core (possible in async calls)
 
