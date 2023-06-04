@@ -220,7 +220,7 @@ public class GameActivity extends NativeActivity {
 				langCode = "yi"; // Yiddish
 				break;
 			case "jw":
-				langCode = "jv"; // Japanese
+				langCode = "jv"; // Javanese
 				break;
 		}
 
