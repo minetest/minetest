@@ -43,7 +43,6 @@ void cleanupAndroid();
 
 /**
  * Initializes path_* variables for Android
- * @param env Android JNI environment
  */
 void initializePathsAndroid();
 
