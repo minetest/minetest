@@ -39,6 +39,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 
 // Native code finds these methods by name (see porting_android.cpp).
@@ -202,5 +203,9 @@ public class GameActivity extends NativeActivity {
 
 		Intent shareIntent = Intent.createChooser(intent, null);
 		startActivity(shareIntent);
+	}
+
+	public String getLanguage() {
+		return Locale.getDefault().getLanguage();
 	}
 }

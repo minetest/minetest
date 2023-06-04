@@ -302,5 +302,24 @@ v2u32 getDisplaySize()
 	}
 	return retval;
 }
+
+std::string getLanguageAndroid()
+{
+	jmethodID getLanguage = jnienv->GetMethodID(nativeActivity,
+			"getLanguage", "()Ljava/lang/String;");
+
+	FATAL_ERROR_IF(getLanguage == nullptr,
+		"porting::getLanguageAndroid unable to find Java getLanguage method");
+
+	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
+			getLanguage);
+
+	const char *javachars = jnienv->GetStringUTFChars((jstring) result, nullptr);
+	std::string text(javachars);
+	jnienv->ReleaseStringUTFChars((jstring) result, javachars);
+
+	return text;
+}
+
 #endif // ndef SERVER
 }
