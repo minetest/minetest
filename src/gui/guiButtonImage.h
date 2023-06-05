@@ -48,5 +48,5 @@ public:
 
 private:
 	irr_ptr<video::ITexture> m_foreground_image;
-	GUIAnimatedImage *m_image;
+	irr_ptr<GUIAnimatedImage> m_image;
 };

@@ -35,8 +35,8 @@ GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 	: GUIButton(environment, parent, id, rectangle, tsrc, noclip)
 {
 	GUIButton::setScaleImage(true);
-	m_image = new GUIAnimatedImage(environment, this, id, rectangle);
-	sendToBack(m_image);
+	m_image = make_irr<GUIAnimatedImage>(environment, this, id, rectangle);
+	sendToBack(m_image.get());
 }
 
 void GUIButtonImage::setForegroundImage(irr_ptr<video::ITexture> image,
@@ -74,7 +74,7 @@ GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const wchar_t *text,
 		const wchar_t *tooltiptext)
 {
-	GUIButtonImage *button = new GUIButtonImage(environment,
+	auto button = make_irr<GUIButtonImage>(environment,
 			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);
 
 	if (text)
@@ -83,6 +83,5 @@ GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 	if (tooltiptext)
 		button->setToolTipText(tooltiptext);
 
-	button->drop();
-	return button;
+	return button.get();
 }
