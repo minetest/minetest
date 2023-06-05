@@ -392,6 +392,13 @@ bool ItemStack::itemFits(ItemStack newitem,
 	return newitem.empty();
 }
 
+bool ItemStack::stacksWith(ItemStack other) const
+{
+	return (this->name == other.name &&
+			this->wear == other.wear &&
+			this->metadata == other.metadata);
+}
+
 ItemStack ItemStack::takeItem(u32 takecount)
 {
 	if(takecount == 0 || count == 0)
