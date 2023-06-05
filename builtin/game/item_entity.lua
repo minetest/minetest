@@ -178,6 +178,11 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
+		-- Prevent assert when item_entity is attached
+		if moveresult == nil and self.object:get_attach() then
+			return
+		end
+
 		if self.force_out then
 			-- This code runs after the entity got a push from the is_stuck code.
 			-- It makes sure the entity is entirely outside the solid node
