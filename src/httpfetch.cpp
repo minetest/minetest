@@ -213,26 +213,22 @@ public:
 
 private:
 	CurlHandlePool *pool;
-	CURL *curl;
-	CURLM *multi;
+	CURL *curl = nullptr;
+	CURLM *multi = nullptr;
 	HTTPFetchRequest request;
 	HTTPFetchResult result;
 	std::ostringstream oss;
-	struct curl_slist *http_header;
-	curl_httppost *post;
+	struct curl_slist *http_header = nullptr;
+	curl_mime *multipart_mime = nullptr;
 };
 
 
 HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		CurlHandlePool *pool_):
 	pool(pool_),
-	curl(NULL),
-	multi(NULL),
 	request(request_),
 	result(request_),
-	oss(std::ios::binary),
-	http_header(NULL),
-	post(NULL)
+	oss(std::ios::binary)
 {
 	curl = pool->alloc();
 	if (curl == NULL) {
@@ -254,10 +250,15 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 		curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 	}
 
-#if LIBCURL_VERSION_NUM >= 0x071304
 	// Restrict protocols so that curl vulnerabilities in
 	// other protocols don't affect us.
-	// These settings were introduced in curl 7.19.4.
+#if LIBCURL_VERSION_NUM >= 0x075500
+	// These settings were introduced in curl 7.85.0.
+	const char *protocols = "HTTP,HTTPS,FTP,FTPS";
+	curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, protocols);
+	curl_easy_setopt(curl, CURLOPT_REDIR_PROTOCOLS_STR, protocols);
+#elif LIBCURL_VERSION_NUM >= 0x071304
+	// These settings were introduced in curl 7.19.4, and later deprecated.
 	long protocols =
 		CURLPROTO_HTTP |
 		CURLPROTO_HTTPS |
@@ -293,19 +294,13 @@ HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
 
 	// Set data from fields or raw_data
 	if (request.multipart) {
-		curl_httppost *last = NULL;
-		for (StringMap::iterator it = request.fields.begin();
-				it != request.fields.end(); ++it) {
-			curl_formadd(&post, &last,
-					CURLFORM_NAMELENGTH, it->first.size(),
-					CURLFORM_PTRNAME, it->first.c_str(),
-					CURLFORM_CONTENTSLENGTH, it->second.size(),
-					CURLFORM_PTRCONTENTS, it->second.c_str(),
-					CURLFORM_END);
+		multipart_mime = curl_mime_init(curl);
+		for (auto &it : request.fields) {
+			curl_mimepart *part = curl_mime_addpart(multipart_mime);
+			curl_mime_name(part, it.first.c_str());
+			curl_mime_data(part, it.second.c_str(), it.second.size());
 		}
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-		// request.post_fields must now *never* be
-		// modified until CURLOPT_HTTPPOST is cleared
+		curl_easy_setopt(curl, CURLOPT_MIMEPOST, multipart_mime);
 	} else {
 		switch (request.method) {
 		case HTTP_GET:
@@ -427,9 +422,9 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, NULL);
 		curl_slist_free_all(http_header);
 	}
-	if (post) {
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
-		curl_formfree(post);
+	if (multipart_mime) {
+		curl_easy_setopt(curl, CURLOPT_MIMEPOST, nullptr);
+		curl_mime_free(multipart_mime);
 	}
 
 	// Store the cURL handle for reuse
