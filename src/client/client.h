@@ -437,10 +437,13 @@ public:
 	ModChannel *getModChannel(const std::string &channel) override;
 
 	const std::string &getFormspecPrepend() const;
+
 	inline MeshGrid getMeshGrid()
 	{
 		return m_mesh_grid;
 	}
+
+	bool inhibit_inventory_revert = false;
 
 private:
 	void loadMods();

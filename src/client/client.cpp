@@ -682,7 +682,7 @@ void Client::step(float dtime)
 		the local inventory (so the player notices the lag problem
 		and knows something is wrong).
 	*/
-	if (m_inventory_from_server) {
+	if (m_inventory_from_server && !inhibit_inventory_revert) {
 		float interval = 10.0f;
 		float count_before = std::floor(m_inventory_from_server_age / interval);
 
