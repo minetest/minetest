@@ -23,9 +23,18 @@ if not core.get_http_api then
 	return
 end
 
--- Unordered preserves the original order of the ContentDB API,
--- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
+local store = {
+	loading = false,
+	load_ok = false,
+	load_error = false,
+
+	-- Unordered preserves the original order of the ContentDB API,
+	-- before the package list is ordered based on installed state.
+	packages = {},
+	packages_full = {},
+	packages_full_unordered = {},
+	aliases = {},
+}
 
 local http = core.get_http_api()
 
@@ -598,7 +607,7 @@ local function fetch_pkgs(param)
 	end
 
 	local packages = core.parse_json(response.data)
-	if not packages then
+	if not packages or #packages == 0 then
 		return
 	end
 	local aliases = {}
@@ -643,11 +652,12 @@ function store.load()
 	if store.loading then
 		return
 	end
+	store.loading = true
 	core.handle_async(
 		fetch_pkgs,
 		{ urlencode = urlencode },
 		function(result)
-			if result and #result.packages > 0 then
+			if result then
 				store.packages = result.packages
 				store.packages_full = result.packages
 				store.packages_full_unordered = result.packages
@@ -664,7 +674,6 @@ function store.load()
 			core.event_handler("Refresh")
 		end
 	)
-	store.loading = true
 end
 
 function store.update_paths()
