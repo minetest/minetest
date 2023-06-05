@@ -39,20 +39,14 @@ GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 	sendToBack(m_image);
 }
 
-void GUIButtonImage::setForegroundImage(video::ITexture *image,
+void GUIButtonImage::setForegroundImage(irr_ptr<video::ITexture> image,
 		const core::rect<s32> &middle)
 {
 	if (image == m_foreground_image)
 		return;
 
-	if (image != nullptr)
-		image->grab();
-
-	if (m_foreground_image != nullptr)
-		m_foreground_image->drop();
-
-	m_foreground_image = image;
-	m_image->setTexture(image);
+	m_foreground_image = std::move(image);
+	m_image->setTexture(m_foreground_image.get());
 	m_image->setMiddleRect(middle);
 }
 
@@ -67,8 +61,8 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style)
 		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
 				getTextureSource());
 
-		setForegroundImage(guiScalingImageButton(driver, texture,
-				AbsoluteRect.getWidth(), AbsoluteRect.getHeight()),
+		setForegroundImage(::grab(guiScalingImageButton(driver, texture,
+				AbsoluteRect.getWidth(), AbsoluteRect.getHeight())),
 				style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getMiddleRect()));
 	} else {
 		setForegroundImage();
