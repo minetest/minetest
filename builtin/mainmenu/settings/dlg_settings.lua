@@ -110,12 +110,6 @@ add_page({
 })
 
 
-local tabsize = {
-	width = 15.5,
-	height= 12,
-}
-
-
 local function load_settingtypes()
 	local page = nil
 	local section = nil
@@ -316,21 +310,26 @@ local function get_formspec(dialogdata)
 	local page_id = dialogdata.page_id or "most_used"
 	local page = filtered_page_by_id[page_id]
 
-	local scrollbar_w = 0.4
-	if PLATFORM == "Android" then
-		scrollbar_w = 0.6
-	end
+	local extra_h = 1 -- not included in tabsize.height
+	local tabsize = {
+		width = TOUCHSCREEN_GUI and 16.5 or 15.5,
+		height = TOUCHSCREEN_GUI and (10 - extra_h) or 12,
+	}
 
-	local left_pane_width = 4.25
+	local scrollbar_w = TOUCHSCREEN_GUI and 0.6 or 0.4
+
+	local left_pane_width = TOUCHSCREEN_GUI and 4.5 or 4.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
+	local technical_names_w = TOUCHSCREEN_GUI and 6 or 5
 	local show_technical_names = core.settings:get_bool("show_technical_names")
 
 	formspec_show_hack = not formspec_show_hack
 
 	local fs = {
 		"formspec_version[6]",
-		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + 1), "]",
+		"size[", tostring(tabsize.width), ",", tostring(tabsize.height + extra_h), "]",
+		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "",
 		"bgcolor[#0000]",
 
 		-- HACK: this is needed to allow resubmitting the same formspec
@@ -340,9 +339,11 @@ local function get_formspec(dialogdata)
 
 		"button[0,", tostring(tabsize.height + 0.2), ";3,0.8;back;", fgettext("Back"), "]",
 
-		("box[%f,%f;5,0.8;#0000008C]"):format(tabsize.width - 5, tabsize.height + 0.2),
-		"checkbox[", tostring(tabsize.width - 4.75), ",", tostring(tabsize.height + 0.6), ";show_technical_names;",
-			fgettext("Show technical names"), ";", tostring(show_technical_names), "]",
+		("box[%f,%f;%f,0.8;#0000008C]"):format(
+			tabsize.width - technical_names_w, tabsize.height + 0.2, technical_names_w),
+		("checkbox[%f,%f;show_technical_names;%s;%s]"):format(
+			tabsize.width - technical_names_w + 0.25, tabsize.height + 0.6,
+			fgettext("Show technical names"), tostring(show_technical_names)),
 
 		"field[0.25,0.25;", tostring(search_width), ",0.75;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",

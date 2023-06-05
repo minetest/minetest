@@ -153,6 +153,13 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
 
+#ifdef HAVE_TOUCHSCREENGUI
+	lua_pushboolean(m_luastack, true);
+#else
+	lua_pushboolean(m_luastack, false);
+#endif
+	lua_setglobal(m_luastack, "TOUCHSCREEN_GUI");
+
 	// Make sure Lua uses the right locale
 	setlocale(LC_NUMERIC, "C");
 }
