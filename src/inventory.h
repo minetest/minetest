@@ -51,6 +51,9 @@ struct ItemStack
 	std::string getDescription(const IItemDefManager *itemdef) const;
 	std::string getShortDescription(const IItemDefManager *itemdef) const;
 
+    // Returns the range
+    f32 getRange(const IItemDefManager *itemdef) const;
+
 	std::string getInventoryImage(const IItemDefManager *itemdef) const;
 	std::string getInventoryOverlay(const IItemDefManager *itemdef) const;
 	std::string getWieldImage(const IItemDefManager *itemdef) const;
