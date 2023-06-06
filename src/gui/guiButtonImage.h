@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiButton.h"
 #include "IGUIButton.h"
 #include "guiAnimatedImage.h"
+#include "irr_ptr.h"
 
 using namespace irr;
 
@@ -33,7 +34,7 @@ public:
 			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
 			bool noclip = false);
 
-	void setForegroundImage(video::ITexture *image = nullptr,
+	void setForegroundImage(irr_ptr<video::ITexture> image = nullptr,
 			const core::rect<s32> &middle = core::rect<s32>());
 
 	//! Set element properties from a StyleSpec
@@ -46,6 +47,6 @@ public:
 			const wchar_t *tooltiptext = L"");
 
 private:
-	video::ITexture *m_foreground_image = nullptr;
-	GUIAnimatedImage *m_image;
+	irr_ptr<video::ITexture> m_foreground_image;
+	irr_ptr<GUIAnimatedImage> m_image;
 };
