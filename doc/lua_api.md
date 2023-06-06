@@ -7393,7 +7393,7 @@ child will follow movement and rotation of that bone.
     * Sets the object animation parameters and (re)starts the animation
     * Animations only work with a `"mesh"` visual
     * `frame_range`: Beginning and end frame (as specified in the mesh file).
-       * Syntax: `{x=start_frame, y=end_frame}
+       * Syntax: `{x=start_frame, y=end_frame}`
        * Animation interpolates towards the end frame but stops when it is reached
        * If looped, there is no interpolation back to the start frame
        * If looped, the model should look identical at start and end
