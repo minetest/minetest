@@ -1,4 +1,4 @@
-/*
+﻿/*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -143,4 +143,4 @@ PunchDamageResult getPunchDamage(
 );
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear);
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand);
+f32 getToolRange(const f32 selected_range, const f32 hand_range);

@@ -1,4 +1,4 @@
-/*
+﻿/*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -368,10 +368,10 @@ PunchDamageResult getPunchDamage(
 	return result;
 }
 
-f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_hand)
+f32 getToolRange(const f32 selected_range, const f32 hand_range)
 {
-	float max_d = def_selected.range;
-	float max_d_hand = def_hand.range;
+	float max_d = selected_range;
+	float max_d_hand = hand_range;
 
 	if (max_d < 0 && max_d_hand >= 0)
 		max_d = max_d_hand;
@@ -380,4 +380,3 @@ f32 getToolRange(const ItemDefinition &def_selected, const ItemDefinition &def_h
 
 	return max_d;
 }
-
