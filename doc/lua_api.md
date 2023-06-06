@@ -7361,7 +7361,7 @@ child will follow movement and rotation of that bone.
     * `puncher`: another `ObjectRef` which punched the object
     * `dir`: direction vector of punch
     * Other arguments: See `on_punch` for entities
-    * All arguments except `puncher` can be `nil`, in which a default
+    * All arguments except `puncher` can be `nil`, in which case a default
       value will be used
 * `right_click(clicker)`:
     * simulates using the 'place/use' key on the object
