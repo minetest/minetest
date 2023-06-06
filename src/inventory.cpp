@@ -281,9 +281,8 @@ f32 ItemStack::getRange(const IItemDefManager *itemdef) const
     {
         try {
             //This is the best way (until otherwise said) to convert a string into a float.
-            //std::stof gives a compilation error along the lines of: namespace 'std' does not contain 'mystof'.
-			char *c = const_cast<char *>(sRange.c_str());
-			f32 _range = std::strtof(c, NULL);
+            //std::stof gives a compilation error along the lines of: namespace 'std' does not contain 'mystof'
+			f32 _range = std::strtof(sRange.c_str(), NULL);
             if (_range != 0 || sRange == "0")
                 range = _range;
 		}
