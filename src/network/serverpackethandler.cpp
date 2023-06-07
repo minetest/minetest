@@ -1,4 +1,4 @@
-/*
+﻿/*
 Minetest
 Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
@@ -893,8 +893,7 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 {
 	ItemStack selected_item, hand_item;
 	player->getWieldedItem(&selected_item, &hand_item);
-	f32 max_d = BS * getToolRange(selected_item.getDefinition(m_itemdef),
-			hand_item.getDefinition(m_itemdef));
+	f32 max_d = BS * getToolRange(selected_item.getRange(m_itemdef), hand_item.getRange(m_itemdef));
 
 	// Cube diagonal * 1.5 for maximal supported node extents:
 	// sqrt(3) * 1.5 ≅ 2.6
