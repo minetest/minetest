@@ -34,6 +34,17 @@ void ScriptApiMapgen::on_mods_loaded()
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiMapgen::on_shutdown()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_shutdown");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
 void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 {
 	SCRIPTAPI_PRECHECKHEADER

@@ -724,6 +724,12 @@ void *EmergeThread::run()
 		m_server->setAsyncFatalError(err.str());
 	}
 
+	try {
+		m_script->on_shutdown();
+	} catch (const ModError &e) {
+		m_server->setAsyncFatalError(e.what());
+	}
+
 	cancelPendingItems();
 
 	END_DEBUG_EXCEPTION_HANDLER

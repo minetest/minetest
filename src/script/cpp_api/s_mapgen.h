@@ -33,6 +33,7 @@ class ScriptApiMapgen : virtual public ScriptApiBase
 public:
 
 	void on_mods_loaded();
+	void on_shutdown();
 
 	// Called after generating a piece of map before writing it to the map
 	void on_generated(BlockMakeData *bmdata);
