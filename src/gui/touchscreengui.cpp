@@ -52,18 +52,6 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 {
 	std::string key = "";
 	switch (id) {
-		case forward_id:
-			key = "forward";
-			break;
-		case left_id:
-			key = "left";
-			break;
-		case right_id:
-			key = "right";
-			break;
-		case backward_id:
-			key = "backward";
-			break;
 		case inventory_id:
 			key = "inventory";
 			break;

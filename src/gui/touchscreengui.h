@@ -54,10 +54,6 @@ typedef enum
 	chat_id,
 	inventory_id,
 	drop_id,
-	forward_id,
-	backward_id,
-	left_id,
-	right_id,
 	joystick_off_id,
 	joystick_bg_id,
 	joystick_center_id
