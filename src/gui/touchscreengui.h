@@ -54,6 +54,7 @@ typedef enum
 	chat_id,
 	inventory_id,
 	drop_id,
+	exit_id,
 	forward_id,
 	backward_id,
 	left_id,
