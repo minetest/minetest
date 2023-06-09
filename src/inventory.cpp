@@ -1,4 +1,4 @@
-﻿/*
+/*
 Minetest
 Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -28,6 +28,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
+
+//used in ItemStack::getRange()
+static float string_to_float(const std::string& str, bool& is_valid)
+{
+    if (str.empty())
+    {
+        is_valid = false;
+        return 0;
+    }
+
+    char* ptr;
+    float f = strtof(str.c_str(), &ptr);
+    is_valid = (*ptr) == '\0';
+    return f;
+}
 
 /*
 	ItemStack
@@ -273,25 +288,12 @@ std::string ItemStack::getShortDescription(const IItemDefManager *itemdef) const
 
 f32 ItemStack::getRange(const IItemDefManager *itemdef) const
 {
-    std::string sRange = metadata.getString("range");
-    f32 range = -1;
-    if (sRange.empty())
-        range = getDefinition(itemdef).range;
-    if (!sRange.empty())
-    {
-        try {
-            //This is the best way (until otherwise said) to convert a string into a float.
-            //std::stof gives a compilation error along the lines of: namespace 'std' does not contain 'mystof'.
-			char *c = const_cast<char *>(sRange.c_str());
-			f32 _range = std::strtof(c, NULL);
-            if (_range != 0 || sRange == "0")
-                range = _range;
-		}
-
-		catch (...) {
-            //If an error occurs, just return -1
-		}
-    }
+    std::string str_meta_range = metadata.getString("range");
+    f32 range = getDefinition(itemdef).range;
+    bool is_valid;
+    float meta_range = string_to_float(str_meta_range, is_valid);
+    if (is_valid && meta_range > -1)
+        range = meta_range;
     return range;
 }
 
