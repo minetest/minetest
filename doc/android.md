@@ -8,9 +8,11 @@ due to limited capabilities of common devices. What can be done is described bel
 
 While you're playing the game normally (that is, no menu or inventory is
 shown), the following controls are available:
+
 * Look around: Touch screen and slide finger
 * Tap: Place a node
 * Long tap: Dig node or use the held item
+
 * Press back: Pause menu
 * Touch buttons: Press button
 * Buttons:
@@ -27,7 +29,7 @@ When a menu or inventory is displayed:
   --> places a single item from dragged stack into current (first touched) slot. If a stack is selected, the stack will be split as half and one of the splitted stack will be selected
 
 ### Limitations
-* Complicated control can be difficult or impossible on Android device
+* Complicated controls can be difficult or impossible on Android device
 * Some old Android devices only support 2 touches at a time, some games/mods contain button combinations that need 3 touches (example: jump + Aux1 + hold)
 
 ## File Path
@@ -119,5 +121,5 @@ automatically. Or you can create a `local.properties` file and specify
 * Once your keystore is setup, enter the android subdirectory and create a new
   file called `ant.properties` there. Add the following lines to that file:
 
-  > key.store=<path to your keystore>
-  > key.alias=Minetest
+      key.store=<path to your keystore>
+      key.alias=Minetest
