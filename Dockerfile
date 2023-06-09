@@ -6,9 +6,21 @@ ENV IRRLICHT_VERSION master
 ENV SPATIALINDEX_VERSION 1.9.3
 ENV LUAJIT_VERSION v2.1
 
-RUN apk add --no-cache git build-base cmake curl-dev zlib-dev zstd-dev \
-		sqlite-dev postgresql-dev hiredis-dev leveldb-dev \
-		gmp-dev jsoncpp-dev ninja ca-certificates
+RUN apk add --no-cache \
+	build-base \
+	ca-certificates \
+	cmake \
+	curl-dev \
+	git \
+	gmp-dev \
+	hiredis-dev \
+	jsoncpp-dev \
+	leveldb-dev \
+	ninja \
+	postgresql-dev \
+	sqlite-dev \
+	zlib-dev \
+	zstd-dev
 
 WORKDIR /usr/src/
 RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
