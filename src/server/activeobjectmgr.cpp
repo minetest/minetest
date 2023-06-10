@@ -39,15 +39,6 @@ void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)>
 	}
 }
 
-void ActiveObjectMgr::step(
-		float dtime, const std::function<void(ServerActiveObject *)> &f)
-{
-	g_profiler->avg("ActiveObjectMgr: SAO count [#]", m_active_objects.size());
-	for (auto &ao_it : m_active_objects) {
-		f(ao_it.second);
-	}
-}
-
 // clang-format off
 bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 {

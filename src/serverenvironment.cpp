@@ -1557,7 +1557,7 @@ void ServerEnvironment::step(float dtime)
 			// Read messages from object
 			obj->dumpAOMessagesToQueue(m_active_object_messages);
 		};
-		m_ao_manager.step(dtime, cb_state);
+		m_ao_manager.step(dtime, cb_state, "SAO");
 
 		m_active_object_gauge->set(object_count);
 	}
@@ -2446,3 +2446,4 @@ bool ServerEnvironment::migrateAuthDatabase(
 	}
 	return true;
 }
+

@@ -328,7 +328,7 @@ void ClientEnvironment::step(float dtime)
 			cao->updateLight(day_night_ratio);
 	};
 
-	m_ao_manager.step(dtime, cb_state);
+	m_ao_manager.step(dtime, cb_state, "CAO");
 
 	/*
 		Step and handle simple objects

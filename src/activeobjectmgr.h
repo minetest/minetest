@@ -19,8 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <map>
 #include "irrlichttypes.h"
+#include "profiler.h"
+
+#include <map>
+#include <string>
 
 class TestClientActiveObjectMgr;
 class TestServerActiveObjectMgr;
@@ -32,7 +35,17 @@ class ActiveObjectMgr
 	friend class ::TestServerActiveObjectMgr;
 
 public:
-	virtual void step(float dtime, const std::function<void(T *)> &f) = 0;
+	virtual void step(float dtime,
+			const std::function<void(T *)> &f,
+			const std::string& profile_tag)
+	{
+		std::string profile_name;
+		profile_name.append("ActiveObjectMgr: ").append(profile_tag).append(" count [#]");
+		g_profiler->avg(profile_name, m_active_objects.size());
+		for (auto &ao_it : m_active_objects) {
+			f(ao_it.second);
+		}
+	}
 	virtual bool registerObject(T *obj) = 0;
 	virtual void removeObject(u16 id) = 0;
 

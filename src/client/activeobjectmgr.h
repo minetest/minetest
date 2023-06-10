@@ -30,8 +30,6 @@ class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
 {
 public:
 	void clear();
-	void step(float dtime,
-			const std::function<void(ClientActiveObject *)> &f) override;
 	bool registerObject(ClientActiveObject *obj) override;
 	void removeObject(u16 id) override;
 
