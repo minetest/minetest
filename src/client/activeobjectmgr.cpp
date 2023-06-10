@@ -52,23 +52,9 @@ void ActiveObjectMgr::step(
 
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ClientActiveObject> obj)
 {
-	assert(obj); // Pre-condition
-	if (obj->getId() == 0) {
-		u16 new_id = getFreeId();
-		if (new_id == 0) {
-			infostream << "Client::ActiveObjectMgr::registerObject(): "
-					<< "no free id available" << std::endl;
-
-			return false;
-		}
-		obj->setId(new_id);
-	}
-
-	if (!isFreeId(obj->getId())) {
-		infostream << "Client::ActiveObjectMgr::registerObject(): "
-				<< "id is not free (" << obj->getId() << ")" << std::endl;
+	if (!assignFreeId(obj))
 		return false;
-	}
+
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
 			<< "added (id=" << obj->getId() << ")" << std::endl;
 	m_active_objects[obj->getId()] = std::move(obj);
@@ -139,6 +125,18 @@ std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObje
 		dest.emplace_back(obj, a);
 	}
 	return dest;
+}
+
+void ActiveObjectMgr::logIdNotFree(ClientActiveObject const *obj) const
+{
+	infostream << "Client::ActiveObjectMgr::registerObject(): "
+			<< "id is not free (" << obj->getId() << ")" << std::endl;
+}
+
+void ActiveObjectMgr::logNoFreeId() const
+{
+	infostream << "Client::ActiveObjectMgr::registerObject(): "
+			<< "no free id available" << std::endl;
 }
 
 } // namespace client

@@ -73,6 +73,39 @@ public:
 	}
 
 protected:
+
+	// ordered to fix #10985
+	// Note: ActiveObjects can access the ActiveObjectMgr. Only erase objects using
+	// removeObject()!
+	std::map<u16, std::unique_ptr<T>> m_active_objects;
+
+	bool assignFreeId(std::unique_ptr<T> &obj) const
+	{
+		assert(obj); // Pre condition
+		if (obj->getId() == 0) {
+			u16 new_id = getFreeId();
+			if (new_id == 0) {
+				logNoFreeId();
+				return false;
+			}
+			obj->setId(new_id);
+		} else {
+			logIdAssigned(obj.get());
+		}
+
+		if (!isFreeId(obj->getId())) {
+			logIdNotFree(obj.get());
+			return false;
+		}
+
+		return true;
+	}
+
+	virtual void logIdAssigned(T const *obj) const = 0;
+	virtual void logIdNotFree(T const *obj) const = 0;
+	virtual void logNoFreeId() const = 0;
+
+private:
 	u16 getFreeId() const
 	{
 		// try to reuse id's as late as possible
@@ -90,9 +123,4 @@ protected:
 	{
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}
-
-	// ordered to fix #10985
-	// Note: ActiveObjects can access the ActiveObjectMgr. Only erase objects using
-	// removeObject()!
-	std::map<u16, std::unique_ptr<T>> m_active_objects;
 };

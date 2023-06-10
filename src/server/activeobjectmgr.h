@@ -48,5 +48,9 @@ public:
 	void getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 radius,
 			f32 player_radius, std::set<u16> &current_objects,
 			std::queue<u16> &added_objects);
+protected:
+	void logIdAssigned(ServerActiveObject const *obj) const override;
+	void logIdNotFree(ServerActiveObject const *obj) const override;
+	void logNoFreeId() const override;
 };
 } // namespace server

@@ -71,25 +71,8 @@ void ActiveObjectMgr::step(
 
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 {
-	assert(obj); // Pre-condition
-	if (obj->getId() == 0) {
-		u16 new_id = getFreeId();
-		if (new_id == 0) {
-			errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-					<< "no free id available" << std::endl;
-			return false;
-		}
-		obj->setId(new_id);
-	} else {
-		verbosestream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-				<< "supplied with id " << obj->getId() << std::endl;
-	}
-
-	if (!isFreeId(obj->getId())) {
-		errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
-				<< "id is not free (" << obj->getId() << ")" << std::endl;
+	if (!assignFreeId(obj))
 		return false;
-	}
 
 	if (objectpos_over_limit(obj->getBasePosition())) {
 		v3f p = obj->getBasePosition();
@@ -193,6 +176,25 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 
 		// Add to added_objects
 		added_objects.push(id);
 	}
+}
+
+void ActiveObjectMgr::logIdAssigned(ServerActiveObject const *obj) const
+{
+	verbosestream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
+			<< "supplied with id " << obj->getId() << std::endl;
+
+}
+
+void ActiveObjectMgr::logIdNotFree(ServerActiveObject const *obj) const
+{
+	errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
+			<< "id is not free (" << obj->getId() << ")" << std::endl;
+}
+
+void ActiveObjectMgr::logNoFreeId() const
+{
+	errorstream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
+			<< "no free id available" << std::endl;
 }
 
 } // namespace server
