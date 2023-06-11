@@ -221,8 +221,10 @@ jobs:
               generator: "-G'Visual Studio 16 2019' -A x64",
               vcpkg_triplet: x64-windows
             }
-#        type: [portable]
-        type: [portable, installer]
+        type: [portable]
+#        type: [portable, installer]
+# The installer type is working, but disabled, to save runner jobs.
+# Enable it, when working on the installer.
 
     steps:
       - uses: actions/checkout@v3
