@@ -91,6 +91,10 @@ The game directory can contain the following files:
                 ContentDB.
     * `release`: Ignore this: Should only ever be set by ContentDB, as it is
                  an internal ID used to track versions.
+    * `website`: The game's website. It must start with either "http://" or
+                   "https://" in order to be displayed.
+    * `license`: The game's license. It should be an SPDX identifier if possible.
+                 See https://spdx.org/licenses/
 * `minetest.conf`:
   Used to set default settings when running this game.
 * `settingtypes.txt`:
@@ -163,7 +167,10 @@ The file is a key-value store of modpack details.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
 * `title`: A human-readable title to address the modpack.
-
+* `website`: The modpack's website. It must start with either "http://" or
+             "https://" in order to be displayed.
+* `license`: The modpack's license. It should be an SPDX identifier if possible.
+             See https://spdx.org/licenses/
 Note: to support 0.4.x, please also create an empty modpack.txt file.
 
 Mod directory structure
@@ -212,7 +219,10 @@ A `Settings` file that provides meta information about the mod.
 * `release`: Ignore this: Should only ever be set by ContentDB, as it is an
              internal ID used to track versions.
 * `title`: A human-readable title to address the mod.
-
+* `website`: The mod's website. It must start with either "http://" or "https://"
+             in order to be displayed.
+* `license`: The mod's license. It should be an SPDX identifier if possible.
+             See https://spdx.org/licenses/
 ### `screenshot.png`
 
 A screenshot shown in the mod manager within the main menu. It should
