@@ -1,0 +1,45 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"lib/irrlichtmt/source/Irrlicht/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 486,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lib/irrlichtmt/lib/Win32-VisualStudio/Debug/IrrlichtMt.lib"
+			],
+			"targetId" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+			"targetIndex" : 9,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/irrlichtmt/source/Irrlicht",
+		"source" : "lib/irrlichtmt/source/Irrlicht"
+	}
+}

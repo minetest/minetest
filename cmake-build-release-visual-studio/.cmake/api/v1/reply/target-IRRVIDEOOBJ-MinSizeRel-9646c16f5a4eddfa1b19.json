@@ -1,0 +1,537 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CFPSCounter.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CNullDriver.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COpenGLCacheHandler.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COpenGLDriver.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COpenGLShaderMaterialRenderer.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COpenGLSLMaterialRenderer.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COpenGLExtensionHandler.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLESDriver.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLESExtensionHandler.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLES2Driver.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLES2ExtensionHandler.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLES2FixedPipelineRenderer.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLES2MaterialRenderer.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/COGLES2Renderer2D.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CWebGL1Driver.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CGLXManager.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CWGLManager.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CEGLManager.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CSDLManager.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/mt_opengl_loader.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CColorConverter.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImage.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageLoaderBMP.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageLoaderJPG.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageLoaderPNG.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageLoaderTGA.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageWriterJPG.obj"
+		},
+		{
+			"path" : "lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/MinSizeRel/CImageWriterPNG.obj"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"_add_library",
+			"add_library",
+			"add_compile_options",
+			"add_definitions",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+			"lib/irrlichtmt/source/Irrlicht/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 363,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 632,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 46,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 6,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 70,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 138,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 176,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 178,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 117,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 84,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 444,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O1 /Ob1 /DNDEBUG"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "/GR-"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "/Zl"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 4,
+					"define" : "IRRLICHT_API="
+				},
+				{
+					"backtrace" : 5,
+					"define" : "IRRLICHT_EXPORTS"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "IRR_ENABLE_BUILTIN_FONT"
+				},
+				{
+					"backtrace" : 7,
+					"define" : "_IRR_COMPILE_WITH_JOYSTICK_EVENTS_"
+				},
+				{
+					"backtrace" : 8,
+					"define" : "_IRR_COMPILE_WITH_OPENGL_"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "_IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "_IRR_COMPILE_WITH_WGL_MANAGER_"
+				},
+				{
+					"backtrace" : 10,
+					"define" : "_IRR_COMPILE_WITH_WINDOWS_DEVICE_"
+				},
+				{
+					"backtrace" : 9,
+					"define" : "_IRR_OPENGL_USE_EXTPOINTER_"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_IRR_STATIC_LIB_"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "_IRR_WINDOWS_"
+				},
+				{
+					"backtrace" : 12,
+					"define" : "_IRR_WINDOWS_API_"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 13,
+					"path" : "D:/Documents/Programming/GitHub/minetest/lib/irrlichtmt/include"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "D:/Documents/Programming/GitHub/minetest/lib/irrlichtmt/source/Irrlicht"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/dev/vcpkg/installed/x64-windows/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					2
+				],
+				"standard" : "11"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5",
+	"name" : "IRRVIDEOOBJ",
+	"paths" : 
+	{
+		"build" : "lib/irrlichtmt/source/Irrlicht",
+		"source" : "lib/irrlichtmt/source/Irrlicht"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CFPSCounter.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CNullDriver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COpenGLCacheHandler.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COpenGLDriver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COpenGLShaderMaterialRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COpenGLSLMaterialRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COpenGLExtensionHandler.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLESDriver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLESExtensionHandler.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLES2Driver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLES2ExtensionHandler.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLES2FixedPipelineRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLES2MaterialRenderer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/COGLES2Renderer2D.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CWebGL1Driver.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CGLXManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CWGLManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CEGLManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CSDLManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/mt_opengl_loader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CColorConverter.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImage.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageLoaderBMP.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageLoaderJPG.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageLoaderPNG.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageLoaderTGA.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageWriterJPG.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/irrlichtmt/source/Irrlicht/CImageWriterPNG.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "OBJECT_LIBRARY"
+}

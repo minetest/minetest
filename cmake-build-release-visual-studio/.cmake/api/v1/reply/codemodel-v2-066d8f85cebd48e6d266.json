@@ -1,0 +1,1768 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-ca5e52fdb3eb4b888d9d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt-Debug-aa98eb602fcb9579a92b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt/source/Irrlicht",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt.source.Irrlicht-Debug-51a695ae9b5aeaf0412f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt/source/Irrlicht",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-src-Debug-95b26a355dcd805c3c9f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src",
+					"targetIndexes" : 
+					[
+						2,
+						11,
+						12
+					]
+				},
+				{
+					"build" : "src/threading",
+					"jsonFile" : "directory-src.threading-Debug-866fe7776bdfd347f566.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/threading"
+				},
+				{
+					"build" : "src/content",
+					"jsonFile" : "directory-src.content-Debug-2575739741d7b2b2ce1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/content"
+				},
+				{
+					"build" : "src/database",
+					"jsonFile" : "directory-src.database-Debug-9f6626c8f994c1bd46ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/database"
+				},
+				{
+					"build" : "src/gui",
+					"jsonFile" : "directory-src.gui-Debug-127846aa570c1dd3fdd1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/gui"
+				},
+				{
+					"build" : "src/mapgen",
+					"jsonFile" : "directory-src.mapgen-Debug-5d92e216e5f80ea478b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/mapgen"
+				},
+				{
+					"build" : "src/network",
+					"jsonFile" : "directory-src.network-Debug-3e33f20a4c8141e0054b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/network"
+				},
+				{
+					"build" : "src/script",
+					"childIndexes" : 
+					[
+						11,
+						12,
+						13
+					],
+					"jsonFile" : "directory-src.script-Debug-2232dc512a8142e37990.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/script"
+				},
+				{
+					"build" : "src/script/common",
+					"jsonFile" : "directory-src.script.common-Debug-c90aeca59a93ad8d1dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/common"
+				},
+				{
+					"build" : "src/script/cpp_api",
+					"jsonFile" : "directory-src.script.cpp_api-Debug-b2d332bc95a105cd3107.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/cpp_api"
+				},
+				{
+					"build" : "src/script/lua_api",
+					"jsonFile" : "directory-src.script.lua_api-Debug-b6be678f9744e1179650.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/lua_api"
+				},
+				{
+					"build" : "src/unittest",
+					"jsonFile" : "directory-src.unittest-Debug-ea8c30069937f854dd79.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/unittest"
+				},
+				{
+					"build" : "src/benchmark",
+					"jsonFile" : "directory-src.benchmark-Debug-f121e447185d2c8721f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/benchmark"
+				},
+				{
+					"build" : "src/util",
+					"jsonFile" : "directory-src.util-Debug-115ba1e4bb25559e3768.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/util"
+				},
+				{
+					"build" : "src/irrlicht_changes",
+					"jsonFile" : "directory-src.irrlicht_changes-Debug-216b3bcb6ab73f93266f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/irrlicht_changes"
+				},
+				{
+					"build" : "src/server",
+					"jsonFile" : "directory-src.server-Debug-0060d0c68a017a1e8304.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/server"
+				},
+				{
+					"build" : "src/client",
+					"jsonFile" : "directory-src.client-Debug-40aaa8b507c401118c86.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/client"
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"name" : "minetest",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						10,
+						11,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "Irrlicht",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@f5ae9ddf267227e6b568",
+					"jsonFile" : "target-ALL_BUILD-Debug-fbff5a0aacbc33b6ad5a.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Debug-478f8be15e961427efd4.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "GenerateVersion::@145eef247bfb46b6828c",
+					"jsonFile" : "target-GenerateVersion-Debug-324317597288b9643e6c.json",
+					"name" : "GenerateVersion",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRGUIOBJ-Debug-034de55304133e3ef071.json",
+					"name" : "IRRGUIOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRIOOBJ-Debug-8e09898515a80024a2a6.json",
+					"name" : "IRRIOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRMESHOBJ-Debug-ca5fcd304fd84ea023c1.json",
+					"name" : "IRRMESHOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROBJ-Debug-748d527b315d6e35b535.json",
+					"name" : "IRROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROTHEROBJ-Debug-bcb77500655178ce8dd4.json",
+					"name" : "IRROTHEROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRVIDEOOBJ-Debug-2b2c34d789d581a9bf48.json",
+					"name" : "IRRVIDEOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IrrlichtMt-Debug-3fe8de75fece9d5ca935.json",
+					"name" : "IrrlichtMt",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Debug-96d45a9eb15c4d0f3dac.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetest::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetest-Debug-bd0e7266cb8d5d32a1db.json",
+					"name" : "minetest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetestserver::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetestserver-Debug-301b60ca8e7b1e59c0ff.json",
+					"name" : "minetestserver",
+					"projectIndex" : 0
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-ca5e52fdb3eb4b888d9d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt-Release-aa98eb602fcb9579a92b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt/source/Irrlicht",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt.source.Irrlicht-Release-495b79d6720083ea2480.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt/source/Irrlicht",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-src-Release-6284c495952de2596358.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src",
+					"targetIndexes" : 
+					[
+						2,
+						11,
+						12
+					]
+				},
+				{
+					"build" : "src/threading",
+					"jsonFile" : "directory-src.threading-Release-866fe7776bdfd347f566.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/threading"
+				},
+				{
+					"build" : "src/content",
+					"jsonFile" : "directory-src.content-Release-2575739741d7b2b2ce1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/content"
+				},
+				{
+					"build" : "src/database",
+					"jsonFile" : "directory-src.database-Release-9f6626c8f994c1bd46ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/database"
+				},
+				{
+					"build" : "src/gui",
+					"jsonFile" : "directory-src.gui-Release-127846aa570c1dd3fdd1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/gui"
+				},
+				{
+					"build" : "src/mapgen",
+					"jsonFile" : "directory-src.mapgen-Release-5d92e216e5f80ea478b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/mapgen"
+				},
+				{
+					"build" : "src/network",
+					"jsonFile" : "directory-src.network-Release-3e33f20a4c8141e0054b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/network"
+				},
+				{
+					"build" : "src/script",
+					"childIndexes" : 
+					[
+						11,
+						12,
+						13
+					],
+					"jsonFile" : "directory-src.script-Release-2232dc512a8142e37990.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/script"
+				},
+				{
+					"build" : "src/script/common",
+					"jsonFile" : "directory-src.script.common-Release-c90aeca59a93ad8d1dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/common"
+				},
+				{
+					"build" : "src/script/cpp_api",
+					"jsonFile" : "directory-src.script.cpp_api-Release-b2d332bc95a105cd3107.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/cpp_api"
+				},
+				{
+					"build" : "src/script/lua_api",
+					"jsonFile" : "directory-src.script.lua_api-Release-b6be678f9744e1179650.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/lua_api"
+				},
+				{
+					"build" : "src/unittest",
+					"jsonFile" : "directory-src.unittest-Release-ea8c30069937f854dd79.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/unittest"
+				},
+				{
+					"build" : "src/benchmark",
+					"jsonFile" : "directory-src.benchmark-Release-f121e447185d2c8721f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/benchmark"
+				},
+				{
+					"build" : "src/util",
+					"jsonFile" : "directory-src.util-Release-115ba1e4bb25559e3768.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/util"
+				},
+				{
+					"build" : "src/irrlicht_changes",
+					"jsonFile" : "directory-src.irrlicht_changes-Release-216b3bcb6ab73f93266f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/irrlicht_changes"
+				},
+				{
+					"build" : "src/server",
+					"jsonFile" : "directory-src.server-Release-0060d0c68a017a1e8304.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/server"
+				},
+				{
+					"build" : "src/client",
+					"jsonFile" : "directory-src.client-Release-40aaa8b507c401118c86.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/client"
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"name" : "minetest",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						10,
+						11,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "Irrlicht",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@f5ae9ddf267227e6b568",
+					"jsonFile" : "target-ALL_BUILD-Release-fbff5a0aacbc33b6ad5a.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-Release-478f8be15e961427efd4.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "GenerateVersion::@145eef247bfb46b6828c",
+					"jsonFile" : "target-GenerateVersion-Release-324317597288b9643e6c.json",
+					"name" : "GenerateVersion",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRGUIOBJ-Release-3208416ab67ab207faee.json",
+					"name" : "IRRGUIOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRIOOBJ-Release-f756866b049890b435ee.json",
+					"name" : "IRRIOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRMESHOBJ-Release-3c9f57c85d5016fdb341.json",
+					"name" : "IRRMESHOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROBJ-Release-aacc7fa9581533f92c56.json",
+					"name" : "IRROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROTHEROBJ-Release-c306b7066895c1880263.json",
+					"name" : "IRROTHEROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRVIDEOOBJ-Release-1b7c39bb3faef81d3dbe.json",
+					"name" : "IRRVIDEOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IrrlichtMt-Release-6d0c40cebdb8f664139e.json",
+					"name" : "IrrlichtMt",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-Release-96d45a9eb15c4d0f3dac.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetest::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetest-Release-23bd8a044f05259ed37a.json",
+					"name" : "minetest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetestserver::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetestserver-Release-a57c9a3189a5426c197f.json",
+					"name" : "minetestserver",
+					"projectIndex" : 0
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-MinSizeRel-ca5e52fdb3eb4b888d9d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt-MinSizeRel-aa98eb602fcb9579a92b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt/source/Irrlicht",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt.source.Irrlicht-MinSizeRel-02dcf190e65068a2b3b2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt/source/Irrlicht",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-src-MinSizeRel-1d4e4c5acb903a233273.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src",
+					"targetIndexes" : 
+					[
+						2,
+						11,
+						12
+					]
+				},
+				{
+					"build" : "src/threading",
+					"jsonFile" : "directory-src.threading-MinSizeRel-866fe7776bdfd347f566.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/threading"
+				},
+				{
+					"build" : "src/content",
+					"jsonFile" : "directory-src.content-MinSizeRel-2575739741d7b2b2ce1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/content"
+				},
+				{
+					"build" : "src/database",
+					"jsonFile" : "directory-src.database-MinSizeRel-9f6626c8f994c1bd46ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/database"
+				},
+				{
+					"build" : "src/gui",
+					"jsonFile" : "directory-src.gui-MinSizeRel-127846aa570c1dd3fdd1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/gui"
+				},
+				{
+					"build" : "src/mapgen",
+					"jsonFile" : "directory-src.mapgen-MinSizeRel-5d92e216e5f80ea478b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/mapgen"
+				},
+				{
+					"build" : "src/network",
+					"jsonFile" : "directory-src.network-MinSizeRel-3e33f20a4c8141e0054b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/network"
+				},
+				{
+					"build" : "src/script",
+					"childIndexes" : 
+					[
+						11,
+						12,
+						13
+					],
+					"jsonFile" : "directory-src.script-MinSizeRel-2232dc512a8142e37990.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/script"
+				},
+				{
+					"build" : "src/script/common",
+					"jsonFile" : "directory-src.script.common-MinSizeRel-c90aeca59a93ad8d1dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/common"
+				},
+				{
+					"build" : "src/script/cpp_api",
+					"jsonFile" : "directory-src.script.cpp_api-MinSizeRel-b2d332bc95a105cd3107.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/cpp_api"
+				},
+				{
+					"build" : "src/script/lua_api",
+					"jsonFile" : "directory-src.script.lua_api-MinSizeRel-b6be678f9744e1179650.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/lua_api"
+				},
+				{
+					"build" : "src/unittest",
+					"jsonFile" : "directory-src.unittest-MinSizeRel-ea8c30069937f854dd79.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/unittest"
+				},
+				{
+					"build" : "src/benchmark",
+					"jsonFile" : "directory-src.benchmark-MinSizeRel-f121e447185d2c8721f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/benchmark"
+				},
+				{
+					"build" : "src/util",
+					"jsonFile" : "directory-src.util-MinSizeRel-115ba1e4bb25559e3768.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/util"
+				},
+				{
+					"build" : "src/irrlicht_changes",
+					"jsonFile" : "directory-src.irrlicht_changes-MinSizeRel-216b3bcb6ab73f93266f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/irrlicht_changes"
+				},
+				{
+					"build" : "src/server",
+					"jsonFile" : "directory-src.server-MinSizeRel-0060d0c68a017a1e8304.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/server"
+				},
+				{
+					"build" : "src/client",
+					"jsonFile" : "directory-src.client-MinSizeRel-40aaa8b507c401118c86.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/client"
+				}
+			],
+			"name" : "MinSizeRel",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"name" : "minetest",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						10,
+						11,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "Irrlicht",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@f5ae9ddf267227e6b568",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-fbff5a0aacbc33b6ad5a.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-MinSizeRel-478f8be15e961427efd4.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "GenerateVersion::@145eef247bfb46b6828c",
+					"jsonFile" : "target-GenerateVersion-MinSizeRel-324317597288b9643e6c.json",
+					"name" : "GenerateVersion",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRGUIOBJ-MinSizeRel-b717246bbefd48a9e7a2.json",
+					"name" : "IRRGUIOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRIOOBJ-MinSizeRel-4d36a018c49d2550913b.json",
+					"name" : "IRRIOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRMESHOBJ-MinSizeRel-657164c07f4996938064.json",
+					"name" : "IRRMESHOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROBJ-MinSizeRel-265b02542885395dc7ce.json",
+					"name" : "IRROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROTHEROBJ-MinSizeRel-3063b41877e8e44a8a3f.json",
+					"name" : "IRROTHEROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRVIDEOOBJ-MinSizeRel-9646c16f5a4eddfa1b19.json",
+					"name" : "IRRVIDEOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IrrlichtMt-MinSizeRel-d6d3d823c46ee289462a.json",
+					"name" : "IrrlichtMt",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-MinSizeRel-96d45a9eb15c4d0f3dac.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetest::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetest-MinSizeRel-df984d7d50d2204af4b9.json",
+					"name" : "minetest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetestserver::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetestserver-MinSizeRel-e6afc4393add0061163f.json",
+					"name" : "minetestserver",
+					"projectIndex" : 0
+				}
+			]
+		},
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-RelWithDebInfo-ca5e52fdb3eb4b888d9d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						1,
+						10
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt-RelWithDebInfo-aa98eb602fcb9579a92b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "lib/irrlichtmt/source/Irrlicht",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib.irrlichtmt.source.Irrlicht-RelWithDebInfo-5d19b910e9e5680b48a4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "lib/irrlichtmt/source/Irrlicht",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-src-RelWithDebInfo-b1afe2bbbbad4b4b853c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src",
+					"targetIndexes" : 
+					[
+						2,
+						11,
+						12
+					]
+				},
+				{
+					"build" : "src/threading",
+					"jsonFile" : "directory-src.threading-RelWithDebInfo-866fe7776bdfd347f566.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/threading"
+				},
+				{
+					"build" : "src/content",
+					"jsonFile" : "directory-src.content-RelWithDebInfo-2575739741d7b2b2ce1e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/content"
+				},
+				{
+					"build" : "src/database",
+					"jsonFile" : "directory-src.database-RelWithDebInfo-9f6626c8f994c1bd46ba.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/database"
+				},
+				{
+					"build" : "src/gui",
+					"jsonFile" : "directory-src.gui-RelWithDebInfo-127846aa570c1dd3fdd1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/gui"
+				},
+				{
+					"build" : "src/mapgen",
+					"jsonFile" : "directory-src.mapgen-RelWithDebInfo-5d92e216e5f80ea478b9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/mapgen"
+				},
+				{
+					"build" : "src/network",
+					"jsonFile" : "directory-src.network-RelWithDebInfo-3e33f20a4c8141e0054b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/network"
+				},
+				{
+					"build" : "src/script",
+					"childIndexes" : 
+					[
+						11,
+						12,
+						13
+					],
+					"jsonFile" : "directory-src.script-RelWithDebInfo-2232dc512a8142e37990.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/script"
+				},
+				{
+					"build" : "src/script/common",
+					"jsonFile" : "directory-src.script.common-RelWithDebInfo-c90aeca59a93ad8d1dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/common"
+				},
+				{
+					"build" : "src/script/cpp_api",
+					"jsonFile" : "directory-src.script.cpp_api-RelWithDebInfo-b2d332bc95a105cd3107.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/cpp_api"
+				},
+				{
+					"build" : "src/script/lua_api",
+					"jsonFile" : "directory-src.script.lua_api-RelWithDebInfo-b6be678f9744e1179650.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 10,
+					"projectIndex" : 0,
+					"source" : "src/script/lua_api"
+				},
+				{
+					"build" : "src/unittest",
+					"jsonFile" : "directory-src.unittest-RelWithDebInfo-ea8c30069937f854dd79.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/unittest"
+				},
+				{
+					"build" : "src/benchmark",
+					"jsonFile" : "directory-src.benchmark-RelWithDebInfo-f121e447185d2c8721f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/benchmark"
+				},
+				{
+					"build" : "src/util",
+					"jsonFile" : "directory-src.util-RelWithDebInfo-115ba1e4bb25559e3768.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/util"
+				},
+				{
+					"build" : "src/irrlicht_changes",
+					"jsonFile" : "directory-src.irrlicht_changes-RelWithDebInfo-216b3bcb6ab73f93266f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/irrlicht_changes"
+				},
+				{
+					"build" : "src/server",
+					"jsonFile" : "directory-src.server-RelWithDebInfo-0060d0c68a017a1e8304.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/server"
+				},
+				{
+					"build" : "src/client",
+					"jsonFile" : "directory-src.client-RelWithDebInfo-40aaa8b507c401118c86.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 0,
+					"source" : "src/client"
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19
+					],
+					"name" : "minetest",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						10,
+						11,
+						12
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "Irrlicht",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "ALL_BUILD::@f5ae9ddf267227e6b568",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-fbff5a0aacbc33b6ad5a.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ALL_BUILD::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ALL_BUILD-RelWithDebInfo-478f8be15e961427efd4.json",
+					"name" : "ALL_BUILD",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "GenerateVersion::@145eef247bfb46b6828c",
+					"jsonFile" : "target-GenerateVersion-RelWithDebInfo-324317597288b9643e6c.json",
+					"name" : "GenerateVersion",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRGUIOBJ-RelWithDebInfo-066bd1216e88cb3c832e.json",
+					"name" : "IRRGUIOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRIOOBJ-RelWithDebInfo-5cdfa5016f63eef42a76.json",
+					"name" : "IRRIOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRMESHOBJ-RelWithDebInfo-c1d944a344462f17ba3c.json",
+					"name" : "IRRMESHOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROBJ-RelWithDebInfo-3e36e04b28256dbb1777.json",
+					"name" : "IRROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRROTHEROBJ-RelWithDebInfo-d06dcf5fb207c1f938e8.json",
+					"name" : "IRROTHEROBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IRRVIDEOOBJ-RelWithDebInfo-e3e8e0c42914217094fe.json",
+					"name" : "IRRVIDEOOBJ",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+					"jsonFile" : "target-IrrlichtMt-RelWithDebInfo-3b1f57d59a372b75ffa4.json",
+					"name" : "IrrlichtMt",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZERO_CHECK-RelWithDebInfo-96d45a9eb15c4d0f3dac.json",
+					"name" : "ZERO_CHECK",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetest::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetest-RelWithDebInfo-50d80d34c1e23b8e9df7.json",
+					"name" : "minetest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "minetestserver::@145eef247bfb46b6828c",
+					"jsonFile" : "target-minetestserver-RelWithDebInfo-f428fec41e972f444fd6.json",
+					"name" : "minetestserver",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Documents/Programming/GitHub/minetest/cmake-build-release-visual-studio",
+		"source" : "D:/Documents/Programming/GitHub/minetest"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

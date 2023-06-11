@@ -1,0 +1,87 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"lib/irrlichtmt/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 57,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 62,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 80,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include/irrlichtmt",
+			"paths" : 
+			[
+				{
+					"from" : "lib/irrlichtmt/include",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/IrrlichtMt",
+			"exportName" : "IrrlichtMt-export",
+			"exportTargets" : 
+			[
+				{
+					"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+					"index" : 9
+				}
+			],
+			"paths" : 
+			[
+				"lib/irrlichtmt/CMakeFiles/Export/9c82c040d3e50e615ae5122050310d9e/IrrlichtMtTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/IrrlichtMt",
+			"paths" : 
+			[
+				"cmake-build-release-visual-studio/lib/irrlichtmt/cmake/IrrlichtMtConfig.cmake",
+				"cmake-build-release-visual-studio/lib/irrlichtmt/cmake/IrrlichtMtConfigVersion.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/irrlichtmt",
+		"source" : "lib/irrlichtmt"
+	}
+}

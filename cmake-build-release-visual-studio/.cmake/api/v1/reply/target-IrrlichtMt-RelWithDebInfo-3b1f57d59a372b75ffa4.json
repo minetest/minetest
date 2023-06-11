@@ -1,0 +1,740 @@
+{
+	"archive" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/machine:x64",
+				"role" : "flags"
+			}
+		]
+	},
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/irrlichtmt/lib/Win32-VisualStudio/RelWithDebInfo/IrrlichtMt.lib"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"_add_library",
+			"add_library",
+			"install",
+			"add_compile_options",
+			"add_definitions",
+			"target_include_directories",
+			"target_sources"
+		],
+		"files" : 
+		[
+			"C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+			"lib/irrlichtmt/source/Irrlicht/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 439,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 632,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 486,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 46,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 6,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 70,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 138,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 176,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 178,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 117,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 84,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 452,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRROBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "lib"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "C:/Program Files (x86)/minetest"
+		}
+	},
+	"name" : "IrrlichtMt",
+	"nameOnDisk" : "IrrlichtMt.lib",
+	"paths" : 
+	{
+		"build" : "lib/irrlichtmt/source/Irrlicht",
+		"source" : "lib/irrlichtmt/source/Irrlicht"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Object Libraries",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CSkinnedMesh.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CBoneSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CMeshSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CAnimatedMeshSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CB3DMeshFileLoader.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/COBJMeshFileLoader.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 15,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRMESHOBJ.dir/$(Configuration)/CXMeshFileLoader.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CBillboardSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CCameraSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CDummyTransformationSceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CEmptySceneNode.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CMeshManipulator.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CSceneCollisionManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CSceneManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 16,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROBJ.dir/$(Configuration)/CMeshCache.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CFPSCounter.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CNullDriver.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COpenGLCacheHandler.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COpenGLDriver.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COpenGLShaderMaterialRenderer.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COpenGLSLMaterialRenderer.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COpenGLExtensionHandler.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLESDriver.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLESExtensionHandler.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLES2Driver.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLES2ExtensionHandler.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLES2FixedPipelineRenderer.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLES2MaterialRenderer.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/COGLES2Renderer2D.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CWebGL1Driver.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CGLXManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CWGLManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CEGLManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CSDLManager.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/mt_opengl_loader.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CColorConverter.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImage.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageLoaderBMP.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageLoaderJPG.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageLoaderPNG.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageLoaderTGA.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageWriterJPG.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 17,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRVIDEOOBJ.dir/$(Configuration)/CImageWriterPNG.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CFileList.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CFileSystem.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CLimitReadFile.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CMemoryFile.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CReadFile.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CWriteFile.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CZipReader.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 18,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRIOOBJ.dir/$(Configuration)/CAttributes.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/CIrrDeviceSDL.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/CIrrDeviceLinux.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/CIrrDeviceStub.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/CIrrDeviceWin32.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/CLogger.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/COSOperator.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/Irrlicht.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 19,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRROTHEROBJ.dir/$(Configuration)/os.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIButton.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUICheckBox.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIComboBox.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIEditBox.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIEnvironment.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIFileOpenDialog.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIFont.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIImage.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIListBox.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIScrollBar.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUISkin.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIStaticText.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUITabControl.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUISpriteBank.obj",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 20,
+			"isGenerated" : true,
+			"path" : "cmake-build-release-visual-studio/lib/irrlichtmt/source/Irrlicht/IRRGUIOBJ.dir/$(Configuration)/CGUIImageList.obj",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

@@ -1,0 +1,54 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"lib/irrlichtmt/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "IRROTHEROBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IrrlichtMt::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRROBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRMESHOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRVIDEOOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRGUIOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "IRRIOOBJ::@3c7fcea70ce08d4557a5"
+		},
+		{
+			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "ALL_BUILD::@f5ae9ddf267227e6b568",
+	"isGeneratorProvided" : true,
+	"name" : "ALL_BUILD",
+	"paths" : 
+	{
+		"build" : "lib/irrlichtmt",
+		"source" : "lib/irrlichtmt"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}
