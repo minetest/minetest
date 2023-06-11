@@ -509,7 +509,7 @@ void ChatPrompt::addToHistory(const std::wstring &line)
 		auto entry = m_history.begin() + m_history_index;
 		if (entry->saved && entry->line == line) {
 			entry->line = *entry->saved;
-			entry->saved = nullopt;
+			entry->saved = std::nullopt;
 			// Remove potential duplicates
 			auto dup_before = std::find(m_history.begin(), entry, *entry);
 			if (dup_before != entry)

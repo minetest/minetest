@@ -698,7 +698,7 @@ void Camera::drawNametags()
 
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
 		const std::string &text, video::SColor textcolor,
-		Optional<video::SColor> bgcolor, const v3f &pos)
+		std::optional<video::SColor> bgcolor, const v3f &pos)
 {
 	Nametag *nametag = new Nametag(parent_node, text, textcolor, bgcolor, pos);
 	m_nametags.push_back(nametag);

@@ -237,7 +237,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (bgcolor != NULL_BGCOLOR)
 			nametag_bgcolor = bgcolor;
 		else
-			nametag_bgcolor = nullopt;
+			nametag_bgcolor = std::nullopt;
 
 		tmp = readU8(is);
 		if (is.eof())

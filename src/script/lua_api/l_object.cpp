@@ -716,7 +716,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 			if (read_color(L, -1, &color))
 				prop->nametag_bgcolor = color;
 		} else {
-			prop->nametag_bgcolor = nullopt;
+			prop->nametag_bgcolor = std::nullopt;
 		}
 	}
 	lua_pop(L, 1);
