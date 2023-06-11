@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <vector>
 #include <set>
+#include <unordered_set>
 #include <memory>
 #include <mutex>
 
@@ -379,7 +380,15 @@ private:
 		List of block positions.
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
-	std::set<v3s16> m_blocks_sent;
+	std::unordered_set<v3s16> m_blocks_sent;
+
+	/*
+		Cache of blocks that have been occlusion culled at the current distance.
+		As GetNextBlocks traverses the same distance multiple times, this saves
+		significant CPU time.
+	 */
+	std::unordered_set<v3s16> m_blocks_occ;
+
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
 	v3f m_last_camera_dir;
@@ -399,7 +408,7 @@ private:
 		Block is removed when GOTBLOCKS is received.
 		Value is time from sending. (not used at the moment)
 	*/
-	std::map<v3s16, float> m_blocks_sending;
+	std::unordered_map<v3s16, float> m_blocks_sending;
 
 	/*
 		Blocks that have been modified since blocks were
@@ -409,7 +418,7 @@ private:
 
 		List of block positions.
 	*/
-	std::set<v3s16> m_blocks_modified;
+	std::unordered_set<v3s16> m_blocks_modified;
 
 	/*
 		Count of excess GotBlocks().

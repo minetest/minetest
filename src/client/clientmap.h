@@ -143,6 +143,7 @@ public:
 protected:
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:
+	bool isMeshOccluded(MapBlock *mesh_block, u16 mesh_size, v3s16 cam_pos_nodes);
 
 	// update the vertex order in transparent mesh buffers
 	void updateTransparentMeshBuffers();
@@ -214,6 +215,6 @@ private:
 	bool m_cache_anistropic_filter;
 	u16 m_cache_transparency_sorting_distance;
 
-	bool m_new_occlusion_culler;
+	bool m_loops_occlusion_culler;
 	bool m_enable_raytraced_culling;
 };

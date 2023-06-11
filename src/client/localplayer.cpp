@@ -573,7 +573,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			}
 		}
 
-		if (control.sneak) {
+		if (control.sneak && !control.jump) {
+			// Descend player in freemove mode, liquids and climbable nodes by sneak key, only if jump key is released
 			if (free_move) {
 				// In free movement mode, sneak descends
 				if (fast_move && (control.aux1 || always_fly_fast))
@@ -606,16 +607,19 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 
 	if (control.jump) {
 		if (free_move) {
-			if (player_settings.aux1_descends || always_fly_fast) {
-				if (fast_move)
-					speedV.Y = movement_speed_fast;
-				else
-					speedV.Y = movement_speed_walk;
-			} else {
-				if (fast_move && control.aux1)
-					speedV.Y = movement_speed_fast;
-				else
-					speedV.Y = movement_speed_walk;
+			if (!control.sneak) {
+				// Don't fly up if sneak key is pressed
+				if (player_settings.aux1_descends || always_fly_fast) {
+					if (fast_move)
+						speedV.Y = movement_speed_fast;
+					else
+						speedV.Y = movement_speed_walk;
+				} else {
+					if (fast_move && control.aux1)
+						speedV.Y = movement_speed_fast;
+					else
+						speedV.Y = movement_speed_walk;
+				}
 			}
 		} else if (m_can_jump) {
 			/*
@@ -629,13 +633,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				setSpeed(speedJ);
 				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_JUMP));
 			}
-		} else if (in_liquid && !m_disable_jump) {
+		} else if (in_liquid && !m_disable_jump && !control.sneak) {
 			if (fast_climb)
 				speedV.Y = movement_speed_fast;
 			else
 				speedV.Y = movement_speed_walk;
 			swimming_vertical = true;
-		} else if (is_climbing && !m_disable_jump) {
+		} else if (is_climbing && !m_disable_jump && !control.sneak) {
 			if (fast_climb)
 				speedV.Y = movement_speed_fast;
 			else

@@ -20,15 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "inventorymanager.h"
+#include <cassert>
 #include <functional>
+#include <memory>
+#include <unordered_map>
 
+class IItemDefManager;
 class ServerEnvironment;
 
 class ServerInventoryManager : public InventoryManager
 {
 public:
 	ServerInventoryManager();
-	virtual ~ServerInventoryManager();
+	virtual ~ServerInventoryManager() = default;
 
 	void setEnv(ServerEnvironment *env)
 	{
@@ -51,7 +55,7 @@ public:
 private:
 	struct DetachedInventory
 	{
-		Inventory *inventory;
+		std::unique_ptr<Inventory> inventory;
 		std::string owner;
 	};
 

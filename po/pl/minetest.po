@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-08-07 20:19+0000\n"
-"Last-Translator: marcin <martinwolski04@gmail.com>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-02-08 21:39+0000\n"
+"Last-Translator: W K <wojciech_kowalczyk@icloud.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -57,7 +57,7 @@ msgstr "Wróć do gry"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Umarłeś"
+msgstr "Nie żyjesz"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr "Znajdź Więcej Modów"
+msgstr "Znajdź więcej modyfikacji"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -232,7 +232,7 @@ msgstr "\"$1\" aktualnie istnieje. Czy chcesz go nadpisać?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Zależności $1 i $2 będą zainstalowane."
+msgstr "Zostaną zainstalowane zależności $1 i $2."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -243,7 +243,7 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
-"$1 pobierany,\n"
+"$1 pobieranych,\n"
 "$2 w kolejce"
 
 #: builtin/mainmenu/dlg_contentstore.lua
@@ -284,21 +284,21 @@ msgstr "Pobieranie..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Błąd instalowania \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Pobieranie $1 do $2 nie powiodło się :("
+msgstr "Nie udało się pobrać \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Pobieranie $1 do $2 nie powiodło się :("
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Instalacja: nieznany typ pliku lub uszkodzone archiwum"
+msgstr ""
+"Nie udało się wypakować \"$1\" (niewspierany typ pliku lub uszkodzone "
+"archiwum)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -815,20 +815,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Instalacja $1 do $2 nie powiodła się"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instalacja moda: nie można znaleźć odpowiedniego folderu dla paczki modów $1"
+msgstr "Instalacja: Nie można znaleźć odpowiedniej nazwy folderu dla $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Nie można znaleźć prawidłowego moda lub paczki modów"
+msgstr "Nie można znaleźć prawidłowej modyfikacji, paczki modyfikacji lub gry"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Nie moźna zainstalować moda jako $1"
+msgstr "Nie można zainstalować $1 jako $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -850,7 +846,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "O Minetest"
+msgstr "Informacje"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -866,7 +862,7 @@ msgstr "Główni twórcy"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Główny zespół"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1687,6 +1683,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Powiększenie jest obecnie wyłączone przez grę lub mod"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Czat ukryty"
 
@@ -1992,23 +1993,26 @@ msgstr "Minimapa w trybie teksturowym"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s wymaga następujących zależności, które nie zostały spełnione:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Zainstaluj i włącz wymagane modyfikacje lub wyłącz modyfikacje powodujące "
+"błędy."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Informacja: to może być spowodowane przez cykl zależności, w tym przypadku "
+"spróbuj zaktualizować modyfikacje."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Brak wymaganych zależności"
+msgstr "Niektóre modyfikacje mają niespełnione zależności:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2358,6 +2362,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Szum 3D, który wpływa na liczbę lochów na jeden mapchunk."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2367,7 +2372,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Wsparcie 3D\n"
@@ -2466,17 +2470,6 @@ msgstr ""
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Dostosuj wykrytą gęstość wyświetlania, używaną do skalowania elementów UI."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2664,20 +2657,19 @@ msgstr "Dystans optymalizacji wysyłanych bloków"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Intensywność efektu bloom"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Zasięg chmur"
+msgstr "Zasięg efektu bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Współczynnik intensywności efektu bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2847,6 +2839,10 @@ msgid "Client"
 msgstr "Klient"
 
 #: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Client and Server"
 msgstr "Klient i Serwer"
 
@@ -2990,7 +2986,6 @@ msgid "ContentDB Max Concurrent Downloads"
 msgstr "Maksymalna liczba jednoczesnych pobrań ContentDB"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "ContentDB URL"
 msgstr "Adres URL ContentDB"
 
@@ -2999,7 +2994,6 @@ msgid "Continuous forward"
 msgstr "Ciągle na przód"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
@@ -3040,7 +3034,6 @@ msgid "Controls steepness/height of hills."
 msgstr "Kontroluje stromość/wysokość gór."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls width of tunnels, a smaller value creates wider tunnels.\n"
 "Value >= 10.0 completely disables generation of tunnels and avoids the\n"
@@ -3048,7 +3041,7 @@ msgid ""
 msgstr ""
 "Wpływa na szerokość tuneli, mniejsza wartość tworzy szersze tunele.\n"
 "Wartość >= 10,0 całkowicie wyłącza tworzenie tuneli i pozwala na uniknięcie\n"
-"intensywnych obliczeń hałasu."
+"intensywnych obliczeń szumu."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -3075,7 +3068,6 @@ msgid "Crosshair color"
 msgstr "Kolor celownika"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
@@ -3124,11 +3116,12 @@ msgstr ""
 "To zostanie nadpisane jeżeli tworzysz świat z menu głównego."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Maksymalna ilość, wczytanych wymuszeniem, bloków mapy."
+msgstr ""
+"Domyślna maksymalna ilość wymuszonych wczytanych bloków map.\n"
+"Ustaw na -1 aby wyłączyć limit."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3166,12 +3159,10 @@ msgid "Defines areas with sandy beaches."
 msgstr "Określa obszary z piaszczystymi plażami."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain and steepness of cliffs."
 msgstr "Określa rozmieszczenie wyższego terenu i stromość klifów."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines distribution of higher terrain."
 msgstr "Określa rozmieszczenie wyższych terenów."
 
@@ -3185,6 +3176,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Definiuje jak dużo efektu bloom jest aplikowane na renderowany obraz\n"
+"Mniejsze wartości sprawiają że efekt jest delikatniejszy\n"
+"Zakres: od 0.01 do 1.0, wartość domyślna: 0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3195,9 +3189,8 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Określa położenie oraz teren z dodatkowymi górami i jeziorami."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Defines the base ground level."
-msgstr "Określa podstawowy poziom podłoża."
+msgstr "Określa poziom podstawowego podłoża."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the depth of the river channel."
@@ -3208,6 +3201,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Definiuje wielkość prześwietlenia efektu bloom.\n"
+"Zakres: od 0.1 do 10.0, wartość domyślna: 1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3297,7 +3292,6 @@ msgid "Disallow empty passwords"
 msgstr "Nie zezwalaj na puste hasła"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Display Density Scaling Factor"
 msgstr "Wyświetl współczynnik skalowania gęstości"
 
@@ -3335,18 +3329,20 @@ msgid "Dungeon minimum Y"
 msgstr "Minimalna wartość Y lochu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dungeon noise"
-msgstr "Hałas lochu"
+msgstr "Szum generowania lochów"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
-msgstr "Włącz wszystkie"
+msgstr "Włącz efekt bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Włącz debug efektu bloom"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3365,15 +3361,26 @@ msgstr ""
 "To wsparcie jest eksperymentalne i API może ulec zmianie."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
 msgstr ""
-"Włącz filtrowanie dysku poisson.\n"
-"Jeśli włączone, to używa dysku poisson do \"miękkich cieni\". W przeciwnym "
+"Włącz filtrowanie dysku Poisson.\n"
+"Jeśli włączone, używa dysku Poisson do \"miękkich cieni\", w przeciwnym "
 "razie używa filtrowania PCF."
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3389,7 +3396,6 @@ msgid "Enable console window"
 msgstr "Odblokuj okno konsoli"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable creative mode for all players"
 msgstr "Zezwól na tryb kreatywny dla wszystkich graczy"
 
@@ -3472,7 +3478,6 @@ msgstr ""
 "Dla przykładu: 0 dla braku drgań; 1.0 dla normalnych; 2.0 dla podwójnych."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable/disable running an IPv6 server.\n"
 "Ignored if bind_address is set.\n"
@@ -3541,7 +3546,6 @@ msgid "Entity methods"
 msgstr "Metody bytów"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3559,17 +3563,17 @@ msgstr ""
 "płaskimi nizinami, odpowiednimi dla jednolitej warstwy pływających wysp."
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
-msgstr ""
+#, fuzzy
+msgid "Exposure compensation"
+msgstr "Współczynnik naświetlenia"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
 msgstr "FPS"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS when unfocused or paused"
-msgstr "Maksymalny FPS gdy gra spauzowana"
+msgstr "Maksymalna ilość klatek na sekundę gdy gra zapauzowana bądź nieaktywna"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -3584,7 +3588,6 @@ msgid "Fall bobbing factor"
 msgstr "Skala drgań głowy podczas upadania"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font path"
 msgstr "Ścieżka czcionki zastępczej"
 
@@ -3675,39 +3678,32 @@ msgid "Fixed virtual joystick"
 msgstr "Ustaw wirtualny joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland density"
 msgstr "Gęstość latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland maximum Y"
 msgstr "Maksymalna wartość Y latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland minimum Y"
 msgstr "Minimalna wartość Y latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland noise"
-msgstr "Szum latających wysp"
+msgstr "Szum generowania latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland taper exponent"
 msgstr "Wykładnik zbieżności latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland tapering distance"
 msgstr "Odległość zwężania latających wysp"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland water level"
-msgstr "Poziom wody pływającej wyspy"
+msgstr "Poziom wody na pływających wyspach"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -3746,7 +3742,6 @@ msgid "Font size"
 msgstr "Rozmiar czcionki"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font size divisible by"
 msgstr "Rozmiar czcionki podzielny przez"
 
@@ -3762,12 +3757,11 @@ msgstr ""
 "DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
-"Rozmiar czcionki tekstu ostatniej rozmowy i monitu rozmowy w punktach (pt).\n"
+"Rozmiar czcionki tekstu ostatniego czatu i monitu czatu w punktach (pt).\n"
 "Wartość 0 spowoduje użycie domyślnego rozmiaru czcionki."
 
 #: src/settings_translation_file.cpp
@@ -3802,22 +3796,18 @@ msgid "Format of screenshots."
 msgstr "Format zrzutu ekranu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Default Background Color"
 msgstr "Domyślny kolor tła formspec"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Default Background Opacity"
 msgstr "Domyślna nieprzezroczystość tła formspec"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Full-Screen Background Color"
 msgstr "Kolor formspec tła pełnoekranowego"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec Full-Screen Background Opacity"
 msgstr "Pełnoekranowa nieprzezroczystość tła formspec"
 
@@ -3830,14 +3820,14 @@ msgid "Formspec default background opacity (between 0 and 255)."
 msgstr "Kanał alfa konsoli w grze (od 0 do 255)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background color (R,G,B)."
-msgstr "Kolor tła konsoli czatu w grze (R,G,B)."
+msgstr ""
+"Kolor pełnoekranowego tła formspec (kanał czerwony, kanał zielony, kanał "
+"niebieski)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Formspec full-screen background opacity (between 0 and 255)."
-msgstr "Kanał alfa konsoli w grze (od 0 do 255)."
+msgstr "Nieprzezroczystość pełnoekranowego tła formspec (pomiędzy 0 i 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Fourth of 4 2D noises that together define hill/mountain range height."
@@ -3932,7 +3922,6 @@ msgstr ""
 "we wszystkich innych generatorach flaga ta kontroluje wszystkie dekoracje."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Gradient of light curve at maximum light level.\n"
 "Controls the contrast of the highest light levels."
@@ -3941,7 +3930,6 @@ msgstr ""
 "Wpływa na kontrast najwyższych poziomów jasności."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Gradient of light curve at minimum light level.\n"
 "Controls the contrast of the lowest light levels."
@@ -3970,9 +3958,8 @@ msgid "Ground level"
 msgstr "Poziom ziemi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ground noise"
-msgstr "Szum ziemi"
+msgstr "Szum generowania podłoża"
 
 #: src/settings_translation_file.cpp
 msgid "HTTP mods"
@@ -3983,9 +3970,8 @@ msgid "HUD"
 msgstr "HUD"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HUD scaling"
-msgstr "Skalowanie GUI"
+msgstr "Skalowanie HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4023,7 +4009,6 @@ msgid "Heat noise"
 msgstr "Szum gorąca"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Height component of the initial window size. Ignored in fullscreen mode."
 msgstr ""
@@ -4046,24 +4031,20 @@ msgid "Hill threshold"
 msgstr "Granica zbocza"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness1 noise"
-msgstr "Hałas górzystości1"
+msgstr "Szum górzystości1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness2 noise"
-msgstr "Hałas górzystości2"
+msgstr "Szum górzystości2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness3 noise"
-msgstr "Hałas górzystości3"
+msgstr "Szum górzystości3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hilliness4 noise"
-msgstr "Hałas górzystości4"
+msgstr "Szum górzystości4"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -4078,7 +4059,6 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration in fast mode,\n"
 "in nodes per second per second."
@@ -4087,7 +4067,6 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Horizontal and vertical acceleration on ground or when climbing,\n"
 "in nodes per second per second."
@@ -4096,12 +4075,10 @@ msgstr ""
 "w blokach na sekundę do kwadratu."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How deep to make rivers."
 msgstr "Jak głębokie tworzyć rzeki."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
 "If negative, liquid waves will move backwards.\n"
@@ -4112,7 +4089,6 @@ msgstr ""
 "Wymaga włączenia falowania cieczy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How long the server will wait before unloading unused mapblocks, stated in "
 "seconds.\n"
@@ -4553,7 +4529,7 @@ msgstr "Duża część jaskini zalana"
 
 #: src/settings_translation_file.cpp
 msgid "Last known version update"
-msgstr ""
+msgstr "Ostatnia znana aktualizacja wersji"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4746,6 +4722,9 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"Wartość logiczna, która kontroluje jak daleko efekt bloom roznosi się\n"
+"od jasnych obiektów.\n"
+"Zakres: od 0.1 do 8, wartość domyślna: 1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -4876,6 +4855,11 @@ msgstr "Limit bloków mapy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
+msgstr "Opóźnienie generacji siatki bloków Mapblock"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
 msgstr "Opóźnienie generacji siatki bloków Mapblock"
 
 #: src/settings_translation_file.cpp
@@ -5391,6 +5375,13 @@ msgstr ""
 "konsumpcją pamięci (4096=100MB, praktyczna zasada)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "Nieprzeźroczyste ciecze"
 
@@ -5527,7 +5518,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post processing"
-msgstr ""
+msgstr "Przetwarzanie końcowe"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5738,11 +5729,6 @@ msgstr ""
 "Piaszczyste pustynie pojawiają się, gdy np_beach przekroczy tą wartość."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "Iteracje"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Zapisz na dysku mapę odebraną przez klienta."
 
@@ -5932,13 +5918,17 @@ msgid "Serverlist file"
 msgstr "Plik listy publicznych serwerów"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
+"Ustaw współczynnik kompensacji ekspozycji.\n"
+"Ten współczynnik jest aplikowany na liniową wartość koloru\n"
+"przed wszystkimi innymi efektami przetwarzania końcowego.\n"
+"Wartość 1.0 (domyślna) oznacza brak kompensacji ekspozycji.\n"
+"Zakres: od 0.1 do 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5981,17 +5971,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
-msgstr ""
-"Ustaw nachylenie orbity Słońca/Księżyca w stopniach.\n"
-"Wartość 0 oznacza brak nachylenia / orbitę pionową.\n"
-"Wartość minimalna: 0.0; wartość maksymalna: 60.0"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
 "Set to true to enable Shadow Mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
@@ -6003,6 +5982,8 @@ msgid ""
 "Set to true to enable bloom effect.\n"
 "Bright colors will bleed over the neighboring objects."
 msgstr ""
+"Ustaw na prawda aby włączyć efekt bloom.\n"
+"Jasne kolory będą rozmywać się na sąsiednich obiektach."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6034,7 +6015,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -6130,6 +6111,15 @@ msgstr "Komunikat zamknięcia serwera"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -6154,11 +6144,6 @@ msgstr ""
 "Rozmiar pamięci bloków mapy generatora siatki. Zwiększenie\n"
 "zmieni rozmiar % pamięci, ograniczając dane kopiowane z głównego wątku\n"
 "oraz ilość drgań."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Sky Body Orbit Tilt"
-msgstr "Pochylenie orbity ciała niebieskiego"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6518,13 +6503,12 @@ msgstr ""
 "Należy to skonfigurować razem z active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Zaplecze renderowania.\n"
 "Po zmianie wymagane jest ponowne uruchomienie.\n"
@@ -6803,6 +6787,12 @@ msgstr ""
 "wyłączone.\n"
 "Jeśli jest ustawiony na 0, MSAA jest wyłączone.\n"
 "Po zmianie tej opcji wymagane jest ponowne uruchomienie."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -7262,6 +7252,23 @@ msgstr "Limit żądań równoległych cURL"
 #~ "Ustaw kodowanie gamma dla tablic świateł. Wyższe wartości to większa "
 #~ "jasność.\n"
 #~ "To ustawienie jest tylko dla klientów, ignorowane przez serwer."
+
+#~ msgid ""
+#~ "Adjust the saturation (or vividness) of the scene\n"
+#~ "Values\n"
+#~ "< 1.0 decrease saturation\n"
+#~ "> 1.0 increase saturation\n"
+#~ "1.0 = unchanged saturation\n"
+#~ "0.0 = black and white\n"
+#~ "(Tone mapping needs to be enabled.)"
+#~ msgstr ""
+#~ "Dostosuj nasycenie (lub jaskrawość) sceny\n"
+#~ "Wartości\n"
+#~ "< 1.0 zmniejszają nasycenie\n"
+#~ "> 1.0 zwiększają nasycenie\n"
+#~ "1.0 = niezmienione nasycenie\n"
+#~ "0.0 = czarny i biały\n"
+#~ "(Mapowanie tonów musi być włączone.)"
 
 #~ msgid "Alters how mountain-type floatlands taper above and below midpoint."
 #~ msgstr ""
@@ -8508,11 +8515,25 @@ msgstr "Limit żądań równoległych cURL"
 #~ msgid "Right key"
 #~ msgstr "W prawo"
 
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "Iteracje"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Wybierz plik paczki:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Pojedynczy gracz"
+
+#, fuzzy
+#~ msgid ""
+#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
+#~ "Value of 0 means no tilt / vertical orbit.\n"
+#~ "Minimum value: 0.0; maximum value: 60.0"
+#~ msgstr ""
+#~ "Ustaw nachylenie orbity Słońca/Księżyca w stopniach.\n"
+#~ "Wartość 0 oznacza brak nachylenia / orbitę pionową.\n"
+#~ "Wartość minimalna: 0.0; wartość maksymalna: 60.0"
 
 #~ msgid "Shadow limit"
 #~ msgstr "Limit cieni"
@@ -8522,6 +8543,10 @@ msgstr "Limit żądań równoległych cURL"
 #~ "Shadow offset (in pixels) of the fallback font. If 0, then shadow will "
 #~ "not be drawn."
 #~ msgstr "Offset cienia czcionki, jeżeli 0 to cień nie będzie rysowany."
+
+#, fuzzy
+#~ msgid "Sky Body Orbit Tilt"
+#~ msgstr "Pochylenie orbity ciała niebieskiego"
 
 #~ msgid "Sneak key"
 #~ msgstr "Skradanie"

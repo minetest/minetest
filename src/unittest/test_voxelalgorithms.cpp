@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "util/numeric.h"
 #include "dummymap.h"
+#include "nodedef.h"
 
 class TestVoxelAlgorithms : public TestBase {
 public:

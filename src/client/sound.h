@@ -88,6 +88,3 @@ public:
 	void step(float dtime) {}
 	void fadeSound(int sound, float step, float gain) {}
 };
-
-// Global DummySoundManager singleton
-extern DummySoundManager dummySoundManager;

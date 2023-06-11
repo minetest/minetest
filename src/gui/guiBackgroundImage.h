@@ -26,7 +26,8 @@ class GUIBackgroundImage : public gui::IGUIElement
 public:
 	GUIBackgroundImage(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 		const core::rect<s32> &rectangle, const std::string &name,
-		const core::rect<s32> &middle, ISimpleTextureSource *tsrc, bool autoclip);
+		const core::rect<s32> &middle, ISimpleTextureSource *tsrc, bool autoclip,
+		v2s32 autoclip_offset);
 
 	virtual void draw() override;
 
@@ -35,4 +36,5 @@ private:
 	core::rect<s32> m_middle;
 	ISimpleTextureSource *m_tsrc;
 	bool m_autoclip;
+	v2s32 m_autoclip_offset;
 };

@@ -190,6 +190,7 @@ local style_fs = [[
 	style[one_btn14:hovered;bgimg=testformspec_bg_hovered.png;fgimg=testformspec_hovered.png;textcolor=yellow]
 	style[one_btn14:pressed;bgimg=testformspec_bg_pressed.png;fgimg=testformspec_pressed.png;textcolor=blue]
 	style[one_btn14:hovered+pressed;textcolor=purple]
+	style[one_btn14:focused;textcolor=red]
 	image_button[0,9.6;1,1;testformspec_button_image.png;one_btn14;Bg]
 
 	style[one_btn15;border=false;bgcolor=#1cc;bgimg=testformspec_bg.png;bgimg_hovered=testformspec_bg_hovered.png;bgimg_pressed=testformspec_bg_pressed.png]
@@ -198,8 +199,8 @@ local style_fs = [[
 	style[one_btn16;border=false;bgimg=testformspec_bg_9slice.png;bgimg_middle=4,6;padding=5,7;fgimg=testformspec_bg.png;fgimg_middle=1]
 	style[one_btn16:hovered;bgimg=testformspec_bg_9slice_hovered.png;fgimg=testformspec_bg_hovered.png]
 	style[one_btn16:pressed;bgimg=testformspec_bg_9slice_pressed.png;fgimg=testformspec_bg_pressed.png]
+	style[one_btn16:focused;bgimg=testformspec_bg_9slice_focused.png;fgimg=testformspec_bg_focused.png]
 	image_button[2.5,9.6;2,1;;one_btn16;9-Slice Bg]
-
 
 
 	container[2.75,0]

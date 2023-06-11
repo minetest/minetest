@@ -23,7 +23,6 @@ package net.minetest.minetest;
 import android.app.NativeActivity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -40,6 +39,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 
 // Native code finds these methods by name (see porting_android.cpp).
@@ -49,13 +49,11 @@ import java.util.Objects;
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
-		System.loadLibrary("Minetest");
+		System.loadLibrary("minetest");
 	}
 
 	private int messageReturnCode = -1;
 	private String messageReturnValue = "";
-
-	public static native void putMessageBoxResult(String text);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,11 +62,10 @@ public class GameActivity extends NativeActivity {
 	}
 
 	private void makeFullScreen() {
-		if (Build.VERSION.SDK_INT >= 19)
-			this.getWindow().getDecorView().setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		this.getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 	}
 
 	@Override
@@ -204,5 +201,29 @@ public class GameActivity extends NativeActivity {
 
 		Intent shareIntent = Intent.createChooser(intent, null);
 		startActivity(shareIntent);
+	}
+
+	public String getLanguage() {
+		String langCode = Locale.getDefault().getLanguage();
+
+		// getLanguage() still uses old language codes to preserve compatibility.
+		// List of code changes in ISO 639-2:
+		// https://www.loc.gov/standards/iso639-2/php/code_changes.php
+		switch (langCode) {
+			case "in":
+				langCode = "id"; // Indonesian
+				break;
+			case "iw":
+				langCode = "he"; // Hebrew
+				break;
+			case "ji":
+				langCode = "yi"; // Yiddish
+				break;
+			case "jw":
+				langCode = "jv"; // Javanese
+				break;
+		}
+
+		return langCode;
 	}
 }

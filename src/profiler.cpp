@@ -50,6 +50,9 @@ ScopeProfiler::~ScopeProfiler()
 		case SPT_GRAPH_ADD:
 			m_profiler->graphAdd(m_name, duration);
 			break;
+		case SPT_MAX:
+			m_profiler->max(m_name, duration);
+			break;
 		}
 	}
 	delete m_timer;
@@ -64,7 +67,7 @@ void Profiler::add(const std::string &name, float value)
 {
 	MutexAutoLock lock(m_mutex);
 	{
-		/* No average shall have been used; mark add used as -2 */
+		/* No average shall have been used; mark add/max used as -2 */
 		std::map<std::string, int>::iterator n = m_avgcounts.find(name);
 		if (n == m_avgcounts.end()) {
 			m_avgcounts[name] = -2;
@@ -80,6 +83,29 @@ void Profiler::add(const std::string &name, float value)
 			m_data[name] = value;
 		else
 			n->second += value;
+	}
+}
+
+void Profiler::max(const std::string &name, float value)
+{
+	MutexAutoLock lock(m_mutex);
+	{
+		/* No average shall have been used; mark add/max used as -2 */
+		auto n = m_avgcounts.find(name);
+		if (n == m_avgcounts.end()) {
+			m_avgcounts[name] = -2;
+		} else {
+			if (n->second == -1)
+				n->second = -2;
+			assert(n->second == -2);
+		}
+	}
+	{
+		auto n = m_data.find(name);
+		if (n == m_data.end())
+			m_data[name] = value;
+		else if (value > n->second)
+			n->second = value;
 	}
 }
 

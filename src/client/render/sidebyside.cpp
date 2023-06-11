@@ -39,7 +39,7 @@ void DrawImageStep::run(PipelineContext &context)
 {
 	if (target)
 		target->activate(context);
-	
+
 	auto texture = source->getTexture(texture_index);
 	core::dimension2du output_size = context.device->getVideoDriver()->getScreenSize();
 	v2s32 pos(offset.X * output_size.Width, offset.Y * output_size.Height);
@@ -73,6 +73,7 @@ void populateSideBySidePipeline(RenderPipeline *pipeline, Client *client, bool h
 		auto output = pipeline->createOwned<TextureBufferOutput>(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		pipeline->addStep<SetRenderTargetStep>(step3D, output);
 		pipeline->addStep(step3D);
+		pipeline->addStep<DrawWield>();
 		pipeline->addStep<MapPostFxStep>();
 		pipeline->addStep<DrawHUD>();
 	}

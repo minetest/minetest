@@ -128,8 +128,11 @@ public:
 	// Same as above, but uses a raw numeric index correlating to the (x,z) position.
 	virtual Biome *getBiomeAtIndex(size_t index, v3s16 pos) const = 0;
 
+	virtual s16 *getBiomeTransitions() const = 0;
+
 	// Result of calcBiomes bulk computation.
 	biome_t *biomemap = nullptr;
+	s16 *biome_transitions = nullptr;
 
 protected:
 	BiomeManager *m_bmgr = nullptr;
@@ -186,6 +189,7 @@ public:
 	Biome *getBiomeAtIndex(size_t index, v3s16 pos) const;
 
 	Biome *calcBiomeFromNoise(float heat, float humidity, v3s16 pos) const;
+	s16 *getBiomeTransitions() const;
 
 	float *heatmap;
 	float *humidmap;

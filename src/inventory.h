@@ -51,6 +51,12 @@ struct ItemStack
 	std::string getDescription(const IItemDefManager *itemdef) const;
 	std::string getShortDescription(const IItemDefManager *itemdef) const;
 
+	std::string getInventoryImage(const IItemDefManager *itemdef) const;
+	std::string getInventoryOverlay(const IItemDefManager *itemdef) const;
+	std::string getWieldImage(const IItemDefManager *itemdef) const;
+	std::string getWieldOverlay(const IItemDefManager *itemdef) const;
+	v3f getWieldScale(const IItemDefManager *itemdef) const;
+
 	/*
 		Quantity methods
 	*/
@@ -155,6 +161,10 @@ struct ItemStack
 	bool itemFits(ItemStack newitem,
 			ItemStack *restitem,  // may be NULL
 			IItemDefManager *itemdef) const;
+
+	// Checks if another itemstack would stack with this one.
+	// Does not check if the item actually fits in the stack.
+	bool stacksWith(ItemStack other) const;
 
 	// Takes some items.
 	// If there are not enough, takes as many as it can.
@@ -278,6 +288,24 @@ public:
 	inline bool checkModified() const { return m_dirty; }
 	inline void setModified(bool dirty = true) { m_dirty = dirty; }
 
+	// Problem: C++ keeps references to InventoryList and ItemStack indices
+	// until a better solution is found, this serves as a guard to prevent side-effects
+	struct ResizeUnlocker {
+		void operator()(InventoryList *invlist)
+		{
+			invlist->m_resize_locks -= 1;
+		}
+	};
+	using ResizeLocked = std::unique_ptr<InventoryList, ResizeUnlocker>;
+
+	void checkResizeLock();
+
+	inline ResizeLocked resizeLock()
+	{
+		m_resize_locks += 1;
+		return ResizeLocked(this);
+	}
+
 private:
 	std::vector<ItemStack> m_items;
 	std::string m_name;
@@ -285,6 +313,7 @@ private:
 	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 	bool m_dirty = true;
+	int m_resize_locks = 0; // Lua callback sanity
 };
 
 class Inventory

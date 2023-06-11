@@ -4,8 +4,8 @@
 MARKDOWN_FILE=$(pip show markdown | awk '/Location/ { print $2 }')/markdown/extensions/codehilite.py
 patch -N -r - $MARKDOWN_FILE lua_highlight.patch || true
 
-# Split lua_api.txt on top level headings
-cat ../lua_api.txt | csplit -sz -f docs/section - '/^=/-1' '{*}'
+# Split lua_api.md on top level headings
+cat ../lua_api.md | csplit -sz -f docs/section - '/^=/-1' '{*}'
 
 cat > mkdocs.yml << EOF
 site_name: Minetest API Documentation

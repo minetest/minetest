@@ -266,7 +266,7 @@ private:
 	std::string output;
 	// Recipe list (itemstrings)
 	std::vector<std::string> recipe;
-	// Recipe list (item names)
+	// Recipe list (item names), sorted
 	std::vector<std::string> recipe_names;
 	// bool indicating if initHash has been called already
 	bool hash_inited = false;

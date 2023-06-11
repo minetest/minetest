@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
+#include "inventory.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiInventoryList.h"
@@ -61,6 +62,19 @@ enum FormspecQuitMode {
 	quit_mode_no,
 	quit_mode_accept,
 	quit_mode_cancel
+};
+
+enum ButtonEventType : u8
+{
+	BET_LEFT,
+	BET_RIGHT,
+	BET_MIDDLE,
+	BET_WHEEL_UP,
+	BET_WHEEL_DOWN,
+	BET_UP,
+	BET_DOWN,
+	BET_MOVE,
+	BET_OTHER
 };
 
 struct TextDest
@@ -257,6 +271,8 @@ public:
 	void updateSelectedItem();
 	ItemStack verifySelectedItem();
 
+	s16 getNextInventoryRing(const InventoryLocation &inventoryloc, const std::string &listname);
+
 	void acceptInput(FormspecQuitMode quitmode=quit_mode_no);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
@@ -331,6 +347,13 @@ protected:
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
+	ButtonEventType m_held_mouse_button = BET_OTHER;
+	bool m_shift_move_after_craft = false;
+
+	u16 m_left_drag_amount = 0;
+	ItemStack m_left_drag_stack;
+	std::vector<std::pair<GUIInventoryList::ItemSpec, ItemStack>> m_left_drag_stacks;
+	bool m_left_dragging = false;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
@@ -338,8 +361,6 @@ protected:
 	bool m_tooltip_append_itemname;
 	u64 m_hovered_time = 0;
 	s32 m_old_tooltip_id = -1;
-
-	bool m_auto_place = false;
 
 	bool m_allowclose = true;
 	bool m_lock = false;

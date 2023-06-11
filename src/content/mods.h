@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <string>
 #include <map>
-#include <json/json.h>
+#include "json-forwards.h"
 #include <unordered_set>
 #include "util/basic_macros.h"
 #include "config.h"

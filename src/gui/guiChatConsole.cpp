@@ -505,6 +505,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 					ChatPrompt::CURSOROP_SCOPE_WORD :
 					ChatPrompt::CURSOROP_SCOPE_CHARACTER;
 				prompt.cursorOperation(op, dir, scope);
+
+				if (op == ChatPrompt::CURSOROP_SELECT)
+					updatePrimarySelection();
 				return true;
 			}
 		}
@@ -570,6 +573,8 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SELECT,
 				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
 				ChatPrompt::CURSOROP_SCOPE_LINE);
+
+			updatePrimarySelection();
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_C && event.KeyInput.Control)
@@ -659,16 +664,30 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_chat_backend->scroll(rows);
 		}
 		// Middle click or ctrl-click opens weblink, if enabled in config
-		else if(m_cache_clickable_chat_weblinks && (
-				event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
-				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && m_is_ctrl_down)
-				))
+		// Otherwise, middle click pastes primary selection
+		else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN ||
+				(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN && m_is_ctrl_down))
 		{
 			// If clicked within console output region
 			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 )
 			{
 				// Translate pixel position to font position
-				middleClick(event.MouseInput.X / m_fontsize.X, event.MouseInput.Y / m_fontsize.Y);
+				bool was_url_pressed = m_cache_clickable_chat_weblinks &&
+						weblinkClick(event.MouseInput.X / m_fontsize.X,
+								event.MouseInput.Y / m_fontsize.Y);
+
+				if (!was_url_pressed
+						&& event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
+					// Paste primary selection at cursor pos
+#if IRRLICHT_VERSION_MT_REVISION >= 11
+					const c8 *text = Environment->getOSOperator()
+							->getTextFromPrimarySelection();
+#else
+					const c8 *text = nullptr;
+#endif
+					if (text)
+						prompt.input(utf8_to_wide(text));
+				}
 			}
 		}
 	}
@@ -691,7 +710,7 @@ void GUIChatConsole::setVisible(bool visible)
 	}
 }
 
-void GUIChatConsole::middleClick(s32 col, s32 row)
+bool GUIChatConsole::weblinkClick(s32 col, s32 row)
 {
 	// Prevent accidental rapid clicking
 	static u64 s_oldtime = 0;
@@ -699,7 +718,7 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 
 	// 0.6 seconds should suffice
 	if (newtime - s_oldtime < 600)
-		return;
+		return false;
 	s_oldtime = newtime;
 
 	const std::vector<ChatFormattedFragment> &
@@ -710,7 +729,7 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 	int indx = frags.size() - 1;
 	if (indx < 0) {
 		// Invalid row, frags is empty
-		return;
+		return false;
 	}
 	// Scan from right to left, offset by 1 font space because left margin
 	while (indx > -1 && (u32)col < frags[indx].column + 1) {
@@ -748,5 +767,17 @@ void GUIChatConsole::middleClick(s32 col, s32 row)
 		}
 		msg << " '" << weblink << "'";
 		m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
+		return true;
 	}
+
+	return false;
+}
+
+void GUIChatConsole::updatePrimarySelection()
+{
+#if IRRLICHT_VERSION_MT_REVISION >= 11
+	std::wstring wselected = m_chat_backend->getPrompt().getSelection();
+	std::string selected = wide_to_utf8(wselected);
+	Environment->getOSOperator()->copyToPrimarySelection(selected.c_str());
+#endif
 }

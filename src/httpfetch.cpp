@@ -457,7 +457,7 @@ protected:
 	size_t m_parallel_limit;
 
 	// Variables exclusively used within thread
-	std::vector<HTTPFetchOngoing*> m_all_ongoing;
+	std::vector<std::unique_ptr<HTTPFetchOngoing>> m_all_ongoing;
 	std::list<HTTPFetchRequest> m_queued_fetches;
 
 public:
@@ -513,11 +513,8 @@ protected:
 			u64 caller = req.fetch_request.caller;
 
 			// Abort all ongoing fetches for the caller
-			for (std::vector<HTTPFetchOngoing*>::iterator
-					it = m_all_ongoing.begin();
-					it != m_all_ongoing.end();) {
+			for (auto it = m_all_ongoing.begin(); it != m_all_ongoing.end();) {
 				if ((*it)->getRequest().caller == caller) {
-					delete (*it);
 					it = m_all_ongoing.erase(it);
 				} else {
 					++it;
@@ -552,17 +549,14 @@ protected:
 
 			// Create ongoing fetch data and make a cURL handle
 			// Set cURL options based on HTTPFetchRequest
-			HTTPFetchOngoing *ongoing =
-				new HTTPFetchOngoing(request, pool);
+			auto ongoing = std::make_unique<HTTPFetchOngoing>(request, pool);
 
 			// Initiate the connection (curl_multi_add_handle)
 			CURLcode res = ongoing->start(m_multi);
 			if (res == CURLE_OK) {
-				m_all_ongoing.push_back(ongoing);
-			}
-			else {
+				m_all_ongoing.push_back(std::move(ongoing));
+			} else {
 				httpfetch_deliver_result(*ongoing->complete(res));
-				delete ongoing;
 			}
 		}
 	}
@@ -581,9 +575,8 @@ protected:
 		}
 		if (msg->msg == CURLMSG_DONE && found) {
 			// m_all_ongoing[i] succeeded or failed.
-			HTTPFetchOngoing *ongoing = m_all_ongoing[i];
-			httpfetch_deliver_result(*ongoing->complete(msg->data.result));
-			delete ongoing;
+			HTTPFetchOngoing &ongoing = *m_all_ongoing[i];
+			httpfetch_deliver_result(*ongoing.complete(msg->data.result));
 			m_all_ongoing.erase(m_all_ongoing.begin() + i);
 		}
 	}
@@ -726,9 +719,6 @@ protected:
 		}
 
 		// Call curl_multi_remove_handle and cleanup easy handles
-		for (HTTPFetchOngoing *i : m_all_ongoing) {
-			delete i;
-		}
 		m_all_ongoing.clear();
 
 		m_queued_fetches.clear();
@@ -744,7 +734,7 @@ protected:
 	}
 };
 
-CurlFetchThread *g_httpfetch_thread = NULL;
+std::unique_ptr<CurlFetchThread> g_httpfetch_thread = nullptr;
 
 void httpfetch_init(int parallel_limit)
 {
@@ -754,7 +744,7 @@ void httpfetch_init(int parallel_limit)
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
 	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
 
-	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
+	g_httpfetch_thread = std::make_unique<CurlFetchThread>(parallel_limit);
 
 	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
 	u64 randbuf[2];
@@ -770,7 +760,7 @@ void httpfetch_cleanup()
 		g_httpfetch_thread->stop();
 		g_httpfetch_thread->requestWakeUp();
 		g_httpfetch_thread->wait();
-		delete g_httpfetch_thread;
+		g_httpfetch_thread.reset();
 	}
 
 	curl_global_cleanup();

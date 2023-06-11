@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rollback_interface.h"
 #include "util/strfnd.h"
 #include "util/basic_macros.h"
+#include "inventory.h"
 
 #define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
 
@@ -259,12 +260,18 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	InventoryList *list_from = inv_from->getList(from_list);
-	InventoryList *list_to = inv_to->getList(to_list);
+	auto get_borrow_checked_invlist = [](Inventory *inv, const std::string &listname)
+			-> InventoryList::ResizeLocked
+	{
+		InventoryList *list = inv->getList(listname);
+		if (!list)
+			return nullptr;
+		return list->resizeLock();
+	};
 
-	/*
-		If a list doesn't exist or the source item doesn't exist
-	*/
+	auto list_from = get_borrow_checked_invlist(inv_from, from_list);
+	auto list_to = get_borrow_checked_invlist(inv_to, to_list);
+
 	if (!list_from) {
 		infostream << "IMoveAction::apply(): FAIL: source list not found: "
 			<< "from_inv=\"" << from_inv.dump() << "\""
@@ -279,6 +286,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	if (move_somewhere) {
+		list_from.reset();
+
 		s16 old_to_i = to_i;
 		u16 old_count = count;
 		caused_by_move_somewhere = true;
@@ -296,23 +305,32 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 		// Try to add the item to destination list
 		s16 dest_size = list_to->getSize();
+		auto add_to = [&](s16 dest_i) {
+			// release resize lock while the callbacks are happening
+			list_to.reset();
+
+			to_i = dest_i;
+			apply(mgr, player, gamedef);
+			assert(move_count <= count);
+			count -= move_count;
+
+			list_to = get_borrow_checked_invlist(inv_to, to_list);
+			if (!list_to) {
+				// list_to was removed. simulate an empty list
+				dest_size = 0;
+				return;
+			}
+			dest_size = list_to->getSize();
+		};
 		// First try all the non-empty slots
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (!list_to->getItem(dest_i).empty()) {
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				assert(move_count <= count);
-				count -= move_count;
-			}
+			if (!list_to->getItem(dest_i).empty())
+				add_to(dest_i);
 		}
-
 		// Then try all the empty ones
 		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
-			if (list_to->getItem(dest_i).empty()) {
-				to_i = dest_i;
-				apply(mgr, player, gamedef);
-				count -= move_count;
-			}
+			if (list_to->getItem(dest_i).empty())
+				add_to(dest_i);
 		}
 
 		to_i = old_to_i;
@@ -478,7 +496,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	bool did_swap = false;
 	move_count = list_from->moveItem(from_i,
-		list_to, to_i, count, allow_swap, &did_swap);
+		list_to.get(), to_i, count, allow_swap, &did_swap);
 	if (caused_by_move_somewhere)
 		count = old_count;
 	assert(allow_swap == did_swap);
@@ -570,6 +588,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
+	list_to.reset();
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
@@ -683,6 +702,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
+	auto list_from_lock = list_from->resizeLock();
+
 	/*
 		Do not handle rollback if inventory is player's
 	*/
@@ -763,6 +784,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report drop to endpoints
 	*/
+	list_from_lock.reset();
 
 	switch (from_inv.type) {
 	case InventoryLocation::DETACHED:
@@ -878,6 +900,10 @@ void ICraftAction::apply(InventoryManager *mgr,
 				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
+
+	auto list_craft_lock       = list_craft->resizeLock();
+	auto list_craftresult_lock = list_craftresult->resizeLock();
+	auto list_main_lock        = list_main->resizeLock();
 
 	ItemStack crafted;
 	ItemStack craftresultitem;

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shader.h"
 #include "client/camera.h"
 
-InitInterlacedMaskStep::InitInterlacedMaskStep(TextureBuffer *_buffer, u8 _index)	: 
+InitInterlacedMaskStep::InitInterlacedMaskStep(TextureBuffer *_buffer, u8 _index)	:
 	buffer(_buffer), index(_index)
 {
 }
@@ -69,6 +69,7 @@ void populateInterlacedPipeline(RenderPipeline *pipeline, Client *client)
 		auto output = pipeline->createOwned<TextureBufferOutput>(buffer, right ? TEXTURE_RIGHT : TEXTURE_LEFT);
 		pipeline->addStep<SetRenderTargetStep>(step3D, output);
 		pipeline->addStep(step3D);
+		pipeline->addStep<DrawWield>();
 		pipeline->addStep<MapPostFxStep>();
 	}
 

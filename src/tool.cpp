@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
+#include <json/json.h>
 
 void ToolGroupCap::toJson(Json::Value &object) const
 {

@@ -102,7 +102,7 @@ TextureOverrideSource::TextureOverrideSource(std::string filepath)
 					<< " Syntax error in texture override \"" << line
 					<< "\": Unknown target \"" << target << "\""
 					<< std::endl;
-			
+
 		}
 
 		// If there are no valid targets, skip adding this override

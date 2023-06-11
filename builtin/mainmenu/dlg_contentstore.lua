@@ -89,7 +89,7 @@ local function download_and_extract(param)
 	if filename == "" or not core.download_file(param.url, filename) then
 		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
-			msg = fgettext("Failed to download \"$1\"", package.title)
+			msg = fgettext_ne("Failed to download \"$1\"", package.title)
 		}
 	end
 
@@ -105,7 +105,7 @@ local function download_and_extract(param)
 	os.remove(filename)
 	if not tempfolder then
 		return {
-			msg = fgettext("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
+			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
 		}
 	end
 
@@ -129,7 +129,7 @@ local function start_install(package, reason)
 			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
 			core.delete_dir(result.path)
 			if not path then
-				gamedata.errormessage = fgettext("Error installing \"$1\": $2", package.title, msg)
+				gamedata.errormessage = fgettext_ne("Error installing \"$1\": $2", package.title, msg)
 			else
 				core.log("action", "Installed package to " .. path)
 
@@ -184,7 +184,7 @@ local function start_install(package, reason)
 
 	if not core.handle_async(download_and_extract, params, callback) then
 		core.log("error", "ERROR: async event failed")
-		gamedata.errormessage = fgettext("Failed to download $1", package.name)
+		gamedata.errormessage = fgettext_ne("Failed to download $1", package.name)
 		return
 	end
 end
@@ -200,6 +200,9 @@ local function queue_download(package, reason)
 end
 
 local function get_raw_dependencies(package)
+	if package.type ~= "mod" then
+		return {}
+	end
 	if package.raw_deps then
 		return package.raw_deps
 	end
@@ -952,6 +955,7 @@ function store.handle_submit(this, fields)
 		local new_type = table.indexof(filter_types_titles, fields.type)
 		if new_type ~= filter_type then
 			filter_type = new_type
+			cur_page = 1
 			store.filter_packages(search_string)
 			return true
 		end
@@ -999,7 +1003,13 @@ function store.handle_submit(this, fields)
 				end
 			end
 
-			if not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+			if package.type == "mod" and #pkgmgr.games == 0 then
+				local dlg = messagebox("install_game",
+					fgettext("You need to install a game before you can install a mod"))
+				dlg:set_parent(this)
+				this:hide()
+				dlg:show()
+			elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
 				local dlg = confirm_overwrite.create(package, on_confirm)
 				dlg:set_parent(this)
 				this:hide()
