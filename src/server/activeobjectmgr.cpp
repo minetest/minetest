@@ -28,10 +28,9 @@ namespace server
 ActiveObjectMgr::~ActiveObjectMgr()
 {
 	if (!m_active_objects.empty()) {
-		errorstream << "server::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+		warningstream << "server::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
 				<< std::endl;
 		clear();
-		// if still not cleared, the base class will terminate
 	}
 }
 
@@ -41,11 +40,7 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 	// set of active objects.
 	// The callback is called for newly added objects iff they happen to reuse
 	// an old id.
-	std::vector<u16> ids;
-	ids.reserve(m_active_objects.size());
-	for (auto &it : m_active_objects) {
-		ids.push_back(it.first);
-	}
+	std::vector<u16> ids = getAllIds();
 
 	for (u16 id : ids) {
 		auto it = m_active_objects.find(id);
@@ -64,11 +59,7 @@ void ActiveObjectMgr::step(
 	g_profiler->avg("ActiveObjectMgr: SAO count [#]", m_active_objects.size());
 
 	// See above.
-	std::vector<u16> ids;
-	ids.reserve(m_active_objects.size());
-	for (auto &it : m_active_objects) {
-		ids.push_back(it.first);
-	}
+	std::vector<u16> ids = getAllIds();
 
 	for (u16 id : ids) {
 		auto it = m_active_objects.find(id);

@@ -29,7 +29,7 @@ namespace server
 class ActiveObjectMgr final : public ::ActiveObjectMgr<ServerActiveObject>
 {
 public:
-	virtual ~ActiveObjectMgr() override;
+	~ActiveObjectMgr() override;
 
 	// If cb returns true, the obj will be deleted
 	void clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb);

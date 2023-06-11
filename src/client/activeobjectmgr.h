@@ -29,7 +29,7 @@ namespace client
 class ActiveObjectMgr final : public ::ActiveObjectMgr<ClientActiveObject>
 {
 public:
-	virtual ~ActiveObjectMgr() override;
+	~ActiveObjectMgr() override;
 
 	void step(float dtime,
 			const std::function<void(ClientActiveObject *)> &f) override;

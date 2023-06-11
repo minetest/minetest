@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include <memory>
+#include <vector>
 #include "debug.h"
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"
@@ -59,6 +60,16 @@ public:
 	{
 		auto it = m_active_objects.find(id);
 		return it != m_active_objects.end() ? it->second.get() : nullptr;
+	}
+
+	std::vector<u16> getAllIds() const
+	{
+		std::vector<u16> ids;
+		ids.reserve(m_active_objects.size());
+		for (auto &it : m_active_objects) {
+			ids.push_back(it.first);
+		}
+		return ids;
 	}
 
 protected:

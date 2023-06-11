@@ -28,10 +28,9 @@ namespace client
 ActiveObjectMgr::~ActiveObjectMgr()
 {
 	if (!m_active_objects.empty()) {
-		errorstream << "client::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+		warningstream << "client::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
 				<< std::endl;
 		clear();
-		// if still not cleared, the base class will terminate
 	}
 }
 
@@ -39,8 +38,15 @@ void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
 	g_profiler->avg("ActiveObjectMgr: CAO count [#]", m_active_objects.size());
-	for (auto &ao_it : m_active_objects) {
-		f(ao_it.second.get());
+
+	// Same as in server activeobjectmgr.
+	std::vector<u16> ids = getAllIds();
+
+	for (u16 id : ids) {
+		auto it = m_active_objects.find(id);
+		if (it == m_active_objects.end())
+			continue; // obj was removed
+		f(it->second.get());
 	}
 }
 
