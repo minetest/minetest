@@ -36,21 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "filesys.h"
 #include "../gui/guiSkin.h"
-
-#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && \
-		!defined(SERVER) && !defined(__HAIKU__)
-#define XORG_USED
-#endif
-#ifdef XORG_USED
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#endif
-
-#ifdef _WIN32
-#include <windows.h>
-#include <winuser.h>
-#endif
+#include "irr_ptr.h"
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
@@ -187,243 +173,30 @@ void RenderingEngine::cleanupMeshCache()
 	}
 }
 
-bool RenderingEngine::setupTopLevelWindow(const std::string &name)
+bool RenderingEngine::setupTopLevelWindow()
 {
 	// FIXME: It would make more sense for there to be a switch of some
 	// sort here that would call the correct toplevel setup methods for
 	// the environment Minetest is running in.
 
-	/* Setting Xorg properties for the top level window */
-	setupTopLevelXorgWindow(name);
-
 	/* Setting general properties for the top level window */
-	verbosestream << "Client: Configuring general top level"
-		<< " window properties"
-		<< std::endl;
+	verbosestream << "Client: Configuring general top level window properties"
+			<< std::endl;
 	bool result = setWindowIcon();
 
 	return result;
 }
 
-void RenderingEngine::setupTopLevelXorgWindow(const std::string &name)
-{
-#ifdef XORG_USED
-	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
-
-	Display *x11_dpl = reinterpret_cast<Display *>(exposedData.OpenGLLinux.X11Display);
-	if (x11_dpl == NULL) {
-		warningstream << "Client: Could not find X11 Display in ExposedVideoData"
-			<< std::endl;
-		return;
-	}
-
-	verbosestream << "Client: Configuring X11-specific top level"
-		<< " window properties"
-		<< std::endl;
-
-
-	Window x11_win = reinterpret_cast<Window>(exposedData.OpenGLLinux.X11Window);
-
-	// Set application name and class hints. For now name and class are the same.
-	XClassHint *classhint = XAllocClassHint();
-	classhint->res_name = const_cast<char *>(name.c_str());
-	classhint->res_class = const_cast<char *>(name.c_str());
-
-	XSetClassHint(x11_dpl, x11_win, classhint);
-	XFree(classhint);
-
-	// FIXME: In the future WMNormalHints should be set ... e.g see the
-	// gtk/gdk code (gdk/x11/gdksurface-x11.c) for the setup_top_level
-	// method. But for now (as it would require some significant changes)
-	// leave the code as is.
-
-	// The following is borrowed from the above gdk source for setting top
-	// level windows. The source indicates and the Xlib docs suggest that
-	// this will set the WM_CLIENT_MACHINE and WM_LOCAL_NAME. This will not
-	// set the WM_CLIENT_MACHINE to a Fully Qualified Domain Name (FQDN) which is
-	// required by the Extended Window Manager Hints (EWMH) spec when setting
-	// the _NET_WM_PID (see further down) but running Minetest in an env
-	// where the window manager is on another machine from Minetest (therefore
-	// making the PID useless) is not expected to be a problem. Further
-	// more, using gtk/gdk as the model it would seem that not using a FQDN is
-	// not an issue for modern Xorg window managers.
-
-	verbosestream << "Client: Setting Xorg window manager Properties"
-		<< std::endl;
-
-	XSetWMProperties (x11_dpl, x11_win, NULL, NULL, NULL, 0, NULL, NULL, NULL);
-
-	// Set the _NET_WM_PID window property according to the EWMH spec. _NET_WM_PID
-	// (in conjunction with WM_CLIENT_MACHINE) can be used by window managers to
-	// force a shutdown of an application if it doesn't respond to the destroy
-	// window message.
-
-	verbosestream << "Client: Setting Xorg _NET_WM_PID extended window manager property"
-		<< std::endl;
-
-	Atom NET_WM_PID = XInternAtom(x11_dpl, "_NET_WM_PID", false);
-
-	pid_t pid = getpid();
-
-	XChangeProperty(x11_dpl, x11_win, NET_WM_PID,
-			XA_CARDINAL, 32, PropModeReplace,
-			reinterpret_cast<unsigned char *>(&pid),1);
-
-	// Set the WM_CLIENT_LEADER window property here. Minetest has only one
-	// window and that window will always be the leader.
-
-	verbosestream << "Client: Setting Xorg WM_CLIENT_LEADER property"
-		<< std::endl;
-
-	Atom WM_CLIENT_LEADER = XInternAtom(x11_dpl, "WM_CLIENT_LEADER", false);
-
-	XChangeProperty (x11_dpl, x11_win, WM_CLIENT_LEADER,
-		XA_WINDOW, 32, PropModeReplace,
-		reinterpret_cast<unsigned char *>(&x11_win), 1);
-#endif
-}
-
-#ifdef _WIN32
-static bool getWindowHandle(irr::video::IVideoDriver *driver, HWND &hWnd)
-{
-	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
-
-	switch (driver->getDriverType()) {
-	case video::EDT_OGLES1:
-	case video::EDT_OGLES2:
-	case video::EDT_OPENGL:
-		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
-		break;
-	default:
-		return false;
-	}
-
-	return true;
-}
-#endif
-
 bool RenderingEngine::setWindowIcon()
 {
-#if defined(XORG_USED)
-#if RUN_IN_PLACE
-	return setXorgWindowIconFromPath(
-			porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#else
-	// We have semi-support for reading in-place data if we are
-	// compiled with RUN_IN_PLACE. Don't break with this and
-	// also try the path_share location.
-	return setXorgWindowIconFromPath(
-			       ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
-	       setXorgWindowIconFromPath(porting::path_share + "/misc/" PROJECT_NAME
-							       "-xorg-icon-128.png");
-#endif
-#elif defined(_WIN32)
-	HWND hWnd; // Window handle
-	if (!getWindowHandle(driver, hWnd))
-		return false;
-
-	// Load the ICON from resource file
-	const HICON hicon = LoadIcon(GetModuleHandle(NULL),
-			MAKEINTRESOURCE(130) // The ID of the ICON defined in
-					     // winresource.rc
-	);
-
-	if (hicon) {
-		SendMessage(hWnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hicon));
-		SendMessage(hWnd, WM_SETICON, ICON_SMALL,
-				reinterpret_cast<LPARAM>(hicon));
-		return true;
-	}
-	return false;
-#else
-	return false;
-#endif
-}
-
-bool RenderingEngine::setXorgWindowIconFromPath(const std::string &icon_file)
-{
-#ifdef XORG_USED
-
-	video::IImageLoader *image_loader = NULL;
-	u32 cnt = driver->getImageLoaderCount();
-	for (u32 i = 0; i < cnt; i++) {
-		if (driver->getImageLoader(i)->isALoadableFileExtension(
-				    icon_file.c_str())) {
-			image_loader = driver->getImageLoader(i);
-			break;
-		}
-	}
-
-	if (!image_loader) {
-		warningstream << "Could not find image loader for file '" << icon_file
-			      << "'" << std::endl;
-		return false;
-	}
-
-	io::IReadFile *icon_f =
-			m_device->getFileSystem()->createAndOpenFile(icon_file.c_str());
-
-	if (!icon_f) {
-		warningstream << "Could not load icon file '" << icon_file << "'"
-			      << std::endl;
-		return false;
-	}
-
-	video::IImage *img = image_loader->loadImage(icon_f);
-
+	irr_ptr<video::IImage> img(driver->createImageFromFile(
+			(porting::path_user + "/textures/base/pack/logo.png").c_str()));
 	if (!img) {
-		warningstream << "Could not load icon file '" << icon_file << "'"
-			      << std::endl;
-		icon_f->drop();
+		warningstream << "Could not load icon file." << std::endl;
 		return false;
 	}
 
-	u32 height = img->getDimension().Height;
-	u32 width = img->getDimension().Width;
-
-	size_t icon_buffer_len = 2 + height * width;
-	long *icon_buffer = new long[icon_buffer_len];
-
-	icon_buffer[0] = width;
-	icon_buffer[1] = height;
-
-	for (u32 x = 0; x < width; x++) {
-		for (u32 y = 0; y < height; y++) {
-			video::SColor col = img->getPixel(x, y);
-			long pixel_val = 0;
-			pixel_val |= (u8)col.getAlpha() << 24;
-			pixel_val |= (u8)col.getRed() << 16;
-			pixel_val |= (u8)col.getGreen() << 8;
-			pixel_val |= (u8)col.getBlue();
-			icon_buffer[2 + x + y * width] = pixel_val;
-		}
-	}
-
-	img->drop();
-	icon_f->drop();
-
-	const video::SExposedVideoData &video_data = driver->getExposedVideoData();
-
-	Display *x11_dpl = (Display *)video_data.OpenGLLinux.X11Display;
-
-	if (x11_dpl == NULL) {
-		warningstream << "Could not find x11 display for setting its icon."
-			      << std::endl;
-		delete[] icon_buffer;
-		return false;
-	}
-
-	Window x11_win = (Window)video_data.OpenGLLinux.X11Window;
-
-	Atom net_wm_icon = XInternAtom(x11_dpl, "_NET_WM_ICON", False);
-	Atom cardinal = XInternAtom(x11_dpl, "CARDINAL", False);
-	XChangeProperty(x11_dpl, x11_win, net_wm_icon, cardinal, 32, PropModeReplace,
-			(const unsigned char *)icon_buffer, icon_buffer_len);
-
-	delete[] icon_buffer;
-
-#endif
-	return true;
+	return m_device->setWindowIcon(img.get());
 }
 
 /*
@@ -548,88 +321,22 @@ const VideoDriverInfo &RenderingEngine::getVideoDriverInfo(irr::video::E_DRIVER_
 	return driver_info_map.at((int)type);
 }
 
+float RenderingEngine::getDisplayDensity()
+{
 #ifndef __ANDROID__
-#if defined(XORG_USED)
-
-static float calcDisplayDensity()
-{
-	const char *current_display = getenv("DISPLAY");
-
-	if (current_display != NULL) {
-		Display *x11display = XOpenDisplay(current_display);
-
-		if (x11display != NULL) {
-			/* try x direct */
-			int dh = DisplayHeight(x11display, 0);
-			int dw = DisplayWidth(x11display, 0);
-			int dh_mm = DisplayHeightMM(x11display, 0);
-			int dw_mm = DisplayWidthMM(x11display, 0);
-			XCloseDisplay(x11display);
-
-			if (dh_mm != 0 && dw_mm != 0) {
-				float dpi_height = floor(dh / (dh_mm * 0.039370) + 0.5);
-				float dpi_width = floor(dw / (dw_mm * 0.039370) + 0.5);
-				return std::max(dpi_height, dpi_width) / 96.0;
-			}
-		}
-	}
-
-	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi") / 96.0;
-}
-
-float RenderingEngine::getDisplayDensity()
-{
-	static float cached_display_density = calcDisplayDensity();
-	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
-}
-
-#elif defined(_WIN32)
-
-
-static float calcDisplayDensity(irr::video::IVideoDriver *driver)
-{
-	HWND hWnd;
-	if (getWindowHandle(driver, hWnd)) {
-		HDC hdc = GetDC(hWnd);
-		float dpi = GetDeviceCaps(hdc, LOGPIXELSX);
-		ReleaseDC(hWnd, hdc);
+	static float cached_display_density = [&] {
+		float dpi = get_raw_device()->getDisplayDensity();
+		// fall back to manually specified dpi
+		if (dpi == 0.0f)
+			dpi = g_settings->getFloat("screen_dpi");
 		return dpi / 96.0f;
-	}
-
-	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi") / 96.0f;
-}
-
-float RenderingEngine::getDisplayDensity()
-{
-	static bool cached = false;
-	static float display_density;
-	if (!cached) {
-		display_density = calcDisplayDensity(get_video_driver());
-		cached = true;
-	}
-	return std::max(display_density * g_settings->getFloat("display_density_factor"), 0.5f);
-}
-
-#else
-
-float RenderingEngine::getDisplayDensity()
-{
-	return std::max(g_settings->getFloat("screen_dpi") / 96.0f *
-		g_settings->getFloat("display_density_factor"), 0.5f);
-}
-
-#endif
+	}();
+	return std::max(cached_display_density * g_settings->getFloat("display_density_factor"), 0.5f);
 
 #else // __ANDROID__
-float RenderingEngine::getDisplayDensity()
-{
 	return porting::getDisplayDensity();
-}
-
 #endif // __ANDROID__
-
+}
 
 void RenderingEngine::autosaveScreensizeAndCo(
 		const irr::core::dimension2d<u32> initial_screen_size,
