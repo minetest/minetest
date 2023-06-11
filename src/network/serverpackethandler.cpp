@@ -911,8 +911,8 @@ bool Server::checkInteractDistance(RemotePlayer *player, const f32 d, const std:
 	return true;
 }
 
-// Tiny helper to retrieve the selected item into an Optional
-static inline void getWieldedItem(const PlayerSAO *playersao, Optional<ItemStack> &ret)
+// Tiny helper to retrieve the selected item into an std::optional
+static inline void getWieldedItem(const PlayerSAO *playersao, std::optional<ItemStack> &ret)
 {
 	ret = ItemStack();
 	playersao->getWieldedItem(&(*ret));
@@ -1226,7 +1226,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Place block or right-click object
 	case INTERACT_PLACE: {
-		Optional<ItemStack> selected_item;
+		std::optional<ItemStack> selected_item;
 		getWieldedItem(playersao, selected_item);
 
 		// Reset build time counter
@@ -1285,7 +1285,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 	} // action == INTERACT_PLACE
 
 	case INTERACT_USE: {
-		Optional<ItemStack> selected_item;
+		std::optional<ItemStack> selected_item;
 		getWieldedItem(playersao, selected_item);
 
 		actionstream << player->getName() << " uses " << selected_item->name
@@ -1302,7 +1302,7 @@ void Server::handleCommand_Interact(NetworkPacket *pkt)
 
 	// Rightclick air
 	case INTERACT_ACTIVATE: {
-		Optional<ItemStack> selected_item;
+		std::optional<ItemStack> selected_item;
 		getWieldedItem(playersao, selected_item);
 
 		actionstream << player->getName() << " activates "

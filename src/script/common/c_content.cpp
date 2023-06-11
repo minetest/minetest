@@ -337,7 +337,7 @@ void read_object_properties(lua_State *L, int index,
 			if (read_color(L, -1, &color))
 				prop->nametag_bgcolor = color;
 		} else {
-			prop->nametag_bgcolor = nullopt;
+			prop->nametag_bgcolor = std::nullopt;
 		}
 	}
 	lua_pop(L, 1);

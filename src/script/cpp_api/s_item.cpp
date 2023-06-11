@@ -59,7 +59,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	return true;
 }
 
-bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnPlace(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -88,13 +88,13 @@ bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnUse(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -118,13 +118,13 @@ bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnSecondaryUse(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -146,7 +146,7 @@ bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
