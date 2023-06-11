@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientobject.h"
 #include "debug.h"
+#include "irrlichttypes_bloated.h"
+#include "shootline.h"
 #include "porting.h"
 
 /*
@@ -53,6 +55,30 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 	Factory f = n->second;
 	ClientActiveObject *object = (*f)(client, env);
 	return object;
+}
+
+
+void ClientActiveObject::selectIfInRange(const Shootline &shootline,
+		std::vector<DistanceSortedActiveObject> &dest)
+{
+	// Imagine a not-axis-aligned cuboid oriented into the direction of the shootline,
+	// with the width of the object's selection box radius * 2 and with length of the
+	// shootline (+selection box radius forwards and backwards). We check whether
+	// the selection box center is inside this cuboid.
+	aabb3f selection_box;
+	if (!getSelectionBox(&selection_box))
+			return;
+
+	// possible optimization: get rid of the sqrt here
+	f32 selection_box_radius = selection_box.getRadius();
+
+	v3f pos_diff = getPosition() + selection_box.getCenter() - shootline.getLine().start;
+
+	f32 d = shootline.getDir().dotProduct(pos_diff);
+
+	if (shootline.hitsSelectionBox(pos_diff, d, selection_box_radius)) {
+		dest.emplace_back(this, d);
+	}
 }
 
 void ClientActiveObject::registerType(u16 type, Factory f)

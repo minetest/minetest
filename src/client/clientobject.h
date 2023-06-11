@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
+#include "irrlichttypes_extrabloated.h"
+#include "shootline.h"
+
 #include <unordered_map>
 #include <unordered_set>
 
@@ -32,6 +34,8 @@ class IGameDef;
 class LocalPlayer;
 struct ItemStack;
 class WieldMeshSceneNode;
+
+class DistanceSortedActiveObject;
 
 class ClientActiveObject : public ActiveObject
 {
@@ -83,6 +87,9 @@ public:
 	// If returns true, punch will not be sent to the server
 	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem = nullptr,
 		float time_from_last_punch = 1000000) { return false; }
+
+	void selectIfInRange(const Shootline &shootline,
+			std::vector<DistanceSortedActiveObject> &dest);
 
 protected:
 	// Used for creating objects based on type
