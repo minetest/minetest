@@ -158,8 +158,8 @@ EmergeManager::EmergeManager(Server *server, MetricsBackend *mb)
 
 	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
-	STATIC_ASSERT(ARRLEN(emergeActionStrs) == ARRLEN(m_completed_emerge_counter),
-		enum_size_mismatches);
+	static_assert(ARRLEN(emergeActionStrs) == ARRLEN(m_completed_emerge_counter),
+		"enum size mismatches");
 	for (u32 i = 0; i < ARRLEN(m_completed_emerge_counter); i++) {
 		std::string help_str("Number of completed emerges with status ");
 		help_str.append(emergeActionStrs[i]);

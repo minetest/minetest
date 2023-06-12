@@ -99,9 +99,9 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"v6",         true},
 };
 
-STATIC_ASSERT(
+static_assert(
 	ARRLEN(g_reg_mapgens) == MAPGEN_INVALID,
-	registered_mapgens_is_wrong_size);
+	"g_reg_mapgens is wrong size");
 
 ////
 //// Mapgen
