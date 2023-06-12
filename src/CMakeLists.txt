@@ -761,7 +761,7 @@ if(MSVC)
 else()
 	# GCC or compatible compilers such as Clang
 	set(WARNING_FLAGS "-Wall -Wextra")
-	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter -Wno-implicit-fallthrough")
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-parameter")
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "${WARNING_FLAGS}")
 	else()

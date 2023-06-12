@@ -440,6 +440,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 			case HUD_ELEM_IMAGE_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
 					break;
+				[[fallthrough]];
 			}
 			case HUD_ELEM_IMAGE: {
 				video::ITexture *texture = tsrc->getTexture(e->text);

@@ -478,6 +478,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 			// "break" is omitted here intentionaly, as PLANTLIKE
 			// FIRELIKE drawtype both should default to having
 			// backface_culling to false.
+			[[fallthrough]];
 		case NDT_MESH:
 		case NDT_LIQUID:
 			default_culling = false;
