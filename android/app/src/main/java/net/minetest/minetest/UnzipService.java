@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-package net.minetest.minetest;
+package net.minetest.minetest;//UnzipService.java
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -88,7 +88,6 @@ public class UnzipService extends IntentService {
 				}
 			}
 
-			migrate(notificationBuilder, userDataDirectory);
 			unzip(notificationBuilder, zipFile, userDataDirectory);
 		} catch (IOException e) {
 			isSuccess = false;
@@ -197,44 +196,6 @@ public class UnzipService extends IntentService {
 			return p.waitFor() == 0;
 		} catch (IOException | InterruptedException e) {
 			return false;
-		}
-	}
-
-	/**
-	 * Migrates user data from deprecated external storage to app scoped storage
-	 */
-	private void migrate(Notification.Builder notificationBuilder, File newLocation) throws IOException {
-		if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.R) {
-			return;
-		}
-
-		File oldLocation = new File(Environment.getExternalStorageDirectory(), "Minetest");
-		if (!oldLocation.isDirectory())
-			return;
-
-		publishProgress(notificationBuilder, R.string.migrating, 0);
-		if (!newLocation.mkdir()) {
-			Log.e("UnzipService", "New installation folder cannot be made");
-		}
-
-		String[] dirs = new String[] { "worlds", "games", "mods", "textures", "client" };
-		for (int i = 0; i < dirs.length; i++) {
-			publishProgress(notificationBuilder, R.string.migrating, 100 * i / dirs.length);
-			File dir = new File(oldLocation, dirs[i]), dir2 = new File(newLocation, dirs[i]);
-			if (dir.isDirectory() && !dir2.isDirectory()) {
-				moveFileOrDir(dir, dir2);
-			}
-		}
-
-		for (String filename : new String[] { "minetest.conf" }) {
-			File file = new File(oldLocation, filename), file2 = new File(newLocation, filename);
-			if (file.isFile() && !file2.isFile()) {
-				moveFileOrDir(file, file2);
-			}
-		}
-
-		if (!recursivelyDeleteDirectory(oldLocation)) {
-			Log.w("UnzipService", "Old installation files cannot be deleted successfully");
 		}
 	}
 
