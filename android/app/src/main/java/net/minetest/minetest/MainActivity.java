@@ -1,42 +1,5 @@
 /*
 Minetest
-Copyright (C) 2014-2020 
-import android.os.Environment;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static net.minetest.minetest.UnzipService.*;
-
-public class MainActivity extends AppCompatActivity {
-	private final static int versionCode = BuildConfig.VERSION_CODE;
-	private final static int PERMISSIONS = 1;
-	private static final String[] REQUIRED_SDK_PERMISSIONS =
-			new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-	private static final String SETTINGS = "MinetestSettings";
-	private static final String TAG_VERSION_CODE = "versionCode";
-
-	private ProgressBar mProgressBar;
-	private TextView mTextView;
-	private SharedPreferences sharedPreferences;
-
-	private final BroadcastReceiver myReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			int progress = 0;
-			@/*
-Minetest
 Copyright (C) 2014-2020 MoNTE48, Maksim Gamarnik <MoNTE48@mail.ua>
 Copyright (C) 2014-2020 ubulem,  Bektur Mambetov <berkut87@gmail.com>
 
