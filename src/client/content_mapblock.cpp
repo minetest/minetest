@@ -447,21 +447,29 @@ void MapblockMeshGenerator::drawSolidNode()
 		v3s16 p2 = blockpos_nodes + p + tile_dirs[face];
 		MapNode neighbor = data->m_vmanip.getNodeNoEx(p2);
 		content_t n2 = neighbor.getContent();
-		bool backface_culling = f->drawtype == NDT_NORMAL;
+		bool backface_culling = false;
 		if (n2 == n1)
 			continue;
 		if (n2 == CONTENT_IGNORE)
 			continue;
 		if (n2 != CONTENT_AIR) {
 			const ContentFeatures &f2 = nodedef->get(n2);
-			if (f2.solidness == 2)
-				continue;
-			if (f->drawtype == NDT_LIQUID) {
-				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+
+			switch (f->solidness) {
+			case 2: // solid node (NDT_NORMAL, NDT_PLANTLIKE_ROOTED)
+				if (f2.solidness == 2)
 					continue;
-				if (n2 == nodedef->getId(f->liquid_alternative_source))
+				backface_culling = true;
+				break;
+
+			case 1: // liquid node (NDT_LIQUID)
+				if (f2.solidness != 0)
 					continue;
-				backface_culling = f2.solidness >= 1;
+				if (f->sameLiquidRender(f2))
+					continue;
+				if (f2.visual_solidness)
+					backface_culling = true;
+				break;
 			}
 		}
 		faces |= 1 << face;
@@ -469,8 +477,6 @@ void MapblockMeshGenerator::drawSolidNode()
 		for (auto &layer : tiles[face].layers) {
 			if (backface_culling)
 				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-			else
-				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 		}
