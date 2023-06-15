@@ -28,7 +28,6 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "sound_openal.h"
 #include "util/basic_macros.h"
-#include "util/Optional.h"
 
 #if defined(_WIN32)
 	#include <al.h>
@@ -46,6 +45,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #endif
 #include <vorbis/vorbisfile.h>
 
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -228,7 +228,7 @@ struct RAIIOggFile {
 
 	OggVorbis_File *get() { return &m_file; }
 
-	Optional<OggFileDecodeInfo> getDecodeInfo(const std::string &filename_for_logging);
+	std::optional<OggFileDecodeInfo> getDecodeInfo(const std::string &filename_for_logging);
 
 	/**
 	 * Main function for loading ogg vorbis sounds.
@@ -442,12 +442,12 @@ class PlayingSound final
 	bool m_looping;
 	bool m_is_positional;
 	bool m_stopped_means_dead = true;
-	Optional<FadeState> m_fade_state = nullopt;
+	std::optional<FadeState> m_fade_state = std::nullopt;
 
 public:
 	PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data, bool loop,
 			f32 volume, f32 pitch, f32 start_time,
-			const Optional<std::pair<v3f, v3f>> &pos_vel_opt);
+			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt);
 
 	~PlayingSound() noexcept
 	{
@@ -570,11 +570,11 @@ private:
 
 	std::shared_ptr<PlayingSound> createPlayingSound(const std::string &sound_name,
 			bool loop, f32 volume, f32 pitch, f32 start_time,
-			const Optional<std::pair<v3f, v3f>> &pos_vel_opt);
+			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt);
 
 	void playSoundGeneric(sound_handle_t id, const std::string &group_name, bool loop,
 			f32 volume, f32 fade, f32 pitch, bool use_local_fallback, f32 start_time,
-			const Optional<std::pair<v3f, v3f>> &pos_vel_opt);
+			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt);
 
 	/**
 	 * Deletes sounds that are dead (=finished).

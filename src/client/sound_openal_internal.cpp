@@ -170,13 +170,13 @@ const ov_callbacks OggVorbisBufferSource::s_ov_callbacks = {
  * RAIIOggFile struct
  */
 
-Optional<OggFileDecodeInfo> RAIIOggFile::getDecodeInfo(const std::string &filename_for_logging)
+std::optional<OggFileDecodeInfo> RAIIOggFile::getDecodeInfo(const std::string &filename_for_logging)
 {
 	OggFileDecodeInfo ret;
 
 	vorbis_info *pInfo = ov_info(&m_file, -1);
 	if (!pInfo)
-		return nullopt;
+		return std::nullopt;
 
 	ret.name_for_logging = filename_for_logging;
 
@@ -191,7 +191,7 @@ Optional<OggFileDecodeInfo> RAIIOggFile::getDecodeInfo(const std::string &filena
 	} else {
 		warningstream << "Audio: Can't decode. Sound is neither mono nor stereo: "
 				<< ret.name_for_logging << std::endl;
-		return nullopt;
+		return std::nullopt;
 	}
 
 	ret.freq = pInfo->rate;
@@ -311,7 +311,7 @@ std::shared_ptr<ISoundDataOpen> ISoundDataOpen::fromOggFile(std::unique_ptr<RAII
 		const std::string &filename_for_logging)
 {
 	// Get some information about the OGG file
-	Optional<OggFileDecodeInfo> decode_info = oggfile->getDecodeInfo(filename_for_logging);
+	std::optional<OggFileDecodeInfo> decode_info = oggfile->getDecodeInfo(filename_for_logging);
 	if (!decode_info.has_value()) {
 		warningstream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
@@ -514,7 +514,7 @@ std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::loadBufferAt(ALuint offs
 
 PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data,
 		bool loop, f32 volume, f32 pitch, f32 start_time,
-		const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		const std::optional<std::pair<v3f, v3f>> &pos_vel_opt)
 	: m_source_id(source_id), m_data(std::move(data)), m_looping(loop),
 	m_is_positional(pos_vel_opt.has_value())
 {
@@ -681,14 +681,14 @@ bool PlayingSound::doFade(f32 dtime) noexcept
 		m_stopped_means_dead = true;
 		alSourceStop(m_source_id);
 
-		m_fade_state = nullopt;
+		m_fade_state = std::nullopt;
 		return false;
 	}
 
 	setGain(current_gain);
 
 	if (current_gain == fade.target_gain) {
-		m_fade_state = nullopt;
+		m_fade_state = std::nullopt;
 		return false;
 	} else {
 		return true;
@@ -848,7 +848,7 @@ std::string OpenALSoundManager::getOrLoadLoadedSoundNameFromGroup(const std::str
 
 std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 		const std::string &sound_name, bool loop, f32 volume, f32 pitch,
-		f32 start_time, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		f32 start_time, const std::optional<std::pair<v3f, v3f>> &pos_vel_opt)
 {
 	infostream << "OpenALSoundManager: Creating playing sound \"" << sound_name
 			<< "\"" << std::endl;
@@ -887,7 +887,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 
 void OpenALSoundManager::playSoundGeneric(sound_handle_t id, const std::string &group_name,
 		bool loop, f32 volume, f32 fade, f32 pitch, bool use_local_fallback,
-		f32 start_time, const Optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		f32 start_time, const std::optional<std::pair<v3f, v3f>> &pos_vel_opt)
 {
 	if (id == 0)
 		id = allocateId(1);
@@ -1083,13 +1083,13 @@ void OpenALSoundManager::addSoundToGroup(const std::string &sound_name, const st
 void OpenALSoundManager::playSound(sound_handle_t id, const SoundSpec &spec)
 {
 	return playSoundGeneric(id, spec.name, spec.loop, spec.gain, spec.fade, spec.pitch,
-			spec.use_local_fallback, spec.start_time, nullopt);
+			spec.use_local_fallback, spec.start_time, std::nullopt);
 }
 
 void OpenALSoundManager::playSoundAt(sound_handle_t id, const SoundSpec &spec,
 		const v3f &pos_, const v3f &vel_)
 {
-	Optional<std::pair<v3f, v3f>> pos_vel_opt({
+	std::optional<std::pair<v3f, v3f>> pos_vel_opt({
 			swap_handedness(pos_),
 			swap_handedness(vel_)
 		});
