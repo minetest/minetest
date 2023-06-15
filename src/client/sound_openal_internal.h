@@ -371,8 +371,8 @@ struct SoundDataOpenBuffer final : ISoundDataOpen
 	std::tuple<ALuint, ALuint, ALuint> getOrLoadBufferAt(ALuint offset) override
 	{
 		if (offset >= m_decode_info.length_samples)
-			return std::make_tuple(0, m_decode_info.length_samples, 0);
-		return std::make_tuple(m_buffer.get(), m_decode_info.length_samples, offset);
+			return {0, m_decode_info.length_samples, 0};
+		return {m_buffer.get(), m_decode_info.length_samples, offset};
 	}
 };
 

@@ -399,7 +399,7 @@ SoundDataOpenStream::SoundDataOpenStream(std::unique_ptr<RAIIOggFile> oggfile,
 std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::getOrLoadBufferAt(ALuint offset)
 {
 	if (offset >= m_decode_info.length_samples)
-		return std::make_tuple(0, m_decode_info.length_samples, 0);
+		return {0, m_decode_info.length_samples, 0};
 
 	// find the right-most ContiguousBuffers, such that `m_start <= offset`
 	// equivalent: the first element from the right such that `!(m_start > offset)`
@@ -422,7 +422,7 @@ std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::getOrLoadBufferAt(ALuint
 		if (upper_it != bufs.end()) {
 			ALuint start = upper_it == bufs.begin() ? lower_rit->m_start
 					: (upper_it - 1)->m_end;
-			return std::make_tuple(upper_it->m_buffer.get(), upper_it->m_end, offset - start);
+			return {upper_it->m_buffer.get(), upper_it->m_end, offset - start};
 		}
 	}
 
@@ -504,8 +504,7 @@ std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::loadBufferAt(ALuint offs
 		it = m_bufferss.erase(it + 1) - 1;
 	}
 
-	return std::make_tuple(it->m_buffers[new_buf_i].m_buffer.get(), new_buf_end,
-			offset - new_buf_start);
+	return {it->m_buffers[new_buf_i].m_buffer.get(), new_buf_end, offset - new_buf_start};
 }
 
 /*
@@ -546,13 +545,11 @@ PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> dat
 		// AL_BUFFER is a NOP (source stays AL_UNDETERMINED). => No sound will be
 		// played.
 
-		auto buf_nxtoffset_thisoffset_tpl = m_data->getOrLoadBufferAt(m_next_sample_pos);
-		ALuint buf = std::get<0>(buf_nxtoffset_thisoffset_tpl);
-		m_next_sample_pos = std::get<1>(buf_nxtoffset_thisoffset_tpl);
-		ALuint sample_offset = std::get<2>(buf_nxtoffset_thisoffset_tpl);
+		auto [buf, buf_end, offset_in_buf] = m_data->getOrLoadBufferAt(m_next_sample_pos);
+		m_next_sample_pos = buf_end;
 
 		alSourcei(m_source_id, AL_BUFFER, buf);
-		alSourcei(m_source_id, AL_SAMPLE_OFFSET, sample_offset);
+		alSourcei(m_source_id, AL_SAMPLE_OFFSET, offset_in_buf);
 
 		alSourcei(m_source_id, AL_LOOPING, m_looping ? AL_TRUE : AL_FALSE);
 
@@ -565,21 +562,20 @@ PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> dat
 		// If m_next_sample_pos >= len_samples (happens only if not looped), one
 		// or both of buf_ids will be 0. Queuing 0 is a NOP.
 
-		auto buf_nxtoffset_thisoffset_tpl1 = m_data->getOrLoadBufferAt(m_next_sample_pos);
-		buf_ids[0] = std::get<0>(buf_nxtoffset_thisoffset_tpl1);
-		m_next_sample_pos = std::get<1>(buf_nxtoffset_thisoffset_tpl1);
-		ALuint sample_offset1 = std::get<2>(buf_nxtoffset_thisoffset_tpl1);
+		auto [buf0, buf0_end, offset_in_buf0] = m_data->getOrLoadBufferAt(m_next_sample_pos);
+		buf_ids[0] = buf0;
+		m_next_sample_pos = buf0_end;
 
 		if (m_looping && m_next_sample_pos == len_samples)
 			m_next_sample_pos = 0;
 
-		auto buf_nxtoffset_thisoffset_tpl2 = m_data->getOrLoadBufferAt(m_next_sample_pos);
-		buf_ids[1] = std::get<0>(buf_nxtoffset_thisoffset_tpl2);
-		m_next_sample_pos = std::get<1>(buf_nxtoffset_thisoffset_tpl2);
-		assert(std::get<2>(buf_nxtoffset_thisoffset_tpl2) == 0);
+		auto [buf1, buf1_end, offset_in_buf1] = m_data->getOrLoadBufferAt(m_next_sample_pos);
+		buf_ids[1] = buf1;
+		m_next_sample_pos = buf1_end;
+		assert(offset_in_buf1 == 0);
 
 		alSourceQueueBuffers(m_source_id, 2, buf_ids);
-		alSourcei(m_source_id, AL_SAMPLE_OFFSET, sample_offset1);
+		alSourcei(m_source_id, AL_SAMPLE_OFFSET, offset_in_buf0);
 
 		// We can't use AL_LOOPING because more buffers are queued later
 		// looping is therefore done manually
@@ -630,12 +626,11 @@ bool PlayingSound::stepStream()
 			}
 		}
 
-		auto buf_nxtoffset_thisoffset_tpl = m_data->getOrLoadBufferAt(m_next_sample_pos);
-		ALuint buf_id = std::get<0>(buf_nxtoffset_thisoffset_tpl);
-		m_next_sample_pos = std::get<1>(buf_nxtoffset_thisoffset_tpl);
-		assert(std::get<2>(buf_nxtoffset_thisoffset_tpl) == 0);
+		auto [buf, buf_end, offset_in_buf] = m_data->getOrLoadBufferAt(m_next_sample_pos);
+		m_next_sample_pos = buf_end;
+		assert(offset_in_buf == 0);
 
-		alSourceQueueBuffers(m_source_id, 1, &buf_id);
+		alSourceQueueBuffers(m_source_id, 1, &buf);
 
 		// Start again if queue was empty and resulted in stop
 		if (getState() == AL_STOPPED) {
