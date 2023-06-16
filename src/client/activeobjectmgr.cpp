@@ -113,9 +113,10 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootline,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
+	Shootline sl{shootline};
 	for (auto &ao_it : m_active_objects) {
 		ClientActiveObject *obj = ao_it.second;
-		obj->selectIfInRange(Shootline{shootline}, dest);
+		obj->selectIfInRange(sl, dest);
 	}
 }
 
