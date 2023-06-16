@@ -71,6 +71,9 @@ private:
 	// get_mapgen_edges([mapgen_limit[, chunksize]])
 	static int l_get_mapgen_edges(lua_State *L);
 
+	// get_seed([add])
+	static int l_get_seed(lua_State *L);
+
 	// get_mapgen_setting(name)
 	static int l_get_mapgen_setting(lua_State *L);
 

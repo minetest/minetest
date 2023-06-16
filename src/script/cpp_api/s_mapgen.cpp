@@ -49,11 +49,22 @@ void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_generateds
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_generateds");
-	// Call callbacks
 	LuaVoxelManip::create(L, bmdata->vmanip, true);
+	const int vmanip = lua_gettop(L);
+
+	// Store vmanip globally (used by helpers)
+	lua_getglobal(L, "core");
+	lua_pushvalue(L, vmanip);
+	lua_setfield(L, -2, "vmanip");
+
+	// Call callbacks
+	lua_getfield(L, -1, "registered_on_generateds");
+	lua_pushvalue(L, vmanip);
 	lua_pushnumber(L, bmdata->seed);
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	lua_pop(L, 1); // return val
+
+	// Unset core.vmanip again
+	lua_pushnil(L);
+	lua_setfield(L, -2, "vmanip");
 }

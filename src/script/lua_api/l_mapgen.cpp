@@ -725,6 +725,31 @@ int ModApiMapgen::l_get_spawn_level(lua_State *L)
 }
 
 
+// get_seed([add])
+int ModApiMapgen::l_get_seed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	// This exists to
+	// 1. not duplicate the truncation logic from Mapgen::Mapgen() once more
+	// 2. because I don't trust myself to do it correctly in Lua
+
+	auto *emerge = getEmergeManager(L);
+	if (!emerge || !emerge->mgparams)
+		return 0;
+
+	int add = 0;
+	if (lua_isnumber(L, 1))
+		add = luaL_checkint(L, 1);
+
+	s32 seed = (s32)emerge->mgparams->seed;
+	seed += add;
+
+	lua_pushinteger(L, seed);
+	return 1;
+}
+
+
 int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -734,8 +759,8 @@ int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 
 	std::string value;
 
-	MapSettingsManager *settingsmgr =
-		getServer(L)->getEmergeManager()->map_settings_mgr;
+	const MapSettingsManager *settingsmgr =
+		getEmergeManager(L)->map_settings_mgr;
 
 	lua_newtable(L);
 
@@ -1942,6 +1967,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(get_biome_data);
 	API_FCT(get_mapgen_object);
 
+	API_FCT(get_seed);
 	API_FCT(get_mapgen_params);
 	API_FCT(get_mapgen_edges);
 	API_FCT(get_mapgen_setting);

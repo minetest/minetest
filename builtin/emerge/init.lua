@@ -14,6 +14,7 @@ dofile(gamepath .. "voxelarea.lua")
 -- Now for our own stuff
 assert(loadfile(commonpath .. "register.lua"))(builtin_shared)
 assert(loadfile(epath .. "register.lua"))(builtin_shared)
+dofile(epath .. "env.lua")
 
 builtin_shared.cache_content_ids()
 
