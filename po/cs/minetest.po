@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-06-16 21:58+0000\n"
-"Last-Translator: Martin Šimek <simekm@yahoo.com>\n"
+"Last-Translator: Vít Skalický <vit.skalicky@email.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -231,7 +231,7 @@ msgstr "\"$1\" již existuje. Chcete jej přepsat?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Budou nainstalovány závislosti $1 a $2."
+msgstr "Nainstaluje se $1 a $2 závislostí"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -251,7 +251,7 @@ msgstr "$1 se stahuje..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr "$1 požadovaných závislostí nebylo nalezeno."
+msgstr "$1 nutných závislostí nebylo nalezeno."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
