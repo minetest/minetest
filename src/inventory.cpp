@@ -35,7 +35,7 @@ static float string_to_float(const std::string& str, bool& is_valid)
     if (str.empty())
     {
         is_valid = false;
-        return 0;
+        return 0.0;
     }
 
     char* ptr;
@@ -294,6 +294,8 @@ f32 ItemStack::getRange(const IItemDefManager *itemdef) const
     float meta_range = string_to_float(str_meta_range, is_valid);
     if (is_valid && meta_range > -1)
         range = meta_range;
+    else if (!str_meta_range.empty())
+        errorstream << "Failed to convert meta 'range' to float";
     return range;
 }
 

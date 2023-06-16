@@ -2436,6 +2436,7 @@ Some of the values in the key-value store are handled specially:
   See also: `get_description` in [`ItemStack`]
 * `short_description`: Set the item stack's short description.
   See also: `get_short_description` in [`ItemStack`]
+* `range`: Override range
 * `inventory_image`: Override inventory_image
 * `inventory_overlay`: Override inventory_overlay
 * `wield_image`: Override wield_image
