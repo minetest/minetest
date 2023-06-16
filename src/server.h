@@ -62,7 +62,7 @@ struct RollbackAction;
 class EmergeManager;
 class ServerScripting;
 class ServerEnvironment;
-struct SimpleSoundSpec;
+struct SoundSpec;
 struct CloudParams;
 struct SkyboxParams;
 struct SunParams;
@@ -97,7 +97,7 @@ struct MediaInfo
 	}
 };
 
-// Combines the pure sound (SimpleSoundSpec) with positional information
+// Combines the pure sound (SoundSpec) with positional information
 struct ServerPlayingSound
 {
 	SoundLocation type = SoundLocation::Local;
@@ -111,7 +111,7 @@ struct ServerPlayingSound
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 
-	SimpleSoundSpec spec;
+	SoundSpec spec;
 
 	std::unordered_set<session_t> clients; // peer ids
 };

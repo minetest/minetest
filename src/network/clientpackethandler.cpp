@@ -805,57 +805,74 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
 	/*
-		[0] u32 server_id
+		[0] s32 server_id
 		[4] u16 name length
 		[6] char name[len]
 		[ 6 + len] f32 gain
-		[10 + len] u8 type
-		[11 + len] (f32 * 3) pos
+		[10 + len] u8 type (SoundLocation)
+		[11 + len] v3f pos (in BS-space)
 		[23 + len] u16 object_id
 		[25 + len] bool loop
 		[26 + len] f32 fade
 		[30 + len] f32 pitch
 		[34 + len] bool ephemeral
+		[35 + len] f32 start_time (in seconds)
 	*/
 
 	s32 server_id;
 
-	SimpleSoundSpec spec;
-	SoundLocation type; // 0=local, 1=positional, 2=object
+	SoundSpec spec;
+	SoundLocation type;
 	v3f pos;
 	u16 object_id;
 	bool ephemeral = false;
 
 	*pkt >> server_id >> spec.name >> spec.gain >> (u8 &)type >> pos >> object_id >> spec.loop;
+	pos *= 1.0f/BS;
 
 	try {
 		*pkt >> spec.fade;
 		*pkt >> spec.pitch;
 		*pkt >> ephemeral;
+		*pkt >> spec.start_time;
 	} catch (PacketError &e) {};
 
+	// Generate a new id
+	sound_handle_t client_id = (ephemeral && object_id == 0) ? 0 : m_sound->allocateId(2);
+
 	// Start playing
-	int client_id = -1;
 	switch(type) {
 	case SoundLocation::Local:
-		client_id = m_sound->playSound(spec);
+		m_sound->playSound(client_id, spec);
 		break;
 	case SoundLocation::Position:
-		client_id = m_sound->playSoundAt(spec, pos);
+		m_sound->playSoundAt(client_id, spec, pos, v3f(0.0f));
 		break;
-	case SoundLocation::Object:
-		{
-			ClientActiveObject *cao = m_env.getActiveObject(object_id);
-			if (cao)
-				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(spec, pos);
-			break;
+	case SoundLocation::Object: {
+		ClientActiveObject *cao = m_env.getActiveObject(object_id);
+		v3f vel(0.0f);
+		if (cao) {
+			pos = cao->getPosition() * (1.0f/BS);
+			vel = cao->getVelocity() * (1.0f/BS);
 		}
+		m_sound->playSoundAt(client_id, spec, pos, vel);
+		break;
+	}
+	default:
+		// Unknown SoundLocation, instantly remove sound
+		if (client_id != 0)
+			m_sound->freeId(client_id, 2);
+		if (!ephemeral)
+			sendRemovedSounds({server_id});
+		return;
 	}
 
-	if (client_id != -1) {
-		// for ephemeral sounds, server_id is not meaningful
-		if (!ephemeral) {
+	if (client_id != 0) {
+		// Note: m_sounds_client_to_server takes 1 ownership
+		// For ephemeral sounds, server_id is not meaningful
+		if (ephemeral) {
+			m_sounds_client_to_server[client_id] = -1;
+		} else {
 			m_sounds_server_to_client[server_id] = client_id;
 			m_sounds_client_to_server[client_id] = server_id;
 		}

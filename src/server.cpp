@@ -2231,7 +2231,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	pkt << id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral;
+			<< ephemeral << params.spec.start_time;
 
 	bool as_reliable = !ephemeral;
 

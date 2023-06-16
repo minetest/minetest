@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "sound.h"
 #include "client/sound_openal.h"
-#include "client/clouds.h"
 #include "httpfetch.h"
 #include "log.h"
 #include "client/fontengine.h"
@@ -97,28 +96,15 @@ video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 /******************************************************************************/
 /** MenuMusicFetcher                                                          */
 /******************************************************************************/
-void MenuMusicFetcher::fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
-			std::set<std::string> &dst_datas)
+void MenuMusicFetcher::addThePaths(const std::string &name,
+		std::vector<std::string> &paths)
 {
-	if(m_fetched.count(name))
-		return;
-	m_fetched.insert(name);
-	std::vector<fs::DirListNode> list;
-	// Reusable local function
-	auto add_paths = [&dst_paths](const std::string name, const std::string base = "") {
-		dst_paths.insert(base + name + ".ogg");
-		for (int i = 0; i < 10; i++)
-			dst_paths.insert(base + name + "." + itos(i) + ".ogg");
-	};
 	// Allow full paths
 	if (name.find(DIR_DELIM_CHAR) != std::string::npos) {
-		add_paths(name);
+		addAllAlternatives(name, paths);
 	} else {
-		std::string share_prefix = porting::path_share + DIR_DELIM;
-		add_paths(name, share_prefix + "sounds" + DIR_DELIM);
-		std::string user_prefix = porting::path_user + DIR_DELIM;
-		add_paths(name, user_prefix + "sounds" + DIR_DELIM);
+		addAllAlternatives(porting::path_share + DIR_DELIM + "sounds" + DIR_DELIM + name, paths);
+		addAllAlternatives(porting::path_user + DIR_DELIM + "sounds" + DIR_DELIM + name, paths);
 	}
 }
 
@@ -151,8 +137,10 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 
 	// create soundmanager
 #if USE_SOUND
-	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get())
-		m_sound_manager.reset(createOpenALSoundManager(g_sound_manager_singleton.get(), &m_soundfetcher));
+	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
+		m_sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
+				std::make_unique<MenuMusicFetcher>());
+	}
 #endif
 	if (!m_sound_manager)
 		m_sound_manager = std::make_unique<DummySoundManager>();
@@ -318,10 +306,11 @@ void GUIEngine::run()
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
-	m_sound_manager.reset();
-
-	infostream<<"GUIEngine: Deinitializing scripting"<<std::endl;
+	// deinitialize script first. gc destructors might depend on other stuff
+	infostream << "GUIEngine: Deinitializing scripting" << std::endl;
 	m_script.reset();
+
+	m_sound_manager.reset();
 
 	m_irr_toplefttext->setText(L"");
 
@@ -607,17 +596,4 @@ void GUIEngine::updateTopLeftTextSize()
 	m_irr_toplefttext->remove();
 	m_irr_toplefttext = gui::StaticText::add(m_rendering_engine->get_gui_env(),
 			m_toplefttext, rect, false, true, 0, -1);
-}
-
-/******************************************************************************/
-s32 GUIEngine::playSound(const SimpleSoundSpec &spec)
-{
-	s32 handle = m_sound_manager->playSound(spec);
-	return handle;
-}
-
-/******************************************************************************/
-void GUIEngine::stopSound(s32 handle)
-{
-	m_sound_manager->stopSound(handle);
 }
