@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-06-16 21:58+0000\n"
-"Last-Translator: Vít Skalický <vit.skalicky@email.cz>\n"
+"PO-Revision-Date: 2023-06-16 22:19+0000\n"
+"Last-Translator: Martin Šimek <simekm@yahoo.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -231,7 +231,7 @@ msgstr "\"$1\" již existuje. Chcete jej přepsat?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Nainstaluje se $1 a $2 závislostí"
+msgstr "Nainstaluje se $1 a $2 závislostí."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -450,7 +450,7 @@ msgstr "Instalovat hru"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr "Nainstalovat jinou hru"
+msgstr "Instalovat další hru"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -964,7 +964,7 @@ msgstr "Žádný svět nebyl vytvořen ani vybrán!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
-msgstr "Spustit hru"
+msgstr "Hrát hru"
 
 #: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_online.lua
 msgid "Port"
@@ -984,7 +984,7 @@ msgstr "Port serveru"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr "Spustit hru"
+msgstr "Spuštění hry"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1213,7 +1213,7 @@ msgstr "Vlnění rostlin"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Spojení přerušeno (chyba protokolu?)"
+msgstr "Spojení přerušeno (chyba protokolu?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1303,7 +1303,7 @@ msgstr "- Veřejný: "
 #. ~ PvP = Player versus Player
 #: src/client/game.cpp
 msgid "- PvP: "
-msgstr "- PvP: "
+msgstr "- „PvP“: "
 
 #: src/client/game.cpp
 msgid "- Server Name: "
@@ -1611,7 +1611,7 @@ msgstr "Vypínání..."
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr "Singleplayer"
+msgstr "„Singleplayer“"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
@@ -1735,7 +1735,7 @@ msgstr "End"
 
 #: src/client/keycode.cpp
 msgid "Erase EOF"
-msgstr "Erase EOF"
+msgstr "Vymazat EOF"
 
 #: src/client/keycode.cpp
 msgid "Execute"
@@ -1755,19 +1755,19 @@ msgstr "Povolené IME"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
-msgstr "IME Convert"
+msgstr "Převést IME"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr "IME Escape"
+msgstr "IME opustit"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr "IME Mode Change"
+msgstr "Změna režimu IME"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr "IME Nonconvert"
+msgstr "IME „Nonconvert“ (nepřevádět)"
 
 #: src/client/keycode.cpp
 msgid "Insert"
@@ -1872,7 +1872,7 @@ msgstr "Numerická klávesnice: 9"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "„OEM Clear“"
 
 #: src/client/keycode.cpp
 msgid "Page down"
@@ -2524,7 +2524,7 @@ msgstr "Zveřejnit server"
 
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
-msgstr "Oznámit tomuto seznamu serverů."
+msgstr "Zapsat do tohoto seznamu serverů."
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2579,7 +2579,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr "Zvuk"
+msgstr "Zvuky"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2591,7 +2591,7 @@ msgstr "Automaticky nahlásit do seznamu serverů."
 
 #: src/settings_translation_file.cpp
 msgid "Autosave screen size"
-msgstr "Ukládat velikost obr."
+msgstr "Automaticky ukládat velikost obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
@@ -3044,7 +3044,7 @@ msgid ""
 "This also applies to the object crosshair."
 msgstr ""
 "Průhlednost („alpha“) nitkového kříže (0 až 255).\n"
-"Také určuje barvu nitkového kříže  objektů."
+"Také určuje barvu nitkového kříže objektů."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -3605,8 +3605,8 @@ msgid ""
 "the\n"
 "Multiplayer Tab."
 msgstr ""
-"Soubor v client/serverlist/, který obsahuje oblíbené servery zobrazené na "
-"záložce 'Multiplayer'."
+"Soubor v client/serverlist/, který obsahuje oblíbené servery zobrazené \n"
+"na záložce 'Multiplayer'."
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth"
@@ -3629,7 +3629,7 @@ msgid ""
 msgstr ""
 "Okraje filtrovaných textur se mohou mísit s průhlednými sousedními pixely,\n"
 "které PNG optimizery obvykle zahazují. To může vyústit v tmavé nebo světlé\n"
-"okraje  hran. Zapnutí tohoto filtru problém řeší při načítání textur.\n"
+"okraje hran. Zapnutí tohoto filtru problém řeší při načítání textur.\n"
 "Toto nastavení je automaticky zapnuto, pokud je povoleno Mip-Mapování."
 
 #: src/settings_translation_file.cpp
@@ -3952,8 +3952,8 @@ msgid ""
 msgstr ""
 "Zacházení s voláními zastaralého Lua API:\n"
 "-    none: Nezaznamenávat zastaralá volání\n"
-"-    log: pokusí se napodobit staré chování a zaznamená backtrace volání\n"
-"     (výchozí pro debug).\n"
+"-    log: pokusí se napodobit staré chování a zaznamená backtrace volání ("
+"výchozí pro debug).\n"
 "-    error: při volání zastaralé funkce skončit (doporučeno vývojářům modů)."
 
 #: src/settings_translation_file.cpp
@@ -4252,9 +4252,7 @@ msgstr "Barva (R,G,B) pozadí herní chatovací konzole."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
-msgstr ""
-"Výška herní chatovací konzole, mezi 0.1 (10 %) a 1.0 (100 %).\n"
-"(Pozor, použijte anglickou desetinnou tečku, nikoliv čárku.)"
+msgstr "Výška herní chatovací konzole, mezi 0.1 (10 %) a 1.0 (100 %)."
 
 #: src/settings_translation_file.cpp
 msgid "Initial vertical speed when jumping, in nodes per second."
@@ -4416,19 +4414,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr "Julia w"
+msgstr "„Julia w“"
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
-msgstr "Julia x"
+msgstr "„Julia x“"
 
 #: src/settings_translation_file.cpp
 msgid "Julia y"
-msgstr "Julia y"
+msgstr "„Julia y“"
 
 #: src/settings_translation_file.cpp
 msgid "Julia z"
-msgstr "Julia z"
+msgstr "„Julia z“"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
@@ -4444,11 +4442,11 @@ msgstr "Vyhodit hráče, který poslal více jak X zpráv během 10 sekund."
 
 #: src/settings_translation_file.cpp
 msgid "Lake steepness"
-msgstr "Strmost jezer"
+msgstr "Svažitost jezer"
 
 #: src/settings_translation_file.cpp
 msgid "Lake threshold"
-msgstr "Strmost jezer"
+msgstr "Práh jezer"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -5426,7 +5424,7 @@ msgstr "Oprávnění, která mohou hráči s „basic_privs“ udělit"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr "Profiler"
+msgstr "„Profiler“"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -6056,7 +6054,7 @@ msgstr "Poloměr měkkých stínů"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr "Zvuk"
+msgstr "Zvuk (Sound)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6406,7 +6404,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
-msgstr "Typ joysticku"
+msgstr "Joystick - typ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6639,7 +6637,7 @@ msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
-msgstr "VSync"
+msgstr "„VSync“"
 
 #: src/settings_translation_file.cpp
 msgid "Valley depth"
@@ -6920,7 +6918,7 @@ msgstr ""
 "Zobrazovat technické názvy. \n"
 "Ovlivňuje mody a balíčky textur v obsahových a výběrových nabídkách modů "
 "stejně jako \n"
-"jména voleb v okně  Všechna nastavení. \n"
+"jména voleb v okně Všechna nastavení. \n"
 "Ovládá se zaškrtávacím políčkem v nabídce „Všechna nastavení“."
 
 #: src/settings_translation_file.cpp
@@ -7035,7 +7033,7 @@ msgstr "Y-úroveň mořského dna."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr "cURL"
+msgstr "„cURL“"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
