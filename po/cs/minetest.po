@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-06-16 22:19+0000\n"
-"Last-Translator: Martin Šimek <simekm@yahoo.com>\n"
+"PO-Revision-Date: 2023-06-16 22:21+0000\n"
+"Last-Translator: Pexauteau Santander <pexauteau@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
 "Language: cs\n"
@@ -450,7 +450,7 @@ msgstr "Instalovat hru"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr "Instalovat další hru"
+msgstr "Nainstaluj jinou hru"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
