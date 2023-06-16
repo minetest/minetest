@@ -52,18 +52,6 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 {
 	std::string key = "";
 	switch (id) {
-		case forward_id:
-			key = "forward";
-			break;
-		case left_id:
-			key = "left";
-			break;
-		case right_id:
-			key = "right";
-			break;
-		case backward_id:
-			key = "backward";
-			break;
 		case inventory_id:
 			key = "inventory";
 			break;
@@ -702,8 +690,9 @@ void TouchScreenGUI::handleReleaseEvent(size_t evt_id)
 		m_has_joystick_id = false;
 
 		// reset joystick
-		for (unsigned int i = 0; i < 4; i++)
-			m_joystick_status[i] = false;
+		m_joystick_direction = 0.0f;
+		m_joystick_speed = 0.0f;
+		m_joystick_status_aux1 = false;
 		applyJoystickStatus();
 
 		m_joystick_btn_off->guibutton->setVisible(true);
@@ -844,8 +833,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 						(m_pointerpos[event.TouchInput.ID].Y - event.TouchInput.Y) *
 						(m_pointerpos[event.TouchInput.ID].Y - event.TouchInput.Y));
 
-				if ((distance > m_touchscreen_threshold) ||
-						(m_move_has_really_moved)) {
+				if (distance > m_touchscreen_threshold || m_move_has_really_moved) {
 					m_move_has_really_moved = true;
 					s32 X = event.TouchInput.X;
 					s32 Y = event.TouchInput.Y;
@@ -868,8 +856,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 							->getSceneCollisionManager()
 							->getRayFromScreenCoordinates(v2s32(X, Y));
 				}
-			} else if ((event.TouchInput.ID == m_move_id) &&
-					(m_move_sent_as_mouse_event)) {
+			} else if (event.TouchInput.ID == m_move_id && m_move_sent_as_mouse_event) {
 				m_shootline = m_device
 						->getSceneManager()
 						->getSceneCollisionManager()
@@ -899,45 +886,21 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					(!m_fixed_joystick &&
 					distance_sq > m_touchscreen_threshold * m_touchscreen_threshold)) {
 				m_joystick_has_really_moved = true;
+
+				m_joystick_direction = atan2(dx, -dy);
+
 				double distance = sqrt(distance_sq);
-
-				// angle in degrees
-				double angle = acos(dx / distance) * 180 / M_PI;
-				if (dy < 0)
-					angle *= -1;
-				// rotate to make comparing easier
-				angle = fmod(angle + 180 + 22.5, 360);
-
-				// reset state before applying
-				for (bool & joystick_status : m_joystick_status)
-					joystick_status = false;
-
 				if (distance <= m_touchscreen_threshold) {
-					// do nothing
-				} else if (angle < 45)
-					m_joystick_status[j_left] = true;
-				else if (angle < 90) {
-					m_joystick_status[j_forward] = true;
-					m_joystick_status[j_left] = true;
-				} else if (angle < 135)
-					m_joystick_status[j_forward] = true;
-				else if (angle < 180) {
-					m_joystick_status[j_forward] = true;
-					m_joystick_status[j_right] = true;
-				} else if (angle < 225)
-					m_joystick_status[j_right] = true;
-				else if (angle < 270) {
-					m_joystick_status[j_backward] = true;
-					m_joystick_status[j_right] = true;
-				} else if (angle < 315)
-					m_joystick_status[j_backward] = true;
-				else if (angle <= 360) {
-					m_joystick_status[j_backward] = true;
-					m_joystick_status[j_left] = true;
+					m_joystick_speed = 0.0f;
+				} else {
+					m_joystick_speed = distance / button_size;
+					if (m_joystick_speed > 1.0f)
+						m_joystick_speed = 1.0f;
 				}
 
+				m_joystick_status_aux1 = distance > (button_size * 1.5f);
+
 				if (distance > button_size) {
-					m_joystick_status[j_aux1] = true;
 					// move joystick "button"
 					s32 ndx = button_size * dx / distance - button_size / 2.0f;
 					s32 ndy = button_size * dy / distance - button_size / 2.0f;
@@ -971,7 +934,7 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 		for (auto iter = m_buttons[i].ids.begin();
 				iter != m_buttons[i].ids.end(); ++iter) {
 			if (event.TouchInput.ID == *iter) {
-				int current_button_id =
+				auto current_button_id =
 						getButtonID(event.TouchInput.X, event.TouchInput.Y);
 
 				if (current_button_id == i)
@@ -1038,17 +1001,14 @@ bool TouchScreenGUI::doRightClick()
 
 void TouchScreenGUI::applyJoystickStatus()
 {
-	for (unsigned int i = 0; i < 5; i++) {
-		if (i == 4 && !m_joystick_triggers_aux1)
-			continue;
-
+	if (m_joystick_triggers_aux1) {
 		SEvent translated{};
 		translated.EventType            = irr::EET_KEY_INPUT_EVENT;
-		translated.KeyInput.Key         = id2keycode(m_joystick_names[i]);
+		translated.KeyInput.Key         = id2keycode(aux1_id);
 		translated.KeyInput.PressedDown = false;
 		m_receiver->OnEvent(translated);
 
-		if (m_joystick_status[i]) {
+		if (m_joystick_status_aux1) {
 			translated.KeyInput.PressedDown = true;
 			m_receiver->OnEvent(translated);
 		}
@@ -1110,12 +1070,7 @@ void TouchScreenGUI::step(float dtime)
 	}
 
 	// joystick
-	for (unsigned int i = 0; i < 4; i++) {
-		if (m_joystick_status[i]) {
-			applyJoystickStatus();
-			break;
-		}
-	}
+	applyJoystickStatus();
 
 	// if a new placed pointer isn't moved for some time start digging
 	if (m_has_move_id &&

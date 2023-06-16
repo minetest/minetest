@@ -54,10 +54,6 @@ typedef enum
 	chat_id,
 	inventory_id,
 	drop_id,
-	forward_id,
-	backward_id,
-	left_id,
-	right_id,
 	joystick_off_id,
 	joystick_bg_id,
 	joystick_center_id
@@ -194,6 +190,9 @@ public:
 	 */
 	line3d<f32> getShootline() { return m_shootline; }
 
+	float getMovementDirection() { return m_joystick_direction; }
+	float getMovementSpeed() { return m_joystick_speed; }
+
 	void step(float dtime);
 	void resetHud();
 	void registerHudItem(int index, const rect<s32> &rect);
@@ -220,11 +219,6 @@ private:
 	double m_camera_yaw_change = 0.0;
 	double m_camera_pitch = 0.0;
 
-	// forward, backward, left, right
-	touch_gui_button_id m_joystick_names[5] = {
-			forward_id, backward_id, left_id, right_id, aux1_id};
-	bool m_joystick_status[5] = {false, false, false, false, false};
-
 	/*
 	 * A line starting at the camera and pointing towards the
 	 * selected object.
@@ -238,11 +232,14 @@ private:
 	bool m_move_has_really_moved = false;
 	u64 m_move_downtime = 0;
 	bool m_move_sent_as_mouse_event = false;
-	v2s32 m_move_downlocation = v2s32(-10000, -10000);
+	v2s32 m_move_downlocation = v2s32(-10000, -10000); // off-screen
 
 	bool m_has_joystick_id = false;
 	size_t m_joystick_id;
 	bool m_joystick_has_really_moved = false;
+	float m_joystick_direction = 0.0f; // assume forward
+	float m_joystick_speed = 0.0f; // no movement
+	bool m_joystick_status_aux1 = false;
 	bool m_fixed_joystick = false;
 	bool m_joystick_triggers_aux1 = false;
 	bool m_draw_crosshair = false;
