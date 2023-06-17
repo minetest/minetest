@@ -5,6 +5,7 @@
 
 function core.set_node(pos, node)
 	core.vmanip:set_node_at(pos, node)
+	return true
 end
 
 function core.bulk_set_node(pos_list, node)
@@ -13,6 +14,7 @@ function core.bulk_set_node(pos_list, node)
 	for _, pos in ipairs(pos_list) do
 		set_node_at(vm, pos, node)
 	end
+	return true
 end
 
 core.add_node = core.set_node
@@ -22,6 +24,7 @@ core.swap_node = core.set_node
 
 function core.remove_node(pos)
 	core.vmanip:set_node_at(pos, {name="air"})
+	return true
 end
 
 function core.get_node(pos)

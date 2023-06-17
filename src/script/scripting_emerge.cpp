@@ -90,8 +90,8 @@ void EmergeScripting::InitializeModApi(lua_State *L, int top)
 
 	// Initialize mod api modules
 	ModApiCraft::InitializeAsync(L, top);
-	//ModApiEnv: should have Lua replacements
-	ModApiItemMod::InitializeAsync(L, top);
+	ModApiEnvVM::InitializeEmerge(L, top);
+	ModApiItem::InitializeAsync(L, top);
 	ModApiMapgen::InitializeEmerge(L, top);
 	ModApiServer::InitializeAsync(L, top);
 	ModApiUtil::InitializeAsync(L, top);
