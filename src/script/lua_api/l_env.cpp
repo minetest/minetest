@@ -46,14 +46,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #endif
 
-const EnumString ModApiEnvMod::es_ClearObjectsMode[] =
+const EnumString ModApiEnvBase::es_ClearObjectsMode[] =
 {
 	{CLEAR_OBJECTS_MODE_FULL,  "full"},
 	{CLEAR_OBJECTS_MODE_QUICK, "quick"},
 	{0, NULL},
 };
 
-const EnumString ModApiEnvMod::es_BlockStatusType[] =
+const EnumString ModApiEnvBase::es_BlockStatusType[] =
 {
 	{ServerEnvironment::BS_UNKNOWN, "unknown"},
 	{ServerEnvironment::BS_EMERGING, "emerging"},
@@ -796,7 +796,7 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 	return 1;
 }
 
-void ModApiEnvMod::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
+void ModApiEnvBase::collectNodeIds(lua_State *L, int idx, const NodeDefManager *ndef,
 	std::vector<content_t> &filter)
 {
 	if (lua_istable(L, idx)) {
@@ -809,8 +809,26 @@ void ModApiEnvMod::collectNodeIds(lua_State *L, int idx, const NodeDefManager *n
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, idx)) {
-		ndef->getIds(readParam<std::string>(L, 3), filter);
+		ndef->getIds(readParam<std::string>(L, idx), filter);
 	}
+}
+
+template <typename F>
+int ModApiEnvBase::findNodeNear(lua_State *L, v3s16 pos, int radius,
+		const std::vector<content_t> &filter, int start_radius, F &&getNode)
+{
+	for (int d = start_radius; d <= radius; d++) {
+		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
+		for (const v3s16 &i : list) {
+			v3s16 p = pos + i;
+			content_t c = getNode(p).getContent();
+			if (CONTAINS(filter, c)) {
+				push_v3s16(L, p);
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 // find_node_near(pos, radius, nodenames, [search_center]) -> pos or nil
@@ -835,21 +853,13 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		radius = client->CSMClampRadius(pos, radius);
 #endif
 
-	for (int d = start_radius; d <= radius; d++) {
-		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
-		for (const v3s16 &i : list) {
-			v3s16 p = pos + i;
-			content_t c = map.getNode(p).getContent();
-			if (CONTAINS(filter, c)) {
-				push_v3s16(L, p);
-				return 1;
-			}
-		}
-	}
-	return 0;
+	auto getNode = [&map] (v3s16 p) -> MapNode {
+		return map.getNode(p);
+	};
+	return findNodeNear(L, pos, radius, filter, start_radius, getNode);
 }
 
-static void checkArea(v3s16 &minp, v3s16 &maxp)
+void ModApiEnvBase::checkArea(v3s16 &minp, v3s16 &maxp)
 {
 	auto volume = VoxelArea(minp, maxp).getVolume();
 	// Volume limit equal to 8 default mapchunks, (80 * 2) ^ 3 = 4,096,000
@@ -864,32 +874,10 @@ static void checkArea(v3s16 &minp, v3s16 &maxp)
 #undef CLAMP
 }
 
-// find_nodes_in_area(minp, maxp, nodenames, [grouped])
-int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
+template <typename F>
+int ModApiEnvBase::findNodesInArea(lua_State *L, const NodeDefManager *ndef,
+		const std::vector<content_t> &filter, bool grouped, F &&iterate)
 {
-	GET_PLAIN_ENV_PTR;
-
-	v3s16 minp = read_v3s16(L, 1);
-	v3s16 maxp = read_v3s16(L, 2);
-	sortBoxVerticies(minp, maxp);
-
-	const NodeDefManager *ndef = env->getGameDef()->ndef();
-	Map &map = env->getMap();
-
-#ifndef SERVER
-	if (Client *client = getClient(L)) {
-		minp = client->CSMClampPos(minp);
-		maxp = client->CSMClampPos(maxp);
-	}
-#endif
-
-	checkArea(minp, maxp);
-
-	std::vector<content_t> filter;
-	collectNodeIds(L, 3, ndef, filter);
-
-	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
-
 	if (grouped) {
 		// create the table we will be returning
 		lua_createtable(L, 0, filter.size());
@@ -901,7 +889,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		for (u32 i = 0; i < filter.size(); i++)
 			lua_newtable(L);
 
-		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+		iterate([&](v3s16 p, MapNode n) -> bool {
 			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
@@ -935,7 +923,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 
 		lua_newtable(L);
 		u32 i = 0;
-		map.forEachNodeInArea(minp, maxp, [&](v3s16 p, MapNode n) -> bool {
+		iterate([&](v3s16 p, MapNode n) -> bool {
 			content_t c = n.getContent();
 
 			auto it = std::find(filter.begin(), filter.end(), c);
@@ -959,17 +947,9 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	}
 }
 
-// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
-// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
+// find_nodes_in_area(minp, maxp, nodenames, [grouped])
+int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 {
-	/* Note: A similar but generalized (and therefore slower) version of this
-	 * function could be created -- e.g. find_nodes_in_area_under -- which
-	 * would accept a node name (or ID?) or list of names that the "above node"
-	 * should be.
-	 * TODO
-	 */
-
 	GET_PLAIN_ENV_PTR;
 
 	v3s16 minp = read_v3s16(L, 1);
@@ -991,16 +971,28 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	std::vector<content_t> filter;
 	collectNodeIds(L, 3, ndef, filter);
 
+	bool grouped = lua_isboolean(L, 4) && readParam<bool>(L, 4);
+
+	auto iterate = [&] (auto &&callback) {
+		map.forEachNodeInArea(minp, maxp, callback);
+	};
+	return findNodesInArea(L, ndef, filter, grouped, iterate);
+}
+
+template <typename F>
+int ModApiEnvBase::findNodesInAreaUnderAir(lua_State *L, v3s16 minp, v3s16 maxp,
+	const std::vector<content_t> &filter, F &&getNode)
+{
 	lua_newtable(L);
 	u32 i = 0;
 	v3s16 p;
 	for (p.X = minp.X; p.X <= maxp.X; p.X++)
 	for (p.Z = minp.Z; p.Z <= maxp.Z; p.Z++) {
 		p.Y = minp.Y;
-		content_t c = map.getNode(p).getContent();
+		content_t c = getNode(p).getContent();
 		for (; p.Y <= maxp.Y; p.Y++) {
 			v3s16 psurf(p.X, p.Y + 1, p.Z);
-			content_t csurf = map.getNode(psurf).getContent();
+			content_t csurf = getNode(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
 					CONTAINS(filter, c)) {
 				push_v3s16(L, p);
@@ -1010,6 +1002,41 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 		}
 	}
 	return 1;
+}
+
+// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
+// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
+int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
+{
+	/* TODO: A similar but generalized (and therefore slower) version of this
+	 * function could be created -- e.g. find_nodes_in_area_under -- which
+	 * would accept a node name or list of names that the "above node" should be.
+	 */
+	GET_PLAIN_ENV_PTR;
+
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	Map &map = env->getMap();
+
+#ifndef SERVER
+	if (Client *client = getClient(L)) {
+		minp = client->CSMClampPos(minp);
+		maxp = client->CSMClampPos(maxp);
+	}
+#endif
+
+	checkArea(minp, maxp);
+
+	std::vector<content_t> filter;
+	collectNodeIds(L, 3, ndef, filter);
+
+	auto getNode = [&map] (v3s16 p) -> MapNode {
+		return map.getNode(p);
+	};
+	return findNodesInAreaUnderAir(L, minp, maxp, filter, getNode);
 }
 
 // get_perlin(seeddiff, octaves, persistence, scale)
@@ -1279,6 +1306,45 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	return 0;
 }
 
+static bool read_tree_def(lua_State *L, int idx,
+	const NodeDefManager *ndef, treegen::TreeDef &tree_def)
+{
+	std::string trunk, leaves, fruit;
+	if (!lua_istable(L, idx))
+		return false;
+
+	getstringfield(L, idx, "axiom", tree_def.initial_axiom);
+	getstringfield(L, idx, "rules_a", tree_def.rules_a);
+	getstringfield(L, idx, "rules_b", tree_def.rules_b);
+	getstringfield(L, idx, "rules_c", tree_def.rules_c);
+	getstringfield(L, idx, "rules_d", tree_def.rules_d);
+	getstringfield(L, idx, "trunk", trunk);
+	tree_def.trunknode = ndef->getId(trunk);
+	getstringfield(L, idx, "leaves", leaves);
+	tree_def.leavesnode = ndef->getId(leaves);
+	tree_def.leaves2_chance = 0;
+	getstringfield(L, idx, "leaves2", leaves);
+	if (!leaves.empty()) {
+		tree_def.leaves2node = ndef->getId(leaves);
+		getintfield(L, idx, "leaves2_chance", tree_def.leaves2_chance);
+	}
+	getintfield(L, idx, "angle", tree_def.angle);
+	getintfield(L, idx, "iterations", tree_def.iterations);
+	if (!getintfield(L, idx, "random_level", tree_def.iterations_random_level))
+		tree_def.iterations_random_level = 0;
+	getstringfield(L, idx, "trunk_type", tree_def.trunk_type);
+	getboolfield(L, idx, "thin_branches", tree_def.thin_branches);
+	tree_def.fruit_chance = 0;
+	getstringfield(L, idx, "fruit", fruit);
+	if (!fruit.empty()) {
+		tree_def.fruitnode = ndef->getId(fruit);
+		getintfield(L, idx, "fruit_chance", tree_def.fruit_chance);
+	}
+	tree_def.explicit_seed = getintfield(L, idx, "seed", tree_def.seed);
+
+	return true;
+}
+
 // spawn_tree(pos, treedef)
 int ModApiEnvMod::l_spawn_tree(lua_State *L)
 {
@@ -1287,41 +1353,9 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 	v3s16 p0 = read_v3s16(L, 1);
 
 	treegen::TreeDef tree_def;
-	std::string trunk,leaves,fruit;
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 
-	if(lua_istable(L, 2))
-	{
-		getstringfield(L, 2, "axiom", tree_def.initial_axiom);
-		getstringfield(L, 2, "rules_a", tree_def.rules_a);
-		getstringfield(L, 2, "rules_b", tree_def.rules_b);
-		getstringfield(L, 2, "rules_c", tree_def.rules_c);
-		getstringfield(L, 2, "rules_d", tree_def.rules_d);
-		getstringfield(L, 2, "trunk", trunk);
-		tree_def.trunknode=ndef->getId(trunk);
-		getstringfield(L, 2, "leaves", leaves);
-		tree_def.leavesnode=ndef->getId(leaves);
-		tree_def.leaves2_chance=0;
-		getstringfield(L, 2, "leaves2", leaves);
-		if (!leaves.empty()) {
-			tree_def.leaves2node=ndef->getId(leaves);
-			getintfield(L, 2, "leaves2_chance", tree_def.leaves2_chance);
-		}
-		getintfield(L, 2, "angle", tree_def.angle);
-		getintfield(L, 2, "iterations", tree_def.iterations);
-		if (!getintfield(L, 2, "random_level", tree_def.iterations_random_level))
-			tree_def.iterations_random_level = 0;
-		getstringfield(L, 2, "trunk_type", tree_def.trunk_type);
-		getboolfield(L, 2, "thin_branches", tree_def.thin_branches);
-		tree_def.fruit_chance=0;
-		getstringfield(L, 2, "fruit", fruit);
-		if (!fruit.empty()) {
-			tree_def.fruitnode=ndef->getId(fruit);
-			getintfield(L, 2, "fruit_chance",tree_def.fruit_chance);
-		}
-		tree_def.explicit_seed = getintfield(L, 2, "seed", tree_def.seed);
-	}
-	else
+	if (!read_tree_def(L, 2, ndef, tree_def))
 		return 0;
 
 	ServerMap *map = &env->getServerMap();
@@ -1334,6 +1368,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 		}
 	}
 
+	lua_pushboolean(L, true);
 	return 1;
 }
 
