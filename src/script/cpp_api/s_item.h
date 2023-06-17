@@ -28,7 +28,7 @@ struct ItemStack;
 class ServerActiveObject;
 struct ItemDefinition;
 class LuaItemStack;
-class ModApiItemMod;
+class ModApiItem;
 class InventoryList;
 struct InventoryLocation;
 
@@ -58,7 +58,7 @@ public:
 
 protected:
 	friend class LuaItemStack;
-	friend class ModApiItemMod;
+	friend class ModApiItem;
 
 	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
 	/*!
