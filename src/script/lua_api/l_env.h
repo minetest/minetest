@@ -54,7 +54,7 @@ protected:
 
 };
 
-class ModApiEnvMod : public ModApiEnvBase {
+class ModApiEnv : public ModApiEnvBase {
 private:
 	// set_node(pos, node)
 	// pos = {x=num, y=num, z=num}

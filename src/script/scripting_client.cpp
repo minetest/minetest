@@ -79,9 +79,9 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);
-	ModApiItemMod::InitializeClient(L, top);
+	ModApiItem::InitializeClient(L, top);
 	ModApiStorage::Initialize(L, top);
-	ModApiEnvMod::InitializeClient(L, top);
+	ModApiEnv::InitializeClient(L, top);
 	ModApiChannels::Initialize(L, top);
 	ModApiParticlesLocal::Initialize(L, top);
 	ModApiClientSound::Initialize(L, top);

@@ -112,7 +112,7 @@ void ServerScripting::initAsync()
 	asyncEngine.registerStateInitializer(InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiCraft::InitializeAsync);
-	asyncEngine.registerStateInitializer(ModApiItemMod::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiItem::InitializeAsync);
 	asyncEngine.registerStateInitializer(ModApiServer::InitializeAsync);
 	// not added: ModApiMapgen is a minefield for thread safety
 	// not added: ModApiHttp async api can't really work together with our jobs
@@ -158,9 +158,9 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	// Initialize mod api modules
 	ModApiAuth::Initialize(L, top);
 	ModApiCraft::Initialize(L, top);
-	ModApiEnvMod::Initialize(L, top);
+	ModApiEnv::Initialize(L, top);
 	ModApiInventory::Initialize(L, top);
-	ModApiItemMod::Initialize(L, top);
+	ModApiItem::Initialize(L, top);
 	ModApiMapgen::Initialize(L, top);
 	ModApiParticles::Initialize(L, top);
 	ModApiRollback::Initialize(L, top);
