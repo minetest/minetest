@@ -10,6 +10,9 @@ local function do_tests()
 	assert(not core.object_refs)
 	-- stuff that should be here
 	assert(ItemStack)
+	local meta = ItemStack():get_meta()
+	assert(type(meta) == "userdata")
+	assert(type(meta.set_tool_capabilities) == "function")
 	assert(core.registered_items[""])
 	-- alias handling
 	assert(core.registered_items["unittests:steel_ingot_alias"].name ==

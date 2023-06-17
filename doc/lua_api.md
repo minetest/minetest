@@ -6454,6 +6454,7 @@ This allows you easy interoperability for delegating work to jobs.
 ### List of APIs available in an async environment
 
 Classes:
+* `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
