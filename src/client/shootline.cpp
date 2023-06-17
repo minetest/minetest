@@ -30,7 +30,7 @@ Shootline::Shootline(const core::line3d<f32> &shootline)
 	m_dir_ortho2 = m_dir.crossProduct(m_dir_ortho1);
 }
 
-bool Shootline::hitsSelectionBox(
+bool Shootline::mayHitSelectionBox(
 		const v3f &pos_diff, f32 dist, f32 selection_box_radius) const
 {
 	// backward- and far-plane

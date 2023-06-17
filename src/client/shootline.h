@@ -26,7 +26,7 @@ class Shootline
 public:
 	Shootline(const core::line3d<f32> &shootline);
 
-	bool hitsSelectionBox(const v3f &pos_diff, f32 dist, f32 selection_box_radius) const;
+	bool mayHitSelectionBox(const v3f &pos_diff, f32 dist, f32 selection_box_radius) const;
 
 	const v3f &getDir() const { return m_dir; }
 	const core::line3d<f32> &getLine() const { return m_line; }

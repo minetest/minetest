@@ -76,7 +76,7 @@ void ClientActiveObject::selectIfInRange(const Shootline &shootline,
 
 	f32 d = shootline.getDir().dotProduct(pos_diff);
 
-	if (shootline.hitsSelectionBox(pos_diff, d, selection_box_radius)) {
+	if (shootline.mayHitSelectionBox(pos_diff, d, selection_box_radius)) {
 		dest.emplace_back(this, d);
 	}
 }
