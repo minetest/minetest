@@ -305,9 +305,9 @@ std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 	};
 	std::vector<video::E_DRIVER_TYPE> drivers;
 
-	for (u32 i = 0; i < ARRLEN(glDrivers); i++) {
-		if (IrrlichtDevice::isDriverSupported(glDrivers[i]))
-			drivers.push_back(glDrivers[i]);
+	for (video::E_DRIVER_TYPE driver: glDrivers) {
+		if (IrrlichtDevice::isDriverSupported(driver))
+			drivers.push_back(driver);
 	}
 
 	return drivers;
