@@ -65,6 +65,28 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 }
 
 
+static video::E_DRIVER_TYPE chooseVideoDriver()
+{
+	auto &&configured_name = g_settings->get("video_driver");
+	auto &&drivers = RenderingEngine::getSupportedVideoDrivers();
+	for (auto driver: drivers) {
+		auto &&info = RenderingEngine::getVideoDriverInfo(driver);
+		if (!strcasecmp(configured_name.c_str(), info.name.c_str()))
+			return driver;
+	}
+
+	auto fallback_driver = drivers.at(0);
+	auto &&fallback_name = RenderingEngine::getVideoDriverInfo(fallback_driver).name;
+
+	if (!configured_name.empty())
+		errorstream << "Invalid video_driver specified: " << configured_name <<
+				"; defaulting to " << fallback_name << std::endl;
+	else
+		infostream << "Defaulting to video_driver = " << fallback_name << std::endl;
+
+	return fallback_driver;
+}
+
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {
 	sanity_check(!s_singleton);
@@ -85,28 +107,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-	video::E_DRIVER_TYPE driverType;
-	const std::string &driverstring = g_settings->get("video_driver");
-	std::vector<video::E_DRIVER_TYPE> drivers =
-			RenderingEngine::getSupportedVideoDrivers();
-	u32 i;
-	for (i = 0; i != drivers.size(); i++) {
-		auto &driverinfo = RenderingEngine::getVideoDriverInfo(drivers[i]);
-		if (!strcasecmp(driverstring.c_str(), driverinfo.name.c_str())) {
-			driverType = drivers[i];
-			break;
-		}
-	}
-	if (i == drivers.size()) {
-		driverType = drivers.at(0);
-		auto &name = RenderingEngine::getVideoDriverInfo(driverType).name;
-		if (driverstring.empty()) {
-			infostream << "Defaulting to video_driver = " << name << std::endl;
-		} else {
-			errorstream << "Invalid video_driver specified; defaulting to "
-				<< name << std::endl;
-		}
-	}
+	video::E_DRIVER_TYPE driverType = chooseVideoDriver();
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	if (tracestream)
