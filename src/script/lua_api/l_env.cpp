@@ -541,7 +541,7 @@ int ModApiEnvMod::l_set_node_level(lua_State *L)
 		level = lua_tonumber(L, 2);
 	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.setLevel(env->getGameDef()->ndef(), level));
-	env->setNode(pos, n);
+	env->swapNode(pos, n);
 	return 1;
 }
 
@@ -558,7 +558,7 @@ int ModApiEnvMod::l_add_node_level(lua_State *L)
 		level = lua_tonumber(L, 2);
 	MapNode n = env->getMap().getNode(pos);
 	lua_pushnumber(L, n.addLevel(env->getGameDef()->ndef(), level));
-	env->setNode(pos, n);
+	env->swapNode(pos, n);
 	return 1;
 }
 
