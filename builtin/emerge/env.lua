@@ -4,15 +4,16 @@
 -- core.vmanip = <VoxelManip> -- set by C++
 
 function core.set_node(pos, node)
-	core.vmanip:set_node_at(pos, node)
-	return true
+	return core.vmanip:set_node_at(pos, node)
 end
 
 function core.bulk_set_node(pos_list, node)
 	local vm = core.vmanip
 	local set_node_at = vm.set_node_at
 	for _, pos in ipairs(pos_list) do
-		set_node_at(vm, pos, node)
+		if not set_node_at(vm, pos, node) then
+			return false
+		end
 	end
 	return true
 end
@@ -23,8 +24,7 @@ core.add_node = core.set_node
 core.swap_node = core.set_node
 
 function core.remove_node(pos)
-	core.vmanip:set_node_at(pos, {name="air"})
-	return true
+	return core.vmanip:set_node_at(pos, {name="air"})
 end
 
 function core.get_node(pos)

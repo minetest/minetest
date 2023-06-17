@@ -154,9 +154,8 @@ int LuaVoxelManip::l_set_node_at(lua_State *L)
 	v3s16 pos        = check_v3s16(L, 2);
 	MapNode n        = readnode(L, 3);
 
-	o->vm->setNodeNoEmerge(pos, n);
-
-	return 0;
+	lua_pushboolean(L, o->vm->setNodeNoEmerge(pos, n));
+	return 1;
 }
 
 int LuaVoxelManip::l_update_liquids(lua_State *L)
