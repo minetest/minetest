@@ -22,6 +22,7 @@ vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo 
 - `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 - `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.
 - `gmp` and `jsoncpp` are optional, otherwise the bundled versions will be compiled
+- `gettext` is optional, but required to use translations.
 
 There are other optional libraries, but they are not tested if they can build and link correctly.
 
