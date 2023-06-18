@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-06-04 12:47+0000\n"
-"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2023-06-19 10:48+0000\n"
+"Last-Translator: Application-maker <max.gouliaev.2010@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3377,12 +3377,17 @@ msgid "Enable Raytraced Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable automatic exposure correction\n"
 "When enabled, the post-processing engine will\n"
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Включить автоматическую коррекцию экспозиции\n"
+"Если эта функция включена, механизм постобработки будет\n"
+"автоматически подстраиваться под яркость сцены,\n"
+"имитируя поведение человеческого глаза."
 
 #: src/settings_translation_file.cpp
 msgid ""
