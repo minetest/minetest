@@ -199,10 +199,12 @@ return {
 		local LABEL_BTN_H = 0.5
 
 		local fs = {
-			"scroll_container[5.5,0.1;", tostring(9.9 - SCROLLBAR_W), ",6.9;scroll_credits;vertical;",
-			tostring(scroll_height / 1000), "]", credit_fs,
+			("scroll_container[5.5,0.1;%f,6.9;scroll_credits;vertical;%f]"):format(
+					9.9 - SCROLLBAR_W, scroll_height / 1000),
+			credit_fs,
 			"scroll_container_end[]",
-			"scrollbar[", tostring(15.4 - SCROLLBAR_W), ",0.1;", SCROLLBAR_W, ",6.9;vertical;scroll_credits;0]",
+			("scrollbar[%f,0.1;%f,6.9;vertical;scroll_credits;0]"):format(
+					15.4 - SCROLLBAR_W, SCROLLBAR_W),
 		}
 
 		-- Place the content of the left half from bottom to top.
