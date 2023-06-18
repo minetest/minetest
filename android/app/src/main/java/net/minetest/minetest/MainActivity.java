@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 		mProgressBar = findViewById(R.id.progressBar);
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
-		checkAppVersion()
+		checkAppVersion();
 
 	}
 	private void checkAppVersion() {
