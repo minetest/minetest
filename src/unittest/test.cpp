@@ -251,7 +251,7 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
-	return num_modules_failed;
+	return num_modules_failed == 0;
 }
 
 ////
