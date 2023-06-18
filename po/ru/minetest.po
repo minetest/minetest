@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-06-19 10:48+0000\n"
-"Last-Translator: Application-maker <max.gouliaev.2010@gmail.com>\n"
+"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -6605,11 +6605,11 @@ msgstr "Сетевой адрес обновления информации"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
-msgstr "Верхний лимит Y для подземелий."
+msgstr "Верхний предел Y для подземелий."
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of floatlands."
-msgstr "Верхний лимит Y для парящих островов."
+msgstr "Верхний предел Y для парящих островов."
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
