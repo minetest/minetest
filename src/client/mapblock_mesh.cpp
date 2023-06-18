@@ -38,10 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(Client *client, bool use_shaders):
-	m_mesh_grid(client->getMeshGrid()),
-	side_length(MAP_BLOCKSIZE * m_mesh_grid.cell_size),
-	m_client(client),
+MeshMakeData::MeshMakeData(const NodeDefManager *ndef, u16 side_length, bool use_shaders):
+	side_length(side_length),
+	nodedef(ndef),
 	m_use_shaders(use_shaders)
 {}
 
@@ -147,7 +146,7 @@ u16 getFaceLight(MapNode n, MapNode n2, const NodeDefManager *ndef)
 static u16 getSmoothLightCombined(const v3s16 &p,
 	const std::array<v3s16,8> &dirs, MeshMakeData *data)
 {
-	const NodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->nodedef;
 
 	u16 ambient_occlusion = 0;
 	u16 light_count = 0;
@@ -360,7 +359,7 @@ static const v3s16 vertex_dirs_table[] = {
 */
 void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
-	const NodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->nodedef;
 	const ContentFeatures &f = ndef->get(mn);
 	tile = f.tiles[tileindex];
 	bool has_crack = p == data->m_crack_pos_relative;
@@ -380,7 +379,7 @@ void getNodeTileN(MapNode mn, const v3s16 &p, u8 tileindex, MeshMakeData *data, 
 */
 void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *data, TileSpec &tile)
 {
-	const NodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->nodedef;
 
 	// Direction must be (1,0,0), (-1,0,0), (0,1,0), (0,-1,0),
 	// (0,0,1), (0,0,-1) or (0,0,0)
@@ -635,9 +634,9 @@ void PartialMeshBuffer::afterDraw() const
 	MapBlockMesh
 */
 
-MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
-	m_tsrc(data->m_client->getTextureSource()),
-	m_shdrsrc(data->m_client->getShaderSource()),
+MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offset):
+	m_tsrc(client->getTextureSource()),
+	m_shdrsrc(client->getShaderSource()),
 	m_bounding_sphere_center((data->side_length * 0.5f - 0.5f) * BS),
 	m_animation_force_timer(0), // force initial animation
 	m_last_crack(-1),
@@ -648,26 +647,27 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
 
+	auto mesh_grid = client->getMeshGrid();
 	v3s16 bp = data->m_blockpos;
 	// Only generate minimap mapblocks at even coordinates.
-	if (data->m_mesh_grid.isMeshPos(bp) && data->m_client->getMinimap()) {
-		m_minimap_mapblocks.resize(data->m_mesh_grid.getCellVolume(), nullptr);
+	if (mesh_grid.isMeshPos(bp) && client->getMinimap()) {
+		m_minimap_mapblocks.resize(mesh_grid.getCellVolume(), nullptr);
 		v3s16 ofs;
 
 		// See also client.cpp for the code that reads the array of minimap blocks.
-		for (ofs.Z = 0; ofs.Z < data->m_mesh_grid.cell_size; ofs.Z++)
-		for (ofs.Y = 0; ofs.Y < data->m_mesh_grid.cell_size; ofs.Y++)
-		for (ofs.X = 0; ofs.X < data->m_mesh_grid.cell_size; ofs.X++) {
+		for (ofs.Z = 0; ofs.Z < mesh_grid.cell_size; ofs.Z++)
+		for (ofs.Y = 0; ofs.Y < mesh_grid.cell_size; ofs.Y++)
+		for (ofs.X = 0; ofs.X < mesh_grid.cell_size; ofs.X++) {
 			v3s16 p = (bp + ofs) * MAP_BLOCKSIZE;
 			if (data->m_vmanip.getNodeNoEx(p).getContent() != CONTENT_IGNORE) {
 				MinimapMapblock *block = new MinimapMapblock;
-				m_minimap_mapblocks[data->m_mesh_grid.getOffsetIndex(ofs)] = block;
+				m_minimap_mapblocks[mesh_grid.getOffsetIndex(ofs)] = block;
 				block->getMinimapNodes(&data->m_vmanip, p);
 			}
 		}
 	}
 
-	v3f offset = intToFloat((data->m_blockpos - data->m_mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
+	v3f offset = intToFloat((data->m_blockpos - mesh_grid.getMeshPos(data->m_blockpos)) * MAP_BLOCKSIZE, BS);
 	MeshCollector collector(m_bounding_sphere_center, offset);
 	/*
 		Add special graphics:
@@ -679,7 +679,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	{
 		MapblockMeshGenerator(data, &collector,
-			data->m_client->getSceneManager()->getMeshManipulator()).generate();
+			client->getSceneManager()->getMeshManipulator()).generate();
 	}
 
 	/*
@@ -1011,7 +1011,7 @@ u8 get_solid_sides(MeshMakeData *data)
 	std::unordered_map<v3s16, u8> results;
 	v3s16 ofs;
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
-	const NodeDefManager *ndef = data->m_client->ndef();
+	const NodeDefManager *ndef = data->nodedef;
 
 	u8 result = 0x3F; // all sides solid;
 

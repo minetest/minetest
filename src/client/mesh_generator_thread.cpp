@@ -189,16 +189,17 @@ void MeshUpdateQueue::done(v3s16 pos)
 
 void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 {
-	MeshMakeData *data = new MeshMakeData(m_client, m_cache_enable_shaders);
+	auto mesh_grid = m_client->getMeshGrid();
+	MeshMakeData *data = new MeshMakeData(m_client->ndef(), MAP_BLOCKSIZE * mesh_grid.cell_size, m_cache_enable_shaders);
 	q->data = data;
 
 	data->fillBlockDataBegin(q->p);
 
 	v3s16 pos;
 	int i = 0;
-	for (pos.X = q->p.X - 1; pos.X <= q->p.X + data->m_mesh_grid.cell_size; pos.X++)
-	for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + data->m_mesh_grid.cell_size; pos.Z++)
-	for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + data->m_mesh_grid.cell_size; pos.Y++) {
+	for (pos.X = q->p.X - 1; pos.X <= q->p.X + mesh_grid.cell_size; pos.X++)
+	for (pos.Z = q->p.Z - 1; pos.Z <= q->p.Z + mesh_grid.cell_size; pos.Z++)
+	for (pos.Y = q->p.Y - 1; pos.Y <= q->p.Y + mesh_grid.cell_size; pos.Y++) {
 		MapBlock *block = q->map_blocks[i++];
 		data->fillBlockData(pos, block ? block->getData() : block_placeholder.data);
 	}
@@ -211,8 +212,8 @@ void MeshUpdateQueue::fillDataFromMapBlocks(QueuedMeshUpdate *q)
 	MeshUpdateWorkerThread
 */
 
-MeshUpdateWorkerThread::MeshUpdateWorkerThread(MeshUpdateQueue *queue_in, MeshUpdateManager *manager, v3s16 *camera_offset) :
-		UpdateThread("Mesh"), m_queue_in(queue_in), m_manager(manager), m_camera_offset(camera_offset)
+MeshUpdateWorkerThread::MeshUpdateWorkerThread(Client *client, MeshUpdateQueue *queue_in, MeshUpdateManager *manager, v3s16 *camera_offset) :
+		UpdateThread("Mesh"), m_client(client), m_queue_in(queue_in), m_manager(manager), m_camera_offset(camera_offset)
 {
 	m_generation_interval = g_settings->getU16("mesh_generation_interval");
 	m_generation_interval = rangelim(m_generation_interval, 0, 50);
@@ -226,7 +227,7 @@ void MeshUpdateWorkerThread::doUpdate()
 			sleep_ms(m_generation_interval);
 		ScopeProfiler sp(g_profiler, "Client: Mesh making (sum)");
 
-		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, *m_camera_offset);
+		MapBlockMesh *mesh_new = new MapBlockMesh(m_client, q->data, *m_camera_offset);
 
 
 
@@ -262,7 +263,7 @@ MeshUpdateManager::MeshUpdateManager(Client *client):
 	infostream << "MeshUpdateManager: using " << number_of_threads << " threads" << std::endl;
 
 	for (int i = 0; i < number_of_threads; i++)
-		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(&m_queue_in, this, &m_camera_offset));
+		m_workers.push_back(std::make_unique<MeshUpdateWorkerThread>(client, &m_queue_in, this, &m_camera_offset));
 }
 
 void MeshUpdateManager::updateBlock(Map *map, v3s16 p, bool ack_block_to_server,

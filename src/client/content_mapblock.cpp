@@ -77,7 +77,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 		scene::IMeshManipulator *mm):
 	data(input),
 	collector(output),
-	nodedef(data->m_client->ndef()),
+	nodedef(data->nodedef),
 	meshmanip(mm),
 	blockpos_nodes(data->m_blockpos * MAP_BLOCKSIZE),
 	enable_mesh_cache(g_settings->getBool("enable_mesh_cache") &&
