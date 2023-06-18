@@ -226,12 +226,12 @@ bool run_tests()
 	u32 num_total_tests_failed = 0;
 	u32 num_total_tests_run    = 0;
 	std::vector<TestBase *> &testmods = TestManager::getTestModules();
-	for (size_t i = 0; i != testmods.size(); i++) {
-		if (!testmods[i]->testModule(&gamedef))
+	for (auto *testmod: testmods) {
+		if (!testmod->testModule(&gamedef))
 			num_modules_failed++;
 
-		num_total_tests_failed += testmods[i]->num_tests_failed;
-		num_total_tests_run += testmods[i]->num_tests_run;
+		num_total_tests_failed += testmod->num_tests_failed;
+		num_total_tests_run += testmod->num_tests_run;
 	}
 
 	u64 tdiff = porting::getTimeMs() - t1;
