@@ -446,10 +446,8 @@ local function get_formspec(dialogdata)
 		height = TOUCHSCREEN_GUI and (10 - extra_h) or 12,
 	}
 
-	local scrollbar_w = TOUCHSCREEN_GUI and 0.6 or 0.4
-
 	local left_pane_width = TOUCHSCREEN_GUI and 4.5 or 4.25
-	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
+	local search_width = left_pane_width + SCROLLBAR_W - (0.75 * 2)
 
 	local technical_names_w = TOUCHSCREEN_GUI and 6 or 5
 	local show_technical_names = core.settings:get_bool("show_technical_names")
@@ -516,7 +514,7 @@ local function get_formspec(dialogdata)
 	if y >= tabsize.height - 1.25 then
 		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height - 1.5, y, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,1.25;%f,%f;vertical;leftscroll;%f]"):format(
-				left_pane_width + 0.25, scrollbar_w, tabsize.height - 1.5, dialogdata.leftscroll or 0)
+				left_pane_width + 0.25, SCROLLBAR_W, tabsize.height - 1.5, dialogdata.leftscroll or 0)
 	end
 
 	fs[#fs + 1] = "style_type[button;border=;bgcolor=]"
@@ -525,9 +523,9 @@ local function get_formspec(dialogdata)
 		dialogdata.components = page and build_page_components(page) or {}
 	end
 
-	local right_pane_width = tabsize.width - left_pane_width - 0.375 - 2*scrollbar_w - 0.25
+	local right_pane_width = tabsize.width - left_pane_width - 0.375 - 2*SCROLLBAR_W - 0.25
 	fs[#fs + 1] = ("scroll_container[%f,0;%f,%f;rightscroll;vertical;0.1]"):format(
-			tabsize.width - right_pane_width - scrollbar_w, right_pane_width, tabsize.height)
+			tabsize.width - right_pane_width - SCROLLBAR_W, right_pane_width, tabsize.height)
 
 	y = 0.25
 	for i, comp in ipairs(dialogdata.components) do
@@ -584,7 +582,7 @@ local function get_formspec(dialogdata)
 	if y >= tabsize.height then
 		fs[#fs + 1] = make_scrollbaroptions_for_scroll_container(tabsize.height, y + 0.375, 0.1)
 		fs[#fs + 1] = ("scrollbar[%f,0;%f,%f;vertical;rightscroll;%f]"):format(
-				tabsize.width - scrollbar_w, scrollbar_w, tabsize.height, dialogdata.rightscroll or 0)
+				tabsize.width - SCROLLBAR_W, SCROLLBAR_W, tabsize.height, dialogdata.rightscroll or 0)
 	end
 
 	return table.concat(fs, "")

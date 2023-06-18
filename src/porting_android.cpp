@@ -195,16 +195,16 @@ void openURIAndroid(const std::string &url)
 	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
 }
 
-void shareFileAndroid(const std::string &path)
+void shareTextAndroid(const std::string &text)
 {
-	jmethodID url_open = jnienv->GetMethodID(nativeActivity, "shareFile",
+	jmethodID j_share_text = jnienv->GetMethodID(nativeActivity, "shareText",
 			"(Ljava/lang/String;)V");
 
-	FATAL_ERROR_IF(url_open == nullptr,
-			"porting::shareFileAndroid unable to find Java shareFile method");
+	FATAL_ERROR_IF(j_share_text == nullptr,
+			"porting::shareTextAndroid unable to find Java shareText method");
 
-	jstring jurl = jnienv->NewStringUTF(path.c_str());
-	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
+	jstring j_text = jnienv->NewStringUTF(text.c_str());
+	jnienv->CallVoidMethod(app_global->activity->clazz, j_share_text, j_text);
 }
 
 int getInputDialogState()
@@ -261,7 +261,7 @@ v2u32 getDisplaySize()
 				"getDisplayWidth", "()I");
 
 		FATAL_ERROR_IF(getDisplayWidth == nullptr,
-			"porting::getDisplayWidth unable to find Java getDisplayWidth method");
+			"porting::getDisplaySize unable to find Java getDisplayWidth method");
 
 		retval.X = jnienv->CallIntMethod(app_global->activity->clazz,
 				getDisplayWidth);
@@ -270,7 +270,7 @@ v2u32 getDisplaySize()
 				"getDisplayHeight", "()I");
 
 		FATAL_ERROR_IF(getDisplayHeight == nullptr,
-			"porting::getDisplayHeight unable to find Java getDisplayHeight method");
+			"porting::getDisplaySize unable to find Java getDisplayHeight method");
 
 		retval.Y = jnienv->CallIntMethod(app_global->activity->clazz,
 				getDisplayHeight);

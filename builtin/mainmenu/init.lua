@@ -23,6 +23,8 @@ mt_color_dark_green = "#25C191"
 mt_color_orange  = "#FF8800"
 mt_color_red = "#FF3300"
 
+SCROLLBAR_W = TOUCHSCREEN_GUI and 0.6 or 0.4
+
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..

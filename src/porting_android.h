@@ -60,11 +60,11 @@ void showInputDialog(const std::string &acceptButton,
 void openURIAndroid(const std::string &url);
 
 /**
- * Opens a share intent to the file at path
+ * Opens a share intent for the given text
  *
  * @param path
  */
-void shareFileAndroid(const std::string &path);
+void shareTextAndroid(const std::string &text);
 
 /**
  * WORKAROUND for not working callbacks from java -> c++

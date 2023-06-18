@@ -1011,11 +1011,19 @@ int ModApiMainMenu::l_open_dir(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_share_file(lua_State *L)
+int ModApiMainMenu::l_copy_text(lua_State *L)
+{
+	const char *text = luaL_checkstring(L, 1);
+	RenderingEngine::get_raw_device()->getOSOperator()->copyToClipboard(text);
+	return 0;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_share_text(lua_State *L)
 {
 #ifdef __ANDROID__
-	std::string path = luaL_checkstring(L, 1);
-	porting::shareFileAndroid(path);
+	std::string text = luaL_checkstring(L, 1);
+	porting::shareTextAndroid(text);
 	lua_pushboolean(L, true);
 #else
 	lua_pushboolean(L, false);
@@ -1130,7 +1138,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);
 	API_FCT(open_dir);
-	API_FCT(share_file);
+	API_FCT(copy_text);
+	API_FCT(share_text);
 	API_FCT(do_async_callback);
 	API_FCT(set_once);
 	API_FCT(get_once);

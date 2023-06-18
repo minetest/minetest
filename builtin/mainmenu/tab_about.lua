@@ -119,9 +119,40 @@ local function build_hacky_list(items, spacing)
 	return table.concat(ret, ""), y
 end
 
+local function read_text_file(path)
+	local f = io.open(path, "r")
+	if not f then
+		return nil
+	end
+    local text = f:read("*all")
+    f:close()
+	return text
+end
+
+local function collect_debug_info()
+	local version = core.get_version()
+	local path_pre = core.get_user_path() .. DIR_DELIM
+	local minetest_conf = read_text_file(path_pre .. "minetest.conf") or "[not available]\n"
+	local debug_txt = read_text_file(path_pre .. "debug.txt") or "[not available]\n"
+
+	return table.concat({
+		version.project, " ", (version.hash or version.string), "\n",
+		"Platform: ", PLATFORM, "\n",
+		"Active Irrlicht device: ", core.get_active_irrlicht_device(), "\n",
+		"Active renderer: ", core.get_active_renderer(), "\n\n",
+		"minetest.conf\n",
+		"-------------\n",
+		minetest_conf, "\n",
+		"debug.txt\n",
+		"---------\n",
+		debug_txt,
+	})
+end
+
 return {
 	name = "about",
 	caption = fgettext("About"),
+
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
@@ -161,49 +192,67 @@ return {
 		-- account for the visible portion
 		scroll_height = math.max(0, scroll_height - 6.9)
 
-		local fs = "image[1.5,0.6;2.5,2.5;" .. core.formspec_escape(logofile) .. "]" ..
-			"style[label_button;border=false]" ..
-			"button[0.1,3.4;5.3,0.5;label_button;" ..
-			core.formspec_escape(version.project .. " " .. version.string) .. "]" ..
-			"button[1.5,4.1;2.5,0.8;homepage;minetest.net]" ..
-			"scroll_container[5.5,0.1;9.5,6.9;scroll_credits;vertical;" ..
-			tostring(scroll_height / 1000) .. "]" .. credit_fs ..
-			"scroll_container_end[]"..
-			"scrollbar[15,0.1;0.4,6.9;vertical;scroll_credits;0]"
+		local TAB_H = 7.1
+		local TAB_PADDING = 0.5
+		local LOGO_SIZE = 2.5
+		local BTN_H = 0.8
+		local LABEL_BTN_H = 0.5
 
-		-- Render information
-		local active_renderer_info = fgettext("Active renderer:") .. " " ..
-			core.formspec_escape(core.get_active_renderer())
-		fs = fs .. "style[label_button2;border=false]" ..
-			"button[0.1,6;5.3,0.5;label_button2;" .. active_renderer_info .. "]"..
-			"tooltip[label_button2;" .. active_renderer_info .. "]"
+		local fs = {
+			"scroll_container[5.5,0.1;", tostring(9.9 - SCROLLBAR_W), ",6.9;scroll_credits;vertical;",
+			tostring(scroll_height / 1000), "]", credit_fs,
+			"scroll_container_end[]",
+			"scrollbar[", tostring(15.4 - SCROLLBAR_W), ",0.1;", SCROLLBAR_W, ",6.9;vertical;scroll_credits;0]",
+		}
 
-		-- Irrlicht device information
-		local irrlicht_device_info = fgettext("Irrlicht device:") .. " " ..
-			core.formspec_escape(core.get_active_irrlicht_device())
-		fs = fs .. "style[label_button3;border=false]" ..
-			"button[0.1,6.5;5.3,0.5;label_button3;" .. irrlicht_device_info .. "]"..
-			"tooltip[label_button3;" .. irrlicht_device_info .. "]"
+		-- Place the content of the left half from bottom to top.
+		local pos_y = TAB_H - TAB_PADDING
+		local show_userdata_btn = PLATFORM ~= "Android"
 
-		if PLATFORM == "Android" then
-			fs = fs .. "button[0.5,5.1;4.5,0.8;share_debug;" .. fgettext("Share debug log") .. "]"
-		else
-			fs = fs .. "tooltip[userdata;" ..
+		if show_userdata_btn then
+			pos_y = pos_y - BTN_H
+			fs[#fs + 1] = "tooltip[userdata;" ..
 					fgettext("Opens the directory that contains user-provided worlds, games, mods,\n" ..
 							"and texture packs in a file manager / explorer.") .. "]"
-			fs = fs .. "button[0.5,5.1;4.5,0.8;userdata;" .. fgettext("Open User Data Directory") .. "]"
+			fs[#fs + 1] = ("button[0.5,%f;4.5,%f;userdata;%s]"):format(
+					pos_y, BTN_H, fgettext("Open user data directory"))
+			pos_y = pos_y - 0.1
 		end
 
-		return fs
+		pos_y = pos_y - BTN_H
+		local debug_label = PLATFORM == "Android" and fgettext("Share debug info") or
+				fgettext("Copy debug info")
+		fs[#fs + 1] = ("button[0.5,%f;4.5,%f;share_debug;%s]"):format(pos_y, BTN_H, debug_label)
+		pos_y = pos_y - (show_userdata_btn and 0.25 or 0.15)
+
+		pos_y = pos_y - BTN_H
+		fs[#fs + 1] = ("button[0.5,%f;4.5,%f;homepage;minetest.net]"):format(pos_y, BTN_H)
+		pos_y = pos_y - 0.15
+
+		pos_y = pos_y - LABEL_BTN_H
+		fs[#fs + 1] = "style[label_button;border=false]"
+		fs[#fs + 1] = ("button[0.1,%f;5.3,%f;label_button;%s]"):format(
+				pos_y, LABEL_BTN_H, core.formspec_escape(version.project .. " " .. version.string))
+
+		-- Place the logo in the middle of the remaining space.
+		fs[#fs + 1] = ("image[1.5,%f;%f,%f;%s]"):format(
+				pos_y / 2 - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE, core.formspec_escape(logofile))
+
+		return table.concat(fs, "")
 	end,
+
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then
 			core.open_url("https://www.minetest.net")
 		end
 
 		if fields.share_debug then
-			local path = core.get_user_path() .. DIR_DELIM .. "debug.txt"
-			core.share_file(path)
+			local info = get_debug_info()
+			if PLATFORM == "Android" then
+				core.share_text(info)
+			else
+				core.copy_text(info)
+			end
 		end
 
 		if fields.userdata then

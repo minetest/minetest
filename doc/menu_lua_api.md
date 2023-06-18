@@ -49,8 +49,10 @@ Functions
 * `core.open_dir(path)`
   * opens the path in the system file browser/explorer, returns false on failure.
   * Must be an existing directory.
-* `core.share_file(path)`
-  * Android only. Shares file using the share popup
+* `core.copy_text(text)`
+  * Copies `text` to the clipboard.
+* `core.share_text(text)`
+  * Android only. Shares `text` using the share popup.
 * `core.get_version()` (possible in async calls)
   * returns current core version
 

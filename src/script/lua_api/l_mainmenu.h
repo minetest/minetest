@@ -60,7 +60,7 @@ private:
 	 */
 	static bool mayModifyPath(std::string path);
 
-	//api calls
+	// api calls
 
 	static int l_start(lua_State *L);
 
@@ -76,7 +76,7 @@ private:
 
 	static int l_gettext(lua_State *L);
 
-	//packages
+	// packages
 
 	static int l_get_games(lua_State *L);
 
@@ -84,7 +84,7 @@ private:
 
 	static int l_check_mod_configuration(lua_State *L);
 
-	//gui
+	// gui
 
 	static int l_show_keys_menu(lua_State *L);
 
@@ -112,7 +112,7 @@ private:
 
 	static int l_get_active_irrlicht_device(lua_State *L);
 
-	//filesystem
+	// filesystem
 
 	static int l_get_mainmenu_path(lua_State *L);
 
@@ -150,7 +150,7 @@ private:
 
 	static int l_get_video_drivers(lua_State *L);
 
-	//version compatibility
+	// version compatibility
 	static int l_get_min_supp_proto(lua_State *L);
 
 	static int l_get_max_supp_proto(lua_State *L);
@@ -160,7 +160,9 @@ private:
 
 	static int l_open_dir(lua_State *L);
 
-	static int l_share_file(lua_State *L);
+	static int l_copy_text(lua_State *L);
+
+	static int l_share_text(lua_State *L);
 
 	static int l_set_once(lua_State *L);
 

@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,9 +34,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Keep;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.FileProvider;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -176,19 +173,10 @@ public class GameActivity extends NativeActivity {
 		return Utils.getCacheDirectory(this).getAbsolutePath();
 	}
 
-	public void shareFile(String path) {
-		File file = new File(path);
-		if (!file.exists()) {
-			Log.e("GameActivity", "File " + file.getAbsolutePath() + " doesn't exist");
-			return;
-		}
-
-		Uri fileUri = FileProvider.getUriForFile(this, "net.minetest.minetest.fileprovider", file);
-
-		Intent intent = new Intent(Intent.ACTION_SEND, fileUri);
-		intent.setDataAndType(fileUri, getContentResolver().getType(fileUri));
-		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+	public void shareText(String text) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_TEXT, text);
 
 		Intent shareIntent = Intent.createChooser(intent, null);
 		startActivity(shareIntent);
