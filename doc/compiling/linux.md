@@ -14,7 +14,7 @@
 | GMP        | 5.0.0+  | Bundled mini-GMP is used if not present                              |
 | JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present                               |
 | Curl       | 7.56.0+ | Optional                                                             |
-| gettext    | 0.21+   | Optional                                                             |
+| gettext    | -       | Optional                                                             |
 
 For Debian/Ubuntu users:
 
