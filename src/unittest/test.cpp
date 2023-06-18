@@ -254,6 +254,48 @@ bool run_tests()
 	return num_modules_failed == 0;
 }
 
+static TestBase *findTestModule(const std::string &module_name) {
+	std::vector<TestBase *> &testmods = TestManager::getTestModules();
+	for (auto *testmod: testmods) {
+		if (module_name == testmod->getName())
+			return testmod;
+	}
+	return nullptr;
+}
+
+bool run_tests(const std::string &module_name)
+{
+	TestGameDef gamedef;
+
+	auto testmod = findTestModule(module_name);
+	if (!testmod) {
+		errorstream << "Test module not found: " << module_name << std::endl;
+		return 1;
+	}
+
+	g_logger.setLevelSilenced(LL_ERROR, true);
+	u64 t1 = porting::getTimeMs();
+
+	bool ok = testmod->testModule(&gamedef);
+
+	u64 tdiff = porting::getTimeMs() - t1;
+	g_logger.setLevelSilenced(LL_ERROR, false);
+
+	const char *overall_status = ok ? "PASSED" : "FAILED";
+
+	rawstream
+		<< "++++++++++++++++++++++++++++++++++++++++"
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
+		<< "Unit Test Results: " << overall_status << std::endl
+		<< "    " << testmod->num_tests_failed << " / "
+		<< testmod->num_tests_run << " failed tests." << std::endl
+		<< "    Testing took " << tdiff << "ms." << std::endl
+		<< "++++++++++++++++++++++++++++++++++++++++"
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
+
+	return ok;
+}
+
 ////
 //// TestBase
 ////
