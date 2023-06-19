@@ -77,8 +77,9 @@ TEST_CASE("test client active object manager")
 			"when we query for it, "
 			"then we should get nullptr.")
 	{
-		caomgr.removeObject(tcao1->getId());
-		CHECK(caomgr.getActiveObject(tcao1->getId()) == nullptr);
+		auto id = tcao1->getId();
+		caomgr.removeObject(tcao1->getId()); // may invalidate tcao1
+		CHECK(caomgr.getActiveObject(id) == nullptr);
 	}
 
 	caomgr.clear();
