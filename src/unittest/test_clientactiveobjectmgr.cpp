@@ -41,7 +41,7 @@ TEST_CASE("test client active object manager")
 	{
 		for (int i = 0; i < UINT8_MAX; ++i) {
 			auto other_tcao = new TestClientActiveObject();
-			caomgr.registerObject(other_tcao);
+			REQUIRE(caomgr.registerObject(other_tcao) == true);
 			CHECK(other_tcao->getId() != tcao1->getId());
 		}
 	}
