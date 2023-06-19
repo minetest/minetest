@@ -28,7 +28,6 @@ class TestServerActiveObjectMgr;
 template <typename T>
 class ActiveObjectMgr
 {
-	friend class ::TestClientActiveObjectMgr;
 	friend class ::TestServerActiveObjectMgr;
 
 public:
@@ -61,5 +60,5 @@ protected:
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}
 
-	std::map<u16, T *> m_active_objects; // ordered to fix #10985 
+	std::map<u16, T *> m_active_objects; // ordered to fix #10985
 };

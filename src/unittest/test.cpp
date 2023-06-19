@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#define CATCH_CONFIG_RUNNER
+#include <catch.hpp>
+
 #include "test.h"
 
 #include "client/sound.h"
@@ -251,6 +254,8 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
+	rawstream << "Catch test results: " << std::endl;
+	Catch::Session().run();
 	return num_modules_failed;
 }
 
