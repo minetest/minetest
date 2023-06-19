@@ -28,6 +28,8 @@ gtags.files
 # Visual Studio Code & plugins
 .vscode/
 build/.cmake/
+# Fleet
+.fleet
 # Gradle
 .gradle
 # Clang
