@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrTypes.h"
+#include "irrlichttypes_bloated.h"
 #ifndef SERVER
 #include "settings.h"
 #include "client/renderingengine.h"
@@ -41,7 +41,7 @@ public:
 	}
 
 #ifndef SERVER
-	static const ClientDynamicInfo getCurrent() {
+	static ClientDynamicInfo getCurrent() {
 		v2u32 screen_size = RenderingEngine::getWindowSize();
 		f32 density = RenderingEngine::getDisplayDensity();
 		f32 gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
