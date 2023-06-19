@@ -17,11 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "client/activeobjectmgr.h"
-#include <algorithm>
 #include "test.h"
 
-#include "profiler.h"
+#include "client/activeobjectmgr.h"
+
+#include <catch.hpp>
 
 class TestClientActiveObject : public ClientActiveObject
 {
@@ -58,9 +58,6 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testFreeID();
-	void testRegisterObject();
-	void testRemoveObject();
 	void testGetActiveSelectableObjects();
 };
 
@@ -68,75 +65,62 @@ static TestClientActiveObjectMgr g_test_instance;
 
 void TestClientActiveObjectMgr::runTests(IGameDef *gamedef)
 {
-	TEST(testFreeID);
-	TEST(testRegisterObject)
-	TEST(testRemoveObject)
 	TEST(testGetActiveSelectableObjects)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void TestClientActiveObjectMgr::testFreeID()
+TEST_CASE("test client active object manager")
 {
 	client::ActiveObjectMgr caomgr;
-	std::vector<u16> aoids;
+	auto tcao1 = new TestClientActiveObject();
+	REQUIRE(caomgr.registerObject(tcao1) == true);
 
-	u16 aoid = caomgr.getFreeId();
-	// Ensure it's not the same id
-	UASSERT(caomgr.getFreeId() != aoid);
-
-	aoids.push_back(aoid);
-
-	// Register basic objects, ensure we never found
-	for (u8 i = 0; i < UINT8_MAX; i++) {
-		// Register an object
-		auto tcao_u = std::make_unique<TestClientActiveObject>();
-		auto tcao = tcao_u.get();
-		caomgr.registerObject(std::move(tcao_u));
-		aoids.push_back(tcao->getId());
-
-		// Ensure next id is not in registered list
-		UASSERT(std::find(aoids.begin(), aoids.end(), caomgr.getFreeId()) ==
-				aoids.end());
+	SECTION("When we register a client object, "
+			"then it should be assigned a unique ID.")
+	{
+		for (int i = 0; i < UINT8_MAX; ++i) {
+			auto other_tcao = new TestClientActiveObject();
+			REQUIRE(caomgr.registerObject(other_tcao) == true);
+			CHECK(other_tcao->getId() != tcao1->getId());
+		}
 	}
 
-	caomgr.clear();
-}
+	SECTION("two registered objects")
+	{
+		auto tcao2 = new TestClientActiveObject();
+		REQUIRE(caomgr.registerObject(tcao2) == true);
+		auto tcao2_id = tcao2->getId();
 
-void TestClientActiveObjectMgr::testRegisterObject()
-{
-	client::ActiveObjectMgr caomgr;
-	auto tcao_u = std::make_unique<TestClientActiveObject>();
-	auto tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
+		auto obj1 = caomgr.getActiveObject(tcao1->getId());
+		REQUIRE(obj1 != nullptr);
 
-	u16 id = tcao->getId();
+		auto obj2 = caomgr.getActiveObject(tcao2_id);
+		REQUIRE(obj2 != nullptr);
 
-	auto tcaoToCompare = caomgr.getActiveObject(id);
-	UASSERT(tcaoToCompare->getId() == id);
-	UASSERT(tcaoToCompare == tcao);
+		SECTION("When we query an object by its ID, "
+				"then we should get back an object with that ID.")
+		{
+			CHECK(obj1->getId() == tcao1->getId());
+			CHECK(obj2->getId() == tcao2->getId());
+		}
 
-	tcao_u = std::make_unique<TestClientActiveObject>();
-	tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
-	UASSERT(caomgr.getActiveObject(tcao->getId()) == tcao);
-	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
+		SECTION("When we register and query for an object, "
+				"its memory location should not have changed.")
+		{
+			CHECK(obj1 == tcao1);
+			CHECK(obj2 == tcao2);
+		}
+	}
 
-	caomgr.clear();
-}
-
-void TestClientActiveObjectMgr::testRemoveObject()
-{
-	client::ActiveObjectMgr caomgr;
-	auto tcao_u = std::make_unique<TestClientActiveObject>();
-	auto tcao = tcao_u.get();
-	UASSERT(caomgr.registerObject(std::move(tcao_u)));
-
-	u16 id = tcao->getId();
-	UASSERT(caomgr.getActiveObject(id) != nullptr)
-
-	caomgr.removeObject(tcao->getId());
-	UASSERT(caomgr.getActiveObject(id) == nullptr)
+	SECTION("Given an object has been removed, "
+			"when we query for it, "
+			"then we should get nullptr.")
+	{
+		auto id = tcao1->getId();
+		caomgr.removeObject(tcao1->getId()); // may invalidate tcao1
+		CHECK(caomgr.getActiveObject(id) == nullptr);
+	}
 
 	caomgr.clear();
 }

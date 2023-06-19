@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#define CATCH_CONFIG_RUNNER
+#include <catch.hpp>
+
 #include "test.h"
 
 #include "nodedef.h"
@@ -248,7 +251,9 @@ bool run_tests()
 		<< num_total_tests_run << " failed individual tests)." << std::endl
 		<< "    Testing took " << tdiff << "ms total." << std::endl
 		<< "++++++++++++++++++++++++++++++++++++++++"
-		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
+		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
+	        << "Catch test results: " << std::endl;
+	Catch::Session().run();
 
 	return num_modules_failed == 0;
 }
