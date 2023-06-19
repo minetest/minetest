@@ -2,19 +2,19 @@
 
 ## Dependencies
 
-| Dependency | Version | Commentary                                                           |
-| ---------- | ------- | -------------------------------------------------------------------- |
-| GCC        | 7.5+    | or Clang 6.0+                                                        |
-| CMake      | 3.5+    |                                                                      |
+| Dependency | Version | Commentary |
+| ---------- | ------- | ---------- |
+| GCC        | 7.5+    | or Clang 6.0+ |
+| CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
-| Freetype   | 2.0+    |                                                                      |
-| SQLite3    | 3+      |                                                                      |
-| Zstd       | 1.0+    |                                                                      |
-| LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present                               |
-| GMP        | 5.0.0+  | Bundled mini-GMP is used if not present                              |
-| JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present                               |
-| Curl       | 7.56.0+ | Optional                                                             |
-| gettext    | -       | Optional                                                             |
+| Freetype   | 2.0+    |            |
+| SQLite3    | 3+      |            |
+| Zstd       | 1.0+    |            |
+| LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
+| GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
+| JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
+| Curl       | 7.56.0+ | Optional |
+| gettext    | -       | Optional |
 
 For Debian/Ubuntu users:
 
