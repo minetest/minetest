@@ -60,7 +60,7 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	const v3f &sneak_max)
 {
 	// Acceptable distance to node center
-	constexpr f32 allowed_range = (0.5f + 0.1f) * BS;
+	constexpr f32 allowed_range = (0.5f + 0.05f) * BS;
 	static const v3s16 dir9_center[9] = {
 		v3s16( 0, 0,  0),
 		v3s16( 1, 0,  0),
