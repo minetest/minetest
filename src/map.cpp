@@ -1803,8 +1803,11 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			block = block_created_new.get();
 		}
 
+		{
+		ScopeProfiler sp(g_profiler, "ServerMap: deSer block", SPT_AVG);
 		// Read basic data
 		block->deSerialize(is, version, true);
+		}
 
 		// If it's a new block, insert it to the map
 		if (block_created_new) {
@@ -1845,6 +1848,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
+	ScopeProfiler sp(g_profiler, "ServerMap: load block", SPT_AVG);
 	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
