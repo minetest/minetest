@@ -730,10 +730,13 @@ f32 PlayingSound::getGain() noexcept
 void OpenALSoundManager::stepStreams(f32 dtime)
 {
 	// spread work across steps
-	int num_issued_sounds = std::ceil(m_sounds_streaming_current_bigstep.size()
-			* dtime / m_stream_timer);
+	const size_t num_issued_sounds = std::min(
+			m_sounds_streaming_current_bigstep.size(),
+			(size_t)std::ceil(m_sounds_streaming_current_bigstep.size()
+				* dtime / m_stream_timer)
+		);
 
-	for (; num_issued_sounds > 0; --num_issued_sounds) {
+	for (size_t i = 0; i < num_issued_sounds; ++i) {
 		auto wptr = std::move(m_sounds_streaming_current_bigstep.back());
 		m_sounds_streaming_current_bigstep.pop_back();
 
