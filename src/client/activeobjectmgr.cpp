@@ -107,9 +107,9 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 	}
 }
 
-void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootline,
-		std::vector<DistanceSortedActiveObject> &dest)
+std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootline)
 {
+	std::vector<DistanceSortedActiveObject> dest;
 	// Imagine a not-axis-aligned cuboid oriented into the direction of the shootline,
 	// with the width of the object's selection box radius * 2 and with length of the
 	// shootline (+selection box radius forwards and backwards). We check whether
@@ -147,6 +147,7 @@ void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootl
 
 		dest.emplace_back(obj, d);
 	}
+	return dest;
 }
 
 } // namespace client
