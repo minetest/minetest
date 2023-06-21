@@ -54,8 +54,8 @@ typedef enum
 	chat_id,
 	inventory_id,
 	drop_id,
-  exit_id,
-  joystick_off_id,
+	exit_id,
+	joystick_off_id,
 	joystick_bg_id,
 	joystick_center_id
 } touch_gui_button_id;
