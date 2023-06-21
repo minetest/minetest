@@ -3053,7 +3053,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element = nullopt;
+		m_focused_element = std::nullopt;
 	}
 
 	removeAll();
@@ -4376,7 +4376,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					ItemStack slct = list_selected->getItem(m_selected_item->i);
 
-					for (s32 i = 0; i < list_s->getSize(); i++) {
+					for (s32 i = 0; i < (s32)list_s->getSize(); i++) {
 						// Skip the selected slot
 						if (i == m_selected_item->i)
 							continue;
@@ -4556,7 +4556,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// Pickup all of the item from the list
 			if (slct.count > 0) {
-				for (s32 i = 0; i < list_s->getSize(); i++) {
+				for (s32 i = 0; i < (s32)list_s->getSize(); i++) {
 					// Skip the selected slot
 					if (i == s.i)
 						continue;
@@ -4816,7 +4816,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;
@@ -4861,7 +4861,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 
 					s.send = true;
 					if (s.is_exit) {
@@ -4886,7 +4886,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput(quit_mode_no);
 
@@ -4904,7 +4904,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.fdefault.clear();
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;

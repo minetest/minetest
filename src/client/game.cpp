@@ -260,31 +260,25 @@ class SoundMaker
 	const NodeDefManager *m_ndef;
 
 public:
-	bool makes_footstep_sound;
-	float m_player_step_timer;
-	float m_player_jump_timer;
+	bool makes_footstep_sound = true;
+	float m_player_step_timer = 0.0f;
+	float m_player_jump_timer = 0.0f;
 
-	SimpleSoundSpec m_player_step_sound;
-	SimpleSoundSpec m_player_leftpunch_sound;
+	SoundSpec m_player_step_sound;
+	SoundSpec m_player_leftpunch_sound;
 	// Second sound made on left punch, currently used for item 'use' sound
-	SimpleSoundSpec m_player_leftpunch_sound2;
-	SimpleSoundSpec m_player_rightpunch_sound;
+	SoundSpec m_player_leftpunch_sound2;
+	SoundSpec m_player_rightpunch_sound;
 
-	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef):
-		m_sound(sound),
-		m_ndef(ndef),
-		makes_footstep_sound(true),
-		m_player_step_timer(0.0f),
-		m_player_jump_timer(0.0f)
-	{
-	}
+	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef) :
+		m_sound(sound), m_ndef(ndef) {}
 
 	void playPlayerStep()
 	{
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
-				m_sound->playSound(m_player_step_sound);
+				m_sound->playSound(0, m_player_step_sound);
 		}
 	}
 
@@ -292,7 +286,7 @@ public:
 	{
 		if (m_player_jump_timer <= 0.0f) {
 			m_player_jump_timer = 0.2f;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f));
+			m_sound->playSound(0, SoundSpec("player_jump", 0.5f));
 		}
 	}
 
@@ -317,33 +311,33 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound2);
+		sm->m_sound->playSound(0, sm->m_player_leftpunch_sound);
+		sm->m_sound->playSound(0, sm->m_player_leftpunch_sound2);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound);
+		sm->m_sound->playSound(0, sm->m_player_rightpunch_sound);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		NodeDugEvent *nde = (NodeDugEvent *)e;
-		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug);
+		sm->m_sound->playSound(0, sm->m_ndef->get(nde->n).sound_dug);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5));
+		sm->m_sound->playSound(0, SoundSpec("player_damage", 0.5));
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5));
+		sm->m_sound->playSound(0, SoundSpec("player_falling_damage", 0.5));
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -362,42 +356,6 @@ public:
 	{
 		m_player_step_timer -= dtime;
 		m_player_jump_timer -= dtime;
-	}
-};
-
-// Locally stored sounds don't need to be preloaded because of this
-class GameOnDemandSoundFetcher: public OnDemandSoundFetcher
-{
-	std::set<std::string> m_fetched;
-private:
-	void paths_insert(std::set<std::string> &dst_paths,
-		const std::string &base,
-		const std::string &name)
-	{
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".0.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".1.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".2.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".3.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".4.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".5.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".6.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".7.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".8.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".9.ogg");
-	}
-public:
-	void fetchSounds(const std::string &name,
-		std::set<std::string> &dst_paths,
-		std::set<std::string> &dst_datas)
-	{
-		if (m_fetched.count(name))
-			return;
-
-		m_fetched.insert(name);
-
-		paths_insert(dst_paths, porting::path_share, name);
-		paths_insert(dst_paths, porting::path_user,  name);
 	}
 };
 
@@ -936,7 +894,6 @@ private:
 	IWritableItemDefManager *itemdef_manager = nullptr;
 	NodeDefManager *nodedef_manager = nullptr;
 
-	GameOnDemandSoundFetcher soundfetcher; // useful when testing
 	std::unique_ptr<ISoundManager> sound_manager;
 	SoundMaker *soundmaker = nullptr;
 
@@ -1278,10 +1235,13 @@ void Game::run()
 			if (m_is_paused)
 				dtime = 0.0f;
 
-			if (!was_paused && m_is_paused)
+			if (!was_paused && m_is_paused) {
 				pauseAnimation();
-			else if (was_paused && !m_is_paused)
+				sound_manager->pauseAll();
+			} else if (was_paused && !m_is_paused) {
 				resumeAnimation();
+				sound_manager->resumeAll();
+			}
 		}
 
 		if (!m_is_paused)
@@ -1397,11 +1357,13 @@ bool Game::initSound()
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
-		sound_manager.reset(createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher));
+		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
+				std::make_unique<SoundFallbackPathProvider>());
 		if (!sound_manager)
 			infostream << "Failed to initialize OpenAL audio" << std::endl;
-	} else
+	} else {
 		infostream << "Sound disabled." << std::endl;
+	}
 #endif
 
 	if (!sound_manager) {
@@ -3194,10 +3156,13 @@ void Game::updateCamera(f32 dtime)
 void Game::updateSound(f32 dtime)
 {
 	// Update sound listener
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	ClientActiveObject *parent = player->getParent();
 	v3s16 camera_offset = camera->getOffset();
 	sound_manager->updateListener(
-			camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
-			v3f(0, 0, 0), // velocity
+			(1.0f/BS) * camera->getCameraNode()->getPosition()
+					+ intToFloat(camera_offset, 1.0f),
+			(1.0f/BS) * (parent ? parent->getVelocity() : player->getSpeed()),
 			camera->getDirection(),
 			camera->getCameraNode()->getUpVector());
 
@@ -3214,8 +3179,6 @@ void Game::updateSound(f32 dtime)
 			g_settings->setFloat("sound_volume", new_volume);
 		}
 	}
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
@@ -3332,7 +3295,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound = SimpleSoundSpec();
+	soundmaker->m_player_leftpunch_sound = SoundSpec();
 	soundmaker->m_player_leftpunch_sound2 = pointed.type != POINTEDTHING_NOTHING ?
 		selected_def.sound_use : selected_def.sound_use_air;
 
@@ -3530,7 +3493,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// Placing animation (always shown for feedback)
 		camera->setDigging(1);
 
-		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
+		soundmaker->m_player_rightpunch_sound = SoundSpec();
 
 		// If the wielded item has node placement prediction,
 		// make that happen

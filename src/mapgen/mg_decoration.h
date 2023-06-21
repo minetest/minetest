@@ -73,6 +73,7 @@ public:
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
 	s16 place_offset_y = 0;
+	s16 check_offset = -1;
 
 	std::unordered_set<biome_t> biomes;
 

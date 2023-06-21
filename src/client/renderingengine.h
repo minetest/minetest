@@ -59,10 +59,8 @@ public:
 	static const VideoDriverInfo &getVideoDriverInfo(irr::video::E_DRIVER_TYPE type);
 	static float getDisplayDensity();
 
-	bool setupTopLevelWindow(const std::string &name);
-	void setupTopLevelXorgWindow(const std::string &name);
+	bool setupTopLevelWindow();
 	bool setWindowIcon();
-	bool setXorgWindowIconFromPath(const std::string &icon_file);
 	static bool print_video_modes();
 	void cleanupMeshCache();
 

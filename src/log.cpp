@@ -111,8 +111,8 @@ static unsigned int g_level_to_android[] = {
 };
 
 void AndroidLogOutput::logRaw(LogLevel lev, const std::string &line) {
-	STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
-		mismatch_between_android_and_internal_loglevels);
+	static_assert(ARRLEN(g_level_to_android) == LL_MAX,
+		"mismatch between android and internal loglevels");
 	__android_log_print(g_level_to_android[lev],
 		PROJECT_NAME_C, "%s", line.c_str());
 }
@@ -226,8 +226,8 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 		"TRACE",
 	};
 	assert(lev < LL_MAX && lev >= 0);
-	STATIC_ASSERT(ARRLEN(names) == LL_MAX,
-		mismatch_between_loglevel_names_and_enum);
+	static_assert(ARRLEN(names) == LL_MAX,
+		"mismatch between loglevel names and enum");
 	return names[lev];
 }
 

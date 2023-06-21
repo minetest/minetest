@@ -65,6 +65,7 @@ std::string RollbackAction::toString() const
 		os << ", " << itos(n_new.param2);
 		os << ", " << serializeJsonString(n_new.meta);
 		os << ')';
+		break;
 	case TYPE_MODIFY_INVENTORY_STACK:
 		os << "modify_inventory_stack (";
 		os << serializeJsonString(inventory_location);
@@ -73,6 +74,7 @@ std::string RollbackAction::toString() const
 		os << ", " << (inventory_add ? "add" : "remove");
 		os << ", " << serializeJsonString(inventory_stack.getItemString());
 		os << ')';
+		break;
 	default:
 		return "<unknown action>";
 	}

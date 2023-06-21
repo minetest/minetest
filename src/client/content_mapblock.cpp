@@ -457,11 +457,9 @@ void MapblockMeshGenerator::drawSolidNode()
 			if (f2.solidness == 2)
 				continue;
 			if (f->drawtype == NDT_LIQUID) {
-				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+				if (f->sameLiquidRender(f2))
 					continue;
-				if (n2 == nodedef->getId(f->liquid_alternative_source))
-					continue;
-				backface_culling = f2.solidness >= 1;
+				backface_culling = f2.solidness || f2.visual_solidness;
 			}
 		}
 		faces |= 1 << face;
@@ -469,8 +467,6 @@ void MapblockMeshGenerator::drawSolidNode()
 		for (auto &layer : tiles[face].layers) {
 			if (backface_culling)
 				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-			else
-				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 		}

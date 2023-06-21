@@ -1179,11 +1179,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				v3s16 node_below_pos = floatToInt(foot_pos + v3f(0.0f, -0.5f, 0.0f),
 						1.0f);
 				MapNode n = m_env->getMap().getNode(node_below_pos);
-				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				SoundSpec spec = ndef->get(n).sound_footstep;
 				// Reduce footstep gain, as non-local-player footsteps are
 				// somehow louder.
 				spec.gain *= 0.6f;
-				m_client->sound()->playSoundAt(spec, foot_pos * BS);
+				// The footstep-sound doesn't travel with the object. => vel=0
+				m_client->sound()->playSoundAt(0, spec, foot_pos, v3f(0.0f));
 			}
 		}
 	}

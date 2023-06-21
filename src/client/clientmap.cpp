@@ -623,6 +623,8 @@ void ClientMap::touchMapBlocks()
 	if (m_control.range_all || m_loops_occlusion_culler)
 		return;
 
+	ScopeProfiler sp(g_profiler, "CM::touchMapBlocks()", SPT_AVG);
+
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
