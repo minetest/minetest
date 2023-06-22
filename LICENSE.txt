@@ -87,6 +87,9 @@ DS:
   games/devtest/mods/soundstuff/sounds/soundstuff_sinus.ogg
   games/devtest/mods/testtools/textures/testtools_branding_iron.png
 
+grorp:
+  textures/base/pack/exit_btn.png
+
 License of Minetest source code
 -------------------------------
 
