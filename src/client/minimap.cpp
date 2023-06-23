@@ -608,7 +608,9 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	matrix.makeIdentity();
 
 	video::SMaterial &material = m_meshbuffer->getMaterial();
-	material.setFlag(video::EMF_TRILINEAR_FILTER, true);
+	material.forEachTexture([] (video::SMaterialLayer &tex) {
+		tex.TrilinearFilter = true;
+	});
 	material.Lighting = false;
 	material.TextureLayer[0].Texture = minimap_texture;
 	material.TextureLayer[1].Texture = data->heightmap_texture;

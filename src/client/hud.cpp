@@ -112,7 +112,7 @@ Hud::Hud(Client *client, LocalPlayer *player,
 			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 	} else if (m_mode == HIGHLIGHT_HALO) {
 		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
-		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+		m_selection_material.BackfaceCulling = true;
 	} else {
 		m_selection_material.MaterialType = video::EMT_SOLID;
 	}

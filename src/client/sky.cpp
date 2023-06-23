@@ -50,9 +50,11 @@ static video::SMaterial baseMaterial()
 
 static inline void disableTextureFiltering(video::SMaterial &mat)
 {
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
+	mat.forEachTexture([] (video::SMaterialLayer &tex) {
+		tex.BilinearFilter = false;
+		tex.TrilinearFilter = false;
+		tex.AnisotropicFilter = 0;
+	});
 }
 
 Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShaderSource *ssrc) :

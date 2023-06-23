@@ -98,9 +98,11 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 		buf->append(vertices + 4 * i, 4, indices, 6);
 		// Set default material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().Lighting = false;
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		buf->getMaterial().forEachTexture([] (video::SMaterialLayer &tex) {
+			tex.BilinearFilter = false;
+		});
 		// Add mesh buffer to mesh
 		mesh->addMeshBuffer(buf);
 		buf->drop();
@@ -406,8 +408,10 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	for (u16 j = 0; j < 6; j++)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().Lighting = false;
+		buf->getMaterial().forEachTexture([] (video::SMaterialLayer &tex) {
+			tex.BilinearFilter = false;
+		});
 		dst_mesh->addMeshBuffer(buf);
 		buf->drop();
 	}

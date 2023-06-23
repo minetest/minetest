@@ -47,14 +47,14 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
 {
-	m_material.setFlag(video::EMF_LIGHTING, false);
-	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	m_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
-	m_material.setFlag(video::EMF_FOG_ENABLE, true);
-	m_material.setFlag(video::EMF_ANTI_ALIASING, true);
-	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	m_material.Lighting = false;
+	m_material.BackfaceCulling = true;
+	m_material.FogEnable = true;
+	m_material.AntiAliasing = video::EAAM_SIMPLE;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	m_material.forEachTexture([] (video::SMaterialLayer &tex) {
+		tex.BilinearFilter = false;
+	});
 
 	m_params.height        = 120;
 	m_params.density       = 0.4f;
@@ -103,7 +103,7 @@ void Clouds::render()
 
 	int num_faces_to_draw = m_enable_3d ? 6 : 1;
 
-	m_material.setFlag(video::EMF_BACK_FACE_CULLING, m_enable_3d);
+	m_material.BackfaceCulling = m_enable_3d;
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);

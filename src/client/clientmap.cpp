@@ -842,14 +842,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
-			material.setFlag(video::EMF_TRILINEAR_FILTER,
-				m_cache_trilinear_filter);
-			material.setFlag(video::EMF_BILINEAR_FILTER,
-				m_cache_bilinear_filter);
-			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
-				m_cache_anistropic_filter);
-			material.setFlag(video::EMF_WIREFRAME,
-				m_control.show_wireframe);
+			material.forEachTexture([this] (video::SMaterialLayer &tex) {
+				tex.TrilinearFilter = m_cache_trilinear_filter;
+				tex.BilinearFilter = m_cache_trilinear_filter;
+				tex.AnisotropicFilter = m_cache_anistropic_filter ? 0xFF : 0;
+			});
+			material.Wireframe = m_control.show_wireframe;
 
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
