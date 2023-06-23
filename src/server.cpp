@@ -460,6 +460,8 @@ void Server::init()
 	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
 
+	m_script->saveGlobals();
+
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
 

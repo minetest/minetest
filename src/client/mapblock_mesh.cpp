@@ -395,48 +395,53 @@ void getNodeTile(MapNode mn, const v3s16 &p, const v3s16 &dir, MeshMakeData *dat
 	//  5 = (0,0,-1)
 	//  6 = (0,-1,0)
 	//  7 = (-1,0,0)
-	u8 dir_i = ((dir.X + 2 * dir.Y + 3 * dir.Z) & 7) * 2;
+	u8 dir_i = (dir.X + 2 * dir.Y + 3 * dir.Z) & 7;
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef, true);
 
-	static const u16 dir_to_tile[24 * 16] =
-	{
+	static constexpr auto
+		R0 = TileRotation::None,
+		R1 = TileRotation::R90,
+		R2 = TileRotation::R180,
+		R3 = TileRotation::R270;
+	static const struct {
+		u8 tile;
+		TileRotation rotation;
+	} dir_to_tile[24][8] = {
 		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
-		   0,0,  2,0 , 0,0 , 4,0 ,  0,0,  5,0 , 1,0 , 3,0 ,  // rotate around y+ 0 - 3
-		   0,0,  4,0 , 0,3 , 3,0 ,  0,0,  2,0 , 1,1 , 5,0 ,
-		   0,0,  3,0 , 0,2 , 5,0 ,  0,0,  4,0 , 1,2 , 2,0 ,
-		   0,0,  5,0 , 0,1 , 2,0 ,  0,0,  3,0 , 1,3 , 4,0 ,
+		   0,R0,  2,R0 , 0,R0 , 4,R0 ,  0,R0,  5,R0 , 1,R0 , 3,R0 ,  // rotate around y+ 0 - 3
+		   0,R0,  4,R0 , 0,R3 , 3,R0 ,  0,R0,  2,R0 , 1,R1 , 5,R0 ,
+		   0,R0,  3,R0 , 0,R2 , 5,R0 ,  0,R0,  4,R0 , 1,R2 , 2,R0 ,
+		   0,R0,  5,R0 , 0,R1 , 2,R0 ,  0,R0,  3,R0 , 1,R3 , 4,R0 ,
 
-		   0,0,  2,3 , 5,0 , 0,2 ,  0,0,  1,0 , 4,2 , 3,1 ,  // rotate around z+ 4 - 7
-		   0,0,  4,3 , 2,0 , 0,1 ,  0,0,  1,1 , 3,2 , 5,1 ,
-		   0,0,  3,3 , 4,0 , 0,0 ,  0,0,  1,2 , 5,2 , 2,1 ,
-		   0,0,  5,3 , 3,0 , 0,3 ,  0,0,  1,3 , 2,2 , 4,1 ,
+		   0,R0,  2,R3 , 5,R0 , 0,R2 ,  0,R0,  1,R0 , 4,R2 , 3,R1 ,  // rotate around z+ 4 - 7
+		   0,R0,  4,R3 , 2,R0 , 0,R1 ,  0,R0,  1,R1 , 3,R2 , 5,R1 ,
+		   0,R0,  3,R3 , 4,R0 , 0,R0 ,  0,R0,  1,R2 , 5,R2 , 2,R1 ,
+		   0,R0,  5,R3 , 3,R0 , 0,R3 ,  0,R0,  1,R3 , 2,R2 , 4,R1 ,
 
-		   0,0,  2,1 , 4,2 , 1,2 ,  0,0,  0,0 , 5,0 , 3,3 ,  // rotate around z- 8 - 11
-		   0,0,  4,1 , 3,2 , 1,3 ,  0,0,  0,3 , 2,0 , 5,3 ,
-		   0,0,  3,1 , 5,2 , 1,0 ,  0,0,  0,2 , 4,0 , 2,3 ,
-		   0,0,  5,1 , 2,2 , 1,1 ,  0,0,  0,1 , 3,0 , 4,3 ,
+		   0,R0,  2,R1 , 4,R2 , 1,R2 ,  0,R0,  0,R0 , 5,R0 , 3,R3 ,  // rotate around z- 8 - 11
+		   0,R0,  4,R1 , 3,R2 , 1,R3 ,  0,R0,  0,R3 , 2,R0 , 5,R3 ,
+		   0,R0,  3,R1 , 5,R2 , 1,R0 ,  0,R0,  0,R2 , 4,R0 , 2,R3 ,
+		   0,R0,  5,R1 , 2,R2 , 1,R1 ,  0,R0,  0,R1 , 3,R0 , 4,R3 ,
 
-		   0,0,  0,3 , 3,3 , 4,1 ,  0,0,  5,3 , 2,3 , 1,3 ,  // rotate around x+ 12 - 15
-		   0,0,  0,2 , 5,3 , 3,1 ,  0,0,  2,3 , 4,3 , 1,0 ,
-		   0,0,  0,1 , 2,3 , 5,1 ,  0,0,  4,3 , 3,3 , 1,1 ,
-		   0,0,  0,0 , 4,3 , 2,1 ,  0,0,  3,3 , 5,3 , 1,2 ,
+		   0,R0,  0,R3 , 3,R3 , 4,R1 ,  0,R0,  5,R3 , 2,R3 , 1,R3 ,  // rotate around x+ 12 - 15
+		   0,R0,  0,R2 , 5,R3 , 3,R1 ,  0,R0,  2,R3 , 4,R3 , 1,R0 ,
+		   0,R0,  0,R1 , 2,R3 , 5,R1 ,  0,R0,  4,R3 , 3,R3 , 1,R1 ,
+		   0,R0,  0,R0 , 4,R3 , 2,R1 ,  0,R0,  3,R3 , 5,R3 , 1,R2 ,
 
-		   0,0,  1,1 , 2,1 , 4,3 ,  0,0,  5,1 , 3,1 , 0,1 ,  // rotate around x- 16 - 19
-		   0,0,  1,2 , 4,1 , 3,3 ,  0,0,  2,1 , 5,1 , 0,0 ,
-		   0,0,  1,3 , 3,1 , 5,3 ,  0,0,  4,1 , 2,1 , 0,3 ,
-		   0,0,  1,0 , 5,1 , 2,3 ,  0,0,  3,1 , 4,1 , 0,2 ,
+		   0,R0,  1,R1 , 2,R1 , 4,R3 ,  0,R0,  5,R1 , 3,R1 , 0,R1 ,  // rotate around x- 16 - 19
+		   0,R0,  1,R2 , 4,R1 , 3,R3 ,  0,R0,  2,R1 , 5,R1 , 0,R0 ,
+		   0,R0,  1,R3 , 3,R1 , 5,R3 ,  0,R0,  4,R1 , 2,R1 , 0,R3 ,
+		   0,R0,  1,R0 , 5,R1 , 2,R3 ,  0,R0,  3,R1 , 4,R1 , 0,R2 ,
 
-		   0,0,  3,2 , 1,2 , 4,2 ,  0,0,  5,2 , 0,2 , 2,2 ,  // rotate around y- 20 - 23
-		   0,0,  5,2 , 1,3 , 3,2 ,  0,0,  2,2 , 0,1 , 4,2 ,
-		   0,0,  2,2 , 1,0 , 5,2 ,  0,0,  4,2 , 0,0 , 3,2 ,
-		   0,0,  4,2 , 1,1 , 2,2 ,  0,0,  3,2 , 0,3 , 5,2
-
+		   0,R0,  3,R2 , 1,R2 , 4,R2 ,  0,R0,  5,R2 , 0,R2 , 2,R2 ,  // rotate around y- 20 - 23
+		   0,R0,  5,R2 , 1,R3 , 3,R2 ,  0,R0,  2,R2 , 0,R1 , 4,R2 ,
+		   0,R0,  2,R2 , 1,R0 , 5,R2 ,  0,R0,  4,R2 , 0,R0 , 3,R2 ,
+		   0,R0,  4,R2 , 1,R1 , 2,R2 ,  0,R0,  3,R2 , 0,R3 , 5,R2
 	};
-	u16 tile_index = facedir * 16 + dir_i;
-	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
+	getNodeTileN(mn, p, dir_to_tile[facedir][dir_i].tile, data, tile);
+	tile.rotation = tile.world_aligned ? TileRotation::None : dir_to_tile[facedir][dir_i].rotation;
 }
 
 static void applyTileColor(PreMeshBuffer &pmb)

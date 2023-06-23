@@ -295,6 +295,13 @@ struct TileLayer
 	u8 scale = 1;
 };
 
+enum class TileRotation: u8 {
+	None,
+	R90,
+	R180,
+	R270,
+};
+
 /*!
  * Defines a face of a node. May have up to two layers.
  */
@@ -305,7 +312,7 @@ struct TileSpec
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
 	//! Tile rotation.
-	u8 rotation = 0;
+	TileRotation rotation = TileRotation::None;
 	//! This much light does the tile emit.
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.

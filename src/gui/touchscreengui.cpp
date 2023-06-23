@@ -50,6 +50,11 @@ const char **joystick_imagenames = (const char *[]) {
 
 static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 {
+	// ESC isn't part of the keymap.
+	if (id == exit_id) {
+		return KEY_ESCAPE;
+	}
+
 	std::string key = "";
 	switch (id) {
 		case inventory_id:
@@ -548,9 +553,10 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 				+ (0.5 * button_size)),
 		AHBB_Dir_Left_Right, 2.0);
 
-	m_rarecontrolsbar.addButton(chat_id,      L"Chat", "chat_btn.png");
+	m_rarecontrolsbar.addButton(chat_id,      L"chat", "chat_btn.png");
 	m_rarecontrolsbar.addButton(inventory_id, L"inv",  "inventory_btn.png");
 	m_rarecontrolsbar.addButton(drop_id,      L"drop", "drop_btn.png");
+	m_rarecontrolsbar.addButton(exit_id,      L"exit", "exit_btn.png");
 
 	m_initialized = true;
 }
