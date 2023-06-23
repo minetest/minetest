@@ -68,7 +68,8 @@ void GUIScene::setTexture(u32 idx, video::ITexture *texture)
 	material.TextureLayer[0].Texture = texture;
 	material.Lighting = false;
 	material.FogEnable = true;
-	material.TextureLayer[0].BilinearFilter = false;
+	material.TextureLayer[0].MinFilter = video::ETMINF_NEAREST;
+	material.TextureLayer[0].MagFilter = video::ETMAGF_NEAREST;
 	material.BackfaceCulling = false;
 	material.ZWriteEnable = video::EZW_AUTO;
 }

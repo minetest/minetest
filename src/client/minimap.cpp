@@ -609,7 +609,8 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 
 	video::SMaterial &material = m_meshbuffer->getMaterial();
 	material.forEachTexture([] (video::SMaterialLayer &tex) {
-		tex.TrilinearFilter = true;
+		tex.MinFilter = video::ETMINF_TRILINEAR;
+		tex.MagFilter = video::ETMAGF_BILINEAR;
 	});
 	material.Lighting = false;
 	material.TextureLayer[0].Texture = minimap_texture;

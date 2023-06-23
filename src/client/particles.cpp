@@ -93,7 +93,8 @@ Particle::Particle(
 	m_material.BackfaceCulling = false;
 	m_material.FogEnable = true;
 	m_material.forEachTexture([] (video::SMaterialLayer &tex) {
-		tex.BilinearFilter = false;
+		tex.MinFilter = video::ETMINF_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
 	// correctly render layered transparent particles -- see #10398

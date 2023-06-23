@@ -51,8 +51,8 @@ static video::SMaterial baseMaterial()
 static inline void disableTextureFiltering(video::SMaterial &mat)
 {
 	mat.forEachTexture([] (video::SMaterialLayer &tex) {
-		tex.BilinearFilter = false;
-		tex.TrilinearFilter = false;
+		tex.MinFilter = video::ETMINF_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
 		tex.AnisotropicFilter = 0;
 	});
 }
