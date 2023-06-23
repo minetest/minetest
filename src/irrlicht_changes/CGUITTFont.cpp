@@ -1119,9 +1119,9 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	// the default font material
 	SMaterial mat;
-	mat.setFlag(video::EMF_LIGHTING, true);
-	mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
-	mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+	mat.Lighting = true;
+	mat.ZWriteEnable = video::EZW_OFF;
+	mat.NormalizeNormals = true;
 	mat.ColorMaterial = video::ECM_NONE;
 	mat.MaterialType = use_transparency ? video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_SOLID;
 	mat.MaterialTypeParam = 0.01f;

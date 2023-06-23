@@ -36,13 +36,16 @@ public:
 		infostream<<"SmokePuffCSO: constructing"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(
 				NULL, v2f(1,1), pos, -1);
-		m_spritenode->setMaterialTexture(0,
-				env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png"));
-		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
-		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		//m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
-		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		video::ITexture *tex = env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png");
+		m_spritenode->forEachMaterial([tex] (video::SMaterial &mat) {
+			mat.setTexture(0, tex);
+			mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			mat.Lighting = false;
+			mat.FogEnable = true;
+			mat.forEachTexture([] (video::SMaterialLayer &tex) {
+				tex.BilinearFilter = false;
+			});
+		});
 		m_spritenode->setColor(video::SColor(255,0,0,0));
 		m_spritenode->setVisible(true);
 		m_spritenode->setSize(size);

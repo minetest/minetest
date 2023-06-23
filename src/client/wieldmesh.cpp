@@ -296,18 +296,15 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.MaterialType = m_material_type;
 		material.MaterialTypeParam = 0.5f;
-		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+		material.BackfaceCulling = true;
 		// Enable bi/trilinear filtering only for high resolution textures
-		if (dim.Width > 32) {
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-		} else {
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-		}
-		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
+		material.forEachTexture([this, &dim] (video::SMaterialLayer &tex) {
+			tex.BilinearFilter = dim.Width > 32 && m_bilinear_filter;
+			tex.TrilinearFilter = dim.Width > 32 && m_trilinear_filter;
+			tex.AnisotropicFilter = m_anisotropic_filter ? 0xFF : 0;
+		});
 		// mipmaps cause "thin black line" artifacts
-		material.setFlag(video::EMF_USE_MIP_MAPS, false);
+		material.UseMipMaps = false;
 		if (m_enable_shaders) {
 			material.setTexture(2, tsrc->getShaderFlagsTexture(false));
 		}
@@ -465,9 +462,11 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
-			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
+			material.BackfaceCulling = cull_backface;
+			material.forEachTexture([this] (video::SMaterialLayer &tex) {
+				tex.BilinearFilter = m_bilinear_filter;
+				tex.TrilinearFilter = m_trilinear_filter;
+			});
 		}
 
 		// initialize the color
@@ -558,9 +557,11 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		m_meshnode->setMesh(mesh);
 	}
 
-	m_meshnode->setMaterialFlag(video::EMF_LIGHTING, m_lighting);
-	// need to normalize normals when lighting is enabled (because of setScale())
-	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
+	m_meshnode->forEachMaterial([this] (video::SMaterial &mat) {
+		mat.Lighting = m_lighting;
+		// need to normalize normals when lighting is enabled (because of setScale())
+		mat.NormalizeNormals = m_lighting;
+	});
 	m_meshnode->setVisible(true);
 }
 
@@ -653,10 +654,12 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialTypeParam = 0.5f;
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
-			material.setFlag(video::EMF_LIGHTING, false);
+			material.forEachTexture([] (video::SMaterialLayer &tex) {
+				tex.BilinearFilter = false;
+				tex.TrilinearFilter = false;
+			});
+			material.BackfaceCulling = cull_backface;
+			material.Lighting = false;
 		}
 
 		rotateMeshXZby(mesh, -45);
@@ -698,10 +701,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
 		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.setFlag(video::EMF_BILINEAR_FILTER, false);
-		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
-		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-		material.setFlag(video::EMF_LIGHTING, false);
+		material.TextureLayer[0].BilinearFilter = false;
+		material.TextureLayer[0].TrilinearFilter = false;
+		material.BackfaceCulling = true;
+		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.5f;
 	}
