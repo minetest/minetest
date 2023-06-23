@@ -843,9 +843,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			// Apply filter settings
 			material.forEachTexture([this] (video::SMaterialLayer &tex) {
-				tex.TrilinearFilter = m_cache_trilinear_filter;
-				tex.BilinearFilter = m_cache_trilinear_filter;
-				tex.AnisotropicFilter = m_cache_anistropic_filter ? 0xFF : 0;
+				tex.setFiltersMinetest(m_cache_bilinear_filter, m_cache_trilinear_filter,
+						m_cache_anistropic_filter);
 			});
 			material.Wireframe = m_control.show_wireframe;
 
@@ -859,9 +858,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				// Do not enable filter on shadow texture to avoid visual artifacts
 				// with colored shadows.
 				// Filtering is done in shader code anyway
-				layer.BilinearFilter = false;
-				layer.AnisotropicFilter = false;
-				layer.TrilinearFilter = false;
+				layer.MinFilter = video::ETMINF_NEAREST;
+				layer.MagFilter = video::ETMAGF_NEAREST;
+				layer.AnisotropicFilter = 0;
 			}
 			driver->setMaterial(material);
 			++material_swaps;

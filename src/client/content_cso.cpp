@@ -43,7 +43,8 @@ public:
 			mat.Lighting = false;
 			mat.FogEnable = true;
 			mat.forEachTexture([] (video::SMaterialLayer &tex) {
-				tex.BilinearFilter = false;
+				tex.MinFilter = video::ETMINF_NEAREST;
+				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 		});
 		m_spritenode->setColor(video::SColor(255,0,0,0));

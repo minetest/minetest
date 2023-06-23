@@ -255,7 +255,8 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	buf->getMaterial().Lighting = false;
 	buf->getMaterial().BackfaceCulling = false;
 	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
-	buf->getMaterial().TextureLayer[0].BilinearFilter = false;
+	buf->getMaterial().TextureLayer[0].MinFilter = video::ETMINF_NEAREST;
+	buf->getMaterial().TextureLayer[0].MagFilter = video::ETMAGF_NEAREST;
 	buf->getMaterial().FogEnable = true;
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	// Add to mesh
@@ -652,7 +653,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			mat.NormalizeNormals = true;
 		}
 		mat.forEachTexture([] (video::SMaterialLayer &tex) {
-			tex.BilinearFilter = false;
+			tex.MinFilter = video::ETMINF_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 	};
 
@@ -1353,9 +1355,8 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 
 			material.forEachTexture([=] (video::SMaterialLayer &tex) {
-				tex.TrilinearFilter = use_trilinear_filter;
-				tex.BilinearFilter = use_bilinear_filter;
-				tex.AnisotropicFilter = use_anisotropic_filter ? 0xFF : 0;
+				tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+						use_anisotropic_filter);
 			});
 		}
 	}
@@ -1390,9 +1391,8 @@ void GenericCAO::updateTextures(std::string mod)
 				use_bilinear_filter &= res > 64;
 
 				material.forEachTexture([=] (video::SMaterialLayer &tex) {
-					tex.TrilinearFilter = use_trilinear_filter;
-					tex.BilinearFilter = use_bilinear_filter;
-					tex.AnisotropicFilter = use_anisotropic_filter ? 0xFF : 0;
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
 				});
 			}
 			for (u32 i = 0; i < m_prop.colors.size() &&
@@ -1438,9 +1438,8 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (video::SMaterialLayer &tex) {
-					tex.TrilinearFilter = use_trilinear_filter;
-					tex.BilinearFilter = use_bilinear_filter;
-					tex.AnisotropicFilter = use_anisotropic_filter ? 0xFF : 0;
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
 				});
 			}
 		} else if (m_prop.visual == "upright_sprite") {
@@ -1464,9 +1463,8 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (video::SMaterialLayer &tex) {
-					tex.TrilinearFilter = use_trilinear_filter;
-					tex.BilinearFilter = use_bilinear_filter;
-					tex.AnisotropicFilter = use_anisotropic_filter ? 0xFF : 0;
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
 				});
 			}
 			{
@@ -1494,9 +1492,8 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (video::SMaterialLayer &tex) {
-					tex.TrilinearFilter = use_trilinear_filter;
-					tex.BilinearFilter = use_bilinear_filter;
-					tex.AnisotropicFilter = use_anisotropic_filter ? 0xFF : 0;
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
 				});
 			}
 			// Set mesh color (only if lighting is disabled)

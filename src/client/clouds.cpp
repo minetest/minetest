@@ -53,7 +53,8 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	m_material.forEachTexture([] (video::SMaterialLayer &tex) {
-		tex.BilinearFilter = false;
+		tex.MinFilter = video::ETMINF_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
 
 	m_params.height        = 120;
