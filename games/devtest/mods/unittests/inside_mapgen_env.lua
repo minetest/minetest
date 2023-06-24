@@ -13,6 +13,8 @@ local function do_tests()
 	-- alias handling
 	assert(core.registered_items["unittests:steel_ingot_alias"].name ==
 		"unittests:steel_ingot")
+	-- fallback to item defaults
+	assert(core.registered_items["unittests:description_test"].on_place == true)
 end
 
 -- there's no (usable) communcation path between mapgen and the regular env
