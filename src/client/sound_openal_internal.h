@@ -27,7 +27,10 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"
 #include "sound_openal.h"
+#include "../sound.h"
+#include "threading/thread.h"
 #include "util/basic_macros.h"
+#include "util/container.h"
 
 #if defined(_WIN32)
 	#include <al.h>
@@ -48,6 +51,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <optional>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 
@@ -141,6 +145,8 @@ constexpr f32 SOUND_DURATION_MAX_SINGLE = 3.0f;
 constexpr f32 MIN_STREAM_BUFFER_LENGTH = 1.0f;
 // duration in seconds of one bigstep
 constexpr f32 STREAM_BIGSTEP_TIME = 0.3f;
+// step duration for the ProxySoundManager, in seconds
+constexpr f32 PROXYSOUNDMGR_DTIME = 0.016f;
 
 static_assert(MIN_STREAM_BUFFER_LENGTH > STREAM_BIGSTEP_TIME * 2.0f,
 		"See [Streaming of sounds].");
@@ -506,10 +512,67 @@ public:
 
 
 /*
- * The public ISoundManager interface
+ * The SoundManager thread
  */
 
-class OpenALSoundManager final : public ISoundManager
+namespace sound_manager_messages_to_mgr {
+	struct PauseAll {};
+	struct ResumeAll {};
+
+	struct UpdateListener { v3f pos_; v3f vel_; v3f at_; v3f up_; };
+	struct SetListenerGain { f32 gain; };
+
+	struct LoadSoundFile { std::string name; std::string filepath; };
+	struct LoadSoundData { std::string name; std::string filedata; };
+	struct AddSoundToGroup { std::string sound_name; std::string group_name; };
+
+	struct PlaySound { sound_handle_t id; SoundSpec spec; };
+	struct PlaySoundAt { sound_handle_t id; SoundSpec spec; v3f pos_; v3f vel_; };
+	struct StopSound { sound_handle_t sound; };
+	struct FadeSound { sound_handle_t soundid; f32 step; f32 target_gain; };
+	struct UpdateSoundPosVel { sound_handle_t sound; v3f pos_; v3f vel_; };
+
+	struct PleaseStop {};
+}
+
+using SoundManagerMsgToMgr = std::variant<
+		std::monostate,
+
+		sound_manager_messages_to_mgr::PauseAll,
+		sound_manager_messages_to_mgr::ResumeAll,
+
+		sound_manager_messages_to_mgr::UpdateListener,
+		sound_manager_messages_to_mgr::SetListenerGain,
+
+		sound_manager_messages_to_mgr::LoadSoundFile,
+		sound_manager_messages_to_mgr::LoadSoundData,
+		sound_manager_messages_to_mgr::AddSoundToGroup,
+
+		sound_manager_messages_to_mgr::PlaySound,
+		sound_manager_messages_to_mgr::PlaySoundAt,
+		sound_manager_messages_to_mgr::StopSound,
+		sound_manager_messages_to_mgr::FadeSound,
+		sound_manager_messages_to_mgr::UpdateSoundPosVel,
+
+		sound_manager_messages_to_mgr::PleaseStop
+	>;
+
+namespace sound_manager_messages_to_proxy {
+	struct ReportRemovedSound { sound_handle_t id; };
+
+	struct Stopped {};
+}
+
+using SoundManagerMsgToProxy = std::variant<
+		std::monostate,
+
+		sound_manager_messages_to_proxy::ReportRemovedSound,
+
+		sound_manager_messages_to_proxy::Stopped
+	>;
+
+// not an ISoundManager. doesn't allocate ids, and doesn't accept id 0
+class OpenALSoundManager final : public Thread
 {
 private:
 	std::unique_ptr<SoundFallbackPathProvider> m_fallback_path_provider;
@@ -539,6 +602,11 @@ private:
 
 	// if true, all sounds will be directly paused after creation
 	bool m_is_paused = false;
+
+public:
+	// used for communication with ProxySoundManager
+	MutexedQueue<SoundManagerMsgToMgr> m_queue_to_mgr;
+	MutexedQueue<SoundManagerMsgToProxy> m_queue_to_proxy;
 
 private:
 	void stepStreams(f32 dtime);
@@ -590,6 +658,75 @@ public:
 	~OpenALSoundManager() override;
 
 	DISABLE_CLASS_COPY(OpenALSoundManager)
+
+private:
+	/* Similar to ISoundManager */
+
+	void step(f32 dtime);
+	void pauseAll();
+	void resumeAll();
+
+	void updateListener(const v3f &pos_, const v3f &vel_, const v3f &at_, const v3f &up_);
+	void setListenerGain(f32 gain);
+
+	bool loadSoundFile(const std::string &name, const std::string &filepath);
+	bool loadSoundData(const std::string &name, std::string &&filedata);
+	void loadSoundFileNoCheck(const std::string &name, const std::string &filepath);
+	void loadSoundDataNoCheck(const std::string &name, std::string &&filedata);
+	void addSoundToGroup(const std::string &sound_name, const std::string &group_name);
+
+	void playSound(sound_handle_t id, const SoundSpec &spec);
+	void playSoundAt(sound_handle_t id, const SoundSpec &spec, const v3f &pos_,
+			const v3f &vel_);
+	void stopSound(sound_handle_t sound);
+	void fadeSound(sound_handle_t soundid, f32 step, f32 target_gain);
+	void updateSoundPosVel(sound_handle_t sound, const v3f &pos_, const v3f &vel_);
+
+protected:
+	/* Thread stuff */
+
+	void *run() override;
+
+private:
+	void send(SoundManagerMsgToProxy msg)
+	{
+		m_queue_to_proxy.push_back(std::move(msg));
+	}
+
+	void reportRemovedSound(sound_handle_t id)
+	{
+		send(sound_manager_messages_to_proxy::ReportRemovedSound{id});
+	}
+};
+
+
+/*
+ * The public ISoundManager interface
+ */
+
+class ProxySoundManager final : public ISoundManager
+{
+	OpenALSoundManager m_sound_manager;
+	// sound names from loadSoundData and loadSoundFile
+	std::unordered_set<std::string> m_known_sound_names;
+
+	void send(SoundManagerMsgToMgr msg)
+	{
+		m_sound_manager.m_queue_to_mgr.push_back(std::move(msg));
+	}
+
+	enum class MsgResult { Ok, Empty, Stopped};
+	MsgResult handleMsg(SoundManagerMsgToProxy &&msg);
+
+public:
+	ProxySoundManager(SoundManagerSingleton *smg,
+			std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider) :
+		m_sound_manager(smg, std::move(fallback_path_provider))
+	{
+		m_sound_manager.start();
+	}
+
+	~ProxySoundManager() override;
 
 	/* Interface */
 
