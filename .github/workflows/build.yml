@@ -204,7 +204,7 @@ jobs:
     env:
       VCPKG_VERSION: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
       # 2023.04.15
-      vcpkg_packages: gmp
+      vcpkg_packages: gettext zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
