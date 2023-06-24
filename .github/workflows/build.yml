@@ -237,7 +237,7 @@ jobs:
         with:
           vcpkgArguments: ${{env.vcpkg_packages}}
           vcpkgDirectory: '${{ github.workspace }}\vcpkg'
-          appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
+          #appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
           vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
           vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
 
