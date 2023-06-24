@@ -768,7 +768,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			material.FogEnable = true;
 			material.setTexture(0, p.layer.texture);
 			material.forEachTexture([] (video::SMaterialLayer &tex) {
-				tex.MinFilter = video::ETMINF_NEAREST;
+				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 

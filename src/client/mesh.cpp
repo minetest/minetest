@@ -101,7 +101,7 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 		buf->getMaterial().Lighting = false;
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		buf->getMaterial().forEachTexture([] (video::SMaterialLayer &tex) {
-			tex.MinFilter = video::ETMINF_NEAREST;
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 		// Add mesh buffer to mesh
@@ -411,7 +411,7 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 		buf->getMaterial().Lighting = false;
 		buf->getMaterial().forEachTexture([] (video::SMaterialLayer &tex) {
-			tex.MinFilter = video::ETMINF_NEAREST;
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 		dst_mesh->addMeshBuffer(buf);

@@ -858,7 +858,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				// Do not enable filter on shadow texture to avoid visual artifacts
 				// with colored shadows.
 				// Filtering is done in shader code anyway
-				layer.MinFilter = video::ETMINF_NEAREST;
+				layer.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				layer.MagFilter = video::ETMAGF_NEAREST;
 				layer.AnisotropicFilter = 0;
 			}

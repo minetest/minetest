@@ -39,7 +39,7 @@ void PostProcessingStep::configureMaterial()
 	material.ZWriteEnable = video::EZW_ON;
 	for (u32 k = 0; k < texture_map.size(); ++k) {
 		material.TextureLayers[k].AnisotropicFilter = 0;
-		material.TextureLayers[k].MinFilter = video::ETMINF_NEAREST;
+		material.TextureLayers[k].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 		material.TextureLayers[k].MagFilter = video::ETMAGF_NEAREST;
 		material.TextureLayers[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
@@ -92,8 +92,8 @@ void PostProcessingStep::run(PipelineContext &context)
 void PostProcessingStep::setBilinearFilter(u8 index, bool value)
 {
 	assert(index < video::MATERIAL_MAX_TEXTURES);
-	material.TextureLayers[index].MinFilter = value ? video::ETMINF_BILINEAR : video::ETMINF_NEAREST;
-	material.TextureLayers[index].MagFilter = value ? video::ETMAGF_BILINEAR : video::ETMAGF_NEAREST;
+	material.TextureLayers[index].MinFilter = value ? video::ETMINF_LINEAR_MIPMAP_NEAREST : video::ETMINF_NEAREST_MIPMAP_NEAREST;
+	material.TextureLayers[index].MagFilter = value ? video::ETMAGF_LINEAR : video::ETMAGF_NEAREST;
 }
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
