@@ -230,10 +230,10 @@ struct TileLayer
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
@@ -241,12 +241,12 @@ struct TileLayer
 	{
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 

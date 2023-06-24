@@ -255,8 +255,8 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	buf->getMaterial().Lighting = false;
 	buf->getMaterial().BackfaceCulling = false;
 	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
-	buf->getMaterial().TextureLayer[0].MinFilter = video::ETMINF_NEAREST;
-	buf->getMaterial().TextureLayer[0].MagFilter = video::ETMAGF_NEAREST;
+	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST;
+	buf->getMaterial().TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 	buf->getMaterial().FogEnable = true;
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	// Add to mesh
@@ -847,9 +847,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 				<< " texture(s) specified, this is deprecated.";
 			logOnce(oss, warningstream);
 
-			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
+			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayers[0].Texture;
 			for (u32 i = 1; i < mat_count; i++) {
-				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayer[0];
+				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayers[0];
 				if (!layer.Texture)
 					layer.Texture = last;
 				last = layer.Texture;
@@ -1379,7 +1379,7 @@ void GenericCAO::updateTextures(std::string mod)
 				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
-				material.TextureLayer[0].Texture = texture;
+				material.TextureLayers[0].Texture = texture;
 				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
 

@@ -292,8 +292,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	// Customize materials
 	for (u32 layer = 0; layer < m_meshnode->getMaterialCount(); layer++) {
 		video::SMaterial &material = m_meshnode->getMaterial(layer);
-		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		material.MaterialType = m_material_type;
 		material.MaterialTypeParam = 0.5f;
 		material.BackfaceCulling = true;
@@ -700,10 +700,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	// Customize materials
 	for (u32 layer = 0; layer < mesh->getMeshBufferCount(); layer++) {
 		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
-		material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayer[0].MinFilter = video::ETMINF_NEAREST;
-		material.TextureLayer[0].MagFilter = video::ETMAGF_NEAREST;
+		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST;
+		material.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 		material.BackfaceCulling = true;
 		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
