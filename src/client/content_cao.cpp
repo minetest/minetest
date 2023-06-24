@@ -255,7 +255,7 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	buf->getMaterial().Lighting = false;
 	buf->getMaterial().BackfaceCulling = false;
 	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
-	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST;
+	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 	buf->getMaterial().TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 	buf->getMaterial().FogEnable = true;
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -653,7 +653,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			mat.NormalizeNormals = true;
 		}
 		mat.forEachTexture([] (video::SMaterialLayer &tex) {
-			tex.MinFilter = video::ETMINF_NEAREST;
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 	};

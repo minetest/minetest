@@ -656,7 +656,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialTypeParam = 0.5f;
 			material.forEachTexture([] (video::SMaterialLayer &tex) {
-				tex.MinFilter = video::ETMINF_NEAREST;
+				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
 			material.BackfaceCulling = cull_backface;
@@ -702,7 +702,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
 		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST;
+		material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 		material.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 		material.BackfaceCulling = true;
 		material.Lighting = false;
