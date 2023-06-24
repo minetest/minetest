@@ -42,8 +42,8 @@ static video::SMaterial baseMaterial()
 	mat.ZBuffer = video::ECFN_DISABLED;
 	mat.ZWriteEnable = video::EZW_OFF;
 	mat.AntiAliasing = 0;
-	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+	mat.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+	mat.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	mat.BackfaceCulling = false;
 	return mat;
 }

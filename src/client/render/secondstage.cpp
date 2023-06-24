@@ -38,11 +38,11 @@ void PostProcessingStep::configureMaterial()
 	material.ZBuffer = true;
 	material.ZWriteEnable = video::EZW_ON;
 	for (u32 k = 0; k < texture_map.size(); ++k) {
-		material.TextureLayer[k].AnisotropicFilter = 0;
-		material.TextureLayer[k].MinFilter = video::ETMINF_NEAREST;
-		material.TextureLayer[k].MagFilter = video::ETMAGF_NEAREST;
-		material.TextureLayer[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayer[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[k].AnisotropicFilter = 0;
+		material.TextureLayers[k].MinFilter = video::ETMINF_NEAREST;
+		material.TextureLayers[k].MagFilter = video::ETMAGF_NEAREST;
+		material.TextureLayers[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		material.TextureLayers[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	}
 }
 
@@ -71,7 +71,7 @@ void PostProcessingStep::run(PipelineContext &context)
 	auto driver = context.device->getVideoDriver();
 
 	for (u32 i = 0; i < texture_map.size(); i++)
-		material.TextureLayer[i].Texture = source->getTexture(texture_map[i]);
+		material.TextureLayers[i].Texture = source->getTexture(texture_map[i]);
 
 	static const video::SColor color = video::SColor(0, 0, 0, 255);
 	static const video::S3DVertex vertices[4] = {
@@ -92,8 +92,8 @@ void PostProcessingStep::run(PipelineContext &context)
 void PostProcessingStep::setBilinearFilter(u8 index, bool value)
 {
 	assert(index < video::MATERIAL_MAX_TEXTURES);
-	material.TextureLayer[index].MinFilter = value ? video::ETMINF_BILINEAR : video::ETMINF_NEAREST;
-	material.TextureLayer[index].MagFilter = value ? video::ETMAGF_BILINEAR : video::ETMAGF_NEAREST;
+	material.TextureLayers[index].MinFilter = value ? video::ETMINF_BILINEAR : video::ETMINF_NEAREST;
+	material.TextureLayers[index].MagFilter = value ? video::ETMAGF_BILINEAR : video::ETMAGF_NEAREST;
 }
 
 RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep, v2f scale, Client *client)
