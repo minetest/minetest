@@ -204,7 +204,7 @@ jobs:
     env:
       VCPKG_VERSION: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
       # 2023.04.15
-      vcpkg_packages: gettext zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false
       matrix:
@@ -249,7 +249,6 @@ jobs:
           -DENABLE_POSTGRESQL=OFF  `
           -DENABLE_LUAJIT=TRUE  `
           -DREQUIRE_LUAJIT=TRUE  `
-          -DENABLE_GETTEXT=TRUE  `
           -DRUN_IN_PLACE=${{ contains(matrix.type, 'portable') }} .
 
       - name: Build Minetest
