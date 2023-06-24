@@ -85,8 +85,8 @@ typedef enum
 // Very slow button repeat frequency
 #define SLOW_BUTTON_REPEAT 1.0f
 
-extern const char **button_imagenames;
-extern const char **joystick_imagenames;
+extern const char *button_imagenames[];
+extern const char *joystick_imagenames[];
 
 struct button_info
 {

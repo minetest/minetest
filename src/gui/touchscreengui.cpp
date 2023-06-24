@@ -35,14 +35,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace irr::core;
 
-const char **button_imagenames = (const char *[]) {
+const char *button_imagenames[] = {
 	"jump_btn.png",
 	"down.png",
 	"zoom.png",
 	"aux1_btn.png"
 };
 
-const char **joystick_imagenames = (const char *[]) {
+const char *joystick_imagenames[] = {
 	"joystick_off.png",
 	"joystick_bg.png",
 	"joystick_center.png"
