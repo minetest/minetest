@@ -21,7 +21,7 @@ local PATH = os.getenv("HOME") -- Linux & similar
 		or os.getenv("HOMEDRIVE") .. os.getenv("HOMEPATH") -- Windows
 		or core.get_user_path() -- If nothing else works
 
-tabdata = {}
+local tabdata = {}
 
 local function texture(filename)
 	return core.formspec_escape(defaulttexturedir .. filename .. ".png")
@@ -38,7 +38,7 @@ local function get_dirs()
 
 	local new = {}
 	for _, f in ipairs(dirs) do
-		if f:sub(1,1) ~= "." then
+		if f:sub(1, 1) ~= "." then
 			new[#new + 1] = core.formspec_escape(f)
 		end
 	end
@@ -50,15 +50,15 @@ end
 local function make_fs(dialogdata)
 	local dirs = get_dirs()
 
-	local _dirs = ""
+	local _dirs = {}
 
 	if not next(dirs) then
-		_dirs = "2,,"
+		_dirs[#_dirs + 1] = "2,,"
 	end
 
 	for _, f in ipairs(dirs) do
 		local is_file = not core.is_dir(PATH .. DIR_DELIM .. f)
-		_dirs = _dirs .. (is_file and "1," or "0,") .. f .. ","
+		_dirs[#_dirs + 1] = (is_file and "1," or "0,") .. f .. ","
 	end
 
 	local field_label
@@ -78,7 +78,7 @@ local function make_fs(dialogdata)
 			"1=", texture('file'), ",",
 			"2=", texture('blank'),
 			";text]",
-		"table[0.2,1.1;13.6,6;dirs;", _dirs:sub(1,-2),
+		"table[0.2,1.1;13.6,6;dirs;", table.concat(_dirs):sub(1, -2),
 			";", (tabdata.selected or 1), "]",
 		"field[0.2,8;9,0.8;select;", field_label, ";", (tabdata.filename or ""), "]",
 		"button[9.5,8;2,0.8;ok;", fgettext("Open"), "]",
@@ -106,7 +106,7 @@ local function fields_handler(this, fields)
 	local dirs = get_dirs()
 
 	if fields.dirs then
-		local event, idx = fields.dirs:sub(1,3), tonumber(fields.dirs:match("%d+"))
+		local event, idx = fields.dirs:sub(1, 3), tonumber(fields.dirs:match("%d+"))
 		local filename = dirs[idx]
 		local is_file = not core.is_dir(PATH .. DIR_DELIM .. filename)
 
@@ -114,7 +114,6 @@ local function fields_handler(this, fields)
 			tabdata.filename = filename
 			tabdata.selected = idx
 
-			core.update_formspec(this:get_formspec())
 			return true
 
 		elseif event == "DCL" and filename then
@@ -123,7 +122,6 @@ local function fields_handler(this, fields)
 				tabdata.selected = 1
 			end
 
-			core.update_formspec(this:get_formspec())
 			return true
 		end
 
@@ -136,13 +134,11 @@ local function fields_handler(this, fields)
 		end
 
 		tabdata.selected = 1
-
-		core.update_formspec(this:get_formspec())
 		return true
 
 	elseif fields.path then
 		PATH = fields.path
-		core.update_formspec(this:get_formspec())
+		tabdata.selected = 1
 		return true
 	end
 
