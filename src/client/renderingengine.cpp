@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <optional>
 #include <IrrlichtDevice.h>
 #include "fontengine.h"
 #include "client.h"
@@ -65,6 +66,45 @@ static gui::GUISkin *createSkin(gui::IGUIEnvironment *environment,
 }
 
 
+static std::optional<video::E_DRIVER_TYPE> chooseVideoDriver()
+{
+	auto &&configured_name = g_settings->get("video_driver");
+	if (configured_name.empty())
+		return std::nullopt;
+
+	auto &&drivers = RenderingEngine::getSupportedVideoDrivers();
+	for (auto driver: drivers) {
+		auto &&info = RenderingEngine::getVideoDriverInfo(driver);
+		if (!strcasecmp(configured_name.c_str(), info.name.c_str()))
+			return driver;
+	}
+
+	errorstream << "Invalid video_driver specified: " << configured_name << std::endl;
+	return std::nullopt;
+}
+
+static irr::IrrlichtDevice *createDevice(SIrrlichtCreationParameters params, std::optional<video::E_DRIVER_TYPE> requested_driver)
+{
+	if (requested_driver) {
+		params.DriverType = *requested_driver;
+		if (auto *device = createDeviceEx(params))
+			return device;
+		errorstream << "Failed to initialize the " << RenderingEngine::getVideoDriverInfo(*requested_driver).friendly_name << " video driver" << std::endl;
+	}
+	sanity_check(requested_driver != video::EDT_NULL);
+
+	// try to find any working video driver
+	for (auto fallback_driver: RenderingEngine::getSupportedVideoDrivers()) {
+		if (fallback_driver == video::EDT_NULL || fallback_driver == requested_driver)
+			continue;
+		params.DriverType = fallback_driver;
+		if (auto *device = createDeviceEx(params))
+			return device;
+	}
+
+	throw std::runtime_error("Could not initialize the device with any supported video driver");
+}
+
 RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {
 	sanity_check(!s_singleton);
@@ -85,33 +125,11 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
-	video::E_DRIVER_TYPE driverType;
-	const std::string &driverstring = g_settings->get("video_driver");
-	std::vector<video::E_DRIVER_TYPE> drivers =
-			RenderingEngine::getSupportedVideoDrivers();
-	u32 i;
-	for (i = 0; i != drivers.size(); i++) {
-		auto &driverinfo = RenderingEngine::getVideoDriverInfo(drivers[i]);
-		if (!strcasecmp(driverstring.c_str(), driverinfo.name.c_str())) {
-			driverType = drivers[i];
-			break;
-		}
-	}
-	if (i == drivers.size()) {
-		driverType = drivers.at(0);
-		auto &name = RenderingEngine::getVideoDriverInfo(driverType).name;
-		if (driverstring.empty()) {
-			infostream << "Defaulting to video_driver = " << name << std::endl;
-		} else {
-			errorstream << "Invalid video_driver specified; defaulting to "
-				<< name << std::endl;
-		}
-	}
+	auto driverType = chooseVideoDriver();
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	if (tracestream)
 		params.LoggingLevel = irr::ELL_DEBUG;
-	params.DriverType = driverType;
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
@@ -129,8 +147,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			+ "shaders" + DIR_DELIM + "Irrlicht";
 	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
 
-	m_device = createDeviceEx(params);
+	m_device = createDevice(params, driverType);
 	driver = m_device->getVideoDriver();
+	infostream << "Using the " << RenderingEngine::getVideoDriverInfo(driver->getDriverType()).friendly_name << " video driver" << std::endl;
 
 	s_singleton = this;
 
