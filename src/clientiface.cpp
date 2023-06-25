@@ -289,7 +289,7 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 				Also retrieve a smaller view cone in the direction of the player's
 				movement.
-				(0.1 is about 4 degrees)
+				(0.1 is about 5 degrees)
 			*/
 			f32 dist;
 			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,
