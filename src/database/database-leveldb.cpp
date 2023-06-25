@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "exceptions.h"
 #include "remoteplayer.h"
+#include "irrlicht_changes/printing.h"
 #include "server/player_sao.h"
 #include "util/serialize.h"
 #include "util/string.h"
@@ -58,7 +59,7 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 			i64tos(getBlockAsInteger(pos)), data);
 	if (!status.ok()) {
 		warningstream << "saveBlock: LevelDB error saving block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< pos << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
@@ -80,7 +81,7 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 			i64tos(getBlockAsInteger(pos)));
 	if (!status.ok()) {
 		warningstream << "deleteBlock: LevelDB error deleting block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< pos << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
