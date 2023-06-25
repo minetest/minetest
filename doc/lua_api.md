@@ -6518,8 +6518,8 @@ Mapgen environment
 
 The engine runs the map generator on separate threads, each of these also has
 a Lua environment. Its primary purpose is to allow mods to operate on newly
-generated parts of the map.
-Internally it may be referred to as "emerge environment".
+generated parts of the map to e.g. generate custom structures.
+Internally it is referred to as "emerge environment".
 
 Refer to the above section for the usual disclaimer on what environment isolation entails.
 
@@ -6539,6 +6539,7 @@ Refer to the above section for the usual disclaimer on what environment isolatio
 ### List of APIs available in the mapgen env
 
 Classes:
+* `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
@@ -6557,6 +6558,9 @@ Functions:
 * `minetest.get_biome_id`, `get_biome_name`, `get_heat`, `get_humidity`,
   `get_biome_data`, `get_mapgen_object`, `get_mapgen_params`, `get_mapgen_edges`,
   `get_mapgen_setting`, `get_noiseparams`, `get_decoration_id` and more
+* `minetest.get_node`, `set_node`, `find_node_near`, `find_nodes_in_area`,
+  `spawn_tree` and similar
+    * these only operate on the current chunk
 
 Variables:
 * `minetest.settings`
@@ -6565,6 +6569,9 @@ Variables:
     * with all functions and userdata values replaced by `true`, calling any
       callbacks here is obviously not possible
 * `minetest.registered_biomes`, `registered_ores`, `registered_decorations`
+
+Note that node metadata does not exist in the mapgen env, we suggest deferring
+setting any metadata you need to the on_generated callback in the regular env.
 
 Server
 ------
