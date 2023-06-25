@@ -217,7 +217,10 @@ int main(int argc, char *argv[])
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
 #if BUILD_UNITTESTS
-		return run_tests();
+		if (cmd_args.exists("test-module"))
+			return run_tests(cmd_args.get("test-module")) ? 0 : 1;
+		else
+			return run_tests() ? 0 : 1;
 #else
 		errorstream << "Unittest support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
@@ -327,6 +330,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Run the unit tests and exit"))));
 	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
 			_("Run the benchmarks and exit"))));
+	allowed_options->insert(std::make_pair("test-module", ValueSpec(VALUETYPE_STRING,
+			_("Only run the specified test module"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
