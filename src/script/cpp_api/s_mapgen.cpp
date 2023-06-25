@@ -49,6 +49,10 @@ void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	v3s16 minp = bmdata->blockpos_min * MAP_BLOCKSIZE;
+	v3s16 maxp = bmdata->blockpos_max * MAP_BLOCKSIZE +
+				 v3s16(1,1,1) * (MAP_BLOCKSIZE - 1);
+
 	LuaVoxelManip::create(L, bmdata->vmanip, true);
 	const int vmanip = lua_gettop(L);
 
@@ -60,8 +64,10 @@ void ScriptApiMapgen::on_generated(BlockMakeData *bmdata)
 	// Call callbacks
 	lua_getfield(L, -1, "registered_on_generateds");
 	lua_pushvalue(L, vmanip);
+	push_v3s16(L, minp);
+	push_v3s16(L, maxp);
 	lua_pushnumber(L, bmdata->seed);
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(4, RUN_CALLBACKS_MODE_FIRST);
 	lua_pop(L, 1); // return val
 
 	// Unset core.vmanip again

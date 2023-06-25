@@ -18,5 +18,10 @@ local function do_tests()
 end
 
 -- there's no (usable) communcation path between mapgen and the regular env
--- so we just run the test unconditionally :shrug:
+-- so we just run the test unconditionally
 do_tests()
+
+core.register_on_generated(function(vm, pos1, pos2, blockseed)
+	local n = tonumber(core.get_mapgen_setting("chunksize")) * 16 - 1
+	assert(pos2:subtract(pos1) == vector.new(n, n, n))
+end)

@@ -6529,9 +6529,11 @@ Refer to the above section for the usual disclaimer on what environment isolatio
 
 ### List of APIs exclusive to the mapgen env
 
-* `minetest.register_on_generated(function(vmanip, blockseed))`
+* `minetest.register_on_generated(function(vmanip, minp, maxp, blockseed))`
     * Called after the engine mapgen finishes a chunk.
       The chunk data resides in `vmanip`. Other parts of the map are not accessible.
+      The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
+      than the emerged area of the VoxelManip.
     * `blockseed`: 64-bit seed number used for this chunk
 
 ### List of APIs available in the mapgen env
