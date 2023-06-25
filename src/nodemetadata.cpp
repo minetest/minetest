@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "gamedef.h"
 #include "inventory.h"
+#include "irrlicht_changes/printing.h"
 #include "log.h"
 #include "util/serialize.h"
-#include "util/basic_macros.h"
 #include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
 
@@ -187,7 +187,7 @@ void NodeMetadataList::deSerialize(std::istream &is,
 		}
 		if (m_data.find(p) != m_data.end()) {
 			warningstream << "NodeMetadataList::deSerialize(): "
-					<< "already set data at position " << PP(p)
+					<< "already set data at position " << p
 					<< ": Ignoring." << std::endl;
 			continue;
 		}

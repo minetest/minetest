@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
+#include "irrlicht_changes/printing.h"
 #include "benchmark/benchmark.h"
 #include "chat_interface.h"
 #include "debug.h"
@@ -1204,7 +1205,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		if (!data.empty()) {
 			new_db->saveBlock(*it, data);
 		} else {
-			errorstream << "Failed to load block " << PP(*it) << ", skipping it." << std::endl;
+			errorstream << "Failed to load block " << *it << ", skipping it." << std::endl;
 		}
 		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
 			std::cerr << " Migrated " << count << " blocks, "
@@ -1259,7 +1260,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		std::string data;
 		db->loadBlock(*it, &data);
 		if (data.empty()) {
-			errorstream << "Failed to load block " << PP(*it) << std::endl;
+			errorstream << "Failed to load block " << *it << std::endl;
 			return false;
 		}
 

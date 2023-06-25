@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "util/numeric.h"
-#include "util/basic_macros.h"
 #include "map.h"
 #include "gamedef.h"
 #include "nodedef.h"
@@ -31,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "inventorymanager.h"
 #include "inventory.h"
+#include "irrlicht_changes/printing.h"
 #include "mapblock.h"
 
 
@@ -55,7 +55,7 @@ std::string RollbackAction::toString() const
 	std::ostringstream os(std::ios::binary);
 	switch (type) {
 	case TYPE_SET_NODE:
-		os << "set_node " << PP(p);
+		os << "set_node " << p;
 		os << ": (" << serializeJsonString(n_old.name);
 		os << ", " << itos(n_old.param1);
 		os << ", " << itos(n_old.param2);
@@ -152,7 +152,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				if (!map->addNodeWithEvent(p, n)) {
 					infostream << "RollbackAction::applyRevert(): "
 						<< "AddNodeWithEvent failed at "
-						<< PP(p) << " for " << n_old.name
+						<< p << " for " << n_old.name
 						<< std::endl;
 					return false;
 				}
@@ -166,7 +166,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 							delete meta;
 							infostream << "RollbackAction::applyRevert(): "
 								<< "setNodeMetadata failed at "
-								<< PP(p) << " for " << n_old.name
+								<< p << " for " << n_old.name
 								<< std::endl;
 							return false;
 						}

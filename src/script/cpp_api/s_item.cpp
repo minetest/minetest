@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "inventory.h"
 #include "inventorymanager.h"
+#include "irrlicht_changes/printing.h"
 
 #define WRAP_LUAERROR(e, detail) \
 	LuaError(std::string(__FUNCTION__) + ": " + (e).what() + ". " detail)
@@ -238,7 +239,7 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
 		// Report error and clean up
 		errorstream << "Item \"" << name << "\" not defined";
 		if (p)
-			errorstream << " at position " << PP(*p);
+			errorstream << " at position " << *p;
 		errorstream << std::endl;
 		lua_pop(L, 1);
 

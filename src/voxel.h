@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include <set>
 #include <list>
-#include "util/basic_macros.h"
+#include "irrlicht_changes/printing.h"
 
 class NodeDefManager;
 
@@ -339,7 +339,7 @@ public:
 	*/
 	void print(std::ostream &o) const
 	{
-		o << PP(MinEdge) << PP(MaxEdge) << "="
+		o << MinEdge << MaxEdge << "="
 			<< m_cache_extent.X << "x" << m_cache_extent.Y << "x" << m_cache_extent.Z
 			<< "=" << getVolume();
 	}

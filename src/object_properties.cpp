@@ -18,10 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "object_properties.h"
+#include "irrlicht_changes/printing.h"
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "util/serialize.h"
-#include "util/basic_macros.h"
 #include <sstream>
 
 static const video::SColor NULL_BGCOLOR{0, 1, 1, 1};
@@ -39,10 +39,10 @@ std::string ObjectProperties::dump()
 	os << ", breath_max=" << breath_max;
 	os << ", physical=" << physical;
 	os << ", collideWithObjects=" << collideWithObjects;
-	os << ", collisionbox=" << PP(collisionbox.MinEdge) << "," << PP(collisionbox.MaxEdge);
+	os << ", collisionbox=" << collisionbox.MinEdge << "," << collisionbox.MaxEdge;
 	os << ", visual=" << visual;
 	os << ", mesh=" << mesh;
-	os << ", visual_size=" << PP(visual_size);
+	os << ", visual_size=" << visual_size;
 	os << ", textures=[";
 	for (const std::string &texture : textures) {
 		os << "\"" << texture << "\" ";
@@ -54,8 +54,8 @@ std::string ObjectProperties::dump()
 			<< color.getGreen() << "," << color.getBlue() << "\" ";
 	}
 	os << "]";
-	os << ", spritediv=" << PP2(spritediv);
-	os << ", initial_sprite_basepos=" << PP2(initial_sprite_basepos);
+	os << ", spritediv=" << spritediv;
+	os << ", initial_sprite_basepos=" << initial_sprite_basepos;
 	os << ", is_visible=" << is_visible;
 	os << ", makes_footstep_sound=" << makes_footstep_sound;
 	os << ", automatic_rotate="<< automatic_rotate;
@@ -71,7 +71,7 @@ std::string ObjectProperties::dump()
 	else
 		os << ", nametag_bgcolor=null ";
 
-	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
+	os << ", selectionbox=" << selectionbox.MinEdge << "," << selectionbox.MaxEdge;
 	os << ", rotate_selectionbox=" << rotate_selectionbox;
 	os << ", pointable=" << pointable;
 	os << ", static_save=" << static_save;

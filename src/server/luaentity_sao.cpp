@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "constants.h"
 #include "inventory.h"
+#include "irrlicht_changes/printing.h"
 #include "player_sao.h"
 #include "scripting_server.h"
 #include "server.h"
@@ -390,7 +391,7 @@ std::string LuaEntitySAO::getDescription()
 	std::ostringstream oss;
 	oss << "LuaEntitySAO \"" << m_init_name << "\" ";
 	auto pos = floatToInt(m_base_position, BS);
-	oss << "at " << PP(pos);
+	oss << "at " << pos;
 	return oss.str();
 }
 
