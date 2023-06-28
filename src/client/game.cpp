@@ -387,7 +387,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
-	CachedPixelShaderSetting<float, 2> m_texel_size0;
+	CachedVertexShaderSetting<float, 2> m_texel_size0_vertex;
+	CachedPixelShaderSetting<float, 2> m_texel_size0_pixel;
 	std::array<float, 2> m_texel_size0_values;
 	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel;
 	float m_user_exposure_compensation;
@@ -445,7 +446,8 @@ public:
 		m_texture1("texture1"),
 		m_texture2("texture2"),
 		m_texture3("texture3"),
-		m_texel_size0("texelSize0"),
+		m_texel_size0_vertex("texelSize0"),
+		m_texel_size0_pixel("texelSize0"),
 		m_exposure_params_pixel("exposureParams",
 				std::array<const char*, 7> {
 						"luminanceMin", "luminanceMax", "exposureCorrection",
@@ -547,7 +549,8 @@ public:
 		tex_id = 3;
 		m_texture3.set(&tex_id, services);
 
-		m_texel_size0.set(m_texel_size0_values.data(), services);
+		m_texel_size0_vertex.set(m_texel_size0_values.data(), services);
+		m_texel_size0_pixel.set(m_texel_size0_values.data(), services);
 
 		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
 		std::array<float, 7> exposure_buffer = {

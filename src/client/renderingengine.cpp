@@ -122,7 +122,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
-	u16 fsaa = g_settings->getU16("fsaa");
+	bool enable_fsaa = g_settings->get("antialiasing") == "fsaa";
+	u16 fsaa = enable_fsaa ? g_settings->getU16("fsaa") : 0;
 
 	// Determine driver
 	auto driverType = chooseVideoDriver();
