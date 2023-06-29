@@ -4,7 +4,7 @@
 
 | Dependency | Version | Commentary |
 | ---------- | ------- | ---------- |
-| GCC        | 7.5+    | or Clang 6.0+ |
+| GCC        | 7.5+    | or Clang 7.0.1+ |
 | CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | Freetype   | 2.0+    |            |
