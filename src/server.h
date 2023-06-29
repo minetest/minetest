@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include "gettext.h"
 #include <string>
 #include <list>
 #include <map>
@@ -150,7 +151,7 @@ public:
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface = nullptr,
-		std::string *on_shutdown_errmsg = nullptr
+		std::string *shutdown_errmsg = nullptr
 	);
 	~Server();
 	DISABLE_CLASS_COPY(Server);
@@ -298,6 +299,22 @@ public:
 	inline void setAsyncFatalError(const LuaError &e)
 	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());
+	}
+
+	// Not thread-safe.
+	inline void addShutdownError(const ModError &e) {
+		// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
+		std::string msg = std::string("ModError while shutting down: ") +
+				e.what() + strgettext("\nCheck debug.txt for details.");
+		errorstream << msg << std::endl;
+
+		if (m_shutdown_errmsg) {
+			if (m_shutdown_errmsg->empty()) {
+				*m_shutdown_errmsg = msg;
+			} else {
+				*m_shutdown_errmsg += "\n\n" + msg;
+			}
+		}
 	}
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
@@ -655,9 +672,9 @@ private:
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
 
-	// if a mod-error occurs in the on_shutdown callback, the error message will
-	// be written into this
-	std::string *const m_on_shutdown_errmsg;
+	// If a mod error occurs while shutting down, the error message will be
+	// written into this.
+	std::string *const m_shutdown_errmsg;
 
 	/*
 		Map edit event queue. Automatically receives all map edits.

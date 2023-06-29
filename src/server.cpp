@@ -235,7 +235,7 @@ Server::Server(
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface,
-		std::string *on_shutdown_errmsg
+		std::string *shutdown_errmsg
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
@@ -254,7 +254,7 @@ Server::Server(
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
-	m_on_shutdown_errmsg(on_shutdown_errmsg),
+	m_shutdown_errmsg(shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -353,14 +353,7 @@ Server::~Server()
 		try {
 			m_script->on_shutdown();
 		} catch (ModError &e) {
-			errorstream << "ModError: " << e.what() << std::endl;
-			if (m_on_shutdown_errmsg) {
-				if (m_on_shutdown_errmsg->empty()) {
-					*m_on_shutdown_errmsg = std::string("ModError: ") + e.what();
-				} else {
-					*m_on_shutdown_errmsg += std::string("\nModError: ") + e.what();
-				}
-			}
+			addShutdownError(e);
 		}
 
 		infostream << "Server: Saving environment metadata" << std::endl;
