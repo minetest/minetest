@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2021-04-08 18:26+0000\n"
+"PO-Revision-Date: 2023-06-30 21:52+0000\n"
 "Last-Translator: Timur Seber <seber.tatsoft@gmail.com>\n"
 "Language-Team: Tatar <https://hosted.weblate.org/projects/minetest/minetest/"
 "tt/>\n"
@@ -12,19 +12,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.6-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
 msgstr ""
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Empty command."
-msgstr ""
+msgstr "Буш команда."
 
 #: builtin/client/chatcommands.lua
+#, fuzzy
 msgid "Exit to main menu"
-msgstr ""
+msgstr "Төп менюга чыгу"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -48,7 +50,7 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Бу команда сервер тарафыннан сүндерелгән."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -60,11 +62,11 @@ msgstr "Сез үлдегез"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr ""
+msgstr "Мөмкин булган командалар:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr ""
+msgstr "Мөмкин булган командалар: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -85,7 +87,7 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "Ярый"
+msgstr "Ярар"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -93,23 +95,26 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Lua скриптында хата килеп чыкты:"
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "An error occurred:"
-msgstr ""
+msgstr "Хата килеп чыкты:"
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "Main menu"
-msgstr ""
+msgstr "Төп меню"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
 msgstr ""
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Сервер яңадан тоташуны сорады:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -151,8 +156,9 @@ msgstr "Баш тарту"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
 msgid "Dependencies:"
-msgstr ""
+msgstr "Бәйләнешләр:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -164,7 +170,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "Барысын да кабызу"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
@@ -178,11 +184,12 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Күбрәк модларны табу"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "Mod:"
-msgstr ""
+msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
