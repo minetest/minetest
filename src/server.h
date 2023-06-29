@@ -304,7 +304,7 @@ public:
 	// Not thread-safe.
 	inline void addShutdownError(const ModError &e) {
 		// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
-		std::string msg = std::string("ModError while shutting down: ") +
+		std::string msg = fmtgettext("%s while shutting down: ", "ModError") +
 				e.what() + strgettext("\nCheck debug.txt for details.");
 		errorstream << msg << std::endl;
 
