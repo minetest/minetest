@@ -2531,7 +2531,6 @@ void Game::toggleFullViewRange()
 	if (draw_control->range_all) {
 		if (sky->getFogDistance() >= 0) {
 			m_game_ui->showTranslatedStatusText("The server has disabled unlimited viewing range");
-			draw_control->range_all = false;
 		} else {
 			m_game_ui->showTranslatedStatusText("Enabled unlimited viewing range");
 		}
@@ -3947,9 +3946,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	if (sky->getFogDistance() >= 0) {
 		draw_control->wanted_range = MYMIN(draw_control->wanted_range, sky->getFogDistance());
-		draw_control->range_all = false;
 	}
-	if (draw_control->range_all) {
+	if (draw_control->range_all && sky->getFogDistance() < 0) {
 		runData.fog_range = 100000 * BS;
 	} else {
 		runData.fog_range = draw_control->wanted_range * BS;
