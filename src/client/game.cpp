@@ -3143,7 +3143,7 @@ void Game::updateCamera(f32 dtime)
 		v3f camera_direction = camera->getDirection();
 
 		client->getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset);
+				camera_direction, camera_fov, camera_offset, player->light_color);
 
 		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);
