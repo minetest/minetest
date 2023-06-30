@@ -7745,13 +7745,13 @@ child will follow movement and rotation of that bone.
                By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
                Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
                Any value < 0, resets the behavior to being client-controlled.
-               (default: not set)
+               (default: -1)
             * `fog_start`: float, override the client's fog_start.
                Fraction of the visible distance at which fog starts to be rendered.
                By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
-               Any value between [0.0, 0.99] set the fog_start as a fraction of fog_distance.
+               Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
                Any value < 0, resets the behavior to being client-controlled.
-               (default: not set)
+               (default: -1)
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
