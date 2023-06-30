@@ -213,6 +213,8 @@ GUI
   * technical name of active video driver, e.g. "opengl"
 * `core.get_active_renderer()`:
   * name of current renderer, e.g. "OpenGL 4.6"
+* `core.get_active_irrlicht_device()`:
+  * name of current irrlicht device, e.g. "SDL"
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
 
   ```lua

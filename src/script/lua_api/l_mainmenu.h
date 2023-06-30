@@ -110,6 +110,8 @@ private:
 
 	static int l_get_active_renderer(lua_State *L);
 
+	static int l_get_active_irrlicht_device(lua_State *L);
+
 	//filesystem
 
 	static int l_get_mainmenu_path(lua_State *L);
