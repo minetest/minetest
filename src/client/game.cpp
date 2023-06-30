@@ -2535,8 +2535,9 @@ void Game::toggleFullViewRange()
 		} else {
 			m_game_ui->showTranslatedStatusText("Enabled unlimited viewing range");
 		}
-	} else
+	} else {
 		m_game_ui->showTranslatedStatusText("Disabled unlimited viewing range");
+	}
 }
 
 
@@ -3022,7 +3023,7 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	if (event->set_sky->fog_start >= 0)
 		sky->setFogStart(rangelim(event->set_sky->fog_start, 0.0f, 0.99f));
 	else
-		sky->setFogStart(g_settings->getFloat("fog_start"));
+		sky->setFogStart(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
 
 
 	delete event->set_sky;

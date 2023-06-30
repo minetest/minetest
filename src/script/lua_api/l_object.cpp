@@ -1805,7 +1805,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		}
 		lua_getfield(L, 2, "fog");
 		if (lua_istable(L, -1)) {
-			sky_params.fog_distance = getfloatfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
+			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
 			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
 		}
 	} else {
@@ -1942,14 +1942,10 @@ int ObjectRef::l_get_sky(lua_State *L)
 	lua_setfield(L, -2, "sky_color");
 
 	lua_newtable(L); // fog
-	if (skybox_params.fog_distance >= 0) {
-		lua_pushinteger(L, skybox_params.fog_distance);
-		lua_setfield(L, -2, "fog_distance");
-	}
-	if (skybox_params.fog_start >= 0) {
-		lua_pushnumber(L, skybox_params.fog_start);
-		lua_setfield(L, -2, "fog_start");
-	}
+	lua_pushinteger(L, skybox_params.fog_distance >= 0 ? skybox_params.fog_distance : -1);
+	lua_setfield(L, -2, "fog_distance");
+	lua_pushnumber(L, skybox_params.fog_start >= 0 ? skybox_params.fog_start : -1.0f);
+	lua_setfield(L, -2, "fog_start");
 	lua_setfield(L, -2, "fog");
 
 	return 1;
