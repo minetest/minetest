@@ -8702,7 +8702,13 @@ Used by `minetest.register_node`.
     -- Only when `paramtype2` supports palettes.
 
     post_effect_color = "#00000000",
-    -- Screen tint if player is inside node, see "ColorSpec"
+    -- Screen tint if a player is inside this node, see `ColorSpec`.
+    -- Isn't applied by color multiplication, but by drawing a rectangle of this
+    -- color over the entire screen. This means that a `post_effect_color` whose
+    -- alpha is 0 has no effect.
+
+    post_effect_color_shaded = false,
+    -- Determines whether `post_effect_color` is affected by lighting.
 
     paramtype = "none",  -- See "Nodes"
 
