@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
-#include "gettext.h"
 #include <string>
 #include <list>
 #include <map>
@@ -302,20 +301,7 @@ public:
 	}
 
 	// Not thread-safe.
-	inline void addShutdownError(const ModError &e) {
-		// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
-		std::string msg = fmtgettext("%s while shutting down: ", "ModError") +
-				e.what() + strgettext("\nCheck debug.txt for details.");
-		errorstream << msg << std::endl;
-
-		if (m_shutdown_errmsg) {
-			if (m_shutdown_errmsg->empty()) {
-				*m_shutdown_errmsg = msg;
-			} else {
-				*m_shutdown_errmsg += "\n\n" + msg;
-			}
-		}
-	}
+	void addShutdownError(const ModError &e);
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }

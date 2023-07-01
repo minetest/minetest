@@ -74,6 +74,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "gameparams.h"
 #include "particles.h"
+#include "gettext.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -3750,6 +3751,23 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+// Not thread-safe.
+void Server::addShutdownError(const ModError &e)
+{
+	// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
+	std::string msg = fmtgettext("%s while shutting down: ", "ModError") +
+			e.what() + strgettext("\nCheck debug.txt for details.");
+	errorstream << msg << std::endl;
+
+	if (m_shutdown_errmsg) {
+		if (m_shutdown_errmsg->empty()) {
+			*m_shutdown_errmsg = msg;
+		} else {
+			*m_shutdown_errmsg += "\n\n" + msg;
+		}
+	}
 }
 
 v3f Server::findSpawnPos()
