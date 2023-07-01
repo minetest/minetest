@@ -608,7 +608,7 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	matrix.makeIdentity();
 
 	video::SMaterial &material = m_meshbuffer->getMaterial();
-	material.forEachTexture([] (video::SMaterialLayer &tex) {
+	material.forEachTexture([] (auto &tex) {
 		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
 		tex.MagFilter = video::ETMAGF_LINEAR;
 	});
