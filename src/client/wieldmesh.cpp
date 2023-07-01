@@ -300,7 +300,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		// Enable bi/trilinear filtering only for high resolution textures
 		bool bilinear_filter = dim.Width > 32 && m_bilinear_filter;
 		bool trilinear_filter = dim.Width > 32 && m_trilinear_filter;
-		material.forEachTexture([=] (video::SMaterialLayer &tex) {
+		material.forEachTexture([=] (auto &tex) {
 			tex.setFiltersMinetest(bilinear_filter, trilinear_filter,
 					m_anisotropic_filter);
 		});
@@ -464,7 +464,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.MaterialType = m_material_type;
 			material.MaterialTypeParam = 0.5f;
 			material.BackfaceCulling = cull_backface;
-			material.forEachTexture([this] (video::SMaterialLayer &tex) {
+			material.forEachTexture([this] (auto &tex) {
 				tex.setFiltersMinetest(m_bilinear_filter, m_trilinear_filter,
 						m_anisotropic_filter);
 			});
@@ -558,7 +558,7 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		m_meshnode->setMesh(mesh);
 	}
 
-	m_meshnode->forEachMaterial([this] (video::SMaterial &mat) {
+	m_meshnode->forEachMaterial([this] (auto &mat) {
 		mat.Lighting = m_lighting;
 		// need to normalize normals when lighting is enabled (because of setScale())
 		mat.NormalizeNormals = m_lighting;
@@ -655,7 +655,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialTypeParam = 0.5f;
-			material.forEachTexture([] (video::SMaterialLayer &tex) {
+			material.forEachTexture([] (auto &tex) {
 				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 				tex.MagFilter = video::ETMAGF_NEAREST;
 			});
@@ -702,8 +702,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		video::SMaterial &material = mesh->getMeshBuffer(layer)->getMaterial();
 		material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-		material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-		material.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
+		material.forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
 		material.BackfaceCulling = true;
 		material.Lighting = false;
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

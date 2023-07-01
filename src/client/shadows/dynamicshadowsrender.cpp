@@ -113,7 +113,7 @@ void ShadowRenderer::disable()
 	}
 
 	for (auto node : m_shadow_node_array)
-		node.node->forEachMaterial([] (video::SMaterial &mat) {
+		node.node->forEachMaterial([] (auto &mat) {
 			mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
 		});
 }
@@ -185,14 +185,14 @@ void ShadowRenderer::addNodeToShadowList(
 	// node should never be ClientMap
 	assert(strcmp(node->getName(), "ClientMap") != 0);
 
-	node->forEachMaterial([this] (video::SMaterial &mat) {
+	node->forEachMaterial([this] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 	});
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 {
-	node->forEachMaterial([] (video::SMaterial &mat) {
+	node->forEachMaterial([] (auto &mat) {
 		mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
 	});
 	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
@@ -264,7 +264,7 @@ void ShadowRenderer::updateSMTextures()
 		assert(shadowMapTextureFinal != nullptr);
 
 		for (auto &node : m_shadow_node_array)
-			node.node->forEachMaterial([this] (video::SMaterial &mat) {
+			node.node->forEachMaterial([this] (auto &mat) {
 				mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 			});
 	}

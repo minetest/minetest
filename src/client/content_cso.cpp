@@ -37,15 +37,13 @@ public:
 		m_spritenode = smgr->addBillboardSceneNode(
 				NULL, v2f(1,1), pos, -1);
 		video::ITexture *tex = env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png");
-		m_spritenode->forEachMaterial([tex] (video::SMaterial &mat) {
-			mat.setTexture(0, tex);
-			mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		m_spritenode->forEachMaterial([tex] (auto &mat) {
+			mat.TextureLayers[0].Texture = tex;
 			mat.Lighting = false;
+			mat.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			mat.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
+			mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			mat.FogEnable = true;
-			mat.forEachTexture([] (video::SMaterialLayer &tex) {
-				tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-				tex.MagFilter = video::ETMAGF_NEAREST;
-			});
 		});
 		m_spritenode->setColor(video::SColor(255,0,0,0));
 		m_spritenode->setVisible(true);

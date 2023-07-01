@@ -842,7 +842,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
-			material.forEachTexture([this] (video::SMaterialLayer &tex) {
+			material.forEachTexture([this] (auto &tex) {
 				tex.setFiltersMinetest(m_cache_bilinear_filter, m_cache_trilinear_filter,
 						m_cache_anistropic_filter);
 			});

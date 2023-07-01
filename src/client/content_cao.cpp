@@ -254,7 +254,7 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	// Set material
 	buf->getMaterial().Lighting = false;
 	buf->getMaterial().BackfaceCulling = false;
-	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
+	buf->getMaterial().TextureLayers[0].Texture = tsrc->getTextureForMesh("rat.png");
 	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 	buf->getMaterial().TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
 	buf->getMaterial().FogEnable = true;
@@ -652,7 +652,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			mat.GouraudShading = false;
 			mat.NormalizeNormals = true;
 		}
-		mat.forEachTexture([] (video::SMaterialLayer &tex) {
+		mat.forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
@@ -668,7 +668,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		video::ITexture *tex = tsrc->getTextureForMesh("no_texture.png");
-		m_spritenode->forEachMaterial([tex] (video::SMaterial &mat) {
+		m_spritenode->forEachMaterial([tex] (auto &mat) {
 			mat.setTexture(0, tex);
 		});
 
@@ -755,7 +755,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 		setSceneNodeMaterials(m_meshnode);
 
-		m_meshnode->forEachMaterial([this] (video::SMaterial &mat) {
+		m_meshnode->forEachMaterial([this] (auto &mat) {
 			mat.BackfaceCulling = m_prop.backface_culling;
 		});
 	} else if (m_prop.visual == "mesh") {
@@ -782,7 +782,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 			setSceneNodeMaterials(m_animated_meshnode);
 
-			m_animated_meshnode->forEachMaterial([this] (video::SMaterial &mat) {
+			m_animated_meshnode->forEachMaterial([this] (auto &mat) {
 				mat.BackfaceCulling = m_prop.backface_culling;
 			});
 		} else
@@ -1354,7 +1354,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.SpecularColor = m_prop.colors[0];
 			}
 
-			material.forEachTexture([=] (video::SMaterialLayer &tex) {
+			material.forEachTexture([=] (auto &tex) {
 				tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
 						use_anisotropic_filter);
 			});
@@ -1390,7 +1390,7 @@ void GenericCAO::updateTextures(std::string mod)
 				use_trilinear_filter &= res > 64;
 				use_bilinear_filter &= res > 64;
 
-				material.forEachTexture([=] (video::SMaterialLayer &tex) {
+				material.forEachTexture([=] (auto &tex) {
 					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
@@ -1437,7 +1437,7 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[i];
 				}
 
-				material.forEachTexture([=] (video::SMaterialLayer &tex) {
+				material.forEachTexture([=] (auto &tex) {
 					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
@@ -1462,7 +1462,7 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.forEachTexture([=] (video::SMaterialLayer &tex) {
+				material.forEachTexture([=] (auto &tex) {
 					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
@@ -1491,7 +1491,7 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.forEachTexture([=] (video::SMaterialLayer &tex) {
+				material.forEachTexture([=] (auto &tex) {
 					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
@@ -1977,7 +1977,7 @@ void GenericCAO::updateMeshCulling()
 
 	if (m_prop.visual == "upright_sprite") {
 		// upright sprite has no backface culling
-		node->forEachMaterial([=] (video::SMaterial &mat) {
+		node->forEachMaterial([=] (auto &mat) {
 			mat.FrontfaceCulling = hidden;
 		});
 		return;
@@ -1987,13 +1987,13 @@ void GenericCAO::updateMeshCulling()
 		// Hide the mesh by culling both front and
 		// back faces. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.
-		node->forEachMaterial([] (video::SMaterial &mat) {
+		node->forEachMaterial([] (auto &mat) {
 			mat.BackfaceCulling = true;
 			mat.FrontfaceCulling = true;
 		});
 	} else {
 		// Restore mesh visibility.
-		node->forEachMaterial([this] (video::SMaterial &mat) {
+		node->forEachMaterial([this] (auto &mat) {
 			mat.BackfaceCulling = m_prop.backface_culling;
 			mat.FrontfaceCulling = false;
 		});

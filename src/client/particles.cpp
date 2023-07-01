@@ -92,7 +92,7 @@ Particle::Particle(
 	m_material.Lighting = false;
 	m_material.BackfaceCulling = false;
 	m_material.FogEnable = true;
-	m_material.forEachTexture([] (video::SMaterialLayer &tex) {
+	m_material.forEachTexture([] (auto &tex) {
 		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});

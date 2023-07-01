@@ -52,7 +52,7 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	m_material.FogEnable = true;
 	m_material.AntiAliasing = video::EAAM_SIMPLE;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.forEachTexture([] (video::SMaterialLayer &tex) {
+	m_material.forEachTexture([] (auto &tex) {
 		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 		tex.MagFilter = video::ETMAGF_NEAREST;
 	});
