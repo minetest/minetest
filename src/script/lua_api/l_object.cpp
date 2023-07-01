@@ -1803,6 +1803,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 			// pop "sky_color" table
 			lua_pop(L, 1);
 		}
+		lua_getfield(L, 2, "fog");
+		if (lua_istable(L, -1)) {
+			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
+			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
+		}
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
@@ -1923,7 +1928,6 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_pushnumber(L, skybox_params.body_orbit_tilt);
 		lua_setfield(L, -2, "body_orbit_tilt");
 	}
-
 	lua_newtable(L);
 	s16 i = 1;
 	for (const std::string &texture : skybox_params.textures) {
@@ -1936,6 +1940,14 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	push_sky_color(L, skybox_params);
 	lua_setfield(L, -2, "sky_color");
+
+	lua_newtable(L); // fog
+	lua_pushinteger(L, skybox_params.fog_distance >= 0 ? skybox_params.fog_distance : -1);
+	lua_setfield(L, -2, "fog_distance");
+	lua_pushnumber(L, skybox_params.fog_start >= 0 ? skybox_params.fog_start : -1.0f);
+	lua_setfield(L, -2, "fog_start");
+	lua_setfield(L, -2, "fog");
+
 	return 1;
 }
 

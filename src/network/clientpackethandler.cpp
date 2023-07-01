@@ -1395,9 +1395,13 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 				>> skybox.sky_color.indoors;
 		}
 
-		try {
+		if (pkt->getRemainingBytes() >= 4) {
 			*pkt >> skybox.body_orbit_tilt;
-		} catch (PacketError &e) {}
+		}
+
+		if (pkt->getRemainingBytes() >= 6) {
+			*pkt >> skybox.fog_distance >> skybox.fog_start;
+		}
 
 		ClientEvent *event = new ClientEvent();
 		event->type = CE_SET_SKY;

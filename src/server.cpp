@@ -1846,6 +1846,7 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		}
 
 		pkt << params.body_orbit_tilt;
+		pkt << params.fog_distance << params.fog_start;
 	}
 
 	Send(&pkt);
