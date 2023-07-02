@@ -1806,6 +1806,10 @@ int ObjectRef::l_set_sky(lua_State *L)
 		lua_getfield(L, 2, "fog");
 		if (lua_istable(L, -1)) {
 			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
+			if (sky_params.fog_distance >= 0) {
+				// if set, enforce game limits
+				sky_params.fog_distance = rangelim(sky_params.fog_distance, 20, 4000);
+			}
 			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
 		}
 	} else {
