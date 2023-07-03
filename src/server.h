@@ -150,7 +150,7 @@ public:
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface = nullptr,
-		std::string *on_shutdown_errmsg = nullptr
+		std::string *shutdown_errmsg = nullptr
 	);
 	~Server();
 	DISABLE_CLASS_COPY(Server);
@@ -299,6 +299,9 @@ public:
 	{
 		setAsyncFatalError(std::string("Lua: ") + e.what());
 	}
+
+	// Not thread-safe.
+	void addShutdownError(const ModError &e);
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
@@ -655,9 +658,9 @@ private:
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
 
-	// if a mod-error occurs in the on_shutdown callback, the error message will
-	// be written into this
-	std::string *const m_on_shutdown_errmsg;
+	// If a mod error occurs while shutting down, the error message will be
+	// written into this.
+	std::string *const m_shutdown_errmsg;
 
 	/*
 		Map edit event queue. Automatically receives all map edits.

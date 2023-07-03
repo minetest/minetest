@@ -510,8 +510,12 @@ ServerEnvironment::~ServerEnvironment()
 	// This makes the next one delete all active objects.
 	m_active_blocks.clear();
 
-	// Convert all objects to static and delete the active objects
-	deactivateFarObjects(true);
+	try {
+		// Convert all objects to static and delete the active objects
+		deactivateFarObjects(true);
+	} catch (ModError &e) {
+		m_server->addShutdownError(e);
+	}
 
 	// Drop/delete map
 	if (m_map)
