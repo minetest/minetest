@@ -150,7 +150,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
 	if (density > 1.5f) {
-		std::string sprite_path = porting::path_user + "/textures/base/pack/";
+		std::string sprite_path = porting::path_share + "/textures/base/pack/";
 		if (density > 3.5f)
 			sprite_path.append("checkbox_64.png");
 		else if (density > 2.0f)

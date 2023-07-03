@@ -210,7 +210,7 @@ bool RenderingEngine::setupTopLevelWindow()
 bool RenderingEngine::setWindowIcon()
 {
 	irr_ptr<video::IImage> img(driver->createImageFromFile(
-			(porting::path_user + "/textures/base/pack/logo.png").c_str()));
+			(porting::path_share + "/textures/base/pack/logo.png").c_str()));
 	if (!img) {
 		warningstream << "Could not load icon file." << std::endl;
 		return false;
