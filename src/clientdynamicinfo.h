@@ -19,11 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrTypes.h"
+#include "irrlichttypes_bloated.h"
+#ifndef SERVER
+#include "settings.h"
+#include "client/renderingengine.h"
+#endif
 
 
 struct ClientDynamicInfo
 {
+public:
 	v2u32 render_target_size;
 	f32 real_gui_scaling;
 	f32 real_hud_scaling;
@@ -35,12 +40,30 @@ struct ClientDynamicInfo
 				abs(real_hud_scaling - other.real_hud_scaling) < 0.001f;
 	}
 
-	static v2f32 calculateMaxFSSize(v2u32 render_target_size) {
+#ifndef SERVER
+	static ClientDynamicInfo getCurrent() {
+		v2u32 screen_size = RenderingEngine::getWindowSize();
+		f32 density = RenderingEngine::getDisplayDensity();
+		f32 gui_scaling = g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
+		f32 hud_scaling = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
+		f32 real_gui_scaling = gui_scaling * density;
+		f32 real_hud_scaling = hud_scaling * density;
+
+		return {
+			screen_size, real_gui_scaling, real_hud_scaling,
+			ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
+		};
+	}
+#endif
+
+private:
+#ifndef SERVER
+	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling) {
 		f32 factor =
 #ifdef HAVE_TOUCHSCREENGUI
-				10;
+				10 / gui_scaling;
 #else
-				15;
+				15 / gui_scaling;
 #endif
 		f32 ratio = (f32)render_target_size.X / (f32)render_target_size.Y;
 		if (ratio < 1)
@@ -48,4 +71,5 @@ struct ClientDynamicInfo
 		else
 			return { factor * ratio, factor };
 	}
+#endif
 };

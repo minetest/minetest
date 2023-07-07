@@ -885,7 +885,6 @@ private:
 	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	f32 getSensitivityScaleFactor() const;
-	ClientDynamicInfo getCurrentDynamicInfo() const;
 
 	InputHandler *input = nullptr;
 
@@ -1199,7 +1198,7 @@ void Game::run()
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime);
 
-		const auto current_dynamic_info = getCurrentDynamicInfo();
+		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
 		if (!current_dynamic_info.equal(client_display_info)) {
 			client_display_info = current_dynamic_info;
 			dynamic_info_send_timer = 0.2f;
@@ -2599,19 +2598,6 @@ f32 Game::getSensitivityScaleFactor() const
 	// 16:9 aspect ratio to minimize disruption of existing sensitivity
 	// settings.
 	return tan(fov_y / 2.0f) * 1.3763818698f;
-}
-
-ClientDynamicInfo Game::getCurrentDynamicInfo() const
-{
-	v2u32 screen_size = RenderingEngine::getWindowSize();
-	f32 density = RenderingEngine::getDisplayDensity();
-	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
-	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
-
-	return {
-		screen_size, gui_scaling, hud_scaling,
-		ClientDynamicInfo::calculateMaxFSSize(screen_size)
-	};
 }
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
