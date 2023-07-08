@@ -93,7 +93,7 @@ std::wstring utf8_to_wide(const std::string &input)
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
 
-#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 	static_assert(sizeof(wchar_t) == 4, "Unexpected wide char size");
 #endif
 
