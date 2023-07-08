@@ -678,13 +678,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 		CGUITTGlyphPage* page = it->second;
 		++it;
 
-		if (shadow_offset) {
-			for (size_t i = 0; i < page->render_positions.size(); ++i)
-				page->render_positions[i] += core::vector2di(shadow_offset, shadow_offset);
-			Driver->draw2DImageBatch(page->texture, page->render_positions, page->render_source_rects, clip, video::SColor(shadow_alpha,0,0,0), true);
-			for (size_t i = 0; i < page->render_positions.size(); ++i)
-				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
-		}
 		// render runs of matching color in batch
 		size_t ibegin;
 		video::SColor colprev;
@@ -697,6 +690,19 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			tmp_positions.set_data(&page->render_positions[ibegin], i - ibegin);
 			tmp_source_rects.set_data(&page->render_source_rects[ibegin], i - ibegin);
 			--i;
+
+			if (shadow_offset) {
+				for (size_t i = 0; i < tmp_positions.size(); ++i)
+					tmp_positions[i] += core::vector2di(shadow_offset, shadow_offset);
+
+				// Never let the opacity of the text shadow exceed the opacity of
+				// the text itself, so that we can render completely transparent text.
+				video::SColor shadow_color = video::SColor(std::min(shadow_alpha, colprev.getAlpha()), 0, 0, 0);
+				Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, shadow_color, true);
+
+				for (size_t i = 0; i < tmp_positions.size(); ++i)
+					tmp_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
+			}
 
 			if (!use_transparency)
 				colprev.color |= 0xff000000;
