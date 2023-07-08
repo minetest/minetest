@@ -695,9 +695,8 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				for (size_t i = 0; i < tmp_positions.size(); ++i)
 					tmp_positions[i] += core::vector2di(shadow_offset, shadow_offset);
 
-				// Never let the opacity of the text shadow exceed the opacity of
-				// the text itself, so that we can render completely transparent text.
-				video::SColor shadow_color = video::SColor(std::min(shadow_alpha, colprev.getAlpha()), 0, 0, 0);
+				u32 new_shadow_alpha = core::clamp(core::round32(shadow_alpha * (colprev.getAlpha() / 255.0f)), 0, 255);
+				video::SColor shadow_color = video::SColor(new_shadow_alpha, 0, 0, 0);
 				Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, shadow_color, true);
 
 				for (size_t i = 0; i < tmp_positions.size(); ++i)
