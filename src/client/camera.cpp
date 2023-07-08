@@ -374,10 +374,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	// Calculate and translate the head SceneNode offsets
 	{
 		v3f eye_offset = player->getEyeOffset();
-		if (m_camera_mode == CAMERA_MODE_FIRST)
+		switch(m_camera_mode) {
+		case CAMERA_MODE_FIRST:
 			eye_offset += player->eye_offset_first;
-		else
+			break;
+		case CAMERA_MODE_THIRD:
 			eye_offset += player->eye_offset_third;
+			break;
+		case CAMERA_MODE_THIRD_FRONT:
+			eye_offset.X += player->eye_offset_third.X;
+			eye_offset.Y += player->eye_offset_third.Y;
+			eye_offset.Z -= player->eye_offset_third.Z;
+			break;
+		}
 
 		// Set head node transformation
 		eye_offset.Y += cameratilt * -player->hurt_tilt_strength + fall_bobbing;
