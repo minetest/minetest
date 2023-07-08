@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-15 19:51+0000\n"
-"Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
+"PO-Revision-Date: 2023-07-09 14:49+0000\n"
+"Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
 "Language: sv\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1678,9 +1678,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zoom är för närvarande inaktiverad av spel eller modd"
+msgstr "Chatt är för närvarande inaktiverad av spel eller modd"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2356,7 +2355,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-brus som bestämmer antalet fängelsehålor per mappchunk."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2376,7 +2374,6 @@ msgstr ""
 "-    topbottom: split screen över/under.\n"
 "-    sidebyside: split screen sida vid sida.\n"
 "-    crossview: Korsögad 3d\n"
-"-    pageflip: quadbufferbaserad 3d.\n"
 "Notera att 'interlaced'-läget kräver shaders."
 
 #: src/settings_translation_file.cpp
@@ -3547,9 +3544,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Exponeringsfaktor"
+msgstr "Exponeringskompensation"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
