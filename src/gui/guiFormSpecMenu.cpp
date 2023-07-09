@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/fontengine.h"
 #include "client/sound.h"
-#include "util/hex.h"
+#include "irr_hex.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"

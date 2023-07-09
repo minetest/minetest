@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
-#include "util/hex.h"
+#include "irr_hex.h"
 #include "util/serialize.h"
 #include "util/sha1.h"
 #include "util/string.h"

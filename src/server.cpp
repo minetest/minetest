@@ -58,7 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/mods.h"
 #include "util/base64.h"
 #include "util/sha1.h"
-#include "util/hex.h"
+#include "irr_hex.h"
 #include "database/database.h"
 #include "chatmessage.h"
 #include "chat_interface.h"

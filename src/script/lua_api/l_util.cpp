@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "config.h"
 #include "version.h"
-#include "util/hex.h"
+#include "irr_hex.h"
 #include "util/sha1.h"
 #include "util/png.h"
 #include <cstdio>

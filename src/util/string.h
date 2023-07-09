@@ -74,11 +74,6 @@ struct FlagDesc {
 	u32 flag;
 };
 
-// Try to avoid converting between wide and UTF-8 unless you need to
-// input/output stuff via Irrlicht
-std::wstring utf8_to_wide(const std::string &input);
-std::string wide_to_utf8(const std::wstring &input);
-
 std::string urlencode(const std::string &str);
 std::string urldecode(const std::string &str);
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask);
@@ -730,24 +725,6 @@ inline std::string str_join(const std::vector<std::string> &list,
 		first = false;
 	}
 	return oss.str();
-}
-
-/**
- * Create a UTF8 std::string from an irr::core::stringw.
- */
-inline std::string stringw_to_utf8(const irr::core::stringw &input)
-{
-	std::wstring str(input.c_str());
-	return wide_to_utf8(str);
-}
-
- /**
-  * Create an irr::core:stringw from a UTF8 std::string.
-  */
-inline irr::core::stringw utf8_to_stringw(const std::string &input)
-{
-	std::wstring str = utf8_to_wide(input);
-	return irr::core::stringw(str.c_str());
 }
 
 /**

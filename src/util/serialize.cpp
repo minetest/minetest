@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialize.h"
 #include "porting.h"
 #include "util/string.h"
-#include "util/hex.h"
+#include "irr_hex.h"
 #include "exceptions.h"
 #include "irrlichttypes.h"
 
