@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-07-12 10:53+0000\n"
+"Last-Translator: MikeL <mike@eightyeight.co.nz>\n"
+"Language-Team: Maori <https://hosted.weblate.org/projects/minetest/minetest/"
+"mi/>\n"
 "Language: mi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -560,7 +563,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Whakakore"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -581,12 +584,12 @@ msgstr ""
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Ingoa"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr ""
+msgstr "Kupuhipa"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
@@ -594,7 +597,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "Rehita"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
@@ -827,7 +830,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Kaihunga"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -897,7 +900,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Nga Korero:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -905,7 +908,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr ""
+msgstr "Ihirangi"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -913,35 +916,35 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Aratau Auaha"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Taea te kino"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Tūmau manaaki"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr ""
+msgstr "Whiriwhiri Mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr ""
+msgstr "Hou"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Taiao:"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "Kēmu Manaaki"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr ""
+msgstr "Panui te tūmau"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -953,7 +956,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Nama Rorohiko"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -965,7 +968,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Tīmata Kēmu"
 
 #: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
 msgid "Clear"
@@ -977,15 +980,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
-msgstr ""
+msgstr "Wāhi noho"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
-msgstr ""
+msgstr "Whakaahuatanga Whakamaramatanga"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Takiuru"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
@@ -1018,7 +1021,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
-msgstr ""
+msgstr "Uru Kēmu"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -1142,7 +1145,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Huri i nga key"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "All Settings"
@@ -1190,7 +1193,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Tautuhinga"
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1547,14 +1550,28 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
+"Whakamaramatanga o nga neke hanga:\n"
+"- %s: whakamua\n"
+"- %s: whakamuri\n"
+"- %s: māui\n"
+"- %s: katau\n"
+"- %s: peke\n"
+"- %s: keri\n"
+"- %s: whakamahī\n"
+"- %s: konihi\n"
+"- %s: whakataka\n"
+"- %s: ketetaputapu\n"
+"- Mouse: tirohanga\n"
+"- Mouse wheel: ti pako\n"
+"- %s: korero\n"
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Haere Tonu"
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Huri Kupuhuna"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -1562,15 +1579,15 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Rōrahi Oro"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Puta ki te pae tahua"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Tata kēmu taki puta"
 
 #: src/client/game.cpp
 msgid "Game info:"
