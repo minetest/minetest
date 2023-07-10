@@ -168,7 +168,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	assert(new_data);
 	u8 *new_flags = new u8[new_size];
 	assert(new_flags);
-	memset(new_flags, VOXELFLAG_NO_DATA, new_size);
+	my_memset(new_flags, VOXELFLAG_NO_DATA, new_size);
 
 	// Copy old data
 	s32 old_x_width = m_area.MaxEdge.X - m_area.MinEdge.X + 1;
@@ -243,7 +243,7 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 	for (s16 z = 0; z < size.Z; z++) {
 		for (s16 y = 0; y < size.Y; y++) {
 			my_memcpy(&m_data[i_local], &src[i_src], size.X * sizeof(*m_data));
-			memset(&m_flags[i_local], 0, size.X);
+			my_memset(&m_flags[i_local], 0, size.X);
 			i_src += src_step;
 			i_local += dest_step;
 		}

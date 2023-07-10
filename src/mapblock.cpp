@@ -274,7 +274,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 	if (!mapping)
 		mapping = std::make_unique<content_t[]>(USHRT_MAX + 1);
 
-	memset(mapping.get(), 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
+	my_memset(mapping.get(), 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
 
 	std::unordered_set<content_t> unknown_contents;
 	content_t id_counter = 0;

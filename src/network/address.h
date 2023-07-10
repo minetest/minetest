@@ -35,8 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct IPv6AddressBytes
 {
-	u8 bytes[16];
-	IPv6AddressBytes() { memset(bytes, 0, 16); }
+	u8 bytes[16] = {};
 };
 
 class Address

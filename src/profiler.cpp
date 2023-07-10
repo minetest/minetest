@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "profiler.h"
 #include "porting.h"
+#include "util/string.h"
 
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
@@ -175,7 +176,7 @@ int Profiler::print(std::ostream &o, u32 page, u32 pagecount)
 		{
 			// Padding
 			s32 space = std::max(0, 44 - (s32)i.first.size());
-			memset(buffer, '_', space);
+			my_memset(buffer, '_', space);
 			buffer[space] = '\0';
 			o << buffer;
 		}

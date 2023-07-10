@@ -26,7 +26,6 @@
 #include <cmath>
 #include "noise.h"
 #include <iostream>
-#include <cstring> // memset
 #include "debug.h"
 #include "util/numeric.h"
 #include "util/string.h"
@@ -637,7 +636,7 @@ float *Noise::perlinMap2D(float x, float y, float *persistence_map)
 	x /= np.spread.X;
 	y /= np.spread.Y;
 
-	memset(result, 0, sizeof(float) * bufsize);
+	my_memset(result, 0, sizeof(float) * bufsize);
 
 	if (persistence_map) {
 		if (!persist_buf)
@@ -675,7 +674,7 @@ float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 	y /= np.spread.Y;
 	z /= np.spread.Z;
 
-	memset(result, 0, sizeof(float) * bufsize);
+	my_memset(result, 0, sizeof(float) * bufsize);
 
 	if (persistence_map) {
 		if (!persist_buf)

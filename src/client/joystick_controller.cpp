@@ -301,7 +301,7 @@ void JoystickController::clear()
 	m_keys_down.reset();
 	m_past_keys_pressed.reset();
 	m_keys_released.reset();
-	memset(m_axes_vals, 0, sizeof(m_axes_vals));
+	my_memset(m_axes_vals, 0, sizeof(m_axes_vals));
 }
 
 float JoystickController::getAxisWithoutDead(JoystickAxis axis)

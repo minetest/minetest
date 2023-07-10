@@ -157,7 +157,7 @@ void UDPSocket::Bind(Address addr)
 
 	if (m_addr_family == AF_INET6) {
 		struct sockaddr_in6 address;
-		memset(&address, 0, sizeof(address));
+		my_memset(&address, 0, sizeof(address));
 
 		address.sin6_family = AF_INET6;
 		address.sin6_addr = addr.getAddress6();
@@ -167,7 +167,7 @@ void UDPSocket::Bind(Address addr)
 				sizeof(struct sockaddr_in6));
 	} else {
 		struct sockaddr_in address;
-		memset(&address, 0, sizeof(address));
+		my_memset(&address, 0, sizeof(address));
 
 		address.sin_family = AF_INET;
 		address.sin_addr = addr.getAddress();
@@ -257,7 +257,7 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 	int received;
 	if (m_addr_family == AF_INET6) {
 		struct sockaddr_in6 address;
-		memset(&address, 0, sizeof(address));
+		my_memset(&address, 0, sizeof(address));
 		socklen_t address_len = sizeof(address);
 
 		received = recvfrom(m_handle, (char *)data, size, 0,
@@ -272,7 +272,7 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 		sender = Address(bytes, address_port);
 	} else {
 		struct sockaddr_in address;
-		memset(&address, 0, sizeof(address));
+		my_memset(&address, 0, sizeof(address));
 
 		socklen_t address_len = sizeof(address);
 

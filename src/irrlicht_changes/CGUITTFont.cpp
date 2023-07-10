@@ -32,6 +32,7 @@
 #include <irrlicht.h>
 #include <iostream>
 #include "CGUITTFont.h"
+#include "util/string.h" // my_memset
 
 namespace irr
 {
@@ -43,7 +44,7 @@ struct SGUITTFace : public virtual irr::IReferenceCounted
 {
 	SGUITTFace() : face_buffer(0), face_buffer_size(0)
 	{
-		memset((void*)&face, 0, sizeof(FT_Face));
+		my_memset(&face, 0, sizeof(FT_Face));
 	}
 
 	~SGUITTFace()

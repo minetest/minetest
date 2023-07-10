@@ -146,7 +146,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	// Initialise with the ID of 'BIOME_NONE' so that cavegen can get the
 	// fallback biome when biome generation (which calculates the biomemap IDs)
 	// is disabled.
-	memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
+	my_memset(biomemap, 0, sizeof(biome_t) * m_csize.X * m_csize.Z);
 
 	// Calculating the bounding position of each biome so we know when we might switch
 	// First gathering all heights where we might switch

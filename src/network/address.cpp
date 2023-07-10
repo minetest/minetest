@@ -59,26 +59,26 @@ typedef int socket_t;
 
 Address::Address()
 {
-	memset(&m_address, 0, sizeof(m_address));
+	my_memset(&m_address, 0, sizeof(m_address));
 }
 
 Address::Address(u32 address, u16 port)
 {
-	memset(&m_address, 0, sizeof(m_address));
+	my_memset(&m_address, 0, sizeof(m_address));
 	setAddress(address);
 	setPort(port);
 }
 
 Address::Address(u8 a, u8 b, u8 c, u8 d, u16 port)
 {
-	memset(&m_address, 0, sizeof(m_address));
+	my_memset(&m_address, 0, sizeof(m_address));
 	setAddress(a, b, c, d);
 	setPort(port);
 }
 
 Address::Address(const IPv6AddressBytes *ipv6_bytes, u16 port)
 {
-	memset(&m_address, 0, sizeof(m_address));
+	my_memset(&m_address, 0, sizeof(m_address));
 	setAddress(ipv6_bytes);
 	setPort(port);
 }
@@ -112,7 +112,7 @@ void Address::Resolve(const char *name)
 	}
 
 	struct addrinfo *resolved, hints;
-	memset(&hints, 0, sizeof(hints));
+	my_memset(&hints, 0, sizeof(hints));
 
 	// Setup hints
 	if (g_settings->getBool("enable_ipv6")) {

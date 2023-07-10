@@ -43,7 +43,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 	int LOCALEID = strtol(pStr, &endptr,16);
 
 	wchar_t buffer[LOCALE_NAME_MAX_LENGTH];
-	memset(buffer, 0, sizeof(buffer));
+	my_memset(buffer, 0, sizeof(buffer));
 	if (GetLocaleInfoW(
 		LOCALEID,
 		LOCALE_SISO639LANGNAME,
@@ -52,7 +52,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 
 		std::wstring name = buffer;
 
-		memset(buffer, 0, sizeof(buffer));
+		my_memset(buffer, 0, sizeof(buffer));
 		GetLocaleInfoW(
 		LOCALEID,
 		LOCALE_SISO3166CTRYNAME,
@@ -61,7 +61,7 @@ BOOL CALLBACK UpdateLocaleCallback(LPTSTR pStr)
 
 		std::wstring country = buffer;
 
-		memset(buffer, 0, sizeof(buffer));
+		my_memset(buffer, 0, sizeof(buffer));
 		GetLocaleInfoW(
 		LOCALEID,
 		LOCALE_SENGLISHLANGUAGENAME,

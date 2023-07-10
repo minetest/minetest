@@ -123,12 +123,12 @@ void TestRandom::testPcgRandomBytes()
 	char buf[32];
 	PcgRandom r(1538, 877);
 
-	memset(buf, 0, sizeof(buf));
+	my_memset(buf, 0, sizeof(buf));
 	r.bytes(buf + 5, 23);
 	UASSERT(memcmp(buf + 5, expected_pcgrandom_bytes_result,
 		sizeof(expected_pcgrandom_bytes_result)) == 0);
 
-	memset(buf, 0, sizeof(buf));
+	my_memset(buf, 0, sizeof(buf));
 	r.bytes(buf, 17);
 	UASSERT(memcmp(buf, expected_pcgrandom_bytes_result2,
 		sizeof(expected_pcgrandom_bytes_result2)) == 0);
@@ -142,7 +142,7 @@ void TestRandom::testPcgRandomNormalDist()
 	static const int num_trials = 20;
 	static const u32 num_samples = 61000;
 	s32 bins[max - min + 1];
-	memset(bins, 0, sizeof(bins));
+	my_memset(bins, 0, sizeof(bins));
 
 	PcgRandom r(486179 + (int)time(NULL));
 

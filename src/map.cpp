@@ -2009,7 +2009,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 				{
 					s32 i = m_area.index(a.MinEdge.X,y,z);
-					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
+					my_memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
 				}
 			}
 		}

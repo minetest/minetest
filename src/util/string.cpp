@@ -139,7 +139,7 @@ std::wstring utf8_to_wide(const std::string &input)
 {
 	size_t outbuf_size = input.size() + 1;
 	wchar_t *outbuf = new wchar_t[outbuf_size];
-	memset(outbuf, 0, outbuf_size * sizeof(wchar_t));
+	my_memset(outbuf, 0, outbuf_size * sizeof(wchar_t));
 	MultiByteToWideChar(CP_UTF8, 0, input.c_str(), input.size(),
 		outbuf, outbuf_size);
 	std::wstring out(outbuf);
@@ -151,7 +151,7 @@ std::string wide_to_utf8(const std::wstring &input)
 {
 	size_t outbuf_size = (input.size() + 1) * 6;
 	char *outbuf = new char[outbuf_size];
-	memset(outbuf, 0, outbuf_size);
+	my_memset(outbuf, 0, outbuf_size);
 	WideCharToMultiByte(CP_UTF8, 0, input.c_str(), input.size(),
 		outbuf, outbuf_size, NULL, NULL);
 	std::string out(outbuf);

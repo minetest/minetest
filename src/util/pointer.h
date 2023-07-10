@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "debug.h" // For assert()
-#include <cstring>
+#include "util/string.h" // my_memcpy, my_memset
 #include <memory> // std::shared_ptr
 
 
@@ -168,7 +168,7 @@ public:
 		else
 			data = nullptr;
 		refcount = new unsigned int;
-		memset(data,0,sizeof(T)*m_size);
+		my_memset(data,0,sizeof(T)*m_size);
 		(*refcount) = 1;
 	}
 	SharedBuffer(const SharedBuffer &buffer)

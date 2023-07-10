@@ -42,7 +42,7 @@ void InitInterlacedMaskStep::run(PipelineContext &context)
 	u8 *data = reinterpret_cast<u8 *>(mask->lock());
 	for (u32 j = 0; j < size.Height; j++) {
 		u8 val = j % 2 ? 0xff : 0x00;
-		memset(data, val, 4 * size.Width);
+		my_memset(data, val, 4 * size.Width);
 		data += 4 * size.Width;
 	}
 	mask->unlock();
