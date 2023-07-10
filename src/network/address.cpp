@@ -196,9 +196,9 @@ void Address::setAddress(const IPv6AddressBytes *ipv6_bytes)
 {
 	m_addr_family = AF_INET6;
 	if (ipv6_bytes)
-		memcpy(m_address.ipv6.s6_addr, ipv6_bytes->bytes, 16);
+		my_memcpy(m_address.ipv6.s6_addr, ipv6_bytes->bytes, 16);
 	else
-		memset(m_address.ipv6.s6_addr, 0, 16);
+		my_memset(m_address.ipv6.s6_addr, 0, 16);
 }
 
 void Address::setPort(u16 port)

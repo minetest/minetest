@@ -89,7 +89,7 @@ std::wstring utf8_to_wide(const std::string &input)
 	size_t outbuf_size = input.length() * sizeof(wchar_t);
 
 	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
-	memcpy(inbuf, input.c_str(), inbuf_size);
+	my_memcpy(inbuf, input.c_str(), inbuf_size);
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
 
@@ -117,7 +117,7 @@ std::string wide_to_utf8(const std::wstring &input)
 	size_t outbuf_size = input.length() * 4;
 
 	char *inbuf = new char[inbuf_size]; // intentionally NOT null-terminated
-	memcpy(inbuf, input.c_str(), inbuf_size);
+	my_memcpy_cast(inbuf, input.c_str(), inbuf_size);
 	std::string out;
 	out.resize(outbuf_size);
 
@@ -261,7 +261,7 @@ size_t mystrlcpy(char *dst, const char *src, size_t size)
 	size_t copylen = MYMIN(srclen, size);
 
 	if (copylen > 0) {
-		memcpy(dst, src, copylen);
+		my_memcpy(dst, src, copylen);
 		dst[copylen - 1] = '\0';
 	}
 

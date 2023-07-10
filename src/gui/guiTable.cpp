@@ -447,8 +447,7 @@ void GUITable::setTable(const TableOptions &options,
 			Row *row = &m_rows[i];
 			row->cellcount = rows[i].cells.size();
 			row->cells = new Cell[row->cellcount];
-			memcpy((void*) row->cells, (void*) &rows[i].cells[0],
-					row->cellcount * sizeof(Cell));
+			my_memcpy(row->cells, &rows[i].cells[0], row->cellcount * sizeof(Cell));
 			row->indent = rows[i].indent;
 			row->visible_index = i;
 			m_visible_rows.push_back(i);

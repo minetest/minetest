@@ -94,9 +94,9 @@ ObjDef *Schematic::clone() const
 	FATAL_ERROR_IF(!schemdata, "Schematic can only be cloned after loading");
 	u32 nodecount = size.X * size.Y * size.Z;
 	def->schemdata = new MapNode[nodecount];
-	memcpy(def->schemdata, schemdata, sizeof(MapNode) * nodecount);
+	my_memcpy(def->schemdata, schemdata, sizeof(MapNode) * nodecount);
 	def->slice_probs = new u8[size.Y];
-	memcpy(def->slice_probs, slice_probs, sizeof(u8) * size.Y);
+	my_memcpy(def->slice_probs, slice_probs, sizeof(u8) * size.Y);
 
 	return def;
 }

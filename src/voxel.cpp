@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "util/directiontables.h"
 #include "util/timetaker.h"
-#include <cstring>  // memcpy, memset
+#include "util/string.h"  // my_memcpy, my_memset
 
 /*
 	Debug stuff
@@ -178,9 +178,9 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 		unsigned int old_index = m_area.index(m_area.MinEdge.X,y,z);
 		unsigned int new_index = new_area.index(m_area.MinEdge.X,y,z);
 
-		memcpy(&new_data[new_index], &m_data[old_index],
+		my_memcpy(&new_data[new_index], &m_data[old_index],
 				old_x_width * sizeof(MapNode));
-		memcpy(&new_flags[new_index], &m_flags[old_index],
+		my_memcpy(&new_flags[new_index], &m_flags[old_index],
 				old_x_width * sizeof(u8));
 	}
 
@@ -242,7 +242,7 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 
 	for (s16 z = 0; z < size.Z; z++) {
 		for (s16 y = 0; y < size.Y; y++) {
-			memcpy(&m_data[i_local], &src[i_src], size.X * sizeof(*m_data));
+			my_memcpy(&m_data[i_local], &src[i_src], size.X * sizeof(*m_data));
 			memset(&m_flags[i_local], 0, size.X);
 			i_src += src_step;
 			i_local += dest_step;

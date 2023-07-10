@@ -395,7 +395,7 @@ void TestSerialization::testFloatFormat()
 		return;
 
 	auto test_single = [&fs, &fm](const u32 &i) -> bool {
-		memcpy(&fm, &i, 4);
+		my_memcpy_cast(&fm, &i, 4);
 		fs = u32Tof32Slow(i);
 		if (fm != fs) {
 			printf("u32Tof32Slow failed on 0x%X, expected %.9g, actual %.9g\n",

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h" // for SerializationError
 #include "debug.h" // for assert
+#include "util/string.h" // for my_memcpy_cast
 #include "ieee_float.h"
 
 #include "config.h"
@@ -38,7 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#include <endian.h>
 	#endif
 #endif
-#include <cstring> // for memcpy
 #include <iostream>
 #include <string>
 #include <vector>
@@ -70,40 +70,40 @@ extern FloatType g_serialize_f32_type;
 inline u16 readU16(const u8 *data)
 {
 	u16 val;
-	memcpy(&val, data, 2);
+	my_memcpy_cast(&val, data, 2);
 	return be16toh(val);
 }
 
 inline u32 readU32(const u8 *data)
 {
 	u32 val;
-	memcpy(&val, data, 4);
+	my_memcpy_cast(&val, data, 4);
 	return be32toh(val);
 }
 
 inline u64 readU64(const u8 *data)
 {
 	u64 val;
-	memcpy(&val, data, 8);
+	my_memcpy_cast(&val, data, 8);
 	return be64toh(val);
 }
 
 inline void writeU16(u8 *data, u16 i)
 {
 	u16 val = htobe16(i);
-	memcpy(data, &val, 2);
+	my_memcpy_cast(data, &val, 2);
 }
 
 inline void writeU32(u8 *data, u32 i)
 {
 	u32 val = htobe32(i);
-	memcpy(data, &val, 4);
+	my_memcpy_cast(data, &val, 4);
 }
 
 inline void writeU64(u8 *data, u64 i)
 {
 	u64 val = htobe64(i);
-	memcpy(data, &val, 8);
+	my_memcpy_cast(data, &val, 8);
 }
 
 #else
@@ -198,7 +198,7 @@ inline f32 readF32(const u8 *data)
 	switch (g_serialize_f32_type) {
 	case FLOATTYPE_SYSTEM: {
 			f32 f;
-			memcpy(&f, &u, 4);
+			my_memcpy_cast(&f, &u, 4);
 			return f;
 		}
 	case FLOATTYPE_SLOW:
@@ -314,7 +314,7 @@ inline void writeF32(u8 *data, f32 i)
 	switch (g_serialize_f32_type) {
 	case FLOATTYPE_SYSTEM: {
 			u32 u;
-			memcpy(&u, &i, 4);
+			my_memcpy_cast(&u, &i, 4);
 			return writeU32(data, u);
 		}
 	case FLOATTYPE_SLOW:

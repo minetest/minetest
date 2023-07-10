@@ -571,11 +571,11 @@ int LuaSecureRandom::l_next_bytes(lua_State *L)
 		char output_buf[RAND_BUF_SIZE];
 
 		// Copy over with what we have left from our current buffer
-		memcpy(output_buf, o->m_rand_buf + o->m_rand_idx, count_remaining);
+		my_memcpy(output_buf, o->m_rand_buf + o->m_rand_idx, count_remaining);
 
 		// Refill buffer and copy over the remainder of what was requested
 		o->fillRandBuf();
-		memcpy(output_buf + count_remaining, o->m_rand_buf, count - count_remaining);
+		my_memcpy(output_buf + count_remaining, o->m_rand_buf, count - count_remaining);
 
 		// Update index
 		o->m_rand_idx = count - count_remaining;

@@ -112,7 +112,7 @@ size_t OggVorbisBufferSource::read_func(void *ptr, size_t size, size_t nmemb,
 {
 	OggVorbisBufferSource *s = (OggVorbisBufferSource *)datasource;
 	size_t copied_size = MYMIN(s->buf.size() - s->cur_offset, size);
-	memcpy(ptr, s->buf.data() + s->cur_offset, copied_size);
+	my_memcpy_cast(ptr, s->buf.data() + s->cur_offset, copied_size);
 	s->cur_offset += copied_size;
 	return copied_size;
 }

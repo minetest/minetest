@@ -977,7 +977,7 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 		// Make a new SharedBuffer from the data without the base headers
 		SharedBuffer<u8> strippeddata(received_size - BASE_HEADER_SIZE);
-		memcpy(*strippeddata, &packetdata[BASE_HEADER_SIZE],
+		my_memcpy(*strippeddata, &packetdata[BASE_HEADER_SIZE],
 			strippeddata.getSize());
 
 		try {
@@ -1056,7 +1056,7 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 	u32 headers_size = BASE_HEADER_SIZE + RELIABLE_HEADER_SIZE;
 	// Get out the inside packet and re-process it
 	SharedBuffer<u8> payload(p->size() - headers_size);
-	memcpy(*payload, &p->data[headers_size], payload.getSize());
+	my_memcpy(*payload, &p->data[headers_size], payload.getSize());
 
 	dst = processPacket(channel, payload, peer_id, channelnum, true);
 	return true;
@@ -1212,7 +1212,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *cha
 		<< std::endl);
 	// Get the inside packet out and return it
 	SharedBuffer<u8> payload(packetdata.getSize() - ORIGINAL_HEADER_SIZE);
-	memcpy(*payload, &(packetdata[ORIGINAL_HEADER_SIZE]), payload.getSize());
+	my_memcpy(*payload, &(packetdata[ORIGINAL_HEADER_SIZE]), payload.getSize());
 	return payload;
 }
 
@@ -1350,7 +1350,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *cha
 
 	// Get out the inside packet and re-process it
 	SharedBuffer<u8> payload(packetdata.getSize() - RELIABLE_HEADER_SIZE);
-	memcpy(*payload, &packetdata[RELIABLE_HEADER_SIZE], payload.getSize());
+	my_memcpy(*payload, &packetdata[RELIABLE_HEADER_SIZE], payload.getSize());
 
 	return processPacket(channel, payload, peer->id, channelnum, true);
 }

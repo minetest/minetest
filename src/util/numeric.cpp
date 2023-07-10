@@ -77,7 +77,7 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 
 	while (data != end) {
 		u64 k;
-		memcpy(&k, data, sizeof(u64));
+		my_memcpy_cast(&k, data, sizeof(u64));
 		data += sizeof(u64);
 
 		k *= m;

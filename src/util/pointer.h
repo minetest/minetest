@@ -79,7 +79,7 @@ public:
 		if(size != 0)
 		{
 			data = new T[size];
-			memcpy(data, t, size);
+			my_memcpy(data, t, size);
 		}
 		else
 			data = nullptr;
@@ -113,7 +113,7 @@ public:
 		buffer.m_size = m_size;
 		if (m_size != 0) {
 			buffer.data = new T[m_size];
-			memcpy(buffer.data, data, m_size);
+			my_memcpy(buffer.data, data, m_size);
 		} else {
 			buffer.data = nullptr;
 		}
@@ -198,7 +198,7 @@ public:
 		if(m_size != 0)
 		{
 			data = new T[m_size];
-			memcpy(data, t, m_size);
+			my_memcpy(data, t, m_size);
 		}
 		else
 			data = nullptr;
@@ -213,7 +213,7 @@ public:
 		m_size = buffer.getSize();
 		if (m_size != 0) {
 				data = new T[m_size];
-				memcpy(data, *buffer, buffer.getSize());
+				my_memcpy(data, *buffer, buffer.getSize());
 		}
 		else
 			data = nullptr;

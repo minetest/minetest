@@ -405,7 +405,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
  	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
-		memcpy(tmp_nodes, data, nodecount * sizeof(MapNode));
+		my_memcpy(tmp_nodes, data, nodecount * sizeof(MapNode));
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
 		buf = MapNode::serializeBulk(version, tmp_nodes, nodecount,

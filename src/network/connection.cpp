@@ -71,7 +71,7 @@ BufferedPacketPtr makePacket(Address &address, const SharedBuffer<u8> &data,
 	writeU16(&p->data[4], sender_peer_id);
 	writeU8(&p->data[6], channel);
 
-	memcpy(&p->data[BASE_HEADER_SIZE], *data, data.getSize());
+	my_memcpy(&p->data[BASE_HEADER_SIZE], *data, data.getSize());
 
 	return p;
 }
@@ -84,7 +84,7 @@ SharedBuffer<u8> makeOriginalPacket(const SharedBuffer<u8> &data)
 
 	writeU8(&(b[0]), PACKET_TYPE_ORIGINAL);
 	if (data.getSize() > 0) {
-		memcpy(&(b[header_size]), *data, data.getSize());
+		my_memcpy(&(b[header_size]), *data, data.getSize());
 	}
 	return b;
 }
@@ -114,7 +114,7 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 		writeU16(&chunk[1], seqnum);
 		// [3] u16 chunk_count is written at next stage
 		writeU16(&chunk[5], chunk_num);
-		memcpy(&chunk[chunk_header_size], &data[start], payload_size);
+		my_memcpy(&chunk[chunk_header_size], &data[start], payload_size);
 
 		chunks->push_back(chunk);
 		chunk_count++;
@@ -153,7 +153,7 @@ SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, u16 seqnum)
 	writeU8(&b[0], PACKET_TYPE_RELIABLE);
 	writeU16(&b[1], seqnum);
 
-	memcpy(&b[header_size], *data, data.getSize());
+	my_memcpy(&b[header_size], *data, data.getSize());
 
 	return b;
 }
@@ -404,7 +404,7 @@ SharedBuffer<u8> IncomingSplitPacket::reassemble()
 	u32 start = 0;
 	for (u32 chunk_i = 0; chunk_i < chunk_count; chunk_i++) {
 		const SharedBuffer<u8> &buf = chunks[chunk_i];
-		memcpy(&fulldata[start], *buf, buf.getSize());
+		my_memcpy(&fulldata[start], *buf, buf.getSize());
 		start += buf.getSize();
 	}
 
@@ -472,7 +472,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 	// Cut chunk data out of packet
 	u32 chunkdatasize = p.size() - headersize;
 	SharedBuffer<u8> chunkdata(chunkdatasize);
-	memcpy(*chunkdata, &(p.data[headersize]), chunkdatasize);
+	my_memcpy(*chunkdata, &(p.data[headersize]), chunkdatasize);
 
 	if (!sp->insert(chunk_num, chunkdata))
 		return SharedBuffer<u8>();

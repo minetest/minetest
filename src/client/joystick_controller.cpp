@@ -57,7 +57,7 @@ JoystickLayout create_default_layout()
 		{3, 1}, // JA_FRUSTUM_HORIZONTAL
 		{4, 1}, // JA_FRUSTUM_VERTICAL
 	};
-	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+	my_memcpy(jlo.axes, axes, sizeof(jlo.axes));
 
 	u32 sb = 1 << 7; // START button mask
 	u32 fb = 1 << 3; // FOUR button mask
@@ -118,7 +118,7 @@ JoystickLayout create_xbox_layout()
 		{2, 1}, // JA_FRUSTUM_HORIZONTAL
 		{3, 1}, // JA_FRUSTUM_VERTICAL
 	};
-	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+	my_memcpy(jlo.axes, axes, sizeof(jlo.axes));
 
 	// The back button means "ESC".
 	JLO_B_PB(KeyType::ESC,        1 << 8,  1 << 8); // back
@@ -170,7 +170,7 @@ JoystickLayout create_dragonrise_gamecube_layout()
 		{3, 1}, // JA_FRUSTUM_HORIZONTAL
 		{4, 1}, // JA_FRUSTUM_VERTICAL
 	};
-	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+	my_memcpy(jlo.axes, axes, sizeof(jlo.axes));
 
 	// The center button
 	JLO_B_PB(KeyType::ESC, 1 << 9, 1 << 9); // Start/Pause Button

@@ -172,7 +172,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 	}
 
 	biome_transitions = new s16[out_pos];
-	memcpy(biome_transitions, temp_transition_heights.data(), sizeof(s16) * out_pos);
+	my_memcpy(biome_transitions, temp_transition_heights.data(), sizeof(s16) * out_pos);
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
