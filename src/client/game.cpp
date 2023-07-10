@@ -893,7 +893,7 @@ private:
 	GUIChatConsole *gui_chat_console = nullptr; // Free using ->Drop()
 	MapDrawControl *draw_control = nullptr;
 	Camera *camera = nullptr;
-	Clouds *clouds = nullptr;	                  // Free using ->Drop()
+	irr_ptr<Clouds> clouds;
 	Sky *sky = nullptr;                         // Free using ->Drop()
 	Hud *hud = nullptr;
 	Minimap *mapper = nullptr;
@@ -1263,8 +1263,7 @@ void Game::shutdown()
 	if (m_shutdown_progress == 0.0f)
 		showOverlayMessage(N_("Shutting down..."), 0, 0);
 
-	if (clouds)
-		clouds->drop();
+	clouds.reset();
 
 	if (gui_chat_console)
 		gui_chat_console->drop();
@@ -1524,7 +1523,7 @@ bool Game::createClient(const GameStartData &start_data)
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds)
-		clouds = new Clouds(smgr, shader_src, -1, rand());
+		clouds = make_irr<Clouds>(smgr, shader_src, -1, rand());
 
 	/* Skybox
 	 */
