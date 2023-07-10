@@ -773,3 +773,65 @@ void safe_print_string(std::ostream &os, const std::string &str);
  * @return
  */
 v3f str_to_v3f(const std::string &str);
+
+/**
+ * Wrapper around memcpy, which:
+ * * Checks that the type is trivially copyable.
+ * * Allows passing invalid ptrs and nullptrs if \p n is 0. (This is UB for
+ *   normal memcpy.)
+ *
+ * @param dest
+ * @param src
+ * @param n
+ * @return dest
+ */
+template <typename D, typename S>
+inline void *my_memcpy_cast(D *dest, const S *src, size_t n)
+{
+	static_assert(std::is_trivially_copyable_v<D> || std::is_same_v<D, void>,
+			"Can't memcpy non-trivially-copyable types");
+	static_assert(std::is_trivially_copyable_v<S> || std::is_same_v<S, void>,
+			"Can't memcpy non-trivially-copyable types");
+
+	if (n > 0)
+		return memcpy(dest, src, n);
+	else
+		return dest;
+}
+
+/**
+ * Wrapper around my_memcpy_cast, which does not allow type-conversion.
+ *
+ * @param dest
+ * @param src
+ * @param n
+ * @return dest
+ */
+template <typename T>
+inline void *my_memcpy(T *dest, const T *src, size_t n)
+{
+	return my_memcpy_cast(dest, src, n);
+}
+
+/**
+ * Wrapper around memset, which:
+ * * Checks that the type is trivially copyable.
+ * * Allows passing invalid ptrs and nullptrs if \p n is 0. (This is UB for
+ *   normal memset.)
+ *
+ * @param s
+ * @param c
+ * @param n
+ * @return s
+ */
+template <typename T>
+inline void *my_memset(T *s, int c, size_t n)
+{
+	static_assert(std::is_trivially_copyable_v<T> || std::is_same_v<T, void>,
+			"Can't memset non-trivially-copyable types");
+
+	if (n > 0)
+		return memset(s, c, n);
+	else
+		return s;
+}
