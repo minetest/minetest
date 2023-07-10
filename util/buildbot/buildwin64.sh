@@ -28,14 +28,12 @@ echo "Using $toolchain_file"
 
 find_runtime_dlls x86_64-w64-mingw32
 
-# Get stuff
-irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
-
 mkdir -p $libdir
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
 download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip"
+download "http://minetest.kitsunemimi.pw/libjpeg-$libjpeg_version-win64.zip"
+download "http://minetest.kitsunemimi.pw/libpng-$libpng_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip"
 download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip"
