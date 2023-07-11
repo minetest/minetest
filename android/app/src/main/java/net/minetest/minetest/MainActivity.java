@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 		checkAppVersion();
 	}
 	private void checkAppVersion() {
-
 		if (UnzipService.getIsRunning()) {
 			mProgressBar.setVisibility(View.VISIBLE);
 			mProgressBar.setIndeterminate(true);
