@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
 		checkAppVersion();
-
 	}
 	private void checkAppVersion() {
 
