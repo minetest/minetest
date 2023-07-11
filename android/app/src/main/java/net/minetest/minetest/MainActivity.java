@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
 		checkAppVersion();
 	}
+
 	private void checkAppVersion() {
 		if (UnzipService.getIsRunning()) {
 			mProgressBar.setVisibility(View.VISIBLE);
