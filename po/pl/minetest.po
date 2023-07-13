@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-02-08 21:39+0000\n"
-"Last-Translator: W K <wojciech_kowalczyk@icloud.com>\n"
+"PO-Revision-Date: 2023-07-14 07:52+0000\n"
+"Last-Translator: Dominik Gęgotek <ioutora@disroot.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1683,9 +1683,8 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Powiększenie jest obecnie wyłączone przez grę lub mod"
+msgstr "Czat jest obecnie wyłączony przez grę lub mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2362,7 +2361,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Szum 3D, który wpływa na liczbę lochów na jeden mapchunk."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2382,7 +2380,6 @@ msgstr ""
 "-    topbottom: podzielony ekran góra/dół.\n"
 "-    sidebyside: podzielony obok siebie.\n"
 "-    crossview: obuoczne 3d\n"
-"-    pageflip: 3D bazujące na quadbuffer.\n"
 "Zauważ, że tryb interlaced wymaga włączenia shaderów."
 
 #: src/settings_translation_file.cpp
@@ -4098,16 +4095,16 @@ msgstr ""
 "Wyższa wartość jest łagodniejsza ale używa więcej pamięci RAM."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How much you are slowed down when moving inside a liquid.\n"
 "Decrease this to increase liquid resistance to movement."
-msgstr "Zmniejsz wartość, aby zwiększyć opór ruchu w cieczy."
+msgstr ""
+"Jak bardzo jesteś spowolniony, poruszając się w cieczy.\n"
+"Zmniejsz wartość, aby zwiększyć opór ruchu w cieczy."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "How wide to make rivers."
-msgstr "Jak szerokie są rzeki."
+msgstr "Jak mają być rzeki."
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
@@ -4147,7 +4144,6 @@ msgstr ""
 "włączony."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -4155,12 +4151,12 @@ msgid ""
 "invisible\n"
 "so that the utility of noclip mode is reduced."
 msgstr ""
-"Jeśli opcja jest włączona to serwer spowoduje zamknięcie usuwania bloków "
-"mapy na podstawie \n"
-"pozycji gracza. Zredukuje to o 50-80% liczbę bloków \n"
-"wysyłanych na serwer. Klient już nie będzie widział większości ukrytych "
-"bloków, \n"
-"tak więc zostanie ograniczona przydatność trybu noclip."
+"Jeśli opcja jest włączona, serwer przeprowadzi usuwanie bloków mapy na "
+"podstawie\n"
+"pozycji gracza. Zredukuje to o 50-80% liczbę bloków\n"
+"wysyłanych na serwer. Klient nie będzie już widział większości ukrytych "
+"bloków,\n"
+"więc przydatność trybu noclip zostanie ograniczona."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4173,24 +4169,22 @@ msgstr ""
 "Wymaga przywileju \"noclip\" na serwerze."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
 msgstr ""
-"Jeżeli włączone, klawisz \"użycia\" zamiast klawisza \"skradania\" będzie "
-"użyty do schodzenia w dół i \n"
-"opadania."
+"Po włączeniu, klawisz \"użycia\" będzie służył do schodzenia w dół i "
+"opadania\n"
+"zamiast klawisza \"skradania\"."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
-"Włącz potwierdzanie rejestracji podczas łączenia się z serwerem.\n"
-"Jeśli wyłączone, to nowe konto zostanie zarejestrowane automatycznie."
+"Po włączeniu, rejestracja konta zostanie oddzielona od logowania w UI.\n"
+"Po wyłączeniu, nowe konta będą rejestrowane automatycznie przy logowaniu."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4214,20 +4208,20 @@ msgstr ""
 "Włącz tylko jeżeli wiesz co robisz."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
-"Jeśli włączona razem z trybem latania, powoduje, że kierunek poruszania jest "
-"zależy do nachylenia gracza."
+"Po włączeniu, sprawia że kierunek poruszania się podczas pływania lub "
+"latania jest zależny do nachylenia gracza."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
-msgstr "Jeśli włączone, nowi gracze nie mogą dołączyć do gry z pustym hasłem."
+msgstr ""
+"Po włączeniu, gracze nie mogą dołączyć do gry z pustym hasłem ani zmienić "
+"swojego hasła na puste."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4250,14 +4244,12 @@ msgstr ""
 "do tej odległości od gracza do węzła."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If the execution of a chat command takes longer than this specified time in\n"
 "seconds, add the time information to the chat command message"
 msgstr ""
-"Jeśli wykonanie polecenia czatu trwa dłużej niż określony czas w sekundach, "
-"dodaj informację o czasie do komunikatu polecenia czatu w\n"
-"sekundach"
+"Jeśli wykonanie polecenia czatu trwa dłużej niż określony czas w sekundach,\n"
+"informacja o czasie zostanie dodana do komunikatu polecenia czatu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
