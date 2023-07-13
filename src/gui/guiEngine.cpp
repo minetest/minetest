@@ -259,6 +259,9 @@ void GUIEngine::run()
 		);
 	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
+	u64 t_last_frame = porting::getTimeUs();
+	f32 dtime = 0.0f;
+
 	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
 
 		//check if we need to update the "upper left corner"-text
@@ -293,7 +296,13 @@ void GUIEngine::run()
 		else
 			sleep_ms(frametime_min);
 
+		u64 t_now = porting::getTimeUs();
+		dtime = static_cast<f32>(t_now - t_last_frame) * 1.0e-6f;
+		t_last_frame = t_now;
+
 		m_script->step();
+
+		m_sound_manager->step(dtime);
 
 #ifdef __ANDROID__
 		m_menu->getAndroidUIInput();
