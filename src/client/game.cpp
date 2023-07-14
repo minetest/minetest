@@ -2343,7 +2343,7 @@ void Game::toggleBlockBounds()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG))) {
-		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
+		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by game or mod)");
 		return;
 	}
 	enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
@@ -2488,16 +2488,18 @@ void Game::increaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
+	s16 server_limit = sky->getFogDistance();
 
-	if (range_new > 4000) {
+	if (range_new >= 4000) {
 		range_new = 4000;
-		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
-		m_game_ui->showStatusText(msg);
-	} else if (sky->getFogDistance() >= 0 && range_new > sky->getFogDistance()) {
-		std::wstring msg = fwgettext("Viewing range changed to %d, but limited to %d set by server", range_new, sky->getFogDistance());
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d (the maximum), but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d (the maximum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2508,16 +2510,18 @@ void Game::decreaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
+	s16 server_limit = sky->getFogDistance();
 
-	if (range_new < 20) {
+	if (range_new <= 20) {
 		range_new = 20;
-		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
-		m_game_ui->showStatusText(msg);
-	} else if (sky->getFogDistance() >= 0 && range_new > sky->getFogDistance()) {
-		std::wstring msg = fwgettext("Viewing range changed to %d, but limited to %d set by server", range_new, sky->getFogDistance());
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing changed to %d (the minimum), but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing changed to %d (the minimum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2529,12 +2533,12 @@ void Game::toggleFullViewRange()
 	draw_control->range_all = !draw_control->range_all;
 	if (draw_control->range_all) {
 		if (sky->getFogDistance() >= 0) {
-			m_game_ui->showTranslatedStatusText("The server has disabled unlimited viewing range");
+			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled, but forbidden by game or mod");
 		} else {
-			m_game_ui->showTranslatedStatusText("Enabled unlimited viewing range");
+			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled");
 		}
 	} else {
-		m_game_ui->showTranslatedStatusText("Disabled unlimited viewing range");
+		m_game_ui->showTranslatedStatusText("Unlimited viewing range disabled");
 	}
 }
 
