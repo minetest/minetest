@@ -144,8 +144,10 @@ void TestClientActiveObjectMgr::testRemoveObject()
 void TestClientActiveObjectMgr::testGetActiveSelectableObjects()
 {
 	client::ActiveObjectMgr caomgr;
-	auto obj = new TestSelectableClientActiveObject({v3f{-1, -1, -1}, v3f{1, 1, 1}});
-	UASSERT(caomgr.registerObject(obj));
+	auto obj_u = std::make_unique<TestSelectableClientActiveObject>(
+			aabb3f{v3f{-1, -1, -1}, v3f{1, 1, 1}});
+	auto obj = obj_u.get();
+	UASSERT(caomgr.registerObject(std::move(obj_u)));
 
 	auto assert_obj_selected = [&] (v3f a, v3f b) {
 		auto actual = caomgr.getActiveSelectableObjects({a, b});
