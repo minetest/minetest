@@ -1064,7 +1064,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 
 	if (features.post_effect_color_shaded) {
 		auto apply_light = [] (u32 color, u32 light) {
-			return core::clamp(core::round32(color * (light / 255.0f)), 0, 255);
+			return core::clamp(core::round32(color * light / 255.0f), 0, 255);
 		};
 		post_color.setRed(apply_light(post_color.getRed(), m_camera_light_color.getRed()));
 		post_color.setGreen(apply_light(post_color.getGreen(), m_camera_light_color.getGreen()));
