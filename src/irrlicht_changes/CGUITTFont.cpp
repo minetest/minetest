@@ -691,6 +691,9 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			tmp_source_rects.set_data(&page->render_source_rects[ibegin], i - ibegin);
 			--i;
 
+			if (!use_transparency)
+				colprev.color |= 0xff000000;
+
 			if (shadow_offset) {
 				for (size_t i = 0; i < tmp_positions.size(); ++i)
 					tmp_positions[i] += core::vector2di(shadow_offset, shadow_offset);
@@ -703,8 +706,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 					tmp_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
 			}
 
-			if (!use_transparency)
-				colprev.color |= 0xff000000;
 			Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, colprev, true);
 		}
 	}
