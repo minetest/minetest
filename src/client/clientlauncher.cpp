@@ -144,8 +144,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
 	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
 	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
-#ifdef HAVE_TOUCHSCREENGUI
-	float density = RenderingEngine::getDisplayDensity();
+
+	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5, 20) *
+		RenderingEngine::getDisplayDensity();
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
 	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
@@ -167,7 +168,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
 		}
 	}
-#endif
+
 	g_fontengine = new FontEngine(guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
