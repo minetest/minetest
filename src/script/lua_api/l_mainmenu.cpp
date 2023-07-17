@@ -965,6 +965,23 @@ int ModApiMainMenu::l_get_active_renderer(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_active_irrlicht_device(lua_State *L)
+{
+	const char *device_name = [] {
+		switch (RenderingEngine::get_raw_device()->getType()) {
+		case EIDT_WIN32: return "WIN32";
+		case EIDT_X11: return "X11";
+		case EIDT_OSX: return "OSX";
+		case EIDT_SDL: return "SDL";
+		case EIDT_ANDROID: return "ANDROID";
+		default: return "Unknown";
+		}
+	}();
+	lua_pushstring(L, device_name);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
 	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
@@ -1108,6 +1125,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_window_info);
 	API_FCT(get_active_driver);
 	API_FCT(get_active_renderer);
+	API_FCT(get_active_irrlicht_device);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);
