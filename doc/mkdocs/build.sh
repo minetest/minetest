@@ -1,9 +1,5 @@
 #!/bin/sh -e
 
-# Patch Python-Markdown
-MARKDOWN_FILE=$(pip show markdown | awk '/Location/ { print $2 }')/markdown/extensions/codehilite.py
-patch -N -r - $MARKDOWN_FILE lua_highlight.patch || true
-
 # Split lua_api.md on top level headings
 cat ../lua_api.md | csplit -sz -f docs/section - '/^=/-1' '{*}'
 
