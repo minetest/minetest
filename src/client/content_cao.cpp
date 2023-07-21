@@ -1355,7 +1355,7 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 
 			material.forEachTexture([=] (auto &tex) {
-				tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+				setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 						use_anisotropic_filter);
 			});
 		}
@@ -1383,15 +1383,8 @@ void GenericCAO::updateTextures(std::string mod)
 				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
 
-				// don't filter low-res textures, makes them look blurry
-				// player models have a res of 64
-				const core::dimension2d<u32> &size = texture->getOriginalSize();
-				const u32 res = std::min(size.Height, size.Width);
-				use_trilinear_filter &= res > 64;
-				use_bilinear_filter &= res > 64;
-
 				material.forEachTexture([=] (auto &tex) {
-					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
 			}
@@ -1438,7 +1431,7 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (auto &tex) {
-					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
 			}
@@ -1463,7 +1456,7 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (auto &tex) {
-					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
 			}
@@ -1492,7 +1485,7 @@ void GenericCAO::updateTextures(std::string mod)
 				}
 
 				material.forEachTexture([=] (auto &tex) {
-					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,
 							use_anisotropic_filter);
 				});
 			}
