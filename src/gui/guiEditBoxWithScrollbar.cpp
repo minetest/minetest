@@ -106,9 +106,8 @@ void GUIEditBoxWithScrollBar::draw()
 			skin->draw3DSunkenPane(this, bg_color, false, m_background,
 				AbsoluteRect, &AbsoluteClippingRect);
 		}
-
-		calculateFrameRect();
 	}
+	calculateFrameRect();
 
 	core::rect<s32> local_clip_rect = m_frame_rect;
 	local_clip_rect.clipAgainst(AbsoluteClippingRect);
