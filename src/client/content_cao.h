@@ -162,7 +162,9 @@ public:
 
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
-	const v3f getPosition() const;
+	const v3f getPosition() const override final;
+
+	const v3f getVelocity() const override final { return m_velocity; }
 
 	inline const v3f &getRotation() const { return m_rotation; }
 

@@ -16,6 +16,10 @@ You can use `minetest --version` to find it.
 
 ```
 
+<!-- For graphical and input-related issues. You can find these in the About tab in the mainmenu. -->
+Active renderer:
+Irrlicht device:
+
 ##### OS / Hardware
 <!-- General information about your hardware and operating system -->
 Operating system:

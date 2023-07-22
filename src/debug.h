@@ -26,17 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #ifdef _WIN32
-	#ifndef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0501
-	#endif
 	#include <windows.h>
 	#ifdef _MSC_VER
 		#include <eh.h>
 	#endif
-	#define NORETURN __declspec(noreturn)
 	#define FUNCTION_NAME __FUNCTION__
 #else
-	#define NORETURN __attribute__ ((__noreturn__))
 	#define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
 
@@ -51,7 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* Abort program execution immediately
  */
-NORETURN extern void fatal_error_fn(
+[[noreturn]] extern void fatal_error_fn(
 		const char *msg, const char *file,
 		unsigned int line, const char *function);
 
@@ -69,7 +64,7 @@ NORETURN extern void fatal_error_fn(
 	defined)
 */
 
-NORETURN extern void sanity_check_fn(
+[[noreturn]] extern void sanity_check_fn(
 		const char *assertion, const char *file,
 		unsigned int line, const char *function);
 

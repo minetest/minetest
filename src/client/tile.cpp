@@ -556,6 +556,32 @@ static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color);
 
+// Perform a Screen blend with the given color. The opposite effect of a
+// Multiply blend.
+static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color);
+
+// Adjust the hue, saturation, and lightness of destination. Like
+// "Hue-Saturation" in GIMP.
+// If colorize is true then the image will be converted to a grayscale
+// image as though seen through a colored glass, like "Colorize" in GIMP.
+static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		s32 hue, s32 saturation, s32 lightness, bool colorize);
+
+// Apply an overlay blend to an images.
+// Overlay blend combines Multiply and Screen blend modes.The parts of the top
+// layer where the base layer is light become lighter, the parts where the base
+// layer is dark become darker.Areas where the base layer are mid grey are
+// unaffected.An overlay with the same picture looks like an S - curve.
+static void apply_overlay(video::IImage *overlay, video::IImage *dst,
+		v2s32 overlay_pos, v2s32 dst_pos, v2u32 size, bool hardlight);
+
+// Adjust the brightness and contrast of the base image. Conceptually like
+// "Brightness-Contrast" in GIMP but allowing brightness to be wound all the
+// way up to white or down to black.
+static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		s32 brightness, s32 contrast);
+
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
 		v2s32 mask_pos, v2s32 dst_pos, v2u32 size);
@@ -1028,7 +1054,7 @@ video::IImage* TextureSource::generateImage(const std::string &name, std::set<st
 				<< std::endl;
 			return NULL;
 		}
-		
+
 		if (baseimg) {
 			core::dimension2d<u32> dim = tmp->getDimension();
 			blit_with_alpha(tmp, baseimg, v2s32(0, 0), v2s32(0, 0), dim);
@@ -1106,43 +1132,53 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 	return out;
 }
 
+/*
+	Replaces the smaller of the two images with one upscaled to match the
+	dimensions of the other.
+	Ensure no other references to these images are being held, as one may
+	get dropped and switched with a new image.
+*/
+void upscaleImagesToMatchLargest(video::IImage *& img1,
+	video::IImage *& img2)
+{
+	core::dimension2d<u32> dim1 = img1->getDimension();
+	core::dimension2d<u32> dim2 = img2->getDimension();
+
+	if (dim1 == dim2) {
+		// image dimensions match, no scaling required
+
+	}
+	else if (dim1.Width * dim1.Height < dim2.Width * dim2.Height) {
+		// Upscale img1
+		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim2);
+		img1->copyToScaling(scaled_image);
+		img1->drop();
+		img1 = scaled_image;
+
+	} else {
+		// Upscale img2
+		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
+			createImage(video::ECF_A8R8G8B8, dim1);
+		img2->copyToScaling(scaled_image);
+		img2->drop();
+		img2 = scaled_image;
+	}
+}
+
 void blitBaseImage(video::IImage* &src, video::IImage* &dst)
 {
 	//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
+	upscaleImagesToMatchLargest(dst, src);
+
 	// Size of the copied area
-	core::dimension2d<u32> dim = src->getDimension();
-	//core::dimension2d<u32> dim(16,16);
+	core::dimension2d<u32> dim_dst = dst->getDimension();
 	// Position to copy the blitted to in the base image
 	core::position2d<s32> pos_to(0,0);
 	// Position to copy the blitted from in the blitted image
 	core::position2d<s32> pos_from(0,0);
-	// Blit
-	/*image->copyToWithAlpha(baseimg, pos_to,
-			core::rect<s32>(pos_from, dim),
-			video::SColor(255,255,255,255),
-			NULL);*/
 
-	core::dimension2d<u32> dim_dst = dst->getDimension();
-	if (dim == dim_dst) {
-		blit_with_alpha(src, dst, pos_from, pos_to, dim);
-	} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
-		// Upscale overlying image
-		video::IImage *scaled_image = RenderingEngine::get_video_driver()->
-			createImage(video::ECF_A8R8G8B8, dim_dst);
-		src->copyToScaling(scaled_image);
-
-		blit_with_alpha(scaled_image, dst, pos_from, pos_to, dim_dst);
-		scaled_image->drop();
-	} else {
-		// Upscale base image
-		video::IImage *scaled_base = RenderingEngine::get_video_driver()->
-			createImage(video::ECF_A8R8G8B8, dim);
-		dst->copyToScaling(scaled_base);
-		dst->drop();
-		dst = scaled_base;
-
-		blit_with_alpha(src, dst, pos_from, pos_to, dim);
-	}
+	blit_with_alpha(src, dst, pos_from, pos_to, dim_dst);
 }
 
 bool TextureSource::generateImagePart(std::string part_of_name,
@@ -1310,6 +1346,44 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					errorstream << "generateImagePart(): Failed to load image \""
 						<< filename << "\" for [combine" << std::endl;
 				}
+			}
+		}
+		/*
+			[fill:WxH:color
+			[fill:WxH:X,Y:color
+			Creates a texture of the given size and color, optionally with an <x>,<y>
+			position. An alpha value may be specified in the `Colorstring`.
+		*/
+		else if (str_starts_with(part_of_name, "[fill"))
+		{
+			s32 x = 0;
+			s32 y = 0;
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 width  = stoi(sf.next("x"));
+			u32 height = stoi(sf.next(":"));
+			std::string color_or_x = sf.next(",");
+
+			video::SColor color;
+			if (!parseColorString(color_or_x, color, true)) {
+				x = stoi(color_or_x);
+				y = stoi(sf.next(":"));
+				std::string color_str = sf.next(":");
+
+				if (!parseColorString(color_str, color, false))
+					return false;
+			}
+			core::dimension2d<u32> dim(width, height);
+
+			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
+			img->fill(color);
+
+			if (baseimg == nullptr) {
+				baseimg = img;
+			} else {
+				blit_with_alpha(img, baseimg, v2s32(0, 0), v2s32(x, y), dim);
+				img->drop();
 			}
 		}
 		/*
@@ -1584,10 +1658,16 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 		[multiply:color
-			multiplys a given color to any pixel of an image
+		or 
+		[screen:color
+			Multiply and Screen blend modes are basic blend modes for darkening and lightening
+			images, respectively.
+			A Multiply blend multiplies a given color to every pixel of an image.
+			A Screen blend has the opposite effect to a Multiply blend.
 			color = color as ColorString
 		*/
-		else if (str_starts_with(part_of_name, "[multiply:")) {
+		else if (str_starts_with(part_of_name, "[multiply:") ||
+		         str_starts_with(part_of_name, "[screen:")) {
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			std::string color_str = sf.next(":");
@@ -1603,13 +1683,18 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			if (!parseColorString(color_str, color, false))
 				return false;
-
-			apply_multiplication(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
+			if (str_starts_with(part_of_name, "[multiply:")) {
+				apply_multiplication(baseimg, v2u32(0, 0), 
+					baseimg->getDimension(), color);
+			} else {
+				apply_screen(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
+			}
 		}
 		/*
-			[colorize:color
+			[colorize:color:ratio
 			Overlays image with given color
 			color = color as ColorString
+			ratio = optional string "alpha", or a weighting between 0 and 255
 		*/
 		else if (str_starts_with(part_of_name, "[colorize:"))
 		{
@@ -1876,6 +1961,115 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 			pngimg->drop();
 		}
+		/*
+			[hsl:hue:saturation:lightness
+			or 
+			[colorizehsl:hue:saturation:lightness
+
+			Adjust the hue, saturation, and lightness of the base image. Like
+			"Hue-Saturation" in GIMP, but with 0 as the mid-point.
+			Hue should be from -180 to +180, though 0 to 360 is also supported.
+			Saturation and lightness are optional, with lightness from -100 to
+			+100, and sauration from -100 to +100-or-higher.
+
+			If colorize is true then saturation is from 0 to 100, and the image
+			will be converted to a grayscale image as though seen through a
+			colored glass, like	"Colorize" in GIMP.
+		*/
+		else if (str_starts_with(part_of_name, "[hsl:") || 
+		         str_starts_with(part_of_name, "[colorizehsl:")) {
+
+			if (baseimg == nullptr) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+					<< "for part_of_name=\"" << part_of_name
+					<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			bool colorize = str_starts_with(part_of_name, "[colorizehsl:");
+
+			// saturation range is 0 to 100 when colorize is true
+			s32 defaultSaturation = colorize ? 50 : 0;
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			s32 hue = mystoi(sf.next(":"), -180, 360); 
+			s32 saturation = sf.at_end() ? defaultSaturation : mystoi(sf.next(":"), -100, 1000);
+			s32 lightness  = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
+
+
+			apply_hue_saturation(baseimg, v2u32(0, 0), baseimg->getDimension(),
+				hue, saturation, lightness, colorize);
+		}
+		/*
+			[overlay:filename
+			or 
+			[hardlight:filename
+
+			"A.png^[hardlight:B.png" is the same as "B.png^[overlay:A.Png"
+
+			Applies an Overlay or Hard Light blend between two images, like the
+			layer modes of the same names in GIMP.
+			Overlay combines Multiply and Screen blend modes. The parts of the
+			top layer where the base layer is light become lighter, the parts
+			where the base layer is dark become darker. Areas where the base
+			layer are mid grey are unaffected. An overlay with the same picture
+			looks like an S-curve.
+
+			Swapping the top layer and base layer is a Hard Light blend
+		*/
+		else if (str_starts_with(part_of_name, "[overlay:") ||
+		         str_starts_with(part_of_name, "[hardlight:")) {
+
+			if (baseimg == nullptr) {
+				errorstream << "generateImage(): baseimg == NULL "
+					<< "for part_of_name=\"" << part_of_name
+					<< "\", cancelling." << std::endl;
+				return false;
+			}
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string filename = unescape_string(sf.next_esc(":", escape), escape);
+
+			video::IImage *img = generateImage(filename, source_image_names);
+			if (img) {
+				upscaleImagesToMatchLargest(baseimg, img);
+
+				bool hardlight = str_starts_with(part_of_name, "[hardlight:");
+				apply_overlay(img, baseimg, v2s32(0, 0), v2s32(0, 0),
+						img->getDimension(), hardlight);
+				img->drop();
+			} else {
+				errorstream << "generateImage(): Failed to load \""
+					<< filename << "\".";
+			}
+		}
+		/*
+			[contrast:C:B
+
+			Adjust the brightness and contrast of the base image. Conceptually
+			like GIMP's "Brightness-Contrast" feature but allows brightness to
+			be wound all the way up to white or down to black.
+			C and B are both values from -127 to +127.
+			B is optional.
+		*/
+		else if (str_starts_with(part_of_name, "[contrast:")) {
+
+			if (baseimg == nullptr) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+					<< "for part_of_name=\"" << part_of_name
+					<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			s32 contrast = mystoi(sf.next(":"), -127, 127);
+			s32 brightness = sf.at_end() ? 0 : mystoi(sf.next(":"), -127, 127);
+
+			apply_brightness_contrast(baseimg, v2u32(0, 0), 
+				baseimg->getDimension(), brightness, contrast);
+		}
 		else
 		{
 			errorstream << "generateImagePart(): Invalid "
@@ -1984,7 +2178,7 @@ static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst
 #endif
 
 /*
-	Apply color to destination
+	Apply color to destination, using a weighted interpolation blend
 */
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color, int ratio, bool keep_alpha)
@@ -2022,7 +2216,7 @@ static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 }
 
 /*
-	Apply color to destination
+	Apply color to destination, using a Multiply blend mode
 */
 static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		const video::SColor &color)
@@ -2038,6 +2232,196 @@ static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				(dst_c.getGreen() * color.getGreen()) / 255,
 				(dst_c.getBlue() * color.getBlue()) / 255
 				);
+		dst->setPixel(x, y, dst_c);
+	}
+}
+
+/*
+	Apply color to destination, using a Screen blend mode
+*/
+static void apply_screen(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color)
+{
+	video::SColor dst_c;
+
+	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+	for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+		dst_c = dst->getPixel(x, y);
+		dst_c.set(
+			dst_c.getAlpha(),
+			255 - ((255 - dst_c.getRed())   * (255 - color.getRed()))   / 255,
+			255 - ((255 - dst_c.getGreen()) * (255 - color.getGreen())) / 255,
+			255 - ((255 - dst_c.getBlue())  * (255 - color.getBlue()))  / 255
+		);
+		dst->setPixel(x, y, dst_c);
+	}
+}
+
+/*
+	Adjust the hue, saturation, and lightness of destination. Like
+	"Hue-Saturation" in GIMP, but with 0 as the mid-point.
+	Hue should be from -180 to +180, or from 0 to 360.
+	Saturation and Lightness are percentages.
+	Lightness is from -100 to +100.
+	Saturation goes down to -100 (fully desaturated) but can go above 100,
+	allowing for even muted colors to become saturated.
+
+	If colorize is true then saturation is from 0 to 100, and destination will
+	be converted to a grayscale image as seen through a colored glass, like
+	"Colorize" in GIMP.
+*/
+static void apply_hue_saturation(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+	s32 hue, s32 saturation, s32 lightness, bool colorize)
+{
+	video::SColorf colorf;
+	video::SColorHSL hsl;
+	f32 norm_s = core::clamp(saturation, -100, 1000) / 100.0f;
+	f32 norm_l = core::clamp(lightness,  -100, 100) / 100.0f;
+
+	if (colorize) {
+		hsl.Saturation = core::clamp((f32)saturation, 0.0f, 100.0f);
+	}
+
+	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+		for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+
+			if (colorize) {
+				f32 lum = dst->getPixel(x, y).getLuminance() / 255.0f;
+
+				if (norm_l < 0) {
+					lum *= norm_l + 1.0f;
+				} else {
+					lum = lum * (1.0f - norm_l) + norm_l;
+				}
+				hsl.Hue = 0;
+				hsl.Luminance = lum * 100;
+
+			} else {
+				// convert the RGB to HSL
+				colorf = video::SColorf(dst->getPixel(x, y));
+				hsl.fromRGB(colorf);
+
+				if (norm_l < 0) {
+					hsl.Luminance *= norm_l + 1.0f;
+				} else{
+					hsl.Luminance = hsl.Luminance + norm_l * (100.0f - hsl.Luminance);
+				}
+
+				// Adjusting saturation in the same manner as lightness resulted in
+				// muted colours being affected too much and bright colours not
+				// affected enough, so I'm borrowing a leaf out of gimp's book and
+				// using a different scaling approach for saturation.
+				// https://github.com/GNOME/gimp/blob/6cc1e035f1822bf5198e7e99a53f7fa6e281396a/app/operations/gimpoperationhuesaturation.c#L139-L145=
+				// This difference is why values over 100% are not necessary for
+				// lightness but are very useful with saturation. An alternative UI
+				// approach would be to have an upper saturation limit of 100, but
+				// multiply positive values by ~3 to make it a more useful positive
+				// range scale.
+				hsl.Saturation *= norm_s + 1.0f;
+				hsl.Saturation = core::clamp(hsl.Saturation, 0.0f, 100.0f);
+			}
+
+			// Apply the specified HSL adjustments
+			hsl.Hue = fmod(hsl.Hue + hue, 360);
+			if (hsl.Hue < 0)
+				hsl.Hue += 360;
+
+			// Convert back to RGB
+			hsl.toRGB(colorf);
+			dst->setPixel(x, y, colorf.toSColor());
+		}
+}
+
+
+/*
+	Apply an Overlay blend to destination
+	If hardlight is true then swap the dst & blend images (a hardlight blend)
+*/
+static void apply_overlay(video::IImage *blend, video::IImage *dst,
+	v2s32 blend_pos, v2s32 dst_pos, v2u32 size, bool hardlight)
+{
+	video::IImage *blend_layer = hardlight ? dst : blend;
+	video::IImage *base_layer  = hardlight ? blend : dst;
+	v2s32 blend_layer_pos = hardlight ? dst_pos : blend_pos;
+	v2s32 base_layer_pos  = hardlight ? blend_pos : dst_pos;
+
+	for (u32 y = 0; y < size.Y; y++) 
+	for (u32 x = 0; x < size.X; x++) {
+		s32 base_x = x + base_layer_pos.X;
+		s32 base_y = y + base_layer_pos.Y;
+
+		video::SColor blend_c =
+			blend_layer->getPixel(x + blend_layer_pos.X, y + blend_layer_pos.Y);
+		video::SColor base_c = base_layer->getPixel(base_x, base_y);		
+		double blend_r = blend_c.getRed()   / 255.0;
+		double blend_g = blend_c.getGreen() / 255.0;
+		double blend_b = blend_c.getBlue()  / 255.0;
+		double base_r = base_c.getRed()   / 255.0;
+		double base_g = base_c.getGreen() / 255.0;
+		double base_b = base_c.getBlue()  / 255.0;
+
+		base_c.set(
+			base_c.getAlpha(),
+			// Do a Multiply blend if less that 0.5, otherwise do a Screen blend
+			(u32)((base_r < 0.5 ? 2 * base_r * blend_r : 1 - 2 * (1 - base_r) * (1 - blend_r)) * 255),
+			(u32)((base_g < 0.5 ? 2 * base_g * blend_g : 1 - 2 * (1 - base_g) * (1 - blend_g)) * 255),
+			(u32)((base_b < 0.5 ? 2 * base_b * blend_b : 1 - 2 * (1 - base_b) * (1 - blend_b)) * 255)
+		);
+		dst->setPixel(base_x, base_y, base_c);
+	}
+}
+
+/* 
+	Adjust the brightness and contrast of the base image.
+
+	Conceptually like GIMP's "Brightness-Contrast" feature but allows brightness to be
+	wound all the way up to white or down to black.
+*/
+static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+	s32 brightness, s32 contrast)
+{
+	video::SColor dst_c;
+	// Only allow normalized contrast to get as high as 127/128 to avoid infinite slope.
+	// (we could technically allow -128/128 here as that would just result in 0 slope)
+	double norm_c = core::clamp(contrast,   -127, 127) / 128.0;
+	double norm_b = core::clamp(brightness, -127, 127) / 127.0;
+	
+	// Scale brightness so its range is -127.5 to 127.5, otherwise brightness
+	// adjustments will outputs values from 0.5 to 254.5 instead of 0 to 255.
+	double scaled_b = brightness * 127.5 / 127;
+
+	// Calculate a contrast slope such that that no colors will get clamped due 
+	// to the brightness setting.
+	// This allows the texture modifier to used as a brightness modifier without
+	// the user having to calculate a contrast to avoid clipping at that brightness.
+	double slope = 1 - fabs(norm_b);
+	
+	// Apply the user's contrast adjustment to the calculated slope, such that
+	// -127 will make it near-vertical and +127 will make it horizontal
+	double angle = atan(slope);
+	angle += norm_c <= 0
+		? norm_c * angle // allow contrast slope to be lowered to 0
+		: norm_c * (M_PI_2 - angle); // allow contrast slope to be raised almost vert.
+	slope = tan(angle);
+
+	double c = slope <= 1
+		? -slope * 127.5 + 127.5 + scaled_b    // shift up/down when slope is horiz.
+		: -slope * (127.5 - scaled_b) + 127.5; // shift left/right when slope is vert.
+
+	// add 0.5 to c so that when the final result is cast to int, it is effectively
+	// rounded rather than trunc'd.
+	c += 0.5;
+
+	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+	for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+		dst_c = dst->getPixel(x, y);
+
+		dst_c.set(
+			dst_c.getAlpha(),
+			core::clamp((int)(slope * dst_c.getRed()   + c), 0, 255),
+			core::clamp((int)(slope * dst_c.getGreen() + c), 0, 255),
+			core::clamp((int)(slope * dst_c.getBlue()  + c), 0, 255)
+		);
 		dst->setPixel(x, y, dst_c);
 	}
 }

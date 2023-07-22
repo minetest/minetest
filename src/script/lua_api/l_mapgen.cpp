@@ -621,10 +621,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		MMVManip *vm = mg->vm;
 
 		// VoxelManip object
-		LuaVoxelManip *o = new LuaVoxelManip(vm, true);
-		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
-		luaL_getmetatable(L, "VoxelManip");
-		lua_setmetatable(L, -2);
+		LuaVoxelManip::create(L, vm, true);
 
 		// emerged min pos
 		push_v3s16(L, vm->m_area.MinEdge);
@@ -1097,6 +1094,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	deco->y_max          = getintfield_default(L, index, "y_max", 31000);
 	deco->nspawnby       = getintfield_default(L, index, "num_spawn_by", -1);
 	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
+	deco->check_offset   = getintfield_default(L, index, "check_offset", -1);
 	deco->sidelen        = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
 		errorstream << "register_decoration: sidelen must be "
@@ -1130,6 +1128,10 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	if (nnames == 0 && deco->nspawnby != -1) {
 		errorstream << "register_decoration: no spawn_by nodes defined,"
 			" but num_spawn_by specified" << std::endl;
+	}
+	if (deco->check_offset < -1 || deco->check_offset > 1) {
+		delete deco;
+		luaL_error(L, "register_decoration: check_offset out of range!  Allowed values: [-1, 0, 1]");
 	}
 
 	//// Handle decoration type-specific parameters

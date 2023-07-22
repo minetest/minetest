@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hex.h"
 #include "porting.h"
 #include "translation.h"
+#include "strfnd.h"
 
 #include <algorithm>
 #include <array>
@@ -35,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef _WIN32
 	#include <iconv.h>
 #else
-	#define _WIN32_WINNT 0x0501
 	#include <windows.h>
 #endif
 
@@ -70,7 +70,7 @@ static bool convert(const char *to, const char *from, char *outbuf,
 #ifdef __ANDROID__
 // On Android iconv disagrees how big a wchar_t is for whatever reason
 const char *DEFAULT_ENCODING = "UTF-32LE";
-#elif defined(__NetBSD__) || defined(__OpenBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 	// NetBSD does not allow "WCHAR_T" as a charset input to iconv.
 	#include <sys/endian.h>
 	#if BYTE_ORDER == BIG_ENDIAN
@@ -93,7 +93,7 @@ std::wstring utf8_to_wide(const std::string &input)
 	std::wstring out;
 	out.resize(outbuf_size / sizeof(wchar_t));
 
-#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__ANDROID__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__FreeBSD__)
 	static_assert(sizeof(wchar_t) == 4, "Unexpected wide char size");
 #endif
 
@@ -896,4 +896,16 @@ void safe_print_string(std::ostream &os, const std::string &str)
 		}
 	}
 	os.setf(flags);
+}
+
+
+v3f str_to_v3f(const std::string &str)
+{
+	v3f value;
+	Strfnd f(str);
+	f.next("(");
+	value.X = stof(f.next(","));
+	value.Y = stof(f.next(","));
+	value.Z = stof(f.next(")"));
+	return value;
 }

@@ -3,10 +3,10 @@ IndentWidth: 4
 UseTab: Always
 TabWidth: 4
 BreakBeforeBraces: Custom
-Standard: Cpp11
+Standard: c++17
 BraceWrapping:
   AfterClass: true
-  AfterControlStatement: false
+  AfterControlStatement: Never
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
@@ -20,7 +20,7 @@ IndentCaseLabels: false
 AccessModifierOffset: -4
 ColumnLimit: 90
 AllowShortFunctionsOnASingleLine: InlineOnly
-SortIncludes: false
+SortIncludes: Never
 IncludeCategories:
   - Regex:           '^".*'
     Priority:        2

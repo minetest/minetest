@@ -34,7 +34,7 @@ local function delete_content_buttonhandler(this, fields)
 				this.data.content.path ~= core.get_gamepath() and
 				this.data.content.path ~= core.get_texturepath() then
 			if not core.delete_dir(this.data.content.path) then
-				gamedata.errormessage = fgettext("pkgmgr: failed to delete \"$1\"", this.data.content.path)
+				gamedata.errormessage = fgettext_ne("pkgmgr: failed to delete \"$1\"", this.data.content.path)
 			end
 
 			if this.data.content.type == "game" then
@@ -43,7 +43,7 @@ local function delete_content_buttonhandler(this, fields)
 				pkgmgr.refresh_globals()
 			end
 		else
-			gamedata.errormessage = fgettext("pkgmgr: invalid path \"$1\"", this.data.content.path)
+			gamedata.errormessage = fgettext_ne("pkgmgr: invalid path \"$1\"", this.data.content.path)
 		end
 		this:delete()
 		return true

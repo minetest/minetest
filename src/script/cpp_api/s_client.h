@@ -20,19 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "util/pointedthing.h"
 #include "cpp_api/s_base.h"
 #include "mapnode.h"
-#include "itemdef.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
-#include "lua_api/l_item.h"
 
 #ifdef _CRT_MSVCP_CURRENT
 #include <cstdint>
 #endif
 
 class ClientEnvironment;
+struct ItemStack;
+class Inventory;
+struct ItemDefinition;
 
 class ScriptApiClient : virtual public ScriptApiBase
 {

@@ -163,7 +163,7 @@ public:
 	static const char className[];
 };
 
-class ModApiItemMod : public ModApiBase {
+class ModApiItem : public ModApiBase {
 private:
 	static int l_register_item_raw(lua_State *L);
 	static int l_unregister_item_raw(lua_State *L);

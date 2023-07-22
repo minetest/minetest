@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/renderingengine.h"
 #include "hud.h"
+#include "inventory.h"
 #include "util/string.h"
 #include "irrlicht_changes/CGUITTFont.h"
 

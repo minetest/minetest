@@ -846,7 +846,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 			if (read_color(L, -1, &color))
 				prop->nametag_bgcolor = color;
 		} else {
-			prop->nametag_bgcolor = nullopt;
+			prop->nametag_bgcolor = std::nullopt;
 		}
 	}
 	lua_pop(L, 1);
@@ -1933,6 +1933,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 			// pop "sky_color" table
 			lua_pop(L, 1);
 		}
+		lua_getfield(L, 2, "fog");
+		if (lua_istable(L, -1)) {
+			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
+			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
+		}
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
@@ -2053,7 +2058,6 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_pushnumber(L, skybox_params.body_orbit_tilt);
 		lua_setfield(L, -2, "body_orbit_tilt");
 	}
-
 	lua_newtable(L);
 	s16 i = 1;
 	for (const std::string &texture : skybox_params.textures) {
@@ -2066,6 +2070,14 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	push_sky_color(L, skybox_params);
 	lua_setfield(L, -2, "sky_color");
+
+	lua_newtable(L); // fog
+	lua_pushinteger(L, skybox_params.fog_distance >= 0 ? skybox_params.fog_distance : -1);
+	lua_setfield(L, -2, "fog_distance");
+	lua_pushnumber(L, skybox_params.fog_start >= 0 ? skybox_params.fog_start : -1.0f);
+	lua_setfield(L, -2, "fog_start");
+	lua_setfield(L, -2, "fog");
+
 	return 1;
 }
 
@@ -2337,7 +2349,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	bool do_override = false;
 	float ratio = 0.0f;
 
-	if (!lua_isnil(L, 2)) {
+	if (!lua_isnoneornil(L, 2)) {
 		do_override = true;
 		ratio = readParam<float>(L, 2);
 		luaL_argcheck(L, ratio >= 0.0f && ratio <= 1.0f, 1,
@@ -2431,26 +2443,30 @@ int ObjectRef::l_set_lighting(lua_State *L)
 	if (player == nullptr)
 		return 0;
 
-	luaL_checktype(L, 2, LUA_TTABLE);
-	Lighting lighting = player->getLighting();
-	lua_getfield(L, 2, "shadows");
-	if (lua_istable(L, -1)) {
-		getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
-	}
-	lua_pop(L, 1); // shadows
+	Lighting lighting;
 
-	getfloatfield(L, -1, "saturation", lighting.saturation);
+	if (!lua_isnoneornil(L, 2)) {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		lighting = player->getLighting();
+		lua_getfield(L, 2, "shadows");
+		if (lua_istable(L, -1)) {
+			getfloatfield(L, -1, "intensity", lighting.shadow_intensity);
+		}
+		lua_pop(L, 1); // shadows
 
-	lua_getfield(L, 2, "exposure");
-	if (lua_istable(L, -1)) {
-		lighting.exposure.luminance_min       = getfloatfield_default(L, -1, "luminance_min",       lighting.exposure.luminance_min);
-		lighting.exposure.luminance_max       = getfloatfield_default(L, -1, "luminance_max",       lighting.exposure.luminance_max);
-		lighting.exposure.exposure_correction = getfloatfield_default(L, -1, "exposure_correction",      lighting.exposure.exposure_correction);
-		lighting.exposure.speed_dark_bright   = getfloatfield_default(L, -1, "speed_dark_bright",   lighting.exposure.speed_dark_bright);
-		lighting.exposure.speed_bright_dark   = getfloatfield_default(L, -1, "speed_bright_dark",   lighting.exposure.speed_bright_dark);
-		lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
+		getfloatfield(L, -1, "saturation", lighting.saturation);
+
+		lua_getfield(L, 2, "exposure");
+		if (lua_istable(L, -1)) {
+			lighting.exposure.luminance_min       = getfloatfield_default(L, -1, "luminance_min",       lighting.exposure.luminance_min);
+			lighting.exposure.luminance_max       = getfloatfield_default(L, -1, "luminance_max",       lighting.exposure.luminance_max);
+			lighting.exposure.exposure_correction = getfloatfield_default(L, -1, "exposure_correction",      lighting.exposure.exposure_correction);
+			lighting.exposure.speed_dark_bright   = getfloatfield_default(L, -1, "speed_dark_bright",   lighting.exposure.speed_dark_bright);
+			lighting.exposure.speed_bright_dark   = getfloatfield_default(L, -1, "speed_bright_dark",   lighting.exposure.speed_bright_dark);
+			lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
+		}
+		lua_pop(L, 1); // exposure
 	}
-	lua_pop(L, 1); // exposure
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;

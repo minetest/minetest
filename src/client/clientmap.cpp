@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <matrix4.h>
 #include "mapsector.h"
 #include "mapblock.h"
+#include "nodedef.h"
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h"               // CameraModes
@@ -47,7 +48,7 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 	for (MeshBufList &l : list) {
 		// comparing a full material is quite expensive so we don't do it if
 		// not even first texture is equal
-		if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
+		if (l.m.TextureLayers[0].Texture != m.TextureLayers[0].Texture)
 			continue;
 
 		if (l.m == m) {
@@ -622,6 +623,8 @@ void ClientMap::touchMapBlocks()
 	if (m_control.range_all || m_loops_occlusion_culler)
 		return;
 
+	ScopeProfiler sp(g_profiler, "CM::touchMapBlocks()", SPT_AVG);
+
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
@@ -839,32 +842,29 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
-			material.setFlag(video::EMF_TRILINEAR_FILTER,
-				m_cache_trilinear_filter);
-			material.setFlag(video::EMF_BILINEAR_FILTER,
-				m_cache_bilinear_filter);
-			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
-				m_cache_anistropic_filter);
-			material.setFlag(video::EMF_WIREFRAME,
-				m_control.show_wireframe);
+			material.forEachTexture([this] (auto &tex) {
+				tex.setFiltersMinetest(m_cache_bilinear_filter, m_cache_trilinear_filter,
+						m_cache_anistropic_filter);
+			});
+			material.Wireframe = m_control.show_wireframe;
 
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
 			if (shadow && shadow->is_active()) {
-				auto &layer = material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW];
+				auto &layer = material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW];
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				// Do not enable filter on shadow texture to avoid visual artifacts
 				// with colored shadows.
 				// Filtering is done in shader code anyway
-				layer.BilinearFilter = false;
-				layer.AnisotropicFilter = false;
-				layer.TrilinearFilter = false;
+				layer.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+				layer.MagFilter = video::ETMAGF_NEAREST;
+				layer.AnisotropicFilter = 0;
 			}
 			driver->setMaterial(material);
 			++material_swaps;
-			material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
+			material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
 		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);

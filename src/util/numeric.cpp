@@ -90,12 +90,12 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 
 	const unsigned char *data2 = (const unsigned char *)data;
 	switch (len & 7) {
-		case 7: h ^= (u64)data2[6] << 48;
-		case 6: h ^= (u64)data2[5] << 40;
-		case 5: h ^= (u64)data2[4] << 32;
-		case 4: h ^= (u64)data2[3] << 24;
-		case 3: h ^= (u64)data2[2] << 16;
-		case 2: h ^= (u64)data2[1] << 8;
+		case 7: h ^= (u64)data2[6] << 48; [[fallthrough]];
+		case 6: h ^= (u64)data2[5] << 40; [[fallthrough]];
+		case 5: h ^= (u64)data2[4] << 32; [[fallthrough]];
+		case 4: h ^= (u64)data2[3] << 24; [[fallthrough]];
+		case 3: h ^= (u64)data2[2] << 16; [[fallthrough]];
+		case 2: h ^= (u64)data2[1] << 8;  [[fallthrough]];
 		case 1: h ^= (u64)data2[0];
 				h *= m;
 	}

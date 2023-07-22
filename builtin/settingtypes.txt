@@ -108,6 +108,12 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
+#    Enable mouse wheel (scroll) for item selection in hotbar.
+enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
+
+#    Invert mouse wheel (scroll) direction for item selection in hotbar.
+invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
+
 [*Touchscreen]
 
 #    The length in pixels it takes for touch screen interaction to start.
@@ -336,14 +342,27 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    texture autoscaling.
 texture_min_size (Minimum texture size) int 64 1 32768
 
-#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
-#    This algorithm smooths out the 3D viewport while keeping the image sharp,
-#    but it doesn't affect the insides of textures
-#    (which is especially noticeable with transparent textures).
-#    Visible spaces appear between nodes when shaders are disabled.
-#    If set to 0, MSAA is disabled.
-#    A restart is required after changing this option.
-fsaa (FSAA) enum 0 0,1,2,4,8,16
+#    Select the antialiasing method to apply.
+#
+#    * None - No antialiasing (default)
+#
+#    * FSAA - Hardware-provided full-screen antialiasing (incompatible with shaders)
+#             A.K.A multi-sample antialiasing (MSAA)
+#             Smoothens out block edges but does not affect the insides of textures.
+#             A restart is required to change this option.
+#
+#    * FXAA - Fast approximate antialiasing (requires shaders)
+#             Applies a post-processing filter to detect and smoothen high-contrast edges.
+#             Provides balance between speed and image quality.
+#
+#    * SSAA - Super-sampling antialiasing (requires shaders)
+#             Renders higher-resolution image of the scene, then scales down to reduce
+#             the aliasing effects. This is the slowest and the most accurate method.
+antialiasing (Antialiasing method) enum none none,fsaa,fxaa,ssaa
+
+#    Defines size of the sampling grid for FSAA and SSAA antializasing methods.
+#    Value of 2 means taking 2x2 = 4 samples.
+fsaa (Anti-aliasing scale) enum 2 2,4,8,16
 
 [**Occlusion Culling]
 
@@ -1667,7 +1686,7 @@ enable_vbo (VBO) bool true
 cloud_radius (Cloud radius) int 12 1 62
 
 #    Whether node texture animations should be desynchronized per mapblock.
-desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
+desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
@@ -2051,7 +2070,7 @@ joystick_deadzone (Joystick dead zone) int 2048 0 65535
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
-[*Temporary Settings]
+[*Hide: Temporary Settings]
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path

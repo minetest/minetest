@@ -91,12 +91,14 @@ void TestIrrPtr::testRefCounting()
 			obj->getReferenceCount());
 }
 
-#if defined(__clang__)
+#if defined(__clang__) || defined(__GNUC__)
 	#pragma GCC diagnostic push
 	#if __clang_major__ >= 7
 		#pragma GCC diagnostic ignored "-Wself-assign-overloaded"
 	#endif
-	#pragma GCC diagnostic ignored "-Wself-move"
+	#if defined(__clang__) || __GNUC__ >= 13
+		#pragma GCC diagnostic ignored "-Wself-move"
+	#endif
 #endif
 
 void TestIrrPtr::testSelfAssignment()
@@ -138,6 +140,6 @@ void TestIrrPtr::testNullHandling()
 	UASSERT(!p3);
 }
 
-#if defined(__clang__)
+#if defined(__clang__) || defined(__GNUC__)
 	#pragma GCC diagnostic pop
 #endif

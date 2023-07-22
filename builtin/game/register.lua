@@ -1,5 +1,6 @@
 -- Minetest: builtin/register.lua
 
+local builtin_shared = ...
 local S = core.get_translator("__builtin")
 
 --
@@ -420,55 +421,6 @@ function core.override_item(name, redefinition)
 	register_item_raw(item)
 end
 
-do
-	local default = {mod = "??", name = "??"}
-	core.callback_origins = setmetatable({}, {
-		__index = function()
-			return default
-		end
-	})
-end
-
-function core.run_callbacks(callbacks, mode, ...)
-	assert(type(callbacks) == "table")
-	local cb_len = #callbacks
-	if cb_len == 0 then
-		if mode == 2 or mode == 3 then
-			return true
-		elseif mode == 4 or mode == 5 then
-			return false
-		end
-	end
-	local ret = nil
-	for i = 1, cb_len do
-		local origin = core.callback_origins[callbacks[i]]
-		core.set_last_run_mod(origin.mod)
-		local cb_ret = callbacks[i](...)
-
-		if mode == 0 and i == 1 then
-			ret = cb_ret
-		elseif mode == 1 and i == cb_len then
-			ret = cb_ret
-		elseif mode == 2 then
-			if not cb_ret or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 3 then
-			if cb_ret then
-				return cb_ret
-			end
-			ret = cb_ret
-		elseif mode == 4 then
-			if (cb_ret and not ret) or i == 1 then
-				ret = cb_ret
-			end
-		elseif mode == 5 and cb_ret then
-			return cb_ret
-		end
-	end
-	return ret
-end
-
 function core.run_priv_callbacks(name, priv, caller, method)
 	local def = core.registered_privileges[priv]
 	if not def or not def["on_" .. method] or
@@ -484,34 +436,6 @@ end
 --
 -- Callback registration
 --
-
-local function make_registration()
-	local t = {}
-	local registerfunc = function(func)
-		t[#t + 1] = func
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
-		--local origin = core.callback_origins[func]
-		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
-	end
-	return t, registerfunc
-end
-
-local function make_registration_reverse()
-	local t = {}
-	local registerfunc = function(func)
-		table.insert(t, 1, func)
-		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
-		}
-		--local origin = core.callback_origins[func]
-		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
-	end
-	return t, registerfunc
-end
 
 local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	local list = {}
@@ -599,6 +523,9 @@ core.registered_decorations = make_registration_wrap("register_decoration", "cle
 
 core.unregister_biome = make_wrap_deregistration(core.register_biome,
 		core.clear_registered_biomes, core.registered_biomes)
+
+local make_registration = builtin_shared.make_registration
+local make_registration_reverse = builtin_shared.make_registration_reverse
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_on_chatcommands, core.register_on_chatcommand = make_registration()

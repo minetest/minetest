@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
+#include "localplayer.h"
 #include "scripting_client.h"
 #include "mapblock_mesh.h"
 #include "mtevent.h"
@@ -494,8 +495,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 	const core::line3d<f32> &shootline_on_map,
 	std::vector<PointedThing> &objects)
 {
-	std::vector<DistanceSortedActiveObject> allObjects;
-	m_ao_manager.getActiveSelectableObjects(shootline_on_map, allObjects);
+	auto allObjects = m_ao_manager.getActiveSelectableObjects(shootline_on_map);
 	const v3f line_vector = shootline_on_map.getVector();
 
 	for (const auto &allObject : allObjects) {

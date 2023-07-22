@@ -332,7 +332,11 @@ public:
 				return 0.0f;
 			return 1.0f; // If there is a keyboard event, assume maximum speed
 		}
+#ifdef HAVE_TOUCHSCREENGUI
+		return m_receiver->m_touchscreengui->getMovementSpeed();
+#else
 		return joystick.getMovementSpeed();
+#endif
 	}
 
 	virtual float getMovementDirection()
@@ -352,7 +356,11 @@ public:
 		if (x != 0 || z != 0) /* If there is a keyboard event, it takes priority */
 			return atan2(x, z);
 		else
+#ifdef HAVE_TOUCHSCREENGUI
+			return m_receiver->m_touchscreengui->getMovementDirection();
+#else
 			return joystick.getMovementDirection();
+#endif
 	}
 
 	virtual bool cancelPressed()

@@ -53,7 +53,7 @@ struct ItemStack;
 struct ItemDefinition;
 struct ToolCapabilities;
 struct ObjectProperties;
-struct SimpleSoundSpec;
+struct SoundSpec;
 struct ServerPlayingSound;
 class Inventory;
 class InventoryList;
@@ -87,8 +87,8 @@ void               push_palette              (lua_State *L,
 TileDef            read_tiledef              (lua_State *L, int index,
                                               u8 drawtype, bool special);
 
-void               read_soundspec            (lua_State *L, int index,
-                                              SimpleSoundSpec &spec);
+void               read_simplesoundspec      (lua_State *L, int index,
+                                              SoundSpec &spec);
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_server_sound_params  (lua_State *L, int index,
@@ -167,8 +167,8 @@ std::vector<ItemStack> read_items            (lua_State *L,
                                               int index,
                                               IGameDef* gdef);
 
-void               push_soundspec            (lua_State *L,
-                                              const SimpleSoundSpec &spec);
+void               push_simplesoundspec      (lua_State *L,
+                                              const SoundSpec &spec);
 
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,

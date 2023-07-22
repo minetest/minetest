@@ -197,40 +197,16 @@ static std::array<video::S3DVertex, 24> setupCuboidVertices(const aabb3f &box, c
 			video::S3DVertex &vertex = vertices[face * 4 + j];
 			v2f &tcoords = vertex.TCoords;
 			switch (tile.rotation) {
-			case 0:
+			case TileRotation::None:
 				break;
-			case 1: // R90
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+			case TileRotation::R90:
+				tcoords.set(-tcoords.Y, tcoords.X);
 				break;
-			case 2: // R180
-				tcoords.rotateBy(180, irr::core::vector2df(0, 0));
+			case TileRotation::R180:
+				tcoords.set(-tcoords.X, -tcoords.Y);
 				break;
-			case 3: // R270
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
-				break;
-			case 4: // FXR90
-				tcoords.X = 1.0 - tcoords.X;
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
-				break;
-			case 5: // FXR270
-				tcoords.X = 1.0 - tcoords.X;
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
-				break;
-			case 6: // FYR90
-				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
-				break;
-			case 7: // FYR270
-				tcoords.Y = 1.0 - tcoords.Y;
-				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
-				break;
-			case 8: // FX
-				tcoords.X = 1.0 - tcoords.X;
-				break;
-			case 9: // FY
-				tcoords.Y = 1.0 - tcoords.Y;
-				break;
-			default:
+			case TileRotation::R270:
+				tcoords.set(tcoords.Y, -tcoords.X);
 				break;
 			}
 		}
@@ -457,11 +433,9 @@ void MapblockMeshGenerator::drawSolidNode()
 			if (f2.solidness == 2)
 				continue;
 			if (f->drawtype == NDT_LIQUID) {
-				if (n2 == nodedef->getId(f->liquid_alternative_flowing))
+				if (f->sameLiquidRender(f2))
 					continue;
-				if (n2 == nodedef->getId(f->liquid_alternative_source))
-					continue;
-				backface_culling = f2.solidness >= 1;
+				backface_culling = f2.solidness || f2.visual_solidness;
 			}
 		}
 		faces |= 1 << face;
@@ -469,8 +443,6 @@ void MapblockMeshGenerator::drawSolidNode()
 		for (auto &layer : tiles[face].layers) {
 			if (backface_culling)
 				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-			else
-				layer.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 		}
@@ -603,7 +575,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		v3s16 p2 = p + v3s16(u, 0, w);
 		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		neighbor.content = n2.getContent();
-		neighbor.level = -0.5 * BS;
+		neighbor.level = -0.5f;
 		neighbor.is_same_liquid = false;
 		neighbor.top_is_same_liquid = false;
 
@@ -612,7 +584,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 
 		if (neighbor.content == c_source) {
 			neighbor.is_same_liquid = true;
-			neighbor.level = 0.5 * BS;
+			neighbor.level = 0.5f;
 		} else if (neighbor.content == c_flowing) {
 			neighbor.is_same_liquid = true;
 			u8 liquid_level = (n2.param2 & LIQUID_LEVEL_MASK);
@@ -620,7 +592,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 				liquid_level = 0;
 			else
 				liquid_level -= (LIQUID_LEVEL_MAX + 1 - range);
-			neighbor.level = (-0.5 + (liquid_level + 0.5) / range) * BS;
+			neighbor.level = (-0.5f + (liquid_level + 0.5f) / range);
 		}
 
 		// Check node above neighbor.
@@ -652,11 +624,11 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 
 		// If top is liquid, draw starting from top of node
 		if (neighbor_data.top_is_same_liquid)
-			return 0.5 * BS;
+			return 0.5f;
 
 		// Source always has the full height
 		if (content == c_source)
-			return 0.5 * BS;
+			return 0.5f;
 
 		// Flowing liquid has level information
 		if (content == c_flowing) {
@@ -667,7 +639,7 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 		}
 	}
 	if (air_count >= 2)
-		return -0.5 * BS + 0.2;
+		return -0.5f + 0.2f / BS;
 	if (count > 0)
 		return sum / count;
 	return 0;
@@ -725,12 +697,12 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.X = (base.X - 0.5f) * BS;
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
-				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f * BS;
+				pos.Y = (neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5f) * BS;
 			} else if (top_is_same_liquid) {
 				pos.Y = 0.5f * BS;
 			} else {
-				pos.Y = corner_levels[base.Z][base.X];
-				v += (0.5f * BS - corner_levels[base.Z][base.X]) / BS;
+				pos.Y = corner_levels[base.Z][base.X] * BS;
+				v += 0.5f - corner_levels[base.Z][base.X];
 			}
 
 			if (data->m_smooth_lighting)
@@ -759,7 +731,7 @@ void MapblockMeshGenerator::drawLiquidTop()
 	for (int i = 0; i < 4; i++) {
 		int u = corner_resolve[i][0];
 		int w = corner_resolve[i][1];
-		vertices[i].Pos.Y += corner_levels[w][u];
+		vertices[i].Pos.Y += corner_levels[w][u] * BS;
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += origin;
@@ -774,15 +746,28 @@ void MapblockMeshGenerator::drawLiquidTop()
 	// Positive if liquid moves towards +X
 	f32 dx = (corner_levels[0][0] + corner_levels[1][0]) -
 	         (corner_levels[0][1] + corner_levels[1][1]);
-	f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG;
 	v2f tcoord_center(0.5, 0.5);
 	v2f tcoord_translate(blockpos_nodes.Z + p.Z, blockpos_nodes.X + p.X);
-	tcoord_translate.rotateBy(tcoord_angle);
+	v2f dir = v2f(dx, dz).normalize();
+	if (dir == v2f{0.0f, 0.0f}) // if corners are symmetrical
+		dir = v2f{1.0f, 0.0f};
+
+	// Rotate tcoord_translate around the origin. The X axis turns to dir.
+	tcoord_translate.set(
+		dir.X * tcoord_translate.X - dir.Y * tcoord_translate.Y,
+		dir.Y * tcoord_translate.X + dir.X * tcoord_translate.Y);
+
 	tcoord_translate.X -= floor(tcoord_translate.X);
 	tcoord_translate.Y -= floor(tcoord_translate.Y);
 
 	for (video::S3DVertex &vertex : vertices) {
-		vertex.TCoords.rotateBy(tcoord_angle, tcoord_center);
+		// Rotate vertex.TCoords around tcoord_center. The X axis turns to dir.
+		vertex.TCoords -= tcoord_center;
+		vertex.TCoords.set(
+			dir.X * vertex.TCoords.X - dir.Y * vertex.TCoords.Y,
+			dir.Y * vertex.TCoords.X + dir.X * vertex.TCoords.Y);
+		vertex.TCoords += tcoord_center;
+
 		vertex.TCoords += tcoord_translate;
 	}
 
@@ -1326,7 +1311,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 
 	// Put wood the right way around in the posts
 	TileSpec tile_rot = tile;
-	tile_rot.rotation = 1;
+	tile_rot.rotation = TileRotation::R90;
 
 	static const f32 post_rad = BS / 8;
 	static const f32 bar_rad  = BS / 16;

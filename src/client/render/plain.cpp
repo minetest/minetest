@@ -130,6 +130,11 @@ RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 	if (downscale_factor.X == 1.0f && downscale_factor.Y == 1.0f)
 		return previousStep;
 
+	// When shaders are enabled, post-processing pipeline takes care of rescaling
+	if (g_settings->getBool("enable_shaders"))
+		return previousStep;
+
+
 	// Initialize buffer
 	TextureBuffer *buffer = pipeline->createOwned<TextureBuffer>();
 	buffer->setTexture(TEXTURE_UPSCALE, downscale_factor, "upscale", video::ECF_A8R8G8B8);

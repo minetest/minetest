@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientmap.h"
 #include "profiler.h"
+#include "EShaderTypes.h"
+#include "IGPUProgrammingServices.h"
+#include "IMaterialRenderer.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
@@ -110,7 +113,9 @@ void ShadowRenderer::disable()
 	}
 
 	for (auto node : m_shadow_node_array)
-		node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		node.node->forEachMaterial([] (auto &mat) {
+			mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		});
 }
 
 void ShadowRenderer::initialize()
@@ -180,12 +185,16 @@ void ShadowRenderer::addNodeToShadowList(
 	// node should never be ClientMap
 	assert(strcmp(node->getName(), "ClientMap") != 0);
 
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	node->forEachMaterial([this] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	});
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 {
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	node->forEachMaterial([] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	});
 	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
 		if (it->node == node) {
 			it = m_shadow_node_array.erase(it);
@@ -255,7 +264,9 @@ void ShadowRenderer::updateSMTextures()
 		assert(shadowMapTextureFinal != nullptr);
 
 		for (auto &node : m_shadow_node_array)
-			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			node.node->forEachMaterial([this] (auto &mat) {
+				mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			});
 	}
 
 	if (!m_shadow_node_array.empty()) {

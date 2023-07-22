@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <algorithm>
+#include <stack>
 #include "serverenvironment.h"
 #include "settings.h"
 #include "log.h"
@@ -47,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_LEVELDB
 #include "database/database-leveldb.h"
 #endif
+#include "irrlicht_changes/printing.h"
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 
@@ -351,6 +353,8 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 			v3f camera_dir = v3f(0,0,1);
 			camera_dir.rotateYZBy(playersao->getLookPitch());
 			camera_dir.rotateXZBy(playersao->getRotation().Y);
+			if (playersao->getCameraInverted())
+				camera_dir = -camera_dir;
 			fillViewConeBlock(pos,
 				player_ao_range,
 				playersao->getEyePosition(),
@@ -506,8 +510,12 @@ ServerEnvironment::~ServerEnvironment()
 	// This makes the next one delete all active objects.
 	m_active_blocks.clear();
 
-	// Convert all objects to static and delete the active objects
-	deactivateFarObjects(true);
+	try {
+		// Convert all objects to static and delete the active objects
+		deactivateFarObjects(true);
+	} catch (ModError &e) {
+		m_server->addShutdownError(e);
+	}
 
 	// Drop/delete map
 	if (m_map)
@@ -1279,7 +1287,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		MapBlock *block = m_map->emergeBlock(p, false);
 		if (!block) {
 			errorstream << "ServerEnvironment::clearObjects(): "
-				<< "Failed to emerge block " << PP(p) << std::endl;
+				<< "Failed to emerge block " << p << std::endl;
 			continue;
 		}
 
@@ -1855,7 +1863,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			v3s16 p = floatToInt(objectpos, BS);
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 				<<"could not emerge block for storing id="<<object->getId()
-				<<" statically (pos="<<PP(p)<<")"<<std::endl;
+				<<" statically (pos="<<p<<")"<<std::endl;
 		}
 	}
 
@@ -1903,7 +1911,7 @@ void ServerEnvironment::removeRemovedObjects()
 					warningstream << "ServerEnvironment::removeRemovedObjects(): "
 							<< "id=" << id << " m_static_exists=true but "
 							<< "static data doesn't actually exist in "
-							<< PP(obj->m_static_block) << std::endl;
+							<< obj->m_static_block << std::endl;
 				}
 			} else {
 				infostream << "Failed to emerge block from which an object to "
@@ -1993,7 +2001,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		if (!obj) {
 			errorstream << "ServerEnvironment::activateObjects(): "
 				<< "failed to create active object from static object "
-				<< "in block " << PP(s_obj.pos / BS)
+				<< "in block " << (s_obj.pos / BS)
 				<< " type=" << (int)s_obj.type << " data:" << std::endl;
 			print_hexdump(verbosestream, s_obj.data);
 
@@ -2001,7 +2009,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			continue;
 		}
 		verbosestream << "ServerEnvironment::activateObjects(): "
-			<< "activated static object pos=" << PP(s_obj.pos / BS)
+			<< "activated static object pos=" << (s_obj.pos / BS)
 			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false, dtime_s);
@@ -2082,7 +2090,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 
 		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
 					  << "deactivating object id=" << id << " on inactive block "
-					  << PP(blockpos_o) << std::endl;
+					  << blockpos_o << std::endl;
 
 		// If known by some client, don't immediately delete.
 		bool pending_delete = (obj->m_known_by_count > 0 && !force_delete);
@@ -2116,7 +2124,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 						warningstream << "ServerEnvironment::deactivateFarObjects(): "
 								<< "id=" << id << " m_static_exists=true but "
 								<< "static data doesn't actually exist in "
-								<< PP(obj->m_static_block) << std::endl;
+								<< obj->m_static_block << std::endl;
 					}
 				}
 			}
@@ -2186,7 +2194,7 @@ void ServerEnvironment::deleteStaticFromBlock(
 		block = m_map->emergeBlock(obj->m_static_block, false);
 	if (!block) {
 		if (!no_emerge)
-			errorstream << "ServerEnv: Failed to emerge block " << PP(obj->m_static_block)
+			errorstream << "ServerEnv: Failed to emerge block " << obj->m_static_block
 					<< " when deleting static data of object from it. id=" << id << std::endl;
 		return;
 	}
@@ -2213,7 +2221,7 @@ bool ServerEnvironment::saveStaticToBlock(
 	}
 
 	if (!block) {
-		errorstream << "ServerEnv: Failed to emerge block " << PP(obj->m_static_block)
+		errorstream << "ServerEnv: Failed to emerge block " << obj->m_static_block
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}

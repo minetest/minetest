@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include "irrlichttypes.h"
 
 class TestClientActiveObjectMgr;
@@ -38,8 +38,7 @@ public:
 
 	T *getActiveObject(u16 id)
 	{
-		typename std::unordered_map<u16, T *>::const_iterator n =
-				m_active_objects.find(id);
+		auto n = m_active_objects.find(id);
 		return (n != m_active_objects.end() ? n->second : nullptr);
 	}
 
@@ -62,5 +61,5 @@ protected:
 		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
 	}
 
-	std::unordered_map<u16, T *> m_active_objects;
+	std::map<u16, T *> m_active_objects; // ordered to fix #10985 
 };

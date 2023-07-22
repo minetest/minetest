@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "client/sound.h"
 #include "client/tile.h"
+#include "client/mapblock_mesh.h"
 #include "util/basic_macros.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
@@ -252,11 +253,12 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	u16 indices[] = {0,1,2,2,3,0};
 	buf->append(vertices, 4, indices, 6);
 	// Set material
-	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
-	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().Lighting = false;
+	buf->getMaterial().BackfaceCulling = false;
+	buf->getMaterial().TextureLayers[0].Texture = tsrc->getTextureForMesh("rat.png");
+	buf->getMaterial().TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+	buf->getMaterial().TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
+	buf->getMaterial().FogEnable = true;
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
@@ -643,16 +645,22 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		m_matrixnode->grab();
 	};
 
-	auto setSceneNodeMaterial = [this] (scene::ISceneNode *node) {
-		node->setMaterialFlag(video::EMF_LIGHTING, false);
-		node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		node->setMaterialType(m_material_type);
-
+	auto setMaterial = [this] (video::SMaterial &mat) {
+		mat.MaterialType = m_material_type;
+		mat.Lighting = false;
+		mat.FogEnable = true;
 		if (m_enable_shaders) {
-			node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-			node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+			mat.GouraudShading = false;
+			mat.NormalizeNormals = true;
 		}
+		mat.forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
+	};
+
+	auto setSceneNodeMaterials = [setMaterial] (scene::ISceneNode *node) {
+		node->forEachMaterial(setMaterial);
 	};
 
 	if (m_prop.visual == "sprite") {
@@ -660,10 +668,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		m_spritenode = m_smgr->addBillboardSceneNode(
 				m_matrixnode, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
-		m_spritenode->setMaterialTexture(0,
-				tsrc->getTextureForMesh("no_texture.png"));
+		video::ITexture *tex = tsrc->getTextureForMesh("no_texture.png");
+		m_spritenode->forEachMaterial([tex] (auto &mat) {
+			mat.setTexture(0, tex);
+		});
 
-		setSceneNodeMaterial(m_spritenode);
+		setSceneNodeMaterials(m_spritenode);
 
 		m_spritenode->setSize(v2f(m_prop.visual_size.X,
 				m_prop.visual_size.Y) * BS);
@@ -695,16 +705,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
-			// Set material
-			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = m_material_type;
 
+			// Set material
+			setMaterial(buf->getMaterial());
 			if (m_enable_shaders) {
 				buf->getMaterial().EmissiveColor = c;
-				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
-				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
 
 			// Add to mesh
@@ -726,16 +731,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			}
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
-			// Set material
-			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = m_material_type;
 
+			// Set material
+			setMaterial(buf->getMaterial());
 			if (m_enable_shaders) {
 				buf->getMaterial().EmissiveColor = c;
-				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
-				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
 
 			// Add to mesh
@@ -753,10 +753,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		mesh->drop();
 
 		m_meshnode->setScale(m_prop.visual_size);
-		m_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-			m_prop.backface_culling);
 
-		setSceneNodeMaterial(m_meshnode);
+		setSceneNodeMaterials(m_meshnode);
+
+		m_meshnode->forEachMaterial([this] (auto &mat) {
+			mat.BackfaceCulling = m_prop.backface_culling;
+		});
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -779,10 +781,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 			setAnimatedMeshColor(m_animated_meshnode, video::SColor(0xFFFFFFFF));
 
-			setSceneNodeMaterial(m_animated_meshnode);
+			setSceneNodeMaterials(m_animated_meshnode);
 
-			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-				m_prop.backface_culling);
+			m_animated_meshnode->forEachMaterial([this] (auto &mat) {
+				mat.BackfaceCulling = m_prop.backface_culling;
+			});
 		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
@@ -845,9 +848,9 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 				<< " texture(s) specified, this is deprecated.";
 			logOnce(oss, warningstream);
 
-			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayer[0].Texture;
+			video::ITexture *last = m_animated_meshnode->getMaterial(0).TextureLayers[0].Texture;
 			for (u32 i = 1; i < mat_count; i++) {
-				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayer[0];
+				auto &layer = m_animated_meshnode->getMaterial(i).TextureLayers[0];
 				if (!layer.Texture)
 					layer.Texture = last;
 				last = layer.Texture;
@@ -1032,7 +1035,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		rot_translator.val_current = m_rotation;
 
 		if (m_is_visible) {
-			int old_anim = player->last_animation;
+			LocalPlayerAnimation old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
@@ -1062,13 +1065,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			if (walking && (controls.dig || controls.place)) {
 				new_anim = player->local_animations[3];
-				player->last_animation = WD_ANIM;
+				player->last_animation = LocalPlayerAnimation::WD_ANIM;
 			} else if (walking) {
 				new_anim = player->local_animations[1];
-				player->last_animation = WALK_ANIM;
+				player->last_animation = LocalPlayerAnimation::WALK_ANIM;
 			} else if (controls.dig || controls.place) {
 				new_anim = player->local_animations[2];
-				player->last_animation = DIG_ANIM;
+				player->last_animation = LocalPlayerAnimation::DIG_ANIM;
 			}
 
 			// Apply animations if input detected and not attached
@@ -1079,9 +1082,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				m_animation_speed = new_speed;
 				player->last_animation_speed = m_animation_speed;
 			} else {
-				player->last_animation = NO_ANIM;
+				player->last_animation = LocalPlayerAnimation::NO_ANIM;
 
-				if (old_anim != NO_ANIM) {
+				if (old_anim != LocalPlayerAnimation::NO_ANIM) {
 					m_animation_range = player->local_animations[0];
 					updateAnimation();
 				}
@@ -1090,7 +1093,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			// Update local player animations
 			if ((player->last_animation != old_anim ||
 					m_animation_speed != old_anim_speed) &&
-					player->last_animation != NO_ANIM && allow_update)
+					player->last_animation != LocalPlayerAnimation::NO_ANIM &&
+					allow_update)
 				updateAnimation();
 
 		}
@@ -1179,11 +1183,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				v3s16 node_below_pos = floatToInt(foot_pos + v3f(0.0f, -0.5f, 0.0f),
 						1.0f);
 				MapNode n = m_env->getMap().getNode(node_below_pos);
-				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				SoundSpec spec = ndef->get(n).sound_footstep;
 				// Reduce footstep gain, as non-local-player footsteps are
 				// somehow louder.
 				spec.gain *= 0.6f;
-				m_client->sound()->playSoundAt(spec, foot_pos * BS);
+				// The footstep-sound doesn't travel with the object. => vel=0
+				m_client->sound()->playSoundAt(0, spec, foot_pos, v3f(0.0f));
 			}
 		}
 	}
@@ -1335,23 +1340,25 @@ void GenericCAO::updateTextures(std::string mod)
 			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
-			m_spritenode->getMaterial(0).MaterialType = m_material_type;
-			m_spritenode->getMaterial(0).MaterialTypeParam = 0.5f;
-			m_spritenode->setMaterialTexture(0,
-					tsrc->getTextureForMesh(texturestring));
+
+			video::SMaterial &material = m_spritenode->getMaterial(0);
+			material.MaterialType = m_material_type;
+			material.MaterialTypeParam = 0.5f;
+			material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
 			// has directional lighting, it should work automatically.
 			if (!m_prop.colors.empty()) {
-				m_spritenode->getMaterial(0).AmbientColor = m_prop.colors[0];
-				m_spritenode->getMaterial(0).DiffuseColor = m_prop.colors[0];
-				m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
+				material.AmbientColor = m_prop.colors[0];
+				material.DiffuseColor = m_prop.colors[0];
+				material.SpecularColor = m_prop.colors[0];
 			}
 
-			m_spritenode->getMaterial(0).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-			m_spritenode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-			m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+			material.forEachTexture([=] (auto &tex) {
+				tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+						use_anisotropic_filter);
+			});
 		}
 	}
 
@@ -1363,20 +1370,19 @@ void GenericCAO::updateTextures(std::string mod)
 				if (texturestring.empty())
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
-				video::ITexture* texture = tsrc->getTextureForMesh(texturestring);
+				video::ITexture *texture = tsrc->getTextureForMesh(texturestring);
 				if (!texture) {
 					errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
 					continue;
 				}
 
 				// Set material flags and texture
-				video::SMaterial& material = m_animated_meshnode->getMaterial(i);
+				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
-				material.TextureLayer[0].Texture = texture;
-				material.setFlag(video::EMF_LIGHTING, true);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
-				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
+				material.TextureLayers[0].Texture = texture;
+				material.Lighting = true;
+				material.BackfaceCulling = m_prop.backface_culling;
 
 				// don't filter low-res textures, makes them look blurry
 				// player models have a res of 64
@@ -1385,22 +1391,21 @@ void GenericCAO::updateTextures(std::string mod)
 				use_trilinear_filter &= res > 64;
 				use_bilinear_filter &= res > 64;
 
-				m_animated_meshnode->getMaterial(i)
-						.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				m_animated_meshnode->getMaterial(i)
-						.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				m_animated_meshnode->getMaterial(i)
-						.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.forEachTexture([=] (auto &tex) {
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
+				});
 			}
 			for (u32 i = 0; i < m_prop.colors.size() &&
-			i < m_animated_meshnode->getMaterialCount(); ++i)
+					i < m_animated_meshnode->getMaterialCount(); ++i)
 			{
+				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				m_animated_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
-				m_animated_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
-				m_animated_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
+				material.AmbientColor = m_prop.colors[i];
+				material.DiffuseColor = m_prop.colors[i];
+				material.SpecularColor = m_prop.colors[i];
 			}
 		}
 	}
@@ -1415,15 +1420,12 @@ void GenericCAO::updateTextures(std::string mod)
 					texturestring = m_prop.textures[i];
 				texturestring += mod;
 
-
 				// Set material flags and texture
-				video::SMaterial& material = m_meshnode->getMaterial(i);
+				video::SMaterial &material = m_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
-				material.setFlag(video::EMF_LIGHTING, false);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
-				material.setTexture(0,
-						tsrc->getTextureForMesh(texturestring));
+				material.Lighting = false;
+				material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 				material.getTextureMatrix(0).makeIdentity();
 
 				// This allows setting per-material colors. However, until a real lighting
@@ -1431,14 +1433,15 @@ void GenericCAO::updateTextures(std::string mod)
 				// has directional lighting, it should work automatically.
 				if(m_prop.colors.size() > i)
 				{
-					m_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
-					m_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
-					m_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
+					material.AmbientColor = m_prop.colors[i];
+					material.DiffuseColor = m_prop.colors[i];
+					material.SpecularColor = m_prop.colors[i];
 				}
 
-				m_meshnode->getMaterial(i).setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.forEachTexture([=] (auto &tex) {
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
+				});
 			}
 		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
@@ -1447,9 +1450,9 @@ void GenericCAO::updateTextures(std::string mod)
 				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
-				auto& material = m_meshnode->getMaterial(0);
-				material.setTexture(0,
-						tsrc->getTextureForMesh(tname));
+
+				auto &material = m_meshnode->getMaterial(0);
+				material.setTexture(0, tsrc->getTextureForMesh(tname));
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1460,9 +1463,10 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.forEachTexture([=] (auto &tex) {
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
+				});
 			}
 			{
 				std::string tname = "no_texture.png";
@@ -1471,9 +1475,9 @@ void GenericCAO::updateTextures(std::string mod)
 				else if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
-				auto& material = m_meshnode->getMaterial(1);
-				material.setTexture(0,
-						tsrc->getTextureForMesh(tname));
+
+				auto &material = m_meshnode->getMaterial(1);
+				material.setTexture(0, tsrc->getTextureForMesh(tname));
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1488,9 +1492,10 @@ void GenericCAO::updateTextures(std::string mod)
 					material.SpecularColor = m_prop.colors[0];
 				}
 
-				material.setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
-				material.setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
-				material.setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
+				material.forEachTexture([=] (auto &tex) {
+					tex.setFiltersMinetest(use_bilinear_filter, use_trilinear_filter,
+							use_anisotropic_filter);
+				});
 			}
 			// Set mesh color (only if lighting is disabled)
 			if (!m_prop.colors.empty() && m_prop.glow < 0)
@@ -1809,7 +1814,7 @@ void GenericCAO::processMessage(const std::string &data)
 			updateAnimation();
 		} else {
 			LocalPlayer *player = m_env->getLocalPlayer();
-			if(player->last_animation == NO_ANIM)
+			if(player->last_animation == LocalPlayerAnimation::NO_ANIM)
 			{
 				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
 				m_animation_speed = readF32(is);
@@ -2017,7 +2022,9 @@ void GenericCAO::updateMeshCulling()
 
 	if (m_prop.visual == "upright_sprite") {
 		// upright sprite has no backface culling
-		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING, hidden);
+		node->forEachMaterial([=] (auto &mat) {
+			mat.FrontfaceCulling = hidden;
+		});
 		return;
 	}
 
@@ -2025,16 +2032,16 @@ void GenericCAO::updateMeshCulling()
 		// Hide the mesh by culling both front and
 		// back faces. Serious hackyness but it works for our
 		// purposes. This also preserves the skeletal armature.
-		node->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-			true);
-		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-			true);
+		node->forEachMaterial([] (auto &mat) {
+			mat.BackfaceCulling = true;
+			mat.FrontfaceCulling = true;
+		});
 	} else {
 		// Restore mesh visibility.
-		node->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
-			m_prop.backface_culling);
-		node->setMaterialFlag(video::EMF_FRONT_FACE_CULLING,
-			false);
+		node->forEachMaterial([this] (auto &mat) {
+			mat.BackfaceCulling = m_prop.backface_culling;
+			mat.FrontfaceCulling = false;
+		});
 	}
 }
 

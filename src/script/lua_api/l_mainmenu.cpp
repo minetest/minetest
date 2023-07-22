@@ -928,25 +928,22 @@ int ModApiMainMenu::l_get_window_info(lua_State *L)
 	lua_newtable(L);
 	int top = lua_gettop(L);
 
-	const v2u32 &window_size = RenderingEngine::getWindowSize();
-	f32 density = RenderingEngine::getDisplayDensity();
-	f32 gui_scaling = g_settings->getFloat("gui_scaling") * density;
-	f32 hud_scaling = g_settings->getFloat("hud_scaling") * density;
+	auto info = ClientDynamicInfo::getCurrent();
 
 	lua_pushstring(L, "size");
-	push_v2u32(L, window_size);
+	push_v2u32(L, info.render_target_size);
 	lua_settable(L, top);
 
 	lua_pushstring(L, "max_formspec_size");
-	push_v2f(L, ClientDynamicInfo::calculateMaxFSSize(window_size));
+	push_v2f(L, info.max_fs_size);
 	lua_settable(L, top);
 
 	lua_pushstring(L, "real_gui_scaling");
-	lua_pushnumber(L, gui_scaling);
+	lua_pushnumber(L, info.real_gui_scaling);
 	lua_settable(L, top);
 
 	lua_pushstring(L, "real_hud_scaling");
-	lua_pushnumber(L, hud_scaling);
+	lua_pushnumber(L, info.real_hud_scaling);
 	lua_settable(L, top);
 
 	return 1;
@@ -964,6 +961,23 @@ int ModApiMainMenu::l_get_active_driver(lua_State *L)
 int ModApiMainMenu::l_get_active_renderer(lua_State *L)
 {
 	lua_pushstring(L, wide_to_utf8(RenderingEngine::get_video_driver()->getName()).c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_active_irrlicht_device(lua_State *L)
+{
+	const char *device_name = [] {
+		switch (RenderingEngine::get_raw_device()->getType()) {
+		case EIDT_WIN32: return "WIN32";
+		case EIDT_X11: return "X11";
+		case EIDT_OSX: return "OSX";
+		case EIDT_SDL: return "SDL";
+		case EIDT_ANDROID: return "ANDROID";
+		default: return "Unknown";
+		}
+	}();
+	lua_pushstring(L, device_name);
 	return 1;
 }
 
@@ -1111,6 +1125,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_window_info);
 	API_FCT(get_active_driver);
 	API_FCT(get_active_renderer);
+	API_FCT(get_active_irrlicht_device);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);
 	API_FCT(open_url);

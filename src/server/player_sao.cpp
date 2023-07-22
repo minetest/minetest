@@ -185,7 +185,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (!isImmortal() && m_node_hurt_interval.step(dtime, 1.0f)) {
 		u32 damage_per_second = 0;
 		std::string nodename;
-        v3s16 node_pos;
+		v3s16 node_pos;
 		// Lowest and highest damage points are 0.1 within collisionbox
 		float dam_top = m_prop.collisionbox.MaxEdge.Y - 0.1f;
 
@@ -199,7 +199,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			if (c.damage_per_second > damage_per_second) {
 				damage_per_second = c.damage_per_second;
 				nodename = c.name;
-                node_pos = p;
+				node_pos = p;
 			}
 		}
 
@@ -211,7 +211,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		if (c.damage_per_second > damage_per_second) {
 			damage_per_second = c.damage_per_second;
 			nodename = c.name;
-            node_pos = ptop;
+			node_pos = ptop;
 		}
 
 		if (damage_per_second != 0 && m_hp > 0) {

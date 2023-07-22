@@ -765,3 +765,11 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
  * brackets (e.g. "a\x1eb" -> "a<1e>b").
  */
 void safe_print_string(std::ostream &os, const std::string &str);
+
+/**
+ * Parses a string of form `(1, 2, 3)` to a v3f
+ *
+ * @param str String
+ * @return
+ */
+v3f str_to_v3f(const std::string &str);

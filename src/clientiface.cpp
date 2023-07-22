@@ -149,6 +149,9 @@ void RemoteClient::GetNextBlocks (
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
 
+	if (sao->getCameraInverted())
+		camera_dir = -camera_dir;
+
 	u16 max_simul_sends_usually = m_max_simul_sends;
 
 	/*
@@ -177,7 +180,12 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	// Get view range and camera fov (radians) from the client
+	s16 fog_distance = sao->getPlayer()->getSkyParams().fog_distance;
 	s16 wanted_range = sao->getWantedRange() + 1;
+	if (fog_distance >= 0) {
+		// enforce if limited by mod
+		wanted_range = std::min<unsigned>(wanted_range, std::ceil((float)fog_distance / MAP_BLOCKSIZE));
+	}
 	float camera_fov = sao->getFov();
 
 	/*
@@ -286,7 +294,7 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 				Also retrieve a smaller view cone in the direction of the player's
 				movement.
-				(0.1 is about 4 degrees)
+				(0.1 is about 5 degrees)
 			*/
 			f32 dist;
 			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,

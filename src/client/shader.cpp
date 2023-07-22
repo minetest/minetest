@@ -752,8 +752,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	shaders_header << "#define ENABLE_WAVING_PLANTS " << g_settings->getBool("enable_waving_plants") << "\n";
 	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
-	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
-
 	if (g_settings->getBool("enable_dynamic_shadows")) {
 		shaders_header << "#define ENABLE_DYNAMIC_SHADOWS 1\n";
 		if (g_settings->getBool("shadow_map_color"))
@@ -779,6 +777,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
+
+	if (g_settings->get("antialiasing") == "ssaa") {
+		shaders_header << "#define ENABLE_SSAA 1\n";
+		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
+		shaders_header << "#define SSAA_SCALE " << ssaa_scale << ".\n";
+	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 

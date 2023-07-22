@@ -403,9 +403,9 @@ void ContentFeatures::reset()
 	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
-	sound_footstep = SimpleSoundSpec();
-	sound_dig = SimpleSoundSpec("__group");
-	sound_dug = SimpleSoundSpec();
+	sound_footstep = SoundSpec();
+	sound_dig = SoundSpec("__group");
+	sound_dug = SoundSpec();
 	connects_to.clear();
 	connects_to_ids.clear();
 	connect_sides = 0;
@@ -529,9 +529,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	collision_box.serialize(os, protocol_version);
 
 	// sound
-	sound_footstep.serialize(os, protocol_version);
-	sound_dig.serialize(os, protocol_version);
-	sound_dug.serialize(os, protocol_version);
+	sound_footstep.serializeSimple(os, protocol_version);
+	sound_dig.serializeSimple(os, protocol_version);
+	sound_dug.serializeSimple(os, protocol_version);
 
 	// legacy
 	writeU8(os, legacy_facedir_simple);
@@ -626,9 +626,9 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	collision_box.deSerialize(is);
 
 	// sounds
-	sound_footstep.deSerialize(is, protocol_version);
-	sound_dig.deSerialize(is, protocol_version);
-	sound_dug.deSerialize(is, protocol_version);
+	sound_footstep.deSerializeSimple(is, protocol_version);
+	sound_dig.deSerializeSimple(is, protocol_version);
+	sound_dug.deSerializeSimple(is, protocol_version);
 
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);

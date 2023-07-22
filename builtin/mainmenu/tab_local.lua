@@ -284,7 +284,7 @@ local function main_button_handler(this, fields, name, tabdata)
 
 		if selected == nil or gamedata.selected_world == 0 then
 			gamedata.errormessage =
-					fgettext("No world created or selected!")
+					fgettext_ne("No world created or selected!")
 			return true
 		end
 

@@ -216,11 +216,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Send forgotten TweenedParameter properties
 		[scheduled bump for 5.7.0]
 	PROTOCOL VERSION 43:
+		"start_time" added to TOCLIENT_PLAY_SOUND
 		AO_CMD_SET_BONE_POSITION extended
 		[scheduled bump for 5.8.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 42
+#define LATEST_PROTOCOL_VERSION 43
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -236,8 +237,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Constant that differentiates the protocol from random data and other protocols
 #define PROTOCOL_ID 0x4f457403
 
-#define PASSWORD_SIZE 28       // Maximum password length. Allows for
-                               // base64-encoded SHA-1 (27+\0).
+#define PASSWORD_SIZE 28    // Maximum password length. Allows for
+                            // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
 #define FORMSPEC_API_VERSION 6
@@ -457,15 +458,18 @@ enum ToClientCommand
 
 	TOCLIENT_PLAY_SOUND = 0x3f,
 	/*
-		s32 sound_id
+		s32 server_id
 		u16 len
 		u8[len] sound name
-		s32 gain*1000
-		u8 type (0=local, 1=positional, 2=object)
-		s32[3] pos_nodes*10000
+		f32 gain
+		u8 type (SoundLocation: 0=local, 1=positional, 2=object)
+		v3f pos_nodes (in BS-space)
 		u16 object_id
 		u8 loop (bool)
+		f32 fade
+		f32 pitch
 		u8 ephemeral (bool)
+		f32 start_time (in seconds)
 	*/
 
 	TOCLIENT_STOP_SOUND = 0x40,
@@ -923,8 +927,10 @@ enum ToServerCommand
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
 		[2+12+12+4+4] u32 keyPressed
-		[2+12+12+4+4+1] u8 fov*80
+		[2+12+12+4+4+4] u8 fov*80
 		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
+		[2+12+12+4+4+4+1+1] u8 camera_inverted (bool)
+
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,

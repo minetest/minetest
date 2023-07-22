@@ -127,7 +127,7 @@ void TestMapSettingsManager::testMapSettingsManager()
 	UASSERT(mgr.getMapSetting("water_level", &value));
 	UASSERT(value == "20");
 
-    // Pretend we have some mapgen settings configured from the scripting
+	// Pretend we have some mapgen settings configured from the scripting
 	UASSERT(mgr.setMapSetting("water_level", "15"));
 	UASSERT(mgr.setMapSetting("seed", "02468"));
 	UASSERT(mgr.setMapSetting("mg_flags", "nolight", true));

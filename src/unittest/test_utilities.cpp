@@ -58,6 +58,7 @@ public:
 	void testEulerConversion();
 	void testBase64();
 	void testSanitizeDirName();
+	void testIsBlockInSight();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +91,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testEulerConversion);
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
+	TEST(testIsBlockInSight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,62 +119,62 @@ inline float ref_WrapDegrees_0_360(float f)
 
 
 void TestUtilities::testAngleWrapAround() {
-    UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
-    UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
-    UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
-    UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
+	UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
+	UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
+	UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
+	UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
 
-    for (float f = -720; f <= -360; f += 0.25) {
-        UASSERT(std::fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
-    }
+	for (float f = -720; f <= -360; f += 0.25) {
+		UASSERT(std::fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
+	}
 
-    for (float f = -1440; f <= 1440; f += 0.25) {
-        UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
-        UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
-        UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
-        UASSERT(wrapDegrees_0_360(
-                std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
-    }
+	for (float f = -1440; f <= 1440; f += 0.25) {
+		UASSERT(std::fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
+		UASSERT(std::fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
+		UASSERT(wrapDegrees_0_360(
+				std::fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
+	}
 
 }
 
 void TestUtilities::testWrapDegrees_0_360_v3f()
 {
-    // only x test with little step
+	// only x test with little step
 	for (float x = -720.f; x <= 720; x += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(x, 0, 0));
-        UASSERT(r.X >= 0.0f && r.X < 360.0f)
-        UASSERT(r.Y == 0.0f)
-        UASSERT(r.Z == 0.0f)
-    }
-
-    // only y test with little step
-    for (float y = -720.f; y <= 720; y += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(0, y, 0));
-        UASSERT(r.X == 0.0f)
-        UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
-        UASSERT(r.Z == 0.0f)
-    }
-
-    // only z test with little step
-    for (float z = -720.f; z <= 720; z += 0.05) {
-        v3f r = wrapDegrees_0_360_v3f(v3f(0, 0, z));
-        UASSERT(r.X == 0.0f)
-        UASSERT(r.Y == 0.0f)
-        UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+		v3f r = wrapDegrees_0_360_v3f(v3f(x, 0, 0));
+		UASSERT(r.X >= 0.0f && r.X < 360.0f)
+		UASSERT(r.Y == 0.0f)
+		UASSERT(r.Z == 0.0f)
 	}
 
-    // test the whole coordinate translation
-    for (float x = -720.f; x <= 720; x += 2.5) {
-        for (float y = -720.f; y <= 720; y += 2.5) {
-            for (float z = -720.f; z <= 720; z += 2.5) {
-                v3f r = wrapDegrees_0_360_v3f(v3f(x, y, z));
-                UASSERT(r.X >= 0.0f && r.X < 360.0f)
-                UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
-                UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
-            }
-        }
-    }
+	// only y test with little step
+	for (float y = -720.f; y <= 720; y += 0.05) {
+		v3f r = wrapDegrees_0_360_v3f(v3f(0, y, 0));
+		UASSERT(r.X == 0.0f)
+		UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
+		UASSERT(r.Z == 0.0f)
+	}
+
+	// only z test with little step
+	for (float z = -720.f; z <= 720; z += 0.05) {
+		v3f r = wrapDegrees_0_360_v3f(v3f(0, 0, z));
+		UASSERT(r.X == 0.0f)
+		UASSERT(r.Y == 0.0f)
+		UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+	}
+
+	// test the whole coordinate translation
+	for (float x = -720.f; x <= 720; x += 2.5) {
+		for (float y = -720.f; y <= 720; y += 2.5) {
+			for (float z = -720.f; z <= 720; z += 2.5) {
+				v3f r = wrapDegrees_0_360_v3f(v3f(x, y, z));
+				UASSERT(r.X >= 0.0f && r.X < 360.0f)
+				UASSERT(r.Y >= 0.0f && r.Y < 360.0f)
+				UASSERT(r.Z >= 0.0f && r.Z < 360.0f)
+			}
+		}
+	}
 }
 
 
@@ -635,4 +637,70 @@ void TestUtilities::testSanitizeDirName()
 	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
 	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
 	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
+}
+
+template <typename F, typename C>
+C apply_all(const C &co, F functor)
+{
+	C ret;
+	for (auto it = co.begin(); it != co.end(); it++)
+		ret.push_back(functor(*it));
+	return ret;
+}
+
+#define cast_v3(T, other) T((other).X, (other).Y, (other).Z)
+
+void TestUtilities::testIsBlockInSight()
+{
+	const std::vector<v3s16> testdata1 = {
+		{0, 1 * (int)BS, 0}, // camera_pos
+		{1, 0, 0},           // camera_dir
+
+		{ 2, 0, 0},
+		{-2, 0, 0},
+		{0, 0,  3},
+		{0, 0, -3},
+		{0, 0, 0},
+		{6, 0, 0}
+	};
+	auto test1 = [] (const std::vector<v3s16> &data) {
+		float range = BS * MAP_BLOCKSIZE * 4;
+		float fov = 72 * core::DEGTORAD;
+		v3f cam_pos = cast_v3(v3f, data[0]), cam_dir = cast_v3(v3f, data[1]);
+		UASSERT( isBlockInSight(data[2], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[3], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[4], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[5], cam_pos, cam_dir, fov, range));
+
+		// camera block must be visible
+		UASSERT(isBlockInSight(data[6], cam_pos, cam_dir, fov, range));
+
+		// out of range is never visible
+		UASSERT(!isBlockInSight(data[7], cam_pos, cam_dir, fov, range));
+	};
+	// XZ rotations
+	for (int j = 0; j < 4; j++) {
+		auto tmpdata = apply_all(testdata1, [&] (v3s16 v) -> v3s16 {
+			v.rotateXZBy(j*90);
+			return v;
+		});
+		test1(tmpdata);
+	}
+	// just two for XY
+	for (int j = 0; j < 2; j++) {
+		auto tmpdata = apply_all(testdata1, [&] (v3s16 v) -> v3s16 {
+			v.rotateXYBy(90+j*180);
+			return v;
+		});
+		test1(tmpdata);
+	}
+
+	{
+		float range = BS * MAP_BLOCKSIZE * 2;
+		float fov = 72 * core::DEGTORAD;
+		v3f cam_pos(-(MAP_BLOCKSIZE - 1) * BS, 0, 0), cam_dir(1, 0, 0);
+		// we're looking at X+ but are so close to block (-1,0,0) that it
+		// should still be considered visible
+		UASSERT(isBlockInSight({-1, 0, 0}, cam_pos, cam_dir, fov, range));
+	}
 }

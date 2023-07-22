@@ -1,7 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2023 Vitaliy Lobachevskiy
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,15 +18,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #pragma once
+#include <ostream>
+#include <vector2d.h>
+#include <vector3d.h>
 
-#include "lua_api/l_base.h"
+namespace irr::core {
 
-class ModApiSound : public ModApiBase
-{
-private:
-	static int l_sound_play(lua_State *L);
-	static int l_sound_stop(lua_State *L);
+	template <class T>
+	std::ostream &operator<< (std::ostream &os, vector2d<T> vec)
+	{
+		return os << "(" << vec.X << "," << vec.Y << ")";
+	}
 
-public:
-	static void Initialize(lua_State *L, int top);
-};
+	template <class T>
+	std::ostream &operator<< (std::ostream &os, vector3d<T> vec)
+	{
+		return os << "(" << vec.X << "," << vec.Y << "," << vec.Z << ")";
+	}
+
+}

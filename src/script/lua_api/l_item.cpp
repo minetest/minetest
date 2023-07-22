@@ -564,7 +564,7 @@ const luaL_Reg LuaItemStack::methods[] = {
 */
 
 // register_item_raw({lots of stuff})
-int ModApiItemMod::l_register_item_raw(lua_State *L)
+int ModApiItem::l_register_item_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, 1, LUA_TTABLE);
@@ -631,7 +631,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 }
 
 // unregister_item(name)
-int ModApiItemMod::l_unregister_item_raw(lua_State *L)
+int ModApiItem::l_unregister_item_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -652,7 +652,7 @@ int ModApiItemMod::l_unregister_item_raw(lua_State *L)
 }
 
 // register_alias_raw(name, convert_to_name)
-int ModApiItemMod::l_register_alias_raw(lua_State *L)
+int ModApiItem::l_register_alias_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -668,7 +668,7 @@ int ModApiItemMod::l_register_alias_raw(lua_State *L)
 }
 
 // get_content_id(name)
-int ModApiItemMod::l_get_content_id(lua_State *L)
+int ModApiItem::l_get_content_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -694,7 +694,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 }
 
 // get_name_from_content_id(name)
-int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
+int ModApiItem::l_get_name_from_content_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	content_t c = luaL_checkint(L, 1);
@@ -706,7 +706,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	return 1; /* number of results */
 }
 
-void ModApiItemMod::Initialize(lua_State *L, int top)
+void ModApiItem::Initialize(lua_State *L, int top)
 {
 	API_FCT(register_item_raw);
 	API_FCT(unregister_item_raw);
@@ -715,14 +715,14 @@ void ModApiItemMod::Initialize(lua_State *L, int top)
 	API_FCT(get_name_from_content_id);
 }
 
-void ModApiItemMod::InitializeAsync(lua_State *L, int top)
+void ModApiItem::InitializeAsync(lua_State *L, int top)
 {
 	// all read-only functions
 	API_FCT(get_content_id);
 	API_FCT(get_name_from_content_id);
 }
 
-void ModApiItemMod::InitializeClient(lua_State *L, int top)
+void ModApiItem::InitializeClient(lua_State *L, int top)
 {
 	// all read-only functions
 	API_FCT(get_content_id);

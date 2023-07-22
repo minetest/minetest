@@ -73,6 +73,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-files.h"
 #include "database/database-dummy.h"
 #include "gameparams.h"
+#include "particles.h"
+#include "gettext.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -234,7 +236,7 @@ Server::Server(
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface,
-		std::string *on_shutdown_errmsg
+		std::string *shutdown_errmsg
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
@@ -253,7 +255,7 @@ Server::Server(
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
-	m_on_shutdown_errmsg(on_shutdown_errmsg),
+	m_shutdown_errmsg(shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -352,14 +354,7 @@ Server::~Server()
 		try {
 			m_script->on_shutdown();
 		} catch (ModError &e) {
-			errorstream << "ModError: " << e.what() << std::endl;
-			if (m_on_shutdown_errmsg) {
-				if (m_on_shutdown_errmsg->empty()) {
-					*m_on_shutdown_errmsg = std::string("ModError: ") + e.what();
-				} else {
-					*m_on_shutdown_errmsg += std::string("\nModError: ") + e.what();
-				}
-			}
+			addShutdownError(e);
 		}
 
 		infostream << "Server: Saving environment metadata" << std::endl;
@@ -458,6 +453,8 @@ void Server::init()
 
 	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
+
+	m_script->saveGlobals();
 
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
@@ -1843,6 +1840,7 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		}
 
 		pkt << params.body_orbit_tilt;
+		pkt << params.fog_distance << params.fog_start;
 	}
 
 	Send(&pkt);
@@ -2230,7 +2228,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	pkt << id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral;
+			<< ephemeral << params.spec.start_time;
 
 	bool as_reliable = !ephemeral;
 
@@ -3753,6 +3751,23 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+// Not thread-safe.
+void Server::addShutdownError(const ModError &e)
+{
+	// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
+	std::string msg = fmtgettext("%s while shutting down: ", "ModError") +
+			e.what() + strgettext("\nCheck debug.txt for details.");
+	errorstream << msg << std::endl;
+
+	if (m_shutdown_errmsg) {
+		if (m_shutdown_errmsg->empty()) {
+			*m_shutdown_errmsg = msg;
+		} else {
+			*m_shutdown_errmsg += "\n\n" + msg;
+		}
+	}
 }
 
 v3f Server::findSpawnPos()

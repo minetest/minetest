@@ -217,8 +217,8 @@ s32 GUIInventoryList::getItemIndexAtPos(v2s32 p) const
 	v2s32 base_pos = AbsoluteRect.UpperLeftCorner;
 
 	// instead of looping through each slot, we look where p would be in the grid
-	s32 i = (p.X - base_pos.X) / (s32)m_slot_spacing.X
-			+ m_geom.X * ((p.Y - base_pos.Y) / (s32)m_slot_spacing.Y);
+	s32 i = static_cast<s32>((p.X - base_pos.X) / m_slot_spacing.X)
+			+ static_cast<s32>((p.Y - base_pos.Y) / m_slot_spacing.Y) * m_geom.X;
 
 	v2s32 p0((i % m_geom.X) * m_slot_spacing.X,
 			(i / m_geom.X) * m_slot_spacing.Y);
