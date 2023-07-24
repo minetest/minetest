@@ -205,7 +205,7 @@ local function get_formspec(tabview, name, tabdata)
 		else
 			retval = retval ..
 				"field[0.3,5.25;3.8,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				core.formspec_escape(current_port) .. "]"
 		end
 	else
 		retval = retval ..
