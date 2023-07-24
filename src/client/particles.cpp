@@ -82,9 +82,7 @@ Particle::Particle(
 		m_owned_texture(std::move(owned_texture))
 {
 	// Set material
-	m_material = [&] {
-		video::SMaterial material;
-
+	{
 		// translate blend modes to GL blend functions
 		video::E_BLEND_FACTOR bfsrc, bfdst;
 		video::E_BLEND_OPERATION blendop;
@@ -119,28 +117,26 @@ Particle::Particle(
 		}
 
 		// Texture
-		material.Lighting = false;
-		material.BackfaceCulling = false;
-		material.FogEnable = true;
-		material.forEachTexture([] (auto &tex) {
+		m_material.Lighting = false;
+		m_material.BackfaceCulling = false;
+		m_material.FogEnable = true;
+		m_material.forEachTexture([] (auto &tex) {
 			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 			tex.MagFilter = video::ETMAGF_NEAREST;
 		});
 
 		// correctly render layered transparent particles -- see #10398
-		material.ZWriteEnable = video::EZW_AUTO;
+		m_material.ZWriteEnable = video::EZW_AUTO;
 
 		// enable alpha blending and set blend mode
-		material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-		material.MaterialTypeParam = video::pack_textureBlendFunc(
+		m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+		m_material.MaterialTypeParam = video::pack_textureBlendFunc(
 				bfsrc, bfdst,
 				video::EMFN_MODULATE_1X,
 				video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-		material.BlendOperation = blendop;
-		material.setTexture(0, m_texture.ref);
-
-		return material;
-	}();
+		m_material.BlendOperation = blendop;
+		m_material.setTexture(0, m_texture.ref);
+	}
 
 	// Irrlicht stuff
 	this->setAutomaticCulling(scene::EAC_OFF);
