@@ -4636,10 +4636,12 @@ differences:
 
 * The Mapgen VoxelManip object is retrieved using:
   `minetest.get_mapgen_object("voxelmanip")`
+
 * This VoxelManip object already has the region of map just generated loaded
   into it; it's not necessary to call `VoxelManip:read_from_map()`.
   Note that the region of map it has loaded is NOT THE SAME as the `minp`, `maxp`
   parameters of `on_generated()`. Refer to `minetest.get_mapgen_object` docs.
+
 * The `on_generated()` callbacks of some mods may place individual nodes in the
   generated area using non-VoxelManip map modification methods. Because the
   same Mapgen VoxelManip object is passed through each `on_generated()`
@@ -4648,6 +4650,7 @@ differences:
   `minetest.add_node()`, `minetest.set_node()` or `minetest.swap_node()`
   will also update the Mapgen VoxelManip object's internal state active on the
   current thread.
+
 * After modifying the Mapgen VoxelManip object's internal buffer, it may be
   necessary to update lighting information using either:
   `VoxelManip:calc_lighting()` or `VoxelManip:set_lighting()`.
