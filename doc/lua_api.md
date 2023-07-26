@@ -4674,13 +4674,25 @@ inside the VoxelManip.
 * Attempting to read data from a VoxelManip object before map is read will
   result in a zero-length array table for `VoxelManip:get_data()`, and an
   "ignore" node at any position for `VoxelManip:get_node_at()`.
-* If either a region of map has not yet been generated or is out-of-bounds of
-  the map, that region is filled with "ignore" nodes.
-* Other mods, or the core itself, could possibly modify the area of map
+
+* If you attempt to use a VoxelManip to read a region of the map that has
+  already been generated, but is not currently loaded, that region will be
+  loaded from disk. This means that reading a region of the map with a
+  VoxelManip has a similar effect as calling `minetest.load_area` on that
+  region.
+
+* If a region of the map has either not yet been generated or is outside the
+  map boundaries, it is filled with "ignore" nodes. Writing to regions of the
+  map that are not yet generated may result in unexpected behavior. You
+  can use `minetest.emerge_area` to make sure that the area you want to
+  read/write is already generated.
+
+* Other mods, or the core itself, could possibly modify the area of the map
   currently loaded into a VoxelManip object. With the exception of Mapgen
   VoxelManips (see above section), the internal buffers are not updated. For
   this reason, it is strongly encouraged to complete the usage of a particular
   VoxelManip object in the same callback it had been created.
+
 * If a VoxelManip object will be used often, such as in an `on_generated()`
   callback, consider passing a file-scoped table as the optional parameter to
   `VoxelManip:get_data()`, which serves as a static buffer the function can use
