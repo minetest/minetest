@@ -4636,10 +4636,12 @@ differences:
 
 * The Mapgen VoxelManip object is retrieved using:
   `minetest.get_mapgen_object("voxelmanip")`
+
 * This VoxelManip object already has the region of map just generated loaded
   into it; it's not necessary to call `VoxelManip:read_from_map()`.
   Note that the region of map it has loaded is NOT THE SAME as the `minp`, `maxp`
   parameters of `on_generated()`. Refer to `minetest.get_mapgen_object` docs.
+
 * The `on_generated()` callbacks of some mods may place individual nodes in the
   generated area using non-VoxelManip map modification methods. Because the
   same Mapgen VoxelManip object is passed through each `on_generated()`
@@ -4648,6 +4650,7 @@ differences:
   `minetest.add_node()`, `minetest.set_node()` or `minetest.swap_node()`
   will also update the Mapgen VoxelManip object's internal state active on the
   current thread.
+
 * After modifying the Mapgen VoxelManip object's internal buffer, it may be
   necessary to update lighting information using either:
   `VoxelManip:calc_lighting()` or `VoxelManip:set_lighting()`.
@@ -4674,13 +4677,25 @@ inside the VoxelManip.
 * Attempting to read data from a VoxelManip object before map is read will
   result in a zero-length array table for `VoxelManip:get_data()`, and an
   "ignore" node at any position for `VoxelManip:get_node_at()`.
-* If either a region of map has not yet been generated or is out-of-bounds of
-  the map, that region is filled with "ignore" nodes.
-* Other mods, or the core itself, could possibly modify the area of map
+
+* If you attempt to use a VoxelManip to read a region of the map that has
+  already been generated, but is not currently loaded, that region will be
+  loaded from disk. This means that reading a region of the map with a
+  VoxelManip has a similar effect as calling `minetest.load_area` on that
+  region.
+
+* If a region of the map has either not yet been generated or is outside the
+  map boundaries, it is filled with "ignore" nodes. Writing to regions of the
+  map that are not yet generated may result in unexpected behavior. You
+  can use `minetest.emerge_area` to make sure that the area you want to
+  read/write is already generated.
+
+* Other mods, or the core itself, could possibly modify the area of the map
   currently loaded into a VoxelManip object. With the exception of Mapgen
   VoxelManips (see above section), the internal buffers are not updated. For
   this reason, it is strongly encouraged to complete the usage of a particular
   VoxelManip object in the same callback it had been created.
+
 * If a VoxelManip object will be used often, such as in an `on_generated()`
   callback, consider passing a file-scoped table as the optional parameter to
   `VoxelManip:get_data()`, which serves as a static buffer the function can use
