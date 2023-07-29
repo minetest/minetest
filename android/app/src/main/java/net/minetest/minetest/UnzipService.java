@@ -44,7 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class UnzipService extends IntentService {
+public final class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
 	public static final String ACTION_PROGRESS_MESSAGE = "net.minetest.minetest.PROGRESS_MESSAGE";
@@ -58,14 +58,14 @@ public class UnzipService extends IntentService {
 	private String failureMessage;
 
 	private static boolean isRunning = false;
-	public static synchronized boolean getIsRunning() {
+	public final static synchronized boolean getIsRunning() {
 		return isRunning;
 	}
-	private static synchronized void setIsRunning(boolean v) {
+	private final static synchronized void setIsRunning(boolean v) {
 		isRunning = v;
 	}
 
-	public UnzipService() {
+	public final UnzipService() {
 		super("net.minetest.minetest.UnzipService");
 	}
 
@@ -99,7 +99,7 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	private Notification.Builder createNotification() {
+	private final Notification.Builder createNotification() {
 		String name = "net.minetest.minetest";
 		String channelId = "Minetest channel";
 		String description = "notifications from Minetest";
@@ -125,7 +125,7 @@ public class UnzipService extends IntentService {
 			builder = new Notification.Builder(this);
 		}
 
-		Intent notificationIntent = new Intent(this, MainActivity.class);
+		final Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		int pendingIntentFlag = 0;
@@ -146,9 +146,8 @@ public class UnzipService extends IntentService {
 		return builder;
 	}
 
-	private void unzip(Notification.Builder notificationBuilder, File zipFile, File userDataDirectory) throws IOException {
+	private final void unzip(Notification.Builder notificationBuilder, File zipFile, File userDataDirectory) throws IOException {
 		int per = 0;
-
 		int size;
 		try (ZipFile zipSize = new ZipFile(zipFile)) {
 			size = zipSize.size();
@@ -176,7 +175,7 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	void moveFileOrDir(@NonNull File src, @NonNull File dst) throws IOException {
+	final void moveFileOrDir(@NonNull File src, @NonNull File dst) throws IOException {
 		try {
 			Process p = new ProcessBuilder("/system/bin/mv",
 				src.getAbsolutePath(), dst.getAbsolutePath()).start();
@@ -198,8 +197,8 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
-		Intent intentUpdate = new Intent(ACTION_UPDATE);
+	private final void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
+		final Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.putExtra(ACTION_PROGRESS, progress);
 		intentUpdate.putExtra(ACTION_PROGRESS_MESSAGE, message);
 		if (!isSuccess)
