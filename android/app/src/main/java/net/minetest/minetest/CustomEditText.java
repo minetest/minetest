@@ -30,7 +30,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 import java.util.Objects;
 
-public class CustomEditText extends AppCompatEditText {
+public final class CustomEditText extends AppCompatEditText {
 	private int editType = 2; // single line text input as default
 	private boolean wantsToShowKeyboard = false;
 
@@ -60,13 +60,13 @@ public class CustomEditText extends AppCompatEditText {
 		tryShowKeyboard();
 	}
 
-	public void requestFocusTryShow() {
+	public final void requestFocusTryShow() {
 		requestFocus();
 		wantsToShowKeyboard = true;
 		tryShowKeyboard();
 	}
 
-	private void tryShowKeyboard() {
+	private final void tryShowKeyboard() {
 		if (hasWindowFocus() && wantsToShowKeyboard) {
 			if (isFocused()) {
 				CustomEditText that = this;
