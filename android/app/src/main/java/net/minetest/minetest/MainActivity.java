@@ -36,7 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import static net.minetest.minetest.UnzipService.*;
 
-public class MainActivity extends AppCompatActivity {
+public final class MainActivity extends AppCompatActivity {
 	private final static int versionCode = BuildConfig.VERSION_CODE;
 	private static final String SETTINGS = "MinetestSettings";
 	private static final String TAG_VERSION_CODE = "versionCode";
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 		checkAppVersion();
 	}
 
-	private void checkAppVersion() {
+	private final void checkAppVersion() {
 		if (UnzipService.getIsRunning()) {
 			mProgressBar.setVisibility(View.VISIBLE);
 			mProgressBar.setIndeterminate(true);
@@ -107,9 +107,9 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void startNative() {
+	private final void startNative() {
 		sharedPreferences.edit().putInt(TAG_VERSION_CODE, versionCode).apply();
-		Intent intent = new Intent(this, GameActivity.class);
+		final Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
 	}
