@@ -450,9 +450,10 @@ EmergeThread::EmergeThread(Server *server, int ethreadid) :
 	enable_mapgen_debug_info(false),
 	id(ethreadid),
 	m_server(server),
-	m_map(NULL),
-	m_emerge(NULL),
-	m_mapgen(NULL)
+	m_map(nullptr),
+	m_emerge(nullptr),
+	m_mapgen(nullptr),
+	m_trans_liquid(nullptr)
 {
 	m_name = "Emerge-" + itos(ethreadid);
 }
@@ -573,13 +574,13 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 				 v3s16(1,1,1) * (MAP_BLOCKSIZE - 1);
 
 	// Ignore map edit events, they will not need to be sent
-	// to anybody because the block hasn't been sent to anybody
+	// to anyone because the block hasn't been sent yet.
 	MapEditEventAreaIgnorer ign(
 		&m_server->m_ignore_map_edit_events_area,
 		VoxelArea(minp, maxp));
 
 	/*
-		Run Lua on_generated callbacks
+		Run Lua on_generated callbacks in the server environment
 	*/
 	try {
 		m_server->getScriptIface()->environment_OnGenerated(
@@ -667,6 +668,8 @@ void *EmergeThread::run()
 
 		action = getBlockOrStartGen(pos, allow_gen, &block, &bmdata);
 		if (action == EMERGE_GENERATED) {
+			m_trans_liquid = &bmdata.transforming_liquid;
+
 			{
 				ScopeProfiler sp(g_profiler,
 					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
@@ -688,6 +691,8 @@ void *EmergeThread::run()
 			block = finishGen(pos, &bmdata, &modified_blocks);
 			if (!block)
 				action = EMERGE_ERRORED;
+
+			m_trans_liquid = nullptr;
 		}
 
 		runCompletionCallbacks(pos, action, bedata.callbacks);

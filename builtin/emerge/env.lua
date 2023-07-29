@@ -39,7 +39,7 @@ end
 function core.get_perlin(seed, octaves, persist, spread)
 	local params
 	if type(seed) == "table" then
-		params = seed
+		params = table.copy(seed)
 	else
 		assert(type(seed) == "number")
 		params = {
@@ -55,6 +55,7 @@ end
 
 
 function core.get_perlin_map(params, size)
-	params.seed = core.get_seed(params.seed) -- add mapgen seed
-	return PerlinNoiseMap(params, size)
+	local params2 = table.copy(params)
+	params2.seed = core.get_seed(params.seed) -- add mapgen seed
+	return PerlinNoiseMap(params2, size)
 end

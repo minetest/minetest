@@ -110,13 +110,19 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 
 int LuaVoxelManip::l_write_to_map(lua_State *L)
 {
-	GET_ENV_PTR;
-
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	bool update_light = !lua_isboolean(L, 2) || readParam<bool>(L, 2);
 
 	if (o->vm->isOrphan())
 		return 0;
+
+	// In mapgen code the vmanip cannot be written manually
+	if (o->is_mapgen_vm) {
+		log_deprecated(L, "write_to_map called for a mapgen VoxelManip object");
+		return 0;
+	}
+
+	GET_ENV_PTR;
 
 	ServerMap *map = &(env->getServerMap());
 

@@ -69,6 +69,8 @@ private:
 	Mapgen *m_mapgen;
 
 	std::unique_ptr<EmergeScripting> m_script;
+	// read from scripting:
+	UniqueQueue<v3s16> *m_trans_liquid;
 
 	Event m_queue_event;
 	std::queue<v3s16> m_block_queue;
