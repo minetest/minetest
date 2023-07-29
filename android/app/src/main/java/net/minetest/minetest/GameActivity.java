@@ -45,7 +45,7 @@ import java.util.Objects;
 // This annotation prevents the minifier/Proguard from mangling them.
 @Keep
 @SuppressWarnings("unused")
-public class GameActivity extends NativeActivity {
+public final class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
 		System.loadLibrary("minetest");
@@ -60,7 +60,7 @@ public class GameActivity extends NativeActivity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
-	private void makeFullScreen() {
+	private final void makeFullScreen() {
 		this.getWindow().getDecorView().setSystemUiVisibility(
 				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
 				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
@@ -85,17 +85,17 @@ public class GameActivity extends NativeActivity {
 		// Ignore the back press so Minetest can handle it
 	}
 
-	public void showDialog(String acceptButton, String hint, String current, int editType) {
+	public final void showDialog(final String acceptButton, String hint, String current, int editType) {
 		runOnUiThread(() -> showDialogUI(hint, current, editType));
 	}
 
-	private void showDialogUI(String hint, String current, int editType) {
+	private final void showDialogUI(String hint, String current, int editType) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		LinearLayout container = new LinearLayout(this);
+		final LinearLayout container = new LinearLayout(this);
 		container.setOrientation(LinearLayout.VERTICAL);
 		builder.setView(container);
-		AlertDialog alertDialog = builder.create();
-		CustomEditText editText = new CustomEditText(this, editType);
+		final AlertDialog alertDialog = builder.create();
+		final CustomEditText editText = new CustomEditText(this, editType);
 		container.addView(editText);
 		editText.setMaxLines(8);
 		editText.setHint(hint);
@@ -142,50 +142,50 @@ public class GameActivity extends NativeActivity {
 		editText.requestFocusTryShow();
 	}
 
-	public int getDialogState() {
+	public final int getDialogState() {
 		return messageReturnCode;
 	}
 
-	public String getDialogValue() {
+	public final String getDialogValue() {
 		messageReturnCode = -1;
 		return messageReturnValue;
 	}
 
-	public float getDensity() {
+	public final float getDensity() {
 		return getResources().getDisplayMetrics().density;
 	}
 
-	public int getDisplayHeight() {
+	public final int getDisplayHeight() {
 		return getResources().getDisplayMetrics().heightPixels;
 	}
 
-	public int getDisplayWidth() {
+	public final int getDisplayWidth() {
 		return getResources().getDisplayMetrics().widthPixels;
 	}
 
-	public void openURI(String uri) {
+	public final void openURI(final String uri) {
 		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		startActivity(browserIntent);
 	}
 
-	public String getUserDataPath() {
+	public final String getUserDataPath() {
 		return Utils.getUserDataDirectory(this).getAbsolutePath();
 	}
 
-	public String getCachePath() {
+	public final String getCachePath() {
 		return Utils.getCacheDirectory(this).getAbsolutePath();
 	}
 
-	public void shareFile(String path) {
-		File file = new File(path);
+	public final void shareFile(final String path) {
+		final File file = new File(path);
 		if (!file.exists()) {
 			Log.e("GameActivity", "File " + file.getAbsolutePath() + " doesn't exist");
 			return;
 		}
 
-		Uri fileUri = FileProvider.getUriForFile(this, "net.minetest.minetest.fileprovider", file);
+		final Uri fileUri = FileProvider.getUriForFile(this, "net.minetest.minetest.fileprovider", file);
 
-		Intent intent = new Intent(Intent.ACTION_SEND, fileUri);
+		final Intent intent = new Intent(Intent.ACTION_SEND, fileUri);
 		intent.setDataAndType(fileUri, getContentResolver().getType(fileUri));
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		intent.putExtra(Intent.EXTRA_STREAM, fileUri);
@@ -194,7 +194,7 @@ public class GameActivity extends NativeActivity {
 		startActivity(shareIntent);
 	}
 
-	public String getLanguage() {
+	public final String getLanguage() {
 		String langCode = Locale.getDefault().getLanguage();
 
 		// getLanguage() still uses old language codes to preserve compatibility.
