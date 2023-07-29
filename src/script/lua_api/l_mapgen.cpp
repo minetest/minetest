@@ -1806,6 +1806,51 @@ int ModApiMapgen::l_read_schematic(lua_State *L)
 	return 1;
 }
 
+int ModApiMapgen::update_liquids(lua_State *L, MMVManip *vm)
+{
+	GET_ENV_PTR;
+
+	ServerMap *map = &(env->getServerMap());
+	const NodeDefManager *ndef = getServer(L)->getNodeDefManager();
+
+	Mapgen mg;
+	mg.vm   = vm;
+	mg.ndef = ndef;
+
+	mg.updateLiquid(&map->m_transforming_liquid,
+		vm->m_area.MinEdge, vm->m_area.MaxEdge);
+	return 0;
+}
+
+int ModApiMapgen::calc_lighting(lua_State *L, MMVManip *vm,
+		v3s16 pmin, v3s16 pmax, bool propagate_shadow)
+{
+	const NodeDefManager *ndef = getGameDef(L)->ndef();
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+
+	assert(vm->m_area.contains(VoxelArea(pmin, pmax)));
+
+	Mapgen mg;
+	mg.vm          = vm;
+	mg.ndef        = ndef;
+	mg.water_level = emerge->mgparams->water_level;
+
+	mg.calcLighting(pmin, pmax, vm->m_area.MinEdge, vm->m_area.MaxEdge,
+		propagate_shadow);
+	return 0;
+}
+
+int ModApiMapgen::set_lighting(lua_State *L, MMVManip *vm,
+		v3s16 pmin, v3s16 pmax, u8 light)
+{
+	assert(vm->m_area.contains(VoxelArea(pmin, pmax)));
+
+	Mapgen mg;
+	mg.vm = vm;
+
+	mg.setLighting(light, pmin, pmax);
+	return 0;
+}
 
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
