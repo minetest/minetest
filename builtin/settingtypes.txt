@@ -315,7 +315,7 @@ enable_3d_clouds (3D clouds) bool true
 #    Use mipmaps when scaling textures down. May slightly increase performance,
 #    especially when using a high resolution texture pack.
 #    Gamma-correct downscaling is not supported.
-mip_map (Mipmapping) bool true
+mip_map (Mipmapping) bool false
 
 #    Use bilinear filtering when scaling textures down.
 bilinear_filter (Bilinear filtering) bool false
