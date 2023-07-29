@@ -65,7 +65,7 @@ public final class UnzipService extends IntentService {
 		isRunning = v;
 	}
 
-	public final UnzipService() {
+	public UnzipService() {
 		super("net.minetest.minetest.UnzipService");
 	}
 
@@ -146,7 +146,7 @@ public final class UnzipService extends IntentService {
 		return builder;
 	}
 
-	private final void unzip(Notification.Builder notificationBuilder, File zipFile, File userDataDirectory) throws IOException {
+	private final void unzip(final Notification.Builder notificationBuilder, final File zipFile, final File userDataDirectory) throws IOException {
 		int per = 0;
 		int size;
 		try (ZipFile zipSize = new ZipFile(zipFile)) {
