@@ -48,6 +48,11 @@ int LuaVoxelManip::l_read_from_map(lua_State *L)
 	if (vm->isOrphan())
 		return 0;
 
+	if (getEmergeThread(L)) {
+		log_deprecated(L, "read_from_map called in mapgen environment");
+		return 0;
+	}
+
 	v3s16 bp1 = getNodeBlockPos(check_v3s16(L, 2));
 	v3s16 bp2 = getNodeBlockPos(check_v3s16(L, 3));
 	sortBoxVerticies(bp1, bp2);
@@ -116,9 +121,9 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	if (o->vm->isOrphan())
 		return 0;
 
-	// In mapgen code the vmanip cannot be written manually
-	if (o->is_mapgen_vm) {
-		log_deprecated(L, "write_to_map called for a mapgen VoxelManip object");
+	// This wouldn't work anyway as we have no env ptr, but it's still unsafe.
+	if (getEmergeThread(L)) {
+		log_deprecated(L, "write_to_map called in mapgen environment");
 		return 0;
 	}
 
@@ -198,8 +203,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 {
 	LuaVoxelManip *o = checkObject<LuaVoxelManip>(L, 1);
 	if (!o->is_mapgen_vm) {
-		warningstream << "VoxelManip:set_lighting called for a non-mapgen "
-			"VoxelManip object" << std::endl;
+		log_deprecated(L, "set_lighting called for a non-mapgen "
+			"VoxelManip object");
 		return 0;
 	}
 
