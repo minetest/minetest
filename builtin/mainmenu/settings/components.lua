@@ -376,4 +376,9 @@ make.filepath = make.path
 make.noise_params_2d = noise_params
 make.noise_params_3d = noise_params
 
+if PLATFORM == "Android" then
+	make.filepath = make.string
+	make.path = make.string
+end
+
 return make
