@@ -32,6 +32,7 @@ paramat:
   textures/base/pack/menu_header.png
   textures/base/pack/next_icon.png
   textures/base/pack/prev_icon.png
+  textures/base/pack/up_icon.png
   textures/base/pack/clear.png
   textures/base/pack/search.png
 
