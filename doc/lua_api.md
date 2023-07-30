@@ -7411,15 +7411,19 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
-* `get_pos()`: returns `{x=num, y=num, z=num}`
-* `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
+* `set_pos(pos)`:
+    * Sets the position of the object.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
+    * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
       set_velocity, add_velocity is supposed to avoid synchronization problems.
       Additionally, players also do not support set_velocity.
-    * If a player:
+    * If object is a player:
         * Does not apply during free_move.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
@@ -7431,11 +7435,19 @@ child will follow movement and rotation of that bone.
     * If `continuous` is true, the Lua entity will not be moved to the current
       position before starting the interpolated move.
     * For players this does the same as `set_pos`,`continuous` is ignored.
-* `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
-    * `puncher` = another `ObjectRef`,
-    * `time_from_last_punch` = time since last punch action of the puncher
-    * `direction`: can be `nil`
-* `right_click(clicker)`; `clicker` is another `ObjectRef`
+    * no-op if object is attached
+* `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
+    * punches the object, triggering all consequences a normal punch would have
+    * `puncher`: another `ObjectRef` which punched the object
+    * `dir`: direction vector of punch
+    * Other arguments: See `on_punch` for entities
+    * All arguments except `puncher` can be `nil`, in which case a default
+      value will be used
+* `right_click(clicker)`:
+    * simulates using the 'place/use' key on the object
+    * triggers all consequences as if a real player had done this
+    * `clicker` is another `ObjectRef` which has clicked
+    * note: this is called `right_click` for historical reasons only
 * `get_hp()`: returns number of health points
 * `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
@@ -7444,46 +7456,74 @@ child will follow movement and rotation of that bone.
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
-* `get_wield_index()`: returns the index of the wielded item
-* `get_wielded_item()`: returns an `ItemStack`
+* `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
+* `get_wielded_item()`: returns the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
+* `get_armor_groups()`:
+    * returns a table with all of the object's armor group ratings
+    * syntax: the table keys are the armor group names,
+      the table values are the corresponding group ratings
+    * see section '`ObjectRef` armor groups' for details
 * `set_armor_groups({group1=rating, group2=rating, ...})`
-* `get_armor_groups()`: returns a table with the armor group ratings
+    * sets the object's full list of armor groups
+    * same table syntax as for `get_armor_groups`
+    * note: all armor groups not in the table will be removed
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
-    * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
-    * `frame_speed`: number, default: `15.0`
+    * Sets the object animation parameters and (re)starts the animation
+    * Animations only work with a `"mesh"` visual
+    * `frame_range`: Beginning and end frame (as specified in the mesh file).
+       * Syntax: `{x=start_frame, y=end_frame}`
+       * Animation interpolates towards the end frame but stops when it is reached
+       * If looped, there is no interpolation back to the start frame
+       * If looped, the model should look identical at start and end
+       * Only integer numbers are supported
+       * default: `{x=1, y=1}`
+    * `frame_speed`: How fast the animation plays, in frames per second (number)
+       * default: `15.0`
     * `frame_blend`: number, default: `0.0`
-    * `frame_loop`: boolean, default: `true`
-* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and
-  `frame_loop`.
+    * `frame_loop`: If `true`, animation will loop. If false, it will play once
+       * default: `true`
+* `get_animation()`: returns current animation parameters set by `set_animaition`:
+    * `range`, `frame_speed`, `frame_blend`, `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
-    * `frame_speed`: number, default: `15.0`
+    * Sets the frame speed of the object's animation
+    * Unlike `set_animation`, this will not restart the animation
+    * `frame_speed`: See `set_animation`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
+    * Attaches object to `parent`
+    * See 'Attachments' section for details
     * `parent`: `ObjectRef` to attach to
-    * `bone`: default `""` (the root bone)
+    * `bone`: Bone to attach to. Default is `""` (the root bone)
     * `position`: relative position, default `{x=0, y=0, z=0}`
     * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person, default `false`.
-    * Please also read the [Attachments] section above.
     * This command may fail silently (do nothing) when it would result
       in circular attachments.
-* `get_attach()`: returns parent, bone, position, rotation, forced_visible,
-    or nil if it isn't attached.
+* `get_attach()`:
+    * returns current attachment parameters or nil if it isn't attached
+    * If attached, returns `parent`, `bone`, `position`, `rotation`, `forced_visible`
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
-* `set_detach()`
+* `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
     * `bone`: string. Default is `""`, the root bone
     * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
-* `get_bone_position(bone)`: returns position and rotation of the bone
-* `set_properties(object property table)`
-* `get_properties()`: returns object property table
+* `get_bone_position(bone)`:
+    * returns bone parameters previously set by `set_bone_position`
+    * returns `position, rotation` of the specified bone (as vectors)
+    * note: position is relative to the object
+* `set_properties(object property table)`:
+    * set a number of object properties in the given table
+    * only properties listed in the table will be changed
+    * see the 'Object properties' section for details
+* `get_properties()`: returns a table of all object properties
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
+    * a nametag is a HUD text rendered above the object
     * ```lua
       {
           text = "",
@@ -7513,11 +7553,14 @@ child will follow movement and rotation of that bone.
       itself instantly becomes unusable with all further method calls having
       no effect and returning `nil`.
 * `set_velocity(vel)`
+    * Sets the velocity
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `set_acceleration(acc)`
+    * Sets the acceleration
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
 * `set_rotation(rot)`
+    * Sets the rotation
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
     * Does not reset rotation incurred through `automatic_rotate`.
@@ -7532,6 +7575,7 @@ child will follow movement and rotation of that bone.
 * `get_texture_mod()` returns current texture modifier
 * `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
+    * Only used by `sprite` and `upright_sprite` visuals
     * Animations iterate along the frame `y` position.
     * `start_frame`: {x=column number, y=row number}, the coordinate of the
       first frame, default: `{x=0, y=0}`
@@ -7546,11 +7590,11 @@ child will follow movement and rotation of that bone.
         * Fifth column:  subject viewed from above
         * Sixth column:  subject viewed from below
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
-* `get_luaentity()`
+* `get_luaentity()`: returns the object's associated luaentity table
 
 #### Player only (no-op for other objects)
 
-* `get_player_name()`: returns `""` if is not a player
+* `get_player_name()`: Returns player name or `""` if is not a player
 * `get_player_velocity()`: **DEPRECATED**, use get_velocity() instead.
   table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `add_player_velocity(vel)`: **DEPRECATED**, use add_velocity(vel) instead.
@@ -7583,7 +7627,7 @@ child will follow movement and rotation of that bone.
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
-    * `fov`: FOV value.
+    * `fov`: Field of View (FOV) value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
     * `transition_time`: If defined, enables smooth FOV transition.
@@ -7602,7 +7646,7 @@ child will follow movement and rotation of that bone.
 * `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
     * Returns value (a string) for extra attribute.
     * Returns `nil` if no attribute found.
-* `get_meta()`: Returns a PlayerMetaRef.
+* `get_meta()`: Returns metadata associated with the player (a PlayerMetaRef).
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
