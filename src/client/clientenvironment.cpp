@@ -206,13 +206,9 @@ void ClientEnvironment::step(float dtime)
 			// Liquid floating / sinking
 			if (!is_climbing && lplayer->in_liquid &&
 					!lplayer->swimming_vertical &&
-					!lplayer->swimming_pitch) {
+					!lplayer->swimming_pitch)
 				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
 				lplayer->gravity = 2 * lplayer->movement_liquid_sink * lplayer->physics_override.liquid_sink;
-
-				speed.Y -= lplayer->movement_liquid_sink *
-					lplayer->physics_override.liquid_sink * dtime_part * 2.0f;
-			}
 
 			// Movement resistance
 			if (lplayer->move_resistance > 0) {
@@ -223,9 +219,9 @@ void ClientEnvironment::step(float dtime)
 				// increase affects other liquid attributes.
 				static const f32 resistance_factor = 0.3f;
 				float fluidity = lplayer->movement_liquid_fluidity;
-				fluidity *= lplayer->physics_override_liquid_fluidity;
+				fluidity *= lplayer->physics_override.liquid_fluidity;
 				float fluidity_smooth = lplayer->movement_liquid_fluidity_smooth;
-				fluidity_smooth *= lplayer->physics_override_liquid_fluidity_smooth;
+				fluidity_smooth *= lplayer->physics_override.liquid_fluidity_smooth;
 
 				v3f d_wanted;
 				bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;

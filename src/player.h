@@ -106,6 +106,14 @@ struct PlayerPhysicsOverride
 	bool sneak_glitch = false;
 	// "Temporary" option for old move code
 	bool new_move = true;
+
+	float speed_climb = 1.f;
+	float speed_crouch = 1.f;
+	float liquid_fluidity = 1.f;
+	float liquid_fluidity_smooth = 1.f;
+	float liquid_sink = 1.f;
+	float acceleration_default = 1.f;
+	float acceleration_air = 1.f;
 };
 
 struct PlayerSettings
