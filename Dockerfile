@@ -1,5 +1,5 @@
 ARG DOCKER_IMAGE=alpine:3.16
-FROM $DOCKER_IMAGE AS builder
+FROM $DOCKER_IMAGE AS dev
 
 ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
@@ -34,6 +34,8 @@ RUN git clone --recursive https://github.com/jupp0r/prometheus-cpp/ && \
 	cd /usr/src/ && \
 	git clone --depth=1 https://github.com/minetest/irrlicht/ -b ${IRRLICHT_VERSION} && \
 		cp -r irrlicht/include /usr/include/irrlichtmt
+
+FROM dev as builder
 
 COPY .git /usr/src/minetest/.git
 COPY CMakeLists.txt /usr/src/minetest/CMakeLists.txt

@@ -32,6 +32,10 @@ For Alpine users:
 
     sudo apk add build-base cmake libpng-dev jpeg-dev libxi-dev mesa-dev sqlite-dev libogg-dev libvorbis-dev openal-soft-dev curl-dev freetype-dev zlib-dev gmp-dev jsoncpp-dev luajit-dev zstd-dev gettext
 
+For Void users:
+
+    sudo xbps-install cmake libpng-devel jpeg-devel libXi-devel mesa sqlite-devel libogg-devel libvorbis-devel libopenal-devel libcurl-devel freetype-devel zlib-devel gmp-devel jsoncpp-devel LuaJIT-devel libzstd-devel gettext
+
 ## Download
 
 You can install Git for easily keeping your copy up to date.
@@ -51,6 +55,10 @@ For Arch users:
 For Alpine users:
 
 	sudo apk add git
+
+For Void users:
+
+    sudo xbps-install git
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
