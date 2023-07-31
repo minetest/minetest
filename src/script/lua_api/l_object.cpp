@@ -1435,6 +1435,10 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		modified |= getboolfield(L, 2, "sneak", phys.sneak);
 		modified |= getboolfield(L, 2, "sneak_glitch", phys.sneak_glitch);
 		modified |= getboolfield(L, 2, "new_move", phys.new_move);
+		modified |= getboolfield(L, 2, "speed_climb", phys.speed_climb);
+		modified |= getboolfield(L, 2, "liquid_fluidity", phys.liquid_fluidity);
+		modified |= getboolfield(L, 2, "liquid_fluidity_smooth", phys.liquid_fluidity_smooth);
+		modified |= getboolfield(L, 2, "liquid_sink", phys.liquid_sink);
 		if (modified)
 			playersao->m_physics_override_sent = false;
 	} else {
@@ -1481,6 +1485,14 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "sneak_glitch");
 	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
+	lua_pushnumber(L, phys.speed_climb);
+	lua_setfield(L, -2, "speed_climb");
+	lua_pushnumber(L, phys.liquid_fluidity);
+	lua_setfield(L, -2, "liquid_fluidity");
+	lua_pushnumber(L, phys.liquid_fluidity_smooth);
+	lua_setfield(L, -2, "liquid_fluidity_smooth");
+	lua_pushnumber(L, phys.liquid_sink);
+	lua_setfield(L, -2, "liquid_sink");
 	return 1;
 }
 

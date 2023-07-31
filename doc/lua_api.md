@@ -7682,15 +7682,28 @@ child will follow movement and rotation of that bone.
     * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default walking speed value (default: `1`)
+        * `speed`: multiplier to default walking/climb speed value (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed_climb`: multiplier to default climb speed value (default: `1`)
+            * Note: The actual climb speed is a product of `speed` and `speed_climb`
+        * `liquid_fluidity`: multiplier to liquid movement resistance value;
+          the higher this value, the lower the resistance to movement.
+          At `math.huge`, the resistance is zero and you can move through any
+          liquid like air. (default: `1`)
+          Warning: Values below 1 are currently unsupported.
+        * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value;
+          controls deceleration when entering liquid at high speed. At higher values
+          you come to a halt more quickly (default: `1`)
+        * `liquid_sink`: multiplier to default liquid sinking speed value (default: `1`)
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
+        * Note: Most of these settings modify a corresponding `movement_*` setting
+
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
