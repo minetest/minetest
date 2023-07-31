@@ -7460,12 +7460,14 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`
 * `set_bone_position([bone, position, rotation])`
-	* Shorthand for `set_bone_override(bone, {position = ..., rotation = ...})` using absolute values.
-	* Supports older servers & clients (5.7.0 and earlier)
-	* **Deprecated**; use `set_bone_override` instead
+	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+	* Supports older servers & clients (5.7.0 and earlier).
+	* **Note:** Rotation is in degrees, not radians.
+	* **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
-	* Shorthand for `get_bone_override(bone).position.vector, get_bone_override(bone).rotation.vector`
-	* **Deprecated**, use `get_bone_override` instead
+	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+	* **Note:** Returned rotation is in degrees, not radians.
+	* **Deprecated:** Use `get_bone_override` instead.
 * `set_bone_override(bone, override)`
     * `bone`: string
     * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
@@ -7478,9 +7480,11 @@ child will follow movement and rotation of that bone.
             * Multiplication in the case of `scale`
         * `interpolation`: Time it takes (on the client, in seconds) to interpolate between the old & new value
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
     * Compatibility note: Clients prior to 5.7.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
+	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table

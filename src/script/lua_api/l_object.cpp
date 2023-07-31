@@ -595,7 +595,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 		lua_getfield(L, -1, "vec");
 		props.rotation.next = lua_isnil(L, -1)
 				? core::quaternion()
-				: core::quaternion(check_v3f(L, -1) * core::DEGTORAD);
+				: core::quaternion(check_v3f(L, -1));
 		lua_pop(L, 1);
 
 		read_prop_attrs(props.rotation);
@@ -635,7 +635,7 @@ static void push_bone_override(lua_State *L, BoneOverride props)
 
 	v3f euler_rot;
 	props.rotation.next.toEuler(euler_rot);
-	push_prop("rotation", props.rotation, euler_rot * core::RADTODEG);
+	push_prop("rotation", props.rotation, euler_rot);
 
 	push_prop("scale", props.scale, props.scale.vector);
 
