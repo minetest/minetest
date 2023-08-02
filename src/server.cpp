@@ -2513,7 +2513,7 @@ bool Server::addMediaFile(const std::string &filename,
 {
 	// If name contains illegal characters, ignore the file
 	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-		infostream << "Server: ignoring illegal file name: \""
+		warningstream << "Server: ignoring illegal file name: \""
 				<< filename << "\"" << std::endl;
 		return false;
 	}
