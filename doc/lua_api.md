@@ -259,7 +259,7 @@ time, if necessary. (See [`Settings`])
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
-the clients (see [Translations]). Accepted name characters are:
+the clients (see [Translations]). Accepted characters for names are:
 
     a-zA-Z0-9_.-
 
