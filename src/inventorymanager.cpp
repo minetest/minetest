@@ -909,7 +909,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 	ItemStack craftresultitem;
 	int count_remaining = count;
 	std::vector<ItemStack> output_replacements;
-	getCraftingResult(inv_craft, crafted, output_replacements, false, gamedef);
+	getCraftingResult(inv_craft, crafted, output_replacements, false, gamedef, count);
 	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 	bool found = !crafted.empty();
 
@@ -918,7 +918,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 
 		std::vector<ItemStack> temp;
 		// Decrement input and add crafting output
-		getCraftingResult(inv_craft, crafted, temp, true, gamedef);
+		getCraftingResult(inv_craft, crafted, temp, true, gamedef, count);
 		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
 		list_craftresult->addItem(0, crafted);
 		mgr->setInventoryModified(craft_inv);
@@ -942,14 +942,14 @@ void ICraftAction::apply(InventoryManager *mgr,
 				<< std::endl;
 
 		// Decrement counter
-		if (count_remaining == 1)
+		if (count_remaining == count)
 			break;
 
-		if (count_remaining > 1)
-			count_remaining--;
+		if (count_remaining > count)
+			count_remaining -= count;
 
 		// Get next crafting result
-		getCraftingResult(inv_craft, crafted, temp, false, gamedef);
+		getCraftingResult(inv_craft, crafted, temp, false, gamedef, count);
 		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 		found = !crafted.empty();
 	}
@@ -990,7 +990,7 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
-		bool decrementInput, IGameDef *gamedef)
+		bool decrementInput, IGameDef *gamedef, u16 desired_crafts)
 {
 	result.clear();
 
@@ -1006,10 +1006,19 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 	for (u16 i=0; i < clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
+	// Find out how many operations we can actually perform
+	// There's a warning about a comparison between int and
+	// unsigned long, but it's unlikely anyone will ever
+	// have a craft requiring more than 65k unique items
+	u16 max_operations = desired_crafts;
+	for(int i = 0; i < ci.items.size(); i++) {
+		if(ci.items[i].count > 0)
+			max_operations = std::min(max_operations, ci.items[i].count);
+	}
 	// Find out what is crafted and add it to result item slot
 	CraftOutput co;
 	bool found = gamedef->getCraftDefManager()->getCraftResult(
-			ci, co, output_replacements, decrementInput, gamedef);
+			ci, co, output_replacements, decrementInput, gamedef, max_operations);
 	if (found)
 		result.deSerialize(co.item, gamedef->getItemDefManager());
 
