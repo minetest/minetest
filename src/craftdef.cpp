@@ -1117,8 +1117,10 @@ public:
 					else {
 						split.push_back(itos(output_count));
 					}
-					// Vector merges back down into string, sets item output stacksize
-					out.item = str_join(split, " ");
+					// Vector merges back down into string, sets item output stacksize, if greater than 1
+					if (output_count > 1) {
+						out.item = str_join(split, " ");
+					}
 
 					output = out;
 					priority_best = priority;
