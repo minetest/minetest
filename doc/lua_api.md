@@ -265,8 +265,8 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .bmp, .tga
-    sounds: .ogg
+    images: .png, .jpg, .bmp, (deprecated) .tga
+    sounds: .ogg vorbis
     models: .x, .b3d, .obj
 
 Other formats won't be sent to the client (e.g. you can store .blend files
