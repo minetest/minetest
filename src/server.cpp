@@ -2994,7 +2994,8 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	InventoryLocation loc;
 	loc.setPlayer(player->getName());
 	std::vector<ItemStack> output_replacements;
-	getCraftingResult(&player->inventory, preview, output_replacements, false, this);
+	// Preview is always going to be the preview for a single craft, so hardcoding in 1
+	getCraftingResult(&player->inventory, preview, output_replacements, false, this, 1);
 	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(),
 			clist, loc);
 

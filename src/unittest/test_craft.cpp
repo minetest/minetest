@@ -53,7 +53,7 @@ std::string TestCraft::getDumpedCraftResult(CraftInput input, IGameDef *gamedef)
 	CraftOutput output{};
 	std::vector<ItemStack> output_replacements;
 
-	cdef->getCraftResult(input, output, output_replacements, false, gamedef);
+	cdef->getCraftResult(input, output, output_replacements, false, gamedef, 1);
 
 	return output.dump();
 }

@@ -4314,9 +4314,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
 				else if (event.MouseInput.Shift && button == BET_LEFT)
-					// TODO: We should craft everything with shift-left-click,
-					// but the slow crafting code limits us, so we only craft one
-					craft_amount = 1;
+					craft_amount = 99;
 					//craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
 				else
 					craft_amount = 1;

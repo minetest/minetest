@@ -390,7 +390,7 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 	CraftInput input(method, width, items);
 	CraftOutput output;
 	std::vector<ItemStack> output_replacements;
-	bool got = cdef->getCraftResult(input, output, output_replacements, true, gdef);
+	bool got = cdef->getCraftResult(input, output, output_replacements, true, gdef, 1);
 	lua_newtable(L); // output table
 	if (got) {
 		ItemStack item;

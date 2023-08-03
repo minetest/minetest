@@ -260,4 +260,4 @@ struct ICraftAction : public InventoryAction
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
-		bool decrementInput, IGameDef *gamedef);
+		bool decrementInput, IGameDef *gamedef, u16 desired_crafts);

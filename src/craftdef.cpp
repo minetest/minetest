@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "craftdef.h"
 
+#include "irrTypes.h"
 #include "irrlichttypes.h"
 #include "log.h"
 #include <sstream>
@@ -188,12 +189,12 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	return success;
 }
 
-// Removes 1 from each item stack
-static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
+// Removes amount from each item stack
+static void craftDecrementInput(CraftInput &input, IGameDef *gamedef, u16 decrement_by)
 {
 	for (auto &item : input.items) {
 		if (item.count != 0)
-			item.remove(1);
+			item.remove(decrement_by);
 	}
 }
 
@@ -203,10 +204,10 @@ static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
 static void craftDecrementOrReplaceInput(CraftInput &input,
 		std::vector<ItemStack> &output_replacements,
 		const CraftReplacements &replacements,
-		IGameDef *gamedef)
+		IGameDef *gamedef, u16 decrement_by)
 {
 	if (replacements.pairs.empty()) {
-		craftDecrementInput(input, gamedef);
+		craftDecrementInput(input, gamedef, decrement_by);
 		return;
 	}
 
@@ -434,9 +435,9 @@ CraftInput CraftDefinitionShaped::getInput(const CraftOutput &output, IGameDef *
 }
 
 void CraftDefinitionShaped::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
-	 IGameDef *gamedef) const
+	 IGameDef *gamedef, u16 operation_count) const
 {
-	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef, operation_count);
 }
 
 u64 CraftDefinitionShaped::getHash(CraftHashType type) const
@@ -688,9 +689,9 @@ CraftInput CraftDefinitionShapeless::getInput(const CraftOutput &output, IGameDe
 }
 
 void CraftDefinitionShapeless::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
-	IGameDef *gamedef) const
+	IGameDef *gamedef, u16 operation_count) const
 {
-	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef, operation_count);
 }
 
 u64 CraftDefinitionShapeless::getHash(CraftHashType type) const
@@ -812,9 +813,9 @@ CraftInput CraftDefinitionToolRepair::getInput(const CraftOutput &output, IGameD
 }
 
 void CraftDefinitionToolRepair::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
-	IGameDef *gamedef) const
+	IGameDef *gamedef, u16 operation_count) const
 {
-	craftDecrementInput(input, gamedef);
+	craftDecrementInput(input, gamedef, operation_count);
 }
 
 std::string CraftDefinitionToolRepair::dump() const
@@ -885,9 +886,9 @@ CraftInput CraftDefinitionCooking::getInput(const CraftOutput &output, IGameDef 
 }
 
 void CraftDefinitionCooking::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
-	IGameDef *gamedef) const
+	IGameDef *gamedef, u16 operation_count) const
 {
-	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef, operation_count);
 }
 
 u64 CraftDefinitionCooking::getHash(CraftHashType type) const
@@ -988,9 +989,9 @@ CraftInput CraftDefinitionFuel::getInput(const CraftOutput &output, IGameDef *ga
 }
 
 void CraftDefinitionFuel::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
-	IGameDef *gamedef) const
+	IGameDef *gamedef, u16 operation_count) const
 {
-	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef, operation_count);
 }
 
 u64 CraftDefinitionFuel::getHash(CraftHashType type) const
@@ -1049,7 +1050,7 @@ public:
 
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacement, bool decrementInput,
-			IGameDef *gamedef) const
+			IGameDef *gamedef, u16 operation_count) const
 	{
 		if (input.empty())
 			return false;
@@ -1098,6 +1099,21 @@ public:
 						continue;
 					}
 
+					int output_count = 1;
+					std::vector<std::string>split = str_split(out.item, ' ');
+					if (split.size() > 1) {
+						output_count = stoi(split[1]);
+					}
+					operation_count = std::min(u16 (is.getStackMax(gamedef->idef()) / output_count), operation_count);
+					output_count = output_count * operation_count;
+					if (split.size() > 1) {
+						split[1] = itos(output_count);
+					}
+					else {
+						split.push_back(itos(output_count));
+					}
+					out.item = str_join(split, " ");
+
 					output = out;
 					priority_best = priority;
 					def_best = def;
@@ -1107,7 +1123,7 @@ public:
 		if (priority_best == CraftDefinition::PRIORITY_NO_RECIPE)
 			return false;
 		if (decrementInput)
-			def_best->decrementInput(input, output_replacement, gamedef);
+			def_best->decrementInput(input, output_replacement, gamedef, operation_count);
 		return true;
 	}
 

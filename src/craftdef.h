@@ -168,7 +168,7 @@ public:
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const=0;
 	// Decreases count of every input item
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const=0;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const=0;
 
 	CraftHashType getHashType() const
 	{
@@ -209,7 +209,7 @@ public:
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const;
 
 	virtual u64 getHash(CraftHashType type) const;
 
@@ -253,7 +253,7 @@ public:
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const;
 
 	virtual u64 getHash(CraftHashType type) const;
 
@@ -293,7 +293,7 @@ public:
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const;
 
 	virtual u64 getHash(CraftHashType type) const { return 2; }
 
@@ -334,7 +334,7 @@ public:
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const;
 
 	virtual u64 getHash(CraftHashType type) const;
 
@@ -377,7 +377,7 @@ public:
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input,
-		std::vector<ItemStack> &output_replacements, IGameDef *gamedef) const;
+		std::vector<ItemStack> &output_replacements, IGameDef *gamedef, u16 operation_count) const;
 
 	virtual u64 getHash(CraftHashType type) const;
 
@@ -417,11 +417,12 @@ public:
 	 * in the input if the stack of the replaced item has a count of 1.
 	 * @param decrementInput If true, consume or replace input items.
 	 * @param gamedef
+	 * @param operation_count Number of operations to perform
 	 * @return true if a result was found, otherwise false.
 	 */
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
-			bool decrementInput, IGameDef *gamedef) const=0;
+			bool decrementInput, IGameDef *gamedef, u16 operation_count) const=0;
 
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
@@ -439,7 +440,7 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
-			bool decrementInput, IGameDef *gamedef) const=0;
+			bool decrementInput, IGameDef *gamedef, u16 operation_count) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
