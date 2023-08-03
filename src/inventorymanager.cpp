@@ -1007,11 +1007,8 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 		ci.items.push_back(clist->getItem(i));
 
 	// Find out how many operations we can actually perform
-	// There's a warning about a comparison between int and
-	// unsigned long, but it's unlikely anyone will ever
-	// have a craft requiring more than 65k unique items
 	u16 max_operations = desired_crafts;
-	for(int i = 0; i < ci.items.size(); i++) {
+	for(u16 i = 0; i < ci.items.size(); i++) {
 		if(ci.items[i].count > 0)
 			max_operations = std::min(max_operations, ci.items[i].count);
 	}

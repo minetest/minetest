@@ -1100,18 +1100,24 @@ public:
 					}
 
 					int output_count = 1;
+					// Recipes' quantity is in the string, so we need to split it out
 					std::vector<std::string>split = str_split(out.item, ' ');
+					// If we ended up with more than one element in the vector, get the output quantity from the second item
 					if (split.size() > 1) {
 						output_count = stoi(split[1]);
 					}
+					// Ensure that we don't craft a larger stack than can be held in one slot
 					operation_count = std::min(u16 (is.getStackMax(gamedef->idef()) / output_count), operation_count);
+					// Get total quantity of output stack
 					output_count = output_count * operation_count;
+					// Quantity goes into second element of vector
 					if (split.size() > 1) {
 						split[1] = itos(output_count);
 					}
 					else {
 						split.push_back(itos(output_count));
 					}
+					// Vector merges back down into string, sets item output stacksize
 					out.item = str_join(split, " ");
 
 					output = out;
