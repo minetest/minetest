@@ -3179,11 +3179,6 @@
 #    type: int min: 1 max: 65535
 # remote_port = 30000
 
-#    Default game when creating a new world.
-#    This will be overridden when creating a world from the main menu.
-#    type: string
-# default_game = minetest
-
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false

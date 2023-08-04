@@ -19,6 +19,12 @@
 local packages_raw
 local packages
 
+-- HACK: Update package list when installing content from a button to CDB
+-- elsewhere (e.g. tab_local or config_world).
+function tab_content_clear_packages()
+	packages = nil
+end
+
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
 	if pkgmgr.global_mods == nil then
