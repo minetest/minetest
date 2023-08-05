@@ -986,6 +986,16 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 	// to make lag less apparent.
 }
 
+u16 getCraftOperationCount(CraftInput ci, u16 desired_crafts)
+{
+	// Find out how many operations we can actually perform
+	u16 max_operations = desired_crafts;
+	for(u16 i = 0; i < ci.items.size(); i++) {
+		if(ci.items[i].count > 0)
+			max_operations = std::min(max_operations, ci.items[i].count);
+	}
+	return max_operations;
+}
 
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack &result,
@@ -1006,16 +1016,12 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 	for (u16 i=0; i < clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
-	// Find out how many operations we can actually perform
-	u16 max_operations = desired_crafts;
-	for(u16 i = 0; i < ci.items.size(); i++) {
-		if(ci.items[i].count > 0)
-			max_operations = std::min(max_operations, ci.items[i].count);
-	}
+	u16 craft_op_count = getCraftOperationCount(ci, desired_crafts);
+
 	// Find out what is crafted and add it to result item slot
 	CraftOutput co;
 	bool found = gamedef->getCraftDefManager()->getCraftResult(
-			ci, co, output_replacements, decrementInput, gamedef, max_operations);
+			ci, co, output_replacements, decrementInput, gamedef, craft_op_count);
 	if (found)
 		result.deSerialize(co.item, gamedef->getItemDefManager());
 
@@ -1028,4 +1034,3 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 
 	return found;
 }
-

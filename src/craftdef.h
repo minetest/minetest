@@ -440,9 +440,12 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			std::vector<ItemStack> &output_replacements,
-			bool decrementInput, IGameDef *gamedef, u16 operation_count) const=0;
+			bool decrementInput, IGameDef *gamedef, u16 operation_count=1) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
+
+	virtual u16 getCraftOutputCount(const CraftOutput &output) const=0;
+	virtual bool setCraftOutputCount(CraftOutput &output, u16 newCount) const=0;
 
 	virtual bool clearCraftsByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
 	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef) = 0;
