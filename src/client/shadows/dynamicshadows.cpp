@@ -39,7 +39,7 @@ static v3f quantizeDirection(v3f direction, float step)
 	return v3f(std::cos(yaw)*std::cos(pitch), std::sin(pitch), std::sin(yaw)*std::cos(pitch));
 }
 
-void DirectionalLight::createSplitMatrices(const Camera *cam)
+ShadowFrustum DirectionalLight::createFrustum(const Camera *cam, f32 near_value, f32 far_value, f32 center_ratio)
 {
 	static const float COS_15_DEG = 0.965926f;
 	v3f newCenter;
@@ -57,8 +57,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	float tanFovX = tanf(cam->getFovX() * 0.5f);
 
 	// adjusted frustum boundaries
-	float sfNear = future_frustum.zNear;
-	float sfFar = adjustDist(future_frustum.zFar, cam->getFovY());
+	float sfNear = near_value;
+	float sfFar = far_value;
 
 	// adjusted camera positions
 	v3f cam_pos_world = cam->getPosition();
@@ -77,8 +77,8 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	cam_pos_world += look * sfNear;
 
 	// center point of light frustum
-	v3f center_scene = cam_pos_scene + look * 0.35 * (sfFar - sfNear);
-	v3f center_world = cam_pos_world + look * 0.35 * (sfFar - sfNear);
+	v3f center_scene = cam_pos_scene + look * center_ratio * (sfFar - sfNear);
+	v3f center_world = cam_pos_world + look * center_ratio * (sfFar - sfNear);
 
 	// Create a vector to the frustum far corner
 	const v3f &viewUp = cam->getCameraNode()->getUpVector();
@@ -94,14 +94,18 @@ void DirectionalLight::createSplitMatrices(const Camera *cam)
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
 	v3f eye = center_scene - eye_displacement;
-	future_frustum.player = cam_pos_scene;
-	future_frustum.position = center_world - eye_displacement;
-	future_frustum.length = length;
-	future_frustum.radius = radius;
-	future_frustum.ViewMat.buildCameraLookAtMatrixLH(eye, center_scene, v3f(0.0f, 1.0f, 0.0f));
-	future_frustum.ProjOrthMat.buildProjectionMatrixOrthoLH(radius, radius,
+	ShadowFrustum f;
+	f.player = cam_pos_scene;
+	f.position = center_world - eye_displacement;
+	f.length = length;
+	f.radius = radius;
+	f.zNear = near_value;
+	f.zFar = far_value;
+	f.ViewMat.buildCameraLookAtMatrixLH(eye, center_scene, v3f(0.0f, 1.0f, 0.0f));
+	f.ProjOrthMat.buildProjectionMatrixOrthoLH(radius, radius,
 			0.0f, length, false);
-	future_frustum.camera_offset = cam->getOffset();
+	f.camera_offset = cam->getOffset();
+	return f;
 }
 
 DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
@@ -121,13 +125,8 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	if (!client->getEnv().getClientMap().getControl().range_all)
 		zFar = MYMIN(zFar, client->getEnv().getClientMap().getControl().wanted_range * BS);
 
-	///////////////////////////////////
-	// update splits near and fars
-	future_frustum.zNear = zNear;
-	future_frustum.zFar = zFar;
+	future_frustum = createFrustum(cam, zNear, zFar, 0.35);
 
-	// update shadow frustum
-	createSplitMatrices(cam);
 	// get the draw list for shadows
 	client->getEnv().getClientMap().updateDrawListShadow(
 			getPosition(), getDirection(), future_frustum.radius, future_frustum.length);

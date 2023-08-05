@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Camera;
 class Client;
 
-struct shadowFrustum
+struct ShadowFrustum
 {
 	f32 zNear{0.0f};
 	f32 zFar{0.0f};
@@ -105,7 +105,10 @@ public:
 	void commitFrustum();
 
 private:
-	void createSplitMatrices(const Camera *cam);
+	// Creates a frustum with parameters
+	// z_near, z_far - distances of player's camera to take in to account for the frustum
+	// center_ratio - interpolation ratio for center of shadow frustum between z_near and z_far
+	ShadowFrustum createFrustum(const Camera *cam, f32 z_near, f32 z_far, f32 center_ratio);
 
 	video::SColorf diffuseColor;
 
@@ -118,7 +121,7 @@ private:
 	v3f last_cam_pos_world{0,0,0};
 	v3f last_look{0,1,0};
 
-	shadowFrustum shadow_frustum;
-	shadowFrustum future_frustum;
+	ShadowFrustum shadow_frustum;
+	ShadowFrustum future_frustum;
 	bool dirty{false};
 };
