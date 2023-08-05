@@ -299,7 +299,6 @@ namespace gui
 		IGUISpriteBank* SpriteBank;
 		core::stringw Texts[EGDT_COUNT];
 		video::IVideoDriver* Driver;
-		bool UseGradient;
 
 		EGUI_SKIN_TYPE Type;
 	};
