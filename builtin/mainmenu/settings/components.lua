@@ -199,7 +199,7 @@ function make.path(setting)
 			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
-				avail_w - 3, setting.name, get_label(setting), value)
+				avail_w - 3, setting.name, get_label(setting), core.formspec_escape(value))
 			fs = fs .. ("button[%f,0.3;1.5,0.8;%s;%s]"):format(avail_w - 3, "pick_" .. setting.name, fgettext("Browse"))
 			fs = fs .. ("button[%f,0.3;1.5,0.8;%s;%s]"):format(avail_w - 1.5, "set_" .. setting.name, fgettext("Set"))
 
