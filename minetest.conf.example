@@ -433,7 +433,7 @@
 
 #    Maximum distance to render shadows.
 #    type: float min: 10 max: 1000
-# shadow_map_max_distance = 200.0
+# shadow_map_max_distance = 140.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.

@@ -430,7 +430,7 @@ enable_dynamic_shadows (Dynamic shadows) bool false
 shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
-shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 200.0 10.0 1000.0
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 140.0 10.0 1000.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.

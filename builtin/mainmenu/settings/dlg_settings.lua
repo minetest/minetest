@@ -19,8 +19,8 @@
 local component_funcs =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "components.lua")
 
-local quick_shader_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
-		"settings" .. DIR_DELIM .. "shader_component.lua")
+local shadows_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
+		"settings" .. DIR_DELIM .. "shadows_component.lua")
 
 
 local full_settings = settingtypes.parse_config_file(false, true)
@@ -60,31 +60,6 @@ local change_keys = {
 	end,
 }
 
-
-add_page({
-	id = "most_used",
-	title = gettext("Most Used"),
-	content = {
-		change_keys,
-		"language",
-		"fullscreen",
-		PLATFORM ~= "Android" and "autosave_screensize" or false,
-		"touchscreen_threshold",
-		{ heading = gettext("Scaling") },
-		"gui_scaling",
-		"hud_scaling",
-		{ heading = gettext("Graphics / Performance") },
-		"smooth_lighting",
-		"enable_particles",
-		"enable_3d_clouds",
-		"opaque_water",
-		"connected_glass",
-		"node_highlighting",
-		"leaves_style",
-		{ heading = gettext("Shaders") },
-		quick_shader_component,
-	},
-})
 
 add_page({
 	id = "accessibility",
@@ -155,6 +130,11 @@ end
 load_settingtypes()
 
 table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+do
+	local content = page_by_id.graphics_and_audio_shaders.content
+	local idx = table.indexof(content, "enable_dynamic_shadows")
+	table.insert(content, idx, shadows_component)
+end
 
 
 local function get_setting_info(name)
