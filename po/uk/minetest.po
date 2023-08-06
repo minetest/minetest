@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-28 20:39+0000\n"
-"Last-Translator: Денис Савченко <denissavchenko0@gmail.com>\n"
+"PO-Revision-Date: 2023-08-09 16:48+0000\n"
+"Last-Translator: Skrripy <rozihrash.ya6w7@simplelogin.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -25,7 +25,7 @@ msgstr "Порожня команда."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Вихід в основне меню"
+msgstr "Вихід в головне меню"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -41,19 +41,19 @@ msgstr "Список гравців у мережі"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Гравці в мережі: "
+msgstr "Гравці у мережі: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Черга чату зараз порожня."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Ця команда вимкнена на сервері."
+msgstr "Ця команда вимкнена сервером."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Переродитися"
+msgstr "Відродитися"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -69,20 +69,22 @@ msgstr "Доступні команди: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr "Команда не доступна: "
+msgstr "Команда недоступна: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr "Отримати довідку для команд"
+msgstr "Отримати довідку щодо команд"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Використовуйте '.help <cmd>', щоб отримати більше інформації або '.help "
+"all', щоб перелічити все."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -90,35 +92,35 @@ msgstr "Добре"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<немає доступних>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr "Трапилася помилка в скрипті Lua:"
+msgstr "Виникла помилка в Lua скрипті:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr "Трапилася помилка:"
+msgstr "Виникла помилка:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Основне меню"
+msgstr "Головне меню"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Перезʼєднання"
+msgstr "Перепідключення"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Сервер запросив перезʼєднання:"
+msgstr "Сервер запросив перепідключення:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Версія протоколу не співпадає. "
+msgstr "Невідповідність версії протоколу. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Сервер працює за протоколом версії $1. "
+msgstr "Сервер використовує протокол версії $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -126,7 +128,7 @@ msgstr "Сервер підтримує версії протоколу між $
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Ми підтримуємо тільки протокол версії $1."
+msgstr "Ми підтримуємо лише протокол версії $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -134,11 +136,11 @@ msgstr "Ми підтримуємо протокол між версіями $1 
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Увімкнено, є помилка)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Незадоволений)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -165,19 +167,19 @@ msgstr "Вимкнути пакмод"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Дозволити все"
+msgstr "Увімкнути все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable modpack"
-msgstr "Дозволити пакмод"
+msgstr "Увімкнути пакмод"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Не вдалося ввімкнути мод \"$1\", тому що він містить не дозволені знаки. "
-"Дозволяються такі знаки: [a-z0-9_]."
+"Не вдалося увімкнути мод \"$1\", оскільки він містить заборонені символи. "
+"Дозволяються лише символи [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -222,7 +224,7 @@ msgstr "Світ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "дозволено"
+msgstr "увімкнено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -230,11 +232,11 @@ msgstr "\"$1\" вже існує. Бажаєте перезаписати?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Встановиться $1 і $2 залежностей."
+msgstr "Будуть встановлені залежності $1 та $2."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr "$1 від $2"
+msgstr "$1 з $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -254,7 +256,7 @@ msgstr "$1 необхідних залежностей не знайдено."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 встановиться, і $2 залежностей буде пропущено."
+msgstr "$1 буде встановлено, а $2 залежностей буде пропущено."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
@@ -270,11 +272,11 @@ msgstr "Назад до головного меню"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr "Базова гра:"
+msgstr "Основна гра:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB недоступний, коли Minetest скомпільований без CURL"
+msgstr "ContentDB недоступний, якщо Minetest було скомпільовано без cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -282,21 +284,20 @@ msgstr "Завантаження..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Помилка встановлення \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Не вдалося завантажити $1"
+msgstr "Не вдалося завантажити \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Не вдалося завантажити $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Установлення: Непідтримуваний тип файлу або пошкоджений архів"
+msgstr ""
+"Не вдалося витягти \"$1\" (непідтримуваний тип файлу або пошкоджений архів)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -328,7 +329,7 @@ msgstr "Нічого не знайдено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
-msgstr "Нема оновлень"
+msgstr "Оновлення відсутні"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
@@ -340,7 +341,7 @@ msgstr "Перезаписати"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr "Перевірте чи основна гра є правильною."
+msgstr "Будь ласка, перевірте коректність основної гри."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -364,7 +365,7 @@ msgstr "Оновити все [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr "Переглянути більше інформації у вебоглядачі"
+msgstr "Переглянути більше інформації у веб-браузері"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -375,10 +376,12 @@ msgid "Additional terrain"
 msgstr "Додаткова місцевість"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Altitude chill"
 msgstr "Висота снігового поясу"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Altitude dry"
 msgstr "Пояс посухи"
 
@@ -392,7 +395,7 @@ msgstr "Біоми"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr "Печери"
+msgstr "Каверни"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
@@ -408,7 +411,7 @@ msgstr "Декорації"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Development Test is meant for developers."
-msgstr "Увага: тестова розробка призначена для розробників."
+msgstr "Тестова розробка призначена для розробників."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -420,15 +423,15 @@ msgstr "Рівнина"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr "Плаваючі земельні масиви в небі"
+msgstr "Летючі острови в небі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Висячі острови (експериментальне)"
+msgstr "Летючі острови (експериментальні)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "Ґенерувати нефрактальну місцевість: океани і підземелля"
+msgstr "Створювати не фрактальну місцевість: океани й підземелля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -436,7 +439,7 @@ msgstr "Пагорби"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr "Вологі ріки"
+msgstr "Вологість річок"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
@@ -448,7 +451,7 @@ msgstr "Встановити гру"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Встановити іншу гру"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -456,19 +459,19 @@ msgstr "Озера"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr "Низька вологість і велика спека спричиняють мілководні або сухі річки"
+msgstr "Низька вологість і спека спричиняють обміління або пересихання річок"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Ґенератор світу"
+msgstr "Генератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Мітки ґенератора світу"
+msgstr "Мітки генератора світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Мітки для ґенератора світу"
+msgstr "Специфічні мітки для генератора світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -476,7 +479,7 @@ msgstr "Гори"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr "Болотяний потік"
+msgstr "Селевий потік"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
@@ -484,7 +487,7 @@ msgstr "Мережа тунелів і печер"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr "Не вибрано гру"
+msgstr "Гра не вибрана"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -525,15 +528,15 @@ msgstr "Споруди, що з’являються на місцевості, 
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr "Помірний, пустеля"
+msgstr "Помірний клімат, пустеля"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr "Помірний, пустелі, джунглі"
+msgstr "Помірний клімат, пустелі, джунглі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr "Помірний, пустеля, джунглі, тундра, тайга"
+msgstr "Помірний клімат, пустеля, джунглі, тундра, тайга"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
@@ -549,7 +552,7 @@ msgstr "Змінювати глибину річок"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "Дуже великі печери глибоко під землею"
+msgstr "Дуже великі каверни глибоко під землею"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -587,16 +590,16 @@ msgstr "Підтвердіть пароль"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Приєднання до $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr "Недоступна назва"
+msgstr "Назва відсутня"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr "Назва"
+msgstr "Ім'я"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -656,7 +659,7 @@ msgstr "Вміст: Моди"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr "Заборонено"
+msgstr "Вимкнено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -664,7 +667,7 @@ msgstr "Редагувати"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "Дозволено"
+msgstr "Увімкнено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Lacunarity"
@@ -6343,7 +6346,7 @@ msgstr "Y-Рівень морського дна."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
