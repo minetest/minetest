@@ -7457,7 +7457,7 @@ child will follow movement and rotation of that bone.
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
 * `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
-* `get_wielded_item()`: returns the wielded item as an `ItemStack`
+* `get_wielded_item()`: returns a copy of the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
 * `get_armor_groups()`:
