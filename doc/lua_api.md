@@ -259,7 +259,18 @@ time, if necessary. (See [`Settings`])
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
-the clients (see [Translations]).
+the clients (see [Translations]). Accepted characters for names are:
+
+    a-zA-Z0-9_.-
+
+Accepted formats are:
+
+    images: .png, .jpg, .bmp, (deprecated) .tga
+    sounds: .ogg vorbis
+    models: .x, .b3d, .obj
+
+Other formats won't be sent to the client (e.g. you can store .blend files
+in a folder for convenience, without the risk that such files are transferred)
 
 It is suggested to use the folders for the purpose they are thought for,
 eg. put textures into `textures`, translation files into `locale`,
