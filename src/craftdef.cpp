@@ -1107,7 +1107,7 @@ public:
 						max_crafts_fit = is.getStackMax(gamedef->idef()) / output_count;
 					}
 					else {
-						max_crafts_fit = is.getStackMax(gamedef->idef()); // Prevent division by 0 for recipes that decrement the input, like fuel
+						max_crafts_fit = is.getStackMax(gamedef->idef()); // Prevent division by 0 for recipes that have no output, like fuel recipes
 					}
 
 					operation_count = std::min(max_crafts_fit, operation_count);
