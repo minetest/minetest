@@ -1090,7 +1090,7 @@ void ClientMap::PrintInfo(std::ostream &out)
 	out<<"ClientMap: ";
 }
 
-void ClientMap::renderMapShadows(video::IVideoDriver *driver,
+void ClientMap::renderMapShadows(u8 cascade, video::IVideoDriver *driver,
 		const video::SMaterial &material, s32 pass, int frame, int total_frames)
 {
 	bool is_transparent_pass = pass != scene::ESNRP_SOLID;
@@ -1106,11 +1106,12 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	MeshBufListList grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 
+	drawlist_t &drawlist = m_drawlist_shadow.at(cascade);
 
 	std::size_t count = 0;
-	std::size_t meshes_per_frame = m_drawlist_shadow.size() / total_frames + 1;
+	std::size_t meshes_per_frame = drawlist.size() / total_frames + 1;
 	std::size_t low_bound = is_transparent_pass ? 0 : meshes_per_frame * frame;
-	std::size_t high_bound = is_transparent_pass ? m_drawlist_shadow.size() : meshes_per_frame * (frame + 1);
+	std::size_t high_bound = is_transparent_pass ? drawlist.size() : meshes_per_frame * (frame + 1);
 
 	// transparent pass should be rendered in one go
 	if (is_transparent_pass && frame != total_frames - 1) {
@@ -1118,7 +1119,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	}
 
 	const MeshGrid mesh_grid = m_client->getMeshGrid();
-	for (const auto &i : m_drawlist_shadow) {
+	for (const auto &i : drawlist) {
 		// only process specific part of the list & break early
 		++count;
 		if (count <= low_bound)
@@ -1232,10 +1233,15 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	g_profiler->avg(prefix + "material swaps [#]", material_swaps);
 }
 
+void ClientMap::allocateDrawListShadowCascades(u8 n_cascades)
+{
+	m_drawlist_shadow.resize(n_cascades);
+}
+
 /*
 	Custom update draw list for the pov of shadow light.
 */
-void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length)
+void ClientMap::updateDrawListShadowCascade(u8 cascade, v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length)
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
@@ -1244,11 +1250,13 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
 
-	for (auto &i : m_drawlist_shadow) {
+	drawlist_t &drawlist = m_drawlist_shadow.at(cascade);
+
+	for (auto &i : drawlist) {
 		MapBlock *block = i.second;
 		block->refDrop();
 	}
-	m_drawlist_shadow.clear();
+	drawlist.clear();
 
 	// Number of blocks currently loaded by the client
 	u32 blocks_loaded = 0;
@@ -1285,15 +1293,17 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			block->resetUsageTimer();
 
 			// Add to set
-			if (m_drawlist_shadow.emplace(block->getPos(), block).second) {
+			if (drawlist.emplace(block->getPos(), block).second) {
 				block->refGrab();
 			}
 		}
 	}
+	
+	std::string cascade_name = std::to_string(cascade);
 
-	g_profiler->avg("SHADOW MapBlock meshes in range [#]", blocks_in_range_with_mesh);
-	g_profiler->avg("SHADOW MapBlocks drawn [#]", m_drawlist_shadow.size());
-	g_profiler->avg("SHADOW MapBlocks loaded [#]", blocks_loaded);
+	g_profiler->avg("SHADOW MapBlock meshes in range " + cascade_name + "[#]", blocks_in_range_with_mesh);
+	g_profiler->avg("SHADOW MapBlocks drawn " + cascade_name + " [#]", drawlist.size());
+	g_profiler->avg("SHADOW MapBlocks loaded " + cascade_name + "[#]", blocks_loaded);
 }
 
 void ClientMap::reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks)

@@ -118,12 +118,13 @@ public:
 	void updateDrawList();
 	// @brief Calculate statistics about the map and keep the blocks alive
 	void touchMapBlocks();
-	void updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
+	void allocateDrawListShadowCascades(u8 n_cascades);
+	void updateDrawListShadowCascade(u8 cascade, v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length);
 	// Returns true if draw list needs updating before drawing the next frame.
 	bool needsUpdateDrawList() { return m_needs_update_drawlist; }
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
-	void renderMapShadows(video::IVideoDriver *driver,
+	void renderMapShadows(u8 cascade, video::IVideoDriver *driver,
 			const video::SMaterial &material, s32 pass, int frame, int total_frames);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
@@ -206,7 +207,8 @@ private:
 
 	std::map<v3s16, MapBlock*, MapBlockComparer> m_drawlist;
 	std::vector<MapBlock*> m_keeplist;
-	std::map<v3s16, MapBlock*> m_drawlist_shadow;
+	typedef std::map<v3s16, MapBlock*> drawlist_t;
+	std::vector<drawlist_t> m_drawlist_shadow; // cascades
 	bool m_needs_update_drawlist;
 
 	std::set<v2s16> m_last_drawn_sectors;
