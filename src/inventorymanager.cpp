@@ -991,8 +991,9 @@ u16 getCraftOperationCount(CraftInput ci, u16 desired_crafts)
 	// Find out how many operations we can actually perform
 	u16 max_operations = desired_crafts;
 	for(u16 i = 0; i < ci.items.size(); i++) {
-		if(ci.items[i].count > 0)
+		if(ci.items[i].count > 0) {
 			max_operations = std::min(max_operations, ci.items[i].count);
+		}
 	}
 	return max_operations;
 }

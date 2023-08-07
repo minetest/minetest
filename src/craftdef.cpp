@@ -1099,17 +1099,24 @@ public:
 						continue;
 					}
 
-
-					u16 output_count = getCraftOutputCount(out);
+					u16 output_count = is.count;
 
 					// Determine how many crafts can be done without resulting in more than one stack of output
-					u16 max_crafts_fit = is.getStackMax(gamedef->idef()) / output_count;
+					u16 max_crafts_fit;
+					if (output_count != 0) {
+						max_crafts_fit = is.getStackMax(gamedef->idef()) / output_count;
+					}
+					else {
+						max_crafts_fit = is.getStackMax(gamedef->idef()); // Prevent division by 0 for recipes that decrement the input, like fuel
+					}
+
 					operation_count = std::min(max_crafts_fit, operation_count);
 					// Get total quantity of output stack
 					output_count *= operation_count;
 
-					setCraftOutputCount(out, output_count);
+					setCraftOutputCount(is, output_count);
 
+					out.item = is.getItemString();
 					output = out;
 					priority_best = priority;
 					def_best = def;
@@ -1123,40 +1130,11 @@ public:
 		return true;
 	}
 
-	virtual u16 getCraftOutputCount(const CraftOutput &output) const
+	virtual void setCraftOutputCount(ItemStack &output, u16 newCount) const
 	{
-		// If not otherwise specified, output is 1 of item
-		u16 output_count = 1;
-		// Recipes' quantity is in the string, so we need to split it out
-		std::vector<std::string> split = str_split(output.item, ' ');
-		// If we ended up with more than one element in the vector, get the output quantity from the second element
-		if (split.size() > 1) {
-			output_count = stoi(split[1]);
-		}
-		return output_count;
-	}
-
-	virtual bool setCraftOutputCount(CraftOutput &output, u16 newCount) const
-	{
-		// If the output count isn't specified, it defaults to 1, and isn't included in the string
-		// Otherwise, it's in the second element of a space delimited list
-		std::vector<std::string> split = str_split(output.item, ' ');
-		if (split.size() > 1) // Originally has a quantity specified
-			{
-				if (newCount != 1)
-					split[1] = itos(newCount);
-				else
-					split.pop_back(); // There was a quantity, but we set it to 1 by removing it (defaults are confusing, no?)
-			}
-		else // Output quantity was 1 before
-		{
-			if (newCount != 1)
-				split.push_back(itos(newCount));
-			else // Nothing changed
-				return false;
-		}
-		output.item = str_join(split, " ");
-			return false;
+		output.count = newCount;
+		std::ostringstream os(std::ios::binary);
+		output.serialize(os, true);
 	}
 
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,

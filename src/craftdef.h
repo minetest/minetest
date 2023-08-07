@@ -444,8 +444,7 @@ public:
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
-	virtual u16 getCraftOutputCount(const CraftOutput &output) const=0;
-	virtual bool setCraftOutputCount(CraftOutput &output, u16 newCount) const=0;
+	virtual void setCraftOutputCount(ItemStack &output, u16 newCount) const=0;
 
 	virtual bool clearCraftsByOutput(const CraftOutput &output, IGameDef *gamedef) = 0;
 	virtual bool clearCraftsByInput(const CraftInput &input, IGameDef *gamedef) = 0;
