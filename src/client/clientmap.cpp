@@ -1093,6 +1093,10 @@ void ClientMap::PrintInfo(std::ostream &out)
 void ClientMap::renderMapShadows(u8 cascade, video::IVideoDriver *driver,
 		const video::SMaterial &material, s32 pass, int frame, int total_frames)
 {
+	// don't draw if the cascade is not defined yet
+	if (cascade >= m_drawlist_shadow.size())
+		return;
+
 	bool is_transparent_pass = pass != scene::ESNRP_SOLID;
 	std::string prefix;
 	if (is_transparent_pass)
@@ -1243,6 +1247,10 @@ void ClientMap::allocateDrawListShadowCascades(u8 n_cascades)
 */
 void ClientMap::updateDrawListShadowCascade(u8 cascade, v3f shadow_light_pos, v3f shadow_light_dir, float radius, float length)
 {
+	// don't generate a draw list if the cascade is not defined yet
+	if (cascade >= m_drawlist_shadow.size())
+		return;
+
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
 	v3s16 cam_pos_nodes = floatToInt(shadow_light_pos, BS);
