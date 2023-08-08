@@ -123,8 +123,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 600 * s, 40 * s);
 		rect += topleft + v2s32(25 * s, 3 * s);
 		//gui::IGUIStaticText *t =
-		Environment->addStaticText(wstrgettext("Keybindings.").c_str(),
-								   rect, false, true, this, -1);
+		gui::StaticText::add(Environment, wstrgettext("Keybindings."), rect,
+				false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
@@ -138,8 +138,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 150 * s, 20 * s);
 			rect += topleft + v2s32(offset.X, offset.Y);
-			Environment->addStaticText(k->button_name.c_str(), rect, false, true,
-					this, -1);
+			gui::StaticText::add(Environment, k->button_name, rect,
+					false, true, this, -1);
 		}
 
 		{
@@ -300,8 +300,8 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		if (key_in_use && !this->key_used_text) {
 			core::rect<s32> rect(0, 0, 600, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
-			this->key_used_text = Environment->addStaticText(
-					wstrgettext("Key already in use").c_str(),
+			this->key_used_text = gui::StaticText::add(Environment,
+					wstrgettext("Key already in use"),
 					rect, false, true, this, -1);
 		} else if (!key_in_use && this->key_used_text) {
 			this->key_used_text->remove();

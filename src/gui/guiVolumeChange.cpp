@@ -73,7 +73,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 160 * s, 20 * s);
 		rect = rect + v2s32(size.X / 2 - 80 * s, size.Y / 2 - 70 * s);
 
-		Environment->addStaticText(fwgettext("Sound Volume: %d%%", volume).c_str(),
+		StaticText::add(Environment, fwgettext("Sound Volume: %d%%", volume),
 				rect, false, true, this, ID_soundText);
 	}
 	{
