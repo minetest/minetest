@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-08-09 16:48+0000\n"
-"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
+"Last-Translator: Jynweythek Vordhosbn <jynweythek.nmk5s@simplelogin.fr>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -4873,9 +4873,8 @@ msgid "Mapgen Carpathian"
 msgstr "Generador de mapas carpatiano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Carpathian specific flags"
-msgstr "Banderas planas de Mapgen"
+msgstr "Indicadores específicos del generador de mapas \"Carpathian\""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
@@ -5157,18 +5156,16 @@ msgid "Minimum texture size"
 msgstr "Tamaño mínimo de la textura"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mipmapping"
-msgstr "Mapeado de relieve"
+msgstr "Mipmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Misc"
 msgstr "Varios"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mod Profiler"
-msgstr "Perfilador"
+msgstr "Perfilador de mods"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Security"
@@ -5519,7 +5516,7 @@ msgstr "Perfilador"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Dirección del receptor \"Prometheus\""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5528,6 +5525,10 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Dirección de escucha de \"Prometheus\".\n"
+"Si Minetest se compila con la opción 'ENABLE_PROMETHEUS' activada,\n"
+"se habilitará el detector de métricas para \"Prometheus\" en esa dirección.\n"
+"Las métricas pueden obtenerse en http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
