@@ -118,7 +118,7 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 	if (!client->getEnv().getClientMap().getControl().range_all)
 		zFar = MYMIN(zFar, client->getEnv().getClientMap().getControl().wanted_range * BS);
 
-	future_frustum = createFrustum(direction, cam, zNear, zFar, 0.35);
+	future_frustum = createFrustum(direction, cam, zNear, zFar * scale, 0.35);
 
 	dirty = true;
 
@@ -189,8 +189,12 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		diffuseColor(lightColor),
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {
-	for (auto &cascade: cascades)
+	f32 scale = 1./9.;
+	for (auto &cascade: cascades) {
 		cascade.farPlane = farPlane;
+		cascade.scale = scale;
+		scale *= 3.;
+	}
 }
 
 void DirectionalLight::setDirection(v3f dir)

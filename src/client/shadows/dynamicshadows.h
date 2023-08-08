@@ -41,7 +41,6 @@ struct ShadowFrustum
 	v3f position;
 	v3f player;
 	v3s16 camera_offset;
-
 };
 
 class DirectionalLight;
@@ -54,6 +53,7 @@ struct ShadowCascade {
 	v3f last_cam_pos_world{0,0,0};
 	v3f last_look{0,1,0};
 	bool dirty {false};
+	f32 scale;
 
 	// Creates a frustum with parameters
 	// z_near, z_far - distances of player's camera to take in to account for the frustum
