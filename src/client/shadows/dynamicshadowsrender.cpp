@@ -205,7 +205,7 @@ void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 	}
 }
 
-void ShadowRenderer::updateSMTextures()
+void ShadowRenderer::ensureSMTextures()
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
 		return;
@@ -268,6 +268,15 @@ void ShadowRenderer::updateSMTextures()
 				mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
 			});
 	}
+}
+
+void ShadowRenderer::updateSMTextures()
+{
+	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
+		return;
+	}
+
+	ensureSMTextures();
 
 	if (!m_shadow_node_array.empty()) {
 		bool reset_sm_texture = false;

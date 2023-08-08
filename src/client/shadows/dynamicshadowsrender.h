@@ -106,6 +106,7 @@ private:
 					scene::ESNRP_SOLID);
 	void renderShadowObjects(video::ITexture *target, DirectionalLight &light);
 	void mixShadowsQuad();
+	void ensureSMTextures();
 	void updateSMTextures();
 
 	void disable();
