@@ -270,13 +270,11 @@ void ShadowRenderer::ensureSMTextures()
 	}
 }
 
-void ShadowRenderer::updateSMTextures()
+void ShadowRenderer::renderMapShadows()
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
 		return;
 	}
-
-	ensureSMTextures();
 
 	if (!m_shadow_node_array.empty()) {
 		bool reset_sm_texture = false;
@@ -351,19 +349,8 @@ void ShadowRenderer::updateSMTextures()
 	}
 }
 
-void ShadowRenderer::update(video::ITexture *outputTarget)
+void ShadowRenderer::renderEntityShadows()
 {
-	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
-		return;
-	}
-
-	updateSMTextures();
-
-	if (shadowMapTextureFinal == nullptr) {
-		return;
-	}
-
-
 	if (!m_shadow_node_array.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
@@ -378,23 +365,45 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			renderShadowObjects(shadowMapTextureDynamicObjects, light);
 			// clear the Render Target
 			m_driver->setRenderTarget(0, false, false);
-
-			// in order to avoid too many map shadow renders,
-			// we should make a second pass to mix clientmap shadows and
-			// entities shadows :(
-			m_screen_quad->getMaterial().setTexture(0, shadowMapClientMap);
-			// dynamic objs shadow texture.
-			if (m_shadow_map_colored)
-				m_screen_quad->getMaterial().setTexture(1, shadowMapTextureColors);
-			m_screen_quad->getMaterial().setTexture(2, shadowMapTextureDynamicObjects);
-
-			m_driver->setRenderTarget(shadowMapTextureFinal, false, false,
-					video::SColor(255, 255, 255, 255));
-			m_screen_quad->render(m_driver);
-			m_driver->setRenderTarget(0, false, false);
-
 		} // end for lights
 	}
+}
+
+void ShadowRenderer::mergeShadowMaps()
+{
+
+	// in order to avoid too many map shadow renders,
+	// we should make a second pass to mix clientmap shadows and
+	// entities shadows :(
+	m_screen_quad->getMaterial().setTexture(0, shadowMapClientMap);
+	// dynamic objs shadow texture.
+	if (m_shadow_map_colored)
+		m_screen_quad->getMaterial().setTexture(1, shadowMapTextureColors);
+	m_screen_quad->getMaterial().setTexture(2, shadowMapTextureDynamicObjects);
+
+	m_driver->setRenderTarget(shadowMapTextureFinal, false, false,
+			video::SColor(255, 255, 255, 255));
+	m_screen_quad->render(m_driver);
+	m_driver->setRenderTarget(0, false, false);
+}
+
+void ShadowRenderer::update(video::ITexture *outputTarget)
+{
+	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
+		return;
+	}
+
+	ensureSMTextures();
+
+	if (shadowMapTextureFinal == nullptr) {
+		return;
+	}
+
+	renderMapShadows();
+
+	renderEntityShadows();
+
+	mergeShadowMaps();
 }
 
 void ShadowRenderer::drawDebug()

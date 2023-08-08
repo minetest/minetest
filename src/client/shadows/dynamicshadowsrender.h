@@ -107,7 +107,9 @@ private:
 	void renderShadowObjects(video::ITexture *target, DirectionalLight &light);
 	void mixShadowsQuad();
 	void ensureSMTextures();
-	void updateSMTextures();
+	void renderMapShadows();
+	void renderEntityShadows();
+	void mergeShadowMaps();
 
 	void disable();
 	void enable() { m_shadows_enabled = m_shadows_supported; }
