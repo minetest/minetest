@@ -189,7 +189,8 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		diffuseColor(lightColor),
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {
-	cascade.farPlane = farPlane;
+	for (auto &cascade: cascades)
+		cascade.farPlane = farPlane;
 }
 
 void DirectionalLight::setDirection(v3f dir)
@@ -200,16 +201,20 @@ void DirectionalLight::setDirection(v3f dir)
 
 void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force)
 {
-	client->getEnv().getClientMap().allocateDrawListShadowCascades(1);
-	if (cascade.update_frustum(direction, cam, client, force)) {
-		should_update_map_shadow = true;
-		// get the draw list for shadows
-		client->getEnv().getClientMap().updateDrawListShadowCascade(0,
-				cascade.getPosition(), getDirection(), cascade.future_frustum.radius, cascade.future_frustum.length);
+	client->getEnv().getClientMap().allocateDrawListShadowCascades(getCascadesCount());
+	for (u8 i = 0; i < getCascadesCount(); i++) {
+		auto &cascade = getCascade(i);
+		if (cascade.update_frustum(direction, cam, client, force)) {
+			should_update_map_shadow = true;
+			// get the draw list for shadows
+			client->getEnv().getClientMap().updateDrawListShadowCascade(i,
+					cascade.getPosition(), getDirection(), cascade.future_frustum.radius, cascade.future_frustum.length);
+		}
 	}
 }
 
 void DirectionalLight::commitFrustum()
 {
-	cascade.commitFrustum();
+	for (auto &cascade: cascades)
+		cascade.commitFrustum();
 }

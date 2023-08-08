@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <array>
 #include "irrlichttypes_bloated.h"
 #include <matrix4.h>
 #include "util/basic_macros.h"
@@ -26,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Camera;
 class Client;
+
+#define SHADOW_CASCADES 3
 
 struct ShadowFrustum
 {
@@ -138,7 +141,9 @@ public:
 
 	void commitFrustum();
 
-	const ShadowCascade &getCascade(u8 index) const { return cascade; }
+	u8 getCascadesCount() const { return cascades.size(); }
+	const ShadowCascade &getCascade(u8 index) const { return cascades.at(index); }
+	ShadowCascade &getCascade(u8 index) { return cascades.at(index); }
 
 private:
 	video::SColorf diffuseColor;
@@ -149,5 +154,5 @@ private:
 	v3f pos;
 	v3f direction{0};
 
-	ShadowCascade cascade;
+	std::array<ShadowCascade, SHADOW_CASCADES> cascades;
 };
