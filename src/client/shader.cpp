@@ -299,8 +299,8 @@ public:
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
 			const auto &light = shadow->getDirectionalLight();
 
-			core::matrix4 shadowViewProj = light.getProjectionMatrix();
-			shadowViewProj *= light.getViewMatrix();
+			core::matrix4 shadowViewProj = light.getCascade(0).getProjectionMatrix();
+			shadowViewProj *= light.getCascade(0).getViewMatrix();
 			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
 
 			f32 v_LightDirection[3];
@@ -320,7 +320,7 @@ public:
 			m_shadowfar.set(&shadowFar, services);
 
 			f32 cam_pos[4];
-			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
+			shadowViewProj.transformVect(cam_pos, light.getCascade(0).getPlayerPos());
 			m_camera_pos.set(cam_pos, services);
 
 			// I don't like using this hardcoded value. maybe something like

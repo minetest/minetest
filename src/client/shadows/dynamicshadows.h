@@ -38,6 +38,50 @@ struct ShadowFrustum
 	v3f position;
 	v3f player;
 	v3s16 camera_offset;
+
+};
+
+class DirectionalLight;
+
+struct ShadowCascade {
+	ShadowFrustum current_frustum;
+	ShadowFrustum future_frustum;
+
+	f32 farPlane;
+	v3f last_cam_pos_world{0,0,0};
+	v3f last_look{0,1,0};
+	bool dirty {false};
+
+	// Creates a frustum with parameters
+	// z_near, z_far - distances of player's camera to take in to account for the frustum
+	// center_ratio - interpolation ratio for center of shadow frustum between z_near and z_far
+	ShadowFrustum createFrustum(v3f direction, const Camera *cam, f32 z_near, f32 z_far, f32 center_ratio);
+	// returns true if the frustum was changed
+	bool update_frustum(v3f direction, const Camera *cam, Client *client, u8 index, bool force = false);
+
+	/// Gets the light's maximum far value, i.e. the shadow boundary
+	f32 getMaxFarValue() const
+	{
+		return farPlane * BS;
+	}
+
+	/// Gets the current far value of the light
+	f32 getFarValue() const
+	{
+		return current_frustum.zFar;
+	}
+
+	v3f getPosition() const;
+	v3f getPlayerPos() const;
+	v3f getFuturePlayerPos() const;
+
+	const core::matrix4 &getViewMatrix() const;
+	const core::matrix4 &getProjectionMatrix() const;
+	const core::matrix4 &getFutureViewMatrix() const;
+	const core::matrix4 &getFutureProjectionMatrix() const;
+	core::matrix4 getViewProjMatrix();
+
+	void commitFrustum();
 };
 
 class DirectionalLight
@@ -58,16 +102,6 @@ public:
 	v3f getDirection() const{
 		return direction;
 	};
-	v3f getPosition() const;
-	v3f getPlayerPos() const;
-	v3f getFuturePlayerPos() const;
-
-	/// Gets the light's matrices.
-	const core::matrix4 &getViewMatrix() const;
-	const core::matrix4 &getProjectionMatrix() const;
-	const core::matrix4 &getFutureViewMatrix() const;
-	const core::matrix4 &getFutureProjectionMatrix() const;
-	core::matrix4 getViewProjMatrix();
 
 	/// Gets the light's maximum far value, i.e. the shadow boundary
 	f32 getMaxFarValue() const
@@ -78,7 +112,7 @@ public:
 	/// Gets the current far value of the light
 	f32 getFarValue() const
 	{
-		return shadow_frustum.zFar;
+		return getCascade(0).getFarValue();
 	}
 
 
@@ -104,12 +138,9 @@ public:
 
 	void commitFrustum();
 
-private:
-	// Creates a frustum with parameters
-	// z_near, z_far - distances of player's camera to take in to account for the frustum
-	// center_ratio - interpolation ratio for center of shadow frustum between z_near and z_far
-	ShadowFrustum createFrustum(const Camera *cam, f32 z_near, f32 z_far, f32 center_ratio);
+	const ShadowCascade &getCascade(u8 index) const { return cascade; }
 
+private:
 	video::SColorf diffuseColor;
 
 	f32 farPlane;
@@ -118,10 +149,5 @@ private:
 	v3f pos;
 	v3f direction{0};
 
-	v3f last_cam_pos_world{0,0,0};
-	v3f last_look{0,1,0};
-
-	ShadowFrustum shadow_frustum;
-	ShadowFrustum future_frustum;
-	bool dirty{false};
+	ShadowCascade cascade;
 };

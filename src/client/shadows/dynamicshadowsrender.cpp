@@ -294,7 +294,7 @@ void ShadowRenderer::updateSMTextures()
 					cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 					cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 					cb->PerspectiveBiasZ = getPerspectiveBiasZ();
-					cb->CameraPos = light.getFuturePlayerPos();
+					cb->CameraPos = light.getCascade(0).getFuturePlayerPos();
 				}
 
 			// set the Render Target
@@ -361,7 +361,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 			// Static shader values for entities are set in updateSMTextures
 			// SM texture for entities is not updated incrementally and
 			// must by updated using current player position.
-			m_shadow_depth_entity_cb->CameraPos = light.getPlayerPos();
+			m_shadow_depth_entity_cb->CameraPos = light.getCascade(0).getPlayerPos();
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
@@ -391,7 +391,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 void ShadowRenderer::drawDebug()
 {
 	/* this code just shows shadows textures in screen and in ONLY for debugging*/
-	#if 0
+	#if 1
 	// this is debug, ignore for now.
 	if (shadowMapTextureFinal)
 		m_driver->draw2DImage(shadowMapTextureFinal,
@@ -436,8 +436,8 @@ video::ITexture *ShadowRenderer::getSMTexture(const std::string &shadow_map_name
 void ShadowRenderer::renderShadowMap(video::ITexture *target,
 		DirectionalLight &light, scene::E_SCENE_NODE_RENDER_PASS pass)
 {
-	m_driver->setTransform(video::ETS_VIEW, light.getFutureViewMatrix());
-	m_driver->setTransform(video::ETS_PROJECTION, light.getFutureProjectionMatrix());
+	m_driver->setTransform(video::ETS_VIEW, light.getCascade(0).getFutureViewMatrix());
+	m_driver->setTransform(video::ETS_PROJECTION, light.getCascade(0).getFutureProjectionMatrix());
 
 	ClientMap &map_node = static_cast<ClientMap &>(m_client->getEnv().getMap());
 
@@ -470,8 +470,8 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 void ShadowRenderer::renderShadowObjects(
 		video::ITexture *target, DirectionalLight &light)
 {
-	m_driver->setTransform(video::ETS_VIEW, light.getViewMatrix());
-	m_driver->setTransform(video::ETS_PROJECTION, light.getProjectionMatrix());
+	m_driver->setTransform(video::ETS_VIEW, light.getCascade(0).getViewMatrix());
+	m_driver->setTransform(video::ETS_PROJECTION, light.getCascade(0).getProjectionMatrix());
 
 	for (const auto &shadow_node : m_shadow_node_array) {
 		// we only take care of the shadow casters and only visible nodes cast shadows
