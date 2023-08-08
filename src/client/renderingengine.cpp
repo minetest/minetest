@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "filesys.h"
 #include "../gui/guiSkin.h"
+#include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
@@ -235,7 +236,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	core::rect<s32> textrect(center - textsize / 2, center + textsize / 2);
 
 	gui::IGUIStaticText *guitext =
-			guienv->addStaticText(text.c_str(), textrect, false, false);
+			gui::StaticText::add(guienv, text, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
 	if (sky && g_settings->getBool("menu_clouds")) {
