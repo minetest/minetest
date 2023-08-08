@@ -666,7 +666,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	spec.ftype = f_ScrollBar;
 	spec.send  = true;
 	GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
-			spec.fid, rect, is_horizontal, true);
+			spec.fid, rect, is_horizontal, true, m_tsrc);
 
 	auto style = getDefaultStyleForElement("scrollbar", name);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1493,7 +1493,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	gui::IGUIEditBox *e = nullptr;
 	if (is_multiline) {
 		e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true, Environment,
-				data->current_parent, spec.fid, rect, is_editable, true);
+				data->current_parent, spec.fid, rect, m_tsrc, is_editable, true);
 	} else if (is_editable) {
 		e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
 				data->current_parent, spec.fid);

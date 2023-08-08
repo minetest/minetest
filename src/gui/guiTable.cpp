@@ -66,7 +66,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 					0,
 					RelativeRect.getWidth(),
 					RelativeRect.getHeight()),
-			false, true);
+			false, true, tsrc);
 	m_scrollbar->setSubElement(true);
 	m_scrollbar->setTabStop(false);
 	m_scrollbar->setAlignment(gui::EGUIA_LOWERRIGHT, gui::EGUIA_LOWERRIGHT,
