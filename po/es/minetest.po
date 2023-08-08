@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2023-08-09 16:48+0000\n"
-"Last-Translator: joserene-007 <green.soul277@gmail.com>\n"
+"Last-Translator: Joaquín Villalba <joaco-mono@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -5286,7 +5286,7 @@ msgstr "Los usuarios nuevos deben ingresar esta contraseña."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Noclip"
 
 #: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
@@ -6035,7 +6035,7 @@ msgstr "Mostrar la informacion de la depuración"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "Mostrar cajas de selección de entidades"
 
 #: src/settings_translation_file.cpp
 msgid ""
