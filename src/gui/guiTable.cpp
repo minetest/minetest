@@ -901,7 +901,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		setToolTipText(cell ? m_strings[cell->tooltip_index].c_str() : L"");
 
 		// Fix for #1567/#1806:
-		// IGUIScrollBar passes double click events to its parent,
+		// GUIScrollBar passes double click events to its parent,
 		// which we don't want. Detect this case and discard the event
 		if (event.MouseInput.Event != EMIE_MOUSE_MOVED &&
 				m_scrollbar->isVisible() &&
