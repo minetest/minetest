@@ -1011,7 +1011,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 			RelativeRect.getWidth() - m_scrollbar_width, 0,
 			RelativeRect.getWidth(), RelativeRect.getHeight());
 
-	m_vscrollbar = new GUIScrollBar(Environment, this, -1, rect, false, true);
+	m_vscrollbar = new GUIScrollBar(Environment, this, -1, rect, false, true, tsrc);
 	m_vscrollbar->setVisible(false);
 }
 
