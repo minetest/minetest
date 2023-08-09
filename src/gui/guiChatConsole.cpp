@@ -33,6 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <string>
 
+#ifdef USE_CURL
+#include <curl/curl.h>
+#include <thread> // we only need threads when curl is there (as getting a webpage title could freeze the entire client otherwise)
+#endif
+
 inline u32 clamp_u8(s32 value)
 {
 	return (u32) MYMIN(MYMAX(value, 0), 255);
@@ -96,6 +101,7 @@ GUIChatConsole::GUIChatConsole(
 	// track ctrl keys for mouse event
 	m_is_ctrl_down = false;
 	m_cache_clickable_chat_weblinks = g_settings->getBool("clickable_chat_weblinks");
+	m_cache_right_click_chat_web_titles = g_settings->getBool("right_click_chat_web_titles");
 }
 
 GUIChatConsole::~GUIChatConsole()
@@ -673,7 +679,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			{
 				// Translate pixel position to font position
 				bool was_url_pressed = m_cache_clickable_chat_weblinks &&
-						weblinkClick(event.MouseInput.X / m_fontsize.X,
+						weblinkClickOpen(event.MouseInput.X / m_fontsize.X,
 								event.MouseInput.Y / m_fontsize.Y);
 
 				if (!was_url_pressed
@@ -690,6 +696,15 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				}
 			}
 		}
+#ifdef USE_CURL
+		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN && m_cache_right_click_chat_web_titles){
+			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 ){
+				std::thread t(&GUIChatConsole::weblinkClickTitle, this, (event.MouseInput.X / m_fontsize.X),
+								(event.MouseInput.Y / m_fontsize.Y));
+				t.detach();
+			}
+		}
+#endif
 	}
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
@@ -710,7 +725,30 @@ void GUIChatConsole::setVisible(bool visible)
 	}
 }
 
-bool GUIChatConsole::weblinkClick(s32 col, s32 row)
+std::string GUIChatConsole::getLinkAt(s32 col, s32 row){
+	const std::vector<ChatFormattedFragment> &
+		frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
+	std::string weblink = ""; // from frag meta
+
+	// Identify targetted fragment, if exists
+	int indx = frags.size() - 1;
+	if (indx < 0) {
+		// Invalid row, frags is empty
+		return "";
+	}
+	// Scan from right to left, offset by 1 font space because left margin
+	while (indx > -1 && (u32)col < frags[indx].column + 1) {
+		--indx;
+	}
+	if (indx > -1) {
+		weblink = frags[indx].weblink;
+		return weblink;
+		// Note if(indx < 0) then a frag somehow had a corrupt column field
+	}
+	return "";
+}
+
+bool GUIChatConsole::weblinkClickOpen(s32 col, s32 row)
 {
 	// Prevent accidental rapid clicking
 	static u64 s_oldtime = 0;
@@ -721,23 +759,10 @@ bool GUIChatConsole::weblinkClick(s32 col, s32 row)
 		return false;
 	s_oldtime = newtime;
 
-	const std::vector<ChatFormattedFragment> &
-			frags = m_chat_backend->getConsoleBuffer().getFormattedLine(row).fragments;
-	std::string weblink = ""; // from frag meta
-
-	// Identify targetted fragment, if exists
-	int indx = frags.size() - 1;
-	if (indx < 0) {
-		// Invalid row, frags is empty
+	std::string weblink = getLinkAt(col, row);
+	
+	if (weblink.empty()){
 		return false;
-	}
-	// Scan from right to left, offset by 1 font space because left margin
-	while (indx > -1 && (u32)col < frags[indx].column + 1) {
-		--indx;
-	}
-	if (indx > -1) {
-		weblink = frags[indx].weblink;
-		// Note if(indx < 0) then a frag somehow had a corrupt column field
 	}
 
 	/*
@@ -773,6 +798,52 @@ bool GUIChatConsole::weblinkClick(s32 col, s32 row)
 	return false;
 }
 
+#ifdef USE_CURL
+// This is a function for CURL to write the page's html into a string
+size_t writeHtml(void* contents, size_t size, size_t nmemb, std::string* strptr) {
+    size_t totalSize = size * nmemb;
+    strptr->append((char*)contents, totalSize);
+    return totalSize;
+}
+#endif
+
+void GUIChatConsole::weblinkClickTitle(s32 col, s32 row){
+	std::ostringstream msg;
+	msg << " * ";
+#ifdef USE_CURL
+	std::string weblink, html, title;
+	weblink = getLinkAt(col, row);
+	CURL* curl = curl_easy_init();
+
+	if(weblink.empty() || !curl){
+		return;
+	}
+
+	curl_easy_setopt(curl, CURLOPT_URL, weblink.c_str());
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeHtml);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &html);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Important for services like https://bit.ly or https://is.gd
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L); // As we don't know if we are stuck in an infinite loop of redirects or if the specifiec server exists at ALL, 10 secs is max!
+	CURLcode res = curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+
+	if(res == CURLE_OPERATION_TIMEDOUT || res == CURLE_COULDNT_RESOLVE_HOST) {
+		msg  << gettext("Host does not exist or timeout for 3rd party webpages reached!");
+	} else {
+		if (res != CURLE_OK || html.find("<title>") == std::string::npos || html.find("</title>") == std::string::npos) {
+			msg << gettext("Unkown error while fetching page title!");
+		}
+		size_t start = html.find("<title>") + 7; // +7 so the html tag isn't in there...
+		size_t end = html.find("</title>");
+		title = html.substr(start, end - start);
+		msg << gettext("Webpage title:") << " '" << title << "'" ;
+	}
+	
+#else
+	msg << gettext("Unable to get webpage title (cURL missing)!");
+#endif
+	m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
+}
 void GUIChatConsole::updatePrimarySelection()
 {
 #if IRRLICHT_VERSION_MT_REVISION >= 11

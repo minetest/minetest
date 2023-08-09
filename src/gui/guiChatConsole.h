@@ -84,9 +84,15 @@ private:
 	void drawText();
 	void drawPrompt();
 
+	// If there is a weblink at the specified place, it gets returned. Empty string otherwise
+	std::string getLinkAt(s32 col, s32 row);
+
 	// If clicked fragment has a web url, send it to the system default web browser.
 	// Returns true if, and only if a web url was pressed.
-	bool weblinkClick(s32 col, s32 row);
+	bool weblinkClickOpen(s32 col, s32 row);
+
+	// If a weblink was clicked, this will get the page's title and display it in chat
+	void weblinkClickTitle(s32 col, s32 row);
 
 	// If the selected text changed, we need to update the (X11) primary selection.
 	void updatePrimarySelection();
@@ -136,6 +142,8 @@ private:
 
 	// Enable clickable chat weblinks
 	bool m_cache_clickable_chat_weblinks;
+	// Enable right clickable chat website titles
+	bool m_cache_right_click_chat_web_titles;
 	// Track if a ctrl key is currently held down
 	bool m_is_ctrl_down;
 };
