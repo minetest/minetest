@@ -110,8 +110,7 @@ public:
 		return m_device->getGUIEnvironment();
 	}
 
-	void draw_load_screen(const std::wstring &text,
-			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
+	void draw_load_screen(const std::wstring &text, ITextureSource *tsrc,
 			float dtime = 0, int percent = 0, bool sky = true);
 
 	void draw_scene(video::SColor skycolor, bool show_hud,
