@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* mainmenumanager.h
  */
-gui::IGUIEnvironment *guienv = nullptr;
 MainMenuManager g_menumgr;
 
 bool isMenuActive()
@@ -135,7 +134,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	m_rendering_engine->get_scene_manager()->getParameters()->
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-	guienv = m_rendering_engine->get_gui_env();
+	gui::IGUIEnvironment *guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
