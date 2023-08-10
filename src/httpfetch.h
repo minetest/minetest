@@ -66,6 +66,9 @@ struct HTTPFetchRequest
 	// application/x-www-form-urlencoded.  POST-only.
 	bool multipart = false;
 
+	// The maximum file size in bytes. Allow any size by default
+	long max_file_size = -1;
+
 	//  The Method to use default = GET
 	//  Avaible methods GET, POST, PUT, DELETE
 	HttpMethod method = HTTP_GET;

@@ -812,6 +812,10 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = weblink;
 	fetch_request.caller = caller;
+	fetch_request.max_file_size = 1.5 * 1024 * 1024; // 1.5 megabyte should be more than enoght for HTML!
+	std::vector<std::string> htmlheader {"Accept: text/html"};
+	fetch_request.extra_headers = htmlheader;
+
 	httpfetch_sync(fetch_request, fetch_result); // sync because this is not the main thread
 
 	httpfetch_caller_free(caller);
