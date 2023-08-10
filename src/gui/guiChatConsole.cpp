@@ -813,6 +813,8 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	fetch_request.url = weblink;
 	fetch_request.caller = caller;
 	httpfetch_sync(fetch_request, fetch_result); // sync because this is not the main thread
+
+	httpfetch_caller_free(caller);
 	
 	if (fetch_result.succeeded) {
 		const std::regex r("<title.*?>(.*?)</title.*?>");
@@ -826,8 +828,6 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	} else {
 		msg << gettext("Error while getting webpage title!");
 	}
-
-	httpfetch_caller_free(caller);
 #else
 	msg << gettext("Unable to get webpage title (cURL missing)!");
 #endif
