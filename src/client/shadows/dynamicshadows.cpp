@@ -52,10 +52,6 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	else
 		last_look = look;
 
-	// camera view tangents
-	float tanFovY = tanf(cam->getFovY() * 0.5f);
-	float tanFovX = tanf(cam->getFovX() * 0.5f);
-
 	// adjusted frustum boundaries
 	float sfNear = near_value;
 	float sfFar = far_value;
@@ -80,14 +76,7 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	v3f center_scene = cam_pos_scene + look * center_ratio * (sfFar - sfNear);
 	v3f center_world = cam_pos_world + look * center_ratio * (sfFar - sfNear);
 
-	// Create a vector to the frustum far corner
-	const v3f &viewUp = cam->getCameraNode()->getUpVector();
-	v3f viewRight = look.crossProduct(viewUp);
-
-	v3f farCorner = (look + viewRight * tanFovX + viewUp * tanFovY).normalize();
-	// Compute the frustumBoundingSphere radius
-	v3f boundVec = (cam_pos_scene + farCorner * sfFar) - center_scene;
-	float radius = boundVec.getLength();
+	float radius = sfFar; // assume radius simply to be the far plane
 	float length = radius * 3.0f;
 	v3f eye_displacement = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/) * length;
 
