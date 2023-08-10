@@ -797,7 +797,7 @@ bool GUIChatConsole::weblinkClickOpen(s32 col, s32 row)
 	return false;
 }
 
-void GUIChatConsole::weblinkClickTitle(std::string weblink, ChatBackend* chat_backend){
+void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* chat_backend){
 	if (weblink.empty()){
 		return;
 	}
@@ -822,7 +822,7 @@ void GUIChatConsole::weblinkClickTitle(std::string weblink, ChatBackend* chat_ba
 			msg << gettext("Unable to find title tags in webpage!");
 		} else {
 			std::string title = fetch_result.data.substr(start + start_tag.length(), end - start - end_tag.length() + 1);
-			unsigned int start_end = title.find(">"); // the reason we need to do this is title tags like <title foo="bar"> (like above)
+			unsigned int start_end = title.find('>'); // the reason we need to do this is title tags like <title foo="bar"> (like above)
 			if (start_end == std::string::npos){ start_end = 0; } // this should never happen, but it's better to have the end of a tag somewhere than notthing
 			title = title.substr(start_end + 1);
 			msg << gettext("Webpage title:") << " '" << title << "'";
