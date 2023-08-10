@@ -69,6 +69,7 @@ core.register_entity(":__builtin:item", {
 			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
 			glow = glow,
+			infotext = stack:get_description(),
 		})
 
 		-- cache for usage in on_step
