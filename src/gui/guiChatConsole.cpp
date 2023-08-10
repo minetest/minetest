@@ -37,8 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include <thread> // we only need threads when curl is there (as getting a webpage title could freeze the entire client otherwise)
 #include <regex>
-
-#define HTMLTITLEREGEX	"<title.*?>(.*?)</title.*?>"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -817,7 +815,7 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	httpfetch_sync(fetch_request, fetch_result); // sync because this is not the main thread
 	
 	if (fetch_result.succeeded) {
-		const std::regex r(HTMLTITLEREGEX);
+		const std::regex r("<title.*?>(.*?)</title.*?>");
 		std::smatch matches;
 		if (std::regex_search(fetch_result.data, matches, r) || !matches.empty()){
 			const std::string title = matches.str(1); // pick the first one, what if this is a webpage teaching html and explain the title tag in the CONTENT section...
@@ -829,9 +827,7 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 		msg << gettext("Error while getting webpage title!");
 	}
 
-
 	httpfetch_caller_free(caller);
-	
 #else
 	msg << gettext("Unable to get webpage title (cURL missing)!");
 #endif
