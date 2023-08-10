@@ -33,9 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include <string>
 
-#ifdef USE_CURL
+#ifdef USE_CURL //specific to the webpage title feature
 #include "httpfetch.h"
 #include <thread> // we only need threads when curl is there (as getting a webpage title could freeze the entire client otherwise)
+#include <regex>
+
+#define HTMLTITLEREGEX	"<title.*?>(.*?)</title.*?>"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -806,7 +809,7 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	msg << " * ";
 	
 #ifdef USE_CURL
-	u64 caller = httpfetch_caller_alloc_secure();
+	const u64 caller = httpfetch_caller_alloc_secure();
 	HTTPFetchResult fetch_result;
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = weblink;
@@ -814,18 +817,13 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	httpfetch_sync(fetch_request, fetch_result); // sync because this is not the main thread
 	
 	if (fetch_result.succeeded) {
-		const std::string start_tag = "<title";
-		const std::string end_tag = "</title"; // '>' missing in case it's actually something like </title foo="bar">
-		unsigned int start = fetch_result.data.find(start_tag);
-		unsigned int end = fetch_result.data.find(end_tag);
-		if (start == std::string::npos || end == std::string::npos){
-			msg << gettext("Unable to find title tags in webpage!");
-		} else {
-			std::string title = fetch_result.data.substr(start + start_tag.length(), end - start - end_tag.length() + 1);
-			unsigned int start_end = title.find('>'); // the reason we need to do this is title tags like <title foo="bar"> (like above)
-			if (start_end == std::string::npos){ start_end = 0; } // this should never happen, but it's better to have the end of a tag somewhere than notthing
-			title = title.substr(start_end + 1);
+		const std::regex r(HTMLTITLEREGEX);
+		std::smatch matches;
+		if (std::regex_search(fetch_result.data, matches, r) || !matches.empty()){
+			const std::string title = matches.str(1); // pick the first one, what if this is a webpage teaching html and explain the title tag in the CONTENT section...
 			msg << gettext("Webpage title:") << " '" << title << "'";
+		} else {
+			msg << gettext("Unable to get the title from HTML!");
 		}
 	} else {
 		msg << gettext("Error while getting webpage title!");
