@@ -101,7 +101,7 @@ private:
 			video::ECOLOR_FORMAT texture_format, u8 n_cascades,
 			bool force_creation = false);
 
-	void renderShadowMap(video::ITexture *target, const ShadowCascade &cascade,
+	void renderShadowMap(video::ITexture *target, u8 cascade_index, const ShadowCascade &cascade,
 			scene::E_SCENE_NODE_RENDER_PASS pass =
 					scene::ESNRP_SOLID);
 	void renderShadowObjects(video::ITexture *target, const ShadowCascade &cascade);

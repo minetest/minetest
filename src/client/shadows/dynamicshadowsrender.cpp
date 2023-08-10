@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
 		m_client(client), m_current_frame(0),
-		m_perspective_bias_xy(0.0), m_perspective_bias_z(1.0)
+		m_perspective_bias_xy(0.0), m_perspective_bias_z(0.5)
 {
 	(void) m_client;
 
@@ -303,7 +303,7 @@ void ShadowRenderer::renderMapShadows()
 						cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
 						cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 						cb->PerspectiveBiasZ = getPerspectiveBiasZ();
-						cb->CameraPos = light.getCascade(0).getFuturePlayerPos();
+						cb->CameraPos = cascade.getFuturePlayerPos();
 					}
 
 				// set the Render Target
@@ -318,7 +318,7 @@ void ShadowRenderer::renderMapShadows()
 					m_driver->setViewPort(core::rect<s32>(
 							i * m_shadow_map_texture_size, 0,
 							(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
-					renderShadowMap(shadowMapTargetTexture, cascade);
+					renderShadowMap(shadowMapTargetTexture, i, cascade);
 
 					// Render transparent part in one pass.
 					// This is also handled in ClientMap.
@@ -326,11 +326,11 @@ void ShadowRenderer::renderMapShadows()
 						if (m_shadow_map_colored) {
 							m_driver->setRenderTarget(0, false, false);
 							m_driver->setRenderTarget(shadowMapTextureColors,
-									true, false, video::SColor(255, 255, 255, 255));
+									i == 0, false, video::SColor(255, 255, 255, 255));
 							m_driver->setViewPort(core::rect<s32>(
 									i * m_shadow_map_texture_size, 0,
 									(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
-							renderShadowMap(shadowMapTextureColors, cascade,
+							renderShadowMap(shadowMapTextureColors, i, cascade,
 									scene::ESNRP_TRANSPARENT);
 						}
 						m_driver->setRenderTarget(0, false, false);
@@ -460,7 +460,7 @@ video::ITexture *ShadowRenderer::getSMTexture(const std::string &shadow_map_name
 	return m_driver->getTexture(shadow_map_name.c_str());
 }
 
-void ShadowRenderer::renderShadowMap(video::ITexture *target,
+void ShadowRenderer::renderShadowMap(video::ITexture *target, u8 cascade_index,
 		const ShadowCascade &cascade, scene::E_SCENE_NODE_RENDER_PASS pass)
 {
 	m_driver->setTransform(video::ETS_VIEW, cascade.getFutureViewMatrix());
@@ -491,7 +491,7 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target,
 	int frame = m_force_update_shadow_map ? 0 : m_current_frame;
 	int total_frames = m_force_update_shadow_map ? 1 : m_map_shadow_update_frames;
 
-	map_node.renderMapShadows(0, m_driver, material, pass, frame, total_frames);
+	map_node.renderMapShadows(cascade_index, m_driver, material, pass, frame, total_frames);
 }
 
 void ShadowRenderer::renderShadowObjects(

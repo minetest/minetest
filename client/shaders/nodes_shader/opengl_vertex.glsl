@@ -40,6 +40,7 @@ centroid varying vec2 varTexCoord;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
 	varying float perspective_factor;
+	varying vec3 shadow_world_position;
 #endif
 
 varying float area_enable_parallax;
@@ -232,6 +233,8 @@ void main(void)
 #else
 		vec4 shadow_pos = pos;
 #endif
+		shadow_world_position = (mWorld * shadow_pos).xyz;
+
 		vec3 nNormal;
 		f_normal_length = length(vNormal);
 

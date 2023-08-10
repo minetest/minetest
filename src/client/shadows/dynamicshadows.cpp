@@ -91,18 +91,22 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	float length = radius * 3.0f;
 	v3f eye_displacement = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/) * length;
 
+	// Adjust frustum radius for the cascade scale
+	radius *= scale;
+	
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
 	v3f eye = center_scene - eye_displacement;
 	ShadowFrustum f;
 	f.player = cam_pos_scene;
+	f.center = center_scene;
 	f.position = center_world - eye_displacement;
 	f.length = length;
 	f.radius = radius;
 	f.zNear = near_value;
 	f.zFar = far_value;
 	f.ViewMat.buildCameraLookAtMatrixLH(eye, center_scene, v3f(0.0f, 1.0f, 0.0f));
-	f.ProjOrthMat.buildProjectionMatrixOrthoLH(radius, radius,
+	f.ProjOrthMat.buildProjectionMatrixOrthoLH(2.0 * radius, 2.0 * radius,
 			0.0f, length, false);
 	f.camera_offset = cam->getOffset();
 	return f;
@@ -118,7 +122,7 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 	if (!client->getEnv().getClientMap().getControl().range_all)
 		zFar = MYMIN(zFar, client->getEnv().getClientMap().getControl().wanted_range * BS);
 
-	future_frustum = createFrustum(direction, cam, zNear, zFar * scale, 0.35);
+	future_frustum = createFrustum(direction, cam, zNear, zFar, 0.);
 
 	dirty = true;
 
@@ -178,7 +182,7 @@ const m4f &ShadowCascade::getFutureProjectionMatrix() const
 	return future_frustum.ProjOrthMat;
 }
 
-m4f ShadowCascade::getViewProjMatrix()
+m4f ShadowCascade::getViewProjMatrix() const
 {
 	return current_frustum.ProjOrthMat * current_frustum.ViewMat;
 }
@@ -189,11 +193,12 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		diffuseColor(lightColor),
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {
-	f32 scale = 1./9.;
+	f32 scale_factor = 4.;
+	f32 scale = 1.0 / powf32(scale_factor, cascades.size() - 1);
 	for (auto &cascade: cascades) {
 		cascade.farPlane = farPlane;
 		cascade.scale = scale;
-		scale *= 3.;
+		scale *= scale_factor;
 	}
 }
 

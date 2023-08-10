@@ -21,7 +21,21 @@ uniform float animationTimer;
 	uniform vec4 CameraPos;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
+	uniform float zPerspectiveBias;
 
+	struct ShadowCascade {
+		mat4 mViewProj; // view-projection matrix
+		vec3 cameraPosition; // position of the camera as seen by the cascade, in scene space
+		float boundary; // boundary of the cascade in scene space
+		vec3 center; // center of the frustum in scene space
+	};
+
+	#define MAX_SHADOW_CASCADES 3
+
+	uniform ShadowCascade shadowCascades[MAX_SHADOW_CASCADES];
+	uniform int cascadeCount;
+
+	varying vec3 shadow_world_position;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
@@ -52,15 +66,30 @@ varying vec3 tsLightVec;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-// assuming near is always 1.0
-float getLinearDepth()
+float debug = 0.0;
+
+int getCascade()
 {
-	return 2.0 * f_shadowfar / (f_shadowfar + 1.0 - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - 1.0));
+	for (int i = 0; i < MAX_SHADOW_CASCADES; i++) {
+		if (i == cascadeCount)
+			break;
+		vec3 center_to_fragment = shadow_world_position - shadowCascades[i].center;
+		float projected_distance = length(center_to_fragment - v_LightDirection * dot(center_to_fragment, v_LightDirection));
+		if (i == 1)
+			debug = projected_distance / shadowCascades[i].boundary;
+
+		if (shadowCascades[i].boundary * 0.9 > projected_distance)
+			return i;
+	}
+	return cascadeCount - 1;
 }
 
-vec3 getLightSpacePosition()
+vec3 getLightSpacePosition(int cascade)
 {
-	return shadow_position * 0.5 + 0.5;
+	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position, 1.0);
+	shadow_position /= shadow_position.w;
+	shadow_position.z *= zPerspectiveBias;
+	return shadow_position.xyz * 0.5 + 0.5;
 }
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
@@ -385,26 +414,35 @@ void main(void)
 	if (f_shadow_strength > 0.0) {
 		float shadow_int = 0.0;
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
-		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
-		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
-			distance_rate = 0.0;
+		int cascade = getCascade();
+		vec3 posLightSpace = getLightSpacePosition(cascade); // 0..1 within a single cascade in the shadow map
+
+		float distance_rate = 1.0;
+		if (cascade == cascadeCount - 1) {
+			distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
+			if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
+				distance_rate = 0.0;
+		}
+
 		float f_adj_shadow_strength = max(adj_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
 
+			// shift posLightSpace to the right cascade in the shadow map
+			posLightSpace.x = (posLightSpace.x + float(cascade)) / cascadeCount;
+
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
 			if (cosLight > 0.0 || f_normal_length < 1e-3)
-				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy * vec2(1./3., 1.), posLightSpace.z);
+				visibility = getShadowColor(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				visibility = vec4(1.0, 0.0, 0.0, 0.0);
 			shadow_int = visibility.r;
 			shadow_color = visibility.gba;
 #else
 			if (cosLight > 0.0 || f_normal_length < 1e-3)
-				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy * vec2(1./3., 1.), posLightSpace.z);
+				shadow_int = getShadow(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
 			else
 				shadow_int = 1.0;
 #endif
@@ -434,6 +472,12 @@ void main(void)
 				(1.0 - adjusted_night_ratio) * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+
+		// col.r = getHardShadowDepth(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
+		// col.r = texture2D(ShadowMapSampler, posLightSpace.xy).r;
+		// col.r = length(shadow_world_position - shadowCascades[0].center) / shadowCascades[0].boundary;
+		// col.g = getCascade();
+		// col.r = debug;
 	}
 #endif
 

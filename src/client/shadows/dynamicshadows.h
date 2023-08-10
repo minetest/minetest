@@ -40,6 +40,7 @@ struct ShadowFrustum
 	core::matrix4 ViewMat;
 	v3f position;
 	v3f player;
+	v3f center;
 	v3s16 camera_offset;
 };
 
@@ -82,7 +83,7 @@ struct ShadowCascade {
 	const core::matrix4 &getProjectionMatrix() const;
 	const core::matrix4 &getFutureViewMatrix() const;
 	const core::matrix4 &getFutureProjectionMatrix() const;
-	core::matrix4 getViewProjMatrix();
+	core::matrix4 getViewProjMatrix() const;
 
 	void commitFrustum();
 };
@@ -115,7 +116,7 @@ public:
 	/// Gets the current far value of the light
 	f32 getFarValue() const
 	{
-		return getCascade(0).getFarValue();
+		return getCascade(getCascadesCount() - 1).getFarValue();
 	}
 
 

@@ -214,6 +214,33 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world;
 
 	// Shadow-related
+	struct ShadowCascadeShaderSettings {
+		ShadowCascadeShaderSettings(int cascade):
+				m_shadow_view_proj(std::string("shadowCascades[") + std::to_string(cascade) + "].mViewProj"),
+				m_camera_world_position(std::string("shadowCascades[") + std::to_string(cascade) + "].cameraPosition"),
+				m_boundary(std::string("shadowCascades[") + std::to_string(cascade) + "].boundary"),
+				m_center(std::string("shadowCascades[") + std::to_string(cascade) + "].center")
+		{}
+
+		CachedVertexShaderSetting<f32, 16> m_shadow_view_proj;
+		CachedVertexShaderSetting<f32, 3> m_camera_world_position;
+		CachedVertexShaderSetting<f32> m_boundary;
+		CachedVertexShaderSetting<f32, 3> m_center;
+
+		void onSetConstants(const ShadowCascade &cascade, video::IMaterialRendererServices *services)
+		{
+			core::matrix4 shadowViewProj = cascade.getViewProjMatrix();
+			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
+			f32 boundary = cascade.current_frustum.radius;
+			m_boundary.set(&boundary, services);
+			m_center.set(&cascade.current_frustum.center.X, services);
+
+			v3f camera_world_position = cascade.getPlayerPos();
+			m_camera_world_position.set(&camera_world_position.X, services);
+		}
+	};
+
+	std::vector<ShadowCascadeShaderSettings> m_cascades;
 	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
 	CachedPixelShaderSetting<f32, 3> m_light_direction;
 	CachedPixelShaderSetting<f32> m_texture_res;
@@ -228,6 +255,8 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
 	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+	CachedVertexShaderSetting<s32> m_cascade_count;
+	CachedVertexShaderSetting<f32, 4> m_camera_world_position;
 
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view;
@@ -254,10 +283,14 @@ public:
 		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
+		, m_cascade_count("cascadeCount")
+		, m_camera_world_position("cameraWorldPosition")
 		, m_world_view("mWorldView")
 		, m_texture("mTexture")
 		, m_normal("mNormal")
-	{}
+	{
+	}
+
 	~MainShaderConstantSetter() = default;
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
@@ -299,6 +332,17 @@ public:
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
 			const auto &light = shadow->getDirectionalLight();
 
+			// register cascades
+			while (m_cascades.size() < light.getCascadesCount())
+				m_cascades.emplace_back(m_cascades.size());
+			
+			// set cascade uniforms
+			for (u8 i = 0; i < light.getCascadesCount(); i++)
+				m_cascades[i].onSetConstants(light.getCascade(i), services);
+
+			int count = m_cascades.size();
+			m_cascade_count.set(&count, services);
+
 			core::matrix4 shadowViewProj = light.getCascade(0).getProjectionMatrix();
 			shadowViewProj *= light.getCascade(0).getViewMatrix();
 			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
@@ -322,6 +366,7 @@ public:
 			f32 cam_pos[4];
 			shadowViewProj.transformVect(cam_pos, light.getCascade(0).getPlayerPos());
 			m_camera_pos.set(cam_pos, services);
+
 
 			// I don't like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
