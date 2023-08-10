@@ -96,7 +96,6 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
-	v3f eye = center_scene - eye_displacement;
 	ShadowFrustum f;
 	f.player = cam_pos_scene;
 	f.center = center_scene;
@@ -105,7 +104,7 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	f.radius = radius;
 	f.zNear = near_value;
 	f.zFar = far_value;
-	f.ViewMat.buildCameraLookAtMatrixLH(eye, center_scene, v3f(0.0f, 1.0f, 0.0f));
+	f.ViewMat.buildCameraLookAtMatrixLH(center_scene, center_scene + eye_displacement, v3f(0.0f, 1.0f, 0.0f));
 	f.ProjOrthMat.buildProjectionMatrixOrthoLH(2.0 * radius, 2.0 * radius,
 			0.0f, length, false);
 	f.camera_offset = cam->getOffset();
