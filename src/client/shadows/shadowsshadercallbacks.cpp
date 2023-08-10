@@ -43,6 +43,7 @@ void ShadowDepthShaderCB::OnSetConstants(
 	m_perspective_bias1.set(&bias1, services);
 	f32 zbias = PerspectiveBiasZ;
 	m_perspective_zbias.set(&zbias, services);
+	m_cascade_setting.set(&Cascade, services);
 
 	m_cam_pos_setting.set(cam_pos, services);
 }

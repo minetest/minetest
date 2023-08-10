@@ -304,6 +304,7 @@ void ShadowRenderer::renderMapShadows()
 						cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 						cb->PerspectiveBiasZ = getPerspectiveBiasZ();
 						cb->CameraPos = cascade.getFuturePlayerPos();
+						cb->Cascade = i;
 					}
 
 				// set the Render Target
