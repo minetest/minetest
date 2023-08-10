@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-02 16:38+0000\n"
-"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
+"PO-Revision-Date: 2023-08-11 05:50+0000\n"
+"Last-Translator: Hugo Rosa <hugoxrosa@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -295,9 +295,10 @@ msgid "Failed to download $1"
 msgstr "Falha ao baixar $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Instalação: Tipo de arquivo não suportado ou corrompido"
+msgstr ""
+"Não foi possível extrair \"$1\" (tipo de arquivo não suportado ou arquivo "
+"corrompido)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -819,9 +820,8 @@ msgstr ""
 "o modpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Incapaz de encontrar um mod ou modpack válido"
+msgstr "Incapaz de encontrar um mod, modpack, ou jogo válido"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -864,7 +864,7 @@ msgstr "Desenvolvedores Principais"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Equipe Principal"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1997,18 +1997,22 @@ msgstr "Minimapa em modo de textura"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s falta:"
 
 #: src/content/mod_configuration.cpp
+#, fuzzy
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Instala e habilita os mods necessários, ou desativa os mods que causam erros."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Nota: isto pode ser causado por uma dependência circular, neste caso tente "
+"atualizar os mods."
 
 #: src/content/mod_configuration.cpp
 #, fuzzy
@@ -2369,7 +2373,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Ruído 3D que determina o número de cavernas por pedaço de mapa."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2388,8 +2391,7 @@ msgstr ""
 "-    interlaced: Sistema interlaçado (Óculos com lentes polarizadas).\n"
 "-    topbottom: Divide a tela em duas: uma em cima e outra em baixo.\n"
 "-    sidebyside: Divide a tela em duas: lado a lado.\n"
-" -   crossview: 3D de olhos cruzados.\n"
-" -   pageflip: Quadbuffer baseado em 3D.\n"
+"-    crossview: 3D de olhos cruzados.\n"
 "Note que o modo interlaçado requer que o sombreamento esteja habilitado."
 
 #: src/settings_translation_file.cpp
@@ -3342,7 +3344,7 @@ msgstr "Ruído de masmorra"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Habilita Exposição Automática"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3390,6 +3392,10 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Habilita a correção automática da exposição\n"
+"Quando habilitado, o motor de pós-processamento\n"
+"irá ajustar automaticamente o brilho da cena,\n"
+"simulando o comportamento do olho humano."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3576,7 +3582,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Exposure compensation"
-msgstr ""
+msgstr "Compensação da exposição"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -4522,8 +4528,9 @@ msgid "Large cave proportion flooded"
 msgstr "Proporção inundada de cavernas grandes"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Last known version update"
-msgstr ""
+msgstr "Atualização para última versão conhecida"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5326,6 +5333,9 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+"Número de threads para usar na geração de mesh\n"
+"Valor 0 (predefinido) fará o Minetest detectar automativamente o número de "
+"threads disponíveis."
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5453,7 +5463,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Post processing"
-msgstr ""
+msgstr "Pós-processamento"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5839,6 +5849,9 @@ msgid ""
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
+"Ajusta a compensação da exposição em unidades EV.\n"
+"Valor 0.0 (predefinido) significa sem compensação da exposição.\n"
+"Intervalo: de -1 até 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6385,7 +6398,6 @@ msgstr ""
 "Isso deve ser configurado junto com active_object_send_range_blocks."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The rendering back-end.\n"
 "Note: A restart is required after changing this!\n"
@@ -6393,11 +6405,9 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "O back-end de renderização.\n"
-"É necessário reiniciar após alterar isso.\n"
-"Nota: No Android, use OGLES1 se não tiver certeza! O aplicativo pode falhar "
-"ao iniciar de outra forma.\n"
-"Em outras plataformas, OpenGL é recomendado.\n"
-"Shaders são suportados por OpenGL (somente desktop) e OGLES2 (experimental)"
+"Nota: É necessário reiniciar depois de alterar.\n"
+"OpenGL é o padrão para Desktop, e OGLES2 para Android.\n"
+" (shaders) é suportado pelo OpenGL e pelo OGLES2 (experimental)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6559,6 +6569,8 @@ msgstr "Modulos confiáveis"
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
 msgstr ""
+"URL do arquivo JSON que fornece informações sobre o mais novo lançamento do "
+"Minetest"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -6588,6 +6600,9 @@ msgid ""
 "Unix timestamp (integer) of when the client last checked for an update\n"
 "Set this value to \"disabled\" to never check for updates."
 msgstr ""
+"Timestamp do Unix (número inteiro) da última vez que o cliente verificou por "
+"uma atualização\n"
+"Ajuste o valor para \"desabilitado\" para nunca verificar por atualizações."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -6749,6 +6764,10 @@ msgid ""
 "Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
 "Ex: 5.5.0 is 005005000"
 msgstr ""
+"Número de versão encontrado na última verificação por atualizações.\n"
+"\n"
+"Representação: MMMIIIPPP, onde M=Maior, I=Menor, P=Patch\n"
+"Ex: 5.5.0 é 005005000"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
