@@ -92,7 +92,7 @@ private:
 	bool weblinkClickOpen(s32 col, s32 row);
 
 	// If a weblink was clicked, this will get the page's title and display it in chat
-	void weblinkClickTitle(s32 col, s32 row);
+	void weblinkClickTitle(std::string weblink, ChatBackend* chat_backen);
 
 	// If the selected text changed, we need to update the (X11) primary selection.
 	void updatePrimarySelection();

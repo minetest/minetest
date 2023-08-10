@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #ifdef USE_CURL
-#include <curl/curl.h>
+#include "httpfetch.h"
 #include <thread> // we only need threads when curl is there (as getting a webpage title could freeze the entire client otherwise)
 #endif
 
@@ -696,15 +696,14 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				}
 			}
 		}
-#ifdef USE_CURL
 		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN && m_cache_right_click_chat_web_titles){
 			if (event.MouseInput.Y / m_fontsize.Y < (m_height / m_fontsize.Y) - 1 ){
-				std::thread t(&GUIChatConsole::weblinkClickTitle, this, (event.MouseInput.X / m_fontsize.X),
-								(event.MouseInput.Y / m_fontsize.Y));
+				std::thread t(&GUIChatConsole::weblinkClickTitle, this, getLinkAt(event.MouseInput.X / m_fontsize.X,
+								event.MouseInput.Y / m_fontsize.Y),
+								m_chat_backend);
 				t.detach();
 			}
 		}
-#endif
 	}
 	else if(event.EventType == EET_STRING_INPUT_EVENT)
 	{
@@ -798,51 +797,48 @@ bool GUIChatConsole::weblinkClickOpen(s32 col, s32 row)
 	return false;
 }
 
-#ifdef USE_CURL
-// This is a function for CURL to write the page's html into a string
-size_t writeHtml(void* contents, size_t size, size_t nmemb, std::string* strptr) {
-    size_t totalSize = size * nmemb;
-    strptr->append((char*)contents, totalSize);
-    return totalSize;
-}
-#endif
-
-void GUIChatConsole::weblinkClickTitle(s32 col, s32 row){
-	std::ostringstream msg;
-	msg << " * ";
-#ifdef USE_CURL
-	std::string weblink, html, title;
-	weblink = getLinkAt(col, row);
-	CURL* curl = curl_easy_init();
-
-	if(weblink.empty() || !curl){
+void GUIChatConsole::weblinkClickTitle(std::string weblink, ChatBackend* chat_backend){
+	if (weblink.empty()){
 		return;
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, weblink.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeHtml);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &html);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Important for services like https://bit.ly or https://is.gd
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L); // As we don't know if we are stuck in an infinite loop of redirects or if the specifiec server exists at ALL, 10 secs is max!
-	CURLcode res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
-
-	if(res == CURLE_OPERATION_TIMEDOUT || res == CURLE_COULDNT_RESOLVE_HOST) {
-		msg  << gettext("Host does not exist or timeout for 3rd party webpages reached!");
-	} else {
-		if (res != CURLE_OK || html.find("<title>") == std::string::npos || html.find("</title>") == std::string::npos) {
-			msg << gettext("Unkown error while fetching page title!");
+	std::ostringstream msg;
+	msg << " * ";
+	
+#ifdef USE_CURL
+	u64 caller = httpfetch_caller_alloc_secure();
+	HTTPFetchResult fetch_result;
+	HTTPFetchRequest fetch_request;
+	fetch_request.url = weblink;
+	fetch_request.caller = caller;
+	httpfetch_sync(fetch_request, fetch_result); // sync because this is not the main thread
+	
+	if (fetch_result.succeeded) {
+		const std::string start_tag = "<title";
+		const std::string end_tag = "</title"; // '>' missing in case it's actually something like </title foo="bar">
+		unsigned int start = fetch_result.data.find(start_tag);
+		unsigned int end = fetch_result.data.find(end_tag);
+		if (start == std::string::npos || end == std::string::npos){
+			msg << gettext("Unable to find title tags in webpage!");
+		} else {
+			std::string title = fetch_result.data.substr(start + start_tag.length(), end - start - end_tag.length() + 1);
+			unsigned int start_end = title.find(">"); // the reason we need to do this is title tags like <title foo="bar"> (like above)
+			if (start_end == std::string::npos){ start_end = 0; } // this should never happen, but it's better to have the end of a tag somewhere than notthing
+			title = title.substr(start_end + 1);
+			msg << gettext("Webpage title:") << " '" << title << "'";
 		}
-		size_t start = html.find("<title>") + 7; // +7 so the html tag isn't in there...
-		size_t end = html.find("</title>");
-		title = html.substr(start, end - start);
-		msg << gettext("Webpage title:") << " '" << title << "'" ;
+	} else {
+		msg << gettext("Error while getting webpage title!");
 	}
+
+
+	httpfetch_caller_free(caller);
 	
 #else
 	msg << gettext("Unable to get webpage title (cURL missing)!");
 #endif
-	m_chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
+	chat_backend->addUnparsedMessage(utf8_to_wide(msg.str()));
+
 }
 void GUIChatConsole::updatePrimarySelection()
 {
