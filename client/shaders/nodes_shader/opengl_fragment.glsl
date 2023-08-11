@@ -66,8 +66,6 @@ varying vec3 tsLightVec;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-float debug = 0.0;
-
 int getCascade()
 {
 	for (int i = 0; i < MAX_SHADOW_CASCADES; i++) {
@@ -75,8 +73,6 @@ int getCascade()
 			break;
 		vec3 center_to_fragment = shadow_world_position - shadowCascades[i].center;
 		float projected_distance = length(center_to_fragment - v_LightDirection * dot(center_to_fragment, v_LightDirection));
-		if (i == 1)
-			debug = projected_distance / shadowCascades[i].boundary;
 
 		if (shadowCascades[i].boundary * 0.9 > projected_distance)
 			return i;
@@ -134,6 +130,33 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	return result;
 }
 
+#if SHADOW_FILTER == 1
+vec4 getFilteredShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
+{
+	vec2 texelSize = vec2(1. / f_textureresolution / cascadeCount, 1. / f_textureresolution);
+	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
+
+	vec2 fraction = texelCoord - floor(texelCoord);
+	vec2 sampleTexCoord = (floor(texelCoord) + 0.5) * texelSize;
+
+	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	vec4 visibility = (1. - fraction.x) * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x += texelSize.x;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.y += texelSize.y;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x -= texelSize.x;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += (1. - fraction.x) * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+	return visibility;
+}
+#endif
+
 #else
 
 float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
@@ -143,13 +166,41 @@ float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	return visibility;
 }
 
+#if SHADOW_FILTER == 1
+float getFilteredShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
+{
+	vec2 texelSize = vec2(1. / f_textureresolution / cascadeCount, 1. / f_textureresolution);
+	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
+
+	vec2 fraction = texelCoord - floor(texelCoord);
+	float scale = 1.0;
+	vec2 sampleTexCoord = (floor(texelCoord) + 0.5 * scale) * texelSize;
+
+	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	float visibility = (1. - fraction.x) * (1. - fraction.y) * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x += texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * (1. - fraction.y) * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.y += texelSize.y * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * fraction.y * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x -= texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += (1. - fraction.x) * fraction.y * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+	return visibility;
+}
+#endif
+
 #endif
 
 
-#if SHADOW_FILTER == 2
+#if SHADOW_FILTER == 3
 	#define PCFBOUND 2.0 // 5x5
 	#define PCFSAMPLES 25
-#elif SHADOW_FILTER == 1
+#elif SHADOW_FILTER == 2
 	#define PCFBOUND 1.0 // 3x3
 	#define PCFSAMPLES 9
 #else
@@ -269,9 +320,13 @@ const vec2[64] poissonDisk = vec2[64](
 );
 
 #ifdef COLORED_SHADOWS
-
 vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadowColor(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadowColor(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -293,12 +348,18 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	}
 
 	return visibility / samples;
+#endif
 }
 
 #else
 
 float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadow(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadow(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -320,6 +381,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	}
 
 	return visibility / samples;
+#endif
 }
 
 #endif
@@ -331,6 +393,11 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 
 vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadowColor(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadowColor(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -354,11 +421,17 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	}
 
 	return visibility / max(n, 1.0);
+#endif
 }
 
 #else
 float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadow(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadow(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -382,6 +455,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	}
 
 	return visibility / max(n, 1.0);
+#endif
 }
 
 #endif
@@ -473,11 +547,6 @@ void main(void)
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
 
-		// col.r = getHardShadowDepth(ShadowMapSampler, posLightSpace.xy, posLightSpace.z);
-		// col.r = texture2D(ShadowMapSampler, posLightSpace.xy).r;
-		// col.r = length(shadow_world_position - shadowCascades[0].center) / shadowCascades[0].boundary;
-		// col.g = getCascade();
-		// col.r = debug;
 	}
 #endif
 

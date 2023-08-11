@@ -524,8 +524,10 @@ shadow_poisson_filter (Poisson filtering) bool true
 #    This simulates the soft shadows effect by applying a PCF or Poisson disk
 #    but also uses more resources.
 #
+#    Note: Setting 1 enables simple 2x2 bilinear filter
+#
 #    Requires: shaders, enable_dynamic_shadows, opengl
-shadow_filters (Shadow filter quality) enum 1 0,1,2
+shadow_filters (Shadow filter quality) enum 1 0,1,2,3
 
 #    Enable colored shadows.
 #    On true translucent nodes cast colored shadows. This is expensive.

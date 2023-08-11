@@ -805,7 +805,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("shadow_poisson_filter"))
 			shaders_header << "#define POISSON_FILTER 1\n";
 
-		s32 shadow_filter = g_settings->getS32("shadow_filters");
+		s32 shadow_filter = rangelim(g_settings->getS32("shadow_filters"), 0, 3);
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
 
 		float shadow_soft_radius = g_settings->getFloat("shadow_soft_radius");
