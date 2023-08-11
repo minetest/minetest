@@ -181,13 +181,6 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		diffuseColor(lightColor),
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {
-	f32 scale_factor = 4.;
-	f32 scale = 1.0 / powf32(scale_factor, cascades.size() - 1);
-	for (auto &cascade: cascades) {
-		cascade.farPlane = farPlane;
-		cascade.scale = scale;
-		scale *= scale_factor;
-	}
 }
 
 void DirectionalLight::setDirection(v3f dir)
@@ -199,6 +192,17 @@ void DirectionalLight::setDirection(v3f dir)
 void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force)
 {
 	client->getEnv().getClientMap().allocateDrawListShadowCascades(getCascadesCount());
+
+	f32 scale = 20. * BS / getFarValue();
+	f32 scale_factor = 1./pow(scale, 1./(cascades.size() - 1.));
+
+	warningstream << "FP: " << farPlane << " scale: " << scale << " F: " << scale_factor << std::endl;
+	for (auto &cascade: cascades) {
+		cascade.farPlane = farPlane;
+		cascade.scale = scale;
+		scale *= scale_factor;
+	}
+
 	for (u8 i = 0; i < getCascadesCount(); i++) {
 		auto &cascade = getCascade(i);
 		if (cascade.update_frustum(direction, cam, client, force)) {
