@@ -1,21 +1,30 @@
 uniform mat4 mWorld;
+// Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
+
+// The cameraOffset is the current center of the visible world.
+uniform vec3 cameraOffset;
 uniform float animationTimer;
 uniform vec4 emissiveColor;
-uniform vec3 cameraOffset;
-
 
 varying vec3 vNormal;
 varying vec3 vPosition;
+// World position in the visible world (i.e. relative to the cameraOffset.)
+// This can be used for many shader effects without loss of precision.
+// If the absolute position is required it can be calculated with
+// cameraOffset + worldPosition (for large coordinates the limits of float
+// precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec4 varColor;
+// The centroid keyword ensures that after interpolation the texture coordinates
+// lie within the same bounds when MSAA is en- and disabled.
+// This fixes the stripes problem with nearest-neighbor textures and MSAA.
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow uniforms
 	uniform vec3 v_LightDirection;
@@ -27,11 +36,15 @@ centroid varying vec2 varTexCoord;
 	uniform vec4 CameraPos;
 
 	varying float cosLight;
+	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
 	varying vec3 shadow_position;
 	varying float perspective_factor;
+	varying vec3 shadow_world_position;
 #endif
+
+varying float area_enable_parallax;
 
 varying vec3 eyeVec;
 varying float nightRatio;
@@ -112,6 +125,12 @@ void main(void)
 		: directional_ambient(normalize(inVertexNormal));
 #endif
 
+
+	// Calculate color.
+	// Red, green and blue components are pre-multiplied with
+	// the brightness, so now we have to multiply these
+	// colors with the color of the incoming light.
+	// The pre-baked colors are halved to prevent overflow.
 #ifdef GL_ES
 	vec4 color = inVertexColor.bgra;
 #else
@@ -134,11 +153,11 @@ void main(void)
 
 	varColor = clamp(color, 0.0, 1.0);
 
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
 		vec3 nNormal = normalize(vNormal);
 		f_normal_length = length(vNormal);
+		shadow_world_position = (mWorld * inVertexPosition).xyz;
 
 		/* normalOffsetScale is in world coordinates (1/10th of a meter)
 		   z_bias is in light space coordinates */
