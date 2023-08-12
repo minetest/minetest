@@ -177,7 +177,8 @@ void log_deprecated(lua_State *L, std::string message, int stack_depth)
 	if (mode == DeprecatedHandlingMode::Ignore)
 		return;
 
-	script_log_add_source(L, message, stack_depth);
+	if (stack_depth >= 0)
+		script_log_add_source(L, message, stack_depth);
 	warningstream << message << std::endl;
 
 	if (mode == DeprecatedHandlingMode::Error)

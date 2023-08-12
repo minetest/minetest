@@ -196,6 +196,43 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 }
 
 /******************************************************************************/
+const std::array<const char *, 33> object_property_keys = {
+	"hp_max",
+	"breath_max",
+	"physical",
+	"collide_with_objects",
+	"collisionbox",
+	"selectionbox",
+	"pointable",
+	"visual",
+	"mesh",
+	"visual_size",
+	"textures",
+	"colors",
+	"spritediv",
+	"initial_sprite_basepos",
+	"is_visible",
+	"makes_footstep_sound",
+	"stepheight",
+	"eye_height",
+	"automatic_rotate",
+	"automatic_face_movement_dir",
+	"backface_culling",
+	"glow",
+	"nametag",
+	"nametag_color",
+	"automatic_face_movement_max_rotation_per_sec",
+	"infotext",
+	"static_save",
+	"wield_item",
+	"zoom_fov",
+	"use_texture_alpha",
+	"shaded",
+	"damage_texture_modifier",
+	"show_on_minimap"
+};
+
+/******************************************************************************/
 void read_object_properties(lua_State *L, int index,
 		ServerActiveObject *sao, ObjectProperties *prop, IItemDefManager *idef)
 {
@@ -362,6 +399,9 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "show_on_minimap", prop->show_on_minimap);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/
@@ -459,6 +499,9 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "damage_texture_modifier");
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/

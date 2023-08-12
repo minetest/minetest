@@ -181,8 +181,39 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 	return std::string(s, len);
 }
 
+void ScriptApiEntity::logDeprecationForExistingProperties(lua_State *L, int index, const std::string &name)
+{
+	if (deprecation_warned_init_properties.find(name) != deprecation_warned_init_properties.end())
+		return;
+
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if (!lua_istable(L, index))
+		return;
+
+	for (const char *key : object_property_keys) {
+		lua_getfield(L, index, key);
+		bool exists = !lua_isnil(L, -1);
+		lua_pop(L, 1);
+
+		if (exists) {
+			std::ostringstream os;
+
+			os << "Reading initial object properties directly from an entity definition is deprecated, "
+				<< "move it to the 'initial_properties' table instead. "
+				<< "(Property '" << key << "' in entity '" << name << "')" << std::endl;
+
+			log_deprecated(L, os.str(), -1);
+
+			deprecation_warned_init_properties.insert(name);
+			break;
+		}
+	}
+}
+
 void ScriptApiEntity::luaentity_GetProperties(u16 id,
-		ServerActiveObject *self, ObjectProperties *prop)
+		ServerActiveObject *self, ObjectProperties *prop, const std::string &entity_name)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -195,6 +226,7 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	prop->hp_max = 10;
 
 	// Deprecated: read object properties directly
+	logDeprecationForExistingProperties(L, -1, entity_name);
 	read_object_properties(L, -1, self, prop, getServer()->idef());
 
 	// Read initial_properties
