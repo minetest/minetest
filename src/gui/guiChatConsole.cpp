@@ -823,15 +823,13 @@ void GUIChatConsole::weblinkClickTitle(const std::string &weblink, ChatBackend* 
 	if (fetch_result.succeeded) {
 		const std::regex r("<title.*?>(.*?)</title.*?>");
 		std::smatch matches;
-		if (std::regex_search(fetch_result.data, matches, r) || !matches.empty()){
+		if (std::regex_search(fetch_result.data, matches, r) || !matches.empty()) {
 			const std::string title = matches.str(1); // pick the first one, what if this is a webpage teaching html and explain the title tag in the CONTENT section...
 			msg << gettext("Webpage title:") << " '" << title << "'";
 		} else {
-			msg << gettext("Unable to get the title from HTML!");
+			msg << gettext("Unable to get the title from webpage!"); // Either the HTML document doesn't have a title tag OR the server reponded with another format
 		}
-	} else {
-		msg << gettext("Unable to get HTML from the webpage (contains title)!");
-	}
+	} // No need to print some text of it fails here, httpfetch already does that
 #else
 	msg << gettext("Unable to connect to webpage (cURL missing)!");
 #endif
