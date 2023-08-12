@@ -52,9 +52,9 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	else
 		last_look = look;
 
-	// adjusted frustum boundaries
+	// adjusted frustum boundaries for the frustum's size
 	float sfNear = near_value;
-	float sfFar = far_value;
+	float sfFar = far_value * scale;
 
 	// adjusted camera positions
 	v3f cam_pos_world = cam->getPosition();
@@ -76,13 +76,10 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	v3f center_scene = cam_pos_scene + look * center_ratio * (sfFar - sfNear);
 	v3f center_world = cam_pos_world + look * center_ratio * (sfFar - sfNear);
 
-	float radius = sfFar; // assume radius simply to be the far plane
-	float length = radius * 3.0f;
+	float radius = sfFar * (1. - center_ratio); // assume radius is the distance from center to camera's far plane
+	float length = far_value * 3.0f;
 	v3f eye_displacement = quantizeDirection(direction, M_PI / 2880 /*15 seconds*/) * length;
 
-	// Adjust frustum radius for the cascade scale
-	radius *= scale;
-	
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
 	ShadowFrustum f;
@@ -110,7 +107,7 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 	if (!client->getEnv().getClientMap().getControl().range_all)
 		zFar = MYMIN(zFar, client->getEnv().getClientMap().getControl().wanted_range * BS);
 
-	future_frustum = createFrustum(direction, cam, zNear, zFar, 0.);
+	future_frustum = createFrustum(direction, cam, zNear, zFar, 0.3);
 
 	dirty = true;
 
