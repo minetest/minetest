@@ -385,6 +385,7 @@ local function get_formspec(dialogdata)
 
 	local technical_names_w = TOUCHSCREEN_GUI and 6 or 5
 	local show_technical_names = core.settings:get_bool("show_technical_names")
+	local show_advanced = core.settings:get_bool("show_advanced")
 
 	formspec_show_hack = not formspec_show_hack
 
@@ -406,6 +407,12 @@ local function get_formspec(dialogdata)
 		("checkbox[%f,%f;show_technical_names;%s;%s]"):format(
 			tabsize.width - technical_names_w + 0.25, tabsize.height + 0.6,
 			fgettext("Show technical names"), tostring(show_technical_names)),
+
+		("box[%f,%f;%f,0.8;#0000008C]"):format(
+			tabsize.width - technical_names_w*2 - 0.25, tabsize.height + 0.2, technical_names_w),
+		("checkbox[%f,%f;show_advanced;%s;%s]"):format(
+			tabsize.width - technical_names_w*2, tabsize.height + 0.6,
+			fgettext("Show advanced settings"), tostring(show_advanced)),
 
 		"field[0.25,0.25;", tostring(search_width), ",0.75;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",
@@ -537,6 +544,17 @@ local function buttonhandler(this, fields)
 	if fields.show_technical_names ~= nil then
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
+		return true
+	end
+
+	if fields.show_advanced ~= nil then
+		local value = core.is_yes(fields.show_advanced)
+		core.settings:set_bool("show_advanced", value)
+
+		dialogdata.components = nil
+		dialogdata.leftscroll = 0
+		dialogdata.rightscroll = 0
+		dialogdata.page_id = update_filtered_pages(dialogdata.query)
 		return true
 	end
 
