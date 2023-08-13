@@ -475,8 +475,8 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target, u8 cascade_index,
 		material = map_node.getMaterial(0);
 	}
 
-	material.BackfaceCulling = false;
-	material.FrontfaceCulling = true;
+	material.BackfaceCulling = true;
+	material.FrontfaceCulling = false;
 
 	if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {
 		material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader_trans;

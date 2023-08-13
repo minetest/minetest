@@ -82,7 +82,10 @@ int getCascade()
 
 vec3 getLightSpacePosition(int cascade)
 {
-	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position, 1.0);
+	float offset = dot(vNormal, -v_LightDirection); // cos(angle(light, normal))
+	offset = 1. - pow(offset, 2.); // sin(angle...)
+	offset *= 2. * shadowCascades[cascade].boundary / f_textureresolution;
+	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position + vNormal * offset, 1.0);
 	shadow_position /= shadow_position.w;
 	shadow_position.z *= zPerspectiveBias;
 	return shadow_position.xyz * 0.5 + 0.5;
@@ -137,20 +140,21 @@ vec4 getFilteredShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float real
 	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
 
 	vec2 fraction = texelCoord - floor(texelCoord);
-	vec2 sampleTexCoord = (floor(texelCoord) + 0.5) * texelSize;
+	float scale = dot(vNormal, -v_LightDirection);
+	vec2 sampleTexCoord = (floor(texelCoord) + 0.5 * scale) * texelSize;
 
 	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
 	vec4 visibility = (1. - fraction.x) * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
 
-	sampleTexCoord.x += texelSize.x;
+	sampleTexCoord.x += texelSize.x * scale;
 	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
 	visibility += fraction.x * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
 
-	sampleTexCoord.y += texelSize.y;
+	sampleTexCoord.y += texelSize.y * scale;
 	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
 	visibility += fraction.x * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
 
-	sampleTexCoord.x -= texelSize.x;
+	sampleTexCoord.x -= texelSize.x * scale;
 	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
 	visibility += (1. - fraction.x) * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
 	return visibility;
