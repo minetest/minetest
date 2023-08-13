@@ -74,7 +74,7 @@ int getCascade()
 		vec3 center_to_fragment = shadow_world_position - shadowCascades[i].center;
 		float projected_distance = length(center_to_fragment - v_LightDirection * dot(center_to_fragment, v_LightDirection));
 
-		if (shadowCascades[i].boundary * 0.9 > projected_distance)
+		if (shadowCascades[i].boundary > projected_distance)
 			return i;
 	}
 	return cascadeCount - 1;
