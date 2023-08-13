@@ -600,7 +600,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 
 TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 		gui::IGUIEnvironment *environment, ISimpleTextureSource *tsrc) :
-		m_text(text), m_client(client), m_tsrc(tsrc), m_environment(environment)
+		m_text(text), m_client(client), m_tsrc(tsrc), m_guienv(environment)
 {
 	// Size all elements
 	for (auto &p : m_text.m_paragraphs) {
@@ -913,7 +913,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 void TextDrawer::draw(const core::rect<s32> &clip_rect,
 		const core::position2d<s32> &dest_offset)
 {
-	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
+	irr::video::IVideoDriver *driver = m_guienv->getVideoDriver();
 	core::position2d<s32> offset = dest_offset;
 	offset.Y += m_voffset;
 
@@ -960,7 +960,7 @@ void TextDrawer::draw(const core::rect<s32> &clip_rect,
 						m_tsrc->getTexture(
 								stringw_to_utf8(el.text));
 				if (texture != 0)
-					m_environment->getVideoDriver()->draw2DImage(
+					m_guienv->getVideoDriver()->draw2DImage(
 							texture, rect,
 							irr::core::rect<s32>(
 									core::position2d<s32>(0, 0),
@@ -974,7 +974,7 @@ void TextDrawer::draw(const core::rect<s32> &clip_rect,
 					ItemStack item;
 					item.deSerialize(stringw_to_utf8(el.text), idef);
 
-					drawItemStack(m_environment->getVideoDriver(),
+					drawItemStack(m_guienv->getVideoDriver(),
 							g_fontengine->getFont(), item, rect, &clip_rect, m_client,
 							IT_ROT_OTHER, el.angle, el.rotation);
 				}
