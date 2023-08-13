@@ -193,7 +193,6 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	f32 scale = 20. * BS / getFarValue();
 	f32 scale_factor = 1./pow(scale, 1./(cascades.size() - 1.));
 
-	warningstream << "FP: " << farPlane << " scale: " << scale << " F: " << scale_factor << std::endl;
 	for (auto &cascade: cascades) {
 		cascade.farPlane = farPlane;
 		cascade.scale = scale;
