@@ -37,7 +37,7 @@ do
 		-- Reassemble the other tables
 		if v.type == "node" then
 			all.registered_nodes[k] = v
-		elseif v.type == "craftitem" then
+		elseif v.type == "craft" then
 			all.registered_craftitems[k] = v
 		elseif v.type == "tool" then
 			all.registered_tools[k] = v
