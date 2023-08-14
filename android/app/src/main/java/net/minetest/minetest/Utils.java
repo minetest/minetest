@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.util.Objects;
 
-public class Utils {
+public final class Utils {
 	@NonNull
-	public static File createDirs(@NonNull File root, @NonNull String dir) {
-		File f = new File(root, dir);
+	public static final File createDirs(@NonNull File root, @NonNull String dir) {
+		final File f = new File(root, dir);
 		if (!f.isDirectory())
 			if (!f.mkdirs())
 				Log.e("Utils", "Directory " + dir + " cannot be created");
@@ -19,8 +19,8 @@ public class Utils {
 	}
 
 	@NonNull
-	public static File getUserDataDirectory(@NonNull Context context) {
-		File extDir = Objects.requireNonNull(
+	public final static File getUserDataDirectory(@NonNull Context context) {
+		final File extDir = Objects.requireNonNull(
 			context.getExternalFilesDir(null),
 			"Cannot get external file directory"
 		);
@@ -35,8 +35,8 @@ public class Utils {
 		);
 	}
 
-	public static boolean isInstallValid(@NonNull Context context) {
-		File userDataDirectory = getUserDataDirectory(context);
+	public static final boolean isInstallValid(@NonNull final Context context) {
+		final File userDataDirectory = getUserDataDirectory(context);
 		return userDataDirectory.isDirectory() &&
 			new File(userDataDirectory, "games").isDirectory() &&
 			new File(userDataDirectory, "builtin").isDirectory() &&

@@ -44,7 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public class UnzipService extends IntentService {
+public final class UnzipService extends IntentService {
 	public static final String ACTION_UPDATE = "net.minetest.minetest.UPDATE";
 	public static final String ACTION_PROGRESS = "net.minetest.minetest.PROGRESS";
 	public static final String ACTION_PROGRESS_MESSAGE = "net.minetest.minetest.PROGRESS_MESSAGE";
@@ -58,10 +58,10 @@ public class UnzipService extends IntentService {
 	private String failureMessage;
 
 	private static boolean isRunning = false;
-	public static synchronized boolean getIsRunning() {
+	public final static synchronized boolean getIsRunning() {
 		return isRunning;
 	}
-	private static synchronized void setIsRunning(boolean v) {
+	private final static synchronized void setIsRunning(boolean v) {
 		isRunning = v;
 	}
 
@@ -77,8 +77,8 @@ public class UnzipService extends IntentService {
 			setIsRunning(true);
 			File userDataDirectory = Utils.getUserDataDirectory(this);
 
-			try (InputStream in = this.getAssets().open(zipFile.getName())) {
-				try (OutputStream out = new FileOutputStream(zipFile)) {
+			try (final InputStream in = this.getAssets().open(zipFile.getName())) {
+				try (final OutputStream out = new FileOutputStream(zipFile)) {
 					int readLen;
 					byte[] readBuffer = new byte[16384];
 					while ((readLen = in.read(readBuffer)) != -1) {
@@ -88,7 +88,7 @@ public class UnzipService extends IntentService {
 			}
 
 			unzip(notificationBuilder, zipFile, userDataDirectory);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			isSuccess = false;
 			failureMessage = e.getLocalizedMessage();
 		} finally {
@@ -99,10 +99,10 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	private Notification.Builder createNotification() {
-		String name = "net.minetest.minetest";
-		String channelId = "Minetest channel";
-		String description = "notifications from Minetest";
+	private final Notification.Builder createNotification() {
+		final String name = "net.minetest.minetest";
+		final String channelId = "Minetest channel";
+		final String description = "notifications from Minetest";
 		Notification.Builder builder;
 		if (mNotifyManager == null)
 			mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -125,7 +125,7 @@ public class UnzipService extends IntentService {
 			builder = new Notification.Builder(this);
 		}
 
-		Intent notificationIntent = new Intent(this, MainActivity.class);
+		final Intent notificationIntent = new Intent(this, MainActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 			| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		int pendingIntentFlag = 0;
@@ -146,17 +146,16 @@ public class UnzipService extends IntentService {
 		return builder;
 	}
 
-	private void unzip(Notification.Builder notificationBuilder, File zipFile, File userDataDirectory) throws IOException {
+	private final void unzip(final Notification.Builder notificationBuilder, final File zipFile, final File userDataDirectory) throws IOException {
 		int per = 0;
-
 		int size;
-		try (ZipFile zipSize = new ZipFile(zipFile)) {
+		try (final ZipFile zipSize = new ZipFile(zipFile)) {
 			size = zipSize.size();
 		}
 
 		int readLen;
 		byte[] readBuffer = new byte[16384];
-		try (FileInputStream fileInputStream = new FileInputStream(zipFile);
+		try (final FileInputStream fileInputStream = new FileInputStream(zipFile);
 		     ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
 			ZipEntry ze;
 			while ((ze = zipInputStream.getNextEntry()) != null) {
@@ -166,7 +165,7 @@ public class UnzipService extends IntentService {
 					continue;
 				}
 				publishProgress(notificationBuilder, R.string.loading, 100 * ++per / size);
-				try (OutputStream outputStream = new FileOutputStream(
+				try (final OutputStream outputStream = new FileOutputStream(
 						new File(userDataDirectory, ze.getName()))) {
 					while ((readLen = zipInputStream.read(readBuffer)) != -1) {
 						outputStream.write(readBuffer, 0, readLen);
@@ -176,14 +175,14 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	void moveFileOrDir(@NonNull File src, @NonNull File dst) throws IOException {
+	final void moveFileOrDir(@NonNull File src, @NonNull File dst) throws IOException {
 		try {
-			Process p = new ProcessBuilder("/system/bin/mv",
+			final Process p = new ProcessBuilder("/system/bin/mv",
 				src.getAbsolutePath(), dst.getAbsolutePath()).start();
-			int exitCode = p.waitFor();
+			final int exitCode = p.waitFor();
 			if (exitCode != 0)
 				throw new IOException("Move failed with exit code " + exitCode);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			throw new IOException("Move operation interrupted");
 		}
 	}
@@ -193,13 +192,13 @@ public class UnzipService extends IntentService {
 			Process p = new ProcessBuilder("/system/bin/rm", "-rf",
 				loc.getAbsolutePath()).start();
 			return p.waitFor() == 0;
-		} catch (IOException | InterruptedException e) {
+		} catch (final IOException | InterruptedException e) {
 			return false;
 		}
 	}
 
-	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
-		Intent intentUpdate = new Intent(ACTION_UPDATE);
+	private final void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
+		final Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.putExtra(ACTION_PROGRESS, progress);
 		intentUpdate.putExtra(ACTION_PROGRESS_MESSAGE, message);
 		if (!isSuccess)
