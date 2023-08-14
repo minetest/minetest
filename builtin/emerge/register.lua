@@ -15,7 +15,7 @@ do
 		if v.type == "node" then
 			setmetatable(v, {__index = all.nodedef_default})
 			all.registered_nodes[k] = v
-		elseif v.type == "craftitem" then
+		elseif v.type == "craft" then
 			setmetatable(v, {__index = all.craftitemdef_default})
 			all.registered_craftitems[k] = v
 		elseif v.type == "tool" then
