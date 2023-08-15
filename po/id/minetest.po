@@ -3,8 +3,9 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-04-26 11:48+0000\n"
-"Last-Translator: Tsaqib Fadhlurrahman Soka <sokatsaqib@gmail.com>\n"
+"PO-Revision-Date: 2023-08-15 22:23+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -12,15 +13,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Hapus antrian obrolan keluar"
+msgstr "Bersihkan antrean obrolan keluar"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr "Command kosong."
+msgstr "Perintah kosong."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -28,47 +29,47 @@ msgstr "Kembali ke menu utama"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
-msgstr "Command tidak valid: "
+msgstr "Perintah tidak sah: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr "Command yang dikeluarkan: "
+msgstr "Perintah yang dikeluarkan: "
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr "Daftar pemain online"
+msgstr "Daftar pemain daring"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Pemain online: "
+msgstr "Pemain daring: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "Antrian obrolan keluar sekarang kosong."
+msgstr "Antrean obrolan keluar sudah dibersihkan."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr "Command ini dinonaktifkan oleh server."
+msgstr "Perintah ini dilarang oleh server."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "Respawn"
+msgstr "Bangkit kembali"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr "Kamu mati"
+msgstr "Anda mati"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
-msgstr "Command yang ada:"
+msgstr "Perintah yang ada:"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
-msgstr "Command yang ada: "
+msgstr "Perintah yang ada: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr "Command tidak tersedia: "
+msgstr "Perintah tidak tersedia: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
@@ -83,11 +84,11 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr "[semua | <cmd>]"
+msgstr "[semua | <perintah>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr "OKE"
+msgstr "Oke"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -1348,7 +1349,7 @@ msgstr "Pembaruan kamera dinyalakan"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr "Tidak bisa menampilkan batas blok (dimatikan oleh mod atau permainan)"
+msgstr "Tidak bisa menampilkan batas blok (dilarang oleh mod atau permainan)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -6518,7 +6519,7 @@ msgid ""
 "Set this value to \"disabled\" to never check for updates."
 msgstr ""
 "Waktu Unix (bilangan bulat) saat klien terakhir kali memeriksa pembaruan\n"
-"Atur nilai ini ke \"disabled\" untuk tidak pernah memeriksa pembaruan."
+"Atur nilai ini ke \"disabled\" agar tidak pernah memeriksa pembaruan."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -7015,7 +7016,7 @@ msgstr "cURL: batas waktu mengunduh berkas"
 
 #: src/settings_translation_file.cpp
 msgid "cURL interactive timeout"
-msgstr "cURL: waktu habis interaksi"
+msgstr "cURL: batas waktu interaksi"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
