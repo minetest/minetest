@@ -8,13 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-08-18 13:47+0000\n"
+"Last-Translator: Eoghan Murray <eoghan@getthere.ie>\n"
+"Language-Team: Irish <https://hosted.weblate.org/projects/minetest/minetest/"
+"ga/>\n"
 "Language: ga\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : (n>2 && n<7) ? 2 :("
+"n>6 && n<11) ? 3 : 4;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
@@ -54,11 +58,11 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Fuair tú bás"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Athsceith"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands: "
@@ -99,7 +103,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Athcheangail"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -135,7 +139,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "Domhan:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -181,7 +185,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "Sábháil"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -191,7 +195,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "Cealaigh"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
@@ -233,7 +237,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
-msgstr ""
+msgstr "Cluichí"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -301,7 +305,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Install"
-msgstr ""
+msgstr "Suiteáil"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -323,7 +327,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr ""
+msgstr "$1 ag íoslódáil..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
@@ -343,7 +347,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Ag íoslódáil..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
@@ -363,7 +367,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caverns"
-msgstr ""
+msgstr "Ollphluaiseanna"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
@@ -371,7 +375,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Rivers"
-msgstr ""
+msgstr "Aibhneacha"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
@@ -379,7 +383,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Sléibhte"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
@@ -423,11 +427,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Cnoic"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Lochanna"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
@@ -475,15 +479,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Caves"
-msgstr ""
+msgstr "Pluaiseanna"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr ""
+msgstr "Doinsiúin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
-msgstr ""
+msgstr "Maisiúcháin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
@@ -501,7 +505,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Bithóim"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
@@ -526,7 +530,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Seed"
-msgstr ""
+msgstr "Síol"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -542,7 +546,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "Cruthaigh"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -560,7 +564,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
 #: src/client/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Scrios"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
@@ -581,16 +585,16 @@ msgstr ""
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Ainm"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr ""
+msgstr "Pasfhocal"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Dearbhaigh Pasfhocal"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
@@ -602,11 +606,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Ní hionann na pasfhocail"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
-msgstr ""
+msgstr "Glac le"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
@@ -743,7 +747,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Cuardaigh"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -815,7 +819,7 @@ msgstr ""
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Ag lódáil..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -897,7 +901,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Information:"
-msgstr ""
+msgstr "Eolas:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Uninstall Package"
@@ -1364,7 +1368,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "ok"
-msgstr ""
+msgstr "togha"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled"
@@ -1554,7 +1558,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Athraigh Pasfhocal"
 
 #: src/client/game.cpp
 msgid "Game paused"
@@ -2121,11 +2125,11 @@ msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Sean Pasfhocal"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Pasfhocal Nua"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2133,7 +2137,7 @@ msgstr ""
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Ní hionann na pasfhocail!"
 
 #: src/gui/guiVolumeChange.cpp
 #, c-format
@@ -3588,7 +3592,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Dícheadaigh pasfhocail folamh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4023,7 +4027,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern limit"
-msgstr ""
+msgstr "Teorainn ollphluaise"
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of cavern upper limit."
@@ -4039,7 +4043,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr ""
+msgstr "Tairseach ollphluaise"
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
@@ -4109,7 +4113,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern noise"
-msgstr ""
+msgstr "Torann ollphluaise"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
@@ -4791,7 +4795,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
-msgstr ""
+msgstr "Uasteorainn ollphluaise"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
