@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2022-08-22 17:15+0000\n"
+"PO-Revision-Date: 2023-08-17 10:48+0000\n"
 "Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hant/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -652,7 +652,7 @@ msgstr "選擇模組："
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Games"
-msgstr "內容：子遊戲"
+msgstr "內容：遊戲"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Content: Mods"
