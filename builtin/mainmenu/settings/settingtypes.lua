@@ -51,20 +51,16 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	line = line:gsub("\r", "")
 
 	-- comment
-	local comment = line:match("^#" .. CHAR_CLASSES.SPACE .. "*(.*)$")
-	if comment then
-		if settings.current_comment == "" then
-			settings.current_comment = comment
-		else
-			settings.current_comment = settings.current_comment .. "\n" .. comment
-		end
+	local comment_match = line:match("^#" .. CHAR_CLASSES.SPACE .. "*(.*)$")
+	if comment_match then
+		settings.current_comment[#settings.current_comment + 1] = comment_match
 		return
 	end
 
 	-- clear current_comment so only comments directly above a setting are bound to it
 	-- but keep a local reference to it for variables in the current line
 	local current_comment = settings.current_comment
-	settings.current_comment = ""
+	settings.current_comment = {}
 
 	-- empty lines
 	if line:match("^" .. CHAR_CLASSES.SPACE .. "*$") then
@@ -103,10 +99,31 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return "Tried to add \"secure.\" setting"
 	end
 
+	local requires = {}
+	local last_line = #current_comment > 0 and current_comment[#current_comment]:trim()
+	if last_line and last_line:lower():sub(1, 9) == "requires:" then
+		local parts = last_line:sub(10):split(",")
+		current_comment[#current_comment] = nil
+
+		for _, part in ipairs(parts) do
+			part = part:trim()
+
+			local value = true
+			if part:sub(1, 1) == "!" then
+				value = false
+				part = part:sub(2):trim()
+			end
+
+			requires[part] = value
+		end
+	end
+
 	if readable_name == "" then
 		readable_name = nil
 	end
 	local remaining_line = line:sub(first_part:len() + 1)
+
+	local comment = table.concat(current_comment, "\n"):trim()
 
 	if setting_type == "int" then
 		local default, min, max = remaining_line:match("^"
@@ -129,7 +146,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -151,7 +169,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -203,7 +222,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 				flags = values[10]
 			},
 			values = values,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 			noise_params = true,
 			flags = flags_to_table("defaults,eased,absvalue")
 		})
@@ -220,7 +240,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "bool",
 			default = remaining_line,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -246,7 +267,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -268,7 +290,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "enum",
 			default = default,
 			values = values:split(",", true),
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -285,7 +308,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -314,7 +338,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "flags",
 			default = default,
 			possible = flags_to_table(possible),
-			comment = current_comment,
+			requires = requires,
+			comment = comment,
 		})
 		return
 	end
@@ -324,7 +349,7 @@ end
 
 local function parse_single_file(file, filepath, read_all, result, base_level, allow_secure)
 	-- store this helper variable in the table so it's easier to pass to parse_setting_line()
-	result.current_comment = ""
+	result.current_comment = {}
 
 	local line = file:read("*line")
 	while line do

@@ -370,7 +370,12 @@ inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
 {
 	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
+	content_t was_n;
 	const v3s16 &em  = vm->m_area.getExtent();
+
+	isignored = true;
+	isliquid = false;
+	was_n = CONTENT_IGNORE;
 
 	for (s16 z = nmin.Z + 1; z <= nmax.Z - 1; z++)
 	for (s16 x = nmin.X + 1; x <= nmax.X - 1; x++) {
@@ -381,8 +386,11 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		for (s16 y = nmax.Y; y >= nmin.Y; y--) {
-			isignored = vm->m_data[vi].getContent() == CONTENT_IGNORE;
-			isliquid = ndef->get(vm->m_data[vi]).isLiquid();
+			const content_t is_n = vm->m_data[vi].getContent();
+			if (is_n != was_n) {
+				isignored = is_n == CONTENT_IGNORE;
+				isliquid = ndef->get(is_n).isLiquid();
+			}
 
 			if (isignored || wasignored || isliquid == wasliquid) {
 				// Neither topmost node of liquid column nor topmost node below column
@@ -411,6 +419,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 				}
 			}
 
+			was_n = is_n;
 			wasliquid = isliquid;
 			wasignored = isignored;
 			VoxelArea::add_y(em, vi, -1);

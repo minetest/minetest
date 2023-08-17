@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "client/tile.h"
@@ -90,7 +91,7 @@ struct button_info
 		FIRST_TEXTURE,
 		SECOND_TEXTURE
 	} toggleable = NOT_TOGGLEABLE;
-	std::vector<const std::string> textures;
+	std::vector<std::string> textures;
 };
 
 class AutoHideButtonBar

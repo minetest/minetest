@@ -43,16 +43,13 @@ inline static const char *yawToDirectionString(int yaw)
 	return direction[yaw];
 }
 
-GameUI::GameUI()
+void GameUI::init(gui::IGUIEnvironment *guienv)
 {
-	if (guienv && guienv->getSkin())
+	if (guienv->getSkin())
 		m_statustext_initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
-	else
-		m_statustext_initial_color = video::SColor(255, 0, 0, 0);
 
-}
-void GameUI::init()
-{
+	gui::IGUIElement *guiroot = guienv->getRootGUIElement();
+
 	// First line of debug text
 	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
 		core::rect<s32>(0, 0, 0, 0), false, true, guiroot);

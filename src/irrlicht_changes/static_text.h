@@ -49,27 +49,7 @@ namespace gui
 			s32 id = -1,
 			bool fillBackground = false)
 		{
-			if (parent == NULL) {
-				// parent is NULL, so we must find one, or we need not to drop
-				// result, but then there will be a memory leak.
-				//
-				// What Irrlicht does is to use guienv as a parent, but the problem
-				// is that guienv is here only an IGUIEnvironment, while it is a
-				// CGUIEnvironment in Irrlicht, which inherits from both IGUIElement
-				// and IGUIEnvironment.
-				//
-				// A solution would be to dynamic_cast guienv to a
-				// IGUIElement*, but Irrlicht is shipped without rtti support
-				// in some distributions, causing the dymanic_cast to segfault.
-				//
-				// Thus, to find the parent, we create a dummy StaticText and ask
-				// for its parent, and then remove it.
-				irr::gui::IGUIStaticText *dummy_text =
-					guienv->addStaticText(L"", rectangle, border, wordWrap,
-						parent, id, fillBackground);
-				parent = dummy_text->getParent();
-				dummy_text->remove();
-			}
+			parent = parent ? parent : guienv->getRootGUIElement();
 			irr::gui::IGUIStaticText *result = new irr::gui::StaticText(
 				text, border, guienv, parent,
 				id, rectangle, fillBackground);

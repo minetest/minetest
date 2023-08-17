@@ -259,7 +259,18 @@ time, if necessary. (See [`Settings`])
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
-the clients (see [Translations]).
+the clients (see [Translations]). Accepted characters for names are:
+
+    a-zA-Z0-9_.-
+
+Accepted formats are:
+
+    images: .png, .jpg, .bmp, (deprecated) .tga
+    sounds: .ogg vorbis
+    models: .x, .b3d, .obj
+
+Other formats won't be sent to the client (e.g. you can store .blend files
+in a folder for convenience, without the risk that such files are transferred)
 
 It is suggested to use the folders for the purpose they are thought for,
 eg. put textures into `textures`, translation files into `locale`,
@@ -6443,6 +6454,7 @@ This allows you easy interoperability for delegating work to jobs.
 ### List of APIs available in an async environment
 
 Classes:
+* `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
@@ -7457,7 +7469,7 @@ child will follow movement and rotation of that bone.
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
 * `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
-* `get_wielded_item()`: returns the wielded item as an `ItemStack`
+* `get_wielded_item()`: returns a copy of the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
 * `get_armor_groups()`:

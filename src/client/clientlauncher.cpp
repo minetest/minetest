@@ -41,8 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* mainmenumanager.h
  */
-gui::IGUIEnvironment *guienv = nullptr;
-gui::IGUIStaticText *guiroot = nullptr;
 MainMenuManager g_menumgr;
 
 bool isMenuActive()
@@ -136,7 +134,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	m_rendering_engine->get_scene_manager()->getParameters()->
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-	guienv = m_rendering_engine->get_gui_env();
+	gui::IGUIEnvironment *guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
@@ -217,14 +215,6 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		try {	// This is used for catching disconnects
 
 			m_rendering_engine->get_gui_env()->clear();
-
-			/*
-				We need some kind of a root node to be able to add
-				custom gui elements directly on the screen.
-				Otherwise they won't be automatically drawn.
-			*/
-			guiroot = m_rendering_engine->get_gui_env()->addStaticText(L"",
-				core::rect<s32>(0, 0, 10000, 10000));
 
 			bool game_has_run = launch_game(error_message, reconnect_requested,
 				start_data, cmd_args);
@@ -551,7 +541,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 #endif
 
 	/* show main menu */
-	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);
+	GUIEngine mymenu(&input->joystick, m_rendering_engine->get_gui_env()->getRootGUIElement(),
+			m_rendering_engine, &g_menumgr, menudata, *kill);
 
 	/* leave scene manager in a clean state */
 	m_rendering_engine->get_scene_manager()->clear();

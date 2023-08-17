@@ -33,6 +33,7 @@ extern "C" {
 
 #include <iostream>
 #include <vector>
+#include <array>
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
@@ -70,6 +71,9 @@ class ServerActiveObject;
 struct collisionMoveResult;
 
 extern struct EnumString es_TileAnimationType[];
+
+
+extern const std::array<const char *, 33> object_property_keys;
 
 void               read_content_features     (lua_State *L, ContentFeatures &f,
                                               int index);
@@ -118,6 +122,7 @@ void               read_object_properties    (lua_State *L, int index,
                                               ServerActiveObject *sao,
                                               ObjectProperties *prop,
                                               IItemDefManager *idef);
+
 void               push_object_properties    (lua_State *L,
                                               ObjectProperties *prop);
 

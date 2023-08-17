@@ -1530,7 +1530,9 @@ bool Game::createClient(const GameStartData &start_data)
 
 bool Game::initGui()
 {
-	m_game_ui->init();
+	auto guienv = m_rendering_engine->get_gui_env();
+
+	m_game_ui->init(guienv);
 
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
@@ -1725,11 +1727,11 @@ bool Game::getServerContent(bool *aborted)
 		if (!client->itemdefReceived()) {
 			progress = 25;
 			m_rendering_engine->draw_load_screen(wstrgettext("Item definitions..."),
-					guienv, texture_src, dtime, progress);
+					texture_src, dtime, progress);
 		} else if (!client->nodedefReceived()) {
 			progress = 30;
 			m_rendering_engine->draw_load_screen(wstrgettext("Node definitions..."),
-					guienv, texture_src, dtime, progress);
+					texture_src, dtime, progress);
 		} else {
 			std::ostringstream message;
 			std::fixed(message);
@@ -1754,7 +1756,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()), guienv,
+			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()),
 				texture_src, dtime, progress);
 		}
 	}
@@ -1804,6 +1806,9 @@ inline bool Game::handleCallbacks()
 		g_gamecallback->disconnect_requested = false;
 		return false;
 	}
+
+	auto guienv = m_rendering_engine->get_gui_env();
+	auto guiroot = guienv->getRootGUIElement();
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
@@ -1949,6 +1954,8 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 
 void Game::processUserInput(f32 dtime)
 {
+	auto guienv = m_rendering_engine->get_gui_env();
+
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		if(m_game_focused) {
@@ -4142,7 +4149,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		}
 
 		if (isMenuActive())
-			guiroot->bringToFront(formspec);
+			m_rendering_engine->get_gui_env()->getRootGUIElement()->bringToFront(formspec);
 	} while (false);
 
 	/*
@@ -4282,7 +4289,7 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
 {
-	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
+	m_rendering_engine->draw_load_screen(wstrgettext(msg), texture_src,
 			dtime, percent, draw_sky);
 }
 

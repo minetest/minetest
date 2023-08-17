@@ -23,6 +23,10 @@ local valid_disabled_settings = {
 	["enable_server"]=true,
 }
 
+-- Name and port stored to persist when updating the formspec
+local current_name = core.settings:get("name")
+local current_port = core.settings:get("port")
+
 -- Currently chosen game in gamebar for theming and filtering
 function current_game()
 	local gameid = core.settings:get("menu_last_game")
@@ -213,7 +217,7 @@ local function get_formspec(tabview, name, tabdata)
 				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]" ..
 				"field[0.3,2.85;3.8,0.5;te_playername;" .. fgettext("Name") .. ";" ..
-				core.formspec_escape(core.settings:get("name")) .. "]" ..
+				core.formspec_escape(current_name) .. "]" ..
 				"pwdfield[0.3,4.05;3.8,0.5;te_passwd;" .. fgettext("Password") .. "]"
 
 		local bind_addr = core.settings:get("bind_address")
@@ -222,11 +226,11 @@ local function get_formspec(tabview, name, tabdata)
 				"field[0.3,5.25;2.5,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
 				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
 				"field[2.85,5.25;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				core.formspec_escape(current_port) .. "]"
 		else
 			retval = retval ..
 				"field[0.3,5.25;3.8,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-				core.formspec_escape(core.settings:get("port")) .. "]"
+				core.formspec_escape(current_port) .. "]"
 		end
 	else
 		retval = retval ..
@@ -255,6 +259,14 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	local world_doubleclick = false
+
+	if fields["te_playername"] then
+		current_name = fields["te_playername"]
+	end
+
+	if fields["te_serverport"] then
+		current_port = fields["te_serverport"]
+	end
 
 	if fields["sp_worlds"] ~= nil then
 		local event = core.explode_textlist_event(fields["sp_worlds"])
