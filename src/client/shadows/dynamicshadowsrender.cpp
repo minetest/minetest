@@ -215,7 +215,7 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 
 		shadowMapTextureDynamicObjects = getSMTexture(
 			std::string("shadow_dynamic_") + itos(m_shadow_map_texture_size),
-			m_texture_format, 1, true);
+			m_texture_format, MYMIN(2, n_cascades), true);
 		assert(shadowMapTextureDynamicObjects != nullptr);
 	}
 
@@ -361,22 +361,31 @@ void ShadowRenderer::renderEntityShadows()
 {
 	if (!m_shadow_node_array.empty()) {
 
+		// render shadows for the n0n-map objects.
+		m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
+				true, video::SColor(255, 255, 255, 255));
 		for (DirectionalLight &light : m_light_list) {
-			// Static shader values for entities are set in updateSMTextures
-			// SM texture for entities is not updated incrementally and
-			// must by updated using current player position.
-			m_shadow_depth_entity_cb->CameraPos = light.getCascade(0).getPlayerPos();
-			m_shadow_depth_entity_cb->Cascade = 0;
+			for (u8 i = 0; i < 2; i++) {
+				if (light.getCascadesCount() <= i)
+					break;
+				const auto &cascade = light.getCascade(i);
+				// Static shader values for entities are set in updateSMTextures
+				// SM texture for entities is not updated incrementally and
+				// must by updated using current player position.
+				m_shadow_depth_entity_cb->CameraPos = cascade.getPlayerPos();
+				m_shadow_depth_entity_cb->Cascade = i;
 
-			// render shadows for the n0n-map objects.
-			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
-					true, video::SColor(255, 255, 255, 255));
-			
-			// only render entities in the first cascade, we figure out later
-			renderShadowObjects(shadowMapTextureDynamicObjects, light.getCascade(0));
-			// clear the Render Target
-			m_driver->setRenderTarget(0, false, false);
+				m_driver->setViewPort(core::rect<s32>(
+						i * m_shadow_map_texture_size, 0,
+						(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+				
+				// only render entities in the first cascade, we figure out later
+				renderShadowObjects(shadowMapTextureDynamicObjects, cascade);
+			} // end for cascades
 		} // end for lights
+
+		// clear the Render Target
+		m_driver->setRenderTarget(0, false, false);
 	}
 }
 
@@ -434,7 +443,7 @@ void ShadowRenderer::drawDebug()
 
 	if (shadowMapTextureDynamicObjects)
 		m_driver->draw2DImage(shadowMapTextureDynamicObjects,
-				core::rect<s32>(0, 128 + 50 + 128, 128,
+				core::rect<s32>(0, 128 + 50 + 128, 128 * 2,
 						128 + 50 + 128 + 128),
 				core::rect<s32>({0, 0}, shadowMapTextureDynamicObjects->getSize()));
 
