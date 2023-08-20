@@ -85,11 +85,15 @@ int getCascade()
 
 vec3 getLightSpacePosition(int cascade)
 {
-	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position, 1.0);
+	float offset = dot(vNormal, -v_LightDirection); // cos(angle(light, normal))
+	offset = 1. - pow(offset, 2.); // sin(angle...)
+	offset *= 2. * shadowCascades[cascade].boundary / f_textureresolution;
+	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position + vNormal * offset, 1.0);
 	shadow_position /= shadow_position.w;
-	shadow_position.z *= zPerspectiveBias;
+	shadow_position.z = shadow_position.z * zPerspectiveBias - 1e-3 * shadowCascades[cascade].boundary / f_textureresolution;
 	return shadow_position.xyz * 0.5 + 0.5;
 }
+
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
 float mtsmoothstep(in float edge0, in float edge1, in float x)
