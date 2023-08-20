@@ -366,6 +366,7 @@ void ShadowRenderer::renderEntityShadows()
 			// SM texture for entities is not updated incrementally and
 			// must by updated using current player position.
 			m_shadow_depth_entity_cb->CameraPos = light.getCascade(0).getPlayerPos();
+			m_shadow_depth_entity_cb->Cascade = 0;
 
 			// render shadows for the n0n-map objects.
 			m_driver->setRenderTarget(shadowMapTextureDynamicObjects, true,
