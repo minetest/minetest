@@ -475,7 +475,7 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target, u8 cascade_index,
 		material = map_node.getMaterial(0);
 	}
 
-	material.BackfaceCulling = true;
+	material.BackfaceCulling = false;
 	material.FrontfaceCulling = false;
 
 	if (m_shadow_map_colored && pass != scene::ESNRP_SOLID) {

@@ -82,9 +82,9 @@ int getCascade()
 
 vec3 getLightSpacePosition(int cascade)
 {
-	float offset = dot(vNormal, -v_LightDirection); // cos(angle(light, normal))
-	offset = 1. - pow(offset, 2.); // sin(angle...)
-	offset *= 2. * shadowCascades[cascade].boundary / f_textureresolution;
+	float cosine = dot(vNormal, v_LightDirection); // cos(angle(light, normal))
+	float offset = 1. - pow(cosine, 2.); // sin(angle...)
+	offset *= 2. * shadowCascades[cascade].boundary / f_textureresolution * (cosine > 0. ? -1. : 1.);
 	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position + vNormal * offset, 1.0);
 	shadow_position /= shadow_position.w;
 	shadow_position.z = shadow_position.z * zPerspectiveBias - 1e-3 * shadowCascades[cascade].boundary / f_textureresolution;
