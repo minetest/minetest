@@ -140,7 +140,7 @@ vec4 getFilteredShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float real
 	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
 
 	vec2 fraction = texelCoord - floor(texelCoord);
-	float scale = dot(vNormal, -v_LightDirection);
+	float scale = 1.0;
 	vec2 sampleTexCoord = (floor(texelCoord) + 0.5 * scale) * texelSize;
 
 	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
