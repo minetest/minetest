@@ -223,7 +223,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 }
 
-//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+// NOTE: selectitem = 0 -> no selected; selectitem is 1-based
 // mainlist can be NULL, but draw the frame anyway.
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
