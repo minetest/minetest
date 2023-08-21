@@ -131,15 +131,18 @@ end
 
 local function collect_debug_info()
 	local version = core.get_version()
-	local path_pre = core.get_user_path() .. DIR_DELIM
-	local minetest_conf = read_text_file(path_pre .. "minetest.conf") or "[not available]\n"
-	local debug_txt = read_text_file(path_pre .. "debug.txt") or "[not available]\n"
+	local irrlicht_device = core.get_active_irrlicht_device()
+	local renderer = core.get_active_renderer()
+
+	local path_prefix = core.get_user_path() .. DIR_DELIM
+	local minetest_conf = read_text_file(path_prefix .. "minetest.conf") or "[not available]\n"
+	local debug_txt = read_text_file(path_prefix .. "debug.txt") or "[not available]\n"
 
 	return table.concat({
 		version.project, " ", (version.hash or version.string), "\n",
 		"Platform: ", PLATFORM, "\n",
-		"Active Irrlicht device: ", core.get_active_irrlicht_device(), "\n",
-		"Active renderer: ", core.get_active_renderer(), "\n\n",
+		"Active Irrlicht device: ", irrlicht_device, "\n",
+		"Active renderer: ", renderer, "\n\n",
 		"minetest.conf\n",
 		"-------------\n",
 		minetest_conf, "\n",
@@ -154,9 +157,6 @@ return {
 	caption = fgettext("About"),
 
 	cbf_formspec = function(tabview, name, tabdata)
-		local logofile = defaulttexturedir .. "logo.png"
-		local version = core.get_version()
-
 		local credit_list = {}
 		table.insert_all(credit_list, {
 			core.colorize("#000", "Dedication of the current release"),
@@ -222,9 +222,9 @@ return {
 		end
 
 		pos_y = pos_y - BTN_H
-		local debug_label = PLATFORM == "Android" and fgettext("Share debug info") or
+		local export_debug_label = PLATFORM == "Android" and fgettext("Share debug info") or
 				fgettext("Copy debug info")
-		fs[#fs + 1] = ("button[0.5,%f;4.5,%f;share_debug;%s]"):format(pos_y, BTN_H, debug_label)
+		fs[#fs + 1] = ("button[0.5,%f;4.5,%f;export_debug;%s]"):format(pos_y, BTN_H, export_debug_label)
 		pos_y = pos_y - (show_userdata_btn and 0.25 or 0.15)
 
 		pos_y = pos_y - BTN_H
@@ -232,13 +232,15 @@ return {
 		pos_y = pos_y - 0.15
 
 		pos_y = pos_y - LABEL_BTN_H
+		local version = core.get_version()
 		fs[#fs + 1] = "style[label_button;border=false]"
 		fs[#fs + 1] = ("button[0.1,%f;5.3,%f;label_button;%s]"):format(
 				pos_y, LABEL_BTN_H, core.formspec_escape(version.project .. " " .. version.string))
 
+		local logofile = core.formspec_escape(defaulttexturedir .. "logo.png")
 		-- Place the logo in the middle of the remaining space.
 		fs[#fs + 1] = ("image[1.5,%f;%f,%f;%s]"):format(
-				pos_y / 2 - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE, core.formspec_escape(logofile))
+				pos_y / 2 - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE, logofile)
 
 		return table.concat(fs, "")
 	end,
@@ -248,13 +250,9 @@ return {
 			core.open_url("https://www.minetest.net")
 		end
 
-		if fields.share_debug then
-			local info = get_debug_info()
-			if PLATFORM == "Android" then
-				core.share_text(info)
-			else
-				core.copy_text(info)
-			end
+		if fields.export_debug then
+			local export_fn = PLATFORM == "Android" and core.share_text or core.copy_text
+			export_fn(collect_debug_info())
 		end
 
 		if fields.userdata then
