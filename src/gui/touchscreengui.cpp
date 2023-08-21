@@ -585,9 +585,10 @@ touch_gui_button_id TouchScreenGUI::getButtonID(size_t eventID)
 
 bool TouchScreenGUI::isHotbarButton(const SEvent &event)
 {
+	const v2s32 touch_pos = v2s32(event.TouchInput.X, event.TouchInput.Y);
 	// check if hotbar item is pressed
 	for (auto &[index, rect] : m_hotbar_rects) {
-		if (rect.isPointInside(v2s32(event.TouchInput.X, event.TouchInput.Y))) {
+		if (rect.isPointInside(touch_pos)) {
 			// We can't just emit a keypress event because the number keys
 			// range from 1 to 9, but there may be more hotbar items.
 			m_hotbar_selection = index;
