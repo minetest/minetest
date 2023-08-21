@@ -435,7 +435,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	return 5;
 }
 
-// set_eye_offset(self, firstperson, thirdperson, thirdperson_front)
+// set_eye_offset(self, firstperson, thirdperson_back, thirdperson_front)
 int ObjectRef::l_set_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

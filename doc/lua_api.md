@@ -7851,10 +7851,10 @@ child will follow movement and rotation of that bone.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset([firstperson, thirdperson, thirdperson_front])`: Sets camera offset vectors.
+* `set_eye_offset([firstperson, thirdperson_back, thirdperson_front])`: Sets camera offset vectors.
     * `firstperson`: Offset in first person view.
       Defaults to `vector.zero()` if unspecified.
-    * `thirdperson`: Offset in third person view.
+    * `thirdperson_back`: Offset in third person back view.
       Clamped between `vector.new(-10, -10, -5)` and `vector.new(10, 15, 5)`.
       Defaults to `vector.zero()` if unspecified.
     * `thirdperson_front`: Offset in third person front view.
