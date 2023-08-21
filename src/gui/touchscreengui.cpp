@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
-#include "guiButton.h"
 
 #include <iostream>
 #include <algorithm>
@@ -154,8 +153,8 @@ void AutoHideButtonBar::init(ISimpleTextureSource *tsrc,
 
 	rect<int> starter_rect = rect<s32>(UpperLeft.X, UpperLeft.Y, LowerRight.X, LowerRight.Y);
 
-	IGUIButton *starter_gui_button = GUIButton::addButton(m_guienv, starter_rect,
-			m_texturesource, nullptr, button_id, L"", nullptr);
+	IGUIButton *starter_gui_button = m_guienv->addButton(starter_rect, nullptr,
+			button_id, L"", nullptr);
 
 	m_starter.gui_button        = starter_gui_button;
 	m_starter.gui_button->grab();
@@ -239,8 +238,8 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 		current_button = rect<s32>(m_upper_left.X, y_start, m_lower_right.Y, y_end);
 	}
 
-	IGUIButton *btn_gui_button = GUIButton::addButton(m_guienv, current_button,
-			m_texturesource, nullptr, button_id, caption, nullptr);
+	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, button_id,
+			caption, nullptr);
 
 	std::shared_ptr<button_info> btn(new button_info);
 	btn->gui_button        = btn_gui_button;
@@ -414,8 +413,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_rect,
 		const std::wstring &caption, bool immediate_release, float repeat_delay)
 {
-	IGUIButton *btn_gui_button = GUIButton::addButton(m_guienv, button_rect,
-			m_texturesource, nullptr, id, caption.c_str());
+	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
 
 	button_info *btn       = &m_buttons[id];
 	btn->gui_button        = btn_gui_button;
