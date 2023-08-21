@@ -188,17 +188,13 @@ return {
 			core.colorize("#ff0", fgettext("Previous Contributors"))
 		})
 		prepare_credits(credit_list, previous_contributors)
+
 		local credit_fs, scroll_height = build_hacky_list(credit_list)
 		-- account for the visible portion
 		scroll_height = math.max(0, scroll_height - 6.9)
 
-		local TAB_H = 7.1
-		local TAB_PADDING = 0.5
-		local LOGO_SIZE = 2.5
-		local BTN_H = 0.8
-		local LABEL_BTN_H = 0.5
-
 		local fs = {
+			-- This is the right half of the tab (the credits).
 			("scroll_container[5.5,0.1;%f,6.9;scroll_credits;vertical;%f]"):format(
 					9.9 - SCROLLBAR_W, scroll_height / 1000),
 			credit_fs,
@@ -208,6 +204,12 @@ return {
 		}
 
 		-- Place the content of the left half from bottom to top.
+		local TAB_H = 7.1
+		local TAB_PADDING = 0.5
+		local LOGO_SIZE = 2.5
+		local BTN_H = 0.8
+		local LABEL_BTN_H = 0.5
+
 		local pos_y = TAB_H - TAB_PADDING
 		local show_userdata_btn = PLATFORM ~= "Android"
 
@@ -238,7 +240,7 @@ return {
 				pos_y, LABEL_BTN_H, core.formspec_escape(version.project .. " " .. version.string))
 
 		local logofile = core.formspec_escape(defaulttexturedir .. "logo.png")
-		-- Place the logo in the middle of the remaining space.
+		-- Place the logo in the middle of the remaining vertical space.
 		fs[#fs + 1] = ("image[1.5,%f;%f,%f;%s]"):format(
 				pos_y / 2 - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE, logofile)
 
