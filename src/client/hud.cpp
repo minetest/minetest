@@ -226,13 +226,9 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
 // mainlist can be NULL, but draw the frame anyway.
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
-		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
+		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
+		bool is_hotbar)
 {
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui && inv_offset == 0)
-		g_touchscreengui->resetHud();
-#endif
-
 	s32 height  = m_hotbar_imagesize + m_padding * 2;
 	s32 width   = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
 
@@ -292,11 +288,13 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			break;
 		}
 
-		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i + 1) == selectitem);
+		core::rect<s32> item_rect = imgrect + pos + steppos;
+
+		drawItem(mainlist->getItem(i), item_rect, (i + 1) == selectitem);
 
 #ifdef HAVE_TOUCHSCREENGUI
-		if (g_touchscreengui)
-			g_touchscreengui->registerHudItem(i, (imgrect + pos + steppos));
+		if (is_hotbar && g_touchscreengui)
+			g_touchscreengui->registerHotbarRect(i, item_rect);
 #endif
 	}
 }
@@ -406,7 +404,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				if (!inv)
 					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
 				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
-					inv, e->item, e->dir);
+					inv, e->item, e->dir, false);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
@@ -739,15 +737,20 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 }
 
 
-void Hud::drawHotbar(u16 playeritem) {
-
-	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
+void Hud::drawHotbar(u16 playeritem)
+{
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui)
+		g_touchscreengui->resetHotbarRects();
+#endif
 
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
-		//silently ignore this we may not be initialized completely
+		// Silently ignore this. We may not be initialized completely.
 		return;
 	}
+
+	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
 	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
@@ -757,7 +760,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0, true);
 		}
 	} else {
 		pos.X += width/4;
@@ -767,9 +770,9 @@ void Hud::drawHotbar(u16 playeritem) {
 
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount / 2, 0,
-				mainlist, playeritem + 1, 0);
+				mainlist, playeritem + 1, 0, true);
 			drawItems(secondpos, v2s32(0, 0), hotbar_itemcount,
-				hotbar_itemcount / 2, mainlist, playeritem + 1, 0);
+				hotbar_itemcount / 2, mainlist, playeritem + 1, 0, true);
 		}
 	}
 }

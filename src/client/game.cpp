@@ -2168,6 +2168,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 		}
 	}
 
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
+		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
+		if (selection)
+			*new_playeritem = *selection;
+	}
+#endif
+
 	// Clamp selection again in case it wasn't changed but max_item was
 	*new_playeritem = MYMIN(*new_playeritem, max_item);
 }

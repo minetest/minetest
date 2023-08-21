@@ -583,23 +583,25 @@ touch_gui_button_id TouchScreenGUI::getButtonID(size_t eventID)
 	return after_last_element_id;
 }
 
-bool TouchScreenGUI::isHUDButton(const SEvent &event)
+bool TouchScreenGUI::isHotbarButton(const SEvent &event)
 {
-	// check if hud item is pressed
-	for (auto &hud_rect : m_hud_rects) {
-		if (hud_rect.second.isPointInside(v2s32(event.TouchInput.X, event.TouchInput.Y))) {
-			SEvent translated{};
-			translated.EventType            = irr::EET_KEY_INPUT_EVENT;
-			translated.KeyInput.Key         = (irr::EKEY_CODE) (KEY_KEY_1 + hud_rect.first);
-			translated.KeyInput.Control     = false;
-			translated.KeyInput.Shift       = false;
-			translated.KeyInput.PressedDown = true;
-			m_receiver->OnEvent(translated);
-			m_hud_ids[event.TouchInput.ID]  = translated.KeyInput.Key;
+	// check if hotbar item is pressed
+	for (auto &[index, rect] : m_hotbar_rects) {
+		if (rect.isPointInside(v2s32(event.TouchInput.X, event.TouchInput.Y))) {
+			// We can't just emit a keypress event because the number keys
+			// range from 1 to 9, but there may be more hotbar items.
+			m_hotbar_selection = index;
 			return true;
 		}
 	}
 	return false;
+}
+
+std::optional<u16> TouchScreenGUI::getHotbarSelection()
+{
+	auto selection = m_hotbar_selection;
+	m_hotbar_selection = std::nullopt;
+	return selection;
 }
 
 void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
@@ -745,10 +747,10 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			handleButtonEvent(button, eventID, true);
 			m_settings_bar.deactivate();
 			m_rare_controls_bar.deactivate();
-		} else if (isHUDButton(event)) {
+		} else if (isHotbarButton(event)) {
 			m_settings_bar.deactivate();
 			m_rare_controls_bar.deactivate();
-			// already handled in isHUDButton()
+			// already handled in isHotbarButton()
 		} else if (m_settings_bar.isButton(event)) {
 			m_rare_controls_bar.deactivate();
 			// already handled in isSettingsBarButton()
@@ -1071,14 +1073,14 @@ void TouchScreenGUI::step(float dtime)
 	m_rare_controls_bar.step(dtime);
 }
 
-void TouchScreenGUI::resetHud()
+void TouchScreenGUI::resetHotbarRects()
 {
-	m_hud_rects.clear();
+	m_hotbar_rects.clear();
 }
 
-void TouchScreenGUI::registerHudItem(int index, const rect<s32> &rect)
+void TouchScreenGUI::registerHotbarRect(u16 index, const rect<s32> &rect)
 {
-	m_hud_rects[index] = rect;
+	m_hotbar_rects[index] = rect;
 }
 
 void TouchScreenGUI::setVisible(bool visible)
