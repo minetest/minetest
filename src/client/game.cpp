@@ -1530,9 +1530,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 bool Game::initGui()
 {
-	auto guienv = m_rendering_engine->get_gui_env();
-
-	m_game_ui->init(guienv);
+	m_game_ui->init();
 
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
@@ -1727,11 +1725,11 @@ bool Game::getServerContent(bool *aborted)
 		if (!client->itemdefReceived()) {
 			progress = 25;
 			m_rendering_engine->draw_load_screen(wstrgettext("Item definitions..."),
-					texture_src, dtime, progress);
+					guienv, texture_src, dtime, progress);
 		} else if (!client->nodedefReceived()) {
 			progress = 30;
 			m_rendering_engine->draw_load_screen(wstrgettext("Node definitions..."),
-					texture_src, dtime, progress);
+					guienv, texture_src, dtime, progress);
 		} else {
 			std::ostringstream message;
 			std::fixed(message);
@@ -1756,7 +1754,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()),
+			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()), guienv,
 				texture_src, dtime, progress);
 		}
 	}
@@ -1807,23 +1805,20 @@ inline bool Game::handleCallbacks()
 		return false;
 	}
 
-	auto guienv = m_rendering_engine->get_gui_env();
-	auto guiroot = guienv->getRootGUIElement();
-
 	if (g_gamecallback->changepassword_requested) {
-		(new GUIPasswordChange(guienv, guiroot, -1,
+		(new GUIPasswordChange(guienv, guienv->getRootGUIElement(), -1,
 				       &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
-		(new GUIVolumeChange(guienv, guiroot, -1,
+		(new GUIVolumeChange(guienv, guienv->getRootGUIElement(), -1,
 				     &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(new GUIKeyChangeMenu(guienv, guiroot, -1,
+		(new GUIKeyChangeMenu(guienv, guienv->getRootGUIElement(), -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
@@ -1954,8 +1949,6 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 
 void Game::processUserInput(f32 dtime)
 {
-	auto guienv = m_rendering_engine->get_gui_env();
-
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		if(m_game_focused) {
@@ -4297,7 +4290,7 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
 {
-	m_rendering_engine->draw_load_screen(wstrgettext(msg), texture_src,
+	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
 			dtime, percent, draw_sky);
 }
 

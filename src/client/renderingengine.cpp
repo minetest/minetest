@@ -226,9 +226,9 @@ bool RenderingEngine::setWindowIcon()
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
-		ITextureSource *tsrc, float dtime, int percent, bool sky)
+		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
+		int percent, bool sky)
 {
-	gui::IGUIEnvironment *guienv = get_gui_env();
 	v2u32 screensize = getWindowSize();
 
 	v2s32 textsize(g_fontengine->getTextWidth(text), g_fontengine->getLineHeight());
