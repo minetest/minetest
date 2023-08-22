@@ -38,8 +38,8 @@ public:
 	virtual void signalKeyConfigChange() = 0;
 };
 
-// FIXME: do we really need this global variable?
 extern gui::IGUIEnvironment *guienv;
+extern gui::IGUIStaticText *guiroot;
 
 // Handler for the modal menus
 
