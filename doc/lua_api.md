@@ -7858,8 +7858,8 @@ child will follow movement and rotation of that bone.
       Clamped between `vector.new(-10, -10, -5)` and `vector.new(10, 15, 5)`.
       Defaults to `vector.zero()` if unspecified.
     * `thirdperson_front`: Offset in third person front view.
-      Same limits as for `thirdperson` apply.
-      Defaults to `thirdperson` if unspecified.
+      Same limits as for `thirdperson_back` apply.
+      Defaults to `thirdperson_back` if unspecified.
 * `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
