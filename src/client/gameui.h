@@ -49,6 +49,9 @@ class GameUI
 	friend class TestGameUI;
 
 public:
+	GameUI();
+	~GameUI() = default;
+
 	// Flags that can, or may, change during main game loop
 	struct Flags
 	{
@@ -60,7 +63,7 @@ public:
 		bool show_profiler_graph = false;
 	};
 
-	void init(gui::IGUIEnvironment *m_guienv);
+	void init();
 	void update(const RunStats &stats, Client *client, MapDrawControl *draw_control,
 			const CameraOrientation &cam, const PointedThing &pointed_old,
 			const GUIChatConsole *chat_console, float dtime);
@@ -118,7 +121,7 @@ private:
 	gui::IGUIStaticText *m_guitext_status = nullptr;
 	std::wstring m_statustext;
 	float m_statustext_time = 0.0f;
-	video::SColor m_statustext_initial_color = video::SColor(255, 0, 0, 0);
+	video::SColor m_statustext_initial_color;
 
 	gui::IGUIStaticText *m_guitext_chat = nullptr; // Chat text
 	u32 m_recent_chat_count = 0;
