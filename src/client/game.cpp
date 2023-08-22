@@ -1806,19 +1806,19 @@ inline bool Game::handleCallbacks()
 	}
 
 	if (g_gamecallback->changepassword_requested) {
-		(new GUIPasswordChange(guienv, guienv->getRootGUIElement(), -1,
+		(new GUIPasswordChange(guienv, guiroot, -1,
 				       &g_menumgr, client, texture_src))->drop();
 		g_gamecallback->changepassword_requested = false;
 	}
 
 	if (g_gamecallback->changevolume_requested) {
-		(new GUIVolumeChange(guienv, guienv->getRootGUIElement(), -1,
+		(new GUIVolumeChange(guienv, guiroot, -1,
 				     &g_menumgr, texture_src))->drop();
 		g_gamecallback->changevolume_requested = false;
 	}
 
 	if (g_gamecallback->keyconfig_requested) {
-		(new GUIKeyChangeMenu(guienv, guienv->getRootGUIElement(), -1,
+		(new GUIKeyChangeMenu(guienv, guiroot, -1,
 				      &g_menumgr, texture_src))->drop();
 		g_gamecallback->keyconfig_requested = false;
 	}
@@ -4150,7 +4150,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		}
 
 		if (isMenuActive())
-			m_rendering_engine->get_gui_env()->getRootGUIElement()->bringToFront(formspec);
+			guiroot->bringToFront(formspec);
 	} while (false);
 
 	/*

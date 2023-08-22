@@ -53,8 +53,6 @@ GameUI::GameUI()
 }
 void GameUI::init()
 {
-	IGUIElement *guiroot = guienv->getRootGUIElement();
-
 	// First line of debug text
 	m_guitext = gui::StaticText::add(guienv, utf8_to_wide(PROJECT_NAME_C).c_str(),
 		core::rect<s32>(0, 0, 0, 0), false, true, guiroot);
