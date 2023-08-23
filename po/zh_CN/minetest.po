@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-01-06 08:49+0000\n"
-"Last-Translator: Gao Tiesuan <yepifoas@666email.com>\n"
+"PO-Revision-Date: 2023-08-27 14:55+0000\n"
+"Last-Translator: yue weikai <send52@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -280,7 +280,7 @@ msgstr "下载中..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "在安装 \"$1\": $2 时发生错误"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -292,9 +292,8 @@ msgid "Failed to download $1"
 msgstr "下载 $1 失败"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "安装：文件类型不支持或压缩包已损坏"
+msgstr "安装：\"$1\" 的文件类型不支持或压缩包已损坏"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -816,9 +815,8 @@ msgid "Unable to find a valid mod, modpack, or game"
 msgstr "无法找到mod或mod包"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "无法将$1安装为mod"
+msgstr "无法将$1 作为 $2 安装为mod"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -854,7 +852,7 @@ msgstr "核心开发者"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "核心团队"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1675,9 +1673,8 @@ msgid "ok"
 msgstr "确定"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "缩放被当前子游戏或 mod 禁用"
+msgstr "无法聊天：可能原因：被游戏或mod禁用"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1985,23 +1982,22 @@ msgstr "材质模式小地图"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "缺失的模组： %s"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
-msgstr ""
+msgstr "安装并启用所需的mod，或禁用导致错误的mod。"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
-msgstr ""
+msgstr "注意：这可能是由于依赖循环造成的，在这种情况下，请尝试更新mod。"
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "无依赖项"
+msgstr "有些mod有未满足的依赖性:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -3084,11 +3080,12 @@ msgstr ""
 "从主菜单创建一个新世界时这将被覆盖。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "强制载入地图块最大数量。"
+msgstr ""
+"默认 加载区块 的最大数量。\n"
+"将其设置为 -1，可禁用该限制。"
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
