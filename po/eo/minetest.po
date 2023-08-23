@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-04-26 11:48+0000\n"
-"Last-Translator: jolesh <jolesh0815@gmail.com>\n"
+"PO-Revision-Date: 2023-08-24 23:51+0000\n"
+"Last-Translator: Emmily <Emmilyrose779@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -45,7 +45,7 @@ msgstr "Enretaj ludantoj: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "La eliga vico de la babilejo nun estas malplena."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -286,7 +286,7 @@ msgstr "Elŝutante…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Eraro dum instalo de \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -871,7 +871,7 @@ msgstr "Kernprogramistoj"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Ĉefa teamo"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1231,9 +1231,8 @@ msgid "Waving Plants"
 msgstr "Ondantaj plantoj"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Konekta eraro (ĉu eltempiĝo?)"
+msgstr "Konekta eraro (ĉu eltempiĝo?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1402,7 +1401,7 @@ msgstr "Konektante al servilo…"
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Konekto malsukcesis pro nekonata kialo"
 
 #: src/client/game.cpp
 msgid "Continue"
@@ -1505,7 +1504,7 @@ msgstr "Ŝaltis senliman vidodistancon"
 #: src/client/game.cpp
 #, fuzzy, c-format
 msgid "Error creating client: %s"
-msgstr "Kreante klienton…"
+msgstr "Eraro dum kreo de kliento: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -3086,7 +3085,7 @@ msgid ""
 "This also applies to the object crosshair."
 msgstr ""
 "Travidebleco de celilo (maltravidebleco, inter 0 kaj 255).\n"
-"Ankaŭ determinas la koloron de la celilo de objekto"
+"Ankaŭ determinas la koloron de la celilo de objekto."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -6837,7 +6836,6 @@ msgstr ""
 "bone elŝutadon de teksturoj de la aparataro."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -6852,7 +6850,7 @@ msgstr ""
 "distingumoj povas malklariĝi; tial memage grandigu ĝin per interpolado\n"
 "laŭ plej proksimaj bilderoj por teni klarajn bilderojn. Ĉi tio agordas la\n"
 "malplejaltan grandecon de teksturo por la grandigitaj teksturoj; pli altaj\n"
-"valoroj aspektas pli klare, sed bezonas pli da memoro.  Potencoj de duo\n"
+"valoroj aspektas pli klare, sed bezonas pli da memoro. Potencoj de duo\n"
 "estas rekomendataj. Valoroj pli grandaj ol 1 eble ne estos videblaj, se ne\n"
 "estas ŝaltita dulinia, trilinia, aŭ neizotropa filtrado.\n"
 "Ĉi tio ankaŭ uziĝas kiel la baza grando de monderaj teksturoj por memaga\n"
