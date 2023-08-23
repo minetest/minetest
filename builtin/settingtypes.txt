@@ -91,6 +91,8 @@
 camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
 #    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#
+#    Requires: keyboard_mouse
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
 
 #    If enabled, you can place nodes at the position (feet + eye level) where you stand.
@@ -127,8 +129,6 @@ safe_dig_and_place (Safe digging and placing) bool false
 invert_mouse (Invert mouse) bool false
 
 #    Mouse sensitivity multiplier.
-#
-#    Requires: keyboard_mouse
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
 
 #    Enable mouse wheel (scroll) for item selection in hotbar.
@@ -154,13 +154,13 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    Requires: touchscreen_gui
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
-#    (Android) Fixes the position of virtual joystick.
+#    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #
 #    Requires: touchscreen_gui
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #
 #    Requires: touchscreen_gui

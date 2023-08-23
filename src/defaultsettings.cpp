@@ -172,7 +172,7 @@ void set_default_settings()
 #else
 	settings->setDefault("show_debug", "true");
 #endif
-	settings->setDefault("fsaa", "0");
+	settings->setDefault("fsaa", "2");
 	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
