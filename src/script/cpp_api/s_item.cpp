@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "inventory.h"
 #include "inventorymanager.h"
+#include "irrlicht_changes/printing.h"
 
 #define WRAP_LUAERROR(e, detail) \
 	LuaError(std::string(__FUNCTION__) + ": " + (e).what() + ". " detail)
@@ -59,7 +60,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	return true;
 }
 
-bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnPlace(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -88,13 +89,13 @@ bool ScriptApiItem::item_OnPlace(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnUse(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -118,13 +119,13 @@ bool ScriptApiItem::item_OnUse(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
-bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
+bool ScriptApiItem::item_OnSecondaryUse(std::optional<ItemStack> &ret_item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -146,7 +147,7 @@ bool ScriptApiItem::item_OnSecondaryUse(Optional<ItemStack> &ret_item,
 			throw WRAP_LUAERROR(e, "item=" + item.name);
 		}
 	} else {
-		ret_item = nullopt;
+		ret_item = std::nullopt;
 	}
 	lua_pop(L, 2);  // Pop item and error handler
 	return true;
@@ -238,7 +239,7 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
 		// Report error and clean up
 		errorstream << "Item \"" << name << "\" not defined";
 		if (p)
-			errorstream << " at position " << PP(*p);
+			errorstream << " at position " << *p;
 		errorstream << std::endl;
 		lua_pop(L, 1);
 

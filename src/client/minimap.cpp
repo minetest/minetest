@@ -608,10 +608,13 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	matrix.makeIdentity();
 
 	video::SMaterial &material = m_meshbuffer->getMaterial();
-	material.setFlag(video::EMF_TRILINEAR_FILTER, true);
+	material.forEachTexture([] (auto &tex) {
+		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
+		tex.MagFilter = video::ETMAGF_LINEAR;
+	});
 	material.Lighting = false;
-	material.TextureLayer[0].Texture = minimap_texture;
-	material.TextureLayer[1].Texture = data->heightmap_texture;
+	material.TextureLayers[0].Texture = minimap_texture;
+	material.TextureLayers[1].Texture = data->heightmap_texture;
 
 	if (m_enable_shaders && data->mode.type == MINIMAP_TYPE_SURFACE) {
 		u16 sid = m_shdrsrc->getShader("minimap_shader", TILE_MATERIAL_ALPHA);
@@ -631,7 +634,7 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 	// Draw overlay
 	video::ITexture *minimap_overlay = data->minimap_shape_round ?
 		data->minimap_overlay_round : data->minimap_overlay_square;
-	material.TextureLayer[0].Texture = minimap_overlay;
+	material.TextureLayers[0].Texture = minimap_overlay;
 	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	driver->setMaterial(material);
 	driver->drawMeshBuffer(m_meshbuffer);
@@ -643,7 +646,7 @@ void Minimap::drawMinimap(core::rect<s32> rect) {
 		matrix.setRotationDegrees(core::vector3df(0, 0, m_angle));
 	}
 
-	material.TextureLayer[0].Texture = data->player_marker;
+	material.TextureLayers[0].Texture = data->player_marker;
 	driver->setTransform(video::ETS_WORLD, matrix);
 	driver->setMaterial(material);
 	driver->drawMeshBuffer(m_meshbuffer);

@@ -96,6 +96,11 @@ public:
 	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
+	void setBodyOrbitTilt(float body_orbit_tilt)
+	{
+		if (body_orbit_tilt != SkyboxParams::INVALID_SKYBOX_TILT)
+			m_sky_params.body_orbit_tilt = rangelim(body_orbit_tilt, -90.f, 90.f);
+	}
 	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
 		m_bgcolor = bgcolor;
@@ -109,6 +114,11 @@ public:
 	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+	void setFogDistance(s16 fog_distance) { m_sky_params.fog_distance = fog_distance; }
+	s16 getFogDistance() const { return m_sky_params.fog_distance; }
+
+	void setFogStart(float fog_start) { m_sky_params.fog_start = fog_start; }
+	float getFogStart() const { return m_sky_params.fog_start; }
 
 private:
 	aabb3f m_box;
@@ -164,7 +174,6 @@ private:
 	bool m_directional_colored_fog;
 	bool m_in_clouds = true; // Prevent duplicating bools to remember old values
 	bool m_enable_shaders = false;
-	float m_sky_body_orbit_tilt = 0.0f;
 
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);

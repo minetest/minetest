@@ -1,16 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-10 20:51+0000\n"
-"Last-Translator: Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi <translation@mnh48.moe>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-03-10 14:41+0000\n"
+"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
 "minetest/ms_Arab/>\n"
 "Language: ms_Arab\n"
@@ -18,48 +13,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "ساٴيز مکسيموم باريس ݢيلير کلوار سيمبڠ"
+msgstr "ڤادم باريس ݢيلير سيمبڠ کلوار"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
 msgstr ""
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "کلوار کمينو"
+msgstr "کلوار کمينو اوتام"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته تيدق صح: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "ڤرينته دکلوارکن: "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "ڤماٴين ڤرسأورڠن"
+msgstr "سنارايکن ڤماٴين دالم تالين"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "ڤماٴين ڤرسأورڠن"
+msgstr "ڤماٴين دالم تالين: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "باريس ݢيلير سيمبڠ کلوار کيني کوسوڠ."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "ڤرينته اين دلومڤوهکن اوليه ڤلاين."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -70,14 +60,12 @@ msgid "You died"
 msgstr "اندا تله منيڠݢل"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته ترسديا:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "ارهن تمڤتن"
+msgstr "ڤرينته ترسديا: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
@@ -85,16 +73,18 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "داڤتکن بنتوان اونتوق ڤرينته"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"ݢوناکن ‭'.help <ڤرينته>'‬ اونتوق داڤتکن معلومت لنجوت⹁ اتاو ‭'.help all'‬ "
+"اونتوق سنارايکن کسمواڽ."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <ڤرينته>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -146,11 +136,11 @@ msgstr "کامي مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(دبوليهکن⹁ اد رالت)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(تيدق دڤنوهي)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -238,11 +228,11 @@ msgstr "دبوليهکن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" سوده وجود. اداکه اندا ايڠين توليس ݢنتيڽ؟"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "کبرݢنتوڠن $1 دان $2 اکن دڤاسڠکن."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -253,37 +243,36 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 سدڠ موات تورون⹁\n"
+"$2 منوڠݢو ݢيليرن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "مموات تورون..."
+msgstr "$1 مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 ممرلوکن کبرݢنتوڠن يڠ تيدق دجومڤاٴي."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "$1 اکن دڤاسڠکن⹁ دان $2 کبرݢنتوڠن اکن دلڠکاو."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "سموا ڤاکيج"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "ککونچي تله دݢوناکن اونتوق فوڠسي لاٴين"
+msgstr "سوده دڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "کمبالي کمينو اوتام"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "هوس ڤرماٴينن"
+msgstr "ڤرماٴينن اساس:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
@@ -295,21 +284,19 @@ msgstr "مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "رالت کتيک مماسڠ \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "ݢاݢل مموات تورون $1"
+msgstr "ݢاݢل اونتوق مموات تورون \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "ݢاݢل مموات تورون $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "ڤاسڠ: جنيس فايل \"$1\" تيدق دسوکوڠ اتاو ارکيب روسق"
+msgstr "ݢاݢل اونتوق مڽاري \"$1\" (جنيس فاٴيل تيدق دسوکوڠ اتاو ارکيب روسق)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -320,14 +307,12 @@ msgid "Install"
 msgstr "ڤاسڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "ڤاسڠ"
+msgstr "ڤاسڠ $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "کبرݢنتوڠن ڤيليهن:"
+msgstr "ڤاسڠ کبرݢنتوڠن يڠ هيلڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -342,26 +327,24 @@ msgid "No results"
 msgstr "تيادا حاصيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "کمس کيني"
+msgstr "تياد کمس کيني"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Not found"
-msgstr "بيسوکن بوڽي"
+msgstr "تيدق دجومڤاٴي"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "توليس ݢنتي"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "سيلا ڤريقسا دان ڤستيکن ڤرماٴينن اساس ايت بتول."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "منوڠݢو ݢيليرن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -377,11 +360,11 @@ msgstr "کمس کيني"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "کمس کيني سموا [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "ليهت معلومت لنجوت دالم ڤلاير سساوڠ"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -424,9 +407,8 @@ msgid "Decorations"
 msgstr "هياسن"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "امرن: The Development Test هاڽله اونتوق کݢوناٴن ڤمباڠون."
+msgstr "Development Test هاڽاله اونتوق کݢوناٴن ڤمباڠون."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -461,9 +443,8 @@ msgid "Increases humidity around rivers"
 msgstr "تيڠکتکن کلمبڤن سکيتر سوڠاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "ڤاسڠ"
+msgstr "ڤاسڠ سواتو ڤرماٴينن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
@@ -866,7 +847,7 @@ msgstr "چوب اکتيفکن سمولا سناراي ڤلاين عوام فان
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "ڤريحال"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -1719,6 +1700,11 @@ msgid "ok"
 msgstr "اوکي"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "زوم سدڠ دلومڤوهکن اوليه ڤرماٴينن اتاو مودس"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "سيمبڠ دسمبوڽيکن"
 
@@ -2377,6 +2363,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2386,7 +2373,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "سوکوڠن 3D.\n"
@@ -2480,17 +2466,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2845,6 +2820,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "کليئن"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3296,6 +3275,10 @@ msgid "Dungeon noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "ممبوليهکن سموا"
@@ -3323,6 +3306,18 @@ msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3493,7 +3488,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4621,6 +4616,11 @@ msgid "Mapblock mesh generation delay"
 msgstr "لڠه ماس ڤنجاناٴن ججاريڠ بلوک ڤتا"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "لڠه ماس ڤنجاناٴن ججاريڠ بلوک ڤتا"
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr ""
 "ساٴيز کيش بلوکڤتا اونتوق ڤنجان ججاريڠ بلوکڤتا دالم اونيت ميݢاباٴيت (MB)"
@@ -5064,6 +5064,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "چچاٴير لݢڤ"
 
@@ -5374,10 +5381,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "سيمڤن ڤتا يڠ دتريما اوليه کليئن دالم چکرا."
 
@@ -5553,11 +5556,9 @@ msgstr "فاٴيل سناراي ڤلاين"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5584,13 +5585,6 @@ msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5635,7 +5629,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5720,6 +5714,15 @@ msgstr "ميسيج ڤنوتوڤن"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5737,10 +5740,6 @@ msgstr ""
 "ساٴيز کيش بلوکڤتا اونتوق ڤنجان ججاريڠ. مناٴيقکن نيلاي اين\n"
 "اکن منيڠکتکن جومله % هيت کيش⹁ مڠورڠکن داتا يڠ ڤرلو دسالين\n"
 "درڤد جالور اوتام⹁ لالو مڠورڠکن کترن."
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6055,11 +6054,9 @@ msgstr ""
 #, fuzzy
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "ترجمهن بهاݢين بلاکڠ اونتوق Irrlicht.\n"
 "اندا ڤرلو ممولاکن سمولا سلڤس مڠاوبه تتڤن اين.\n"
@@ -6311,6 +6308,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp

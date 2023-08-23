@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
+#include <unordered_set>
 
 struct ObjectProperties;
 struct ToolCapabilities;
@@ -37,7 +38,7 @@ public:
 	void luaentity_Remove(u16 id);
 	std::string luaentity_GetStaticdata(u16 id);
 	void luaentity_GetProperties(u16 id,
-			ServerActiveObject *self, ObjectProperties *prop);
+			ServerActiveObject *self, ObjectProperties *prop, const std::string &entity_name);
 	void luaentity_Step(u16 id, float dtime,
 		const collisionMoveResult *moveresult);
 	bool luaentity_Punch(u16 id,
@@ -51,4 +52,11 @@ public:
 private:
 	bool luaentity_run_simple_callback(u16 id, ServerActiveObject *sao,
 		const char *field);
+
+	void logDeprecationForExistingProperties(lua_State *L, int index, const std::string &name);
+
+	/** Stores names of entities that already caused a deprecation warning due to
+	 * properties being outside of initial_properties. If an entity's name is in here,
+	 * it won't cause any more of those deprecation warnings. */
+	std::unordered_set<std::string> deprecation_warned_init_properties;
 };

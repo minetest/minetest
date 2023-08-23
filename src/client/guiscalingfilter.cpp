@@ -78,6 +78,7 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 {
 	if (src == NULL)
 		return src;
+
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return src;
 
@@ -114,12 +115,19 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 
 	// Create a new destination image and scale the source into it.
 	imageCleanTransparent(srcimg, 0);
+
+	if (destrect.getWidth() <= 0 || destrect.getHeight() <= 0) {
+		errorstream << "Attempted to scale texture to invalid size " << scalename.c_str() << std::endl;
+		// Avoid log spam by reusing and displaying the original texture
+		src->grab();
+		g_txrCache[scalename] = src;
+		return src;
+	}
 	video::IImage *destimg = driver->createImage(src->getColorFormat(),
 			core::dimension2d<u32>((u32)destrect.getWidth(),
 			(u32)destrect.getHeight()));
 	imageScaleNNAA(srcimg, srcrect, destimg);
 
-#if ENABLE_GLES
 	// Some platforms are picky about textures being powers of 2, so expand
 	// the image dimensions to the next power of 2, if necessary.
 	if (!driver->queryFeature(video::EVDF_TEXTURE_NPOT)) {
@@ -131,7 +139,6 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		destimg->drop();
 		destimg = po2img;
 	}
-#endif
 
 	// Convert the scaled image back into a texture.
 	scaled = driver->addTexture(scalename, destimg);
@@ -162,6 +169,10 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 		const core::rect<s32> *cliprect, const video::SColor *const colors,
 		bool usealpha)
 {
+	// 9-sliced images might calculate negative texture dimensions. Skip them.
+	if (destrect.getWidth() <= 0 || destrect.getHeight() <= 0)
+		return;
+
 	// Attempt to pre-scale image in software in high quality.
 	video::ITexture *scaled = guiScalingResizeCached(driver, txr, srcrect, destrect);
 	if (scaled == NULL)

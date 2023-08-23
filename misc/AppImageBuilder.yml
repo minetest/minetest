@@ -1,8 +1,7 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
 version: 1
-
 AppDir:
-  path: ./AppDir
-
+  path: AppDir
   app_info:
     id: net.minetest.minetest
     name: Minetest
@@ -10,10 +9,12 @@ AppDir:
     version: !ENV ${VERSION}
     exec: usr/bin/minetest
     exec_args: $@
-  runtime:
-    env:
-      APPDIR_LIBRARY_PATH: $APPDIR/usr/lib/x86_64-linux-gnu
-
+  files:
+    include: []
+    exclude:
+    - usr/share/man
+    - usr/share/doc
+    - usr/share/lintian
   apt:
     arch: amd64
     sources:
@@ -27,6 +28,7 @@ AppDir:
       - libc6
       - libcrypt1
       - libcurl3-gnutls
+      - libcurl4
       - libfreetype6
       - libgl1
       - libjpeg-turbo8
@@ -41,13 +43,18 @@ AppDir:
       - libx11-6
       - libxi6
       - zlib1g
-
-  files:
-    exclude:
-      - usr/share/man
-      - usr/share/doc
-
 AppImage:
-  update-information: None
+  update-information: guess
   sign-key: None
   arch: x86_64
+script: |
+    # Compile and install binaries into AppDir
+    cmake -B appimage-build -DENABLE_REDIS=FALSE -DENABLE_POSTGRESQL=OFF -DCMAKE_INSTALL_PREFIX=AppDir/usr/ -DBUILD_SERVER=FALSE -DENABLE_GETTEXT=TRUE -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE
+    cmake --build appimage-build --parallel $(nproc) --config Release
+    cmake --install appimage-build
+
+    # Is a backup icon location in case
+    mkdir -p AppDir/usr/share/minetest/misc
+    cp AppDir/usr/share/icons/hicolor/128x128/apps/minetest.png AppDir/usr/share/minetest/misc/minetest-xorg-icon-128.png
+    # Validation issues
+    sed -i '/PrefersNonDefaultGPU/d' AppDir/usr/share/applications/net.minetest.minetest.desktop

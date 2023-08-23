@@ -28,13 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "config.h"
 
-#if ENABLE_GLES
-#include <IVideoDriver.h>
-#endif
-
 class IGameDef;
 struct TileSpec;
 struct TileDef;
+
+namespace irr::video { class IVideoDriver; }
 
 typedef std::vector<video::SColor> Palette;
 
@@ -133,9 +131,7 @@ public:
 
 IWritableTextureSource *createTextureSource();
 
-#if ENABLE_GLES
 video::IImage *Align2Npot2(video::IImage *image, video::IVideoDriver *driver);
-#endif
 
 enum MaterialType{
 	TILE_MATERIAL_BASIC,
@@ -234,10 +230,10 @@ struct TileLayer
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
@@ -245,19 +241,13 @@ struct TileLayer
 	{
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
-	}
-
-	bool isTileable() const
-	{
-		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
-			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
 	bool isTransparent() const
@@ -305,6 +295,13 @@ struct TileLayer
 	u8 scale = 1;
 };
 
+enum class TileRotation: u8 {
+	None,
+	R90,
+	R180,
+	R270,
+};
+
 /*!
  * Defines a face of a node. May have up to two layers.
  */
@@ -312,26 +309,10 @@ struct TileSpec
 {
 	TileSpec() = default;
 
-	/*!
-	 * Returns true if this tile can be merged with the other tile.
-	 */
-	bool isTileable(const TileSpec &other) const {
-		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-			if (layers[layer] != other.layers[layer])
-				return false;
-			// Only non-transparent tiles can be merged into fast faces
-			if (layers[layer].isTransparent() || !layers[layer].isTileable())
-				return false;
-		}
-		return rotation == 0
-			&& rotation == other.rotation
-			&& emissive_light == other.emissive_light;
-	}
-
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
 	//! Tile rotation.
-	u8 rotation = 0;
+	TileRotation rotation = TileRotation::None;
 	//! This much light does the tile emit.
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.

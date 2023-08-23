@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_LEVELDB
 
+#include <memory>
 #include <string>
 #include "database.h"
 #include "leveldb/db.h"
@@ -31,7 +32,7 @@ class Database_LevelDB : public MapDatabase
 {
 public:
 	Database_LevelDB(const std::string &savedir);
-	~Database_LevelDB();
+	~Database_LevelDB() = default;
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
@@ -42,14 +43,14 @@ public:
 	void endSave() {}
 
 private:
-	leveldb::DB *m_database;
+	std::unique_ptr<leveldb::DB> m_database;
 };
 
 class PlayerDatabaseLevelDB : public PlayerDatabase
 {
 public:
 	PlayerDatabaseLevelDB(const std::string &savedir);
-	~PlayerDatabaseLevelDB();
+	~PlayerDatabaseLevelDB() = default;
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
@@ -57,14 +58,14 @@ public:
 	void listPlayers(std::vector<std::string> &res);
 
 private:
-	leveldb::DB *m_database;
+	std::unique_ptr<leveldb::DB> m_database;
 };
 
 class AuthDatabaseLevelDB : public AuthDatabase
 {
 public:
 	AuthDatabaseLevelDB(const std::string &savedir);
-	virtual ~AuthDatabaseLevelDB();
+	virtual ~AuthDatabaseLevelDB() = default;
 
 	virtual bool getAuth(const std::string &name, AuthEntry &res);
 	virtual bool saveAuth(const AuthEntry &authEntry);
@@ -74,7 +75,7 @@ public:
 	virtual void reload();
 
 private:
-	leveldb::DB *m_database;
+	std::unique_ptr<leveldb::DB> m_database;
 };
 
 #endif // USE_LEVELDB

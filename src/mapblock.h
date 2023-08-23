@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
-#include "mapgen/mapgen.h"
 
 class Map;
 class NodeMetadataList;
@@ -81,9 +80,22 @@ public:
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
 
-	Map * getParent()
+	Map *getParent()
 	{
 		return m_parent;
+	}
+
+	// Any server-modding code can "delete" arbitrary blocks (i.e. with
+	// core.delete_area), which makes them orphan. Avoid using orphan blocks for
+	// anything.
+	bool isOrphan() const
+	{
+		return !m_parent;
+	}
+
+	void makeOrphan()
+	{
+		m_parent = nullptr;
 	}
 
 	void reallocate()

@@ -23,9 +23,18 @@ if not core.get_http_api then
 	return
 end
 
--- Unordered preserves the original order of the ContentDB API,
--- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
+local store = {
+	loading = false,
+	load_ok = false,
+	load_error = false,
+
+	-- Unordered preserves the original order of the ContentDB API,
+	-- before the package list is ordered based on installed state.
+	packages = {},
+	packages_full = {},
+	packages_full_unordered = {},
+	aliases = {},
+}
 
 local http = core.get_http_api()
 
@@ -65,7 +74,7 @@ local REASON_DEPENDENCY = "dependency"
 -- encodes for use as URL parameter or path component
 local function urlencode(str)
 	return str:gsub("[^%a%d()._~-]", function(char)
-		return string.format("%%%02X", string.byte(char))
+		return ("%%%02X"):format(char:byte())
 	end)
 end
 assert(urlencode("sample text?") == "sample%20text%3F")
@@ -89,7 +98,7 @@ local function download_and_extract(param)
 	if filename == "" or not core.download_file(param.url, filename) then
 		core.log("error", "Downloading " .. dump(param.url) .. " failed")
 		return {
-			msg = fgettext("Failed to download \"$1\"", package.title)
+			msg = fgettext_ne("Failed to download \"$1\"", package.title)
 		}
 	end
 
@@ -105,7 +114,7 @@ local function download_and_extract(param)
 	os.remove(filename)
 	if not tempfolder then
 		return {
-			msg = fgettext("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
+			msg = fgettext_ne("Failed to extract \"$1\" (unsupported file type or broken archive)", package.title),
 		}
 	end
 
@@ -129,7 +138,7 @@ local function start_install(package, reason)
 			local path, msg = pkgmgr.install_dir(package.type, result.path, package.name, package.path)
 			core.delete_dir(result.path)
 			if not path then
-				gamedata.errormessage = fgettext("Error installing \"$1\": $2", package.title, msg)
+				gamedata.errormessage = fgettext_ne("Error installing \"$1\": $2", package.title, msg)
 			else
 				core.log("action", "Installed package to " .. path)
 
@@ -184,7 +193,7 @@ local function start_install(package, reason)
 
 	if not core.handle_async(download_and_extract, params, callback) then
 		core.log("error", "ERROR: async event failed")
-		gamedata.errormessage = fgettext("Failed to download $1", package.name)
+		gamedata.errormessage = fgettext_ne("Failed to download $1", package.name)
 		return
 	end
 end
@@ -200,6 +209,9 @@ local function queue_download(package, reason)
 end
 
 local function get_raw_dependencies(package)
+	if package.type ~= "mod" then
+		return {}
+	end
 	if package.raw_deps then
 		return package.raw_deps
 	end
@@ -429,7 +441,7 @@ function install_dialog.get_formspec()
 		"container_end[]",
 	}
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function install_dialog.handle_submit(this, fields)
@@ -574,29 +586,33 @@ local function get_screenshot(package)
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-function store.load()
+local function fetch_pkgs(param)
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. urlencode(version.string)
+		core.get_max_supp_proto() .. "&engine_version=" .. param.urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. urlencode(item)
+			url = url .. "&hide=" .. param.urlencode(item)
 		end
 	end
 
+	local http = core.get_http_api()
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
 
-	store.packages_full = core.parse_json(response.data) or {}
-	store.aliases = {}
+	local packages = core.parse_json(response.data)
+	if not packages or #packages == 0 then
+		return
+	end
+	local aliases = {}
 
-	for _, package in pairs(store.packages_full) do
+	for _, package in pairs(packages) do
 		local name_len = #package.name
 		-- This must match what store.update_paths() does!
 		package.id = package.author:lower() .. "/"
@@ -606,22 +622,58 @@ function store.load()
 			package.id = package.id .. package.name
 		end
 
-		package.url_part = urlencode(package.author) .. "/" .. urlencode(package.name)
+		package.url_part = param.urlencode(package.author) .. "/" .. param.urlencode(package.name)
 
 		if package.aliases then
 			for _, alias in ipairs(package.aliases) do
 				-- We currently don't support name changing
 				local suffix = "/" .. package.name
 				if alias:sub(-#suffix) == suffix then
-					store.aliases[alias:lower()] = package.id
+					aliases[alias:lower()] = package.id
 				end
 			end
 		end
 	end
 
-	store.packages_full_unordered = store.packages_full
-	store.packages = store.packages_full
-	store.loaded = true
+	return { packages = packages, aliases = aliases }
+end
+
+local function sort_and_filter_pkgs()
+	store.update_paths()
+	store.sort_packages()
+	store.filter_packages(search_string)
+end
+
+function store.load()
+	if store.load_ok then
+		sort_and_filter_pkgs()
+		return
+	end
+	if store.loading then
+		return
+	end
+	store.loading = true
+	core.handle_async(
+		fetch_pkgs,
+		{ urlencode = urlencode },
+		function(result)
+			if result then
+				store.packages = result.packages
+				store.packages_full = result.packages
+				store.packages_full_unordered = result.packages
+				store.aliases = result.aliases
+				sort_and_filter_pkgs()
+
+				store.load_ok = true
+				store.load_error = false
+			else
+				store.load_error = true
+			end
+
+			store.loading = false
+			core.event_handler("Refresh")
+		end
+	)
 end
 
 function store.update_paths()
@@ -732,7 +784,29 @@ function store.filter_packages(query)
 	end
 end
 
+local function get_info_formspec(text)
+	local H = 9.5
+	return table.concat({
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
+
+		"label[4,4.35;", text, "]",
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
+		"container_end[]",
+	})
+end
+
 function store.get_formspec(dlgdata)
+	if store.loading then
+		return get_info_formspec(fgettext("Loading..."))
+	end
+	if store.load_error then
+		return get_info_formspec(fgettext("No packages could be retrieved"))
+	end
+	assert(store.load_ok)
+
 	store.update_paths()
 
 	dlgdata.pagemax = math.max(math.ceil(#store.packages / num_per_page), 1)
@@ -742,82 +816,70 @@ function store.get_formspec(dlgdata)
 
 	local W = 15.75
 	local H = 9.5
-	local formspec
-	if #store.packages_full > 0 then
-		formspec = {
-			"formspec_version[3]",
-			"size[15.75,9.5]",
-			"position[0.5,0.55]",
+	local formspec = {
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		not TOUCHSCREEN_GUI and "position[0.5,0.55]" or "",
 
-			"style[status,downloading,queued;border=false]",
+		"style[status,downloading,queued;border=false]",
 
-			"container[0.375,0.375]",
-			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
-			"field_close_on_enter[search_string;false]",
-			"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
-			"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
-			"dropdown[9.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
-			"container_end[]",
+		"container[0.375,0.375]",
+		"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
+		"field_close_on_enter[search_string;false]",
+		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
+		"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
+		"dropdown[9.175,0;2.7875,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+		"container_end[]",
 
-			-- Page nav buttons
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+		-- Page nav buttons
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 
-			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
-			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
-			"style[pagenum;border=false]",
-			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
-			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
-			"container_end[]",
+		"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+		"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+		"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
+		"style[pagenum;border=false]",
+		"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+		"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+		"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
+		"container_end[]",
 
-			"container_end[]",
-		}
+		"container_end[]",
+	}
 
-		if number_downloading > 0 then
-			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;downloading;"
-			if #download_queue > 0 then
-				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
-			else
-				formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+	if number_downloading > 0 then
+		formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;downloading;"
+		if #download_queue > 0 then
+			formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
+		else
+			formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+		end
+		formspec[#formspec + 1] = "]"
+	else
+		local num_avail_updates = 0
+		for i=1, #store.packages_full do
+			local package = store.packages_full[i]
+			if package.path and package.installed_release < package.release and
+					not (package.downloading or package.queued) then
+				num_avail_updates = num_avail_updates + 1
 			end
+		end
+
+		if num_avail_updates == 0 then
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;status;"
+			formspec[#formspec + 1] = fgettext("No updates")
 			formspec[#formspec + 1] = "]"
 		else
-			local num_avail_updates = 0
-			for i=1, #store.packages_full do
-				local package = store.packages_full[i]
-				if package.path and package.installed_release < package.release and
-						not (package.downloading or package.queued) then
-					num_avail_updates = num_avail_updates + 1
-				end
-			end
-
-			if num_avail_updates == 0 then
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
-				formspec[#formspec + 1] = fgettext("No updates")
-				formspec[#formspec + 1] = "]"
-			else
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;update_all;"
-				formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
-				formspec[#formspec + 1] = "]"
-			end
-		end
-
-		if #store.packages == 0 then
-			formspec[#formspec + 1] = "label[4,3;"
-			formspec[#formspec + 1] = fgettext("No results")
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;update_all;"
+			formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
 			formspec[#formspec + 1] = "]"
 		end
-	else
-		formspec = {
-			"size[12,7]",
-			"position[0.5,0.55]",
-			"label[4,3;", fgettext("No packages could be retrieved"), "]",
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
-			"container_end[]",
-		}
+	end
+
+	if #store.packages == 0 then
+		formspec[#formspec + 1] = "label[4,4.75;"
+		formspec[#formspec + 1] = fgettext("No results")
+		formspec[#formspec + 1] = "]"
 	end
 
 	-- download/queued tooltips always have the same message
@@ -888,7 +950,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
-		local description_width = W - 0.375*5 - 0.85 - 2*0.7
+		local description_width = W - 0.375*5 - 0.85 - 2*0.7 - 0.15
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
@@ -898,7 +960,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 	end
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function store.handle_submit(this, fields)
@@ -952,6 +1014,7 @@ function store.handle_submit(this, fields)
 		local new_type = table.indexof(filter_types_titles, fields.type)
 		if new_type ~= filter_type then
 			filter_type = new_type
+			cur_page = 1
 			store.filter_packages(search_string)
 			return true
 		end
@@ -999,7 +1062,13 @@ function store.handle_submit(this, fields)
 				end
 			end
 
-			if not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+			if package.type == "mod" and #pkgmgr.games == 0 then
+				local dlg = messagebox("install_game",
+					fgettext("You need to install a game before you can install a mod"))
+				dlg:set_parent(this)
+				this:hide()
+				dlg:show()
+			elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
 				local dlg = confirm_overwrite.create(package, on_confirm)
 				dlg:set_parent(this)
 				this:hide()
@@ -1032,16 +1101,8 @@ function store.handle_submit(this, fields)
 end
 
 function create_store_dlg(type)
-	if not store.loaded or #store.packages_full == 0 then
-		store.load()
-	end
-
-	store.update_paths()
-	store.sort_packages()
-
 	search_string = ""
 	cur_page = 1
-
 	if type then
 		-- table.indexof does not work on tables that contain `nil`
 		for i, v in pairs(filter_types_type) do
@@ -1050,9 +1111,11 @@ function create_store_dlg(type)
 				break
 			end
 		end
+	else
+		filter_type = 1
 	end
 
-	store.filter_packages(search_string)
+	store.load()
 
 	return dialog_create("store",
 			store.get_formspec,

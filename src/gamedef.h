@@ -35,10 +35,10 @@ class ModChannel;
 class ModStorage;
 class ModStorageDatabase;
 
-namespace irr { namespace scene {
+namespace irr::scene {
 	class IAnimatedMesh;
 	class ISceneManager;
-}}
+}
 
 struct SubgameSpec;
 struct ModSpec;

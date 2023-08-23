@@ -20,11 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "lua_api/l_base.h"
+#include "irr_v3d.h"
 
 typedef u16 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
+class MMVManip;
+
 class ModApiMapgen : public ModApiBase
 {
+	friend class LuaVoxelManip;
 private:
 	// get_biome_id(biomename)
 	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
@@ -138,6 +142,21 @@ private:
 
 	// read_schematic(schematic, options={...})
 	static int l_read_schematic(lua_State *L);
+
+	// Foreign implementations
+	/*
+	 * In this case the API functions belong to LuaVoxelManip (so l_vmanip.cpp),
+	 * but the implementations are so deeply connected to mapgen-related code
+	 * that they are better off being here.
+	 */
+
+	static int update_liquids(lua_State *L, MMVManip *vm);
+
+	static int calc_lighting(lua_State *L, MMVManip *vm,
+			v3s16 pmin, v3s16 pmax, bool propagate_shadow);
+
+	static int set_lighting(lua_State *L, MMVManip *vm,
+			v3s16 pmin, v3s16 pmax, u8 light);
 
 public:
 	static void Initialize(lua_State *L, int top);

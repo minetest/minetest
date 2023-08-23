@@ -33,7 +33,7 @@ void SetColorMaskStep::run(PipelineContext &context)
 	video::SOverrideMaterial &mat = context.device->getVideoDriver()->getOverrideMaterial();
 	mat.reset();
 	mat.Material.ColorMask = color_mask;
-	mat.EnableFlags = video::EMF_COLOR_MASK;
+	mat.EnableProps = video::EMP_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
 			   scene::ESNRP_TRANSPARENT | scene::ESNRP_TRANSPARENT_EFFECT |
 			   scene::ESNRP_SHADOW;
@@ -73,19 +73,20 @@ void populateAnaglyphPipeline(RenderPipeline *pipeline, Client *client)
 	step3D->setRenderTarget(enable_override_material);
 
 	// left eye
-	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(false));
-	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_RED));
+	pipeline->addStep<OffsetCameraStep>(false);
+	pipeline->addStep<SetColorMaskStep>(video::ECP_RED);
 	pipeline->addStep(step3D);
 
 	// right eye
-	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(true));
-	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_GREEN | video::ECP_BLUE));
+	pipeline->addStep<OffsetCameraStep>(true);
+	pipeline->addStep<SetColorMaskStep>(video::ECP_GREEN | video::ECP_BLUE);
 	pipeline->addStep(step3D);
 
 	// reset
-	pipeline->addStep(pipeline->createOwned<OffsetCameraStep>(0.0f));
-	pipeline->addStep(pipeline->createOwned<SetColorMaskStep>(video::ECP_ALL));
-	
-	pipeline->addStep(pipeline->createOwned<MapPostFxStep>());
-	pipeline->addStep(pipeline->createOwned<DrawHUD>());
+	pipeline->addStep<OffsetCameraStep>(0.0f);
+	pipeline->addStep<SetColorMaskStep>(video::ECP_ALL);
+
+	pipeline->addStep<DrawWield>();
+	pipeline->addStep<MapPostFxStep>();
+	pipeline->addStep<DrawHUD>();
 }

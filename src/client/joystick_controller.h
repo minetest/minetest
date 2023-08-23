@@ -109,6 +109,12 @@ public:
 	bool handleEvent(const irr::SEvent::SJoystickEvent &ev);
 	void clear();
 
+	void releaseAllKeys()
+	{
+		m_keys_released |= m_keys_down;
+		m_keys_down.reset();
+	}
+
 	bool wasKeyDown(GameKeyType b)
 	{
 		bool r = m_past_keys_pressed[b];

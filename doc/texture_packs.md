@@ -51,7 +51,7 @@ unsure, just test your texture pack in-game.
 Texture modifiers
 -----------------
 
-See lua_api.txt for texture modifiers
+See lua_api.md for texture modifiers
 
 Special textures
 ----------------
@@ -152,6 +152,7 @@ are placeholders intended to be overwritten by the game.
 * `debug_btn.png`
 * `gear_icon.png`
 * `rare_controls.png`
+* `exit_btn.png`
 
 Texture Overrides
 -----------------
@@ -209,7 +210,7 @@ Here are targets you can choose from:
 Nodes support all targets, but other items only support 'inventory'
 and 'wield'.
 
-¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.txt for details.
+¹ : `N` is an integer [0,255]. Sets align_style = "world" and scale = N on the tile, refer to lua_api.md for details.
 
 ### Using the special targets
 

@@ -105,15 +105,6 @@ set_dev_build() {
 		sed -i -re 's/^set\(DEVELOPMENT_BUILD [A-Z]+\)$/set(DEVELOPMENT_BUILD FALSE)/' CMakeLists.txt
 	fi
 
-	# Update Android versions
-	if [ "$is_dev" -eq 1 ]; then
-		sed -i 's/set("versionExtra", "")/set("versionExtra", "-dev")/' android/build.gradle
-		sed -i 's/project.ext.set("developmentBuild", 0)/project.ext.set("developmentBuild", 1)/' android/build.gradle
-	else
-		sed -i 's/set("versionExtra", "-dev")/set("versionExtra", "")/' android/build.gradle
-		sed -i 's/project.ext.set("developmentBuild", 1)/project.ext.set("developmentBuild", 0)/' android/build.gradle
-	fi
-
 	git add -f CMakeLists.txt android/build.gradle
 }
 
@@ -139,10 +130,10 @@ write_new_version() {
 	sed -i -re "s/set\(\"versionPatch\", [0-9]+\)/set(\"versionPatch\", $NEXT_VERSION_PATCH)/" android/build.gradle
 
 	# Update doc versions
-	sed -i -re '1s/[0-9]+\.[0-9]+\.[0-9]+/'"$NEXT_VERSION"'/g' doc/menu_lua_api.txt
-	sed -i -re '1s/[0-9]+\.[0-9]+\.[0-9]+/'"$NEXT_VERSION"'/g' doc/client_lua_api.txt
+	sed -i -re '1s/[0-9]+\.[0-9]+\.[0-9]+/'"$NEXT_VERSION"'/g' doc/menu_lua_api.md
+	sed -i -re '1s/[0-9]+\.[0-9]+\.[0-9]+/'"$NEXT_VERSION"'/g' doc/client_lua_api.md
 
-	git add -f CMakeLists.txt android/build.gradle doc/menu_lua_api.txt doc/client_lua_api.txt
+	git add -f CMakeLists.txt android/build.gradle doc/menu_lua_api.md doc/client_lua_api.md
 }
 
 ## Create release commit and tag

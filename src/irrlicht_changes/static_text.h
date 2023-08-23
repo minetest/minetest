@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include "IrrCompileConfig.h"
-#ifdef _IRR_COMPILE_WITH_GUI_
-
 #include "IGUIStaticText.h"
 #include "irrArray.h"
 
@@ -52,27 +49,7 @@ namespace gui
 			s32 id = -1,
 			bool fillBackground = false)
 		{
-			if (parent == NULL) {
-				// parent is NULL, so we must find one, or we need not to drop
-				// result, but then there will be a memory leak.
-				//
-				// What Irrlicht does is to use guienv as a parent, but the problem
-				// is that guienv is here only an IGUIEnvironment, while it is a
-				// CGUIEnvironment in Irrlicht, which inherits from both IGUIElement
-				// and IGUIEnvironment.
-				//
-				// A solution would be to dynamic_cast guienv to a
-				// IGUIElement*, but Irrlicht is shipped without rtti support
-				// in some distributions, causing the dymanic_cast to segfault.
-				//
-				// Thus, to find the parent, we create a dummy StaticText and ask
-				// for its parent, and then remove it.
-				irr::gui::IGUIStaticText *dummy_text =
-					guienv->addStaticText(L"", rectangle, border, wordWrap,
-						parent, id, fillBackground);
-				parent = dummy_text->getParent();
-				dummy_text->remove();
-			}
+			parent = parent ? parent : guienv->getRootGUIElement();
 			irr::gui::IGUIStaticText *result = new irr::gui::StaticText(
 				text, border, guienv, parent,
 				id, rectangle, fillBackground);
@@ -135,10 +112,8 @@ namespace gui
 		//! Gets the override color
 		virtual video::SColor getOverrideColor() const;
 
-		#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
 		//! Gets the currently used text color
 		virtual video::SColor getActiveColor() const;
-		#endif
 
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
@@ -233,5 +208,3 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *
 {
 	setStaticText(static_text, EnrichedString(text, static_text->getOverrideColor()));
 }
-
-#endif // _IRR_COMPILE_WITH_GUI_

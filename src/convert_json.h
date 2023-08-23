@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <json/json.h>
+#include "json-forwards.h"
 #include <ostream>
 
 void fastWriteJson(const Json::Value &value, std::ostream &to);

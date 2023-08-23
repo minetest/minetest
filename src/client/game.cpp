@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
 #include "client/joystick_controller.h"
+#include "client/mapblock_mesh.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"
@@ -71,6 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "script/scripting_client.h"
 #include "hud.h"
+#include "clientdynamicinfo.h"
 
 #if USE_SOUND
 	#include "client/sound_openal.h"
@@ -258,31 +260,25 @@ class SoundMaker
 	const NodeDefManager *m_ndef;
 
 public:
-	bool makes_footstep_sound;
-	float m_player_step_timer;
-	float m_player_jump_timer;
+	bool makes_footstep_sound = true;
+	float m_player_step_timer = 0.0f;
+	float m_player_jump_timer = 0.0f;
 
-	SimpleSoundSpec m_player_step_sound;
-	SimpleSoundSpec m_player_leftpunch_sound;
+	SoundSpec m_player_step_sound;
+	SoundSpec m_player_leftpunch_sound;
 	// Second sound made on left punch, currently used for item 'use' sound
-	SimpleSoundSpec m_player_leftpunch_sound2;
-	SimpleSoundSpec m_player_rightpunch_sound;
+	SoundSpec m_player_leftpunch_sound2;
+	SoundSpec m_player_rightpunch_sound;
 
-	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef):
-		m_sound(sound),
-		m_ndef(ndef),
-		makes_footstep_sound(true),
-		m_player_step_timer(0.0f),
-		m_player_jump_timer(0.0f)
-	{
-	}
+	SoundMaker(ISoundManager *sound, const NodeDefManager *ndef) :
+		m_sound(sound), m_ndef(ndef) {}
 
 	void playPlayerStep()
 	{
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
 			if (makes_footstep_sound)
-				m_sound->playSound(m_player_step_sound);
+				m_sound->playSound(0, m_player_step_sound);
 		}
 	}
 
@@ -290,7 +286,7 @@ public:
 	{
 		if (m_player_jump_timer <= 0.0f) {
 			m_player_jump_timer = 0.2f;
-			m_sound->playSound(SimpleSoundSpec("player_jump", 0.5f));
+			m_sound->playSound(0, SoundSpec("player_jump", 0.5f));
 		}
 	}
 
@@ -315,33 +311,33 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound);
-		sm->m_sound->playSound(sm->m_player_leftpunch_sound2);
+		sm->m_sound->playSound(0, sm->m_player_leftpunch_sound);
+		sm->m_sound->playSound(0, sm->m_player_leftpunch_sound2);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(sm->m_player_rightpunch_sound);
+		sm->m_sound->playSound(0, sm->m_player_rightpunch_sound);
 	}
 
 	static void nodeDug(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
 		NodeDugEvent *nde = (NodeDugEvent *)e;
-		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug);
+		sm->m_sound->playSound(0, sm->m_ndef->get(nde->n).sound_dug);
 	}
 
 	static void playerDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_damage", 0.5));
+		sm->m_sound->playSound(0, SoundSpec("player_damage", 0.5));
 	}
 
 	static void playerFallingDamage(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker *)data;
-		sm->m_sound->playSound(SimpleSoundSpec("player_falling_damage", 0.5));
+		sm->m_sound->playSound(0, SoundSpec("player_falling_damage", 0.5));
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -363,42 +359,6 @@ public:
 	}
 };
 
-// Locally stored sounds don't need to be preloaded because of this
-class GameOnDemandSoundFetcher: public OnDemandSoundFetcher
-{
-	std::set<std::string> m_fetched;
-private:
-	void paths_insert(std::set<std::string> &dst_paths,
-		const std::string &base,
-		const std::string &name)
-	{
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".0.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".1.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".2.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".3.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".4.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".5.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".6.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".7.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".8.ogg");
-		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".9.ogg");
-	}
-public:
-	void fetchSounds(const std::string &name,
-		std::set<std::string> &dst_paths,
-		std::set<std::string> &dst_datas)
-	{
-		if (m_fetched.count(name))
-			return;
-
-		m_fetched.insert(name);
-
-		paths_insert(dst_paths, porting::path_share, name);
-		paths_insert(dst_paths, porting::path_user,  name);
-	}
-};
-
 
 typedef s32 SamplerLayer_t;
 
@@ -412,6 +372,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	bool m_fog_enabled;
 	CachedPixelShaderSetting<float, 4> m_sky_bg_color;
 	CachedPixelShaderSetting<float> m_fog_distance;
+	CachedPixelShaderSetting<float> m_fog_shading_parameter;
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
 	CachedVertexShaderSetting<float> m_animation_timer_delta_vertex;
@@ -427,7 +388,8 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
-	CachedPixelShaderSetting<float, 2> m_texel_size0;
+	CachedVertexShaderSetting<float, 2> m_texel_size0_vertex;
+	CachedPixelShaderSetting<float, 2> m_texel_size0_pixel;
 	std::array<float, 2> m_texel_size0_values;
 	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel;
 	float m_user_exposure_compensation;
@@ -470,6 +432,7 @@ public:
 		m_fog_range(fog_range),
 		m_sky_bg_color("skyBgColor"),
 		m_fog_distance("fogDistance"),
+		m_fog_shading_parameter("fogShadingParameter"),
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
 		m_animation_timer_delta_vertex("animationTimerDelta"),
@@ -485,7 +448,8 @@ public:
 		m_texture1("texture1"),
 		m_texture2("texture2"),
 		m_texture3("texture3"),
-		m_texel_size0("texelSize0"),
+		m_texel_size0_vertex("texelSize0"),
+		m_texel_size0_pixel("texelSize0"),
 		m_exposure_params_pixel("exposureParams",
 				std::array<const char*, 7> {
 						"luminanceMin", "luminanceMax", "exposureCorrection",
@@ -534,7 +498,10 @@ public:
 		if (m_fog_enabled && !*m_force_fog_off)
 			fog_distance = *m_fog_range;
 
+		float fog_shading_parameter = 1.0 / ( 1.0 - m_sky->getFogStart());
+
 		m_fog_distance.set(&fog_distance, services);
+		m_fog_shading_parameter.set(&fog_shading_parameter, services);
 
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
 		video::SColorf sunlight;
@@ -587,7 +554,8 @@ public:
 		tex_id = 3;
 		m_texture3.set(&tex_id, services);
 
-		m_texel_size0.set(m_texel_size0_values.data(), services);
+		m_texel_size0_vertex.set(m_texel_size0_values.data(), services);
+		m_texel_size0_pixel.set(m_texel_size0_values.data(), services);
 
 		const AutoExposure &exposure_params = m_client->getEnv().getLocalPlayer()->getLighting().exposure;
 		std::array<float, 7> exposure_buffer = {
@@ -923,6 +891,9 @@ private:
 	Client *client = nullptr;
 	Server *server = nullptr;
 
+	ClientDynamicInfo client_display_info{};
+	float dynamic_info_send_timer = 0;
+
 	IWritableTextureSource *texture_src = nullptr;
 	IWritableShaderSource *shader_src = nullptr;
 
@@ -930,9 +901,7 @@ private:
 	IWritableItemDefManager *itemdef_manager = nullptr;
 	NodeDefManager *nodedef_manager = nullptr;
 
-	GameOnDemandSoundFetcher soundfetcher; // useful when testing
-	ISoundManager *sound = nullptr;
-	bool sound_is_dummy = false;
+	std::unique_ptr<ISoundManager> sound_manager;
 	SoundMaker *soundmaker = nullptr;
 
 	ChatBackend *chat_backend = nullptr;
@@ -996,21 +965,20 @@ private:
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
 	f32  m_cache_cam_smoothing;
-	f32  m_cache_fog_start;
 
-	bool m_invert_mouse = false;
+	bool m_invert_mouse;
+	bool m_enable_hotbar_mouse_wheel;
+	bool m_invert_hotbar_mouse_wheel;
+
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
+	bool m_game_focused;
 
 	bool m_does_lost_focus_pause_game = false;
 
 	// if true, (almost) the whole game is paused
 	// this happens in pause menu in singleplayer
 	bool m_is_paused = false;
-
-#if IRRLICHT_VERSION_MT_REVISION < 5
-	int m_reset_HW_buffer_counter = 0;
-#endif
 
 #ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
@@ -1032,7 +1000,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("doubletap_joysticks",
+	g_settings->registerChangedCallback("enable_joysticks",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("enable_particles",
 		&settingChangedCallback, this);
@@ -1048,11 +1016,21 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("pause_on_lost_focus",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -1073,8 +1051,7 @@ Game::~Game()
 {
 	delete client;
 	delete soundmaker;
-	if (!sound_is_dummy)
-		delete sound;
+	sound_manager.reset();
 
 	delete server; // deleted first to stop all server threads
 
@@ -1094,11 +1071,15 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_clouds",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_joysticks",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_particles",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("enable_fog",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
@@ -1106,12 +1087,24 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("free_move",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("fog_start",
+		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_mouse",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("invert_hotbar_mouse_wheel",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("pause_on_lost_focus",
+		&settingChangedCallback, this);
+	if (m_rendering_engine)
+		m_rendering_engine->finalize();
 }
 
 bool Game::startup(bool *kill,
@@ -1146,7 +1139,6 @@ bool Game::startup(bool *kill,
 
 	m_game_ui->initFlags();
 
-	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -1191,30 +1183,33 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
-		g_settings->getU16("screen_h"));
+	const irr::core::dimension2du initial_screen_size(
+			g_settings->getU16("screen_w"),
+			g_settings->getU16("screen_h")
+		);
+	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
 
-		const irr::core::dimension2d<u32> &current_screen_size =
-			m_rendering_engine->get_video_driver()->getScreenSize();
-		// Verify if window size has changed and save it if it's the case
-		// Ensure evaluating settings->getBool after verifying screensize
-		// First condition is cheaper
-		if (previous_screen_size != current_screen_size &&
-				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
-				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screen_w", current_screen_size.Width);
-			g_settings->setU16("screen_h", current_screen_size.Height);
-			previous_screen_size = current_screen_size;
-		}
-
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
 		//  + Sleep time until the wanted FPS are reached
 		draw_times.limit(device, &dtime);
+
+		const auto current_dynamic_info = ClientDynamicInfo::getCurrent();
+		if (!current_dynamic_info.equal(client_display_info)) {
+			client_display_info = current_dynamic_info;
+			dynamic_info_send_timer = 0.2f;
+		}
+
+		if (dynamic_info_send_timer > 0.0f) {
+			dynamic_info_send_timer -= dtime;
+			if (dynamic_info_send_timer <= 0.0f) {
+				client->sendUpdateClientInfo(current_dynamic_info);
+			}
+		}
 
 		// Prepare render data for next iteration
 
@@ -1246,10 +1241,13 @@ void Game::run()
 			if (m_is_paused)
 				dtime = 0.0f;
 
-			if (!was_paused && m_is_paused)
+			if (!was_paused && m_is_paused) {
 				pauseAnimation();
-			else if (was_paused && !m_is_paused)
+				sound_manager->pauseAll();
+			} else if (was_paused && !m_is_paused) {
 				resumeAnimation();
+				sound_manager->resumeAll();
+			}
 		}
 
 		if (!m_is_paused)
@@ -1269,13 +1267,13 @@ void Game::run()
 			showPauseMenu();
 		}
 	}
+
+	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }
 
 
 void Game::shutdown()
 {
-	m_rendering_engine->finalize();
-
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
@@ -1365,20 +1363,21 @@ bool Game::initSound()
 #if USE_SOUND
 	if (g_settings->getBool("enable_sound") && g_sound_manager_singleton.get()) {
 		infostream << "Attempting to use OpenAL audio" << std::endl;
-		sound = createOpenALSoundManager(g_sound_manager_singleton.get(), &soundfetcher);
-		if (!sound)
+		sound_manager = createOpenALSoundManager(g_sound_manager_singleton.get(),
+				std::make_unique<SoundFallbackPathProvider>());
+		if (!sound_manager)
 			infostream << "Failed to initialize OpenAL audio" << std::endl;
-	} else
+	} else {
 		infostream << "Sound disabled." << std::endl;
+	}
 #endif
 
-	if (!sound) {
+	if (!sound_manager) {
 		infostream << "Using dummy audio." << std::endl;
-		sound = &dummySoundManager;
-		sound_is_dummy = true;
+		sound_manager = std::make_unique<DummySoundManager>();
 	}
 
-	soundmaker = new SoundMaker(sound, nodedef_manager);
+	soundmaker = new SoundMaker(sound_manager.get(), nodedef_manager);
 	if (!soundmaker)
 		return false;
 
@@ -1505,17 +1504,10 @@ bool Game::createClient(const GameStartData &start_data)
 	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
 	str += L" ";
 	str += utf8_to_wide(g_version_hash);
-	{
-		const wchar_t *text = nullptr;
-		if (simple_singleplayer_mode)
-			text = wgettext("Singleplayer");
-		else
-			text = wgettext("Multiplayer");
-		str += L" [";
-		str += text;
-		str += L"]";
-		delete[] text;
-	}
+	str += L" [";
+	str += simple_singleplayer_mode ? wstrgettext("Singleplayer")
+			: wstrgettext("Multiplayer");
+	str += L"]";
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -1538,7 +1530,9 @@ bool Game::createClient(const GameStartData &start_data)
 
 bool Game::initGui()
 {
-	m_game_ui->init();
+	auto guienv = m_rendering_engine->get_gui_env();
+
+	m_game_ui->init(guienv);
 
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
@@ -1601,7 +1595,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 		client = new Client(start_data.name.c_str(),
 				start_data.password, start_data.address,
 				*draw_control, texture_src, shader_src,
-				itemdef_manager, nodedef_manager, sound, eventmgr,
+				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
 				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
 				start_data.allow_login_or_register);
 		client->migrateModStorage();
@@ -1731,17 +1725,13 @@ bool Game::getServerContent(bool *aborted)
 		int progress = 25;
 
 		if (!client->itemdefReceived()) {
-			const wchar_t *text = wgettext("Item definitions...");
 			progress = 25;
-			m_rendering_engine->draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			m_rendering_engine->draw_load_screen(wstrgettext("Item definitions..."),
+					texture_src, dtime, progress);
 		} else if (!client->nodedefReceived()) {
-			const wchar_t *text = wgettext("Node definitions...");
 			progress = 30;
-			m_rendering_engine->draw_load_screen(text, guienv, texture_src,
-				dtime, progress);
-			delete[] text;
+			m_rendering_engine->draw_load_screen(wstrgettext("Node definitions..."),
+					texture_src, dtime, progress);
 		} else {
 			std::ostringstream message;
 			std::fixed(message);
@@ -1766,7 +1756,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()), guienv,
+			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()),
 				texture_src, dtime, progress);
 		}
 	}
@@ -1817,6 +1807,9 @@ inline bool Game::handleCallbacks()
 		return false;
 	}
 
+	auto guienv = m_rendering_engine->get_gui_env();
+	auto guiroot = guienv->getRootGUIElement();
+
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
 				       &g_menumgr, client, texture_src))->drop();
@@ -1847,7 +1840,6 @@ inline bool Game::handleCallbacks()
 void Game::processQueues()
 {
 	texture_src->processQueue();
-	itemdef_manager->processQueue(client);
 	shader_src->processQueue();
 }
 
@@ -1962,21 +1954,32 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 
 void Game::processUserInput(f32 dtime)
 {
+	auto guienv = m_rendering_engine->get_gui_env();
+
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
-		input->clear();
+		if(m_game_focused) {
+			m_game_focused = false;
+			infostream << "Game lost focus" << std::endl;
+			input->releaseAllKeys();
+		} else {
+			input->clear();
+		}
 #ifdef HAVE_TOUCHSCREENGUI
 		g_touchscreengui->hide();
 #endif
-	}
+	} else {
 #ifdef HAVE_TOUCHSCREENGUI
-	else if (g_touchscreengui) {
-		/* on touchscreengui step may generate own input events which ain't
-		 * what we want in case we just did clear them */
-		g_touchscreengui->show();
-		g_touchscreengui->step(dtime);
-	}
+		if (g_touchscreengui) {
+			/* on touchscreengui step may generate own input events which ain't
+			 * what we want in case we just did clear them */
+			g_touchscreengui->show();
+			g_touchscreengui->step(dtime);
+		}
 #endif
+
+		m_game_focused = true;
+	}
 
 	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
@@ -2089,7 +2092,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		m_game_ui->toggleChat();
+		m_game_ui->toggleChat(client);
 	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
@@ -2133,9 +2136,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 	/* Item selection using mouse wheel
 	 */
 	*new_playeritem = player->getWieldIndex();
-	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		    player->hud_hotbar_itemcount - 1);
+
+	s32 wheel = input->getMouseWheel();
+	if (!m_enable_hotbar_mouse_wheel)
+		wheel = 0;
+	if (m_invert_hotbar_mouse_wheel)
+		wheel *= -1;
 
 	s32 dir = wheel;
 
@@ -2207,7 +2215,8 @@ void Game::openInventory()
 	TextDest *txt_dst = new TextDestPlayerInventory(client);
 	auto *&formspec = m_game_ui->updateFormspec("");
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+		sound_manager.get());
 
 	formspec->setFormSpec(fs_src->getForm(), inventoryloc);
 }
@@ -2341,7 +2350,7 @@ void Game::toggleBlockBounds()
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	if (!(client->checkPrivilege("debug") || (player->hud_flags & HUD_FLAG_BASIC_DEBUG))) {
-		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by mod or game)");
+		m_game_ui->showTranslatedStatusText("Can't show block bounds (disabled by game or mod)");
 		return;
 	}
 	enum Hud::BlockBoundsMode newmode = hud->toggleBlockBounds();
@@ -2486,13 +2495,18 @@ void Game::increaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
+	s16 server_limit = sky->getFogDistance();
 
-	if (range_new > 4000) {
+	if (range_new >= 4000) {
 		range_new = 4000;
-		std::wstring msg = fwgettext("Viewing range is at maximum: %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d (the maximum), but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d (the maximum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2503,13 +2517,18 @@ void Game::decreaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
+	s16 server_limit = sky->getFogDistance();
 
-	if (range_new < 20) {
+	if (range_new <= 20) {
 		range_new = 20;
-		std::wstring msg = fwgettext("Viewing range is at minimum: %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing changed to %d (the minimum), but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing changed to %d (the minimum)", range_new);
 		m_game_ui->showStatusText(msg);
 	} else {
-		std::wstring msg = fwgettext("Viewing range changed to %d", range_new);
+		std::wstring msg = server_limit >= 0 && range_new > server_limit ?
+				fwgettext("Viewing range changed to %d, but limited to %d by game or mod", range_new, server_limit) :
+				fwgettext("Viewing range changed to %d", range_new);
 		m_game_ui->showStatusText(msg);
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2519,10 +2538,15 @@ void Game::decreaseViewRange()
 void Game::toggleFullViewRange()
 {
 	draw_control->range_all = !draw_control->range_all;
-	if (draw_control->range_all)
-		m_game_ui->showTranslatedStatusText("Enabled unlimited viewing range");
-	else
-		m_game_ui->showTranslatedStatusText("Disabled unlimited viewing range");
+	if (draw_control->range_all) {
+		if (sky->getFogDistance() >= 0) {
+			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled, but forbidden by game or mod");
+		} else {
+			m_game_ui->showTranslatedStatusText("Unlimited viewing range enabled");
+		}
+	} else {
+		m_game_ui->showTranslatedStatusText("Unlimited viewing range disabled");
+	}
 }
 
 
@@ -2535,7 +2559,7 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-#if !defined(__ANDROID__) && IRRLICHT_VERSION_MT_REVISION >= 9
+#ifndef __ANDROID__
 	if (isMenuActive())
 		device->getCursorControl()->setRelativeMode(false);
 	else
@@ -2799,7 +2823,8 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 		auto *&formspec = m_game_ui->updateFormspec(*(event->show_formspec.formname));
 		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 	}
 
 	delete event->show_formspec.formspec;
@@ -2812,7 +2837,7 @@ void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrienta
 	LocalFormspecHandler *txt_dst =
 		new LocalFormspecHandler(*event->show_formspec.formname, client);
 	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
@@ -2980,6 +3005,23 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 		);
 	}
 
+	// Orbit Tilt:
+	sky->setBodyOrbitTilt(event->set_sky->body_orbit_tilt);
+
+	// fog
+	// do not override a potentially smaller client setting.
+	sky->setFogDistance(event->set_sky->fog_distance);
+
+	// if the fog distance is reset, switch back to the client's viewing_range
+	if (event->set_sky->fog_distance < 0)
+		draw_control->wanted_range = g_settings->getS16("viewing_range");
+
+	if (event->set_sky->fog_start >= 0)
+		sky->setFogStart(rangelim(event->set_sky->fog_start, 0.0f, 0.99f));
+	else
+		sky->setFogStart(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
+
+
 	delete event->set_sky;
 }
 
@@ -3143,27 +3185,29 @@ void Game::updateCamera(f32 dtime)
 void Game::updateSound(f32 dtime)
 {
 	// Update sound listener
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	ClientActiveObject *parent = player->getParent();
 	v3s16 camera_offset = camera->getOffset();
-	sound->updateListener(camera->getCameraNode()->getPosition() + intToFloat(camera_offset, BS),
-			      v3f(0, 0, 0), // velocity
-			      camera->getDirection(),
-			      camera->getCameraNode()->getUpVector());
+	sound_manager->updateListener(
+			(1.0f/BS) * camera->getCameraNode()->getPosition()
+					+ intToFloat(camera_offset, 1.0f),
+			(1.0f/BS) * (parent ? parent->getVelocity() : player->getSpeed()),
+			camera->getDirection(),
+			camera->getCameraNode()->getUpVector());
 
 	bool mute_sound = g_settings->getBool("mute_sound");
 	if (mute_sound) {
-		sound->setListenerGain(0.0f);
+		sound_manager->setListenerGain(0.0f);
 	} else {
 		// Check if volume is in the proper range, else fix it.
 		float old_volume = g_settings->getFloat("sound_volume");
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-		sound->setListenerGain(new_volume);
+		sound_manager->setListenerGain(new_volume);
 
 		if (old_volume != new_volume) {
 			g_settings->setFloat("sound_volume", new_volume);
 		}
 	}
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
@@ -3280,7 +3324,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 
 	runData.punching = false;
 
-	soundmaker->m_player_leftpunch_sound = SimpleSoundSpec();
+	soundmaker->m_player_leftpunch_sound = SoundSpec();
 	soundmaker->m_player_leftpunch_sound2 = pointed.type != POINTEDTHING_NOTHING ?
 		selected_def.sound_use : selected_def.sound_use_air;
 
@@ -3478,7 +3522,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		// Placing animation (always shown for feedback)
 		camera->setDigging(1);
 
-		soundmaker->m_player_rightpunch_sound = SimpleSoundSpec();
+		soundmaker->m_player_rightpunch_sound = SoundSpec();
 
 		// If the wielded item has node placement prediction,
 		// make that happen
@@ -3528,7 +3572,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		auto *&formspec = m_game_ui->updateFormspec("");
 		GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 
 		formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		return false;
@@ -3896,7 +3941,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Fog range
 	*/
 
-	if (draw_control->range_all) {
+	if (sky->getFogDistance() >= 0) {
+		draw_control->wanted_range = MYMIN(draw_control->wanted_range, sky->getFogDistance());
+	}
+	if (draw_control->range_all && sky->getFogDistance() < 0) {
 		runData.fog_range = 100000 * BS;
 	} else {
 		runData.fog_range = draw_control->wanted_range * BS;
@@ -3987,12 +4035,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Fog
 	*/
-
 	if (m_cache_enable_fog) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
-				runData.fog_range * m_cache_fog_start,
+				runData.fog_range * sky->getFogStart(),
 				runData.fog_range * 1.0,
 				0.01,
 				false, // pixel fog
@@ -4055,11 +4102,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	runData.update_draw_list_timer += dtime;
 	runData.touch_blocks_timer += dtime;
 
-	bool draw_list_updated = false;
-
 	float update_draw_list_delta = 0.2f;
 
 	v3f camera_direction = camera->getDirection();
+
+	// call only one of updateDrawList, touchMapBlocks, or updateShadow per frame
+	// (the else-ifs below are intentional)
 	if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| m_camera_offset_changed
@@ -4067,15 +4115,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList();
 		runData.update_draw_list_last_cam_dir = camera_direction;
-		draw_list_updated = true;
-	}
-
-	if (runData.touch_blocks_timer > update_draw_list_delta && !draw_list_updated) {
+	} else if (runData.touch_blocks_timer > update_draw_list_delta) {
 		client->getEnv().getClientMap().touchMapBlocks();
 		runData.touch_blocks_timer = 0;
-	}
-
-	if (RenderingEngine::get_shadow_renderer()) {
+	} else if (RenderingEngine::get_shadow_renderer()) {
 		updateShadows();
 	}
 
@@ -4106,7 +4149,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		}
 
 		if (isMenuActive())
-			guiroot->bringToFront(formspec);
+			m_rendering_engine->get_gui_env()->getRootGUIElement()->bringToFront(formspec);
 	} while (false);
 
 	/*
@@ -4153,29 +4196,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== End scene ====================
 	*/
-#if IRRLICHT_VERSION_MT_REVISION < 5
-	if (++m_reset_HW_buffer_counter > 500) {
-		/*
-		  Periodically remove all mesh HW buffers.
-
-		  Work around for a quirk in Irrlicht where a HW buffer is only
-		  released after 20000 iterations (triggered from endScene()).
-
-		  Without this, all loaded but unused meshes will retain their HW
-		  buffers for at least 5 minutes, at which point looking up the HW buffers
-		  becomes a bottleneck and the framerate drops (as much as 30%).
-
-		  Tests showed that numbers between 50 and 1000 are good, so picked 500.
-		  There are no other public Irrlicht APIs that allow interacting with the
-		  HW buffers without tracking the status of every individual mesh.
-
-		  The HW buffers for _visible_ meshes will be reinitialized in the next frame.
-		*/
-		infostream << "Game::updateFrame(): Removing all HW buffers." << std::endl;
-		driver->removeAllHardwareBuffers();
-		m_reset_HW_buffer_counter = 0;
-	}
-#endif
 
 	driver->endScene();
 
@@ -4215,8 +4235,6 @@ void Game::updateShadows()
 
 	v3f sun_pos = light * offset_constant;
 
-	if (shadow->getDirectionalLightCount() == 0)
-		shadow->addDirectionalLight();
 	shadow->getDirectionalLight().setDirection(sun_pos);
 	shadow->setTimeOfDay(in_timeofday);
 
@@ -4251,8 +4269,8 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 
 	if (busy_time < frametime_min) {
 		sleep_time = frametime_min - busy_time;
-		if (sleep_time > 1000)
-			sleep_ms(sleep_time / 1000);
+		if (sleep_time > 0)
+			sleep_us(sleep_time);
 	} else {
 		sleep_time = 0;
 	}
@@ -4269,12 +4287,10 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 	last_time = time;
 }
 
-void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_clouds)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
 {
-	const wchar_t *wmsg = wgettext(msg);
-	m_rendering_engine->draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
-		draw_clouds);
-	delete[] wmsg;
+	m_rendering_engine->draw_load_screen(wstrgettext(msg), texture_src,
+			dtime, percent, draw_sky);
 }
 
 void Game::settingChangedCallback(const std::string &setting_name, void *data)
@@ -4296,17 +4312,18 @@ void Game::readSettings()
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
-	m_cache_fog_start                    = g_settings->getFloat("fog_start");
-
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
 	else
 		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
 
-	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+
+	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_enable_hotbar_mouse_wheel = g_settings->getBool("enable_hotbar_mouse_wheel");
+	m_invert_hotbar_mouse_wheel = g_settings->getBool("invert_hotbar_mouse_wheel");
 
 	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
 }
@@ -4335,7 +4352,8 @@ void Game::showDeathFormspec()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+		&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+		sound_manager.get());
 	formspec->setFocus("btn_respawn");
 }
 
@@ -4343,14 +4361,14 @@ void Game::showDeathFormspec()
 void Game::showPauseMenu()
 {
 #ifdef HAVE_TOUCHSCREENGUI
-	static const std::string control_text = strgettext("Default Controls:\n"
-		"No menu visible:\n"
-		"- single tap: button activate\n"
-		"- double tap: place/use\n"
+	static const std::string control_text = strgettext("Controls:\n"
+		"No menu open:\n"
 		"- slide finger: look around\n"
-		"Menu/Inventory visible:\n"
+		"- tap: place/use\n"
+		"- long tap: dig/punch/use\n"
+		"Menu/inventory open:\n"
 		"- double tap (outside):\n"
-		" -->close\n"
+		" --> close\n"
 		"- touch stack, touch slot:\n"
 		" --> move stack\n"
 		"- touch&drag, tap 2nd finger\n"
@@ -4363,7 +4381,7 @@ void Game::showPauseMenu()
 		"- %s: move left\n"
 		"- %s: move right\n"
 		"- %s: jump/climb up\n"
-		"- %s: dig/punch\n"
+		"- %s: dig/punch/use\n"
 		"- %s: place/use\n"
 		"- %s: sneak/climb down\n"
 		"- %s: drop item\n"
@@ -4471,7 +4489,8 @@ void Game::showPauseMenu()
 
 	auto *&formspec = m_game_ui->getFormspecGUI();
 	GUIFormSpecMenu::create(formspec, client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound);
+			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(),
+			sound_manager.get());
 	formspec->setFocus("btn_continue");
 	// game will be paused in next step, if in singleplayer (see m_is_paused)
 	formspec->doPause = true;
@@ -4514,7 +4533,7 @@ void the_game(bool *kill,
 		error_message = e.what();
 		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
-		// DO NOT TRANSLATE the `ModError`, it's used by ui.lua
+		// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
 		error_message = std::string("ModError: ") + e.what() +
 				strgettext("\nCheck debug.txt for details.");
 		errorstream << error_message << std::endl;

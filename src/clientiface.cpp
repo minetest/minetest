@@ -99,6 +99,17 @@ void RemoteClient::GetNextBlocks (
 {
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
+	m_map_send_completion_timer += dtime;
+
+	if (m_map_send_completion_timer > g_settings->getFloat("server_unload_unused_data_timeout") * 0.8f) {
+		infostream << "Server: Player " << m_name << ", peer_id=" << peer_id
+				<< ": full map send is taking too long ("
+				<< m_map_send_completion_timer
+				<< "s), restarting to avoid visible blocks being unloaded."
+				<< std::endl;
+		m_map_send_completion_timer = 0.0f;
+		m_nearest_unsent_d = 0;
+	}
 
 	if (m_nothing_to_send_pause_timer >= 0)
 		return;
@@ -138,6 +149,9 @@ void RemoteClient::GetNextBlocks (
 	camera_dir.rotateYZBy(sao->getLookPitch());
 	camera_dir.rotateXZBy(sao->getRotation().Y);
 
+	if (sao->getCameraInverted())
+		camera_dir = -camera_dir;
+
 	u16 max_simul_sends_usually = m_max_simul_sends;
 
 	/*
@@ -166,7 +180,12 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	// Get view range and camera fov (radians) from the client
+	s16 fog_distance = sao->getPlayer()->getSkyParams().fog_distance;
 	s16 wanted_range = sao->getWantedRange() + 1;
+	if (fog_distance >= 0) {
+		// enforce if limited by mod
+		wanted_range = std::min<unsigned>(wanted_range, std::ceil((float)fog_distance / MAP_BLOCKSIZE));
+	}
 	float camera_fov = sao->getFov();
 
 	/*
@@ -175,12 +194,14 @@ void RemoteClient::GetNextBlocks (
 	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
 		m_last_center = center;
+		m_map_send_completion_timer = 0.0f;
 	}
 	// reset the unsent distance if the view angle has changed more that 10% of the fov
 	// (this matches isBlockInSight which allows for an extra 10%)
 	if (camera_dir.dotProduct(m_last_camera_dir) < std::cos(camera_fov * 0.1f)) {
 		m_nearest_unsent_d = 0;
 		m_last_camera_dir = camera_dir;
+		m_map_send_completion_timer = 0.0f;
 	}
 	if (m_nearest_unsent_d > 0) {
 		// make sure any blocks modified since the last time we sent blocks are resent
@@ -258,16 +279,6 @@ void RemoteClient::GetNextBlocks (
 			if (d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
 				max_simul_dynamic = m_max_simul_sends;
 
-			// Don't select too many blocks for sending
-			if (num_blocks_selected >= max_simul_dynamic) {
-				//queue_is_full = true;
-				goto queue_full_break;
-			}
-
-			// Don't send blocks that are currently being transferred
-			if (m_blocks_sending.find(p) != m_blocks_sending.end())
-				continue;
-
 			/*
 				Do not go over max mapgen limit
 			*/
@@ -283,7 +294,7 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 				Also retrieve a smaller view cone in the direction of the player's
 				movement.
-				(0.1 is about 4 degrees)
+				(0.1 is about 5 degrees)
 			*/
 			f32 dist;
 			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,
@@ -295,21 +306,32 @@ void RemoteClient::GetNextBlocks (
 			}
 
 			/*
+				Check if map has this block
+			*/
+			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
+			if (block) {
+				// First: Reset usage timer, this block will be of use in the future.
+				block->resetUsageTimer();
+			}
+
+			// Don't select too many blocks for sending
+			if (num_blocks_selected >= max_simul_dynamic) {
+				//queue_is_full = true;
+				goto queue_full_break;
+			}
+
+			// Don't send blocks that are currently being transferred
+			if (m_blocks_sending.find(p) != m_blocks_sending.end())
+				continue;
+
+			/*
 				Don't send already sent blocks
 			*/
 			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
 
-			/*
-				Check if map has this block
-			*/
-			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
-
 			bool block_not_found = false;
 			if (block) {
-				// Reset usage timer, this block will be of use in the future.
-				block->resetUsageTimer();
-
 				// Check whether the block exists (with data)
 				if (!block->isGenerated())
 					block_not_found = true;
@@ -326,8 +348,15 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
+				/*
+					Check occlusion cache first.
+				 */
+				if (m_blocks_occ.find(p) != m_blocks_occ.end())
+					continue;
+
 				if (m_occ_cull && !block_not_found &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					m_blocks_occ.insert(p);
 					continue;
 				}
 			}
@@ -383,6 +412,8 @@ queue_full_break:
 		if (d > full_d_max) {
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0f;
+			infostream << "Server: Player " << m_name << ", RemoteClient " << peer_id << ": full map send completed after " << m_map_send_completion_timer << "s, restarting" << std::endl;
+			m_map_send_completion_timer = 0.0f;
 		} else {
 			if (nearest_sent_d != -1)
 				new_nearest_unsent_d = nearest_sent_d;
@@ -391,8 +422,11 @@ queue_full_break:
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1 && m_nearest_unsent_d != new_nearest_unsent_d) {
 		m_nearest_unsent_d = new_nearest_unsent_d;
+		// if the distance has changed, clear the occlusion cache
+		m_blocks_occ.clear();
+	}
 }
 
 void RemoteClient::GotBlock(v3s16 p)

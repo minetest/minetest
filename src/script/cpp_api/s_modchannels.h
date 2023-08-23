@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "cpp_api/s_base.h"
-#include "modchannels.h"
+
+enum ModChannelSignal : u8;
 
 class ScriptApiModChannels : virtual public ScriptApiBase
 {

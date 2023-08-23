@@ -1,5 +1,6 @@
 /*
 Minetest
+Copyright (C) 2023 DS
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
@@ -18,36 +19,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "l_sound.h"
-#include "l_internal.h"
-#include "common/c_content.h"
-#include "gui/guiEngine.h"
+#pragma once
 
+#include "lua_api/l_base.h"
+#include "util/basic_macros.h"
 
-int ModApiSound::l_sound_play(lua_State *L)
+using sound_handle_t = int;
+
+class ModApiMainMenuSound : public ModApiBase
 {
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-	spec.loop = readParam<bool>(L, 2);
+private:
+	// sound_play(spec, loop)
+	static int l_sound_play(lua_State *L);
 
-	s32 handle = getGuiEngine(L)->playSound(spec);
+public:
+	static void Initialize(lua_State *L, int top);
+};
 
-	lua_pushinteger(L, handle);
-
-	return 1;
-}
-
-int ModApiSound::l_sound_stop(lua_State *L)
+class MainMenuSoundHandle final : public ModApiBase
 {
-	u32 handle = luaL_checkinteger(L, 1);
+private:
+	sound_handle_t m_handle;
 
-	getGuiEngine(L)->stopSound(handle);
+	static const char className[];
+	static const luaL_Reg methods[];
 
-	return 1;
-}
+	MainMenuSoundHandle(sound_handle_t handle) : m_handle(handle) {}
 
-void ModApiSound::Initialize(lua_State *L, int top)
-{
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
-}
+	DISABLE_CLASS_COPY(MainMenuSoundHandle)
+
+	static MainMenuSoundHandle *checkobject(lua_State *L, int narg);
+
+	static int gc_object(lua_State *L);
+
+	// :stop()
+	static int l_stop(lua_State *L);
+
+public:
+	~MainMenuSoundHandle() = default;
+
+	static void create(lua_State *L, sound_handle_t handle);
+	static void Register(lua_State *L);
+};

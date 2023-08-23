@@ -25,9 +25,10 @@ numerical
 //! constructor
 GUIEditBoxWithScrollBar::GUIEditBoxWithScrollBar(const wchar_t* text, bool border,
 	IGUIEnvironment* environment, IGUIElement* parent, s32 id,
-	const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
+	const core::rect<s32>& rectangle, ISimpleTextureSource *tsrc,
+	bool writable, bool has_vscrollbar)
 	: GUIEditBox(environment, parent, id, rectangle, border, writable),
-	m_background(true), m_bg_color_used(false)
+	m_background(true), m_bg_color_used(false), m_tsrc(tsrc)
 {
 #ifdef _DEBUG
 	setDebugName("GUIEditBoxWithScrollBar");
@@ -106,9 +107,8 @@ void GUIEditBoxWithScrollBar::draw()
 			skin->draw3DSunkenPane(this, bg_color, false, m_background,
 				AbsoluteRect, &AbsoluteClippingRect);
 		}
-
-		calculateFrameRect();
 	}
+	calculateFrameRect();
 
 	core::rect<s32> local_clip_rect = m_frame_rect;
 	local_clip_rect.clipAgainst(AbsoluteClippingRect);
@@ -636,7 +636,7 @@ void GUIEditBoxWithScrollBar::createVScrollBar()
 	irr::core::rect<s32> scrollbarrect = m_frame_rect;
 	scrollbarrect.UpperLeftCorner.X += m_frame_rect.getWidth() - m_scrollbar_width;
 	m_vscrollbar = new GUIScrollBar(Environment, getParent(), -1,
-			scrollbarrect, false, true);
+			scrollbarrect, false, true, m_tsrc);
 
 	m_vscrollbar->setVisible(false);
 	m_vscrollbar->setSmallStep(3 * fontHeight);

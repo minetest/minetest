@@ -41,8 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* mainmenumanager.h
  */
-gui::IGUIEnvironment *guienv = nullptr;
-gui::IGUIStaticText *guiroot = nullptr;
 MainMenuManager g_menumgr;
 
 bool isMenuActive()
@@ -118,7 +116,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		return false;
 	}
 
-	m_rendering_engine->setupTopLevelWindow(PROJECT_NAME_C);
+	m_rendering_engine->setupTopLevelWindow();
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
@@ -136,7 +134,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	m_rendering_engine->get_scene_manager()->getParameters()->
 		setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-	guienv = m_rendering_engine->get_gui_env();
+	gui::IGUIEnvironment *guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
@@ -144,13 +142,14 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
 	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
 	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
-#ifdef HAVE_TOUCHSCREENGUI
-	float density = RenderingEngine::getDisplayDensity();
+
+	float density = rangelim(g_settings->getFloat("gui_scaling"), 0.5, 20) *
+		RenderingEngine::getDisplayDensity();
 	skin->setSize(gui::EGDS_CHECK_BOX_WIDTH, (s32)(17.0f * density));
 	skin->setSize(gui::EGDS_SCROLLBAR_SIZE, (s32)(14.0f * density));
 	skin->setSize(gui::EGDS_WINDOW_BUTTON_WIDTH, (s32)(15.0f * density));
 	if (density > 1.5f) {
-		std::string sprite_path = porting::path_user + "/textures/base/pack/";
+		std::string sprite_path = porting::path_share + "/textures/base/pack/";
 		if (density > 3.5f)
 			sprite_path.append("checkbox_64.png");
 		else if (density > 2.0f)
@@ -167,7 +166,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 				skin->setIcon(gui::EGDI_CHECK_BOX_CHECKED, sprite_id);
 		}
 	}
-#endif
+
 	g_fontengine = new FontEngine(guienv);
 	FATAL_ERROR_IF(g_fontengine == NULL, "Font engine creation failed.");
 
@@ -208,24 +207,14 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 	while (m_rendering_engine->run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
-		const wchar_t *text = wgettext("Main Menu");
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + text + L"]").c_str());
-		delete[] text;
+			L" [" + wstrgettext("Main Menu") + L"]").c_str());
 
 		try {	// This is used for catching disconnects
 
 			m_rendering_engine->get_gui_env()->clear();
-
-			/*
-				We need some kind of a root node to be able to add
-				custom gui elements directly on the screen.
-				Otherwise they won't be automatically drawn.
-			*/
-			guiroot = m_rendering_engine->get_gui_env()->addStaticText(L"",
-				core::rect<s32>(0, 0, 10000, 10000));
 
 			bool game_has_run = launch_game(error_message, reconnect_requested,
 				start_data, cmd_args);
@@ -553,15 +542,12 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	m_rendering_engine->get_raw_device()->getCursorControl()->setVisible(true);
 
 	// Set absolute mouse mode
-#if IRRLICHT_VERSION_MT_REVISION >= 9
 	m_rendering_engine->get_raw_device()->getCursorControl()->setRelativeMode(false);
 #endif
 
-#endif
-
-
 	/* show main menu */
-	GUIEngine mymenu(&input->joystick, guiroot, m_rendering_engine, &g_menumgr, menudata, *kill);
+	GUIEngine mymenu(&input->joystick, m_rendering_engine->get_gui_env()->getRootGUIElement(),
+			m_rendering_engine, &g_menumgr, menudata, *kill);
 
 	/* leave scene manager in a clean state */
 	m_rendering_engine->get_scene_manager()->clear();

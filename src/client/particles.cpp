@@ -89,13 +89,16 @@ Particle::Particle(
 	}
 
 	// Texture
-	m_material.setFlag(video::EMF_LIGHTING, false);
-	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
-	m_material.setFlag(video::EMF_FOG_ENABLE, true);
+	m_material.Lighting = false;
+	m_material.BackfaceCulling = false;
+	m_material.FogEnable = true;
+	m_material.forEachTexture([] (auto &tex) {
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
+	});
 
 	// correctly render layered transparent particles -- see #10398
-	m_material.setFlag(video::EMF_ZWRITE_ENABLE, true);
+	m_material.ZWriteEnable = video::EZW_AUTO;
 
 	// enable alpha blending and set blend mode
 	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
