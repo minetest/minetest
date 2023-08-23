@@ -36,14 +36,12 @@ body:
     attributes:
       label: Active renderer
       description: For graphical and input-related issues. You can find these in the About tab in the mainmenu.
-      placeholder: ""
     validations:
       required: false
   - type: input
     attributes:
       label: Irrlicht device
       description: 
-      placeholder: ""
     validations:
       required: false
   - type: input
