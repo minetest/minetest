@@ -68,6 +68,8 @@ add_page({
 	id = "accessibility",
 	title = gettext("Accessibility"),
 	content = {
+		"language",
+		{ heading = gettext("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
@@ -176,14 +178,14 @@ get_setting_info("language").option_labels = {
 	gd = "Gàidhlig [gd]",
 	gl = "Galego [gl]",
 	--he = " [he]", blacklisted
-	--hi = "हिन्दी [hi]", blacklisted
+	--hi = " [hi]", blacklisted
 	hu = "Magyar [hu]",
 	id = "Bahasa Indonesia [id]",
 	it = "Italiano [it]",
 	ja = "日本語 [ja]",
 	jbo = "Lojban [jbo]",
 	kk = "Қазақша [kk]",
-	--kn = "ಕನ್ನಡ [kn]", blacklisted
+	--kn = " [kn]", blacklisted
 	ko = "한국어 [ko]",
 	ky = "Kırgızca / Кыргызча [ky]",
 	lt = "Lietuvių [lt]",
@@ -191,23 +193,23 @@ get_setting_info("language").option_labels = {
 	mn = "Монгол [mn]",
 	mr = "मराठी [mr]",
 	ms = "Bahasa Melayu [ms]",
-	--ms_Arab = "Malay (Jawi) [ms_Arab]", blacklisted
-	nb = "Norwegian Bokmål [nb]",
+	--ms_Arab = " [ms_Arab]", blacklisted
+	nb = "Norsk Bokmål [nb]",
 	nl = "Nederlands [nl]",
-	nn = "Norsk (nynorsk)  [nn]",
+	nn = "Norsk Nynorsk [nn]",
 	oc = "Occitan [oc]",
 	pl = "Polski [pl]",
 	pt = "Português [pt]",
-	pt_BR = "Português (do Brasil) [pt_BR]",
+	pt_BR = "Português do Brasil [pt_BR]",
 	ro = "Română [ro]",
 	ru = "Русский [ru]",
 	sk = "Slovenčina [sk]",
 	sl = "Slovenščina [sl]",
 	sr_Cyrl = "Српски [sr_Cyrl]",
-	sr_Latn = "Српски [sr_Latn]",
+	sr_Latn = "Srpski (Latinica) [sr_Latn]",
 	sv = "Svenska [sv]",
 	sw = "Kiswahili [sw]",
-	--th = "ไทย / Phasa Thai [th]", blacklisted
+	--th = " [th]", blacklisted
 	tr = "Türkçe [tr]",
 	tt = "Tatarça [tt]",
 	uk = "Українська [uk]",
