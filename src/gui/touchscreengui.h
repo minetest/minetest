@@ -24,8 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIEnvironment.h>
 #include <IrrlichtDevice.h>
 
-#include <map>
 #include <memory>
+#include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "client/tile.h"
@@ -186,13 +187,15 @@ public:
 	float getMovementSpeed() { return m_joystick_speed; }
 
 	void step(float dtime);
-	void resetHud();
-	void registerHudItem(int index, const rect<s32> &rect);
 	inline void setUseCrosshair(bool use_crosshair) { m_draw_crosshair = use_crosshair; }
 
 	void setVisible(bool visible);
 	void hide();
 	void show();
+
+	void resetHotbarRects();
+	void registerHotbarRect(u16 index, const rect<s32> &rect);
+	std::optional<u16> getHotbarSelection();
 
 private:
 	bool m_initialized = false;
@@ -203,9 +206,10 @@ private:
 	v2u32 m_screensize;
 	s32 button_size;
 	double m_touchscreen_threshold;
-	std::map<int, rect<s32>> m_hud_rects;
-	std::map<size_t, EKEY_CODE> m_hud_ids;
 	bool m_visible; // is the whole touch screen gui visible
+
+	std::unordered_map<u16, rect<s32>> m_hotbar_rects;
+	std::optional<u16> m_hotbar_selection = std::nullopt;
 
 	// value in degree
 	double m_camera_yaw_change = 0.0;
@@ -272,8 +276,8 @@ private:
 	// handle a button event
 	void handleButtonEvent(touch_gui_button_id bID, size_t eventID, bool action);
 
-	// handle pressed hud buttons
-	bool isHUDButton(const SEvent &event);
+	// handle pressing hotbar items
+	bool isHotbarButton(const SEvent &event);
 
 	// do a right-click
 	bool doRightClick();
@@ -285,7 +289,7 @@ private:
 	void applyJoystickStatus();
 
 	// array for saving last known position of a pointer
-	std::map<size_t, v2s32> m_pointer_pos;
+	std::unordered_map<size_t, v2s32> m_pointer_pos;
 
 	// settings bar
 	AutoHideButtonBar m_settings_bar;
