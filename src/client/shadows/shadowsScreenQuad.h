@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class shadowScreenQuad
 {
 public:
-	shadowScreenQuad();
+	shadowScreenQuad(video::SColor color = video::SColor(0x0));
 
 	void render(video::IVideoDriver *driver);
 	video::SMaterial &getMaterial() { return Material; }

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/clientenvironment.h"
 #include "client/clientmap.h"
 #include "client/camera.h"
+#include "settings.h"
 
 using m4f = core::matrix4;
 
@@ -97,7 +98,7 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	return f;
 }
 
-bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *client, u8 index, bool force)
+bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *client, bool force)
 {
 	if (dirty && !force)
 		return false;
@@ -108,6 +109,7 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 		zFar = MYMIN(zFar, client->getEnv().getClientMap().getControl().wanted_range * BS);
 
 	future_frustum = createFrustum(direction, cam, zNear, zFar, 0.3);
+	current_frame = 0;
 
 	dirty = true;
 
@@ -178,6 +180,13 @@ DirectionalLight::DirectionalLight(const u32 shadowMapResolution,
 		diffuseColor(lightColor),
 		farPlane(farValue), mapRes(shadowMapResolution), pos(position)
 {
+	cascades[0].max_frames = 1;
+	u8 shadow_update_frames = rangelim(g_settings->getS16("shadow_update_frames"), 0, 32);
+	int n_cascades = getCascadesCount();
+	if (n_cascades > 1)
+		cascades[1].max_frames = rangelim(shadow_update_frames / 4, 1, 8);
+	for (u8 i = 2; i < n_cascades; i++)
+		getCascade(i).max_frames = shadow_update_frames;
 }
 
 void DirectionalLight::setDirection(v3f dir)
@@ -202,16 +211,9 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 	for (u8 i = 0; i < getCascadesCount(); i++) {
 		auto &cascade = getCascade(i);
 		if (cascade.update_frustum(direction, cam, client, force)) {
-			should_update_map_shadow = true;
 			// get the draw list for shadows
 			client->getEnv().getClientMap().updateDrawListShadowCascade(i,
 					cascade.getPosition(), getDirection(), cascade.future_frustum.radius, cascade.future_frustum.length);
 		}
 	}
-}
-
-void DirectionalLight::commitFrustum()
-{
-	for (auto &cascade: cascades)
-		cascade.commitFrustum();
 }

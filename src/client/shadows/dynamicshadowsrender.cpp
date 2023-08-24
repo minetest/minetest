@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
-		m_client(client), m_current_frame(0),
+		m_client(client),
 		m_perspective_bias_xy(0.0), m_perspective_bias_z(0.5)
 {
 	(void) m_client;
@@ -55,7 +55,6 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadow_map_texture_32bit = g_settings->getBool("shadow_map_texture_32bit");
 	m_shadow_map_colored = g_settings->getBool("shadow_map_color");
 	m_shadow_samples = g_settings->getS32("shadow_filters");
-	m_map_shadow_update_frames = g_settings->getS16("shadow_update_frames");
 
 	// add at least one light
 	addDirectionalLight();
@@ -107,9 +106,10 @@ void ShadowRenderer::disable()
 		shadowMapClientMap = nullptr;
 	}
 
-	if (shadowMapClientMapFuture) {
-		m_driver->removeTexture(shadowMapClientMapFuture);
-		shadowMapClientMapFuture = nullptr;
+	if (!shadowMapClientMapFuture.empty()) {
+		for (auto texture: shadowMapClientMapFuture)
+			m_driver->removeTexture(texture);
+		shadowMapClientMapFuture.clear();
 	}
 
 	for (auto node : m_shadow_node_array)
@@ -205,6 +205,22 @@ void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 	}
 }
 
+// SM rendering rules:
+// 1. Render ClientMap cascade 0 directly to ClientMap shadow map
+// 2. Update distant cascades incrementally (1, 2,...)
+//    - If distant cascade is finished
+//      a. Blit cascade from backbuffer to ClientMap shadow Map
+//      b. Render cascade's colored texture
+// 3. Render objects (cascades 0, 1)
+// 4. Merge the final SM texture = (Solid + Color + Objects)
+
+// Texture layout for shadow maps:
+// - Final SM texture contains N cascades
+// - Entity shadow map contains 2 cascades: 0,1.
+// - ClientMap shadow map contains N cascades: 1, 2, ...
+// - N-1 ClientMap backbuffer textures for cascades: 1, 2, ...
+// - ClientMap colored texture contains N cascades.
+
 void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
@@ -228,12 +244,15 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 		assert(shadowMapClientMap != nullptr);
 	}
 
-	if (!shadowMapClientMapFuture && m_map_shadow_update_frames > 1) {
-		shadowMapClientMapFuture = getSMTexture(
-			std::string("shadow_clientmap_bb_") + itos(m_shadow_map_texture_size),
-			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
-			n_cascades, true);
-		assert(shadowMapClientMapFuture != nullptr);
+	if (shadowMapClientMapFuture.empty()) {
+		for (u8 i = 1; i < n_cascades; i++) {
+			video::ITexture *cascade_texture = getSMTexture(
+					std::string("shadow_clientmap_bb_") + itos(i) + std::string("_") + itos(m_shadow_map_texture_size),
+					m_shadow_map_colored ? m_texture_format_color : m_texture_format,
+					n_cascades, true);
+			assert(cascade_texture != nullptr);
+			shadowMapClientMapFuture.push_back(cascade_texture);
+		}
 	}
 
 	if (m_shadow_map_colored && !shadowMapTextureColors) {
@@ -270,6 +289,18 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 	}
 }
 
+static void drawQuad(video::SColor color, video::ITexture *texture, video::IVideoDriver *driver)
+{
+	shadowScreenQuad quad(color);
+	auto &material = quad.getMaterial();
+	material.MaterialType = video::EMT_SOLID;
+	material.TextureLayers[0].Texture = texture;
+	material.ZBuffer = video::E_COMPARISON_FUNC::ECFN_DISABLED;
+	driver->setTransform(video::ETS_VIEW, core::matrix4());
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+	quad.render(driver);
+}
+
 void ShadowRenderer::renderMapShadows()
 {
 	if (!m_shadows_enabled || m_smgr->getActiveCamera() == nullptr) {
@@ -277,25 +308,11 @@ void ShadowRenderer::renderMapShadows()
 	}
 
 	if (!m_shadow_node_array.empty()) {
-		bool reset_sm_texture = false;
-
-		// detect if SM should be regenerated
-		for (DirectionalLight &light : m_light_list) {
-			if (light.should_update_map_shadow || m_force_update_shadow_map) {
-				light.should_update_map_shadow = false;
-				m_current_frame = 0;
-				reset_sm_texture = true;
-			}
-		}
-
-		video::ITexture* shadowMapTargetTexture = shadowMapClientMapFuture;
-		if (shadowMapTargetTexture == nullptr)
-			shadowMapTargetTexture = shadowMapClientMap;
-
 		// Update SM incrementally:
 		for (DirectionalLight &light : m_light_list) {
 			for (u8 i = 0; i < light.getCascadesCount(); i++) {
-				const auto& cascade = light.getCascade(i);
+				auto& cascade = light.getCascade(i);
+
 				// Static shader values.
 				for (auto cb : {m_shadow_depth_cb, m_shadow_depth_entity_cb, m_shadow_depth_trans_cb})
 					if (cb) {
@@ -307,53 +324,56 @@ void ShadowRenderer::renderMapShadows()
 						cb->Cascade = i;
 					}
 
+				video::ITexture* shadowMapTargetTexture = shadowMapClientMap;
 				// set the Render Target
-				// right now we can only render in usual RTT, not
-				// Depth texture is available in irrlicth maybe we
-				// should put some gl* fn here
-				if (m_current_frame < m_map_shadow_update_frames || m_force_update_shadow_map) {
-					m_driver->setRenderTarget(shadowMapTargetTexture, reset_sm_texture, true,
-							video::SColor(255, 255, 255, 255));
-					reset_sm_texture = false;
+				// For cascade 0 render directly into shadowMapClientMap texture
+				// For other cascades render into a relevant back-buffer texture
+				if (i == 0) {
+					if (cascade.current_frame == 0) {
+						m_driver->setRenderTarget(shadowMapClientMap, false, true);
+						// erase the area of cascade 0
+						m_driver->setViewPort(core::rect<s32>(
+								0, 0,
+								m_shadow_map_texture_size, m_shadow_map_texture_size));
+						drawQuad(video::SColor(0xFFFFFFFF), nullptr, m_driver);
+					}
+				}
+				else
+					m_driver->setRenderTarget(shadowMapClientMapFuture.at(i-1), cascade.current_frame == 0, true, video::SColor(0xFFFFFFFF));
 
-					m_driver->setViewPort(core::rect<s32>(
-							i * m_shadow_map_texture_size, 0,
-							(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+				if (cascade.current_frame < cascade.max_frames) {
 					renderShadowMap(shadowMapTargetTexture, i, cascade);
 
 					// Render transparent part in one pass.
 					// This is also handled in ClientMap.
-					if (m_current_frame == m_map_shadow_update_frames - 1 || m_force_update_shadow_map) {
-						if (m_shadow_map_colored) {
-							m_driver->setRenderTarget(0, false, false);
-							m_driver->setRenderTarget(shadowMapTextureColors,
-									i == 0, false, video::SColor(255, 255, 255, 255));
+					if (cascade.current_frame == cascade.max_frames - 1) {
+						if (i > 0) {
+							// blit current texture to the main
+							m_driver->setRenderTarget(shadowMapClientMap, false, true);
 							m_driver->setViewPort(core::rect<s32>(
 									i * m_shadow_map_texture_size, 0,
 									(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+							drawQuad(video::SColor(0xFFFFFFFF), shadowMapClientMapFuture.at(i-1), m_driver);
+						}
+
+						if (m_shadow_map_colored) {
+							m_driver->setRenderTarget(shadowMapTextureColors,
+									false, true);
+							m_driver->setViewPort(core::rect<s32>(
+									i * m_shadow_map_texture_size, 0,
+									(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+							// erase the area
+							drawQuad(video::SColor(0xFFFFFFFF), nullptr, m_driver);
+							// render the shadow map
 							renderShadowMap(shadowMapTextureColors, i, cascade,
 									scene::ESNRP_TRANSPARENT);
 						}
-						m_driver->setRenderTarget(0, false, false);
+						cascade.commitFrustum();
 					}
+					cascade.current_frame++;
 				}
 			}
 		} // end for lights
-
-		// move to the next section
-		if (m_current_frame <= m_map_shadow_update_frames)
-			++m_current_frame;
-
-		// pass finished, swap textures and commit light changes
-		if (m_current_frame == m_map_shadow_update_frames || m_force_update_shadow_map) {
-			if (shadowMapClientMapFuture != nullptr)
-				std::swap(shadowMapClientMapFuture, shadowMapClientMap);
-
-			// Let all lights know that maps are updated
-			for (DirectionalLight &light : m_light_list)
-				light.commitFrustum();
-		}
-		m_force_update_shadow_map = false;
 	}
 }
 
@@ -499,8 +519,8 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target, u8 cascade_index,
 	m_driver->setTransform(video::ETS_WORLD,
 			map_node.getAbsoluteTransformation());
 
-	int frame = m_force_update_shadow_map ? 0 : m_current_frame;
-	int total_frames = m_force_update_shadow_map ? 1 : m_map_shadow_update_frames;
+	int frame = cascade.current_frame;
+	int total_frames = cascade.max_frames;
 
 	map_node.renderMapShadows(cascade_index, m_driver, material, pass, frame, total_frames);
 }

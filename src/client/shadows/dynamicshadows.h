@@ -50,18 +50,20 @@ struct ShadowCascade {
 	ShadowFrustum current_frustum;
 	ShadowFrustum future_frustum;
 
-	f32 farPlane;
-	v3f last_cam_pos_world{0,0,0};
-	v3f last_look{0,1,0};
+	f32 farPlane {1.0};
+	v3f last_cam_pos_world {0,0,0};
+	v3f last_look {0,1,0};
 	bool dirty {false};
-	f32 scale;
+	f32 scale {1.0f};
+	u8 max_frames {1};
+	u8 current_frame {0};
 
 	// Creates a frustum with parameters
 	// z_near, z_far - distances of player's camera to take in to account for the frustum
 	// center_ratio - interpolation ratio for center of shadow frustum between z_near and z_far
 	ShadowFrustum createFrustum(v3f direction, const Camera *cam, f32 z_near, f32 z_far, f32 center_ratio);
 	// returns true if the frustum was changed
-	bool update_frustum(v3f direction, const Camera *cam, Client *client, u8 index, bool force = false);
+	bool update_frustum(v3f direction, const Camera *cam, Client *client, bool force = false);
 
 	/// Gets the light's maximum far value, i.e. the shadow boundary
 	f32 getMaxFarValue() const
@@ -139,8 +141,6 @@ public:
 	}
 
 	bool should_update_map_shadow{true};
-
-	void commitFrustum();
 
 	u8 getCascadesCount() const { return cascades.size(); }
 	const ShadowCascade &getCascade(u8 index) const { return cascades.at(index); }

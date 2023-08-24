@@ -19,12 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "shadowsScreenQuad.h"
 
-shadowScreenQuad::shadowScreenQuad()
+shadowScreenQuad::shadowScreenQuad(video::SColor color)
 {
 	Material.Wireframe = false;
 	Material.Lighting = false;
 
-	video::SColor color(0x0);
 	Vertices[0] = video::S3DVertex(
 			-1.0f, -1.0f, 0.0f, 0, 0, 1, color, 0.0f, 1.0f);
 	Vertices[1] = video::S3DVertex(
