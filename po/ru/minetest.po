@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-06-19 10:48+0000\n"
-"Last-Translator: Артём Котлубай <artemkotlubai@yandex.ru>\n"
+"PO-Revision-Date: 2023-08-26 01:30+0000\n"
+"Last-Translator: Nanashi Mumei <sab.pyrope@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
 "minetest/ru/>\n"
 "Language: ru\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -25,7 +25,7 @@ msgstr "Пустая команда."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
-msgstr "Выход в главное меню"
+msgstr "Выйти в главное меню"
 
 #: builtin/client/chatcommands.lua
 msgid "Invalid command: "
@@ -695,7 +695,7 @@ msgstr "Пожалуйста, введите допустимое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Сбросить значения"
+msgstr "По умолчанию"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Scale"
@@ -1205,7 +1205,7 @@ msgstr "Покачивание листвы"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Liquids"
-msgstr "Волнистые жидкости"
+msgstr "Волны на жидкостях"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
@@ -1775,7 +1775,7 @@ msgstr "Insert"
 
 #: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
 msgid "Left"
-msgstr "Лево"
+msgstr "Влево"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1800,7 +1800,7 @@ msgstr "Левый Win"
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
 msgid "Menu"
-msgstr "Контекстное меню"
+msgstr "Menu"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -2049,7 +2049,7 @@ msgstr "Границы блока"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
-msgstr "Сменить угол"
+msgstr "Сменить камеру"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Chat"
@@ -2069,7 +2069,7 @@ msgstr "Умен. дальность"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr "Громкость -"
+msgstr "Уменьшить громкость"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -2105,7 +2105,7 @@ msgstr "Клавиша уже используется"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr "Привязки клавиш"
+msgstr "Сочетания клавиш."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2145,23 +2145,23 @@ msgstr "Вкл/откл журнал чата"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Ускорение"
+msgstr "Быстрый режим"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Полёт"
+msgstr "Режим полёта"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fog"
-msgstr "Туман"
+msgstr "Вкл/откл туман"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle minimap"
-msgstr "Миникарта"
+msgstr "Вкл/откл миникарту"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Сквозь стены"
+msgstr "Режим сквозь стены"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
@@ -2193,7 +2193,7 @@ msgstr "Закрыть"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr "Заглушить"
+msgstr "Заглушено"
 
 #: src/gui/guiVolumeChange.cpp
 #, c-format
@@ -2361,7 +2361,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-шум, определяющий количество подземелий в куске карты."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2373,16 +2372,15 @@ msgid ""
 "-    crossview: Cross-eyed 3d\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
-"Поддержка 3D.\n"
+"3D-анаглиф.\n"
 "Сейчас поддерживаются:\n"
-"-    none: Нет.\n"
-"-    anaglyph: Анаглифные очки.\n"
-"-    interlaced: Поляризационные 3d-очки.\n"
-"-    topbottom: Разделение экрана по горизонтали.\n"
-"-    sidebyside: Разделение экрана по диагонали.\n"
-"-    crossview: 3D на основе автостереограммы.\n"
-"-    pageflip: Четырёхкратная буферизация.\n"
-"Примечание: в режиме interlaced шейдеры должны быть включены."
+"-    none: без 3D.\n"
+"-    anaglyph: для красно/бирюзовых очков.\n"
+"-    interlaced: для поляризационных 3D очков.\n"
+"-    topbottom: горизонтальное разделение экрана.\n"
+"-    sidebyside: вертикальное разделение экрана.\n"
+"-    crossview: перекрёстная стереопара.\n"
+"Примечание: для режима «interlaced» должны быть включены шейдеры."
 
 #: src/settings_translation_file.cpp
 msgid "3d"
@@ -2551,7 +2549,7 @@ msgstr "Шум яблонь"
 
 #: src/settings_translation_file.cpp
 msgid "Arm inertia"
-msgstr "Инерция руки"
+msgstr "Покачивание руки"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2940,11 +2938,10 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Уровень сжатия для использования при отправке блоков карты клиенту.\n"
+"Уровень сжатия для отправки блоков карты клиенту.\n"
 "-1 - уровень сжатия по умолчанию\n"
-"0 - без сжатия, самый быстрый\n"
-"9 - лучшее сжатие, самое медленное\n"
-"(уровни 1-3 используют «быстрый» метод Zlib, 4-9 используют обычный метод)"
+"0 - меньшее сжатие, самое быстрое\n"
+"9 - лучшее сжатие, самое медленное"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -3246,7 +3243,7 @@ msgstr "Обработка устаревшего Lua API"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find giant caverns."
-msgstr "Глубина, ниже которой встречаются крупные пещеры."
+msgstr "Глубина, ниже которой встречаются гигантские пещеры."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
@@ -3334,7 +3331,6 @@ msgid "Dungeon noise"
 msgstr "Шум подземелья"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Automatic Exposure"
 msgstr "Включить автоматическую экспозицию"
 
@@ -3374,10 +3370,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Включить лучевую окклюзию"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Enable automatic exposure correction\n"
 "When enabled, the post-processing engine will\n"
@@ -3571,9 +3566,8 @@ msgstr ""
 "островов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Exposure compensation"
-msgstr "Показатель нарастания"
+msgstr "Компенсация экспозиции"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -5360,10 +5354,7 @@ msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
 msgstr ""
-"Путь к шрифту по умолчанию.\n"
-"Если настройка «freetype» включена: должен быть шрифт TrueType.\n"
-"Если настройка «freetype» отключена: это должен быть растровый или векторный "
-"шрифт XML.\n"
+"Путь к шрифту по умолчанию. Шрифт должен быть TrueType.\n"
 "Запасной шрифт будет использоваться, если шрифт не сможет загрузиться."
 
 #: src/settings_translation_file.cpp
@@ -5371,10 +5362,7 @@ msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
-"Путь к моноширинному шрифту.\n"
-"Если настройка «freetype» включена: должен быть шрифт TrueType.\n"
-"Если настройка «freetype» отключена: это должен быть растровый или векторный "
-"шрифт XML.\n"
+"Путь к моноширинному шрифту. Шрифт должен быть TrueType.\n"
 "Этот шрифт используется, например, для командной строки и экрана "
 "профилировщика."
 
@@ -5814,17 +5802,14 @@ msgid "Serverlist file"
 msgstr "Файл списка серверов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
 msgstr ""
-"Установите показатель компенсации нарастания.\n"
-"Этот показатель применяется к линейному значению цвета\n"
-"перед всеми другими эффектами последующей обработки.\n"
-"Значение 1.0 (по умолчанию) означает отсутствие компенсации нарастания.\n"
-"Промежуток: от 0.1 до 10.0"
+"Установите компенсацию эспозиции в электронвольтах.\n"
+"Значение 0.0 (по умолчанию) означает отсутствие компенсации экспозиции.\n"
+"Диапазон: от -1 до 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5903,19 +5888,18 @@ msgstr ""
 "Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
 "In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
-"Установка в «true» отображает отладочную разбивку эффекта расцветки.\n"
-"В режиме отладки экран разделён на 4 квадранта: \n"
-"вверху слева - обработанное начальное изображение, вверху справа - конечное "
-"изображение,\n"
-"внизу слева - необработанное начальное изображение, внизу справа - текстура "
-"эффекта расцветки."
+"Включите для отладочного рендера эффекта свечения.\n"
+"В режиме отладки экран разделяется на 4 квадранта:\n"
+"сверху слева - обработанное начальное изображение, сверху справа - конечное "
+"изображение\n"
+"снизу слева - необработанное начальное изображение, снизу справа - текстура "
+"свечения."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6007,6 +5991,11 @@ msgid ""
 "draw calls, benefiting especially high-end GPUs.\n"
 "Systems with a low-end GPU (or no GPU) would benefit from smaller values."
 msgstr ""
+"Длина стороны куба блоков на карте которые клиент будет считать как единое\n"
+"когда генерируются меши.\n"
+"Большие значения увеличивают использование GPU уменьшив число\n"
+"вызовов отрисовки, давая прибавку от мощных GPU.\n"
+"Системы со слабым GPU (или без GPU) получат прибавку от меньших значений."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6389,11 +6378,9 @@ msgid ""
 "Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 "Движок отрисовки.\n"
-"После изменения этой настройки требуется перезагрузка.\n"
-"Примечание: на Android, если вы не уверены, используйте OGLES1! В противном "
-"случае приложение может не запуститься.\n"
-"На других операционных системах желательно использовать OpenGL.\n"
-"Шейдеры поддерживаются OpenGL (только для компьютеров) и OGLES2 (пробный)"
+"Примечение: после изменения этой настройки требуется перезапуск!\n"
+"OpenGL по умолчанию для компьютеров и OGLES2 для Android.\n"
+"Шейдеры поддерживаются OpenGL и OGLES2 (экспериментально)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6677,6 +6664,8 @@ msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
 "This flag enables use of raytraced occlusion culling test"
 msgstr ""
+"Использовать лучевую окклюзию в новом обрезателе.\n"
+"Этот флаг включает использование трассировки лучей в проверках обрезания"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -6845,7 +6834,7 @@ msgstr "Покачивание листвы"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids"
-msgstr "Волнистые жидкости"
+msgstr "Волны на жидкостях"
 
 #: src/settings_translation_file.cpp
 msgid "Waving liquids wave height"
@@ -6902,18 +6891,17 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"При использовании билинейных/трилинейных/анизотропных фильтров текстуры с "
-"низким разрешением\n"
-"могут быть размыты, поэтому автоматически увеличиваются с помощью "
-"интерполяции ближайших соседей,\n"
-"чтобы сохранить чёткие пиксели. Здесь задаётся размер текстуры для "
-"увеличенных текстур;\n"
-"значения выше выглядят чётче, но требуют больше памяти. Желательно "
-"использовать значения, кратные 2.\n"
-"Эта настройка применяется ТОЛЬКО в том случае, если включена билинейная/"
-"трилинейная/анизотропная фильтрация. Это значение также используется в "
-"качестве основного размера текстур блоков для автомасштабирования с "
-"выравниванием по миру."
+"Когда используются билинейный/трилинейный/анизотропный фильтры, то текстуры "
+"низкого разрешения\n"
+"могут быть размытыми, поэтому они автоматически увеличиваются ближайшей\n"
+"интерполяцией для сохранения четкости пикселей. Это устанавливает "
+"минимальный размер текстуры\n"
+"для увеличенных текстур; большие значения выглядят чётче, но требуют больше\n"
+"памяти. Рекомендуются степени числа 2. Эта настройки применяется только "
+"если\n"
+"билинейный/трилинейный/анизотропный фильтр включен.\n"
+"Это также используется для автомасштабирования как основной размер для\n"
+"повёрнутых по сторонам света текстур блока."
 
 #: src/settings_translation_file.cpp
 msgid ""
