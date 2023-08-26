@@ -217,13 +217,11 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	struct ShadowCascadeShaderSettings {
 		ShadowCascadeShaderSettings(int cascade):
 				m_shadow_view_proj(std::string("shadowCascades[") + std::to_string(cascade) + "].mViewProj"),
-				m_camera_world_position(std::string("shadowCascades[") + std::to_string(cascade) + "].cameraPosition"),
 				m_boundary(std::string("shadowCascades[") + std::to_string(cascade) + "].boundary"),
 				m_center(std::string("shadowCascades[") + std::to_string(cascade) + "].center")
 		{}
 
 		CachedVertexShaderSetting<f32, 16> m_shadow_view_proj;
-		CachedVertexShaderSetting<f32, 3> m_camera_world_position;
 		CachedVertexShaderSetting<f32> m_boundary;
 		CachedVertexShaderSetting<f32, 3> m_center;
 
@@ -234,9 +232,6 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 			f32 boundary = cascade.current_frustum.radius;
 			m_boundary.set(&boundary, services);
 			m_center.set(&cascade.current_frustum.center.X, services);
-
-			v3f camera_world_position = cascade.getPlayerPos();
-			m_camera_world_position.set(&camera_world_position.X, services);
 		}
 	};
 
@@ -247,12 +242,7 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<f32> m_shadow_strength;
 	CachedPixelShaderSetting<f32> m_time_of_day;
 	CachedPixelShaderSetting<f32> m_shadowfar;
-	CachedPixelShaderSetting<f32, 4> m_camera_pos;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
-	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
-	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
 	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
 	CachedVertexShaderSetting<s32> m_cascade_count;
@@ -275,12 +265,7 @@ public:
 		, m_shadow_strength("f_shadow_strength")
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
-		, m_camera_pos("CameraPos")
 		, m_shadow_texture("ShadowMapSampler")
-		, m_perspective_bias0_vertex("xyPerspectiveBias0")
-		, m_perspective_bias0_pixel("xyPerspectiveBias0")
-		, m_perspective_bias1_vertex("xyPerspectiveBias1")
-		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
 		, m_cascade_count("cascadeCount")
@@ -363,22 +348,11 @@ public:
 			f32 shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
 
-			f32 cam_pos[4];
-			shadowViewProj.transformVect(cam_pos, light.getCascade(0).getPlayerPos());
-			m_camera_pos.set(cam_pos, services);
-
-
 			// I don't like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
 
-			f32 bias0 = shadow->getPerspectiveBiasXY();
-			m_perspective_bias0_vertex.set(&bias0, services);
-			m_perspective_bias0_pixel.set(&bias0, services);
-			f32 bias1 = 1.0f - bias0 + 1e-5f;
-			m_perspective_bias1_vertex.set(&bias1, services);
-			m_perspective_bias1_pixel.set(&bias1, services);
 			f32 zbias = shadow->getPerspectiveBiasZ();
 			m_perspective_zbias_vertex.set(&zbias, services);
 			m_perspective_zbias_pixel.set(&zbias, services);

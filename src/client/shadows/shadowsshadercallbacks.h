@@ -31,10 +31,7 @@ public:
 			m_map_resolution_setting("MapResolution"),
 			m_max_far_setting("MaxFar"),
 			m_color_map_sampler_setting("ColorMapSampler"),
-			m_perspective_bias0("xyPerspectiveBias0"),
-			m_perspective_bias1("xyPerspectiveBias1"),
 			m_perspective_zbias("zPerspectiveBias"),
-			m_cam_pos_setting("CameraPos"),
 			m_cascade_setting("Cascade")
 	{}
 
@@ -44,8 +41,7 @@ public:
 			s32 userData) override;
 
 	f32 MaxFar{2048.0f}, MapRes{1024.0f};
-	f32 PerspectiveBiasXY {0.9f}, PerspectiveBiasZ {0.5f};
-	v3f CameraPos;
+	f32 PerspectiveBiasZ {0.5f};
 	s32 Cascade;
 
 private:
@@ -53,9 +49,6 @@ private:
 	CachedVertexShaderSetting<f32> m_map_resolution_setting;
 	CachedVertexShaderSetting<f32> m_max_far_setting;
 	CachedPixelShaderSetting<s32> m_color_map_sampler_setting;
-	CachedVertexShaderSetting<f32> m_perspective_bias0;
-	CachedVertexShaderSetting<f32> m_perspective_bias1;
 	CachedVertexShaderSetting<f32> m_perspective_zbias;
-	CachedVertexShaderSetting<f32, 4> m_cam_pos_setting;
 	CachedPixelShaderSetting<s32> m_cascade_setting;
 };

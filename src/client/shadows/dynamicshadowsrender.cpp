@@ -35,8 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
-		m_client(client),
-		m_perspective_bias_xy(0.0), m_perspective_bias_z(0.5)
+		m_client(client), m_perspective_bias_z(0.5)
 {
 	(void) m_client;
 
@@ -318,9 +317,7 @@ void ShadowRenderer::renderMapShadows()
 					if (cb) {
 						cb->MapRes = (f32)m_shadow_map_texture_size;
 						cb->MaxFar = (f32)m_shadow_map_max_distance * BS;
-						cb->PerspectiveBiasXY = getPerspectiveBiasXY();
 						cb->PerspectiveBiasZ = getPerspectiveBiasZ();
-						cb->CameraPos = cascade.getFuturePlayerPos();
 						cb->Cascade = i;
 					}
 
@@ -390,9 +387,6 @@ void ShadowRenderer::renderEntityShadows()
 					break;
 				const auto &cascade = light.getCascade(i);
 				// Static shader values for entities are set in updateSMTextures
-				// SM texture for entities is not updated incrementally and
-				// must by updated using current player position.
-				m_shadow_depth_entity_cb->CameraPos = cascade.getPlayerPos();
 				m_shadow_depth_entity_cb->Cascade = i;
 
 				m_driver->setViewPort(core::rect<s32>(

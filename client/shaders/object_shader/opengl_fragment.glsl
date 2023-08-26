@@ -18,14 +18,10 @@ uniform float animationTimer;
 	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
-	uniform vec4 CameraPos;
-	uniform float xyPerspectiveBias0;
-	uniform float xyPerspectiveBias1;
 	uniform float zPerspectiveBias;
 
 	struct ShadowCascade {
 		mat4 mViewProj; // view-projection matrix
-		vec3 cameraPosition; // position of the camera as seen by the cascade, in scene space
 		float boundary; // boundary of the cascade in scene space
 		vec3 center; // center of the frustum in scene space
 	};
@@ -39,8 +35,6 @@ uniform float animationTimer;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
-	varying vec3 shadow_position;
-	varying float perspective_factor;
 #endif
 
 
@@ -246,14 +240,13 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	// A factor from 0 to 1 to reduce blurring of short shadows
 	float sharpness_factor = 1.0;
 	// conversion factor from shadow depth to blur radius
-	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS / xyPerspectiveBias0;
+	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS;
 	if (depth > 0.0 && f_normal_length > 0.0)
 		// 5 is empirical factor that controls how fast shadow loses sharpness
 		sharpness_factor = clamp(5 * depth * depth_to_blur, 0.0, 1.0);
 	depth = 0.0;
 
-	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor
-			* f_textureresolution / 2.0 / f_shadowfar;
+	float world_to_texture = f_textureresolution / 2.0 / f_shadowfar;
 	float world_radius = 0.2; // shadow blur radius in world float coordinates, e.g. 0.2 = 0.02 of one node
 
 	return max(BASEFILTERRADIUS * f_textureresolution / 4096.0,  sharpness_factor * world_radius * world_to_texture * SOFTSHADOWRADIUS);
