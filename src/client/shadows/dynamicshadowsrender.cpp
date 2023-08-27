@@ -229,17 +229,17 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 	if (!shadowMapTextureDynamicObjects) {
 
 		shadowMapTextureDynamicObjects = getSMTexture(
-			std::string("shadow_dynamic_") + itos(m_shadow_map_texture_size),
-			m_texture_format, MYMIN(2, n_cascades), true);
+				std::string("shadow_dynamic_") + itos(m_shadow_map_texture_size),
+				m_texture_format, MYMIN(2, n_cascades), true);
 		assert(shadowMapTextureDynamicObjects != nullptr);
 	}
 
 	if (!shadowMapClientMap) {
 
 		shadowMapClientMap = getSMTexture(
-			std::string("shadow_clientmap_") + itos(m_shadow_map_texture_size),
-			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
-			n_cascades, true);
+				std::string("shadow_clientmap_") + itos(m_shadow_map_texture_size),
+				m_texture_format,
+				n_cascades, true);
 		assert(shadowMapClientMap != nullptr);
 	}
 
@@ -247,7 +247,7 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 		for (u8 i = 1; i < n_cascades; i++) {
 			video::ITexture *cascade_texture = getSMTexture(
 					std::string("shadow_clientmap_bb_") + itos(i) + std::string("_") + itos(m_shadow_map_texture_size),
-					m_shadow_map_colored ? m_texture_format_color : m_texture_format,
+					m_texture_format,
 					n_cascades, true);
 			assert(cascade_texture != nullptr);
 			shadowMapClientMapFuture.push_back(cascade_texture);
@@ -256,9 +256,9 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 
 	if (m_shadow_map_colored && !shadowMapTextureColors) {
 		shadowMapTextureColors = getSMTexture(
-			std::string("shadow_colored_") + itos(m_shadow_map_texture_size),
-			m_shadow_map_colored ? m_texture_format_color : m_texture_format,
-			n_cascades, true);
+				std::string("shadow_colored_") + itos(m_shadow_map_texture_size),
+				m_texture_format_color,
+				n_cascades, true);
 		assert(shadowMapTextureColors != nullptr);
 	}
 
