@@ -74,6 +74,8 @@ int getCascade()
 	return cascadeCount - 1;
 }
 
+int cascade = getCascade();
+
 vec3 getLightSpacePosition(int cascade)
 {
 	float cosine = dot(vNormal, v_LightDirection); // cos(angle(light, normal))
@@ -486,7 +488,6 @@ void main(void)
 		float shadow_int = 0.0;
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
 
-		int cascade = getCascade();
 		vec3 posLightSpace = getLightSpacePosition(cascade); // 0..1 within a single cascade in the shadow map
 
 		float distance_rate = 1.0;
