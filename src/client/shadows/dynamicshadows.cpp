@@ -84,7 +84,6 @@ ShadowFrustum ShadowCascade::createFrustum(v3f direction, const Camera *cam, f32
 	// we must compute the viewmat with the position - the camera offset
 	// but the future_frustum position must be the actual world position
 	ShadowFrustum f;
-	f.player = cam_pos_scene;
 	f.center = center_scene;
 	f.position = center_world - eye_displacement;
 	f.length = length;
@@ -119,7 +118,6 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 		v3f rotated_offset;
 		current_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - current_frustum.camera_offset, BS));
 		current_frustum.ViewMat.setTranslation(current_frustum.ViewMat.getTranslation() + rotated_offset);
-		current_frustum.player += intToFloat(current_frustum.camera_offset - cam->getOffset(), BS);
 		current_frustum.camera_offset = cam_offset;
 	}
 	return true;
@@ -137,16 +135,6 @@ void ShadowCascade::commitFrustum()
 v3f ShadowCascade::getPosition() const
 {
 	return current_frustum.position;
-}
-
-v3f ShadowCascade::getPlayerPos() const
-{
-	return current_frustum.player;
-}
-
-v3f ShadowCascade::getFuturePlayerPos() const
-{
-	return future_frustum.player;
 }
 
 const m4f &ShadowCascade::getViewMatrix() const

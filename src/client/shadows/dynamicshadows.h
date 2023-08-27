@@ -78,8 +78,6 @@ struct ShadowCascade {
 	}
 
 	v3f getPosition() const;
-	v3f getPlayerPos() const;
-	v3f getFuturePlayerPos() const;
 
 	const core::matrix4 &getViewMatrix() const;
 	const core::matrix4 &getProjectionMatrix() const;
