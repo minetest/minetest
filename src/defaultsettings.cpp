@@ -172,7 +172,7 @@ void set_default_settings()
 #else
 	settings->setDefault("show_debug", "true");
 #endif
-	settings->setDefault("fsaa", "0");
+	settings->setDefault("fsaa", "2");
 	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
@@ -473,7 +473,8 @@ void set_default_settings()
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("touchscreen_threshold", "20");
+	settings->setDefault("touchscreen_sensitivity", "0.2");
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");

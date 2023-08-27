@@ -829,7 +829,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_pointer_pos[event.TouchInput.ID] = touch_pos;
 
 					// adapt to similar behavior as pc screen
-					const double d = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f) * 3.0f;
+					const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f) * 3.0f;
 
 					m_camera_yaw_change -= dir_free.X * d;
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dir_free.Y * d), -180.0f), 180.0f);
