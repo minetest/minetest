@@ -16,8 +16,8 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-local function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
+local function get_last_folder(text, count)
+	local parts = text:gsub("\\","/"):split("/")
 
 	if count == nil then
 		return parts[#parts]
@@ -25,7 +25,7 @@ local function get_last_folder(text,count)
 
 	local retval = ""
 	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
+		retval = retval .. parts[#parts - (count-i)] .. "/"
 	end
 
 	return retval
@@ -78,7 +78,7 @@ local function load_texture_packs(txtpath, retval)
 
 	for _, item in ipairs(list) do
 		if item ~= "base" then
-			local path = txtpath .. DIR_DELIM .. item .. DIR_DELIM
+			local path = txtpath .. "/" .. item .. "/"
 			local conf = Settings(path .. "texture_pack.conf")
 			local enabled = path == current_texture_path
 
@@ -113,7 +113,7 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
-			local mod_path = path .. DIR_DELIM .. name
+			local mod_path = path .. "/" .. name
 			local mod_virtual_path = virtual_path .. "/" .. name
 			local toadd = {
 				dir_name = name,
@@ -123,18 +123,18 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 
 			-- Get config file
 			local mod_conf
-			local modpack_conf = io.open(mod_path .. DIR_DELIM .. "modpack.conf")
+			local modpack_conf = io.open(mod_path .. "/modpack.conf")
 			if modpack_conf then
 				toadd.is_modpack = true
 				modpack_conf:close()
 
-				mod_conf = Settings(mod_path .. DIR_DELIM .. "modpack.conf"):to_table()
+				mod_conf = Settings(mod_path .. "/modpack.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
 				end
 			else
-				mod_conf = Settings(mod_path .. DIR_DELIM .. "mod.conf"):to_table()
+				mod_conf = Settings(mod_path .. "/mod.conf"):to_table()
 				if mod_conf.name then
 					name = mod_conf.name
 					toadd.is_name_explicit = true
@@ -154,7 +154,7 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 
 			-- Check modpack.txt
 			-- Note: modpack.conf is already checked above
-			local modpackfile = io.open(mod_path .. DIR_DELIM .. "modpack.txt")
+			local modpackfile = io.open(mod_path .. "/modpack.txt")
 			if modpackfile then
 				modpackfile:close()
 				toadd.is_modpack = true
@@ -219,31 +219,31 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.get_folder_type(path)
-	local testfile = io.open(path .. DIR_DELIM .. "init.lua","r")
+	local testfile = io.open(path .. "/init.lua","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "mod", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "modpack.conf","r")
+	testfile = io.open(path .. "/modpack.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "modpack", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "modpack.txt","r")
+	testfile = io.open(path .. "/modpack.txt","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "modpack", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "game.conf","r")
+	testfile = io.open(path .. "/game.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "game", path = path }
 	end
 
-	testfile = io.open(path .. DIR_DELIM .. "texture_pack.conf","r")
+	testfile = io.open(path .. "/texture_pack.conf","r")
 	if testfile ~= nil then
 		testfile:close()
 		return { type = "txp", path = path }
@@ -265,11 +265,11 @@ function pkgmgr.get_base_folder(temppath)
 
 	local subdirs = core.get_dir_list(temppath, true)
 	if #subdirs == 1 then
-		ret = pkgmgr.get_folder_type(temppath .. DIR_DELIM .. subdirs[1])
+		ret = pkgmgr.get_folder_type(temppath .. "/" .. subdirs[1])
 		if ret then
 			return ret
 		else
-			return { type = "invalid", path = temppath .. DIR_DELIM .. subdirs[1] }
+			return { type = "invalid", path = temppath .. "/" .. subdirs[1] }
 		end
 	end
 
@@ -519,8 +519,7 @@ end
 
 --------------------------------------------------------------------------------
 function pkgmgr.get_worldconfig(worldpath)
-	local filename = worldpath ..
-				DIR_DELIM .. "world.mt"
+	local filename = worldpath .. "/world.mt"
 
 	local worldfile = Settings(filename)
 
@@ -568,7 +567,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 
 		local from = basefolder and basefolder.path or path
 		if not targetpath then
-			targetpath = core.get_texturepath() .. DIR_DELIM .. basename
+			targetpath = core.get_texturepath() .. "/" .. basename
 		end
 		core.delete_dir(targetpath)
 		if not core.copy_dir(from, targetpath, false) then
@@ -601,7 +600,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 		end
 
 		if basename and (basefolder.type ~= "mod" or pkgmgr.is_valid_modname(basename)) then
-			targetpath = content_path .. DIR_DELIM .. basename
+			targetpath = content_path .. "/" .. basename
 		else
 			return nil,
 				fgettext_ne("Install: Unable to find suitable folder name for $1", path)
@@ -670,8 +669,7 @@ function pkgmgr.preparemodlist(data)
 	end
 
 	--read world mod configuration
-	local filename = data.worldpath ..
-				DIR_DELIM .. "world.mt"
+	local filename = data.worldpath .. "/world.mt"
 
 	local worldfile = Settings(filename)
 	for key, value in pairs(worldfile:to_table()) do

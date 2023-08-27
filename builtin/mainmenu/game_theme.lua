@@ -103,14 +103,14 @@ end
 function mm_game_theme.set_engine_single(identifier)
 	--try texture pack first
 	if mm_game_theme.texturepack ~= nil then
-		local path = mm_game_theme.texturepack .. DIR_DELIM .."menu_" ..
+		local path = mm_game_theme.texturepack .. "/menu_" ..
 										identifier .. ".png"
 		if core.set_background(identifier,path) then
 			return true
 		end
 	end
 
-	local path = defaulttexturedir .. DIR_DELIM .. "menu_" .. identifier .. ".png"
+	local path = defaulttexturedir .. "/menu_" .. identifier .. ".png"
 	if core.set_background(identifier, path) then
 		return true
 	end
@@ -123,7 +123,7 @@ function mm_game_theme.set_game_single(identifier, gamedetails)
 	assert(gamedetails ~= nil)
 
 	if mm_game_theme.texturepack ~= nil then
-		local path = mm_game_theme.texturepack .. DIR_DELIM ..
+		local path = mm_game_theme.texturepack .. "/" ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
 		if core.set_background(identifier, path) then
 			return true
@@ -133,7 +133,7 @@ function mm_game_theme.set_game_single(identifier, gamedetails)
 	-- Find out how many randomized textures the game provides
 	local n = 0
 	local filename
-	local menu_files = core.get_dir_list(gamedetails.path .. DIR_DELIM .. "menu", false)
+	local menu_files = core.get_dir_list(gamedetails.path .. "/menu", false)
 	for i = 1, #menu_files do
 		filename = identifier .. "." .. i .. ".png"
 		if table.indexof(menu_files, filename) == -1 then
@@ -149,8 +149,7 @@ function mm_game_theme.set_game_single(identifier, gamedetails)
 		filename = identifier .. "." .. n .. ".png"
 	end
 
-	local path = gamedetails.path .. DIR_DELIM .. "menu" ..
-		DIR_DELIM .. filename
+	local path = gamedetails.path .. "/menu/" .. filename
 	if core.set_background(identifier, path) then
 		return true
 	end
@@ -161,7 +160,7 @@ end
 --------------------------------------------------------------------------------
 function mm_game_theme.set_dirt_bg()
 	if mm_game_theme.texturepack ~= nil then
-		local path = mm_game_theme.texturepack .. DIR_DELIM .."default_dirt.png"
+		local path = mm_game_theme.texturepack .. "/default_dirt.png"
 		if core.set_background("background", path, true, 128) then
 			return true
 		end
@@ -185,6 +184,6 @@ function mm_game_theme.set_music(gamedetails)
 
 	assert(gamedetails ~= nil)
 
-	local music_path = gamedetails.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme"
+	local music_path = gamedetails.path .. "/menu/theme"
 	mm_game_theme.music_handle = core.sound_play(music_path, true)
 end

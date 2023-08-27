@@ -1,7 +1,7 @@
 -- helper
 
 core.register_async_dofile(core.get_modpath(core.get_current_modname()) ..
-	DIR_DELIM .. "inside_async_env.lua")
+	"/inside_async_env.lua")
 
 local function deepequal(a, b)
 	if type(a) == "function" then

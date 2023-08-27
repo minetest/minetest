@@ -39,7 +39,7 @@ local store = {
 local http = core.get_http_api()
 
 -- Screenshot
-local screenshot_dir = core.get_cache_path() .. DIR_DELIM .. "cdb"
+local screenshot_dir = core.get_cache_path() .. "/cdb"
 assert(core.create_dir(screenshot_dir))
 local screenshot_downloading = {}
 local screenshot_downloaded = {}
@@ -98,7 +98,7 @@ local function download_and_extract(param)
 
 	local tempfolder = core.get_temp_path()
 	if tempfolder ~= "" then
-		tempfolder = tempfolder .. DIR_DELIM .. "MT_" .. math.random(1, 1024000)
+		tempfolder = tempfolder .. "/MT_" .. math.random(1, 1024000)
 		if not core.extract_zip(filename, tempfolder) then
 			tempfolder = nil
 		end
@@ -141,15 +141,15 @@ local function start_install(package, reason)
 				if package.type == "mod" then
 					local actual_type = pkgmgr.get_folder_type(path)
 					if actual_type.type == "modpack" then
-						conf_path = path .. DIR_DELIM .. "modpack.conf"
+						conf_path = path .. "/modpack.conf"
 					else
-						conf_path = path .. DIR_DELIM .. "mod.conf"
+						conf_path = path .. "/mod.conf"
 					end
 				elseif package.type == "game" then
-					conf_path = path .. DIR_DELIM .. "game.conf"
+					conf_path = path .. "/game.conf"
 					name_is_title = true
 				elseif package.type == "txp" then
-					conf_path = path .. DIR_DELIM .. "texture_pack.conf"
+					conf_path = path .. "/texture_pack.conf"
 				end
 
 				if conf_path then
@@ -566,7 +566,7 @@ local function install_or_update_package(this, package)
 		dlg:set_parent(this)
 		this:hide()
 		dlg:show()
-	elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+	elseif not package.path and core.is_dir(install_parent .. "/" .. package.name) then
 		local dlg = confirm_overwrite.create(package, on_confirm)
 		dlg:set_parent(this)
 		this:hide()
@@ -591,7 +591,7 @@ local function get_screenshot(package)
 
 	-- Get tmp screenshot path
 	local ext = get_file_extension(package.thumbnail)
-	local filepath = screenshot_dir .. DIR_DELIM ..
+	local filepath = screenshot_dir .. "/" ..
 		("%s-%s-%s.%s"):format(package.type, package.author, package.name, ext)
 
 	-- Return if already downloaded

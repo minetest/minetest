@@ -12,8 +12,8 @@ function core.job_processor(func, params)
 end
 
 -- Import a bunch of individual files from builtin/game/
-local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
-local commonpath = core.get_builtin_path() .. "common" .. DIR_DELIM
+local gamepath = core.get_builtin_path() .. "game/"
+local commonpath = core.get_builtin_path() .. "common/"
 
 local builtin_shared = {}
 

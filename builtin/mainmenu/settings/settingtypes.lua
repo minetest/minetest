@@ -412,7 +412,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 		-- Parse games
 		local games_category_initialized = false
 		for _, game in ipairs(pkgmgr.games) do
-			local path = game.path .. DIR_DELIM .. FILENAME
+			local path = game.path .. "/" .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
@@ -445,7 +445,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 		table.sort(mods, function(a, b) return a.name < b.name end)
 
 		for _, mod in ipairs(mods) do
-			local path = mod.path .. DIR_DELIM .. FILENAME
+			local path = mod.path .. "/" .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
@@ -476,7 +476,7 @@ function settingtypes.parse_config_file(read_all, parse_mods)
 		local clientmods = {}
 		pkgmgr.get_mods(core.get_clientmodpath(), "clientmods", clientmods)
 		for _, mod in ipairs(clientmods) do
-			local path = mod.path .. DIR_DELIM .. FILENAME
+			local path = mod.path .. "/" .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not clientmods_category_initialized then

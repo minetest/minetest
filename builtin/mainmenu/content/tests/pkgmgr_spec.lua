@@ -24,7 +24,6 @@ local function reset()
 		core = {},
 		unpack = table.unpack or unpack,
 		pkgmgr = {},
-		DIR_DELIM = "/",
 	}
 	env._G = env
 	setmetatable(env, { __index = _G })

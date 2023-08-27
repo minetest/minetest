@@ -103,7 +103,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	if selected_pkg then
 		-- Check for screenshot being available
-		local screenshotfilename = selected_pkg.path .. DIR_DELIM .. "screenshot.png"
+		local screenshotfilename = selected_pkg.path .. "/screenshot.png"
 		local screenshotfile, error = io.open(screenshotfilename, "r")
 
 		local modscreenshot

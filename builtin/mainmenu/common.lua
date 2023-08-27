@@ -229,7 +229,7 @@ end
 function menu_worldmt(selected, setting, value)
 	local world = menudata.worldlist:get_list()[selected]
 	if world then
-		local filename = world.path .. DIR_DELIM .. "world.mt"
+		local filename = world.path .. "/world.mt"
 		local world_conf = Settings(filename)
 
 		if value then

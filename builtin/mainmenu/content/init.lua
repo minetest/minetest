@@ -15,8 +15,8 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local path = core.get_mainmenu_path() .. DIR_DELIM .. "content"
+local path = core.get_mainmenu_path() .. "/content"
 
-dofile(path .. DIR_DELIM .. "pkgmgr.lua")
-dofile(path .. DIR_DELIM .. "update_detector.lua")
-dofile(path .. DIR_DELIM .. "dlg_contentstore.lua")
+dofile(path .. "/pkgmgr.lua")
+dofile(path .. "/update_detector.lua")
+dofile(path .. "/dlg_contentstore.lua")

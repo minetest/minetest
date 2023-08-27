@@ -79,7 +79,7 @@ local function generate_name(def)
 		source = source:gsub(modpath, def.mod)
 	end
 	source = source:gsub(worldmods_path, "")
-	source = source:gsub(builtin_path, "builtin" .. DIR_DELIM)
+	source = source:gsub(builtin_path, "builtin/")
 	source = source:gsub(user_path, "")
 	return format("%s[%d] %s#%s", class or func_name, index, source, info.linedefined)
 end

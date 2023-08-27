@@ -1,6 +1,6 @@
-local gamepath = core.get_builtin_path() .. "game" .. DIR_DELIM
-local commonpath = core.get_builtin_path() .. "common" .. DIR_DELIM
-local epath = core.get_builtin_path() .. "emerge" .. DIR_DELIM
+local gamepath = core.get_builtin_path() .. "game/"
+local commonpath = core.get_builtin_path() .. "common/"
+local epath = core.get_builtin_path() .. "emerge/"
 
 local builtin_shared = {}
 

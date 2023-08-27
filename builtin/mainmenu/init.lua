@@ -25,37 +25,36 @@ mt_color_red = "#FF3300"
 
 local menupath = core.get_mainmenu_path()
 local basepath = core.get_builtin_path()
-defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-					DIR_DELIM .. "pack" .. DIR_DELIM
+defaulttexturedir = core.get_texturepath_share() .. "/base/pack/"
 
-dofile(menupath .. DIR_DELIM .. "misc.lua")
+dofile(menupath .. "/misc.lua")
 
-dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
-dofile(menupath .. DIR_DELIM .. "async_event.lua")
-dofile(menupath .. DIR_DELIM .. "common.lua")
-dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
-dofile(menupath .. DIR_DELIM .. "game_theme.lua")
-dofile(menupath .. DIR_DELIM .. "content" .. DIR_DELIM .. "init.lua")
+dofile(basepath .. "common/filterlist.lua")
+dofile(basepath .. "fstk/buttonbar.lua")
+dofile(basepath .. "fstk/dialog.lua")
+dofile(basepath .. "fstk/tabview.lua")
+dofile(basepath .. "fstk/ui.lua")
+dofile(menupath .. "/async_event.lua")
+dofile(menupath .. "/common.lua")
+dofile(menupath .. "/serverlistmgr.lua")
+dofile(menupath .. "/game_theme.lua")
+dofile(menupath .. "/content/init.lua")
 
-dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
-dofile(menupath .. DIR_DELIM .. "settings" .. DIR_DELIM .. "init.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
+dofile(menupath .. "/dlg_config_world.lua")
+dofile(menupath .. "/settings/init.lua")
+dofile(menupath .. "/dlg_create_world.lua")
+dofile(menupath .. "/dlg_delete_content.lua")
+dofile(menupath .. "/dlg_delete_world.lua")
+dofile(menupath .. "/dlg_register.lua")
+dofile(menupath .. "/dlg_rename_modpack.lua")
+dofile(menupath .. "/dlg_version_info.lua")
+dofile(menupath .. "/dlg_reinstall_mtg.lua")
 
 local tabs = {
-	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
-	about = dofile(menupath .. DIR_DELIM .. "tab_about.lua"),
-	local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua"),
-	play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
+	content  = dofile(menupath .. "/tab_content.lua"),
+	about = dofile(menupath .. "/tab_about.lua"),
+	local_game = dofile(menupath .. "/tab_local.lua"),
+	play_online = dofile(menupath .. "/tab_online.lua")
 }
 
 --------------------------------------------------------------------------------

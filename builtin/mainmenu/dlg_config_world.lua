@@ -282,7 +282,7 @@ local function handle_buttons(this, fields)
 	end
 
 	if fields.btn_config_world_save then
-		local filename = this.data.worldspec.path .. DIR_DELIM .. "world.mt"
+		local filename = this.data.worldspec.path .. "/world.mt"
 
 		local worldfile = Settings(filename)
 		local mods = worldfile:to_table()

@@ -197,7 +197,7 @@ end
 
 --------------------------------------------------------------------------------
 local function get_favorites_path(folder)
-	local base = core.get_user_path() .. DIR_DELIM .. "client" .. DIR_DELIM .. "serverlist" .. DIR_DELIM
+	local base = core.get_user_path() .. "/client/serverlist/"
 	if folder then
 		return base
 	end

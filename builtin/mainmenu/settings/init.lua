@@ -15,14 +15,14 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local path = core.get_mainmenu_path() .. DIR_DELIM .. "settings"
+local path = core.get_mainmenu_path() .. "/settings"
 
-dofile(path .. DIR_DELIM .. "settingtypes.lua")
-dofile(path .. DIR_DELIM .. "dlg_change_mapgen_flags.lua")
-dofile(path .. DIR_DELIM .. "dlg_settings.lua")
+dofile(path .. "/settingtypes.lua")
+dofile(path .. "/dlg_change_mapgen_flags.lua")
+dofile(path .. "/dlg_settings.lua")
 
 -- Uncomment to generate 'minetest.conf.example' and 'settings_translation_file.cpp'.
 -- For RUN_IN_PLACE the generated files may appear in the 'bin' folder.
 -- See comment and alternative line at the end of 'generate_from_settingtypes.lua'.
 
--- dofile(path .. DIR_DELIM .. "generate_from_settingtypes.lua")
+-- dofile(path .. "/generate_from_settingtypes.lua")

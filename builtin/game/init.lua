@@ -1,7 +1,7 @@
 
 local scriptpath = core.get_builtin_path()
-local commonpath = scriptpath .. "common" .. DIR_DELIM
-local gamepath   = scriptpath .. "game".. DIR_DELIM
+local commonpath = scriptpath .. "common/"
+local gamepath   = scriptpath .. "game/"
 
 -- Shared between builtin files, but
 -- not exposed to outer context
@@ -14,7 +14,7 @@ assert(loadfile(commonpath .. "register.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "register.lua"))(builtin_shared)
 
 if core.settings:get_bool("profiler.load") then
-	profiler = dofile(scriptpath .. "profiler" .. DIR_DELIM .. "init.lua")
+	profiler = dofile(scriptpath .. "profiler/init.lua")
 end
 
 dofile(commonpath .. "after.lua")
