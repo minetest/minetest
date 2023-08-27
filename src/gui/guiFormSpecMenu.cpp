@@ -4447,6 +4447,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (m_left_drag_stacks.size() > 1) {
 					// Finalize the left-dragging
 					for (auto &ds : m_left_drag_stacks) {
+						if (ds.first == *m_selected_item) {
+							// This entry is needed to properly calculate the stack sizes.
+							// The stack already exists, hence no further action needed here.
+							continue;
+						}
+
 						// Check how many items we should move to this slot,
 						// it may be less than the full split
 						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
