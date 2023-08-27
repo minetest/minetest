@@ -236,18 +236,18 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float y, x;
 	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
 	// A factor from 0 to 1 to reduce blurring of short shadows
-	float sharpness_factor = 1.0;
+	float sharpness_factor = 0.0;
 	// conversion factor from shadow depth to blur radius
 	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS;
 	if (depth > 0.0 && f_normal_length > 0.0)
-		// 5 is empirical factor that controls how fast shadow loses sharpness
-		sharpness_factor = clamp(5 * depth * depth_to_blur, 0.0, 1.0);
+		sharpness_factor = clamp(2e-1 * depth * depth_to_blur, 0.0, 1.0);
 	depth = 0.0;
 
-	float world_to_texture = f_textureresolution / 2.0 / f_shadowfar;
+	float world_to_texture = f_textureresolution / 2. / shadowCascades[cascade].boundary;
 	float world_radius = 0.2; // shadow blur radius in world float coordinates, e.g. 0.2 = 0.02 of one node
+	float base_radius = max(BASEFILTERRADIUS, SOFTSHADOWRADIUS / 5.);
 
-	return max(BASEFILTERRADIUS * f_textureresolution / 4096.0,  sharpness_factor * world_radius * world_to_texture * SOFTSHADOWRADIUS);
+	return max(base_radius,  sharpness_factor * world_radius * world_to_texture * SOFTSHADOWRADIUS);
 }
 
 #ifdef POISSON_FILTER
