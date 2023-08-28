@@ -156,7 +156,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- Y offsets for game settings checkboxes
 	local y = 0.2
-	local yo = 0.45
+	local yo = 0.5625
 
 	if disabled_settings["creative_mode"] == nil then
 		creative = "checkbox[0,"..y..";cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
