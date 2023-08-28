@@ -75,7 +75,7 @@ methods:
   ^ handler: function(tabview,fields) --> returns true to finish button processing false to continue
 - set_parent(parent)
   ^ set parent to attach tabview to. TV's with parent are hidden if their parent
-	is hidden and they don't set their specified size.
+    is hidden and they don't set their specified size.
   ^ parent: component to attach to
 - show()
   ^ show tabview
@@ -85,6 +85,12 @@ methods:
   ^ delete tabview
 - set_fixed_size(state)
   ^ true/false set to fixed size, variable size
+- set_end_button(info)
+  ^ info is a table with:
+      * name: button name
+      * label: tooltip text
+      * icon: path to icon
+      * on_click(tabview): callback function
 
 File: fst/dialog.lua
 ---------------------
