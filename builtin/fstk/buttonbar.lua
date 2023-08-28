@@ -22,8 +22,9 @@ local function buttonbar_formspec(self)
 		return ""
 	end
 
-	local formspec = string.format("box[%f,%f;%f,%f;%s]",
-			self.pos.x,self.pos.y ,self.size.x,self.size.y,self.bgcolor)
+	local formspec = "style_type[box;noclip=true]" ..
+			string.format("box[%f,%f;%f,%f;%s]", self.pos.x, self.pos.y, self.size.x, self.size.y, self.bgcolor) ..
+			"style_type[box;noclip=false]"
 
 	for i=self.startbutton,#self.buttons,1 do
 		local btn_name = self.buttons[i].name
@@ -31,18 +32,18 @@ local function buttonbar_formspec(self)
 
 		if self.orientation == "horizontal" then
 			btn_pos.x = self.pos.x + --base pos
-			(i - self.startbutton) * self.btn_size +       --button offset
+			(i - self.startbutton) * self.btn_size * 1.25 +       --button offset
 			self.btn_initial_offset
 		else
-			btn_pos.x = self.pos.x + (self.btn_size * 0.05)
+			btn_pos.x = self.pos.x + self.size.x / 2 - self.btn_size / 2
 		end
 
 		if self.orientation == "vertical" then
 			btn_pos.y = self.pos.y + --base pos
-			(i - self.startbutton) * self.btn_size +       --button offset
+			(i - self.startbutton) * self.btn_size * 1.25 +       --button offset
 			self.btn_initial_offset
 		else
-			btn_pos.y = self.pos.y + (self.btn_size * 0.05)
+			btn_pos.y = self.pos.y + self.size.y / 2 - self.btn_size / 2
 		end
 
 		if (self.orientation == "vertical" and
@@ -195,15 +196,16 @@ function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
 	self.have_move_buttons = false
 	self.hidden = false
 
-	if self.orientation == "horizontal" then
-			self.btn_size = self.size.y
-	else
-			self.btn_size = self.size.x
+	if self.btn_initial_offset == nil then
+		self.btn_initial_offset = 0.375
 	end
 
-	if (self.btn_initial_offset == nil) then
-		self.btn_initial_offset = self.btn_size * 0.05
+	if self.orientation == "horizontal" then
+		self.btn_size = self.size.y - 2*0.1
+	else
+		self.btn_size = self.size.x - 2*0.1
 	end
+
 
 	self.userbuttonhandler = cbf_buttonhandler
 	self.buttons = {}

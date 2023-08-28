@@ -83,7 +83,7 @@ function singleplayer_refresh_gamebar()
 
 	local btnbar = buttonbar_create("game_button_bar",
 		game_buttonbar_button_handler,
-		{x=-0.3,y=5.9}, "horizontal", {x=12.4,y=1.15})
+		{x=0,y=7.475}, "horizontal", {x=15.5,y=1.25})
 
 	for _, game in ipairs(pkgmgr.games) do
 		local btn_name = "game_btnbar_" .. game.id
@@ -155,8 +155,8 @@ local function get_formspec(tabview, name, tabdata)
 	local creative, damage, host = "", "", ""
 
 	-- Y offsets for game settings checkboxes
-	local y = -0.2
-	local yo = 0.45
+	local y = 0.2
+	local yo = 0.5625
 
 	if disabled_settings["creative_mode"] == nil then
 		creative = "checkbox[0,"..y..";cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
@@ -175,41 +175,58 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	retval = retval ..
-			"button[3.9,3.8;2.8,1;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[6.55,3.8;2.8,1;world_configure;".. fgettext("Select Mods") .. "]" ..
-			"button[9.2,3.8;2.8,1;world_create;".. fgettext("New") .. "]" ..
-			"label[3.9,-0.05;".. fgettext("Select World:") .. "]"..
+			"container[5.25,4.75]" ..
+			"button[0,0;3.125,0.85;world_delete;".. fgettext("Delete") .. "]" ..
+			"button[3.375,0;3.125,0.85;world_configure;".. fgettext("Select Mods") .. "]" ..
+			"button[6.75,0;3.125,0.85;world_create;".. fgettext("New") .. "]" ..
+			"container_end[]" ..
+			"container[0.375,0.375]" ..
 			creative ..
 			damage ..
 			host ..
-			"textlist[3.9,0.4;7.9,3.45;sp_worlds;" ..
+			"container_end[]" ..
+			"container[5.25,0.375]" ..
+			"label[0,0.2;".. fgettext("Select World:") .. "]"..
+			"textlist[0,0.5;9.875,3.6;sp_worlds;" ..
 			menu_render_worldlist() ..
-			";" .. index .. "]"
+			";" .. index .. "]" ..
+			"container_end[]"
 
 	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
-				"button[7.9,4.75;4.1,1;play;".. fgettext("Host Game") .. "]" ..
+				"button[11.025,5.85;4.1,0.85;play;".. fgettext("Host Game") .. "]" ..
+				"container[0.375,0.375]" ..
 				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
-				dump(core.settings:get_bool("server_announce")) .. "]" ..
-				"field[0.3,2.85;3.8,0.5;te_playername;" .. fgettext("Name") .. ";" ..
-				core.formspec_escape(current_name) .. "]" ..
-				"pwdfield[0.3,4.05;3.8,0.5;te_passwd;" .. fgettext("Password") .. "]"
+				dump(core.settings:get_bool("server_announce")) .. "]"
+
+		y = y + yo + 0.35
+
+		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
+				core.formspec_escape(current_name) .. "]"
+
+		y = y + 1.15 + 0.25
+
+		retval = retval .. "pwdfield[0," .. y .. ";4.5,0.75;te_passwd;" .. fgettext("Password") .. "]"
+
+		y = y + 1.15 + 0.25
 
 		local bind_addr = core.settings:get("bind_address")
 		if bind_addr ~= nil and bind_addr ~= "" then
 			retval = retval ..
-				"field[0.3,5.25;2.5,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
+				"field[0," .. y .. ";3,0.75;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
 				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
-				"field[2.85,5.25;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
+				"field[3.25," .. y .. ";1.25,0.75;te_serverport;" .. fgettext("Port") .. ";" ..
 				core.formspec_escape(current_port) .. "]"
 		else
 			retval = retval ..
-				"field[0.3,5.25;3.8,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
+				"field[0," .. y .. ";4.5,0.75;te_serverport;" .. fgettext("Server Port") .. ";" ..
 				core.formspec_escape(current_port) .. "]"
 		end
+
+		retval = retval .. "container_end[]"
 	else
 		retval = retval ..
-				"button[7.9,4.75;4.1,1;play;" .. fgettext("Play Game") .. "]"
+				"button[11.025,5.85;4.1,0.85;play;" .. fgettext("Play Game") .. "]"
 	end
 
 	return retval
