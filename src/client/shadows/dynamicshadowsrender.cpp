@@ -312,6 +312,9 @@ void ShadowRenderer::renderMapShadows()
 			for (u8 i = 0; i < light.getCascadesCount(); i++) {
 				auto& cascade = light.getCascade(i);
 
+				if (cascade.current_frame >= cascade.max_frames)
+					continue;
+
 				// Static shader values.
 				for (auto cb : {m_shadow_depth_cb, m_shadow_depth_entity_cb, m_shadow_depth_trans_cb})
 					if (cb) {
@@ -321,7 +324,6 @@ void ShadowRenderer::renderMapShadows()
 						cb->Cascade = i;
 					}
 
-				video::ITexture* shadowMapTargetTexture = shadowMapClientMap;
 				// set the Render Target
 				// For cascade 0 render directly into shadowMapClientMap texture
 				// For other cascades render into a relevant back-buffer texture
@@ -338,37 +340,35 @@ void ShadowRenderer::renderMapShadows()
 				else
 					m_driver->setRenderTarget(shadowMapClientMapFuture.at(i-1), cascade.current_frame == 0, true, video::SColor(0xFFFFFFFF));
 
-				if (cascade.current_frame < cascade.max_frames) {
-					renderShadowMap(shadowMapTargetTexture, i, cascade);
+				renderShadowMap(shadowMapClientMap, i, cascade);
 
-					// Render transparent part in one pass.
-					// This is also handled in ClientMap.
-					if (cascade.current_frame == cascade.max_frames - 1) {
-						if (i > 0) {
-							// blit current texture to the main
-							m_driver->setRenderTarget(shadowMapClientMap, false, true);
-							m_driver->setViewPort(core::rect<s32>(
-									i * m_shadow_map_texture_size, 0,
-									(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
-							drawQuad(video::SColor(0xFFFFFFFF), shadowMapClientMapFuture.at(i-1), m_driver);
-						}
-
-						if (m_shadow_map_colored) {
-							m_driver->setRenderTarget(shadowMapTextureColors,
-									false, true);
-							m_driver->setViewPort(core::rect<s32>(
-									i * m_shadow_map_texture_size, 0,
-									(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
-							// erase the area
-							drawQuad(video::SColor(0xFFFFFFFF), nullptr, m_driver);
-							// render the shadow map
-							renderShadowMap(shadowMapTextureColors, i, cascade,
-									scene::ESNRP_TRANSPARENT);
-						}
-						cascade.commitFrustum();
+				// Render transparent part in one pass.
+				// This is also handled in ClientMap.
+				if (cascade.current_frame == cascade.max_frames - 1) {
+					if (i > 0) {
+						// blit current texture to the main
+						m_driver->setRenderTarget(shadowMapClientMap, false, true);
+						m_driver->setViewPort(core::rect<s32>(
+								i * m_shadow_map_texture_size, 0,
+								(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+						drawQuad(video::SColor(0xFFFFFFFF), shadowMapClientMapFuture.at(i-1), m_driver);
 					}
-					cascade.current_frame++;
+
+					if (m_shadow_map_colored) {
+						m_driver->setRenderTarget(shadowMapTextureColors,
+								false, true);
+						m_driver->setViewPort(core::rect<s32>(
+								i * m_shadow_map_texture_size, 0,
+								(i + 1) * m_shadow_map_texture_size, m_shadow_map_texture_size));
+						// erase the area
+						drawQuad(video::SColor(0xFFFFFFFF), nullptr, m_driver);
+						// render the shadow map
+						renderShadowMap(shadowMapTextureColors, i, cascade,
+								scene::ESNRP_TRANSPARENT);
+					}
+					cascade.commitFrustum();
 				}
+				cascade.current_frame++;
 			}
 		} // end for lights
 	}
