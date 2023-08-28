@@ -201,25 +201,25 @@ local function get_formspec(tabview, name, tabdata)
 
 		y = y + yo + 0.25
 
-		retval = retval .. "field[0," .. y .. ";3.8,0.75;te_playername;" .. fgettext("Name") .. ";" ..
+		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
 
 		y = y + 1 + 0.25
 
-		retval = retval .. "pwdfield[0," .. y .. ";3.8,0.75;te_passwd;" .. fgettext("Password") .. "]"
+		retval = retval .. "pwdfield[0," .. y .. ";4.5,0.75;te_passwd;" .. fgettext("Password") .. "]"
 
 		y = y + 1 + 0.25
 
 		local bind_addr = core.settings:get("bind_address")
 		if bind_addr ~= nil and bind_addr ~= "" then
 			retval = retval ..
-				"field[0," .. y .. ";2.5,0.75;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
+				"field[0," .. y .. ";3,0.75;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
 				core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
-				"field[2.85," .. y .. ";1.25,0.75;te_serverport;" .. fgettext("Port") .. ";" ..
+				"field[3.25," .. y .. ";1.25,0.75;te_serverport;" .. fgettext("Port") .. ";" ..
 				core.formspec_escape(current_port) .. "]"
 		else
 			retval = retval ..
-				"field[0," .. y .. ";3.8,0.75;te_serverport;" .. fgettext("Server Port") .. ";" ..
+				"field[0," .. y .. ";4.5,0.75;te_serverport;" .. fgettext("Server Port") .. ";" ..
 				core.formspec_escape(current_port) .. "]"
 		end
 
