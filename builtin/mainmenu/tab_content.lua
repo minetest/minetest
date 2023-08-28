@@ -148,8 +148,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	end
 
-	return table.concat(retval),
-		"size[15.5,7.1,false]real_coordinates[true]"
+	return table.concat(retval)
 end
 
 local function handle_doubleclick(pkg)
