@@ -186,8 +186,8 @@ local function get_formspec(tabview, name, tabdata)
 			host ..
 			"container_end[]" ..
 			"container[5.25,0.375]" ..
-			"label[0,-0.05;".. fgettext("Select World:") .. "]"..
-			"textlist[0,0.4;9.875,3.7;sp_worlds;" ..
+			"label[0,0.2;".. fgettext("Select World:") .. "]"..
+			"textlist[0,0.5;9.875,3.6;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]" ..
 			"container_end[]"
