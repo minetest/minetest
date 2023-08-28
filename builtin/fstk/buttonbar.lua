@@ -35,7 +35,7 @@ local function buttonbar_formspec(self)
 			(i - self.startbutton) * self.btn_size * 1.25 +       --button offset
 			self.btn_initial_offset
 		else
-			btn_pos.x = self.pos.x + self.size.x / 2 + self.btn_size / 2
+			btn_pos.x = self.pos.x + self.size.x / 2 - self.btn_size / 2
 		end
 
 		if self.orientation == "vertical" then
