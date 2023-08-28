@@ -199,16 +199,16 @@ local function get_formspec(tabview, name, tabdata)
 				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]"
 
-		y = y + yo + 0.25
+		y = y + yo + 0.35
 
 		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
 
-		y = y + 1 + 0.25
+		y = y + 1.15 + 0.25
 
 		retval = retval .. "pwdfield[0," .. y .. ";4.5,0.75;te_passwd;" .. fgettext("Password") .. "]"
 
-		y = y + 1 + 0.25
+		y = y + 1.15 + 0.25
 
 		local bind_addr = core.settings:get("bind_address")
 		if bind_addr ~= nil and bind_addr ~= "" then
