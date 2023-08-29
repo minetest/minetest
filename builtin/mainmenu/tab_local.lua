@@ -250,7 +250,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()
-		tab_content_clear_packages()
 		return true
 	end
 

@@ -338,7 +338,6 @@ local function handle_buttons(this, fields)
 		dlg:set_parent(this)
 		this:hide()
 		dlg:show()
-		tab_content_clear_packages()
 		return true
 	end
 

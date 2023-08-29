@@ -336,7 +336,6 @@ local function create_world_buttonhandler(this, fields)
 		this:delete()
 		this.parent:hide()
 		dlg:show()
-		tab_content_clear_packages()
 		return true
 	end
 
