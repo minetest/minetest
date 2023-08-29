@@ -615,6 +615,8 @@ class LiquidSystem {
 	bool levelInc(Dir i, int maxLevel)
 	{
 		int level = n[i].getLevel(m_nodedef);
+		if(level >= maxLevel) return false;
+
 		int increase = LIQUID_LEVEL_MAX - (int)d[i]->liquid_viscosity + 1;
 		level += increase;
 		if(level > maxLevel) level = maxLevel;
@@ -798,10 +800,10 @@ class LiquidSystem {
 				!d[D]->floodable && !isLiquid(D)) {
 
 			u8 l0 = n[C].getLevel(m_nodedef);
-			if(l0 < d[C]->liquid_range) {
+			if(l0 <= 1 || l0 <= (LIQUID_LEVEL_SOURCE - d[C]->liquid_range)) {
+				// The liquid cannot spread further.
 				return false;
 			}
-
 
 			if(d[C]->liquid_slope_range > 0) {
 
