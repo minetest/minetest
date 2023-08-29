@@ -74,9 +74,6 @@ local function buttonbar_formspec(self)
 				btn.caption, btn.name, btn.tooltip))
 	end
 
-	self.btn_prev_name = "btnbar_prev_" .. self.name
-	self.btn_next_name = "btnbar_next_" .. self.name
-
 	if show_scroll_btns then
 		local btn_prev_pos = {
 			x = self.pos.x + BASE_SPACING,
@@ -164,6 +161,9 @@ function buttonbar_create(name, pos, size, bgcolor, cbf_buttonhandler)
 	self.hidden = false
 	self.cur_page = 1
 	self.buttons = {}
+
+	self.btn_prev_name = "btnbar_prev_" .. self.name
+	self.btn_next_name = "btnbar_next_" .. self.name
 
 	setmetatable(self, buttonbar_metatable)
 
