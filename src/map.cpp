@@ -522,20 +522,43 @@ class LiquidSystem {
 	}
 
 	void writeChangedNodes(ServerEnvironment *env,
-			std::map<v3s16, MapBlock*> &modified_blocks,
-			std::vector<std::pair<v3s16, MapNode>> changed_nodes)
+			std::map<v3s16, MapBlock*>& modified_blocks,
+			std::vector<std::pair<v3s16, MapNode>>& changed_nodes, IGameDef *gamedef)
 	{
+		// Find out whether there is a suspect for this action
+		auto rb = gamedef->rollback();
+		std::string suspect;
+		if(rb != nullptr) {
+			std::string suspect = rb->getSuspect(p[0], 83, 1);
+		}
+
 		for(u16 i = ALL_START; i < ALL_END; ++i) {
 
 			if(n[i] == n_old[i]) continue;
 
-			if(d[i]->isLiquid() && d_old[i]->floodable) {
+			if(d[i]->isLiquid() && d_old[i]->floodable &&
+					n_old[i].getContent() != CONTENT_AIR) {
 				if (env->getScriptIface()->node_on_flood(p[i], n_old[i], n[i]))
 					continue;
 			}
 
+			if(!suspect.empty()) {
+				// Blame suspect
+				RollbackScopeActor rollback_scope(rb, suspect, true);
+				// Get old node for rollback
+				RollbackNode rollback_oldnode(m_map, p[i], gamedef);
+				// Set node
+				m_map->setNode(p[i], n[i]);
+				// Report
+				RollbackNode rollback_newnode(m_map, p[i], gamedef);
+				RollbackAction action;
+				action.setSetNode(p[i], rollback_oldnode, rollback_newnode);
+				rb->reportAction(action);
+			}
+			else {
+				m_map->setNode(p[i], n[i]);
+			}
 
-			m_map->setNode(p[i], n[i]);
 			changed_nodes.emplace_back(p[i], n[i]);
 			auto blockpos = getNodeBlockPos(p[i]);
 			auto block = m_map->getBlockNoCreateNoEx(blockpos);
@@ -546,6 +569,7 @@ class LiquidSystem {
 			ContentLightingFlags f = m_nodedef->getLightingFlags(n[i]);
 			n[i].setLight(LIGHTBANK_DAY, 0, f);
 			n[i].setLight(LIGHTBANK_NIGHT, 0, f);
+
 		}
 	}
 
@@ -710,8 +734,12 @@ class LiquidSystem {
 		if(n[C] == n_old[C] && isLiquid(C) &&
 				!d[D]->floodable && !isLiquid(D)) {
 
+			u8 l0 = n[C].getLevel(m_nodedef);
+			if(l0 < d[C]->liquid_range) {
+				return false;
+			}
+
 			if(d[C]->liquid_mechanic == LiquidMechanic::FLOW_DOWN || 1) {
-				u8 l0 = n[C].getLevel(m_nodedef);
 				u8 slope_dist[CNT_DIRS];
 
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
@@ -779,8 +807,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		m_transforming_liquid.pop_front();
 
 		liquidSystem.enterNode(p0, m_transforming_liquid);
-		liquidSystem.writeChangedNodes(env, modified_blocks, changed_nodes);
-
+		liquidSystem.writeChangedNodes(env, modified_blocks, changed_nodes,
+				m_gamedef);
 	}
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
