@@ -455,10 +455,8 @@ size_t get_biome_list(lua_State *L, int index,
 
 	// returns number of failed resolutions
 	size_t fail_count = 0;
-	size_t count = 0;
 
 	for (lua_pushnil(L); lua_next(L, index); lua_pop(L, 1)) {
-		count++;
 		Biome *biome = get_or_load_biome(L, -1, biomemgr);
 		if (!biome) {
 			fail_count++;
