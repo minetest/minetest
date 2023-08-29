@@ -578,7 +578,7 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 	}
 
-	void onSetMaterial(const video::SMaterial &material)
+	void onSetMaterial(const video::SMaterial &material) override
 	{
 		video::ITexture *texture = material.getTexture(0);
 		if (texture) {
