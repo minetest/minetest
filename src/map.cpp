@@ -496,92 +496,122 @@ void ServerMap::transforming_liquid_add(v3s16 p) {
 		m_transforming_liquid.push_back(p);
 }
 
-// This is a workaround for MCL.
-// MCL is abusing liquid for cobwebs.
-static bool isLiquid_mcl(const ContentFeatures *d)
-{
-	return d->isLiquid() &&
-		d->liquid_alternative_source_id != d->liquid_alternative_flowing_id;
-}
 
-static u8 getSlopeDistance(ServerMap *self, v3s16 p, u8 liquid_level,
-		const v3s16& dir)
-{
-	for(u8 i = 0; i < liquid_level; ++i) {
-		p += dir;
-		auto n1 = self->getNode(p);
-		auto& d1 = self->getNodeDefManager()->get(n1);
-		if(d1.floodable || isLiquid_mcl(&d1)) {
-			auto n2 = self->getNode(p + v3s16(0, -1, 0));
-			auto& d2 = self->getNodeDefManager()->get(n2);
-			if(d2.floodable || isLiquid_mcl(&d2)) {
-				return i;
-			}
-		}
-		else {
-			return UINT8_MAX;
-		}
+class LiquidSystem {
+	public:
+	LiquidSystem(ServerMap *map) : m_map(map)
+	{
+		m_nodedef = map->getNodeDefManager();
 	}
-	return UINT8_MAX;
-}
 
-
-
-void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
-		ServerEnvironment *env)
-{
-
-	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
-	std::vector<v3s16> check_for_falling;
-
-	int cnt_nodes = m_transforming_liquid.size();
-	for (int i = 0; i < cnt_nodes && m_transforming_liquid.size() > 0; ++i) {
-
-		auto p0 = m_transforming_liquid.front();
-		m_transforming_liquid.pop_front();
-
-		enum
-		{
-			ALL_START = 0,
-			C = 0, // Center
-			U = 1, // Up
-			SAME_START = 2,
-			B = 2, // Back
-			R = 3, // Right
-			F = 4, // Front
-			L = 5, // Left
-			SAME_END = 6,
-			D = 6, // Down
-			ALL_END = 7,
-			CNT_DIRS = 7,
-		};
-
-		v3s16 p[CNT_DIRS];
+	void enterNode(const v3s16& p0, UniqueQueue<v3s16>& transforming_liquid)
+	{
 		for(u16 i = 0; i < CNT_DIRS; ++ i) p[i] = p0 + liquid_7dirs[i];
-
-		MapNode n[CNT_DIRS];
-		for(u16 i = 0; i < CNT_DIRS; ++ i) n[i] = getNode(p[i]);
-
-		MapNode n_old[CNT_DIRS];
+		for(u16 i = 0; i < CNT_DIRS; ++ i) n[i] = m_map->getNode(p[i]);
 		for(u16 i = 0; i < CNT_DIRS; ++ i) n_old[i] = n[i];
-
-		const ContentFeatures *d[CNT_DIRS];
 		for(u16 i = 0; i < CNT_DIRS; ++ i) d[i] = &m_nodedef->get(n[i]);
-
-		const ContentFeatures *d_old[CNT_DIRS];
 		for(u16 i = 0; i < CNT_DIRS; ++ i) d_old[i] = d[i];
 
+		do {
+			if(handleRenewableLiquid(transforming_liquid)) break;
+			if(handleSinkingLiquid(transforming_liquid))   break;
+			if(handleRemovedLiquid(transforming_liquid))   break;
+			if(handleFlowDownLiquid(transforming_liquid))  break;
+			if(handleSpreadingLiquid(transforming_liquid)) break;
+		} while(0);
+	}
 
-		// Renewable liquid
+	void writeChangedNodes(ServerEnvironment *env,
+			std::map<v3s16, MapBlock*> &modified_blocks,
+			std::vector<std::pair<v3s16, MapNode>> changed_nodes)
+	{
+		for(u16 i = ALL_START; i < ALL_END; ++i) {
+
+			if(n[i] == n_old[i]) continue;
+
+			if(d[i]->isLiquid() && d_old[i]->floodable) {
+				if (env->getScriptIface()->node_on_flood(p[i], n_old[i], n[i]))
+					continue;
+			}
+
+
+			m_map->setNode(p[i], n[i]);
+			changed_nodes.emplace_back(p[i], n[i]);
+			auto blockpos = getNodeBlockPos(p[i]);
+			auto block = m_map->getBlockNoCreateNoEx(blockpos);
+			if(block != nullptr) {
+				modified_blocks[blockpos] = block;
+			}
+
+			ContentLightingFlags f = m_nodedef->getLightingFlags(n[i]);
+			n[i].setLight(LIGHTBANK_DAY, 0, f);
+			n[i].setLight(LIGHTBANK_NIGHT, 0, f);
+		}
+	}
+
+
+	private:
+	enum Dir
+	{
+		ALL_START = 0,
+		C = 0, // Center
+		U = 1, // Up
+		SAME_START = 2,
+		B = 2, // Back
+		R = 3, // Right
+		F = 4, // Front
+		L = 5, // Left
+		SAME_END = 6,
+		D = 6, // Down
+		ALL_END = 7,
+		CNT_DIRS = 7,
+	};
+
+	bool isLiquid(const ContentFeatures *d)
+	{
+		return d->isLiquid() &&
+			// This is a workaround for MCL.
+			// MCL is abusing liquid for cobwebs.
+			d->liquid_alternative_source_id != d->liquid_alternative_flowing_id;
+	}
+
+	bool isLiquid(Dir i) { return isLiquid(d[i]); }
+
+	bool isLiquid(int i) { return isLiquid(d[i]); }
+
+	u8 getSlopeDistance(u8 liquid_level,
+			const v3s16& dir)
+	{
+		v3s16 pi = p[0];
+		for(u8 i = 0; i < liquid_level; ++i) {
+			pi += dir;
+			auto n1 = m_map->getNode(pi);
+			auto& d1 = m_map->getNodeDefManager()->get(n1);
+			if(d1.floodable || isLiquid(&d1)) {
+				auto n2 = m_map->getNode(pi + v3s16(0, -1, 0));
+				auto& d2 = m_map->getNodeDefManager()->get(n2);
+				if(d2.floodable || isLiquid(&d2)) {
+					return i;
+				}
+			}
+			else {
+				return UINT8_MAX;
+			}
+		}
+		return UINT8_MAX;
+	}
+
+	bool handleRenewableLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
 		if(d[C]->floodable ||
-				(isLiquid_mcl(d[C]) && d[C]->liquid_type == LIQUID_FLOWING)) {
+				(isLiquid(C) && d[C]->liquid_type == LIQUID_FLOWING)) {
 
 			u8 cnt[CNT_DIRS] = {0};
 
 			for(u16 i = SAME_START; i < SAME_END; ++i) {
 				// Check if the liquid fits the requirements.
 				if(d[i]->liquid_type != LIQUID_SOURCE || !d[i]->liquid_renewable ||
-						!isLiquid_mcl(d[i])) {
+						!isLiquid(i)) {
 					continue;
 				}
 
@@ -597,16 +627,19 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						 (d[C]->liquid_alternative_source_id == n[i].getContent()))
 						) {
 
-					m_transforming_liquid.push_back(p[C]);
+					transforming_liquid.push_back(p[C]);
 					n[C] = MapNode(n[i]);
 					d[C] = &m_nodedef->get(n[C]);
-					goto done;
+					return true;
 				}
 			}
 		}
+		return false;
+	}
 
-
-		if(n[C] == n_old[C] && isLiquid_mcl(d[C]) && !isLiquid_mcl(d[U]) &&
+	bool handleSinkingLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
+		if(n[C] == n_old[C] && isLiquid(C) && !isLiquid(U) &&
 				d[C]->liquid_type == LIQUID_FLOWING) {
 			// There is no liquid of the same type on top.
 			u8 maxLevel = 0;
@@ -632,44 +665,57 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				d[C] = &m_nodedef->get(n[C]);
 
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
-					if(levels[i] >= maxLevel) m_transforming_liquid.push_back(p[i]);
+					if(levels[i] >= maxLevel) transforming_liquid.push_back(p[i]);
 				}
 
 				if(new_l == 0) {
-					m_transforming_liquid.push_back(p[C]);
+					transforming_liquid.push_back(p[C]);
 				}
+				return true;
 			}
 		}
+		return false;
+	}
 
-		if(!isLiquid_mcl(d[C])) {
+	bool handleRemovedLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
+		if(!isLiquid(C)) {
 			for(u16 i = SAME_START; i < ALL_END; ++i) {
-				if(isLiquid_mcl(d[i]) && d[i]->liquid_type == LIQUID_FLOWING) {
-					m_transforming_liquid.push_back(p[i]);
+				if(isLiquid(i) && d[i]->liquid_type == LIQUID_FLOWING) {
+					transforming_liquid.push_back(p[i]);
 				}
 			}
-			goto done;
+			return true;
 		}
+		return false;
+	}
 
-
-		if(n[C] == n_old[C] && isLiquid_mcl(d[C]) &&
+	bool handleFlowDownLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
+		if(n[C] == n_old[C] && isLiquid(C) &&
 				d[D]->floodable) {
 
-			m_transforming_liquid.push_back(p[D]);
+			transforming_liquid.push_back(p[D]);
 			n[D] = MapNode(n[C]);
 			n[D].setLevel(m_nodedef, LIQUID_LEVEL_SOURCE - 1);
 			d[D] = &m_nodedef->get(n[D]);
-			goto done;
+			return true;
 		}
+		return false;
+	}
 
-		if(n[C] == n_old[C] && isLiquid_mcl(d[C]) &&
-				!d[D]->floodable && !isLiquid_mcl(d[D])) {
+
+	bool handleSpreadingLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
+		if(n[C] == n_old[C] && isLiquid(C) &&
+				!d[D]->floodable && !isLiquid(D)) {
 
 			if(d[C]->liquid_mechanic == LiquidMechanic::FLOW_DOWN || 1) {
 				u8 l0 = n[C].getLevel(m_nodedef);
 				u8 slope_dist[CNT_DIRS];
 
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
-					slope_dist[i] = getSlopeDistance(this, p0, l0, liquid_7dirs[i]);
+					slope_dist[i] = getSlopeDistance(l0, liquid_7dirs[i]);
 				}
 
 				slope_dist[C] = slope_dist[U] = slope_dist[D] = UINT8_MAX;
@@ -683,53 +729,57 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable && slope_dist[i] == min_slope_dist) {
-						m_transforming_liquid.push_back(p[i]);
+						transforming_liquid.push_back(p[i]);
 
 						n[i] = MapNode(n[C]);
 						n[i].addLevel(m_nodedef, -1);
 						d[i] = &m_nodedef->get(n[i]);
 					}
 				}
-				goto done;
+				return true;
 			}
 			else if(d[C]->liquid_mechanic == LiquidMechanic::CLASSIC) {
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable) {
-						m_transforming_liquid.push_back(p[i]);
+						transforming_liquid.push_back(p[i]);
 						n[i] = MapNode(n[C]);
 						n[i].addLevel(m_nodedef, -1);
 						d[i] = &m_nodedef->get(n[i]);
 					}
 				}
-				goto done;
+				return true;
 			}
 		}
+		return false;
+	}
 
 
-done:
-		for(u16 i = ALL_START; i < ALL_END; ++i) {
+	ServerMap *m_map;
+	const NodeDefManager *m_nodedef;
 
-			if(n[i] == n_old[i]) continue;
+	v3s16 p[CNT_DIRS];
+	MapNode n[CNT_DIRS];
+	MapNode n_old[CNT_DIRS];
+	const ContentFeatures *d[CNT_DIRS];
+	const ContentFeatures *d_old[CNT_DIRS];
 
-			if(d[i]->isLiquid() && d_old[i]->floodable) {
-				if (env->getScriptIface()->node_on_flood(p[i], n_old[i], n[i]))
-					continue;
-			}
+};
 
 
-			setNode(p[i], n[i]);
-			changed_nodes.emplace_back(p[i], n[i]);
-			auto blockpos = getNodeBlockPos(p[i]);
-			auto block = getBlockNoCreateNoEx(blockpos);
-			if(block != nullptr) {
-				modified_blocks[blockpos] = block;
-			}
+void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+		ServerEnvironment *env)
+{
+	std::vector<std::pair<v3s16, MapNode>> changed_nodes;
 
-			ContentLightingFlags f = m_nodedef->getLightingFlags(n[i]);
-			n[i].setLight(LIGHTBANK_DAY, 0, f);
-			n[i].setLight(LIGHTBANK_NIGHT, 0, f);
+	int cnt_nodes = m_transforming_liquid.size();
+	for (int i = 0; i < cnt_nodes && m_transforming_liquid.size() > 0; ++i) {
 
-		}
+		LiquidSystem liquidSystem(this);
+		auto p0 = m_transforming_liquid.front();
+		m_transforming_liquid.pop_front();
+
+		liquidSystem.enterNode(p0, m_transforming_liquid);
+		liquidSystem.writeChangedNodes(env, modified_blocks, changed_nodes);
 
 	}
 	env->getScriptIface()->on_liquid_transformed(changed_nodes);
