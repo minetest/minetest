@@ -159,8 +159,7 @@ local function get_formspec(tabview, name, tabdata)
 		return table.concat{
 			"style[label_button;border=false]",
 			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
-			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"},
-			"size[15.5,7.1,false]real_coordinates[true]"
+			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"}
 	end
 
 	local retval = ""
