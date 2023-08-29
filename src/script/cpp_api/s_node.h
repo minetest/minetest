@@ -52,7 +52,6 @@ public:
 	static struct EnumString es_DrawType[];
 	static struct EnumString es_ContentParamType[];
 	static struct EnumString es_ContentParamType2[];
-	static struct EnumString es_LiquidMechanic[];
 	static struct EnumString es_LiquidType[];
 	static struct EnumString es_LiquidMoveType[];
 	static struct EnumString es_NodeBoxType[];

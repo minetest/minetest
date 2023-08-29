@@ -739,7 +739,13 @@ class LiquidSystem {
 				return false;
 			}
 
-			if(d[C]->liquid_mechanic == LiquidMechanic::FLOW_DOWN || 1) {
+
+
+			if(d[C]->liquid_slope_range > 0) {
+
+				int l = l0 + d[C]->liquid_slope_range - LIQUID_LEVEL_SOURCE;
+				l0 = (u8)(l < 0? 0 : l);
+
 				u8 slope_dist[CNT_DIRS];
 
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
@@ -766,7 +772,7 @@ class LiquidSystem {
 				}
 				return true;
 			}
-			else if(d[C]->liquid_mechanic == LiquidMechanic::CLASSIC) {
+			else if(d[C]->liquid_slope_range == 0) {
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable) {
 						transforming_liquid.push_back(p[i]);

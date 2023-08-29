@@ -84,13 +84,6 @@ enum ContentParamType2
 	CPT2_COLORED_4DIR,
 };
 
-enum class LiquidMechanic
-{
-  NONE,
-  CLASSIC,
-	FLOW_DOWN,
-};
-
 enum LiquidType
 {
 	LIQUID_NONE,
@@ -412,8 +405,6 @@ struct ContentFeatures
 
 	// --- LIQUID PROPERTIES ---
 
-  // The mechanic of the liquid.
-  LiquidMechanic liquid_mechanic;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If true, movement (e.g. of players) inside this node is liquid-like.
@@ -432,6 +423,9 @@ struct ContentFeatures
 	bool liquid_renewable;
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
+	// maximal distance to the next slope.
+	// If 0 the liquid spreads in all directions.
+	u8 liquid_slope_range;
 	u8 drowning;
 	// Liquids flow into and replace node
 	bool floodable;

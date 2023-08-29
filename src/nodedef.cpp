@@ -386,7 +386,6 @@ void ContentFeatures::reset()
 	rightclickable = true;
 	leveled = 0;
 	leveled_max = LEVELED_MAX;
-  liquid_mechanic = LiquidMechanic::CLASSIC;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing.clear();
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
@@ -395,6 +394,7 @@ void ContentFeatures::reset()
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
+	liquid_slope_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
 	light_source = 0;
 	damage_per_second = 0;
@@ -517,15 +517,15 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 			liquid_type_bc = LIQUID_FLOWING;
 	}
 
-  if (protocol_version >= 43) {
-    writeU8(os, (u8)liquid_mechanic);
-  }
 	writeU8(os, liquid_type_bc);
 	os << serializeString16(liquid_alternative_flowing);
 	os << serializeString16(liquid_alternative_source);
 	writeU8(os, liquid_viscosity);
 	writeU8(os, liquid_renewable);
 	writeU8(os, liquid_range);
+	if (protocol_version >= 43) {
+	  writeU8(os, liquid_slope_range);
+	}
 	writeU8(os, drowning);
 	writeU8(os, floodable);
 
@@ -616,9 +616,6 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	damage_per_second = readU32(is);
 
 	// liquid
-  if (protocol_version >= 43) {
-    liquid_mechanic = (enum LiquidMechanic)readU8(is);
-  }
 	liquid_type = (enum LiquidType) readU8(is);
 	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
@@ -627,6 +624,9 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	move_resistance = liquid_viscosity; // set default move_resistance
 	liquid_renewable = readU8(is);
 	liquid_range = readU8(is);
+	if (protocol_version >= 43) {
+	  liquid_slope_range = readU8(is);
+	}
 	drowning = readU8(is);
 	floodable = readU8(is);
 

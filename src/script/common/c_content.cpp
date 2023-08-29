@@ -763,9 +763,6 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	getboolfield(L, index, "buildable_to", f.buildable_to);
 	// Liquids flow into and replace node
 	getboolfield(L, index, "floodable", f.floodable);
-	// Select the general behaviour of the water.
-	f.liquid_mechanic = (LiquidMechanic)getenumfield(L, index, "liquidmechanic",
-			ScriptApiNode::es_LiquidMechanic, (int)LiquidMechanic::NONE);
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
 			ScriptApiNode::es_LiquidType, LIQUID_NONE);
@@ -785,6 +782,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	f.move_resistance = f.liquid_viscosity;
 	f.liquid_range = getintfield_default(L, index,
 			"liquid_range", f.liquid_range);
+	f.liquid_slope_range = getintfield_default(L, index,
+			"liquid_slope_range", f.liquid_slope_range);
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
 	f.leveled_max = getintfield_default(L, index,
 			"leveled_max", f.leveled_max);
