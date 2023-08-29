@@ -194,12 +194,14 @@ local function get_formspec(tabview, name, tabdata)
 
 	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
-				"button[11.025,5.85;4.1,0.85;play;".. fgettext("Host Game") .. "]" ..
+				"button[10.1875,5.85;4.9375,0.85;play;".. fgettext("Host Game") .. "]" ..
 				"container[0.375,0.375]" ..
 				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]"
 
-		y = y + yo + 0.35
+		-- Reset y so that the text fields always start at the same position,
+		-- regardless of whether some of the checkboxes are hidden.
+		y = 0.2 + 4*yo + 0.35
 
 		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
@@ -226,7 +228,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "container_end[]"
 	else
 		retval = retval ..
-				"button[11.025,5.85;4.1,0.85;play;" .. fgettext("Play Game") .. "]"
+				"button[10.1875,5.85;4.9375,0.85;play;" .. fgettext("Play Game") .. "]"
 	end
 
 	return retval
