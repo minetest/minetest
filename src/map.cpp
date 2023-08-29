@@ -516,6 +516,7 @@ class LiquidSystem {
 			if(handleRenewableLiquid(transforming_liquid)) break;
 			if(handleSinkingLiquid(transforming_liquid))   break;
 			if(handleRemovedLiquid(transforming_liquid))   break;
+			if(handleViscosityLiquid(transforming_liquid)) break;
 			if(handleFlowDownLiquid(transforming_liquid))  break;
 			if(handleSpreadingLiquid(transforming_liquid)) break;
 		} while(0);
@@ -579,6 +580,7 @@ class LiquidSystem {
 	{
 		ALL_START = 0,
 		C = 0, // Center
+		OTHERS_START = 1,
 		U = 1, // Up
 		SAME_START = 2,
 		B = 2, // Back
@@ -587,6 +589,7 @@ class LiquidSystem {
 		L = 5, // Left
 		SAME_END = 6,
 		D = 6, // Down
+		OTHERS_END = 7,
 		ALL_END = 7,
 		CNT_DIRS = 7,
 	};
@@ -602,6 +605,35 @@ class LiquidSystem {
 	bool isLiquid(Dir i) { return isLiquid(d[i]); }
 
 	bool isLiquid(int i) { return isLiquid(d[i]); }
+
+	bool isSameLiquid(int i, int j) {
+		return isLiquid(i) && isLiquid(j) &&
+			d[i]->liquid_alternative_source_id == d[j]->liquid_alternative_source_id
+			;
+	}
+
+	bool levelInc(Dir i, int maxLevel)
+	{
+		int level = n[i].getLevel(m_nodedef);
+		int increase = LIQUID_LEVEL_MAX - (int)d[i]->liquid_viscosity + 1;
+		level += increase;
+		if(level > maxLevel) level = maxLevel;
+		if(level <= 0) return false;
+
+		n[i].setLevel(m_nodedef, level);
+		return true;
+	}
+
+	bool levelInit(int i, int maxLevel)
+	{
+		int level = LIQUID_LEVEL_MAX - (int)d[i]->liquid_viscosity + 1;
+		//level = 1;
+		if(level > maxLevel) level = maxLevel;
+		if(level <= 0) return false;
+
+		n[i].setLevel(m_nodedef, level);
+		return true;
+	}
 
 	u8 getSlopeDistance(u8 liquid_level,
 			const v3s16& dir)
@@ -721,13 +753,44 @@ class LiquidSystem {
 
 			transforming_liquid.push_back(p[D]);
 			n[D] = MapNode(n[C]);
-			n[D].setLevel(m_nodedef, LIQUID_LEVEL_SOURCE - 1);
+			d[D] = &m_nodedef->get(n[D]); // levelInit() requires d[D]!!
+			levelInit(D, LIQUID_LEVEL_SOURCE - 1);
 			d[D] = &m_nodedef->get(n[D]);
 			return true;
 		}
 		return false;
 	}
 
+	bool handleViscosityLiquid(UniqueQueue<v3s16>& transforming_liquid)
+	{
+		int levelC = n[C].getLevel(m_nodedef);
+		if(isSameLiquid(C, U)) {
+			if(levelC < LIQUID_LEVEL_MAX) {
+				if(levelInc(C, LIQUID_LEVEL_MAX)) {
+					d[C] = &m_nodedef->get(n[C]);
+					transforming_liquid.push_back(p[C]);
+					return true;
+				}
+			}
+		}
+		else if(isLiquid(C)) {
+			int maxLevel = 0;
+			for(u16 i = SAME_START; i < SAME_END; ++i) {
+				if(!isSameLiquid(C, i)) continue;
+
+				int level = n[i].getLevel(m_nodedef);
+				if(level > maxLevel) maxLevel = level;
+			}
+			if(maxLevel - 1 > levelC) {
+				if(levelInc(C, maxLevel - 1)) {
+					d[C] = &m_nodedef->get(n[C]);
+					transforming_liquid.push_back(p[C]);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	bool handleSpreadingLiquid(UniqueQueue<v3s16>& transforming_liquid)
 	{
@@ -740,20 +803,21 @@ class LiquidSystem {
 			}
 
 
-
 			if(d[C]->liquid_slope_range > 0) {
 
 				int l = l0 + d[C]->liquid_slope_range - LIQUID_LEVEL_SOURCE;
-				l0 = (u8)(l < 0? 0 : l);
+				u8 max_slope_dist = (u8)(l < 0? 0 : l);
 
 				u8 slope_dist[CNT_DIRS];
 
+				// Calculate all the slope distances
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
-					slope_dist[i] = getSlopeDistance(l0, liquid_7dirs[i]);
+					slope_dist[i] = getSlopeDistance(max_slope_dist, liquid_7dirs[i]);
 				}
 
 				slope_dist[C] = slope_dist[U] = slope_dist[D] = UINT8_MAX;
 
+				// Find nearest slope.
 				u8 min_slope_dist = UINT8_MAX;
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(slope_dist[i] < min_slope_dist) {
@@ -761,13 +825,16 @@ class LiquidSystem {
 					}
 				}
 
+				// Put liquid in the direction where the slope distance is the
+				// shortest.
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable && slope_dist[i] == min_slope_dist) {
-						transforming_liquid.push_back(p[i]);
 
 						n[i] = MapNode(n[C]);
-						n[i].addLevel(m_nodedef, -1);
+						d[i] = &m_nodedef->get(n[i]); // levelInit() requires d[i]!!
+						levelInit(i, (int)l0 - 1);
 						d[i] = &m_nodedef->get(n[i]);
+						transforming_liquid.push_back(p[i]);
 					}
 				}
 				return true;
@@ -775,10 +842,11 @@ class LiquidSystem {
 			else if(d[C]->liquid_slope_range == 0) {
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable) {
-						transforming_liquid.push_back(p[i]);
 						n[i] = MapNode(n[C]);
-						n[i].addLevel(m_nodedef, -1);
+						d[i] = &m_nodedef->get(n[i]); // levelInit() requires d[i]!!
+						levelInit(i, (int)l0 - 1);
 						d[i] = &m_nodedef->get(n[i]);
+						transforming_liquid.push_back(p[i]);
 					}
 				}
 				return true;
