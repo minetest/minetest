@@ -37,7 +37,7 @@ local function buttonbar_formspec(self)
 	-- Spacing works like CSS Flexbox with `justify-content: space-evenly;`.
 	-- `BASE_SPACING` is used as the minimum spacing, like `gap` in CSS Flexbox.
 
-	-- The number of buttons per page is always calculated as if both scroll
+	-- The number of buttons per page is always calculated as if the scroll
     -- buttons were visible.
 	local avail_space = self.size.x - 2*BASE_SPACING - 2*SCROLL_BTN_WIDTH
 	local btns_per_page = math.floor((avail_space - BASE_SPACING) / (btn_size + BASE_SPACING))
