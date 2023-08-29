@@ -4109,7 +4109,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	// call only one of updateDrawList, touchMapBlocks, or updateShadow per frame
 	// (the else-ifs below are intentional)
-	if (runData.update_draw_list_timer >= update_draw_list_delta
+	if (RenderingEngine::get_shadow_renderer() && m_camera_offset_changed) {
+		// prioritize shadow frustum update if camera offset changes
+		updateShadows();
+	}
+	else if (runData.update_draw_list_timer >= update_draw_list_delta
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| m_camera_offset_changed
 			|| client->getEnv().getClientMap().needsUpdateDrawList()) {

@@ -115,9 +115,13 @@ bool ShadowCascade::update_frustum(v3f direction, const Camera *cam, Client *cli
 	// when camera offset changes, adjust the current frustum view matrix to avoid flicker
 	v3s16 cam_offset = cam->getOffset();
 	if (cam_offset != current_frustum.camera_offset) {
-		v3f rotated_offset;
-		current_frustum.ViewMat.rotateVect(rotated_offset, intToFloat(cam_offset - current_frustum.camera_offset, BS));
-		current_frustum.ViewMat.setTranslation(current_frustum.ViewMat.getTranslation() + rotated_offset);
+		v3f delta = intToFloat(cam_offset - current_frustum.camera_offset, BS);
+
+		current_frustum.center -= delta;
+
+		v3f rotated_delta;
+		current_frustum.ViewMat.rotateVect(rotated_delta, delta);
+		current_frustum.ViewMat.setTranslation(current_frustum.ViewMat.getTranslation() + rotated_delta);
 		current_frustum.camera_offset = cam_offset;
 	}
 	return true;
