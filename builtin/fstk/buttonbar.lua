@@ -159,8 +159,9 @@ function buttonbar_create(name, pos, size, bgcolor, cbf_buttonhandler)
 	self.userbuttonhandler = cbf_buttonhandler
 
 	self.hidden = false
-	self.cur_page = 1
 	self.buttons = {}
+	self.num_pages = 1
+	self.cur_page = 1
 
 	self.btn_prev_name = "btnbar_prev_" .. self.name
 	self.btn_next_name = "btnbar_next_" .. self.name
