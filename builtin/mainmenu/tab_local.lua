@@ -201,7 +201,7 @@ local function get_formspec(tabview, name, tabdata)
 
 		-- Reset y so that the text fields always start at the same position,
 		-- regardless of whether some of the checkboxes are hidden.
-		y = 0.2 + 4*yo + 0.35
+		y = 0.2 + 4 * yo + 0.35
 
 		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
