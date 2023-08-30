@@ -175,10 +175,10 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	retval = retval ..
-			"container[5.25,4.75]" ..
-			"button[0,0;3.125,0.85;world_delete;".. fgettext("Delete") .. "]" ..
-			"button[3.375,0;3.125,0.85;world_configure;".. fgettext("Select Mods") .. "]" ..
-			"button[6.75,0;3.125,0.85;world_create;".. fgettext("New") .. "]" ..
+			"container[5.25,4.875]" ..
+			"button[0,0;3.225,0.8;world_delete;".. fgettext("Delete") .. "]" ..
+			"button[3.325,0;3.225,0.8;world_configure;".. fgettext("Select Mods") .. "]" ..
+			"button[6.65,0;3.225,0.8;world_create;".. fgettext("New") .. "]" ..
 			"container_end[]" ..
 			"container[0.375,0.375]" ..
 			creative ..
@@ -187,19 +187,21 @@ local function get_formspec(tabview, name, tabdata)
 			"container_end[]" ..
 			"container[5.25,0.375]" ..
 			"label[0,0.2;".. fgettext("Select World:") .. "]"..
-			"textlist[0,0.5;9.875,3.6;sp_worlds;" ..
+			"textlist[0,0.5;9.875,3.9;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]" ..
 			"container_end[]"
 
 	if core.settings:get_bool("enable_server") and disabled_settings["enable_server"] == nil then
 		retval = retval ..
-				"button[11.025,5.85;4.1,0.85;play;".. fgettext("Host Game") .. "]" ..
+				"button[10.1875,5.925;4.9375,0.8;play;".. fgettext("Host Game") .. "]" ..
 				"container[0.375,0.375]" ..
 				"checkbox[0,"..y..";cb_server_announce;" .. fgettext("Announce Server") .. ";" ..
 				dump(core.settings:get_bool("server_announce")) .. "]"
 
-		y = y + yo + 0.35
+		-- Reset y so that the text fields always start at the same position,
+		-- regardless of whether some of the checkboxes are hidden.
+		y = 0.2 + 4 * yo + 0.35
 
 		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
@@ -226,7 +228,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "container_end[]"
 	else
 		retval = retval ..
-				"button[11.025,5.85;4.1,0.85;play;" .. fgettext("Play Game") .. "]"
+				"button[10.1875,5.925;4.9375,0.8;play;" .. fgettext("Play Game") .. "]"
 	end
 
 	return retval
