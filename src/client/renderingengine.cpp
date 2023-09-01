@@ -140,7 +140,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = true;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
