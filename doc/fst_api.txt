@@ -126,30 +126,27 @@ members:
 File: fst/buttonbar.lua
 -----------------------
 
-buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
+buttonbar_create(name, pos, size, bgcolor, cbf_buttonhandler)
 ^ create a buttonbar
 ^ name: name of component (unique per ui)
-^ cbf_buttonhandler: function to be called on button pressed
-	function(buttonbar,buttonname,buttondata)
 ^ pos: position relative to upper left of current shown formspec
 	{
 		x,
 		y
 	}
-^ orientation: "vertical" or "horizontal"
 ^ size: size of bar
 	{
-		width,
-		height
+		x,
+		y
 	}
+^ bgcolor: background color as `ColorString`
+^ cbf_buttonhandler: function to be called on button pressed
+	function(fields)
 
 Class reference buttonbar:
 
 methods:
-- add_button(btn_id, caption, button_image)
-- set_parent(parent)
-  ^ set parent to attach a buttonbar to
-  ^ parent: component to attach to
+- add_button(name, caption, image, tooltip)
 - show()
   ^ show buttonbar
 - hide()

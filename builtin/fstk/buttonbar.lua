@@ -1,5 +1,6 @@
 --Minetest
 --Copyright (C) 2014 sapier
+--Copyright (C) 2023 Gregor Parzefall
 --
 --This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
@@ -16,116 +17,101 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-local function buttonbar_formspec(self)
+local BASE_SPACING = 0.1
+local SCROLL_BTN_WIDTH = TOUCHSCREEN_GUI and 0.8 or 0.5
 
+local function buttonbar_formspec(self)
 	if self.hidden then
 		return ""
 	end
 
-	local formspec = "style_type[box;noclip=true]" ..
-			string.format("box[%f,%f;%f,%f;%s]", self.pos.x, self.pos.y, self.size.x, self.size.y, self.bgcolor) ..
-			"style_type[box;noclip=false]"
+	local formspec = {
+		"style_type[box;noclip=true]",
+		string.format("box[%f,%f;%f,%f;%s]", self.pos.x, self.pos.y, self.size.x,
+				self.size.y, self.bgcolor),
+		"style_type[box;noclip=false]",
+	}
 
-	for i=self.startbutton,#self.buttons,1 do
-		local btn_name = self.buttons[i].name
-		local btn_pos = {}
+	local btn_size = self.size.y - 2*BASE_SPACING
 
-		if self.orientation == "horizontal" then
-			btn_pos.x = self.pos.x + --base pos
-			(i - self.startbutton) * self.btn_size * 1.25 +       --button offset
-			self.btn_initial_offset
-		else
-			btn_pos.x = self.pos.x + self.size.x / 2 - self.btn_size / 2
-		end
+	-- Spacing works like CSS Flexbox with `justify-content: space-evenly;`.
+	-- `BASE_SPACING` is used as the minimum spacing, like `gap` in CSS Flexbox.
 
-		if self.orientation == "vertical" then
-			btn_pos.y = self.pos.y + --base pos
-			(i - self.startbutton) * self.btn_size * 1.25 +       --button offset
-			self.btn_initial_offset
-		else
-			btn_pos.y = self.pos.y + self.size.y / 2 - self.btn_size / 2
-		end
+	-- The number of buttons per page is always calculated as if the scroll
+    -- buttons were visible.
+	local avail_space = self.size.x - 2*BASE_SPACING - 2*SCROLL_BTN_WIDTH
+	local btns_per_page = math.floor((avail_space - BASE_SPACING) / (btn_size + BASE_SPACING))
 
-		if (self.orientation == "vertical" and
-			(btn_pos.y + self.btn_size <= self.pos.y + self.size.y)) or
-			(self.orientation == "horizontal" and
-			(btn_pos.x + self.btn_size <= self.pos.x + self.size.x)) then
+	self.num_pages = math.ceil(#self.buttons / btns_per_page)
+	self.cur_page = math.min(self.cur_page, self.num_pages)
+	local first_btn = (self.cur_page - 1) * btns_per_page + 1
 
-		local borders="true"
+	local show_scroll_btns = self.num_pages > 1
 
-		if self.buttons[i].image ~= nil then
-			borders="false"
-		end
+	-- In contrast, the button spacing calculation takes hidden scroll buttons
+	-- into account.
+	local real_avail_space = show_scroll_btns and avail_space or self.size.x
+	local btn_spacing = (real_avail_space - btns_per_page * btn_size) / (btns_per_page + 1)
 
-		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
-					btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
-					self.buttons[i].image, btn_name, self.buttons[i].caption,
-					borders, btn_name, self.buttons[i].tooltip)
-		else
-			--print("end of displayable buttons: orientation: " .. self.orientation)
-			--print( "button_end: " .. (btn_pos.y + self.btn_size - (self.btn_size * 0.05)))
-			--print( "bar_end: " .. (self.pos.x + self.size.x))
+	local btn_start_x = self.pos.x + btn_spacing
+	if show_scroll_btns then
+		btn_start_x = btn_start_x + BASE_SPACING + SCROLL_BTN_WIDTH
+	end
+
+	for i = first_btn, first_btn + btns_per_page - 1 do
+		local btn = self.buttons[i]
+		if btn == nil then
 			break
 		end
+
+		local btn_pos = {
+			x = btn_start_x + (i - first_btn) * (btn_size + btn_spacing),
+			y = self.pos.y + BASE_SPACING,
+		}
+
+		table.insert(formspec, string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;false]tooltip[%s;%s]",
+				btn_pos.x, btn_pos.y, btn_size, btn_size, btn.image, btn.name,
+				btn.caption, btn.name, btn.tooltip))
 	end
 
-	if (self.have_move_buttons) then
-		local btn_dec_pos = {}
-		btn_dec_pos.x = self.pos.x + (self.btn_size * 0.05)
-		btn_dec_pos.y = self.pos.y + (self.btn_size * 0.05)
-		local btn_inc_pos = {}
-		local btn_size = {}
+	if show_scroll_btns then
+		local btn_prev_pos = {
+			x = self.pos.x + BASE_SPACING,
+			y = self.pos.y + BASE_SPACING,
+		}
+		local btn_next_pos = {
+			x = self.pos.x + self.size.x - BASE_SPACING - SCROLL_BTN_WIDTH,
+			y = self.pos.y + BASE_SPACING,
+		}
 
-		if self.orientation == "horizontal" then
-			btn_size.x = 0.5
-			btn_size.y = self.btn_size
-			btn_inc_pos.x = self.pos.x + self.size.x - 0.5
-			btn_inc_pos.y = self.pos.y + (self.btn_size * 0.05)
-		else
-			btn_size.x = self.btn_size
-			btn_size.y = 0.5
-			btn_inc_pos.x = self.pos.x + (self.btn_size * 0.05)
-			btn_inc_pos.y = self.pos.y + self.size.y - 0.5
-		end
+		table.insert(formspec, string.format("style[%s,%s;noclip=true]",
+				self.btn_prev_name, self.btn_next_name))
 
-		local text_dec = "<"
-		local text_inc = ">"
-		if self.orientation == "vertical" then
-			text_dec = "^"
-			text_inc = "v"
-		end
+		table.insert(formspec, string.format("button[%f,%f;%f,%f;%s;<]",
+				btn_prev_pos.x, btn_prev_pos.y, SCROLL_BTN_WIDTH, btn_size,
+				self.btn_prev_name))
 
-		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]",
-					btn_dec_pos.x, btn_dec_pos.y, btn_size.x, btn_size.y,
-					self.name, text_dec)
-
-		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]",
-					btn_inc_pos.x, btn_inc_pos.y, btn_size.x, btn_size.y,
-					 self.name, text_inc)
+		table.insert(formspec, string.format("button[%f,%f;%f,%f;%s;>]",
+				btn_next_pos.x, btn_next_pos.y, SCROLL_BTN_WIDTH, btn_size,
+				self.btn_next_name))
 	end
 
-	return formspec
+	return table.concat(formspec)
 end
 
 local function buttonbar_buttonhandler(self, fields)
-
-	if fields["btnbar_inc_" .. self.name] ~= nil and
-		self.startbutton < #self.buttons then
-
-		self.startbutton = self.startbutton + 1
+	if fields[self.btn_prev_name] and self.cur_page > 1 then
+		self.cur_page = self.cur_page - 1
 		return true
 	end
 
-	if fields["btnbar_dec_" .. self.name] ~= nil and self.startbutton > 1 then
-		self.startbutton = self.startbutton - 1
+	if fields[self.btn_next_name] and self.cur_page < self.num_pages then
+		self.cur_page = self.cur_page + 1
 		return true
 	end
 
-	for i=1,#self.buttons,1 do
-		if fields[self.buttons[i].name] ~= nil then
+	for _, btn in ipairs(self.buttons) do
+		if fields[btn.name] then
 			return self.userbuttonhandler(fields)
 		end
 	end
@@ -142,75 +128,45 @@ local buttonbar_metatable = {
 	delete = function(self) ui.delete(self) end,
 
 	add_button = function(self, name, caption, image, tooltip)
-			if caption == nil then caption = "" end
-			if image == nil then image = "" end
-			if tooltip == nil then tooltip = "" end
+		if caption == nil then caption = "" end
+		if image == nil then image = "" end
+		if tooltip == nil then tooltip = "" end
 
-			self.buttons[#self.buttons + 1] = {
-				name = name,
-				caption = caption,
-				image = image,
-				tooltip = tooltip
-			}
-			if self.orientation == "horizontal" then
-				if ( (self.btn_size * #self.buttons) + (self.btn_size * 0.05 *2)
-					> self.size.x ) then
-
-					self.btn_initial_offset = self.btn_size * 0.05 + 0.5
-					self.have_move_buttons = true
-				end
-			else
-				if ((self.btn_size * #self.buttons) + (self.btn_size * 0.05 *2)
-					> self.size.y ) then
-
-					self.btn_initial_offset = self.btn_size * 0.05 + 0.5
-					self.have_move_buttons = true
-				end
-			end
-		end,
-
-	set_bgparams = function(self, bgcolor)
-			if (type(bgcolor) == "string") then
-				self.bgcolor = bgcolor
-			end
-		end,
+		table.insert(self.buttons, {
+			name = name,
+			caption = caption,
+			image = image,
+			tooltip = tooltip,
+		})
+	end,
 }
 
 buttonbar_metatable.__index = buttonbar_metatable
 
-function buttonbar_create(name, cbf_buttonhandler, pos, orientation, size)
-	assert(name ~= nil)
-	assert(cbf_buttonhandler ~= nil)
-	assert(orientation == "vertical" or orientation == "horizontal")
-	assert(pos ~= nil and type(pos) == "table")
-	assert(size ~= nil and type(size) == "table")
+function buttonbar_create(name, pos, size, bgcolor, cbf_buttonhandler)
+	assert(type(name)              == "string"  )
+	assert(type(pos)               == "table"   )
+	assert(type(size)              == "table"   )
+	assert(type(bgcolor)           == "string"  )
+	assert(type(cbf_buttonhandler) == "function")
 
 	local self = {}
-	self.name = name
 	self.type = "addon"
-	self.bgcolor = "#000000"
+	self.name = name
 	self.pos = pos
 	self.size = size
-	self.orientation = orientation
-	self.startbutton = 1
-	self.have_move_buttons = false
-	self.hidden = false
-
-	if self.btn_initial_offset == nil then
-		self.btn_initial_offset = 0.375
-	end
-
-	if self.orientation == "horizontal" then
-		self.btn_size = self.size.y - 2*0.1
-	else
-		self.btn_size = self.size.x - 2*0.1
-	end
-
-
+	self.bgcolor = bgcolor
 	self.userbuttonhandler = cbf_buttonhandler
-	self.buttons = {}
 
-	setmetatable(self,buttonbar_metatable)
+	self.hidden = false
+	self.buttons = {}
+	self.num_pages = 1
+	self.cur_page = 1
+
+	self.btn_prev_name = "btnbar_prev_" .. self.name
+	self.btn_next_name = "btnbar_next_" .. self.name
+
+	setmetatable(self, buttonbar_metatable)
 
 	ui.add(self)
 	return self
