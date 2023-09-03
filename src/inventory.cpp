@@ -330,7 +330,7 @@ ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 		newitem.clear();
 	}
 	// If item name or metadata differs, bail out
-	else if (name != newitem.name
+	else if (itemdef->getAlias(name) != itemdef->getAlias(newitem.name)
 		|| metadata != newitem.metadata)
 	{
 		// cannot be added
@@ -350,6 +350,7 @@ ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 		newitem.remove(freespace);
 	}
 
+	name = itemdef->getAlias(name);
 	return newitem;
 }
 
@@ -369,7 +370,7 @@ bool ItemStack::itemFits(ItemStack newitem,
 		newitem.clear();
 	}
 	// If item name or metadata differs, bail out
-	else if (name != newitem.name
+	else if (itemdef->getAlias(name) != itemdef->getAlias(newitem.name)
 		|| metadata != newitem.metadata)
 	{
 		// cannot be added
@@ -392,9 +393,9 @@ bool ItemStack::itemFits(ItemStack newitem,
 	return newitem.empty();
 }
 
-bool ItemStack::stacksWith(ItemStack other) const
+bool ItemStack::stacksWith(ItemStack other, IItemDefManager *itemdef) const
 {
-	return (this->name == other.name &&
+	return (itemdef->getAlias(this->name) == itemdef->getAlias(other.name) &&
 			this->wear == other.wear &&
 			this->metadata == other.metadata);
 }

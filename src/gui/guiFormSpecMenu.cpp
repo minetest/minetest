@@ -4173,6 +4173,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		m_old_tooltip_id = -1;
 		updateSelectedItem();
+		IItemDefManager *idef = m_client->idef();
 		GUIInventoryList::ItemSpec s = getItemAtPos(m_pointer);
 
 		Inventory *inv_selected = NULL;
@@ -4231,7 +4232,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (m_selected_item && s.isValid()) {
 			ItemStack a = list_selected->getItem(m_selected_item->i);
 			ItemStack b = list_s->getItem(s.i);
-			matching = a.stacksWith(b);
+			matching = a.stacksWith(b, idef);
 		}
 
 		ButtonEventType button = BET_OTHER;
@@ -4377,7 +4378,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							continue;
 						ItemStack item = list_s->getItem(i);
 
-						if (slct.stacksWith(item)) {
+						if (slct.stacksWith(item, idef)) {
 							IMoveAction *a = new IMoveAction();
 							a->count = item.count;
 							a->from_inv = s.inventoryloc;
@@ -4564,7 +4565,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					ItemStack item = list_s->getItem(i);
 
-					if (slct.stacksWith(item)) {
+					if (slct.stacksWith(item, idef)) {
 						// Found a match, check if we can pick it up
 						bool full = false;
 						u16 amount = item.count;
