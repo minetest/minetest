@@ -282,7 +282,7 @@ return {
 		fs[#fs + 1] = ("image[1.5,%f;%f,%f;%s]"):format(
 				pos_y / 2 - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE, logofile)
 
-		return table.concat(fs, "")
+		return table.concat(fs)
 	end,
 
 	cbf_button_handler = function(this, fields, name, tabdata)

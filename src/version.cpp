@@ -52,6 +52,7 @@ const char *g_build_info =
 #else
 	"Using " LUA_RELEASE "\n"
 #endif
+	"ARCH=" ARCH "\n"
 	"BUILD_TYPE=" BUILD_TYPE "\n"
 	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n"
 	"USE_CURL=" STR(USE_CURL) "\n"
