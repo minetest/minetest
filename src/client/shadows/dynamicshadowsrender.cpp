@@ -248,7 +248,7 @@ void ShadowRenderer::ensureSMTextures(u8 n_cascades)
 			video::ITexture *cascade_texture = getSMTexture(
 					std::string("shadow_clientmap_bb_") + itos(i) + std::string("_") + itos(m_shadow_map_texture_size),
 					m_texture_format,
-					n_cascades, true);
+					1, true);
 			assert(cascade_texture != nullptr);
 			shadowMapClientMapFuture.push_back(cascade_texture);
 		}
