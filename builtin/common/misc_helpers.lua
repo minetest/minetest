@@ -196,6 +196,27 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 end
 
 --------------------------------------------------------------------------------
+function string.tail(str, num_lines)
+	local first_char = 1
+
+	local str_reversed = str:reverse()
+	local index = #str
+	local num_newlines = 0
+	for char in str_reversed:gmatch(".") do
+		if char == "\n" then -- catches CRLF as well
+			num_newlines = num_newlines + 1
+		end
+		if num_newlines > num_lines then
+			first_char = index + 1
+			break
+		end
+		index = index - 1
+	end
+
+	return str:sub(first_char)
+end
+
+--------------------------------------------------------------------------------
 function table.indexof(list, val)
 	for i, v in ipairs(list) do
 		if v == val then

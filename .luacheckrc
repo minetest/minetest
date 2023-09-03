@@ -18,7 +18,7 @@ read_globals = {
 	"profiler",
 	"Settings",
 
-	string = {fields = {"split", "trim"}},
+	string = {fields = {"split", "tail", "trim"}},
 	table  = {fields = {"copy", "getn", "indexof", "insert_all"}},
 	math   = {fields = {"hypot", "round"}},
 }

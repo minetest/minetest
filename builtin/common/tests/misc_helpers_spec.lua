@@ -45,6 +45,38 @@ describe("string", function()
 			end)
 		end)
 	end)
+
+	it("tail()", function()
+		local test_str_lf = "123456\n234567\n345678\n456789\n"
+		local test_str_crlf = "123456\r\n234567\r\n345678\r\n456789\r\n"
+
+		assert.equal(string.tail(test_str_lf,   -math.huge), "")
+		assert.equal(string.tail(test_str_crlf, -math.huge), "")
+
+		assert.equal(string.tail(test_str_lf,   -1), "")
+		assert.equal(string.tail(test_str_crlf, -1), "")
+
+		assert.equal(string.tail(test_str_lf,   0), "")
+		assert.equal(string.tail(test_str_crlf, 0), "")
+
+		assert.equal(string.tail(test_str_lf,   1), "456789\n")
+		assert.equal(string.tail(test_str_crlf, 1), "456789\r\n")
+
+		assert.equal(string.tail(test_str_lf,   2), "345678\n456789\n")
+		assert.equal(string.tail(test_str_crlf, 2), "345678\r\n456789\r\n")
+
+		assert.equal(string.tail(test_str_lf,   3), "234567\n345678\n456789\n")
+		assert.equal(string.tail(test_str_crlf, 3), "234567\r\n345678\r\n456789\r\n")
+
+		assert.equal(string.tail(test_str_lf,   4), test_str_lf)
+		assert.equal(string.tail(test_str_crlf, 4), test_str_crlf)
+
+		assert.equal(string.tail(test_str_lf,   5), test_str_lf)
+		assert.equal(string.tail(test_str_crlf, 5), test_str_crlf)
+
+		assert.equal(string.tail(test_str_lf,   math.huge), test_str_lf)
+		assert.equal(string.tail(test_str_crlf, math.huge), test_str_crlf)
+	end)
 end)
 
 describe("privs", function()
