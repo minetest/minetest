@@ -24,6 +24,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "cmake_config_githash.h"
 #endif
 
+// Included for version information.
+#include "IrrCompileConfig.h"
+extern "C" {
+#if USE_LUAJIT
+	#include <luajit.h>
+#else
+	#include <lua.h>
+#endif
+}
+
 #ifndef VERSION_GITHASH
 	#define VERSION_GITHASH VERSION_STRING
 #endif
@@ -34,6 +44,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 const char *g_version_string = VERSION_STRING;
 const char *g_version_hash = VERSION_GITHASH;
 const char *g_build_info =
+#ifndef SERVER
+	"Using Irrlicht " IRRLICHT_SDK_VERSION "\n"
+#endif
+#if USE_LUAJIT
+	"Using " LUAJIT_VERSION "\n"
+#else
+	"Using " LUA_RELEASE "\n"
+#endif
 	"BUILD_TYPE=" BUILD_TYPE "\n"
 	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n"
 	"USE_CURL=" STR(USE_CURL) "\n"

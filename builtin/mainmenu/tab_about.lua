@@ -122,27 +122,65 @@ end
 local function read_text_file(path)
 	local f = io.open(path, "r")
 	if not f then
-		return nil
+		return "[not available]\n"
 	end
     local text = f:read("*all")
     f:close()
 	return text
 end
 
+local function tail(str, num_lines)
+	local first_char = 1
+
+	local str_reversed = str:reverse()
+	local index = #str
+	local num_newlines = 0
+	for char in str_reversed:gmatch(".") do
+		if char == "\n" then -- catches CRLF as well
+			num_newlines = num_newlines + 1
+		end
+		if num_newlines > num_lines then
+			first_char = index + 1
+			break
+		end
+		index = index - 1
+	end
+
+	return str:sub(first_char)
+end
+
+-- TODO move these unittests somewhere else
+
+local test_str = "123456\n234567\n345678\n456789\n"
+
+assert(tail(test_str, -math.huge) == "")
+assert(tail(test_str, -1) == "")
+assert(tail(test_str, 0) == "")
+assert(tail(test_str, 1) == "456789\n")
+assert(tail(test_str, 2) == "345678\n456789\n")
+assert(tail(test_str, 3) == "234567\n345678\n456789\n")
+assert(tail(test_str, 4) == test_str)
+assert(tail(test_str, math.huge) == test_str)
+
 local function collect_debug_info()
 	local version = core.get_version()
+	local build_info = core.get_build_info()
 	local irrlicht_device = core.get_active_irrlicht_device()
+	local driver = core.get_active_driver()
 	local renderer = core.get_active_renderer()
 
 	local path_prefix = core.get_user_path() .. DIR_DELIM
-	local minetest_conf = read_text_file(path_prefix .. "minetest.conf") or "[not available]\n"
-	local debug_txt = read_text_file(path_prefix .. "debug.txt") or "[not available]\n"
+	-- Write the current settings to "minetest.conf" so we don't read outdated ones.
+	core.settings:write()
+	local minetest_conf = read_text_file(path_prefix .. "minetest.conf")
+	local debug_txt = tail(read_text_file(path_prefix .. "debug.txt"), 64)
 
 	return table.concat({
-		version.project, " ", (version.hash or version.string), "\n",
-		"Platform: ", PLATFORM, "\n",
-		"Active Irrlicht device: ", irrlicht_device, "\n",
-		"Active renderer: ", renderer, "\n\n",
+		version.project, " ", (version.hash or version.string), " (", PLATFORM, ")\n",
+		build_info, "\n\n",
+		"Active Irrlicht device = ", irrlicht_device, "\n",
+		"Active \"video_driver\"  = ", driver, "\n", -- not redundant!
+		"Active renderer        = ", renderer, "\n\n",
 		"minetest.conf\n",
 		"-------------\n",
 		minetest_conf, "\n",
