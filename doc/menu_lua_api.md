@@ -55,6 +55,8 @@ Functions
   * Android only. Shares `text` using the share popup.
 * `core.get_version()` (possible in async calls)
   * returns current core version
+* `core.get_build_info()`
+  * Returns a string containing build information, similar to the output of `minetest --version`.
 
 
 
