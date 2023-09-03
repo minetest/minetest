@@ -618,6 +618,8 @@ Helper functions
     * If `max_splits` is negative, do not limit splits.
     * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
     * e.g. `string:split("a,b", ",") == {"a","b"}`
+* `string.tail(str, num_lines)`
+    * Returns the last `num_lines` lines of `str`.
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
 * `minetest.wrap_text(str, limit)`: returns a string

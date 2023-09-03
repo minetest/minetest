@@ -3898,6 +3898,8 @@ Helper functions
     * `sep_is_pattern`: boolean, it specifies whether separator is a plain
       string or a pattern (regex), default: `false`
     * e.g. `"a,b":split","` returns `{"a","b"}`
+* `string.tail(str, num_lines)`
+    * Returns the last `num_lines` lines of `str`.
 * `string:trim()`: returns the string without whitespace pre- and suffixes
     * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
 * `minetest.wrap_text(str, limit, as_table)`: returns a string or table
