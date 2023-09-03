@@ -2,6 +2,7 @@
    CGUITTFont FreeType class for Irrlicht
    Copyright (c) 2009-2010 John Norman
    Copyright (c) 2016 Nathanaëlle Courant
+   Copyright (c) 2023 Caleb Butler
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -357,9 +358,12 @@ namespace gui
 			static scene::SMesh  shared_plane_;
 
 			// Helper functions for the same-named public member functions above
-			// (Since std::wstring is nicer to work with than wchar_t *)
-			core::dimension2d<u32> getDimension(const std::wstring& text) const;
-			s32 getCharacterFromPos(const std::wstring& text, s32 pixel_x) const;
+			// (Since std::u32string is nicer to work with than wchar_t *)
+			core::dimension2d<u32> getDimension(const std::u32string& text) const;
+			s32 getCharacterFromPos(const std::u32string& text, s32 pixel_x) const;
+
+			// Helper function for the above helper functions :P
+			std::u32string convertWCharToU32String(const wchar_t* const) const;
 
 			CGUITTFont(IGUIEnvironment *env);
 			bool load(const io::path& filename, const u32 size, const bool antialias, const bool transparency);
@@ -399,7 +403,7 @@ namespace gui
 
 			s32 GlobalKerningWidth;
 			s32 GlobalKerningHeight;
-			std::wstring Invisible;
+			std::u32string Invisible;
 			u32 shadow_offset;
 			u32 shadow_alpha;
 

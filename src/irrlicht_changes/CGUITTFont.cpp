@@ -2,6 +2,7 @@
    CGUITTFont FreeType class for Irrlicht
    Copyright (c) 2009-2010 John Norman
    Copyright (c) 2016 Nathanaëlle Courant
+   Copyright (c) 2023 Caleb Butler
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -31,6 +32,8 @@
 
 #include <irrlicht.h>
 #include <iostream>
+#include <codecvt>
+#include <locale>
 #include "CGUITTFont.h"
 
 namespace irr
@@ -577,7 +580,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	}
 
 	// Convert to a unicode string.
-	std::wstring wtext = text.getString();
+	std::u32string utext = convertWCharToU32String(text.c_str());
 
 	// Set up our render map.
 	std::map<u32, CGUITTGlyphPage*> Render_Map;
@@ -585,12 +588,12 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 	// Start parsing characters.
 	u32 n;
 	char32_t previousChar = 0;
-	std::wstring::const_iterator iter = wtext.begin();
-	while (iter != wtext.end())
+	std::u32string::const_iterator iter = utext.begin();
+	while (iter != utext.end())
 	{
 		char32_t currentChar = *iter;
 		n = getGlyphIndexByChar(currentChar);
-		bool visible = (Invisible.find_first_of(currentChar) == std::wstring::npos);
+		bool visible = (Invisible.find_first_of(currentChar) == std::u32string::npos);
 		bool lineBreak=false;
 		if (currentChar == L'\r') // Mac or Windows breaks
 		{
@@ -632,9 +635,9 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			page->render_positions.push_back(core::position2di(offset.X + offx, offset.Y + offy));
 			page->render_source_rects.push_back(glyph.source_rect);
 
-			// static_cast<unsigned long>(iter - wtext.begin()) is a nasty hack to get the position of iter in the wtext string.
-			if (static_cast<unsigned long>(iter - wtext.begin()) < colors.size())
-				page->render_colors.push_back(colors[static_cast<unsigned long>(iter - wtext.begin())]);
+			// static_cast<unsigned long>(iter - utext.begin()) is a nasty hack to get the position of iter in the wtext string.
+			if (static_cast<unsigned long>(iter - utext.begin()) < colors.size())
+				page->render_colors.push_back(colors[static_cast<unsigned long>(iter - utext.begin())]);
 			else
 				page->render_colors.push_back(video::SColor(255,255,255,255));
 			Render_Map[glyph.glyph_page] = page;
@@ -654,7 +657,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				offset.X += fallback->getKerningWidth(l1, &l2);
 				offset.Y += fallback->getKerningHeight();
 
-				u32 current_color = static_cast<unsigned long>(iter - wtext.begin());
+				u32 current_color = static_cast<unsigned long>(iter - utext.begin());
 				fallback->draw(core::stringw(l1),
 					core::rect<s32>({offset.X-1, offset.Y-1}, position.LowerRightCorner), // ???
 					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
@@ -719,10 +722,10 @@ core::dimension2d<u32> CGUITTFont::getCharDimension(const wchar_t ch) const
 
 core::dimension2d<u32> CGUITTFont::getDimension(const wchar_t* text) const
 {
-	return getDimension(std::wstring(text));
+	return getDimension(convertWCharToU32String(text));
 }
 
-core::dimension2d<u32> CGUITTFont::getDimension(const std::wstring& text) const
+core::dimension2d<u32> CGUITTFont::getDimension(const std::u32string& text) const
 {
 	// Get the maximum font height.  Unfortunately, we have to do this hack as
 	// Irrlicht will draw things wrong.  In FreeType, the font size is the
@@ -740,7 +743,7 @@ core::dimension2d<u32> CGUITTFont::getDimension(const std::wstring& text) const
 	core::dimension2d<u32> line(0, max_font_height);
 
 	char32_t previousChar = 0;
-	std::wstring::const_iterator iter = text.begin();
+	std::u32string::const_iterator iter = text.begin();
 	for (; iter != text.end(); ++iter)
 	{
 		char32_t p = *iter;
@@ -889,17 +892,17 @@ u32 CGUITTFont::getGlyphIndexByChar(char32_t c) const
 
 s32 CGUITTFont::getCharacterFromPos(const wchar_t* text, s32 pixel_x) const
 {
-	return getCharacterFromPos(std::wstring(text), pixel_x);
+	return getCharacterFromPos(convertWCharToU32String(text), pixel_x);
 }
 
-s32 CGUITTFont::getCharacterFromPos(const std::wstring& text, s32 pixel_x) const
+s32 CGUITTFont::getCharacterFromPos(const std::u32string& text, s32 pixel_x) const
 {
 	s32 x = 0;
 	//s32 idx = 0;
 
 	u32 character = 0;
 	char32_t previousChar = 0;
-	std::wstring::const_iterator iter = text.begin();
+	std::u32string::const_iterator iter = text.begin();
 	while (iter != text.end())
 	{
 		char32_t c = *iter;
@@ -1007,8 +1010,7 @@ core::vector2di CGUITTFont::getKerning(const char32_t thisLetter, const char32_t
 
 void CGUITTFont::setInvisibleCharacters(const wchar_t *s)
 {
-	std::wstring ws(s);
-	Invisible = ws;
+	Invisible = convertWCharToU32String(s);
 }
 
 video::IImage* CGUITTFont::createTextureFromChar(const char32_t& ch)
@@ -1245,6 +1247,32 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	return container;
 }
+
+std::u32string CGUITTFont::convertWCharToU32String(const wchar_t* const charArray) const
+{
+	if (sizeof(wchar_t) == 4) // Systems where wchar_t is UTF-32
+		return std::u32string(reinterpret_cast<const char32_t*>(charArray));
+
+	if (sizeof(wchar_t) == 2) // Systems where wchar_t is UTF-16
+	{
+		// First, convert to UTF-8
+		std::u16string utf16String(reinterpret_cast<const char16_t*>(charArray));
+		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter1;
+		std::string utf8String = converter1.to_bytes(utf16String);
+
+		// Next, convert to UTF-32
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter2;
+		return std::u32string(converter2.from_bytes(utf8String));
+
+		// This is inefficient, but importantly it is _correct_, rather than a hand-rolled UTF-16 to
+		// UTF-32 converter which may or may not be correct. Since I do not have a Windows system,
+		// I do not want to accidentally break Windows! Hence, I'm using what the standard library
+		// gives us.
+	}
+
+	return std::u32string(); // If this returns, something is very wrong!
+}
+
 
 } // end namespace gui
 } // end namespace irr
