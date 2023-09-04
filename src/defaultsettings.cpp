@@ -360,7 +360,7 @@ void set_default_settings()
 	// Network
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
-	settings->setDefault("max_packets_per_iteration","1024");
+	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
@@ -487,23 +487,18 @@ void set_default_settings()
 	settings->setDefault("screen_w", "0");
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
-	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("performance_tradeoffs", "true");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");
 	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("max_block_generate_distance", "5");
-	settings->setDefault("enable_3d_clouds", "false");
-	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("sqlite_synchronous", "1");
-	settings->setDefault("map_compression_level_disk", "-1");
-	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
-	settings->setDefault("curl_verify_cert","false");
+	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size
 	float x_inches = (float) porting::getDisplaySize().X /
