@@ -998,8 +998,8 @@ static bool determine_subgame(GameParams *game_params)
 			if (game_params->is_dedicated_server) {
 				// If this is a dedicated server and no gamespec has been specified,
 				// print a friendly error pointing to ContentDB.
-				errorstream << "To run a " PROJECT_NAME_C " server, you will need some kind of game." << std::endl
-				            << "Check out content.minetest.net for a selection of games to pick from and download." << std::endl;
+				errorstream << "To run a " PROJECT_NAME_C " server, you need a game." << std::endl
+				            << "Check out https://content.minetest.net for a selection of games to pick from and download." << std::endl;
 			}
 
 			return false;

@@ -301,7 +301,7 @@ local function create_world_formspec(dialogdata)
 		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]"
 
 	-- Warning when making a devtest world
-	if game == "devtest" then
+	if game.id == "devtest" then
 		retval = retval ..
 			"container[0,3.5]" ..
 			"box[0,0;5.8,1.7;#ff8800]" ..
