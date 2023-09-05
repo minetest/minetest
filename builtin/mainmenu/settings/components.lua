@@ -113,7 +113,7 @@ end
 
 make.float = make_field(tonumber, is_valid_number, function(x)
 	local str = tostring(x)
-	if str:match("^%d+$") then
+	if str:match("^[+-]?%d+$") then
 		str = str .. ".0"
 	end
 	return str
