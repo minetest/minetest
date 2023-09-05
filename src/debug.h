@@ -25,11 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "log.h"
 
-#ifdef _WIN32
-	#include <windows.h>
-	#ifdef _MSC_VER
-		#include <eh.h>
-	#endif
+#ifdef _MSC_VER
 	#define FUNCTION_NAME __FUNCTION__
 #else
 	#define FUNCTION_NAME __PRETTY_FUNCTION__
@@ -75,6 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define sanity_check(expr) SANITY_CHECK(expr)
 
+std::string debug_describe_exc(const std::exception &e);
 
 void debug_set_exception_handler();
 
@@ -86,9 +83,10 @@ void debug_set_exception_handler();
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
 	#define END_DEBUG_EXCEPTION_HANDLER                        \
 		} catch (std::exception &e) {                          \
+			std::string e_descr = debug_describe_exc(e);       \
 			errorstream << "An unhandled exception occurred: " \
-				<< e.what() << std::endl;                      \
-			FATAL_ERROR(e.what());                             \
+				<< e_descr << std::endl;                       \
+			FATAL_ERROR(e_descr.c_str());                      \
 		}
 #else
 	// Dummy ones
