@@ -1107,6 +1107,12 @@ void ClientMap::renderMapShadows(u8 cascade, video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
+	/*
+		Update transparent meshes
+	*/
+	if (is_transparent_pass)
+		updateTransparentMeshBuffers();
+
 	MeshBufListList grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 
