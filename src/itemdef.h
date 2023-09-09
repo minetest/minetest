@@ -87,7 +87,7 @@ struct ItemDefinition
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
 	std::string node_placement_prediction;
-	u8 place_param2;
+	s16 place_param2; // -1: not defined, >= 0: hardcoded prediction
 
 	/*
 		Some helpful methods
