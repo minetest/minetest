@@ -187,7 +187,7 @@ void DirectionalLight::setDirection(v3f dir)
 	direction.normalize();
 }
 
-void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force)
+void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool force, u8 max_cascades)
 {
 	client->getEnv().getClientMap().allocateDrawListShadowCascades(getCascadesCount());
 
@@ -200,7 +200,7 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 		scale *= scale_factor;
 	}
 
-	for (u8 i = 0; i < getCascadesCount(); i++) {
+	for (u8 i = 0; i < MYMIN(max_cascades, getCascadesCount()); i++) {
 		auto &cascade = getCascade(i);
 		if (cascade.update_frustum(direction, cam, client, force)) {
 			// get the draw list for shadows

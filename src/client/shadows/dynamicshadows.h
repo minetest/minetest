@@ -99,7 +99,7 @@ public:
 
 	//DISABLE_CLASS_COPY(DirectionalLight)
 
-	void update_frustum(const Camera *cam, Client *client, bool force = false);
+	void update_frustum(const Camera *cam, Client *client, bool force, u8 max_cascades);
 
 	// when set direction is updated to negative normalized(direction)
 	void setDirection(v3f dir);
