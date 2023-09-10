@@ -79,6 +79,9 @@ core.register_entity(":__builtin:falling_node", {
 		-- Cache whether we're supposed to float on water
 		self.floats = core.get_item_group(node.name, "float") ~= 0
 
+		-- Save liquidtype for falling water
+        self.liquidtype = def.liquidtype
+
 		-- Set entity visuals
 		if def.drawtype == "torchlike" or def.drawtype == "signlike" then
 			local textures
@@ -273,7 +276,8 @@ core.register_entity(":__builtin:falling_node", {
 		-- Decide if we're replacing the node or placing on top
 		local np = vector.copy(bcp)
 		if bcd and bcd.buildable_to and
-				(not self.floats or bcd.liquidtype == "none") then
+			((not self.floats or bcd.liquidtype == "none") or
+             (self.floats and self.liquidtype ~= "none" and bcd.liquidtype ~= "source")) then
 			core.remove_node(bcp)
 		else
 			np.y = np.y + 1
@@ -284,7 +288,7 @@ core.register_entity(":__builtin:falling_node", {
 		local nd = core.registered_nodes[n2.name]
 		-- If it's not air or liquid, remove node and replace it with
 		-- it's drops
-		if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
+		if n2.name ~= "air" and (not nd or nd.liquidtype ~= "source") then
 			if nd and nd.buildable_to == false then
 				nd.on_dig(np, n2, nil)
 				-- If it's still there, it might be protected
