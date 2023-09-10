@@ -338,12 +338,11 @@ void ShadowRenderer::renderMapShadows()
 					}
 				}
 				else
+					// shadowMapClientFuture has one less cascade
 					m_driver->setRenderTarget(shadowMapClientMapFuture.at(i-1), cascade.current_frame == 0, true, video::SColor(0xFFFFFFFF));
 
 				renderShadowMap(shadowMapClientMap, i, cascade);
 
-				// Render transparent part in one pass.
-				// This is also handled in ClientMap.
 				if (cascade.current_frame == cascade.max_frames - 1) {
 					if (i > 0) {
 						// blit current texture to the main
@@ -354,6 +353,8 @@ void ShadowRenderer::renderMapShadows()
 						drawQuad(video::SColor(0xFFFFFFFF), shadowMapClientMapFuture.at(i-1), m_driver);
 					}
 
+					// Render transparent part in one pass.
+					// This is also handled in ClientMap.
 					if (m_shadow_map_colored) {
 						m_driver->setRenderTarget(shadowMapTextureColors,
 								false, true);
@@ -397,9 +398,6 @@ void ShadowRenderer::renderEntityShadows()
 				renderShadowObjects(shadowMapTextureDynamicObjects, cascade);
 			} // end for cascades
 		} // end for lights
-
-		// clear the Render Target
-		m_driver->setRenderTarget(0, false, false);
 	}
 }
 
@@ -418,7 +416,6 @@ void ShadowRenderer::mergeShadowMaps()
 	m_driver->setRenderTarget(shadowMapTextureFinal, false, false,
 			video::SColor(255, 255, 255, 255));
 	m_screen_quad->render(m_driver);
-	m_driver->setRenderTarget(0, false, false);
 }
 
 void ShadowRenderer::update(video::ITexture *outputTarget)
@@ -509,9 +506,6 @@ void ShadowRenderer::renderShadowMap(video::ITexture *target, u8 cascade_index,
 		material.MaterialType = (video::E_MATERIAL_TYPE) depth_shader;
 		material.BlendOperation = video::EBO_MIN;
 	}
-
-	m_driver->setTransform(video::ETS_WORLD,
-			map_node.getAbsoluteTransformation());
 
 	int frame = cascade.current_frame;
 	int total_frames = cascade.max_frames;
