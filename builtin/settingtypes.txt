@@ -1772,7 +1772,7 @@ shader_path (Shader path) path
 #    The rendering back-end.
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
-#    Shaders are supported by OpenGL and OGLES2 (experimental).
+#    Shaders are supported by OpenGL, OpenGL3 (experimental) and OGLES2 (experimental).
 video_driver (Video driver) enum  ,opengl,opengl3,ogles1,ogles2
 
 #    Distance in nodes at which transparency depth sorting is enabled
