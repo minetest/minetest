@@ -780,44 +780,52 @@ void Hud::drawHotbar(u16 playeritem)
 
 void Hud::drawCrosshair()
 {
+	auto draw_image_crosshair = [this] (video::ITexture *tex) {
+		core::dimension2di orig_size(tex->getOriginalSize());
+		core::dimension2di scaled_size(
+				core::round32(orig_size.Width * m_scale_factor),
+				core::round32(orig_size.Height * m_scale_factor));
+
+		core::rect<s32> src_rect(orig_size);
+		core::position2d pos(m_displaycenter.X - scaled_size.Width / 2,
+				m_displaycenter.Y - scaled_size.Height / 2);
+		core::rect<s32> dest_rect(pos, scaled_size);
+
+		video::SColor colors[] = { crosshair_argb, crosshair_argb,
+				crosshair_argb, crosshair_argb };
+
+		draw2DImageFilterScaled(driver, tex, dest_rect, src_rect,
+				nullptr, colors, true);
+	};
+
 	if (pointing_at_object) {
 		if (use_object_crosshair_image) {
-			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
-			v2u32 size  = object_crosshair->getOriginalSize();
-			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-					m_displaycenter.Y - (size.Y / 2));
-			driver->draw2DImage(object_crosshair, lsize,
-					core::rect<s32>(0, 0, size.X, size.Y),
-					nullptr, crosshair_argb, true);
+			draw_image_crosshair(tsrc->getTexture("object_crosshair.png"));
 		} else {
+			s32 line_size = core::round32(OBJECT_CROSSHAIR_LINE_SIZE * m_scale_factor);
+
 			driver->draw2DLine(
-					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE),
-					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+					m_displaycenter - v2s32(line_size, line_size),
+					m_displaycenter + v2s32(line_size, line_size),
+					crosshair_argb);
 			driver->draw2DLine(
-					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					-OBJECT_CROSSHAIR_LINE_SIZE),
-					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+					m_displaycenter + v2s32(line_size, -line_size),
+					m_displaycenter + v2s32(-line_size, line_size),
+					crosshair_argb);
 		}
 
 		return;
 	}
 
 	if (use_crosshair_image) {
-		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
-		v2u32 size  = crosshair->getOriginalSize();
-		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-				m_displaycenter.Y - (size.Y / 2));
-		driver->draw2DImage(crosshair, lsize,
-				core::rect<s32>(0, 0, size.X, size.Y),
-				nullptr, crosshair_argb, true);
+		draw_image_crosshair(tsrc->getTexture("crosshair.png"));
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
-				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
-				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
+		s32 line_size = core::round32(CROSSHAIR_LINE_SIZE * m_scale_factor);
+
+		driver->draw2DLine(m_displaycenter - v2s32(line_size, 0),
+				m_displaycenter + v2s32(line_size, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, line_size),
+				m_displaycenter + v2s32(0, line_size), crosshair_argb);
 	}
 }
 
