@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-08-27 14:55+0000\n"
-"Last-Translator: yue weikai <send52@outlook.com>\n"
+"PO-Revision-Date: 2023-09-11 13:54+0000\n"
+"Last-Translator: Claybiokiller <569735195@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -2627,11 +2627,11 @@ msgstr "最优方块发送距离"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "泛光"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "泛光强度"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2640,7 +2640,7 @@ msgstr "云半径"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "泛光强度因子"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2807,7 +2807,7 @@ msgstr "客户端"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "客户端网格区块大小"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
