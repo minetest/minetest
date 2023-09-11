@@ -87,7 +87,7 @@ Particle::Particle(
 		video::E_BLEND_FACTOR bfsrc, bfdst;
 		video::E_BLEND_OPERATION blendop;
 		const auto blendmode = texture.tex != nullptr
-				? texture.tex -> blendmode
+				? texture.tex->blendmode
 				: ParticleParamTypes::BlendMode::alpha;
 
 		switch (blendmode) {
@@ -918,7 +918,15 @@ void ParticleManager::addParticleSpawner(u64 id, std::unique_ptr<ParticleSpawner
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 
-	m_particle_spawners[id] = std::move(toadd);
+	auto &slot = m_particle_spawners[id];
+	if (slot) {
+		// do not kill spawners here. its children are still alive
+		// FIXME: this happens in practice
+		errorstream << "ParticleManager: Failed to add spawner with id " << id
+				<< ". Id already in use." << std::endl;
+		return;
+	}
+	slot = std::move(toadd);
 }
 
 void ParticleManager::deleteParticleSpawner(u64 id)
