@@ -8927,6 +8927,10 @@ Used by `minetest.register_node`.
     -- * nil: Will be treated as true if `liquidtype ~= "none"`
     --   and as false otherwise.
 
+    air_equivalent = nil,
+    -- unclear meaning, the engine sets this to true for 'air' and 'ignore'
+    -- deprecated.
+
     leveled = 0,
     -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
     -- Allows defining the nodebox height without using param2.
