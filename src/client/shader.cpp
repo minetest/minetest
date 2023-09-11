@@ -279,7 +279,7 @@ public:
 		worldViewProj *= worldView;
 		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
-		if (driver->getDriverType() == video::EDT_OGLES2) {
+		if (driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3) {
 			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
 			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
 			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
@@ -624,14 +624,14 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
-	bool use_gles = driver->getDriverType() == video::EDT_OGLES2;
+	bool use_modern_gl = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
 	std::stringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha
 		<< std::showpoint // for GLSL ES
 		;
 	std::string vertex_header, fragment_header, geometry_header;
-	if (use_gles) {
+	if (use_modern_gl) {
 		shaders_header << R"(
 			#version 100
 		)";
@@ -690,7 +690,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		abort();
 	}
 
-	bool use_discard = use_gles;
+	bool use_discard = use_modern_gl;
 	// For renderers that should use discard instead of GL_ALPHA_TEST
 	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
 	if (strstr(renderer, "GC7000"))
