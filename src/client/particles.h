@@ -124,24 +124,15 @@ private:
 	v3f m_pos;
 	v3f m_velocity;
 	v3f m_acceleration;
-	v3f m_drag;
-	ParticleParamTypes::v3fRange m_jitter;
-	ParticleParamTypes::f32Range m_bounce;
+	const ParticleParameters m_p;
 	LocalPlayer *m_player;
-	float m_size;
 
 	//! Color without lighting
 	video::SColor m_base_color;
 	//! Final rendered color
 	video::SColor m_color;
-	bool m_collisiondetection;
-	bool m_collision_removal;
-	bool m_object_collision;
-	bool m_vertical;
-	struct TileAnimationParams m_animation;
 	float m_animation_time = 0.0f;
 	int m_animation_frame = 0;
-	u8 m_glow;
 	float m_alpha = 0.0f;
 
 	ParticleSpawner *m_parent = nullptr;

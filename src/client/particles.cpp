@@ -63,20 +63,11 @@ Particle::Particle(
 		m_pos(p.pos),
 		m_velocity(p.vel),
 		m_acceleration(p.acc),
-		m_drag(p.drag),
-		m_jitter(p.jitter),
-		m_bounce(p.bounce),
+		m_p(p),
 		m_player(player),
-		m_size(p.size),
 
 		m_base_color(color),
 		m_color(color),
-		m_collisiondetection(p.collisiondetection),
-		m_collision_removal(p.collision_removal),
-		m_object_collision(p.object_collision),
-		m_vertical(p.vertical),
-		m_animation(p.animation),
-		m_glow(p.glow),
 
 		m_parent(parent),
 		m_owned_texture(std::move(owned_texture))
@@ -174,20 +165,20 @@ void Particle::step(float dtime)
 
 	// apply drag (not handled by collisionMoveSimple) and brownian motion
 	v3f av = vecAbsolute(m_velocity);
-	av -= av * (m_drag * dtime);
-	m_velocity = av*vecSign(m_velocity) + v3f(m_jitter.pickWithin())*dtime;
+	av -= av * (m_p.drag * dtime);
+	m_velocity = av*vecSign(m_velocity) + v3f(m_p.jitter.pickWithin())*dtime;
 
-	if (m_collisiondetection) {
+	if (m_p.collisiondetection) {
 		aabb3f box = m_collisionbox;
 		v3f p_pos = m_pos * BS;
 		v3f p_velocity = m_velocity * BS;
 		collisionMoveResult r = collisionMoveSimple(m_env, m_gamedef, BS * 0.5f,
 			box, 0.0f, dtime, &p_pos, &p_velocity, m_acceleration * BS, nullptr,
-			m_object_collision);
+			m_p.object_collision);
 
-		f32 bounciness = m_bounce.pickWithin();
-		if (r.collides && (m_collision_removal || bounciness > 0)) {
-			if (m_collision_removal) {
+		f32 bounciness = m_p.bounce.pickWithin();
+		if (r.collides && (m_p.collision_removal || bounciness > 0)) {
+			if (m_p.collision_removal) {
 				// force expiration of the particle
 				m_expiration = -1.0f;
 			} else if (bounciness > 0) {
@@ -220,10 +211,10 @@ void Particle::step(float dtime)
 		m_velocity += m_acceleration * dtime;
 	}
 
-	if (m_animation.type != TAT_NONE) {
+	if (m_p.animation.type != TAT_NONE) {
 		m_animation_time += dtime;
 		int frame_length_i, frame_count;
-		m_animation.determineParams(
+		m_p.animation.determineParams(
 				m_material.getTexture(0)->getSize(),
 				&frame_count, &frame_length_i, NULL);
 		float frame_length = frame_length_i / 1000.0;
@@ -267,7 +258,7 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	u8 m_light = decode_light(light + m_glow);
+	u8 m_light = decode_light(light + m_p.glow);
 	m_color.set(m_alpha*255,
 		m_light * m_base_color.getRed() / 255,
 		m_light * m_base_color.getGreen() / 255,
@@ -284,12 +275,12 @@ void Particle::updateVertices()
 	else
 		scale = v2f(1.f, 1.f);
 
-	if (m_animation.type != TAT_NONE) {
+	if (m_p.animation.type != TAT_NONE) {
 		const v2u32 texsize = m_material.getTexture(0)->getSize();
 		v2f texcoord, framesize_f;
 		v2u32 framesize;
-		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
-		m_animation.determineParams(texsize, NULL, NULL, &framesize);
+		texcoord = m_p.animation.getTextureCoords(texsize, m_animation_frame);
+		m_p.animation.determineParams(texsize, NULL, NULL, &framesize);
 		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
 
 		tx0 = m_texpos.X + texcoord.X;
@@ -303,7 +294,7 @@ void Particle::updateVertices()
 		ty1 = m_texpos.Y + m_texsize.Y;
 	}
 
-	auto half = m_size * .5f,
+	auto half = m_p.size * .5f,
 	     hx   = half * scale.X,
 	     hy   = half * scale.Y;
 	m_vertices[0] = video::S3DVertex(-hx, -hy,
@@ -322,7 +313,7 @@ void Particle::updateVertices()
 	m_box.reset(v3f());
 
 	for (video::S3DVertex &vertex : m_vertices) {
-		if (m_vertical) {
+		if (m_p.vertical) {
 			v3f ppos = m_player->getPosition()/BS;
 			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
 				core::DEGTORAD + 90);
