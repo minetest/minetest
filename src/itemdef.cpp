@@ -123,7 +123,7 @@ void ItemDefinition::reset()
 	sound_use_air = SoundSpec();
 	range = -1;
 	node_placement_prediction.clear();
-	place_param2 = -1;
+	place_param2.reset();
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -171,14 +171,18 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	if (protocol_version <= 43) {
 		// Uncertainity whether 0 is the specified prediction or means disabled
-		const u8 place_param2_legacy = rangelim(place_param2, 0, U8_MAX);
-		os << place_param2_legacy;
+		if (place_param2)
+			os << place_param2.value();
+		else
+			os << (u8)0;
 	}
 
 	sound_use.serializeSimple(os, protocol_version);
 	sound_use_air.serializeSimple(os, protocol_version);
 
-	os << place_param2; // protocol_version >= 43
+	os << (u8)place_param2.has_value(); // protocol_version >= 43
+	if (place_param2)
+		os << place_param2.value();
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -236,7 +240,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 			place_param2 = readU8(is);
 			// assume disabled prediction
 			if (place_param2 == 0)
-				place_param2 = -1;
+				place_param2.reset();
 		}
 
 		sound_use.deSerializeSimple(is, protocol_version);
@@ -245,7 +249,8 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 
-		place_param2 = readS16(is); // protocol_version >= 43
+		if (readU8(is)) // protocol_version >= 43
+			place_param2 = readU8(is);
 	} catch(SerializationError &e) {};
 }
 

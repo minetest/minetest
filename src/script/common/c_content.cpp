@@ -133,8 +133,9 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
 
-	int place_param2 = getintfield_default(L, index, "place_param2", -1);
-	def.place_param2 = rangelim(place_param2, -1, U8_MAX);
+	int place_param2;
+	if (getintfield(L, index, "place_param2", place_param2))
+		def.place_param2 = rangelim(place_param2, 0, U8_MAX);
 }
 
 /******************************************************************************/
