@@ -711,12 +711,7 @@ void ParticleManager::clearAll()
 	MutexAutoLock lock2(m_particle_list_lock);
 
 	// clear particle spawners
-	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
-		it->second.reset();
-		it = m_particle_spawners.erase(it);
-	}
-	for (std::unique_ptr<ParticleSpawner> &ps : m_dying_particle_spawners)
-		ps.reset();
+	m_particle_spawners.clear();
 	m_dying_particle_spawners.clear();
 
 	// clear particles
