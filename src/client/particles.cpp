@@ -349,7 +349,6 @@ ParticleSpawner::ParticleSpawner(
 		m_active(0),
 		m_particlemanager(p_manager),
 		m_time(0.0f),
-		m_dying(false),
 		m_gamedef(gamedef),
 		m_player(player),
 		p(params),
@@ -657,18 +656,26 @@ void ParticleManager::stepSpawners(float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 
-	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
-		ParticleSpawner &ps = *it->second;
-		if (ps.getExpired()) {
-			// the particlespawner owns the textures, so we need to make
-			// sure there are no active particles before we free it
-			if (!ps.hasActive()) {
-				it = m_particle_spawners.erase(it);
-			} else {
-				++it;
-			}
+	for (size_t i = 0; i < m_dying_particle_spawners.size();) {
+		// the particlespawner owns the textures, so we need to make
+		// sure there are no active particles before we free it
+		if (!m_dying_particle_spawners[i]->hasActive()) {
+			m_dying_particle_spawners[i] = std::move(m_dying_particle_spawners.back());
+			m_dying_particle_spawners.pop_back();
 		} else {
-			ps.step(dtime, m_env);
+			++i;
+		}
+	}
+
+	for (auto it = m_particle_spawners.begin(); it != m_particle_spawners.end();) {
+		auto &ps = it->second;
+		if (ps->getExpired()) {
+			// same as above
+			if (ps->hasActive())
+				m_dying_particle_spawners.push_back(std::move(ps));
+			it = m_particle_spawners.erase(it);
+		} else {
+			ps->step(dtime, m_env);
 			++it;
 		}
 	}
@@ -708,6 +715,9 @@ void ParticleManager::clearAll()
 		it->second.reset();
 		it = m_particle_spawners.erase(it);
 	}
+	for (std::unique_ptr<ParticleSpawner> &ps : m_dying_particle_spawners)
+		ps.reset();
+	m_dying_particle_spawners.clear();
 
 	// clear particles
 	for (std::unique_ptr<Particle> &p : m_particles) {
@@ -920,8 +930,7 @@ void ParticleManager::addParticleSpawner(u64 id, std::unique_ptr<ParticleSpawner
 
 	auto &slot = m_particle_spawners[id];
 	if (slot) {
-		// do not kill spawners here. its children are still alive
-		// FIXME: this happens in practice
+		// do not kill spawners here. children are still alive
 		errorstream << "ParticleManager: Failed to add spawner with id " << id
 				<< ". Id already in use." << std::endl;
 		return;
@@ -935,6 +944,7 @@ void ParticleManager::deleteParticleSpawner(u64 id)
 
 	auto it = m_particle_spawners.find(id);
 	if (it != m_particle_spawners.end()) {
-		it->second->setDying();
+		m_dying_particle_spawners.push_back(std::move(it->second));
+		m_particle_spawners.erase(it);
 	}
 }

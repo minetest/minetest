@@ -162,8 +162,7 @@ public:
 	void step(float dtime, ClientEnvironment *env);
 
 	bool getExpired() const
-	{ return m_dying || (p.amount <= 0 && p.time != 0); }
-	void setDying() { m_dying = true; }
+	{ return p.amount <= 0 && p.time != 0; }
 
 	bool hasActive() const { return m_active != 0; }
 	void decrActive() { m_active -= 1; }
@@ -175,7 +174,6 @@ private:
 	size_t m_active;
 	ParticleManager *m_particlemanager;
 	float m_time;
-	bool m_dying;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
 	ParticleSpawnerParameters p;
@@ -239,6 +237,7 @@ private:
 
 	std::vector<std::unique_ptr<Particle>> m_particles;
 	std::unordered_map<u64, std::unique_ptr<ParticleSpawner>> m_particle_spawners;
+	std::vector<std::unique_ptr<ParticleSpawner>> m_dying_particle_spawners;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
 	u64 m_next_particle_spawner_id = U32_MAX + 1;
