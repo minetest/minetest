@@ -810,7 +810,7 @@ void Hud::drawCrosshair()
 					crosshair_argb);
 			driver->draw2DLine(
 					m_displaycenter + v2s32(line_size, -line_size),
-					m_displaycenter + v2s32(-line_size,line_size),
+					m_displaycenter + v2s32(-line_size, line_size),
 					crosshair_argb);
 		}
 
