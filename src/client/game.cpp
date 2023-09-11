@@ -3630,7 +3630,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	const auto place_param2 = selected_def.place_param2;
 
 	if (place_param2) {
-		predicted_node.setParam2(place_param2.value());
+		predicted_node.setParam2(*place_param2);
 	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		v3s16 dir = nodepos - neighborpos;

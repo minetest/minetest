@@ -172,7 +172,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	if (protocol_version <= 43) {
 		// Uncertainity whether 0 is the specified prediction or means disabled
 		if (place_param2)
-			os << place_param2.value();
+			os << *place_param2;
 		else
 			os << (u8)0;
 	}
@@ -182,7 +182,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
-		os << place_param2.value();
+		os << *place_param2;
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)

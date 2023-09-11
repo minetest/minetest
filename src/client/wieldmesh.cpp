@@ -444,7 +444,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			// Render non-trivial drawtypes like the actual node
 			MapNode n(id);
 			if (def.place_param2)
-				n.setParam2(def.place_param2.value());
+				n.setParam2(*def.place_param2);
 
 			mesh = createSpecialNodeMesh(client, n, &m_colors, f);
 			changeToMesh(mesh);
@@ -640,7 +640,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			// Render non-trivial drawtypes like the actual node
 			MapNode n(id);
 			if (def.place_param2)
-				n.setParam2(def.place_param2.value());
+				n.setParam2(*def.place_param2);
 
 			mesh = createSpecialNodeMesh(client, n, &result->buffer_colors, f);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
