@@ -230,7 +230,7 @@ local function buttonhandler(this, fields)
 
 	for name, value in pairs(fields) do
 		if name:sub(1, 3) == "cb_" then
-			checkboxes[name] = value == "true"
+			checkboxes[name] = core.is_yes(value)
 			return false -- Don't update the formspec!
 		end
 	end
