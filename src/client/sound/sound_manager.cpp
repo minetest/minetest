@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sound_singleton.h"
 #include "util/numeric.h" // myrand()
+#include "util/tracy_wrapper.h"
 #include "filesys.h"
 #include "porting.h"
 
@@ -450,6 +451,10 @@ void *OpenALSoundManager::run()
 {
 	using namespace sound_manager_messages_to_mgr;
 
+	[[maybe_unused]]
+	static const char *framename_OpenALSoundManager_run =
+			"OpenALSoundManager::run()-frame";
+
 	struct MsgVisitor {
 		enum class Result { Ok, Empty, StopRequested };
 
@@ -492,6 +497,8 @@ void *OpenALSoundManager::run()
 
 	u64 t_step_start = porting::getTimeMs();
 	while (true) {
+		FrameMarkStart(framename_OpenALSoundManager_run);
+
 		auto get_time_since_last_step = [&] {
 			return (f32)(porting::getTimeMs() - t_step_start);
 		};
@@ -520,7 +527,10 @@ void *OpenALSoundManager::run()
 		f32 dtime = get_time_since_last_step() * 1.0e-3f;
 		t_step_start = porting::getTimeMs();
 		step(dtime);
+
+		FrameMarkEnd(framename_OpenALSoundManager_run);
 	}
+	FrameMarkEnd(framename_OpenALSoundManager_run);
 
 	send(sound_manager_messages_to_proxy::Stopped{});
 

@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <IGUIStaticText.h>
 #include "client/imagefilters.h"
+#include "util/tracy_wrapper.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -292,6 +293,9 @@ bool GUIEngine::loadMainMenuScript()
 /******************************************************************************/
 void GUIEngine::run()
 {
+	[[maybe_unused]]
+	static const char *framename_GuiEngine_run = "GUIEngine::run()-frame";
+
 	IrrlichtDevice *device = m_rendering_engine->get_raw_device();
 	video::IVideoDriver *driver = device->getVideoDriver();
 
@@ -329,9 +333,13 @@ void GUIEngine::run()
 
 	fps_control.reset();
 
+	FrameMarkStart(framename_GuiEngine_run);
+
 	while (m_rendering_engine->run() && !m_startgame && !m_kill) {
 
+		FrameMarkEnd(framename_GuiEngine_run);
 		fps_control.limit(device, &dtime);
+		FrameMarkStart(framename_GuiEngine_run);
 
 		if (device->isWindowVisible()) {
 			// check if we need to update the "upper left corner"-text
@@ -371,6 +379,7 @@ void GUIEngine::run()
 		m_menu->getAndroidUIInput();
 #endif
 	}
+	FrameMarkEnd(framename_GuiEngine_run);
 
 	m_script->beforeClose();
 

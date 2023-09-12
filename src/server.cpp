@@ -75,6 +75,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "particles.h"
 #include "gettext.h"
+#include "util/tracy_wrapper.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -101,6 +102,13 @@ private:
 
 void *ServerThread::run()
 {
+	[[maybe_unused]]
+	static const char *framename_ServerThread_run    = "ServerThread::run()-frame";
+	[[maybe_unused]]
+	static const char *framename_Server_AsyncRunStep = "Server::AsyncRunStep()-frame";
+	[[maybe_unused]]
+	static const char *framename_Server_Receive      = "Server::Receive()-frame";
+
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	/*
@@ -110,8 +118,11 @@ void *ServerThread::run()
 	 * server-step frequency. Receive() is used for waiting between the steps.
 	 */
 
+	FrameMarkStart(framename_ServerThread_run);
 	try {
+		FrameMarkStart(framename_Server_AsyncRunStep);
 		m_server->AsyncRunStep(0.0f, true);
+		FrameMarkEnd(framename_Server_AsyncRunStep);
 	} catch (con::ConnectionBindFailed &e) {
 		m_server->setAsyncFatalError(e.what());
 	} catch (LuaError &e) {
@@ -119,10 +130,12 @@ void *ServerThread::run()
 	} catch (ModError &e) {
 		m_server->setAsyncFatalError(e.what());
 	}
+	FrameMarkEnd(framename_ServerThread_run);
 
 	float dtime = 0.0f;
 
 	while (!stopRequested()) {
+		FrameMarkStart(framename_ServerThread_run);
 		ScopeProfiler spm(g_profiler, "Server::RunStep() (max)", SPT_MAX);
 
 		u64 t0 = porting::getTimeUs();
@@ -130,11 +143,15 @@ void *ServerThread::run()
 		const Server::StepSettings step_settings = m_server->getStepSettings();
 
 		try {
+			FrameMarkStart(framename_Server_AsyncRunStep);
 			m_server->AsyncRunStep(step_settings.pause ? 0.0f : dtime);
+			FrameMarkEnd(framename_Server_AsyncRunStep);
 
 			const float remaining_time = step_settings.steplen
 					- 1e-6f * (porting::getTimeUs() - t0);
+			FrameMarkStart(framename_Server_Receive);
 			m_server->Receive(remaining_time);
+			FrameMarkEnd(framename_Server_Receive);
 
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
@@ -149,6 +166,7 @@ void *ServerThread::run()
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
+		FrameMarkEnd(framename_ServerThread_run);
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER

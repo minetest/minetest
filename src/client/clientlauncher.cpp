@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include "util/tracy_wrapper.h"
 #include <IGUISpriteBank.h>
 #include <ICameraSceneNode.h>
 #include <unordered_map>
@@ -540,19 +541,27 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 void ClientLauncher::main_menu(MainMenuData *menudata)
 {
+	[[maybe_unused]]
+	static const char *framename_ClientLauncher_main_menu =
+			"ClientLauncher::main_menu()-wait-frame";
+
 	bool *kill = porting::signal_handler_killstatus();
 	video::IVideoDriver *driver = m_rendering_engine->get_video_driver();
 
 	infostream << "Waiting for other menus" << std::endl;
+	FrameMarkStart(framename_ClientLauncher_main_menu);
 	while (m_rendering_engine->run() && !*kill) {
 		if (!isMenuActive())
 			break;
 		driver->beginScene(true, true, video::SColor(255, 128, 128, 128));
 		m_rendering_engine->get_gui_env()->drawAll();
 		driver->endScene();
+		FrameMarkEnd(framename_ClientLauncher_main_menu);
 		// On some computers framerate doesn't seem to be automatically limited
 		sleep_ms(25);
+		FrameMarkStart(framename_ClientLauncher_main_menu);
 	}
+	FrameMarkEnd(framename_ClientLauncher_main_menu);
 	infostream << "Waited for other menus" << std::endl;
 
 	auto *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();
