@@ -147,6 +147,7 @@ minetest.register_node("basenodes:water_source", {
 	liquid_alternative_source = "basenodes:water_source",
 	liquid_viscosity = WATER_VISC,
 	post_effect_color = {a = 64, r = 100, g = 100, b = 200},
+	post_effect_color_shaded = true,
 	groups = {water = 3, liquid = 3},
 })
 
@@ -177,6 +178,7 @@ minetest.register_node("basenodes:water_flowing", {
 	liquid_alternative_source = "basenodes:water_source",
 	liquid_viscosity = WATER_VISC,
 	post_effect_color = {a = 64, r = 100, g = 100, b = 200},
+	post_effect_color_shaded = true,
 	groups = {water = 3, liquid = 3},
 })
 
@@ -206,6 +208,7 @@ minetest.register_node("basenodes:river_water_source", {
 	liquid_renewable = false,
 	liquid_range = 2,
 	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+	post_effect_color_shaded = true,
 	groups = {water = 3, liquid = 3, },
 })
 
@@ -238,6 +241,7 @@ minetest.register_node("basenodes:river_water_flowing", {
 	liquid_renewable = false,
 	liquid_range = 2,
 	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+	post_effect_color_shaded = true,
 	groups = {water = 3, liquid = 3, },
 })
 

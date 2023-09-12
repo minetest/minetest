@@ -172,10 +172,11 @@ void set_default_settings()
 #else
 	settings->setDefault("show_debug", "true");
 #endif
-	settings->setDefault("fsaa", "0");
+	settings->setDefault("fsaa", "2");
 	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
+	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
@@ -235,8 +236,6 @@ void set_default_settings()
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
-	settings->setDefault("texture_clean_transparent", "false");
-	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
@@ -252,9 +251,9 @@ void set_default_settings()
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
-	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
+	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("tone_mapping", "false");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
@@ -361,7 +360,7 @@ void set_default_settings()
 	// Network
 	settings->setDefault("enable_ipv6", "true");
 	settings->setDefault("ipv6_server", "false");
-	settings->setDefault("max_packets_per_iteration","1024");
+	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
@@ -473,7 +472,8 @@ void set_default_settings()
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
-	settings->setDefault("touchscreen_threshold","20");
+	settings->setDefault("touchscreen_threshold", "20");
+	settings->setDefault("touchscreen_sensitivity", "0.2");
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
@@ -486,23 +486,18 @@ void set_default_settings()
 	settings->setDefault("screen_w", "0");
 	settings->setDefault("screen_h", "0");
 	settings->setDefault("fullscreen", "true");
-	settings->setDefault("smooth_lighting", "false");
 	settings->setDefault("performance_tradeoffs", "true");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("emergequeue_limit_diskonly", "16");
 	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("max_block_generate_distance", "5");
-	settings->setDefault("enable_3d_clouds", "false");
-	settings->setDefault("fps_max_unfocused", "10");
 	settings->setDefault("sqlite_synchronous", "1");
-	settings->setDefault("map_compression_level_disk", "-1");
-	settings->setDefault("map_compression_level_net", "-1");
 	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "1000");
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
-	settings->setDefault("curl_verify_cert","false");
+	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size
 	float x_inches = (float) porting::getDisplaySize().X /

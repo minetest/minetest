@@ -354,6 +354,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
+	if (list_from.get() == list_to.get() && from_i == to_i)
+		return; // Same slot
+
 	/*
 		Do not handle rollback if both inventories are that of the same player
 	*/

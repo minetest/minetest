@@ -144,7 +144,7 @@ public:
 		return new GenericCAO(client, env);
 	}
 
-	inline ActiveObjectType getType() const
+	inline ActiveObjectType getType() const override
 	{
 		return ACTIVEOBJECT_TYPE_GENERIC;
 	}
@@ -152,15 +152,15 @@ public:
 	{
 		return m_armor_groups;
 	}
-	void initialize(const std::string &data);
+	void initialize(const std::string &data) override;
 
 	void processInitData(const std::string &data);
 
-	bool getCollisionBox(aabb3f *toset) const;
+	bool getCollisionBox(aabb3f *toset) const override;
 
-	bool collideWithObjects() const;
+	bool collideWithObjects() const override;
 
-	virtual bool getSelectionBox(aabb3f *toset) const;
+	virtual bool getSelectionBox(aabb3f *toset) const override;
 
 	const v3f getPosition() const override final;
 
@@ -172,9 +172,9 @@ public:
 
 	inline const ObjectProperties &getProperties() const { return m_prop; }
 
-	scene::ISceneNode *getSceneNode() const;
+	scene::ISceneNode *getSceneNode() const override;
 
-	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const;
+	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const override;
 
 	// m_matrixnode controls the position and rotation of the child node
 	// for all scene nodes, as a workaround for an Irrlicht problem with
@@ -201,7 +201,7 @@ public:
 		return m_prop.stepheight;
 	}
 
-	inline bool isLocalPlayer() const
+	inline bool isLocalPlayer() const override
 	{
 		return m_is_local_player;
 	}
@@ -218,28 +218,28 @@ public:
 
 	void setChildrenVisible(bool toset);
 	void setAttachment(int parent_id, const std::string &bone, v3f position,
-			v3f rotation, bool force_visible);
+			v3f rotation, bool force_visible) override;
 	void getAttachment(int *parent_id, std::string *bone, v3f *position,
-			v3f *rotation, bool *force_visible) const;
-	void clearChildAttachments();
-	void clearParentAttachment();
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	ClientActiveObject *getParent() const;
-	const std::unordered_set<int> &getAttachmentChildIds() const
+			v3f *rotation, bool *force_visible) const override;
+	void clearChildAttachments() override;
+	void clearParentAttachment() override;
+	void addAttachmentChild(int child_id) override;
+	void removeAttachmentChild(int child_id) override;
+	ClientActiveObject *getParent() const override;
+	const std::unordered_set<int> &getAttachmentChildIds() const override
 	{ return m_attachment_child_ids; }
-	void updateAttachments();
+	void updateAttachments() override;
 
-	void removeFromScene(bool permanent);
+	void removeFromScene(bool permanent) override;
 
-	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
+	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr) override;
 
 	inline void expireVisuals()
 	{
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u32 day_night_ratio);
+	void updateLight(u32 day_night_ratio) override;
 
 	void setNodeLight(const video::SColor &light);
 
@@ -254,7 +254,7 @@ public:
 
 	void updateNodePos();
 
-	void step(float dtime, ClientEnvironment *env);
+	void step(float dtime, ClientEnvironment *env) override;
 
 	void updateTexturePos();
 
@@ -268,14 +268,14 @@ public:
 
 	void updateBonePosition();
 
-	void processMessage(const std::string &data);
+	void processMessage(const std::string &data) override;
 
 	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
-			float time_from_last_punch=1000000);
+			float time_from_last_punch=1000000) override;
 
-	std::string debugInfoText();
+	std::string debugInfoText() override;
 
-	std::string infoText()
+	std::string infoText() override
 	{
 		return m_prop.infotext;
 	}

@@ -113,7 +113,7 @@ end
 
 make.float = make_field(tonumber, is_valid_number, function(x)
 	local str = tostring(x)
-	if str:match("^%d+$") then
+	if str:match("^[+-]?%d+$") then
 		str = str .. ".0"
 	end
 	return str
@@ -161,15 +161,17 @@ function make.enum(setting)
 			local value = core.settings:get(setting.name) or setting.default
 			self.resettable = core.settings:has(setting.name)
 
+			local labels = setting.option_labels or {}
+
 			local items = {}
 			for i, option in ipairs(setting.values) do
-				items[i] = core.formspec_escape(option)
+				items[i] = core.formspec_escape(labels[option] or option)
 			end
 
 			local selected_idx = table.indexof(setting.values, value)
 			local fs = "label[0,0.1;" .. get_label(setting) .. "]"
 
-			fs = fs .. ("dropdown[0,0.3;%f,0.8;%s;%s;%d]"):format(
+			fs = fs .. ("dropdown[0,0.3;%f,0.8;%s;%s;%d;true]"):format(
 				avail_w, setting.name, table.concat(items, ","), selected_idx, value)
 
 			return fs, 1.1
@@ -177,7 +179,8 @@ function make.enum(setting)
 
 		on_submit = function(self, fields)
 			local old_value = core.settings:get(setting.name) or setting.default
-			local value = fields[setting.name]
+			local idx = tonumber(fields[setting.name]) or 0
+			local value = setting.values[idx]
 			if value == nil or value == old_value then
 				return false
 			end

@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
-#include "guiButton.h"
 
 #include <iostream>
 #include <algorithm>
@@ -154,8 +153,8 @@ void AutoHideButtonBar::init(ISimpleTextureSource *tsrc,
 
 	rect<int> starter_rect = rect<s32>(UpperLeft.X, UpperLeft.Y, LowerRight.X, LowerRight.Y);
 
-	IGUIButton *starter_gui_button = GUIButton::addButton(m_guienv, starter_rect,
-			m_texturesource, nullptr, button_id, L"", nullptr);
+	IGUIButton *starter_gui_button = m_guienv->addButton(starter_rect, nullptr,
+			button_id, L"", nullptr);
 
 	m_starter.gui_button        = starter_gui_button;
 	m_starter.gui_button->grab();
@@ -239,8 +238,8 @@ void AutoHideButtonBar::addButton(touch_gui_button_id button_id, const wchar_t *
 		current_button = rect<s32>(m_upper_left.X, y_start, m_lower_right.Y, y_end);
 	}
 
-	IGUIButton *btn_gui_button = GUIButton::addButton(m_guienv, current_button,
-			m_texturesource, nullptr, button_id, caption, nullptr);
+	IGUIButton *btn_gui_button = m_guienv->addButton(current_button, nullptr, button_id,
+			caption, nullptr);
 
 	std::shared_ptr<button_info> btn(new button_info);
 	btn->gui_button        = btn_gui_button;
@@ -414,8 +413,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver)
 void TouchScreenGUI::initButton(touch_gui_button_id id, const rect<s32> &button_rect,
 		const std::wstring &caption, bool immediate_release, float repeat_delay)
 {
-	IGUIButton *btn_gui_button = GUIButton::addButton(m_guienv, button_rect,
-			m_texturesource, nullptr, id, caption.c_str());
+	IGUIButton *btn_gui_button = m_guienv->addButton(button_rect, nullptr, id, caption.c_str());
 
 	button_info *btn       = &m_buttons[id];
 	btn->gui_button        = btn_gui_button;
@@ -583,23 +581,26 @@ touch_gui_button_id TouchScreenGUI::getButtonID(size_t eventID)
 	return after_last_element_id;
 }
 
-bool TouchScreenGUI::isHUDButton(const SEvent &event)
+bool TouchScreenGUI::isHotbarButton(const SEvent &event)
 {
-	// check if hud item is pressed
-	for (auto &hud_rect : m_hud_rects) {
-		if (hud_rect.second.isPointInside(v2s32(event.TouchInput.X, event.TouchInput.Y))) {
-			SEvent translated{};
-			translated.EventType            = irr::EET_KEY_INPUT_EVENT;
-			translated.KeyInput.Key         = (irr::EKEY_CODE) (KEY_KEY_1 + hud_rect.first);
-			translated.KeyInput.Control     = false;
-			translated.KeyInput.Shift       = false;
-			translated.KeyInput.PressedDown = true;
-			m_receiver->OnEvent(translated);
-			m_hud_ids[event.TouchInput.ID]  = translated.KeyInput.Key;
+	const v2s32 touch_pos = v2s32(event.TouchInput.X, event.TouchInput.Y);
+	// check if hotbar item is pressed
+	for (auto &[index, rect] : m_hotbar_rects) {
+		if (rect.isPointInside(touch_pos)) {
+			// We can't just emit a keypress event because the number keys
+			// range from 1 to 9, but there may be more hotbar items.
+			m_hotbar_selection = index;
 			return true;
 		}
 	}
 	return false;
+}
+
+std::optional<u16> TouchScreenGUI::getHotbarSelection()
+{
+	auto selection = m_hotbar_selection;
+	m_hotbar_selection = std::nullopt;
+	return selection;
 }
 
 void TouchScreenGUI::handleButtonEvent(touch_gui_button_id button,
@@ -745,10 +746,10 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			handleButtonEvent(button, eventID, true);
 			m_settings_bar.deactivate();
 			m_rare_controls_bar.deactivate();
-		} else if (isHUDButton(event)) {
+		} else if (isHotbarButton(event)) {
 			m_settings_bar.deactivate();
 			m_rare_controls_bar.deactivate();
-			// already handled in isHUDButton()
+			// already handled in isHotbarButton()
 		} else if (m_settings_bar.isButton(event)) {
 			m_rare_controls_bar.deactivate();
 			// already handled in isSettingsBarButton()
@@ -828,7 +829,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					m_pointer_pos[event.TouchInput.ID] = touch_pos;
 
 					// adapt to similar behavior as pc screen
-					const double d = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f) * 3.0f;
+					const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f) * 3.0f;
 
 					m_camera_yaw_change -= dir_free.X * d;
 					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dir_free.Y * d), -180.0f), 180.0f);
@@ -1071,14 +1072,14 @@ void TouchScreenGUI::step(float dtime)
 	m_rare_controls_bar.step(dtime);
 }
 
-void TouchScreenGUI::resetHud()
+void TouchScreenGUI::resetHotbarRects()
 {
-	m_hud_rects.clear();
+	m_hotbar_rects.clear();
 }
 
-void TouchScreenGUI::registerHudItem(int index, const rect<s32> &rect)
+void TouchScreenGUI::registerHotbarRect(u16 index, const rect<s32> &rect)
 {
-	m_hud_rects[index] = rect;
+	m_hotbar_rects[index] = rect;
 }
 
 void TouchScreenGUI::setVisible(bool visible)

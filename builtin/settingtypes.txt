@@ -91,6 +91,8 @@
 camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
 #    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#
+#    Requires: keyboard_mouse
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
 
 #    If enabled, you can place nodes at the position (feet + eye level) where you stand.
@@ -110,13 +112,16 @@ always_fly_fast (Always fly fast) bool true
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
+#
+#    Requires: keyboard_mouse
 repeat_place_time (Place repetition interval) float 0.25 0.16 2
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
 
-#    Prevent digging and placing from repeating when holding the mouse buttons.
+#    Prevent digging and placing from repeating when holding the respective buttons.
 #    Enable this when you dig or place too often by accident.
+#    On touchscreens, this only affects digging.
 safe_dig_and_place (Safe digging and placing) bool false
 
 [*Keyboard and Mouse]
@@ -143,10 +148,15 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
-#    The length in pixels it takes for touch screen interaction to start.
+#    The length in pixels it takes for touchscreen interaction to start.
 #
 #    Requires: touchscreen_gui
-touchscreen_threshold (Touch screen threshold) int 20 0 100
+touchscreen_threshold (Touchscreen threshold) int 20 0 100
+
+#    Touchscreen sensitivity multiplier.
+#
+#    Requires: touchscreen_gui
+touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
@@ -154,13 +164,13 @@ touchscreen_threshold (Touch screen threshold) int 20 0 100
 #    Requires: touchscreen_gui
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
-#    (Android) Fixes the position of virtual joystick.
+#    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #
 #    Requires: touchscreen_gui
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #
 #    Requires: touchscreen_gui
@@ -371,35 +381,21 @@ enable_3d_clouds (3D clouds) bool true
 
 [**Filtering and Antialiasing]
 
-#    Use mipmapping to scale textures. May slightly increase performance,
+#    Use mipmaps when scaling textures down. May slightly increase performance,
 #    especially when using a high resolution texture pack.
-#    Gamma correct downscaling is not supported.
+#    Gamma-correct downscaling is not supported.
 mip_map (Mipmapping) bool false
 
-#    Use anisotropic filtering when viewing at textures from an angle.
-anisotropic_filter (Anisotropic filtering) bool false
-
-#    Use bilinear filtering when scaling textures.
+#    Use bilinear filtering when scaling textures down.
 bilinear_filter (Bilinear filtering) bool false
 
-#    Use trilinear filtering when scaling textures.
+#    Use trilinear filtering when scaling textures down.
+#    If both bilinear and trilinear filtering are enabled, trilinear filtering
+#    is applied.
 trilinear_filter (Trilinear filtering) bool false
 
-#    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, often resulting in dark or
-#    light edges to transparent textures. Apply a filter to clean that up
-#    at texture load time. This is automatically enabled if mipmapping is enabled.
-texture_clean_transparent (Clean transparent textures) bool false
-
-#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
-#    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels. This sets the minimum texture size
-#    for the upscaled textures; higher values look sharper, but require more
-#    memory. Powers of 2 are recommended. This setting is ONLY applied if
-#    bilinear/trilinear/anisotropic filtering is enabled.
-#    This is also used as the base node texture size for world-aligned
-#    texture autoscaling.
-texture_min_size (Minimum texture size) int 64 1 32768
+#    Use anisotropic filtering when looking at textures from an angle.
+anisotropic_filter (Anisotropic filtering) bool false
 
 #    Select the antialiasing method to apply.
 #
@@ -1830,6 +1826,9 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    See also texture_min_size.
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
+
+#    The base node texture size used for world-aligned texture autoscaling.
+texture_min_size (Base texture size) int 64 1 32768
 
 #    Side length of a cube of map blocks that the client will consider together
 #    when generating meshes.

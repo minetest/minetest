@@ -297,11 +297,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		material.MaterialType = m_material_type;
 		material.MaterialTypeParam = 0.5f;
 		material.BackfaceCulling = true;
-		// Enable bi/trilinear filtering only for high resolution textures
-		bool bilinear_filter = dim.Width > 32 && m_bilinear_filter;
-		bool trilinear_filter = dim.Width > 32 && m_trilinear_filter;
 		material.forEachTexture([=] (auto &tex) {
-			tex.setFiltersMinetest(bilinear_filter, trilinear_filter,
+			setMaterialFilters(tex, m_bilinear_filter, m_trilinear_filter,
 					m_anisotropic_filter);
 		});
 		// mipmaps cause "thin black line" artifacts
@@ -465,7 +462,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 			material.MaterialTypeParam = 0.5f;
 			material.BackfaceCulling = cull_backface;
 			material.forEachTexture([this] (auto &tex) {
-				tex.setFiltersMinetest(m_bilinear_filter, m_trilinear_filter,
+				setMaterialFilters(tex, m_bilinear_filter, m_trilinear_filter,
 						m_anisotropic_filter);
 			});
 		}

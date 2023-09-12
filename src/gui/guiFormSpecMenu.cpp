@@ -139,9 +139,9 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	TextDest *txt_dest, const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
 	if (cur_formspec == nullptr) {
-		cur_formspec = new GUIFormSpecMenu(joystick, guienv->getRootGUIElement(),
-			-1, &g_menumgr, client, guienv, client->getTextureSource(), sound_manager,
-			fs_src, txt_dest, formspecPrepend);
+		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
+			client, guienv, client->getTextureSource(), sound_manager, fs_src,
+			txt_dest, formspecPrepend);
 		cur_formspec->doPause = false;
 
 		/*
@@ -4312,10 +4312,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
 				else if (event.MouseInput.Shift && button == BET_LEFT)
-					// TODO: We should craft everything with shift-left-click,
-					// but the slow crafting code limits us, so we only craft one
-					craft_amount = 1;
-					//craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
+					craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
 				else
 					craft_amount = 1;
 
@@ -4450,6 +4447,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (m_left_drag_stacks.size() > 1) {
 					// Finalize the left-dragging
 					for (auto &ds : m_left_drag_stacks) {
+						if (ds.first == *m_selected_item) {
+							// This entry is needed to properly calculate the stack sizes.
+							// The stack already exists, hence no further action needed here.
+							continue;
+						}
+
 						// Check how many items we should move to this slot,
 						// it may be less than the full split
 						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);

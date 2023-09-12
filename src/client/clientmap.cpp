@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmap.h"
 #include "client.h"
+#include "client/mesh.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
@@ -124,7 +125,7 @@ ClientMap::~ClientMap()
 	g_settings->deregisterChangedCallback("enable_raytraced_culling", on_settings_changed, this);
 }
 
-void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
+void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)
 {
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
@@ -133,6 +134,7 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	m_camera_direction = dir;
 	m_camera_fov = fov;
 	m_camera_offset = offset;
+	m_camera_light_color = light_color;
 
 	v3s16 current_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
@@ -843,7 +845,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			// Apply filter settings
 			material.forEachTexture([this] (auto &tex) {
-				tex.setFiltersMinetest(m_cache_bilinear_filter, m_cache_trilinear_filter,
+				setMaterialFilters(tex, m_cache_bilinear_filter, m_cache_trilinear_filter,
 						m_cache_anistropic_filter);
 			});
 			material.Wireframe = m_control.show_wireframe;
@@ -1056,21 +1058,30 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	MapNode n = getNode(floatToInt(m_camera_position, BS));
 
 	const ContentFeatures& features = m_nodedef->get(n);
-	video::SColor post_effect_color = features.post_effect_color;
+	video::SColor post_color = features.post_effect_color;
+
+	if (features.post_effect_color_shaded) {
+		auto apply_light = [] (u32 color, u32 light) {
+			return core::clamp(core::round32(color * light / 255.0f), 0, 255);
+		};
+		post_color.setRed(apply_light(post_color.getRed(), m_camera_light_color.getRed()));
+		post_color.setGreen(apply_light(post_color.getGreen(), m_camera_light_color.getGreen()));
+		post_color.setBlue(apply_light(post_color.getBlue(), m_camera_light_color.getBlue()));
+	}
 
 	// If the camera is in a solid node, make everything black.
 	// (first person mode only)
 	if (features.solidness == 2 && cam_mode == CAMERA_MODE_FIRST &&
-		!m_control.allow_noclip) {
-		post_effect_color = video::SColor(255, 0, 0, 0);
+			!m_control.allow_noclip) {
+		post_color = video::SColor(255, 0, 0, 0);
 	}
 
-	if (post_effect_color.getAlpha() != 0) {
+	if (post_color.getAlpha() != 0) {
 		// Draw a full-screen rectangle
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(post_effect_color, rect);
+		driver->draw2DRectangle(post_color, rect);
 	}
 }
 

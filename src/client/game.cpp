@@ -578,7 +578,7 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 	}
 
-	void onSetMaterial(const video::SMaterial &material)
+	void onSetMaterial(const video::SMaterial &material) override
 	{
 		video::ITexture *texture = material.getTexture(0);
 		if (texture) {
@@ -1530,9 +1530,7 @@ bool Game::createClient(const GameStartData &start_data)
 
 bool Game::initGui()
 {
-	auto guienv = m_rendering_engine->get_gui_env();
-
-	m_game_ui->init(guienv);
+	m_game_ui->init();
 
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
@@ -1727,11 +1725,11 @@ bool Game::getServerContent(bool *aborted)
 		if (!client->itemdefReceived()) {
 			progress = 25;
 			m_rendering_engine->draw_load_screen(wstrgettext("Item definitions..."),
-					texture_src, dtime, progress);
+					guienv, texture_src, dtime, progress);
 		} else if (!client->nodedefReceived()) {
 			progress = 30;
 			m_rendering_engine->draw_load_screen(wstrgettext("Node definitions..."),
-					texture_src, dtime, progress);
+					guienv, texture_src, dtime, progress);
 		} else {
 			std::ostringstream message;
 			std::fixed(message);
@@ -1756,7 +1754,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()),
+			m_rendering_engine->draw_load_screen(utf8_to_wide(message.str()), guienv,
 				texture_src, dtime, progress);
 		}
 	}
@@ -1806,9 +1804,6 @@ inline bool Game::handleCallbacks()
 		g_gamecallback->disconnect_requested = false;
 		return false;
 	}
-
-	auto guienv = m_rendering_engine->get_gui_env();
-	auto guiroot = guienv->getRootGUIElement();
 
 	if (g_gamecallback->changepassword_requested) {
 		(new GUIPasswordChange(guienv, guiroot, -1,
@@ -1954,8 +1949,6 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 
 void Game::processUserInput(f32 dtime)
 {
-	auto guienv = m_rendering_engine->get_gui_env();
-
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		if(m_game_focused) {
@@ -2167,6 +2160,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 			break;
 		}
 	}
+
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
+		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
+		if (selection)
+			*new_playeritem = *selection;
+	}
+#endif
 
 	// Clamp selection again in case it wasn't changed but max_item was
 	*new_playeritem = MYMIN(*new_playeritem, max_item);
@@ -3169,7 +3170,7 @@ void Game::updateCamera(f32 dtime)
 		v3f camera_direction = camera->getDirection();
 
 		client->getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset);
+				camera_direction, camera_fov, camera_offset, player->light_color);
 
 		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);
@@ -4149,7 +4150,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		}
 
 		if (isMenuActive())
-			m_rendering_engine->get_gui_env()->getRootGUIElement()->bringToFront(formspec);
+			guiroot->bringToFront(formspec);
 	} while (false);
 
 	/*
@@ -4289,7 +4290,7 @@ void FpsControl::limit(IrrlichtDevice *device, f32 *dtime)
 
 void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_sky)
 {
-	m_rendering_engine->draw_load_screen(wstrgettext(msg), texture_src,
+	m_rendering_engine->draw_load_screen(wstrgettext(msg), guienv, texture_src,
 			dtime, percent, draw_sky);
 }
 

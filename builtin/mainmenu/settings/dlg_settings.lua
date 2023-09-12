@@ -68,6 +68,8 @@ add_page({
 	id = "accessibility",
 	title = gettext("Accessibility"),
 	content = {
+		"language",
+		{ heading = gettext("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
@@ -149,6 +151,72 @@ local function get_setting_info(name)
 
 	return nil
 end
+
+
+-- These must not be translated, as they need to show in the local
+-- language no matter the user's current language.
+get_setting_info("language").option_labels = {
+	[""] = fgettext_ne("(Use system language)"),
+	--ar = " [ar]", blacklisted
+	be = "Беларуская [be]",
+	bg = "Български [bg]",
+	ca = "Català [ca]",
+	cs = "Česky [cs]",
+	cy = "Cymraeg [cy]",
+	da = "Dansk [da]",
+	de = "Deutsch [de]",
+	--dv = " [dv]", blacklisted
+	el = "Ελληνικά [el]",
+	en = "English [en]",
+	eo = "Esperanto [eo]",
+	es = "Español [es]",
+	et = "Eesti [et]",
+	eu = "Euskara [eu]",
+	fi = "Suomi [fi]",
+	fil = "Wikang Filipino [fil]",
+	fr = "Français [fr]",
+	gd = "Gàidhlig [gd]",
+	gl = "Galego [gl]",
+	--he = " [he]", blacklisted
+	--hi = " [hi]", blacklisted
+	hu = "Magyar [hu]",
+	id = "Bahasa Indonesia [id]",
+	it = "Italiano [it]",
+	ja = "日本語 [ja]",
+	jbo = "Lojban [jbo]",
+	kk = "Қазақша [kk]",
+	--kn = " [kn]", blacklisted
+	ko = "한국어 [ko]",
+	ky = "Kırgızca / Кыргызча [ky]",
+	lt = "Lietuvių [lt]",
+	lv = "Latviešu [lv]",
+	mn = "Монгол [mn]",
+	mr = "मराठी [mr]",
+	ms = "Bahasa Melayu [ms]",
+	--ms_Arab = " [ms_Arab]", blacklisted
+	nb = "Norsk Bokmål [nb]",
+	nl = "Nederlands [nl]",
+	nn = "Norsk Nynorsk [nn]",
+	oc = "Occitan [oc]",
+	pl = "Polski [pl]",
+	pt = "Português [pt]",
+	pt_BR = "Português do Brasil [pt_BR]",
+	ro = "Română [ro]",
+	ru = "Русский [ru]",
+	sk = "Slovenčina [sk]",
+	sl = "Slovenščina [sl]",
+	sr_Cyrl = "Српски [sr_Cyrl]",
+	sr_Latn = "Srpski (Latinica) [sr_Latn]",
+	sv = "Svenska [sv]",
+	sw = "Kiswahili [sw]",
+	--th = " [th]", blacklisted
+	tr = "Türkçe [tr]",
+	tt = "Tatarça [tt]",
+	uk = "Українська [uk]",
+	vi = "Tiếng Việt [vi]",
+	zh_CN = "中文 (简体) [zh_CN]",
+	zh_TW = "正體中文 (繁體) [zh_TW]",
+}
 
 
 -- See if setting matches keywords

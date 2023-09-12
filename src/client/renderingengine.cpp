@@ -124,7 +124,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
 	bool enable_fsaa = g_settings->get("antialiasing") == "fsaa";
-	u16 fsaa = enable_fsaa ? g_settings->getU16("fsaa") : 0;
+	u16 fsaa = enable_fsaa ? MYMAX(2, g_settings->getU16("fsaa")) : 0;
 
 	// Determine driver
 	auto driverType = chooseVideoDriver();
@@ -140,7 +140,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = true;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
@@ -226,9 +225,9 @@ bool RenderingEngine::setWindowIcon()
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 void RenderingEngine::draw_load_screen(const std::wstring &text,
-		ITextureSource *tsrc, float dtime, int percent, bool sky)
+		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime,
+		int percent, bool sky)
 {
-	gui::IGUIEnvironment *guienv = get_gui_env();
 	v2u32 screensize = getWindowSize();
 
 	v2s32 textsize(g_fontengine->getTextWidth(text), g_fontengine->getLineHeight());
