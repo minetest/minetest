@@ -154,10 +154,10 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
-		return table.concat{
+		return table.concat({
 			"style[label_button;border=false]",
 			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
-			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"}
+			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
 	end
 
 	local retval = ""
