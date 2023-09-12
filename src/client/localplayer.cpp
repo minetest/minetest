@@ -510,8 +510,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	setPitch(control.pitch);
 	setYaw(control.yaw);
 
-	// Nullify speed and don't run positioning code if the player is attached
-	if (getParent()) {
+	// Nullify speed and don't run positioning code if the player is attached or if the overridden speed is 0
+	if (getParent() || physics_override.speed == 0) {
 		setSpeed(v3f(0.0f));
 		return;
 	}
