@@ -3627,10 +3627,10 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	// Compare core.item_place_node() for what the server does with param2
 	MapNode predicted_node(id, 0, 0);
 
-	const u8 place_param2 = selected_def.place_param2;
+	const auto place_param2 = selected_def.place_param2;
 
 	if (place_param2) {
-		predicted_node.setParam2(place_param2);
+		predicted_node.setParam2(*place_param2);
 	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		v3s16 dir = nodepos - neighborpos;
