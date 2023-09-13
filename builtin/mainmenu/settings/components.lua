@@ -370,8 +370,6 @@ local function noise_params(setting)
 		get_formspec = function(self, avail_w)
 			-- The "defaults" noise parameter flag doesn't reset a noise
 			-- setting to its default value, so we offer a regular reset button.
-			-- I'm not sure what the actual purpose of the "defaults" noise
-			-- parameter flag is.
 			self.resettable = core.settings:has(setting.name)
 
 			local fs = "label[0,0.4;" .. get_label(setting) .. "]" ..
