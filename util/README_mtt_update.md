@@ -97,7 +97,7 @@ The script will add (if not already present) a `# textdomain: <modname>` at the 
 
 ### Strings
 
-The order of the strings is deterministic and follows certain rules: First, all strings are grouped by the source `*.lua` file. The files are loaded in alphabetical order. In case of subdirectories, the mod’s root directory takes precedence, then the directories are traversed in top-down alphabetical order. Second, within each file, the strings are then inserted in the same order as they appear in the source code.
+The order of the strings is deterministic and follows certain rules: First, all strings are grouped by the source `*.lua` file. The files are loaded in alphabetical order. In case of subdirectories, the mod's root directory takes precedence, then the directories are traversed in top-down alphabetical order. Second, within each file, the strings are then inserted in the same order as they appear in the source code.
 
 If a string appears multiple times in the source code, the string will be added when it was first found only.
 
@@ -107,7 +107,7 @@ If the mod's source changes in such a way that a line with an existing translati
 
     ##### not used anymore #####
 
-This allows for old translations and comments to be reused with new lines where appropriate. This script doesn’t attempt “fuzzy” matching of old strings to new, so even a single change of punctuation or spelling will put strings into the “not used anymore” section and require manual re-association with the new string.
+This allows for old translations and comments to be reused with new lines where appropriate. This script doesn't attempt "fuzzy" matching of old strings to new, so even a single change of punctuation or spelling will put strings into the "not used anymore" section and require manual re-association with the new string.
 
 ### Comments
 
@@ -136,13 +136,13 @@ This comment means that all lines following it belong to the file `file.lua`. In
     ##[ file3.lua ]##
     example=Beispiel
 
-This means the string “example” was found in the files `file1.lua`, `file2.lua` and `file3.lua`.
+This means the string "example" was found in the files `file1.lua`, `file2.lua` and `file3.lua`.
 
 If the print source option is not provided, these comments will disappear.
 
-Note that all comments of the form `##[something]##` will be treated as “source file” comments so they may be moved, changed or removed by the script at will.
+Note that all comments of the form `##[something]##` will be treated as "source file" comments so they may be moved, changed or removed by the script at will.
 
-#### “not used anymore” section
+#### "not used anymore" section
 
 By default, the exact comment `##### not used anymore #####` will be automatically added to mark the beginning of a section where old/unused strings will go. Leave the exact wording of this comment intact so this line can be moved (or removed) properly in subsequent runs.
 
