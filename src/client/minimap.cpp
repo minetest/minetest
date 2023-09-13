@@ -248,9 +248,6 @@ Minimap::~Minimap()
 
 	driver->removeTexture(data->texture);
 	driver->removeTexture(data->heightmap_texture);
-	driver->removeTexture(data->minimap_overlay_round);
-	driver->removeTexture(data->minimap_overlay_square);
-	driver->removeTexture(data->object_marker_red);
 
 	for (MinimapMarker *m : m_markers)
 		delete m;
