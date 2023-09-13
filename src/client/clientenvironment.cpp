@@ -223,6 +223,7 @@ void ClientEnvironment::step(float dtime)
 				fluidity = MYMAX(0.001f, fluidity); // prevent division by 0
 				float fluidity_smooth = lplayer->movement_liquid_fluidity_smooth;
 				fluidity_smooth *= lplayer->physics_override.liquid_fluidity_smooth;
+				fluidity_smooth = MYMAX(0.0f, fluidity_smooth);
 
 				v3f d_wanted;
 				bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;
