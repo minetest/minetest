@@ -331,7 +331,7 @@ void set_default_settings()
 	std::string font_size_str = std::to_string(TTF_DEFAULT_FONT_SIZE);
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
-	settings->setDefault("chat_font_size", "0"); // Default "font_size"
+	settings->setDefault("chat_font_size", "0"); // Default "mono_font_size"
 
 	// ContentDB
 	settings->setDefault("contentdb_url", "https://content.minetest.net");

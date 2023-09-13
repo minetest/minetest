@@ -71,7 +71,7 @@ add_page({
 		"language",
 		{ heading = gettext("General") },
 		"font_size",
-		"chat_font_size",
+		"mono_font_size",
 		"gui_scaling",
 		"hud_scaling",
 		"show_nametag_backgrounds",
