@@ -42,6 +42,8 @@ void shadowScreenQuad::render(video::IVideoDriver *driver)
 {
 	u16 indices[6] = {0, 1, 2, 3, 4, 5};
 	driver->setMaterial(Material);
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, core::matrix4());
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->drawIndexedTriangleList(&Vertices[0], 6, &indices[0], 2);
 }
