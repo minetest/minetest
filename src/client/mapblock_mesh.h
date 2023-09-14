@@ -193,12 +193,12 @@ public:
 
 	scene::IMesh *getMesh()
 	{
-		return m_mesh[0];
+		return m_mesh[0].get();
 	}
 
 	scene::IMesh *getMesh(u8 layer)
 	{
-		return m_mesh[layer];
+		return m_mesh[layer].get();
 	}
 
 	std::vector<MinimapMapblock*> moveMinimapMapblocks()
@@ -242,7 +242,7 @@ private:
 		TileLayer tile;
 	};
 
-	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
+	irr_ptr<scene::IMesh> m_mesh[MAX_TILE_LAYERS];
 	std::vector<MinimapMapblock*> m_minimap_mapblocks;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
