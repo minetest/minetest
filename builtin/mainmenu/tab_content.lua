@@ -16,6 +16,17 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
+local function get_content_icons(packages_with_updates)
+	local ret = {}
+	for i = 1, #packages_with_updates do
+		local content = packages_with_updates[i]
+		ret[content.virtual_path or content.path] = { type = "update" }
+	end
+	return ret
+end
+
+
 local packages_raw, packages
 
 local function update_packages()
@@ -62,14 +73,30 @@ local function get_formspec(tabview, name, tabdata)
 
 	local use_technical_names = core.settings:get_bool("show_technical_names")
 
+	local packages_with_updates = update_detector.get_all()
+	local update_icons = get_content_icons(packages_with_updates)
+	local update_count = #packages_with_updates
+	local contentdb_label
+	if update_count == 0 then
+		contentdb_label = fgettext("Browse online content")
+	elseif update_count == 1 then
+		contentdb_label = fgettext("Browse online content [1 update]")
+	else
+		contentdb_label = fgettext("Browse online content [$1 updates]", update_count)
+	end
+
 	local retval = {
 		"label[0.4,0.4;", fgettext("Installed Packages:"), "]",
-		"tablecolumns[color;tree;text]",
+		"tablecolumns[color;tree;image,align=inline,width=1.5",
+			",tooltip=", fgettext("Update available?"),
+			",0=", core.formspec_escape(defaulttexturedir .. "blank.png"),
+			",4=", core.formspec_escape(defaulttexturedir .. "cdb_update_cropped.png"),
+			";text]",
 		"table[0.4,0.8;6.3,4.8;pkglist;",
-		pkgmgr.render_packagelist(packages, use_technical_names),
+		pkgmgr.render_packagelist(packages, use_technical_names, update_icons),
 		";", tabdata.selected_pkg, "]",
 
-		"button[0.4,5.8;6.3,0.9;btn_contentdb;", fgettext("Browse online content"), "]"
+		"button[0.4,5.8;6.3,0.9;btn_contentdb;", contentdb_label, "]"
 	}
 
 	local selected_pkg
@@ -138,12 +165,12 @@ local function get_formspec(tabview, name, tabdata)
 		elseif selected_pkg.type == "txp" then
 			if selected_pkg.enabled then
 				table.insert_all(retval, {
-					"button[11.1,5.8;4,0.9;btn_mod_mgr_disable_txp;",
+					"button[9.766,5.8;2.666,0.9;btn_mod_mgr_disable_txp;",
 					fgettext("Disable Texture Pack"), "]"
 				})
 			else
 				table.insert_all(retval, {
-					"button[11.1,5.8;4,0.9;btn_mod_mgr_use_txp;",
+					"button[9.766,5.8;2.666,0.9;btn_mod_mgr_use_txp;",
 					fgettext("Use Texture Pack"), "]"
 				})
 			end
@@ -153,8 +180,15 @@ local function get_formspec(tabview, name, tabdata)
 
 		if core.may_modify_path(selected_pkg.path) then
 			table.insert_all(retval, {
-				"button[7.1,5.8;4,0.9;btn_mod_mgr_delete_mod;",
-				fgettext("Uninstall Package"), "]"
+				"button[7.1,5.8;2.666,0.9;btn_mod_mgr_delete_mod;",
+				fgettext("Uninstall"), "]"
+			})
+		end
+
+		if update_icons[selected_pkg.virtual_path or selected_pkg.path] then
+			table.insert_all(retval, {
+				"button[12.433,5.8;2.66,0.9;btn_mod_mgr_update;",
+				fgettext("Update"), "]"
 			})
 		end
 	end
@@ -216,6 +250,16 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 		return true
 	end
 
+	if fields.btn_mod_mgr_update then
+		local pkg = packages:get_list()[tabdata.selected_pkg]
+		local dlg = create_store_dlg(nil, { author = pkg.author, name = pkg.id or pkg.name })
+		dlg:set_parent(tabview)
+		tabview:hide()
+		dlg:show()
+		packages = nil
+		return true
+	end
+
 	if fields.btn_mod_mgr_use_txp or fields.btn_mod_mgr_disable_txp then
 		local txp_path = ""
 		if fields.btn_mod_mgr_use_txp then
@@ -235,7 +279,14 @@ end
 
 return {
 	name = "content",
-	caption = fgettext("Content"),
+	caption = function()
+		local update_count = update_detector.get_count()
+		if update_count == 0 then
+			return fgettext("Content")
+		else
+			return fgettext("Content [$1]", update_count)
+		end
+	end,
 	cbf_formspec = get_formspec,
 	cbf_button_handler = handle_buttons,
 	on_change = on_change
