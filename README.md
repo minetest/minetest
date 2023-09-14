@@ -31,12 +31,12 @@ Table of Contents
 
 Further documentation
 ----------------------
--[Website](https://minetest.net/)
--[Wiki](https://wiki.minetest.net/)
--[Developer wiki](https://dev.minetest.net/)
--[Foru](https://forum.minetest.net/)
--[GitHub](https://github.com/minetest/minetest/)
--[doc/](doc/) directory of source distribution
+- [Website](https://minetest.net/)
+- [Wiki](https://wiki.minetest.net/)
+- [Developer wiki](https://dev.minetest.net/)
+- [Foru](https://forum.minetest.net/)
+- [GitHub](https://github.com/minetest/minetest/)
+- [doc/](doc/) directory of source distribution
 
 Default controls
 ----------------
