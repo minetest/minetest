@@ -7683,7 +7683,7 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default movement speed value (default: `1`)
+        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
@@ -7703,8 +7703,10 @@ child will follow movement and rotation of that bone.
           (for nodes with `liquid_move_physics`) (default: `1`)
         * `acceleration_default`: multiplier to horizontal and vertical acceleration
           on ground or when climbing (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_default`
         * `acceleration_air`: multiplier to acceleration
           when jumping or falling (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_air`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
