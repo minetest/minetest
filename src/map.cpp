@@ -841,7 +841,7 @@ class LiquidSystem {
 				}
 				return true;
 			}
-			else if(d[C]->liquid_slope_range == 0) {
+			else {
 				for(u16 i = SAME_START; i < SAME_END; ++i) {
 					if(d[i]->floodable) {
 						n[i] = MapNode(n[C]);
@@ -876,6 +876,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	std::vector<std::pair<v3s16, MapNode>> changed_nodes;
 
 	int cnt_nodes = m_transforming_liquid.size();
+
+	actionstream << "transformLiquids " << cnt_nodes << std::endl;
 	for (int i = 0; i < cnt_nodes && m_transforming_liquid.size() > 0; ++i) {
 
 		LiquidSystem liquidSystem(this);

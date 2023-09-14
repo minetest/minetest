@@ -1004,6 +1004,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 		lua_setfield(L, -2, "liquid_renewable");
 		lua_pushnumber(L, c.liquid_range);
 		lua_setfield(L, -2, "liquid_range");
+		lua_pushnumber(L, c.liquid_slope_range);
+		lua_setfield(L, -2, "liquid_slope_range");
 	}
 	lua_pushnumber(L, c.drowning);
 	lua_setfield(L, -2, "drowning");

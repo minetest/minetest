@@ -394,7 +394,7 @@ void ContentFeatures::reset()
 	liquid_viscosity = 0;
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
-	liquid_slope_range = LIQUID_LEVEL_MAX+1;
+	liquid_slope_range = 0;
 	drowning = 0;
 	light_source = 0;
 	damage_per_second = 0;
