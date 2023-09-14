@@ -218,6 +218,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 43:
 		"start_time" added to TOCLIENT_PLAY_SOUND
 		place_param2 type change u8 -> optional<u8>
+    Add an alternative liquid system.
 		[scheduled bump for 5.8.0]
 */
 

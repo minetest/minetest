@@ -386,6 +386,7 @@ void ContentFeatures::reset()
 	rightclickable = true;
 	leveled = 0;
 	leveled_max = LEVELED_MAX;
+  liquid_mechanic = LiquidMechanic::CLASSIC;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing.clear();
 	liquid_alternative_flowing_id = CONTENT_IGNORE;
@@ -515,6 +516,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 		else if (drawtype == NDT_FLOWINGLIQUID)
 			liquid_type_bc = LIQUID_FLOWING;
 	}
+
+  if (protocol_version >= 43) {
+    writeU8(os, (u8)liquid_mechanic);
+  }
 	writeU8(os, liquid_type_bc);
 	os << serializeString16(liquid_alternative_flowing);
 	os << serializeString16(liquid_alternative_source);
@@ -611,6 +616,9 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	damage_per_second = readU32(is);
 
 	// liquid
+  if (protocol_version >= 43) {
+    liquid_mechanic = (enum LiquidMechanic)readU8(is);
+  }
 	liquid_type = (enum LiquidType) readU8(is);
 	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);

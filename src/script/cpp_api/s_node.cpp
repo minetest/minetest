@@ -71,6 +71,14 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{0, NULL},
 	};
 
+struct EnumString ScriptApiNode::es_LiquidMechanic[] =
+	{
+		{(int)LiquidMechanic::NONE, "none"},
+		{(int)LiquidMechanic::CLASSIC, "classic"},
+		{(int)LiquidMechanic::FLOW_DOWN, "flow_down"},
+		{0, NULL},
+	};
+
 struct EnumString ScriptApiNode::es_LiquidType[] =
 	{
 		{LIQUID_NONE, "none"},
