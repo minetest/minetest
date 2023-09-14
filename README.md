@@ -36,6 +36,7 @@ Further documentation
 - Developer wiki: https://dev.minetest.net/
 - Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
+- Twitter: https://twitter.com/MinetestProject
 - [doc/](doc/) directory of source distribution
 
 Default controls
