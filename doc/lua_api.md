@@ -7693,16 +7693,44 @@ child will follow movement and rotation of that bone.
         * 9 - zoom
     * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
+    * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default walking speed value (default: `1`)
+        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed_climb`: multiplier to default climb speed value (default: `1`)
+            * Note: The actual climb speed is the product of `speed` and `speed_climb`
+        * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
+            * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
+        * `liquid_fluidity`: multiplier to liquid movement resistance value
+          (for nodes with `liquid_move_physics`); the higher this value, the lower the
+          resistance to movement. At `math.huge`, the resistance is zero and you can
+          move through any liquid like air. (default: `1`)
+            * Warning: Values below 1 are currently unsupported.
+        * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value
+          (for nodes with `liquid_move_physics`); controls deceleration when entering
+          node at high speed. At higher values you come to a halt more quickly
+          (default: `1`)
+        * `liquid_sink`: multiplier to default liquid sinking speed value;
+          (for nodes with `liquid_move_physics`) (default: `1`)
+        * `acceleration_default`: multiplier to horizontal and vertical acceleration
+          on ground or when climbing (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_default`
+        * `acceleration_air`: multiplier to acceleration
+          when jumping or falling (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_air`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
+    * Note: All numeric fields above modify a corresponding `movement_*` setting.
+    * For games, we recommend for simpler code to first modify the `movement_*`
+      settings (e.g. via the game's `minetest.conf`) to set a global base value
+      for all players and only use `set_physics_override` when you need to change
+      from the base value on a per-player basis
+
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success

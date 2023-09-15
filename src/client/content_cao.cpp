@@ -1775,6 +1775,23 @@ void GenericCAO::processMessage(const std::string &data)
 		bool sneak_glitch = !readU8(is);
 		bool new_move = !readU8(is);
 
+		float override_speed_climb = readF32(is);
+		float override_speed_crouch = readF32(is);
+		float override_liquid_fluidity = readF32(is);
+		float override_liquid_fluidity_smooth = readF32(is);
+		float override_liquid_sink = readF32(is);
+		float override_acceleration_default = readF32(is);
+		float override_acceleration_air = readF32(is);
+		// fallback for new overrides (since 5.8.0)
+		if (is.eof()) {
+			override_speed_climb = 1.0f;
+			override_speed_crouch = 1.0f;
+			override_liquid_fluidity = 1.0f;
+			override_liquid_fluidity_smooth = 1.0f;
+			override_liquid_sink = 1.0f;
+			override_acceleration_default = 1.0f;
+			override_acceleration_air = 1.0f;
+		}
 
 		if (m_is_local_player) {
 			auto &phys = m_env->getLocalPlayer()->physics_override;
@@ -1784,6 +1801,13 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.sneak = sneak;
 			phys.sneak_glitch = sneak_glitch;
 			phys.new_move = new_move;
+			phys.speed_climb = override_speed_climb;
+			phys.speed_crouch = override_speed_crouch;
+			phys.liquid_fluidity = override_liquid_fluidity;
+			phys.liquid_fluidity_smooth = override_liquid_fluidity_smooth;
+			phys.liquid_sink = override_liquid_sink;
+			phys.acceleration_default = override_acceleration_default;
+			phys.acceleration_air = override_acceleration_air;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
