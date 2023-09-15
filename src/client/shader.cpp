@@ -218,12 +218,14 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 		ShadowCascadeShaderSettings(int cascade):
 				m_shadow_view_proj(std::string("shadowCascades[") + std::to_string(cascade) + "].mViewProj"),
 				m_boundary(std::string("shadowCascades[") + std::to_string(cascade) + "].boundary"),
-				m_center(std::string("shadowCascades[") + std::to_string(cascade) + "].center")
+				m_center(std::string("shadowCascades[") + std::to_string(cascade) + "].center"),
+				m_frame(std::string("shadowCascades[") + std::to_string(cascade) + "].frame")
 		{}
 
 		CachedVertexShaderSetting<f32, 16> m_shadow_view_proj;
 		CachedVertexShaderSetting<f32> m_boundary;
 		CachedVertexShaderSetting<f32, 3> m_center;
+		CachedPixelShaderSetting<f32> m_frame;
 
 		void onSetConstants(const ShadowCascade &cascade, video::IMaterialRendererServices *services)
 		{
@@ -232,19 +234,19 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 			f32 boundary = cascade.current_frustum.radius;
 			m_boundary.set(&boundary, services);
 			m_center.set(&cascade.current_frustum.center.X, services);
+			f32 frame = (cascade.current_frame == cascade.max_frames);
+			m_frame.set(&frame, services);
 		}
 	};
 
 	std::vector<ShadowCascadeShaderSettings> m_cascades;
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
 	CachedPixelShaderSetting<f32, 3> m_light_direction;
 	CachedPixelShaderSetting<f32> m_texture_res;
 	CachedPixelShaderSetting<f32> m_shadow_strength;
 	CachedPixelShaderSetting<f32> m_time_of_day;
 	CachedPixelShaderSetting<f32> m_shadowfar;
 	CachedPixelShaderSetting<s32> m_shadow_texture;
-	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+	CachedPixelShaderSetting<f32> m_perspective_zbias;
 	CachedVertexShaderSetting<s32> m_cascade_count;
 	CachedVertexShaderSetting<f32, 4> m_camera_world_position;
 
@@ -259,15 +261,13 @@ public:
 	MainShaderConstantSetter() :
 		  m_world_view_proj("mWorldViewProj")
 		, m_world("mWorld")
-		, m_shadow_view_proj("m_ShadowViewProj")
 		, m_light_direction("v_LightDirection")
 		, m_texture_res("f_textureresolution")
 		, m_shadow_strength("f_shadow_strength")
 		, m_time_of_day("f_timeofday")
 		, m_shadowfar("f_shadowfar")
 		, m_shadow_texture("ShadowMapSampler")
-		, m_perspective_zbias_vertex("zPerspectiveBias")
-		, m_perspective_zbias_pixel("zPerspectiveBias")
+		, m_perspective_zbias("zPerspectiveBias")
 		, m_cascade_count("cascadeCount")
 		, m_camera_world_position("cameraWorldPosition")
 		, m_world_view("mWorldView")
@@ -328,10 +328,6 @@ public:
 			int count = m_cascades.size();
 			m_cascade_count.set(&count, services);
 
-			core::matrix4 shadowViewProj = light.getCascade(0).getProjectionMatrix();
-			shadowViewProj *= light.getCascade(0).getViewMatrix();
-			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
-
 			f32 v_LightDirection[3];
 			light.getDirection().getAs3Values(v_LightDirection);
 			m_light_direction.set(v_LightDirection, services);
@@ -354,8 +350,7 @@ public:
 			m_shadow_texture.set(&TextureLayerID, services);
 
 			f32 zbias = shadow->getPerspectiveBiasZ();
-			m_perspective_zbias_vertex.set(&zbias, services);
-			m_perspective_zbias_pixel.set(&zbias, services);
+			m_perspective_zbias.set(&zbias, services);
 		}
 	}
 };

@@ -27,12 +27,8 @@ centroid varying vec2 varTexCoord;
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow uniforms
 	uniform vec3 v_LightDirection;
-	uniform float f_textureresolution;
-	uniform mat4 m_ShadowViewProj;
-	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform float f_timeofday;
-	uniform float zPerspectiveBias;
 
 	varying float cosLight;
 	varying float normalOffsetScale;
@@ -51,13 +47,6 @@ const float e = 2.718281828459;
 const float BS = 10.0;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-
-vec4 applyPerspectiveDistortion(in vec4 position)
-{
-	position /= position.w;
-	position.z *= zPerspectiveBias;
-	return position;
-}
 
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
