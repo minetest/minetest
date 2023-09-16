@@ -368,6 +368,10 @@ local function noise_params(setting)
 		setting = setting,
 
 		get_formspec = function(self, avail_w)
+			-- The "defaults" noise parameter flag doesn't reset a noise
+			-- setting to its default value, so we offer a regular reset button.
+			self.resettable = core.settings:has(setting.name)
+
 			local fs = "label[0,0.4;" .. get_label(setting) .. "]" ..
 					("button[%f,0;2.5,0.8;%s;%s]"):format(avail_w - 2.5, "edit_" .. setting.name, fgettext("Edit"))
 			return fs, 0.8

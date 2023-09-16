@@ -198,7 +198,6 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		local flags = ""
 		if index then
 			flags = default:sub(index)
-			default = default:sub(1, index - 3) -- Make sure no flags in single-line format
 		end
 		table.insert(values, flags)
 
