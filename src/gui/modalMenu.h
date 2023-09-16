@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "irr_ptr.h"
 #include "util/string.h"
+#ifdef __ANDROID__
+	#include <porting_android.h>
+#endif
 
 enum class PointerType {
 	Mouse,
@@ -59,8 +62,8 @@ public:
 	virtual bool OnEvent(const SEvent &event) { return false; };
 	virtual bool pausesGame() { return false; } // Used for pause menu
 #ifdef __ANDROID__
-	virtual bool getAndroidUIInput() { return false; }
-	bool hasAndroidUIInput();
+	virtual void getAndroidUIInput() {};
+	porting::AndroidDialogState getAndroidUIInputState();
 #endif
 
 	PointerType getPointerType() { return m_pointer_type; };

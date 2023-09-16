@@ -286,7 +286,7 @@ public:
 	core::rect<s32> getAbsoluteRect();
 
 #ifdef __ANDROID__
-	bool getAndroidUIInput();
+	void getAndroidUIInput();
 #endif
 
 protected:

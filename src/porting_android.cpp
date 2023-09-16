@@ -165,22 +165,41 @@ bool setSystemPaths()
 	return true;
 }
 
-void showInputDialog(const std::string &acceptButton, const std::string &hint,
-		const std::string &current, int editType)
+void showTextInputDialog(const std::string &hint, const std::string &current, int editType)
 {
-	jmethodID showdialog = jnienv->GetMethodID(nativeActivity, "showDialog",
-		"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
+	jmethodID showdialog = jnienv->GetMethodID(nativeActivity, "showTextInputDialog",
+			"(Ljava/lang/String;Ljava/lang/String;I)V");
 
 	FATAL_ERROR_IF(showdialog == nullptr,
-		"porting::showInputDialog unable to find Java showDialog method");
+			"porting::showTextInputDialog unable to find Java showTextInputDialog method");
 
-	jstring jacceptButton = jnienv->NewStringUTF(acceptButton.c_str());
 	jstring jhint         = jnienv->NewStringUTF(hint.c_str());
 	jstring jcurrent      = jnienv->NewStringUTF(current.c_str());
 	jint    jeditType     = editType;
 
 	jnienv->CallVoidMethod(app_global->activity->clazz, showdialog,
-			jacceptButton, jhint, jcurrent, jeditType);
+			jhint, jcurrent, jeditType);
+}
+
+void showComboBoxDialog(const std::string optionList[], s32 listSize, s32 selectedIdx)
+{
+	jmethodID showdialog = jnienv->GetMethodID(nativeActivity, "showSelectionInputDialog",
+			"([Ljava/lang/String;I)V");
+
+	FATAL_ERROR_IF(showdialog == nullptr,
+			"porting::showComboBoxDialog unable to find Java showSelectionInputDialog method");
+
+	jclass       jStringClass = jnienv->FindClass("java/lang/String");
+	jobjectArray jOptionList  = jnienv->NewObjectArray(listSize, jStringClass, NULL);
+	jint         jselectedIdx = selectedIdx;
+
+	for (s32 i = 0; i < listSize; i ++) {
+		jnienv->SetObjectArrayElement(jOptionList, i,
+				jnienv->NewStringUTF(optionList[i].c_str()));
+	}
+
+	jnienv->CallVoidMethod(app_global->activity->clazz, showdialog, jOptionList,
+			jselectedIdx);
 }
 
 void openURIAndroid(const char *url)
@@ -207,28 +226,51 @@ void shareFileAndroid(const std::string &path)
 	jnienv->CallVoidMethod(app_global->activity->clazz, url_open, jurl);
 }
 
-int getInputDialogState()
+AndroidDialogType getLastInputDialogType()
 {
-	jmethodID dialogstate = jnienv->GetMethodID(nativeActivity,
-			"getDialogState", "()I");
+	jmethodID lastdialogtype = jnienv->GetMethodID(nativeActivity,
+			"getLastDialogType", "()I");
 
-	FATAL_ERROR_IF(dialogstate == nullptr,
-		"porting::getInputDialogState unable to find Java getDialogState method");
+	FATAL_ERROR_IF(lastdialogtype == nullptr,
+			"porting::getLastInputDialogType unable to find Java getLastDialogType method");
 
-	return jnienv->CallIntMethod(app_global->activity->clazz, dialogstate);
+	int dialogType = jnienv->CallIntMethod(app_global->activity->clazz, lastdialogtype);
+	return static_cast<AndroidDialogType>(dialogType);
 }
 
-std::string getInputDialogValue()
+AndroidDialogState getInputDialogState()
+{
+	jmethodID inputdialogstate = jnienv->GetMethodID(nativeActivity,
+			"getInputDialogState", "()I");
+
+	FATAL_ERROR_IF(inputdialogstate == nullptr,
+			"porting::getInputDialogState unable to find Java getInputDialogState method");
+
+	int dialogState = jnienv->CallIntMethod(app_global->activity->clazz, inputdialogstate);
+	return static_cast<AndroidDialogState>(dialogState);
+}
+
+std::string getInputDialogMessage()
 {
 	jmethodID dialogvalue = jnienv->GetMethodID(nativeActivity,
-			"getDialogValue", "()Ljava/lang/String;");
+			"getDialogMessage", "()Ljava/lang/String;");
 
 	FATAL_ERROR_IF(dialogvalue == nullptr,
-		"porting::getInputDialogValue unable to find Java getDialogValue method");
+			"porting::getInputDialogMessage unable to find Java getDialogMessage method");
 
 	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
 			dialogvalue);
 	return readJavaString((jstring) result);
+}
+
+int getInputDialogSelection()
+{
+	jmethodID dialogvalue = jnienv->GetMethodID(nativeActivity, "getDialogSelection", "()I");
+
+	FATAL_ERROR_IF(dialogvalue == nullptr,
+			"porting::getInputDialogSelection unable to find Java getDialogSelection method");
+
+	return jnienv->CallIntMethod(app_global->activity->clazz, dialogvalue);
 }
 
 #ifndef SERVER
