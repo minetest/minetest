@@ -916,7 +916,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		local description_width = W - 2.625 - 2*0.7 - 2*0.15
+		local description_width = W - 2.625 - 2 * 0.7 - 2 * 0.15
 
 		local second_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
 		local third_base = "image_button[-2.4,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
