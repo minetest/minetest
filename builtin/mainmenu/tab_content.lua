@@ -142,7 +142,7 @@ local function get_formspec(tabview, name, tabdata)
 			end
 		end
 
-		table.insert_all(retval, {"textarea[7.1,2.4;8,3.1;;;", desc, "]"})
+		table.insert_all(retval, {"textarea[7.1,2.4;8,3.1;;;", core.formspec_escape(desc), "]"})
 
 		if core.may_modify_path(selected_pkg.path) then
 			table.insert_all(retval, {
