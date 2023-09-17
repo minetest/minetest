@@ -1198,8 +1198,14 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 			// override some material properties
 			video::SMaterial local_material = buf->getMaterial();
 			local_material.MaterialType = material.MaterialType;
-			local_material.BackfaceCulling = material.BackfaceCulling;
-			local_material.FrontfaceCulling = material.FrontfaceCulling;
+			// do not override culling if the original material renders both back
+			// and front faces in solid mode (e.g. plantlike)
+			// Transparent plants would still render shadows only from one side,
+			// but this conflicts with water which occurs much more frequently
+			if (is_transparent_pass || local_material.BackfaceCulling || local_material.FrontfaceCulling) {
+				local_material.BackfaceCulling = material.BackfaceCulling;
+				local_material.FrontfaceCulling = material.FrontfaceCulling;
+			}
 			local_material.BlendOperation = material.BlendOperation;
 			local_material.Lighting = false;
 			driver->setMaterial(local_material);
