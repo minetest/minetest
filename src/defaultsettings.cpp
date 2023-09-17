@@ -367,7 +367,6 @@ void set_default_settings()
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 	settings->setDefault("time_send_interval", "5");
 
-	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
 	settings->setDefault("creative_mode", "false");

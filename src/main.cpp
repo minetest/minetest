@@ -994,15 +994,15 @@ static bool determine_subgame(GameParams *game_params)
 		if (game_params->game_spec.isValid()) {
 			gamespec = game_params->game_spec;
 			infostream << "Using commanded gameid [" << gamespec.id << "]" << std::endl;
-		} else { // Otherwise we will be using "minetest"
-			gamespec = findSubgame(g_settings->get("default_game"));
-			infostream << "Using default gameid [" << gamespec.id << "]" << std::endl;
-			if (!gamespec.isValid()) {
-				errorstream << "Game specified in default_game ["
-				            << g_settings->get("default_game")
-				            << "] is invalid." << std::endl;
-				return false;
+		} else {
+			if (game_params->is_dedicated_server) {
+				// If this is a dedicated server and no gamespec has been specified,
+				// print a friendly error pointing to ContentDB.
+				errorstream << "To run a " PROJECT_NAME_C " server, you need to select a game using the '--gameid' argument." << std::endl
+				            << "Check out https://content.minetest.net for a selection of games to pick from and download." << std::endl;
 			}
+
+			return false;
 		}
 	} else { // World exists
 		std::string world_gameid = getWorldGameId(game_params->world_path, false);

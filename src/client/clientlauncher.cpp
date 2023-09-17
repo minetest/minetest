@@ -397,11 +397,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		spec.path = start_data.world_path;
 		spec.gameid = getWorldGameId(spec.path, true);
 		spec.name = _("[--world parameter]");
-
-		if (spec.gameid.empty()) {	// Create new
-			spec.gameid = g_settings->get("default_game");
-			spec.name += " [new]";
-		}
 	}
 
 	/* Show the GUI menu

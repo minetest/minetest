@@ -87,15 +87,8 @@ local function init_globals()
 	menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 	menudata.worldlist:set_sortmode("alphabetic")
 
-	local gameid = core.settings:get("menu_last_game")
-	local game = gameid and pkgmgr.find_by_gameid(gameid)
-	if not game then
-		gameid = core.settings:get("default_game") or "minetest"
-		game = pkgmgr.find_by_gameid(gameid)
-		core.settings:set("menu_last_game", gameid)
-	end
-
 	mm_game_theme.init()
+	mm_game_theme.reset()
 
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 15.5, y = 7.1}, {x = 0, y = 0})
@@ -126,12 +119,6 @@ local function init_globals()
 			return true
 		end,
 	})
-
-	-- In case the folder of the last selected game has been deleted,
-	-- display "Minetest" as a header
-	if tv_main.current_tab == "local" and not game then
-		mm_game_theme.reset()
-	end
 
 	ui.set_default("maintab")
 	check_new_version()

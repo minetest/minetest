@@ -29,8 +29,24 @@ local current_port = core.settings:get("port")
 
 -- Currently chosen game in gamebar for theming and filtering
 function current_game()
-	local last_game_id = core.settings:get("menu_last_game")
-	local game = pkgmgr.find_by_gameid(last_game_id)
+	local gameid = core.settings:get("menu_last_game")
+	local game = gameid and pkgmgr.find_by_gameid(gameid)
+	-- Fall back to first game installed if one exists.
+	if not game and #pkgmgr.games > 0 then
+
+		-- If devtest is the first game in the list and there is another
+		-- game available, pick the other game instead.
+		local picked_game
+		if pkgmgr.games[1].id == "devtest" and #pkgmgr.games > 1 then
+			picked_game = 2
+		else
+			picked_game = 1
+		end
+
+		game = pkgmgr.games[picked_game]
+		gameid = game.id
+		core.settings:set("menu_last_game", gameid)
+	end
 
 	return game
 end
@@ -63,16 +79,12 @@ function singleplayer_refresh_gamebar()
 		old_bar:delete()
 	end
 
-	local function game_buttonbar_button_handler(fields)
-		if fields.game_open_cdb then
-			local maintab = ui.find_by_name("maintab")
-			local dlg = create_store_dlg("game")
-			dlg:set_parent(maintab)
-			maintab:hide()
-			dlg:show()
-			return true
-		end
+	-- Hide gamebar if no games are installed
+	if #pkgmgr.games == 0 then
+		return false
+	end
 
+	local function game_buttonbar_button_handler(fields)
 		for _, game in ipairs(pkgmgr.games) do
 			if fields["game_btnbar_" .. game.id] then
 				apply_game(game)
@@ -108,6 +120,7 @@ function singleplayer_refresh_gamebar()
 
 	local plus_image = core.formspec_escape(defaulttexturedir .. "plus.png")
 	btnbar:add_button("game_open_cdb", "", plus_image, fgettext("Install games from ContentDB"))
+	return true
 end
 
 local function get_disabled_settings(game)
@@ -137,6 +150,15 @@ local function get_disabled_settings(game)
 end
 
 local function get_formspec(tabview, name, tabdata)
+
+	-- Point the player to ContentDB when no games are found
+	if #pkgmgr.games == 0 then
+		return table.concat({
+			"style[label_button;border=false]",
+			"button[2.75,1.5;10,1;label_button;", fgettext("You have no games installed."), "]",
+			"button[5.25,3.5;5,1.2;game_open_cdb;", fgettext("Install a game"), "]"})
+	end
+
 	local retval = ""
 
 	local index = filterlist.get_current_index(menudata.worldlist,
@@ -236,6 +258,15 @@ end
 local function main_button_handler(this, fields, name, tabdata)
 
 	assert(name == "local")
+
+	if fields.game_open_cdb then
+		local maintab = ui.find_by_name("maintab")
+		local dlg = create_store_dlg("game")
+		dlg:set_parent(maintab)
+		maintab:hide()
+		dlg:show()
+		return true
+	end
 
 	if this.dlg_create_world_closed_at == nil then
 		this.dlg_create_world_closed_at = 0
@@ -411,8 +442,9 @@ local function on_change(type, old_tab, new_tab)
 			apply_game(game)
 		end
 
-		singleplayer_refresh_gamebar()
-		ui.find_by_name("game_button_bar"):show()
+		if singleplayer_refresh_gamebar() then
+			ui.find_by_name("game_button_bar"):show()
+		end
 	else
 		menudata.worldlist:set_filtercriteria(nil)
 		local gamebar = ui.find_by_name("game_button_bar")

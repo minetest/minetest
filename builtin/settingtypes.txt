@@ -2194,10 +2194,6 @@ address (Server address) string
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
 
-#    Default game when creating a new world.
-#    This will be overridden when creating a world from the main menu.
-default_game (Default game) string minetest
-
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
