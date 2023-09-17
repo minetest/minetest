@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-08-24 23:51+0000\n"
-"Last-Translator: Emmily <Emmilyrose779@gmail.com>\n"
+"PO-Revision-Date: 2023-09-18 15:01+0000\n"
+"Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0\n"
+"X-Generator: Weblate 5.0.2\n"
 
 #: builtin/client/chatcommands.lua
 #, fuzzy
@@ -795,6 +795,10 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"instalita versio: $1\n"
+"nova version:$2\n"
+"Vizitu $3 por ekscii kiel akiri la plej novan version kaj resti ĝisdatigita "
+"pri funkcioj kaj korektoj."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -1348,19 +1352,19 @@ msgstr "Memaga pluigo ŝaltita"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Bloklimoj kaŝitaj"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Bloklimoj montritaj por ĉiuj blokoj"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Bloklimoj montritaj por nuna bloko"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Bloklimoj montritaj por proksimaj blokoj"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1372,7 +1376,7 @@ msgstr "Ĝisdatigo de vidpunkto ŝaltita"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+msgstr "Ne povas montri bloklimojn (malŝaltita de mod aŭ ludo)"
 
 #: src/client/game.cpp
 msgid "Change Password"
