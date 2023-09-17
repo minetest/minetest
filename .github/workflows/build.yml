@@ -177,7 +177,6 @@ jobs:
         run: |
            EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
         env:
-          NO_MINETEST_GAME: 1
           NO_PACKAGE: 1
 
   win64:
@@ -195,7 +194,6 @@ jobs:
         run: |
           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
         env:
-          NO_MINETEST_GAME: 1
           NO_PACKAGE: 1
 
   msvc:
