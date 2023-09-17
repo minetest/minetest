@@ -47,13 +47,25 @@ local screenshot_downloaded = {}
 -- Filter
 local search_string = ""
 local cur_page = 1
-local num_per_page = 5
+local num_per_page = 12
+if PLATFORM == "Android" then
+	num_per_page = 8
+end
 local filter_type = 1
 local filter_types_titles = {
-	fgettext("All packages"),
+	fgettext("All"),
 	fgettext("Games"),
 	fgettext("Mods"),
 	fgettext("Texture packs"),
+	fgettext("Installed")
+}
+
+local filter_types_type = {
+	"all",
+	"game",
+	"mod",
+	"txp",
+	"installed"
 }
 
 -- Automatic package installation
@@ -62,16 +74,11 @@ local auto_install_spec = nil
 local number_downloading = 0
 local download_queue = {}
 
-local filter_types_type = {
-	nil,
-	"game",
-	"mod",
-	"txp",
-}
-
 local REASON_NEW = "new"
 local REASON_UPDATE = "update"
 local REASON_DEPENDENCY = "dependency"
+
+local texdir = core.formspec_escape(defaulttexturedir)
 
 
 local function get_download_url(package, reason)
@@ -81,9 +88,62 @@ local function get_download_url(package, reason)
 	if reason then
 		ret = ret .. "?reason=" .. reason
 	end
+	print(dump(package))
 	return ret
 end
 
+local function get_file_extension(path)
+	local parts = path:split(".")
+	return parts[#parts]
+end
+
+local function get_screenshot(package)
+	if not package.thumbnail then
+		return defaulttexturedir .. "no_screenshot.png"
+	elseif screenshot_downloading[package.thumbnail] then
+		return defaulttexturedir .. "loading_screenshot.png"
+	end
+
+	-- Get tmp screenshot path
+	local ext = get_file_extension(package.thumbnail)
+	local filepath = screenshot_dir .. DIR_DELIM ..
+		("%s-%s-%s.%s"):format(package.type, package.author, package.name, ext)
+
+	-- Return if already downloaded
+	local file = io.open(filepath, "r")
+	if file then
+		file:close()
+		return filepath
+	end
+
+	-- Show error if we've failed to download before
+	if screenshot_downloaded[package.thumbnail] then
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	-- Download
+
+	local function download_screenshot(params)
+		return core.download_file(params.url:gsub("/1/", "/2/"), params.dest)
+	end
+	local function callback(success)
+		screenshot_downloading[package.thumbnail] = nil
+		screenshot_downloaded[package.thumbnail] = true
+		if not success then
+			core.log("warning", "Screenshot download failed for some reason")
+		end
+		ui.update()
+	end
+	if core.handle_async(download_screenshot,
+			{ dest = filepath, url = package.thumbnail }, callback) then
+		screenshot_downloading[package.thumbnail] = true
+	else
+		core.log("error", "ERROR: async event failed")
+		return defaulttexturedir .. "error_screenshot.png"
+	end
+
+	return defaulttexturedir .. "loading_screenshot.png"
+end
 
 local function download_and_extract(param)
 	local package = param.package
@@ -439,7 +499,7 @@ function install_dialog.get_formspec()
 		"container_end[]",
 	}
 
-	return table.concat(formspec)
+	return table.concat(formspec, "")
 end
 
 function install_dialog.handle_submit(this, fields)
@@ -491,7 +551,6 @@ function install_dialog.create(package, raw_deps)
 			install_dialog.handle_submit,
 			nil)
 end
-
 
 local confirm_overwrite = {}
 function confirm_overwrite.get_formspec()
@@ -574,58 +633,178 @@ local function install_or_update_package(this, package)
 	end
 end
 
+package_dialog = {}
 
-local function get_file_extension(path)
-	local parts = path:split(".")
-	return parts[#parts]
+function package_dialog.get_formspec(dialogdata)
+	store.update_paths()
+
+	local W = 16.2
+	local H = 10
+
+	local package = store.packages[dialogdata.id]
+
+	local base_url = core.settings:get("contentdb_url")
+	local url = base_url.."/api/packages/"..package.url_part
+
+	local response = http.fetch_sync({ url = url })
+	assert(response.succeeded, "Unstable internet connection?")
+
+	local package_details = core.parse_json(response.data)
+	print(dump(package_details))
+
+	local stuff = core.formspec_escape(
+		("by %s  —  %d downloads  —  +NaN/NaN/-NaN"):format(package.author, package_details.downloads))
+
+	-- example data before CDB implements this
+	local example_labels = {
+		{color = "#99CCFF", text = "Work in progress"},
+		{color = "#FF8800", text = "Deprecated"},
+		{color = "#25C191", text = "Featured!"},
+		{color = "#6389FF", text = "Recently updated"}
+	}
+	local labeldata = example_labels[math.random(1, #example_labels)]
+
+	local custom_label = ""
+	if labeldata then
+		custom_label = "  —  " .. minetest.colorize(labeldata.color, labeldata.text)
+	end
+
+	local fs = {
+		"formspec_version[5]",
+		"size[",W,",",H,"]",
+		"padding[-0.01,-0.01]",
+
+		"style_type[label;font_size=+24;font=bold]",
+		"label[0.5,0.9;", package.title, "]",
+		"style_type[label;font_size=+0;font=regular]",
+		"textarea[0.5,1.6;14,1;;;", package.short_description, "]",
+		"label[0.5,3;", stuff, custom_label, "]",
+
+		"image[0.5,3.5;5,3.25;", get_screenshot(package), "]",
+		"image[5.6,3.5;5,3.25;", get_screenshot(package), "]",
+		"image[10.7,3.5;5,3.25;", get_screenshot(package), "]",
+
+		"button[0.5,8.75;4.5,1;back;", fgettext("Back to package list"), "]",
+		"button[5.85,7.25;4.5,1;view;", fgettext("View in web browser"), "]"
+	}
+
+	local function write(...) table.insert_all(fs, {...}) end
+
+	local left_base = "button[10.7,7.25;5,1;"
+
+	if package.downloading then
+		write("animated_image[-1.7,-0.15;1,1;downloading;", texdir, "cdb_downloading.png", ";3;400;]")
+	elseif package.queued then
+		write(left_base,"cdb_queued.png;queued;]")
+	elseif not package.path then
+		write(
+			"style[install;bgcolor=#71aa34]",
+			left_base, "install;", fgettext("Install"), "]"
+		)
+	else
+		if package.installed_release < package.release then
+			-- The install action also handles updating
+			write(
+				"style[install;bgcolor=#28ccdf]",
+				"button[10.7,8.5;5,1;install;", fgettext("Update"), "]"
+			)
+		end
+
+		write(
+			"style[uninstall;bgcolor=#a93b3b]",
+			left_base, "uninstall;", fgettext("Uninstall"), "]"
+		)
+	end
+
+	return table.concat(fs)
 end
 
-local function get_screenshot(package)
-	if not package.thumbnail then
-		return defaulttexturedir .. "no_screenshot.png"
-	elseif screenshot_downloading[package.thumbnail] then
-		return defaulttexturedir .. "loading_screenshot.png"
-	end
+function package_dialog.handle_submit(this, fields)
+	local package = store.packages[this.data.id]
 
-	-- Get tmp screenshot path
-	local ext = get_file_extension(package.thumbnail)
-	local filepath = screenshot_dir .. DIR_DELIM ..
-		("%s-%s-%s.%s"):format(package.type, package.author, package.name, ext)
-
-	-- Return if already downloaded
-	local file = io.open(filepath, "r")
-	if file then
-		file:close()
-		return filepath
-	end
-
-	-- Show error if we've failed to download before
-	if screenshot_downloaded[package.thumbnail] then
-		return defaulttexturedir .. "error_screenshot.png"
-	end
-
-	-- Download
-
-	local function download_screenshot(params)
-		return core.download_file(params.url, params.dest)
-	end
-	local function callback(success)
-		screenshot_downloading[package.thumbnail] = nil
-		screenshot_downloaded[package.thumbnail] = true
-		if not success then
-			core.log("warning", "Screenshot download failed for some reason")
+	if fields.install then
+		local install_parent
+		if package.type == "mod" then
+			install_parent = core.get_modpath()
+		elseif package.type == "game" then
+			install_parent = core.get_gamepath()
+		elseif package.type == "txp" then
+			install_parent = core.get_texturepath()
+		else
+			error("Unknown package type: " .. package.type)
 		end
-		ui.update()
-	end
-	if core.handle_async(download_screenshot,
-			{ dest = filepath, url = package.thumbnail }, callback) then
-		screenshot_downloading[package.thumbnail] = true
-	else
-		core.log("error", "ERROR: async event failed")
-		return defaulttexturedir .. "error_screenshot.png"
+
+		local function on_confirm()
+			local deps = false and get_raw_dependencies(package)
+			if deps and has_hard_deps(deps) then
+				local dlg = install_dialog.create(package, deps)
+				dlg:set_parent(this)
+				this:hide()
+				dlg:show()
+			else
+				queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
+			end
+		end
+
+		if package.type == "mod" and #pkgmgr.games == 0 then
+			local dlg = messagebox("install_game",
+				fgettext("You need to install a game before you can install a mod"))
+			dlg:set_parent(this)
+			this:hide()
+			dlg:show()
+		elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+			local dlg = confirm_overwrite.create(package, on_confirm)
+			dlg:set_parent(this)
+			this:hide()
+			dlg:show()
+		else
+			on_confirm()
+		end
+
+		return true
 	end
 
-	return defaulttexturedir .. "loading_screenshot.png"
+	if fields.uninstall then
+		local dlg = create_delete_content_dlg(package)
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.view then
+		local url = ("%s/packages/%s?protocol_version=%d"):format(
+				core.settings:get("contentdb_url"), package.url_part,
+				core.get_max_supp_proto())
+		core.open_url(url)
+		return true
+	end
+
+	if fields.back then
+		this:delete()
+		return true
+	end
+
+	return false
+end
+
+function package_dialog.create(package, id)
+	local retval = dialog_create("dlg_content_package",
+			package_dialog.get_formspec,
+			package_dialog.handle_submit,
+			nil)
+
+	local base_url = core.settings:get("contentdb_url")
+	local response = http.fetch_sync({
+		url = base_url .. "/api/packages/" .. package.url_part
+	})
+
+	retval.data.id = id
+	retval.data.package_meta = core.parse_json(response.data)
+
+	print(dump(package))
+
+	return retval
 end
 
 local function fetch_pkgs()
@@ -887,24 +1066,47 @@ function store.filter_packages(query)
 	store.packages = {}
 	for _, package in pairs(store.packages_full) do
 		if (query == "" or matches_keywords(package)) and
-				(filter_type == 1 or package.type == filter_types_type[filter_type]) then
+				(filter_type == 1 or
+				(filter_type == 5 and package.path) or
+				(package.type == filter_types_type[filter_type])) then
 			store.packages[#store.packages + 1] = package
 		end
 	end
 end
 
-local function get_info_formspec(text)
-	local H = 9.5
-	return table.concat({
-		"formspec_version[6]",
-		"size[15.75,9.5]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
+local grid_width = 4
 
-		"label[4,4.35;", text, "]",
-		"container[0,", H - 0.8 - 0.375, "]",
-		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
-		"container_end[]",
-	})
+local function getCell(i)
+	return
+		((i) % grid_width),				-- x
+		math.floor((i) / grid_width)	-- y
+end
+
+local button_tabs = {
+	{"all", "All"},
+	{"mod", "Mods"},
+	{"game", "Games"},
+	{"txp", "Texture Packs"},
+	{"installed", "Installed"},
+}
+
+local W = 21.25 --winfo.max_formspec_size.x
+local H = 13.25 --winfo.max_formspec_size.y
+
+if PLATFORM == "Android" then
+	H = 10
+end
+
+local function get_info_formspec(text)
+	return table.concat{
+		"formspec_version[6]",
+		"size[",W,",",H,"]",
+		"padding[-0.01,-0.01]",
+
+		"style[lbl_message;border=false;font_size=32]",
+		"button[0,4.35;",W,",1;lbl_message;", text, "]",
+		"button[0.5,",H-1.25,";4.5,1;back;", fgettext("Back to Main Menu"), "]",
+	}
 end
 
 function store.get_formspec(dlgdata)
@@ -923,155 +1125,99 @@ function store.get_formspec(dlgdata)
 		cur_page = 1
 	end
 
-	local W = 15.75
-	local H = 9.5
-	local formspec = {
-		"formspec_version[6]",
-		"size[15.75,9.5]",
-		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
+	local fs = {
+		"formspec_version[5]",
+		"size[",W,",",H,"]",
+		"padding[-0.01,-0.01]",
 
-		"style[status,downloading,queued;border=false]",
+		"button[0.5,",H-1.25,";4.5,1;back;", fgettext("Back to Main Menu"), "]",
 
-		"container[0.375,0.375]",
-		"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
-		"field_enter_after_edit[search_string;true]",
-		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
-		"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
-		"dropdown[9.175,0;2.7875,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
-		"container_end[]",
+		"container[",(W-6)/2,",",H-1.25,"]",
+		"image_button[0,0;1,1;", texdir, "start_icon.png;pstart;]",
+		"image_button[1,0;1,1;", texdir, "prev_icon.png;pback;]",
 
-		-- Page nav buttons
-		"container[0,", H - 0.8 - 0.375, "]",
-		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
-
-		"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-		"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
-		"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
 		"style[pagenum;border=false]",
-		"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-		"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
-		"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
+		"button[2,0;2,1;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+		"image_button[4,0;1,1;", texdir, "next_icon.png;pnext;]",
+		"image_button[5,0;1,1;", texdir, "end_icon.png;pend;]",
 		"container_end[]",
 
+		"container[13,0.25]",
+		"field[0,0.05;6,0.9;search_string;;", core.formspec_escape(search_string), "]",
+		"field_close_on_enter[search_string;false]",
+		"image_button[5.75,0;1,1;", texdir, "search.png", ";search;]",
+		"image_button[6.75,0;1,1;", texdir, "clear.png", ";clear;]",
 		"container_end[]",
+
+		"style[status;border=false]"
 	}
 
-	if number_downloading > 0 then
-		formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;downloading;"
-		if #download_queue > 0 then
-			formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
-		else
-			formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+	local function write(...) table.insert_all(fs, {...}) end
+
+	local num_avail_updates = 0
+	for i=1, #store.packages_full do
+		local package = store.packages_full[i]
+		if package.path and package.installed_release < package.release and
+				not (package.downloading or package.queued) then
+			num_avail_updates = num_avail_updates + 1
 		end
-		formspec[#formspec + 1] = "]"
+	end
+
+	write("button[", W-5, ",", H-1.25, ";4.5,1;")
+	if num_avail_updates == 0 then
+		write("status;", fgettext("No updates"), "]")
 	else
-		local num_avail_updates = 0
-		for i=1, #store.packages_full do
-			local package = store.packages_full[i]
-			if package.path and package.installed_release < package.release and
-					not (package.downloading or package.queued) then
-				num_avail_updates = num_avail_updates + 1
-			end
-		end
-
-		if num_avail_updates == 0 then
-			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;status;"
-			formspec[#formspec + 1] = fgettext("No updates")
-			formspec[#formspec + 1] = "]"
-		else
-			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;update_all;"
-			formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
-			formspec[#formspec + 1] = "]"
-		end
+		write("update_all;", fgettext("Update All [$1]", num_avail_updates), "]")
 	end
 
-	if #store.packages == 0 then
-		formspec[#formspec + 1] = "label[4,4.75;"
-		formspec[#formspec + 1] = fgettext("No results")
-		formspec[#formspec + 1] = "]"
-	end
+	write("container[0.5,0.25]")
+	for i = 1, #filter_types_type, 1 do
+		write(
+			"button[", ((i-1)*2.5), ",0;2.5,0.9;",
+			"btn_filter_", filter_types_type[i], ";", filter_types_titles[i], "]"
+		)
 
-	-- download/queued tooltips always have the same message
-	local tooltip_colors = ";#dff6f5;#302c2e]"
-	formspec[#formspec + 1] = "tooltip[downloading;" .. fgettext("Downloading...") .. tooltip_colors
-	formspec[#formspec + 1] = "tooltip[queued;" .. fgettext("Queued") .. tooltip_colors
+		if filter_type == i then
+			write("box[", ((i-1)*2.5), ",0.9;2.5,0.1;#aaa]")
+		end
+	end
+	write("container_end[]")
 
 	local start_idx = (cur_page - 1) * num_per_page + 1
 	for i=start_idx, math.min(#store.packages, start_idx+num_per_page-1) do
 		local package = store.packages[i]
-		local container_y = (i - start_idx) * 1.375 + (2*0.375 + 0.8)
-		formspec[#formspec + 1] = "container[0.375,"
-		formspec[#formspec + 1] = container_y
-		formspec[#formspec + 1] = "]"
 
-		-- image
-		formspec[#formspec + 1] = "image[0,0;1.5,1;"
-		formspec[#formspec + 1] = core.formspec_escape(get_screenshot(package))
-		formspec[#formspec + 1] = "]"
+		local x, y = getCell(i - start_idx)
 
-		-- title
-		formspec[#formspec + 1] = "label[1.875,0.1;"
-		formspec[#formspec + 1] = core.formspec_escape(
-				core.colorize(mt_color_green, package.title) ..
-				core.colorize("#BFBFBF", " by " .. package.author))
-		formspec[#formspec + 1] = "]"
-
-		-- buttons
-		local description_width = W - 2.625 - 2 * 0.7 - 2 * 0.15
-
-		local second_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
-		local third_base = "image_button[-2.4,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
-		formspec[#formspec + 1] = "container["
-		formspec[#formspec + 1] = W - 0.375*2
-		formspec[#formspec + 1] = ",0.1]"
-
-		if package.downloading then
-			formspec[#formspec + 1] = "animated_image[-1.7,-0.15;1,1;downloading;"
-			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
-			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
-		elseif package.queued then
-			formspec[#formspec + 1] = second_base
-			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
-		elseif not package.path then
-			local elem_name = "install_" .. i .. ";"
-			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
-			formspec[#formspec + 1] = second_base .. "cdb_add.png;" .. elem_name .. "]"
-			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") .. tooltip_colors
-		else
-			if package.installed_release < package.release then
-				-- The install_ action also handles updating
-				local elem_name = "install_" .. i .. ";"
-				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#28ccdf]"
-				formspec[#formspec + 1] = third_base .. "cdb_update.png;" .. elem_name .. "]"
-				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") .. tooltip_colors
-
-				description_width = description_width - 0.7 - 0.15
-			end
-
-			local elem_name = "uninstall_" .. i .. ";"
-			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
-			formspec[#formspec + 1] = second_base .. "cdb_clear.png;" .. elem_name .. "]"
-			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
+		local title = package.title:sub(1,20)
+		if package.title:len() > 20 then
+			title = title .. "..."
 		end
 
-		local web_elem_name = "view_" .. i .. ";"
-		formspec[#formspec + 1] = "image_button[-0.7,0;0.7,0.7;" ..
-			core.formspec_escape(defaulttexturedir) .. "cdb_viewonline.png;" .. web_elem_name .. "]"
-		formspec[#formspec + 1] = "tooltip[" .. web_elem_name ..
-			fgettext("View more information in a web browser") .. tooltip_colors
-		formspec[#formspec + 1] = "container_end[]"
+		write(
+			"container[", (0.25+x*5.25), ",", (1.5+y*3.5), "]",
+			"style[btn_test;border=false]",
+			"image_button[0,0;5,3.25;", get_screenshot(package), ";showpkg_", i, ";]",
+			-- could have been "box[0,2;5,1.25;#000]" but box[] isn't throughclickable
+			"image[0,0;5,3.25;", texdir, "cdb_trans.png]",
+			"style[*;font_size=+4;font=bold]",
+			"label[0.15,2.3;", core.formspec_escape(title), "]",
+			"style[*;font_size=+0;font=regular]",
+			"label[0.15,2.9;", core.formspec_escape(package.author), "]"
+		)
 
-		-- description
-		formspec[#formspec + 1] = "textarea[1.855,0.3;"
-		formspec[#formspec + 1] = tostring(description_width)
-		formspec[#formspec + 1] = ",0.8;;;"
-		formspec[#formspec + 1] = core.formspec_escape(package.short_description)
-		formspec[#formspec + 1] = "]"
+		if package.path then
+			if package.installed_release < package.release then
+				write("image[3.5,2.4;1,1;", texdir, "cdb_update.png]")
+			end
 
-		formspec[#formspec + 1] = "container_end[]"
+			write("image[4.15,2.4;1,1;", texdir, "cdb_installed.png]")
+		end
+
+		write("container_end[]")
 	end
 
-	return table.concat(formspec)
+	return table.concat(fs)
 end
 
 function store.handle_submit(this, fields)
@@ -1131,6 +1277,20 @@ function store.handle_submit(this, fields)
 		end
 	end
 
+	for i = 1, #button_tabs, 1 do
+		local tab = button_tabs[i]
+		if fields["btn_filter_"..tab[1]] then
+			print(tab[1])
+
+			filter_type = table.indexof(filter_types_type, tab[1])
+
+			print(filter_type)
+			cur_page = 1
+			store.filter_packages(search_string)
+			return true
+		end
+	end
+
 	if fields.update_all then
 		for i=1, #store.packages_full do
 			local package = store.packages_full[i]
@@ -1148,24 +1308,11 @@ function store.handle_submit(this, fields)
 		local package = store.packages[i]
 		assert(package)
 
-		if fields["install_" .. i] then
-			install_or_update_package(this, package)
-			return true
-		end
-
-		if fields["uninstall_" .. i] then
-			local dlg = create_delete_content_dlg(package)
+		if fields["showpkg_"..i] then
+			local dlg = package_dialog.create(package, i)
 			dlg:set_parent(this)
 			this:hide()
 			dlg:show()
-			return true
-		end
-
-		if fields["view_" .. i] then
-			local url = ("%s/packages/%s?protocol_version=%d"):format(
-					core.settings:get("contentdb_url"), package.url_part,
-					core.get_max_supp_proto())
-			core.open_url(url)
 			return true
 		end
 	end
