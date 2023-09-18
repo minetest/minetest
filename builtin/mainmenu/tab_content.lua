@@ -86,7 +86,7 @@ local function get_formspec(tabview, name, tabdata)
 		local info = core.get_content_info(selected_pkg.path)
 		local desc = fgettext("No package description available")
 		if info.description and info.description:trim() ~= "" then
-			desc = info.description
+			desc = core.formspec_escape(info.description)
 		end
 
 		local title_and_name
@@ -142,7 +142,7 @@ local function get_formspec(tabview, name, tabdata)
 			end
 		end
 
-		table.insert_all(retval, {"textarea[7.1,2.4;8,3.1;;;", core.formspec_escape(desc), "]"})
+		table.insert_all(retval, {"textarea[7.1,2.4;8,3.1;;;", desc, "]"})
 
 		if core.may_modify_path(selected_pkg.path) then
 			table.insert_all(retval, {
