@@ -294,7 +294,6 @@ static void drawQuad(video::SColor color, video::ITexture *texture, video::IVide
 	auto &material = quad.getMaterial();
 	material.MaterialType = video::EMT_SOLID;
 	material.TextureLayers[0].Texture = texture;
-	material.ZBuffer = video::E_COMPARISON_FUNC::ECFN_DISABLED;
 	quad.render(driver);
 }
 

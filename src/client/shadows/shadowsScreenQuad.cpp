@@ -23,6 +23,7 @@ shadowScreenQuad::shadowScreenQuad(video::SColor color)
 {
 	Material.Wireframe = false;
 	Material.Lighting = false;
+	Material.ZBuffer = video::ECFN_DISABLED;
 
 	Vertices[0] = video::S3DVertex(
 			-1.0f, -1.0f, 0.0f, 0, 0, 1, color, 0.0f, 1.0f);
