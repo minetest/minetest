@@ -433,13 +433,13 @@
 
 #    Maximum distance to render shadows.
 #    type: float min: 10 max: 1000
-# shadow_map_max_distance = 140.0
+# shadow_map_max_distance = 200.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
 #    Bigger numbers create better shadows but it is also more expensive.
 #    type: int min: 128 max: 8192
-# shadow_map_texture_size = 2048
+# shadow_map_texture_size = 1024
 
 #    Sets shadow texture quality to 32 bits.
 #    On false, 16 bits texture will be used.
@@ -455,7 +455,8 @@
 #    Define shadow filtering quality.
 #    This simulates the soft shadows effect by applying a PCF or Poisson disk
 #    but also uses more resources.
-#    type: enum values: 0, 1, 2
+#    Value of 1 enables fast bilinear filter
+#    type: enum values: 0, 1, 2, 3
 # shadow_filters = 1
 
 #    Enable colored shadows.
@@ -466,9 +467,9 @@
 #    Spread a complete update of shadow map over given amount of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
-#    Minimum value: 1; maximum value: 16
-#    type: int min: 1 max: 16
-# shadow_update_frames = 8
+#    Minimum value: 1; maximum value: 64
+#    type: int min: 1 max: 64
+# shadow_update_frames = 16 
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.

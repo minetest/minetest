@@ -273,13 +273,13 @@ void set_default_settings()
 	// Effects Shadows
 	settings->setDefault("enable_dynamic_shadows", "false");
 	settings->setDefault("shadow_strength_gamma", "1.0");
-	settings->setDefault("shadow_map_max_distance", "140.0");
-	settings->setDefault("shadow_map_texture_size", "2048");
+	settings->setDefault("shadow_map_max_distance", "200.0");
+	settings->setDefault("shadow_map_texture_size", "1024");
 	settings->setDefault("shadow_map_texture_32bit", "true");
 	settings->setDefault("shadow_map_color", "false");
 	settings->setDefault("shadow_filters", "1");
 	settings->setDefault("shadow_poisson_filter", "true");
-	settings->setDefault("shadow_update_frames", "8");
+	settings->setDefault("shadow_update_frames", "16");
 	settings->setDefault("shadow_soft_radius", "5.0");
 	settings->setDefault("shadow_sky_body_orbit_tilt", "0.0");
 
