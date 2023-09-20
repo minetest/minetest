@@ -65,9 +65,33 @@ public:
 	}
 };
 
-static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
+template <bool IS_A8R8G8B8>
+void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 {
+	void *src_data = src->getData();
 	core::dimension2d<u32> dim = src->getDimension();
+	u32 src_pitch = src->getPitch();
+
+	auto get_pixel = [src, src_data, dim](u32 x, u32 y) -> video::SColor {
+		if constexpr (IS_A8R8G8B8) {
+			if (x >= dim.Width || y >= dim.Height)
+				return video::SColor(0);
+			return reinterpret_cast<u32 *>(src_data)[y*dim.Width + x];
+		} else {
+			return src->getPixel(x, y);
+		}
+	};
+	auto set_pixel = [src, src_data, src_pitch, dim](u32 x, u32 y, video::SColor color) {
+		if constexpr (IS_A8R8G8B8) {
+			if (x >= dim.Width || y >= dim.Height)
+				return;
+			u32 *dest = reinterpret_cast<u32 *>(
+					reinterpret_cast<u8 *>(src_data) + (y * src_pitch) + (x << 2));
+			*dest = color.color;
+		} else {
+			src->setPixel(x, y, color);
+		}
+	};
 
 	Bitmap bitmap(dim.Width, dim.Height);
 
@@ -75,7 +99,7 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 	// Note: loop y around x for better cache locality.
 	for (u32 ctry = 0; ctry < dim.Height; ctry++)
 	for (u32 ctrx = 0; ctrx < dim.Width; ctrx++) {
-		if (src->getPixel(ctrx, ctry).getAlpha() > threshold)
+		if (get_pixel(ctrx, ctry).getAlpha() > threshold)
 			bitmap.set(ctrx, ctry);
 	}
 
@@ -114,7 +138,7 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 
 			// Add RGB values weighted by alpha IF the pixel is opaque, otherwise
 			// use full weight since we want to propagate colors.
-			video::SColor d = src->getPixel(sx, sy);
+			video::SColor d = get_pixel(sx, sy);
 			u32 a = d.getAlpha() <= threshold ? 255 : d.getAlpha();
 			ss += a;
 			sr += a * d.getRed();
@@ -124,11 +148,11 @@ static void imageCleanTransparentWithInlining(video::IImage *src, u32 threshold)
 
 		// Set pixel to average weighted by alpha
 		if (ss > 0) {
-			video::SColor c = src->getPixel(ctrx, ctry);
+			video::SColor c = get_pixel(ctrx, ctry);
 			c.setRed(sr / ss);
 			c.setGreen(sg / ss);
 			c.setBlue(sb / ss);
-			src->setPixel(ctrx, ctry, c);
+			set_pixel(ctrx, ctry, c);
 			newmap.set(ctrx, ctry);
 		}
 	}
@@ -161,7 +185,10 @@ void imageCleanTransparent(video::IImage *src, u32 threshold)
 {
 	TimeTaker tt("imageCleanTransparent", nullptr, PRECISION_MICRO);
 
-	imageCleanTransparentWithInlining(src, threshold);
+	if (src->getColorFormat() == video::ECF_A8R8G8B8)
+		imageCleanTransparentWithInlining<true>(src, threshold);
+	else
+		imageCleanTransparentWithInlining<false>(src, threshold);
 
 	u64 t = tt.stop(true);
 	static thread_local u64 s_t_sum = 0;
