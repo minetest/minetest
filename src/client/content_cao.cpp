@@ -357,7 +357,6 @@ bool GenericCAO::collideWithObjects() const
 
 void GenericCAO::initialize(const std::string &data)
 {
-	infostream<<"GenericCAO: Got init data"<<std::endl;
 	processInitData(data);
 
 	m_enable_shaders = g_settings->getBool("enable_shaders");
@@ -393,8 +392,7 @@ void GenericCAO::processInitData(const std::string &data)
 	}
 
 	const u8 num_messages = readU8(is);
-
-	for (int i = 0; i < num_messages; i++) {
+	for (u8 i = 0; i < num_messages; i++) {
 		std::string message = deSerializeString32(is);
 		processMessage(message);
 	}
@@ -1704,8 +1702,6 @@ void GenericCAO::processMessage(const std::string &data)
 		if (expire_visuals) {
 			expireVisuals();
 		} else {
-			infostream << "GenericCAO: properties updated but expiring visuals"
-				<< " not necessary" << std::endl;
 			if (textures_changed) {
 				// don't update while punch texture modifier is active
 				if (m_reset_textures_timer < 0)

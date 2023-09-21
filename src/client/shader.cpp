@@ -488,8 +488,6 @@ u32 ShaderSource::getShader(const std::string &name,
 u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		MaterialType material_type, NodeDrawType drawtype)
 {
-	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
-
 	// Empty name means shader 0
 	if (name.empty()) {
 		infostream<<"getShaderIdDirect(): name is empty"<<std::endl;

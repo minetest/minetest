@@ -195,16 +195,7 @@ void RenderingEngine::cleanupMeshCache()
 
 bool RenderingEngine::setupTopLevelWindow()
 {
-	// FIXME: It would make more sense for there to be a switch of some
-	// sort here that would call the correct toplevel setup methods for
-	// the environment Minetest is running in.
-
-	/* Setting general properties for the top level window */
-	verbosestream << "Client: Configuring general top level window properties"
-			<< std::endl;
-	bool result = setWindowIcon();
-
-	return result;
+	return setWindowIcon();
 }
 
 bool RenderingEngine::setWindowIcon()

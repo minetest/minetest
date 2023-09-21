@@ -412,7 +412,9 @@ queue_full_break:
 		if (d > full_d_max) {
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0f;
-			infostream << "Server: Player " << m_name << ", RemoteClient " << peer_id << ": full map send completed after " << m_map_send_completion_timer << "s, restarting" << std::endl;
+			infostream << "Server: Player " << m_name << ", peer_id=" << peer_id
+				<< ": full map send completed after " << m_map_send_completion_timer
+				<< "s, restarting" << std::endl;
 			m_map_send_completion_timer = 0.0f;
 		} else {
 			if (nearest_sent_d != -1)

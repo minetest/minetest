@@ -29,9 +29,6 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
-			<<name<<"\""<<std::endl;
-
 	// Get core.registered_entities[name]
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_entities");
@@ -78,8 +75,6 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "scriptapi_luaentity_activate: id=" << id << std::endl;
-
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get core.luaentities[id]
@@ -106,8 +101,6 @@ void ScriptApiEntity::luaentity_Deactivate(u16 id, bool removal)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "scriptapi_luaentity_deactivate: id=" << id << std::endl;
-
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get the entity
@@ -132,8 +125,6 @@ void ScriptApiEntity::luaentity_Remove(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "scriptapi_luaentity_rm: id=" << id << std::endl;
-
 	// Get core.luaentities table
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "luaentities");
@@ -151,8 +142,6 @@ void ScriptApiEntity::luaentity_Remove(u16 id)
 std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -216,8 +205,6 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 		ServerActiveObject *self, ObjectProperties *prop, const std::string &entity_name)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
 
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
