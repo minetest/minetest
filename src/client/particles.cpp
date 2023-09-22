@@ -166,7 +166,7 @@ void Particle::render()
 {
 	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	driver->setTransform(video::ETS_WORLD, core::matrix4());
 
 	u16 indices[] = {0,1,2, 2,3,0};
 	driver->drawVertexPrimitiveList(m_vertices, 4,
@@ -251,9 +251,6 @@ void Particle::step(float dtime)
 	// Update model
 	updateVertices();
 
-	// Update position -- see #10398
-	v3s16 camera_offset = m_env->getCameraOffset();
-	setPosition(m_pos*BS - intToFloat(camera_offset, BS));
 }
 
 void Particle::updateLight()
@@ -327,6 +324,9 @@ void Particle::updateVertices()
 	// particle position is now handled by step()
 	m_box.reset(v3f());
 
+	// Update position -- see #10398
+	v3s16 camera_offset = m_env->getCameraOffset();
+
 	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
@@ -336,6 +336,7 @@ void Particle::updateVertices()
 			vertex.Pos.rotateYZBy(m_player->getPitch());
 			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
+		vertex.Pos += m_pos * BS - intToFloat(camera_offset, BS);
 		m_box.addInternalPoint(vertex.Pos);
 	}
 }
