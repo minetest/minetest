@@ -353,13 +353,13 @@ public:
 		if (!inventory_overlay.empty())
 			cache_key += ":" + inventory_overlay;
 
-		infostream << "Lazily creating item texture and mesh for \""
-				<< cache_key << "\""<<std::endl;
-
 		// Skip if already in cache
 		auto it = m_clientcached.find(cache_key);
 		if (it != m_clientcached.end())
 			return it->second.get();
+
+		infostream << "Lazily creating item texture and mesh for \""
+				<< cache_key << "\"" << std::endl;
 
 		ITextureSource *tsrc = client->getTextureSource();
 

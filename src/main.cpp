@@ -713,8 +713,8 @@ static void uninit_common()
 
 static void startup_message()
 {
-	infostream << PROJECT_NAME << " " << _("with")
-		<< " SER_FMT_VER_HIGHEST_READ="
+	infostream << PROJECT_NAME_C << " " << g_version_hash
+		<< "\nwith SER_FMT_VER_HIGHEST_READ="
 		<< (int)SER_FMT_VER_HIGHEST_READ << ", "
 		<< g_build_info << std::endl;
 }
