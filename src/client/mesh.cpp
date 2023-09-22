@@ -337,6 +337,8 @@ bool checkMeshNormals(scene::IMesh *mesh)
 
 	for (u32 i = 0; i < buffer_count; i++) {
 		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+		if (!buffer->getVertexCount())
+			continue;
 
 		// Here we intentionally check only first normal, assuming that if buffer
 		// has it valid, then most likely all other ones are fine too. We can
