@@ -111,7 +111,7 @@ void TestKeycode::testCompare()
 {
 	// Basic comparison
 	UASSERT(KeyPress("5") == KeyPress("KEY_KEY_5"));
-	UASSERT(!(KeyPress("5") == KeyPress("KEY_NUMPAD_5")));
+	UASSERT(!(KeyPress("5") == KeyPress("KEY_NUMPAD5")));
 
 	// Matching char suffices
 	// note: This is a real-world example, Irrlicht maps XK_equal to irr::KEY_PLUS on Linux
@@ -126,4 +126,11 @@ void TestKeycode::testCompare()
 	in.Char = L'\0';
 	in2.Char = L';';
 	UASSERT(KeyPress(in) == KeyPress(in2));
+
+	// Irrlicht sets chars to the according digit for numpad keys.
+	// We need to distinguish them in order to bind numpad keys.
+	irr::SEvent::SKeyInput in3;
+	in3.Key = irr::KEY_NUMPAD5;
+	in3.Char = L'5';
+	UASSERT(!(KeyPress("5") == KeyPress(in3)));
 }
