@@ -86,7 +86,7 @@ local function get_formspec(tabview, name, tabdata)
 		local info = core.get_content_info(selected_pkg.path)
 		local desc = fgettext("No package description available")
 		if info.description and info.description:trim() ~= "" then
-			desc = info.description
+			desc = core.formspec_escape(info.description)
 		end
 
 		local title_and_name
