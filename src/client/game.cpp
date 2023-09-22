@@ -972,7 +972,7 @@ private:
 
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
-	bool m_game_focused;
+	bool m_game_focused = false;
 
 	bool m_does_lost_focus_pause_game = false;
 
@@ -1951,7 +1951,7 @@ void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
-		if(m_game_focused) {
+		if (m_game_focused) {
 			m_game_focused = false;
 			infostream << "Game lost focus" << std::endl;
 			input->releaseAllKeys();
