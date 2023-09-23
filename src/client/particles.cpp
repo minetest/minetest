@@ -101,9 +101,12 @@ Particle::~Particle()
 		delete m_texture.tex;
 }
 
-void Particle::attachBuffer(ParticleBuffer *buffer) {
-	if (buffer->allocate(index))
+bool Particle::attachToBuffer(ParticleBuffer *buffer) {
+	if (buffer->allocate(index)) {
 		this->buffer = buffer;
+		return true;
+	}
+	return false;
 }
 
 void Particle::step(float dtime)
@@ -332,6 +335,9 @@ namespace {
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
+	if (!m_particlemanager->canAddParticle())
+		return;
+
 	float fac = 0;
 	if (p.time != 0) { // ensure safety from divide-by-zeroes
 		fac = m_time / (p.time+0.1f);
@@ -519,6 +525,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
 
+	if (pp.pos.getDistanceFrom(env->getLocalPlayer()->getPosition() / BS) > PARTICLES_MAX_DISTANCE_NODES)
+		return;
+
 	++m_active;
 	auto pa = new Particle(
 		m_gamedef,
@@ -531,7 +540,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		color
 	);
 	pa->m_parent = this;
-	m_particlemanager->addParticle(pa);
+	if (!m_particlemanager->addParticle(pa))
+		delete pa;
 }
 
 void ParticleSpawner::step(float dtime, ClientEnvironment *env)
@@ -840,14 +850,16 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				});
 			}
 
-			auto toadd = new ParticleSpawner(client, player,
-					p,
-					event->add_particlespawner.attached_id,
-					texpool,
-					txpsz,
-					this);
+			if (m_particle_spawners.size() < 200) {
+				auto toadd = new ParticleSpawner(client, player,
+						p,
+						event->add_particlespawner.attached_id,
+						texpool,
+						txpsz,
+						this);
 
-			addParticleSpawner(event->add_particlespawner.id, toadd);
+				addParticleSpawner(event->add_particlespawner.id, toadd);
+			}
 
 			delete event->add_particlespawner.p;
 			break;
@@ -884,7 +896,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				Particle *toadd = new Particle(client, player, m_env,
 						p, texture, texpos, texsize, color);
 
-				addParticle(toadd);
+				if (!addParticle(toadd))
+					delete toadd;
 			}
 
 			delete event->spawn_particle;
@@ -962,6 +975,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
+	if (!canAddParticle())
+		return;
+
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
@@ -991,7 +1007,8 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 		texsize,
 		color);
 
-	addParticle(toadd);
+	if (!addParticle(toadd))
+		delete toadd;
 }
 
 void ParticleManager::reserveParticleSpace(size_t max_estimate)
@@ -1000,9 +1017,16 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
-void ParticleManager::addParticle(Particle *toadd)
+bool ParticleManager::addParticle(Particle *toadd)
 {
+	if (!canAddParticle())
+		return false;
+
 	MutexAutoLock lock(m_particle_list_lock);
+
+	if (!canAddParticle())
+		return false;
+
 	video::ITexture *texture = toadd->getTextureRef().ref;
 	ParticleBuffer *buffer = nullptr;
 	decltype(m_particle_buffers)::iterator entry = m_particle_buffers.find(texture);
@@ -1013,8 +1037,10 @@ void ParticleManager::addParticle(Particle *toadd)
 		buffer = entry->second;
 	}
 
-	toadd->attachBuffer(buffer);
+	if (!toadd->attachToBuffer(buffer))
+		return false;
 	m_particles.push_back(toadd);
+	return true;
 }
 
 

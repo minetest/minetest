@@ -32,6 +32,9 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
+#define MAX_PARTICLES 64000
+#define PARTICLES_MAX_DISTANCE_NODES 200
+
 struct ClientTexture
 {
 	/* per-spawner structure used to store the ParticleTexture structs
@@ -90,7 +93,7 @@ public:
 	ParticleSpawner *m_parent;
 
 	const ClientTexRef &getTextureRef() const { return m_texture; }
-	void attachBuffer(ParticleBuffer *buffer);
+	bool attachToBuffer(ParticleBuffer *buffer);
 
 private:
 	void updateLight();
@@ -231,7 +234,8 @@ protected:
 		ParticleParameters &p, video::ITexture **texture, v2f &texpos,
 		v2f &texsize, video::SColor *color, u8 tilenum = 0);
 
-	void addParticle(Particle* toadd);
+	bool canAddParticle() { return m_particles.size() < MAX_PARTICLES; }
+	bool addParticle(Particle* toadd);
 
 private:
 	void addParticleSpawner(u64 id, ParticleSpawner *toadd);
