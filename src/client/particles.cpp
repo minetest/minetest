@@ -83,10 +83,13 @@ Particle::~Particle()
 		buffer->release(index);
 }
 
-void Particle::attachBuffer(ParticleBuffer *buffer)
+bool Particle::attachToBuffer(ParticleBuffer *buffer)
 {
-	if (buffer->allocate(index))
+	if (buffer->allocate(index)) {
 		this->buffer = buffer;
+		return true;
+	}
+	return false;
 }
 
 void Particle::step(float dtime)
@@ -312,6 +315,9 @@ namespace {
 void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	const core::matrix4 *attached_absolute_pos_rot_matrix)
 {
+	if (!m_particlemanager->canAddParticle())
+		return;
+
 	float fac = 0;
 	if (p.time != 0) { // ensure safety from divide-by-zeroes
 		fac = m_time / (p.time+0.1f);
@@ -499,6 +505,9 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	// Allow keeping default random size
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
+
+	if (pp.pos.getDistanceFrom(env->getLocalPlayer()->getPosition() / BS) > PARTICLES_MAX_DISTANCE_NODES)
+		return;
 
 	++m_active;
 	m_particlemanager->addParticle(std::make_unique<Particle>(
@@ -829,15 +838,17 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 				texpool.emplace_back(p.texture, client->tsrc());
 			}
 
-			addParticleSpawner(event->add_particlespawner.id,
-					std::make_unique<ParticleSpawner>(
-						client,
-						player,
-						p,
-						event->add_particlespawner.attached_id,
-						std::move(texpool),
-						this)
-					);
+			if (m_particle_spawners.size() < 200) {
+				addParticleSpawner(event->add_particlespawner.id,
+						std::make_unique<ParticleSpawner>(
+							client,
+							player,
+							p,
+							event->add_particlespawner.attached_id,
+							std::move(texpool),
+							this)
+						);
+			}
 
 			delete event->add_particlespawner.p;
 			break;
@@ -952,6 +963,9 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef,
 	if (!getNodeParticleParams(n, f, p, &ref, texpos, texsize, &color))
 		return;
 
+	if (!canAddParticle())
+		return;
+
 	p.expirationtime = myrand_range(0, 100) / 100.0f;
 
 	// Physics
@@ -989,9 +1003,15 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 	m_particles.reserve(m_particles.size() + max_estimate);
 }
 
-void ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
+bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 {
+	if (!canAddParticle())
+		return false;
+
 	MutexAutoLock lock(m_particle_list_lock);
+
+	if (!canAddParticle())
+		return false;
 
 	video::ITexture *texture = toadd->getTextureRef().ref;
 	ParticleBuffer *buffer = nullptr;
@@ -1003,8 +1023,10 @@ void ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 		buffer = entry->second;
 	}
 
-	toadd->attachBuffer(buffer);
+	if (!toadd->attachToBuffer(buffer))
+		return false;
 	m_particles.push_back(std::move(toadd));
+	return true;
 }
 
 
