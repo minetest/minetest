@@ -18,11 +18,7 @@
 
 local packages_raw, packages
 
-local function on_change(type)
-	if type ~= "ENTER" then
-		return
-	end
-
+local function update_packages()
 	if not pkgmgr.global_mods then
 		pkgmgr.refresh_globals()
 	end
@@ -48,7 +44,17 @@ local function on_change(type)
 			is_equal, nil, {})
 end
 
+local function on_change(type)
+	if type == "ENTER" then
+		update_packages()
+	end
+end
+
 local function get_formspec(tabview, name, tabdata)
+	if not packages then
+		update_packages()
+	end
+
 	if not tabdata.selected_pkg then
 		tabdata.selected_pkg = 1
 	end
