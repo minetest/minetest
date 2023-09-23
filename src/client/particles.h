@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <iostream>
+#include <vector>
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "localplayer.h"
@@ -41,7 +42,10 @@ struct ClientTexture
 	ClientTexture() = default;
 	ClientTexture(const ServerParticleTexture& p, ITextureSource *t):
 			tex(p),
-			ref(t->getTextureForMesh(p.string)) {};
+			ref(t->getTextureForMesh(p.string)) {}
+	ClientTexture(const ParticleTexture& p, video::ITexture *t):
+			tex(p),
+			ref(t) {}
 };
 
 struct ClientTexRef
@@ -61,8 +65,9 @@ struct ClientTexRef
 };
 
 class ParticleSpawner;
+class ParticleBuffer;
 
-class Particle : public scene::ISceneNode
+class Particle
 {
 public:
 	Particle(
@@ -77,24 +82,6 @@ public:
 	);
 	~Particle();
 
-	virtual const aabb3f &getBoundingBox() const
-	{
-		return m_box;
-	}
-
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
-
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return m_material;
-	}
-
-	virtual void OnRegisterSceneNode();
-	virtual void render();
-
 	void step(float dtime);
 
 	bool get_expired ()
@@ -102,12 +89,16 @@ public:
 
 	ParticleSpawner *m_parent;
 
+	const ClientTexRef &getTextureRef() const { return m_texture; }
+	void attachBuffer(ParticleBuffer *buffer);
+
 private:
 	void updateLight();
 	void updateVertices();
 	void setVertexAlpha(float a);
 
-	video::S3DVertex m_vertices[4];
+	ParticleBuffer *buffer{nullptr};
+	u16 index;
 	float m_time = 0.0f;
 	float m_expiration;
 
@@ -116,7 +107,6 @@ private:
 	aabb3f m_box;
 	aabb3f m_collisionbox;
 	ClientTexRef m_texture;
-	video::SMaterial m_material;
 	v2f m_texpos;
 	v2f m_texsize;
 	v3f m_pos;
@@ -179,6 +169,28 @@ private:
 	u16 m_attached_id;
 };
 
+class ParticleBuffer : public scene::ISceneNode
+{
+public:
+	ParticleBuffer(ClientEnvironment *env, const ClientTexRef& texture);
+	~ParticleBuffer();
+
+	u16 allocate();
+	void release(u16 index);
+
+	video::S3DVertex *getVertices(u16 index);
+
+	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual void render() override;
+	virtual void OnRegisterSceneNode();
+private:
+	ClientTexture texture;
+	scene::SMeshBuffer *buffer;
+	u16 count = 0;
+	std::vector<u16> free_list;
+	bool bounding_box_dirty = true;
+};
+
 /**
  * Class doing particle as well as their spawners handling
  */
@@ -232,6 +244,7 @@ private:
 
 	std::vector<Particle*> m_particles;
 	std::unordered_map<u64, ParticleSpawner*> m_particle_spawners;
+	std::unordered_map<video::ITexture*, ParticleBuffer*> m_particle_buffers;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
 	u64 m_next_particle_spawner_id = U32_MAX + 1;

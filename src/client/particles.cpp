@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "particles.h"
 #include <cmath>
+#include <array>
 #include "client.h"
 #include "collision.h"
 #include "client/content_cao.h"
@@ -47,67 +48,12 @@ Particle::Particle(
 	v2f texsize,
 	video::SColor color
 ):
-	scene::ISceneNode(((Client *)gamedef)->getSceneManager()->getRootSceneNode(),
-		((Client *)gamedef)->getSceneManager()),
 	m_texture(texture)
 {
 	// Misc
 	m_gamedef = gamedef;
 	m_env = env;
 
-	// translate blend modes to GL blend functions
-	video::E_BLEND_FACTOR bfsrc, bfdst;
-	video::E_BLEND_OPERATION blendop;
-	const auto blendmode = texture.tex != nullptr
-			? texture.tex -> blendmode
-			: ParticleParamTypes::BlendMode::alpha;
-
-	switch (blendmode) {
-		case ParticleParamTypes::BlendMode::add:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_DST_ALPHA;
-			blendop = video::EBO_ADD;
-		break;
-
-		case ParticleParamTypes::BlendMode::sub:
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_DST_ALPHA;
-			blendop = video::EBO_REVSUBTRACT;
-		break;
-
-		case ParticleParamTypes::BlendMode::screen:
-			bfsrc = video::EBF_ONE;
-			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
-			blendop = video::EBO_ADD;
-		break;
-
-		default: // includes ParticleParamTypes::BlendMode::alpha
-			bfsrc = video::EBF_SRC_ALPHA;
-			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
-			blendop = video::EBO_ADD;
-		break;
-	}
-
-	// Texture
-	m_material.Lighting = false;
-	m_material.BackfaceCulling = false;
-	m_material.FogEnable = true;
-	m_material.forEachTexture([] (auto &tex) {
-		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
-		tex.MagFilter = video::ETMAGF_NEAREST;
-	});
-
-	// correctly render layered transparent particles -- see #10398
-	m_material.ZWriteEnable = video::EZW_AUTO;
-
-	// enable alpha blending and set blend mode
-	m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	m_material.MaterialTypeParam = video::pack_textureBlendFunc(
-			bfsrc, bfdst,
-			video::EMFN_MODULATE_1X,
-			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
-	m_material.BlendOperation = blendop;
-	m_material.setTexture(0, m_texture.ref);
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = p.animation;
@@ -137,7 +83,6 @@ Particle::Particle(
 	// Irrlicht stuff
 	const float c = p.size / 2;
 	m_collisionbox = aabb3f(-c, -c, -c, c, c, c);
-	this->setAutomaticCulling(scene::EAC_OFF);
 
 	// Init lighting
 	updateLight();
@@ -148,30 +93,17 @@ Particle::Particle(
 
 Particle::~Particle()
 {
+	if (buffer)
+		buffer->release(index);
 	/* if our textures aren't owned by a particlespawner, we need to clean
 	 * them up ourselves when the particle dies */
 	if (m_parent == nullptr)
 		delete m_texture.tex;
 }
 
-void Particle::OnRegisterSceneNode()
-{
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
-
-	ISceneNode::OnRegisterSceneNode();
-}
-
-void Particle::render()
-{
-	video::IVideoDriver *driver = SceneManager->getVideoDriver();
-	driver->setMaterial(m_material);
-	driver->setTransform(video::ETS_WORLD, core::matrix4());
-
-	u16 indices[] = {0,1,2, 2,3,0};
-	driver->drawVertexPrimitiveList(m_vertices, 4,
-			indices, 2, video::EVT_STANDARD,
-			scene::EPT_TRIANGLES, video::EIT_16BIT);
+void Particle::attachBuffer(ParticleBuffer *buffer) {
+	this->buffer = buffer;
+	index = buffer->allocate();
 }
 
 void Particle::step(float dtime)
@@ -230,7 +162,7 @@ void Particle::step(float dtime)
 		m_animation_time += dtime;
 		int frame_length_i, frame_count;
 		m_animation.determineParams(
-				m_material.getTexture(0)->getSize(),
+				m_texture.ref->getSize(),
 				&frame_count, &frame_length_i, NULL);
 		float frame_length = frame_length_i / 1000.0;
 		while (m_animation_time > frame_length) {
@@ -282,13 +214,18 @@ void Particle::updateVertices()
 	f32 tx0, tx1, ty0, ty1;
 	v2f scale;
 
+	if (!buffer)
+		return;
+	
+	video::S3DVertex *vertices = buffer->getVertices(index);
+
 	if (m_texture.tex != nullptr)
 		scale = m_texture.tex -> scale.blend(m_time / (m_expiration+0.1));
 	else
 		scale = v2f(1.f, 1.f);
 
 	if (m_animation.type != TAT_NONE) {
-		const v2u32 texsize = m_material.getTexture(0)->getSize();
+		const v2u32 texsize = m_texture.ref->getSize();
 		v2f texcoord, framesize_f;
 		v2u32 framesize;
 		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
@@ -309,13 +246,13 @@ void Particle::updateVertices()
 	auto half = m_size * .5f,
 	     hx   = half * scale.X,
 	     hy   = half * scale.Y;
-	m_vertices[0] = video::S3DVertex(-hx, -hy,
+	vertices[0] = video::S3DVertex(-hx, -hy,
 		0, 0, 0, 0, m_color, tx0, ty1);
-	m_vertices[1] = video::S3DVertex(hx, -hy,
+	vertices[1] = video::S3DVertex(hx, -hy,
 		0, 0, 0, 0, m_color, tx1, ty1);
-	m_vertices[2] = video::S3DVertex(hx, hy,
+	vertices[2] = video::S3DVertex(hx, hy,
 		0, 0, 0, 0, m_color, tx1, ty0);
-	m_vertices[3] = video::S3DVertex(-hx, hy,
+	vertices[3] = video::S3DVertex(-hx, hy,
 		0, 0, 0, 0, m_color, tx0, ty0);
 
 
@@ -327,7 +264,8 @@ void Particle::updateVertices()
 	// Update position -- see #10398
 	v3s16 camera_offset = m_env->getCameraOffset();
 
-	for (video::S3DVertex &vertex : m_vertices) {
+	for (u16 i = 0; i < 4; i++) {
+		video::S3DVertex &vertex = vertices[i];
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
 			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
@@ -643,6 +581,153 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	}
 }
 
+static const ParticleTexture default_particle_texture;
+
+ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientTexRef &_texture)
+	: scene::ISceneNode(
+			env->getGameDef()->getSceneManager()->getRootSceneNode(),
+			env->getGameDef()->getSceneManager()),
+	texture(_texture.tex == nullptr ? default_particle_texture : *_texture.tex, _texture.ref),
+	buffer(new scene::SMeshBuffer())
+{
+	// translate blend modes to GL blend functions
+	video::E_BLEND_FACTOR bfsrc, bfdst;
+	video::E_BLEND_OPERATION blendop;
+	const auto blendmode = texture.tex.blendmode;
+
+	switch (blendmode) {
+		case ParticleParamTypes::BlendMode::add:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_DST_ALPHA;
+			blendop = video::EBO_ADD;
+		break;
+
+		case ParticleParamTypes::BlendMode::sub:
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_DST_ALPHA;
+			blendop = video::EBO_REVSUBTRACT;
+		break;
+
+		case ParticleParamTypes::BlendMode::screen:
+			bfsrc = video::EBF_ONE;
+			bfdst = video::EBF_ONE_MINUS_SRC_COLOR;
+			blendop = video::EBO_ADD;
+		break;
+
+		default: // includes ParticleParamTypes::BlendMode::alpha
+			bfsrc = video::EBF_SRC_ALPHA;
+			bfdst = video::EBF_ONE_MINUS_SRC_ALPHA;
+			blendop = video::EBO_ADD;
+		break;
+	}
+
+	video::SMaterial &material = buffer->getMaterial();
+	// Texture
+	material.Lighting = false;
+	material.BackfaceCulling = false;
+	material.FogEnable = true;
+	material.forEachTexture([] (auto &tex) {
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
+	});
+
+	// correctly render layered transparent particles -- see #10398
+	material.ZWriteEnable = video::EZW_AUTO;
+
+	// enable alpha blending and set blend mode
+	material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+	material.MaterialTypeParam = video::pack_textureBlendFunc(
+			bfsrc, bfdst,
+			video::EMFN_MODULATE_1X,
+			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
+	material.BlendOperation = blendop;
+	material.setTexture(0, texture.ref);
+}
+
+ParticleBuffer::~ParticleBuffer()
+{
+	buffer->drop();
+}
+
+static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
+
+u16 ParticleBuffer::allocate()
+{
+	if (free_list.empty()) {
+		// append new vertices
+		std::array<video::S3DVertex, 4> vertices {};
+		buffer->append(&vertices.front(), 4, quad_indices, 6);
+		return count++;
+	}
+	else {
+		u16 index = free_list.back();
+		free_list.pop_back();
+		u16 *indices = buffer->getIndices();
+		video::S3DVertex *vertices = static_cast<video::S3DVertex*>(buffer->getVertices());
+		for (u16 i = 0; i < 4; i++)
+			vertices[4 * index + i] = video::S3DVertex();
+		for (u16 i = 0; i < 6; i++)
+			indices[6 * index + i] = 4 * index + quad_indices[i];
+		return index;
+	}
+}
+
+void ParticleBuffer::release(u16 index)
+{
+	u16 *indices = buffer->getIndices();
+	for (u16 i = 0; i < 6; i++)
+		indices[6 * index + i] = 0;
+	free_list.push_back(index);
+}
+
+video::S3DVertex *ParticleBuffer::getVertices(u16 index)
+{
+	if (index >= count)
+		return nullptr;
+	bounding_box_dirty = true;
+	return &(static_cast<video::S3DVertex*>(buffer->getVertices())[4 * index]);
+}
+
+void ParticleBuffer::OnRegisterSceneNode()
+{
+	if (IsVisible)
+		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
+	scene::ISceneNode::OnRegisterSceneNode();
+}
+
+const core::aabbox3d<f32>& ParticleBuffer::getBoundingBox() const
+{
+	if (!bounding_box_dirty)
+		return buffer->BoundingBox;
+	bool first = true;	
+	for (u16 i = 0; i < count; i++) {
+		if (buffer->getIndices()[6 * i + 1] == 0)
+			continue;
+
+		for (u16 j = 0; j < 4; j++) {
+			if (first) {
+				buffer->BoundingBox.reset(buffer->getPosition(i * 4 + j));
+				first = false;
+			}
+			else {
+				buffer->BoundingBox.addInternalPoint(buffer->getPosition(i * 4 + j));
+			}
+		}
+	}
+
+	const_cast<bool &>(bounding_box_dirty) = false;
+	return buffer->BoundingBox;
+}
+
+void ParticleBuffer::render()
+{
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
+
+	driver->setTransform(video::ETS_WORLD, core::matrix4());
+	driver->setMaterial(buffer->getMaterial());
+	driver->drawMeshBuffer(buffer);
+}
+
 /*
 	ParticleManager
 */
@@ -654,6 +739,10 @@ ParticleManager::ParticleManager(ClientEnvironment *env) :
 ParticleManager::~ParticleManager()
 {
 	clearAll();
+	for (const auto it : m_particle_buffers) {
+		it.second->remove();
+		it.second->drop();
+	}
 }
 
 void ParticleManager::step(float dtime)
@@ -691,7 +780,6 @@ void ParticleManager::stepParticles(float dtime)
 				assert((*i)->m_parent->m_active != 0);
 				--(*i)->m_parent->m_active;
 			}
-			(*i)->remove();
 			delete *i;
 			i = m_particles.erase(i);
 		} else {
@@ -712,7 +800,6 @@ void ParticleManager::clearAll()
 
 	for(auto i = m_particles.begin(); i != m_particles.end();)
 	{
-		(*i)->remove();
 		delete *i;
 		i = m_particles.erase(i);
 	}
@@ -913,6 +1000,17 @@ void ParticleManager::reserveParticleSpace(size_t max_estimate)
 void ParticleManager::addParticle(Particle *toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);
+	video::ITexture *texture = toadd->getTextureRef().ref;
+	ParticleBuffer *buffer = nullptr;
+	decltype(m_particle_buffers)::iterator entry = m_particle_buffers.find(texture);
+	if (entry == m_particle_buffers.end()) {
+		buffer = new ParticleBuffer(m_env, toadd->getTextureRef());
+		m_particle_buffers[texture] = buffer;
+	} else {
+		buffer = entry->second;
+	}
+
+	toadd->attachBuffer(buffer);
 	m_particles.push_back(toadd);
 }
 
