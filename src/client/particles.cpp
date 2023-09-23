@@ -102,8 +102,8 @@ Particle::~Particle()
 }
 
 void Particle::attachBuffer(ParticleBuffer *buffer) {
-	this->buffer = buffer;
-	index = buffer->allocate();
+	if (buffer->allocate(index))
+		this->buffer = buffer;
 }
 
 void Particle::step(float dtime)
@@ -651,16 +651,10 @@ ParticleBuffer::~ParticleBuffer()
 
 static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
 
-u16 ParticleBuffer::allocate()
+bool ParticleBuffer::allocate(u16 &index)
 {
-	if (free_list.empty()) {
-		// append new vertices
-		std::array<video::S3DVertex, 4> vertices {};
-		buffer->append(&vertices.front(), 4, quad_indices, 6);
-		return count++;
-	}
-	else {
-		u16 index = free_list.back();
+	if (!free_list.empty()) {
+		index = free_list.back();
 		free_list.pop_back();
 		u16 *indices = buffer->getIndices();
 		video::S3DVertex *vertices = static_cast<video::S3DVertex*>(buffer->getVertices());
@@ -668,8 +662,17 @@ u16 ParticleBuffer::allocate()
 			vertices[4 * index + i] = video::S3DVertex();
 		for (u16 i = 0; i < 6; i++)
 			indices[6 * index + i] = 4 * index + quad_indices[i];
-		return index;
+		return true;
 	}
+
+	if (count >= 16000)
+		return false;
+
+	// append new vertices
+	std::array<video::S3DVertex, 4> vertices {};
+	buffer->append(&vertices.front(), 4, quad_indices, 6);
+	index = count++;
+	return true;
 }
 
 void ParticleBuffer::release(u16 index)
