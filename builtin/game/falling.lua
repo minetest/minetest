@@ -537,16 +537,20 @@ function core.check_single_for_falling(p)
 				return success
 			end
 			local d_falling = core.registered_nodes[n.name]
+			local do_float = core.get_item_group(n.name, "float") > 0
 			-- Otherwise only if the bottom node is considered "fall through"
 			if not same and
-			    (not d_bottom.walkable or d_bottom.buildable_to) and
-			    ((core.get_item_group(n.name, "float") == 0 or
-			      d_bottom.liquidtype == "none") or
-				(core.get_item_group(n.name, "float") > 0 and
-				 d_falling.liquidtype == "source" and
-				 d_bottom.liquidtype ~= "source")) then
-			    local success, _ = convert_to_falling_node(p, n)
-			    return success
+					(not d_bottom.walkable or d_bottom.buildable_to)
+					and -- Take "float" group into consideration:
+					(
+						-- Fall through non-liquids
+						not do_float or d_bottom.liquidtype == "none" or
+						-- Only let sources fall through flowing liquids
+						(do_float and d_falling.liquidtype == "source" and d_bottom.liquidtype ~= "source")
+					) then
+
+				local success, _ = convert_to_falling_node(p, n)
+				return success
 			end
 		end
 	end
