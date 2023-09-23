@@ -274,10 +274,17 @@ core.register_entity(":__builtin:falling_node", {
 		end
 
 		-- Decide if we're replacing the node or placing on top
+		-- This condition is very similar to the check in core.check_single_for_falling(p)
 		local np = vector.copy(bcp)
-		if bcd and bcd.buildable_to and
-			((not self.floats or bcd.liquidtype == "none") or
-             (self.floats and self.liquidtype ~= "none" and bcd.liquidtype ~= "source")) then
+		if bcd and bcd.buildable_to
+				and -- Take "float" group into consideration:
+				(
+					-- Fall through non-liquids
+					not self.floats or bcd.liquidtype == "none" or
+					-- Only let sources fall through flowing liquids
+					(self.floats and self.liquidtype ~= "none" and bcd.liquidtype ~= "source")
+				) then
+
 			core.remove_node(bcp)
 		else
 			np.y = np.y + 1
