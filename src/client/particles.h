@@ -172,7 +172,7 @@ public:
 	ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &texture);
 	~ParticleBuffer();
 
-	u16 allocate();
+	bool allocate(u16 &index);
 	void release(u16 index);
 
 	video::S3DVertex *getVertices(u16 index);
