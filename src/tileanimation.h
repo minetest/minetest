@@ -31,7 +31,7 @@ enum TileAnimationType
 
 struct TileAnimationParams
 {
-	enum TileAnimationType type;
+	enum TileAnimationType type = TileAnimationType::TAT_NONE;
 	union
 	{
 		// struct {
