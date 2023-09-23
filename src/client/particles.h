@@ -183,9 +183,9 @@ public:
 
 	video::S3DVertex *getVertices(u16 index);
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual const core::aabbox3d<f32>& getBoundingBox() const override;
 	virtual void render() override;
-	virtual void OnRegisterSceneNode();
+	virtual void OnRegisterSceneNode() override;
 private:
 	ClientTexture texture;
 	scene::SMeshBuffer *buffer;
