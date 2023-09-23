@@ -167,7 +167,7 @@ public:
   void deallocate(volatile pointer p, size_type n) {
     std::memset(p, 0, n * sizeof(T));
     // free using "global operator delete"
-    ::operator delete(p);
+    allocate::operator delete(p);
   }
 
   /**
@@ -175,7 +175,7 @@ public:
    */
   template <typename... Args> void construct(pointer p, Args&&... args) {
     // construct using "placement new" and "perfect forwarding"
-    ::new (static_cast<void*>(p)) T(std::forward<Args>(args)...);
+    type::new (static_cast<void*>(p)) T(std::forward<Args>(args)...);
   }
 
   size_type max_size() const { return size_t(-1) / sizeof(T); }
