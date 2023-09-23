@@ -570,7 +570,8 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 	}
 }
 
-static const ParticleTexture default_particle_texture;
+static const ParticleTexture default_particle_texture {
+		false, ParticleParamTypes::BlendMode::alpha, { TAT_NONE, { 0, 0, 0.f } } };
 
 ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &_texture)
 	: scene::ISceneNode(
