@@ -2928,7 +2928,7 @@ Elements
 * Only affects Android clients.
 * `<name>` is the name of the field.
 * If `<enter_after_edit>` is true, pressing the "Done" button in the Android
-  text editor dialog will simulate an <kbd>Enter</kbd> keypress.
+  text input dialog will simulate an <kbd>Enter</kbd> keypress.
 * Defaults to false when not specified (i.e. no tag for a field).
 
 ### `field_close_on_enter[<name>;<close_on_enter>]`
