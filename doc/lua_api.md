@@ -7756,9 +7756,8 @@ child will follow movement and rotation of that bone.
         * `base_color`: ColorSpec, changes fog in "skybox" and "plain".
           (default: `#ffffff`)
         * `body_orbit_tilt`: Float, rotation angle of sun/moon orbit in degrees.
-           Due to legacy reasons, this field is not set by default.  
            After a value is assigned, it can only be changed to another float value.
-           Valid range [-60.0,60.0] (default: `nil`)
+           Valid range [-60.0,60.0] (default: `0.0`)
         * `type`: Available types:
             * `"regular"`: Uses 0 textures, `base_color` ignored
             * `"skybox"`: Uses 6 textures, `base_color` used as fog.
