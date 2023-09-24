@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ZSTD_CLEVEL_DEFAULT 3
 #endif
 
-// log([level], text)
+// log([level,] text)
 // Writes a line to the logger.
 // The one-argument version logs to LL_NONE.
 // The two-argument version accepts a log level.
