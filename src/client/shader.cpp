@@ -233,8 +233,6 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float, 16> m_world_view;
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture;
-	// Normal matrix
-	CachedVertexShaderSetting<float, 9> m_normal;
 
 public:
 	MainShaderConstantSetter() :
@@ -256,7 +254,6 @@ public:
 		, m_perspective_zbias_pixel("zPerspectiveBias")
 		, m_world_view("mWorldView")
 		, m_texture("mTexture")
-		, m_normal("mNormal")
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -283,16 +280,6 @@ public:
 			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
 			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
 			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
-
-			core::matrix4 normal;
-			worldView.getTransposed(normal);
-			sanity_check(normal.makeInverse());
-			float m[9] = {
-				normal[0], normal[1], normal[2],
-				normal[4], normal[5], normal[6],
-				normal[8], normal[9], normal[10],
-			};
-			m_normal.set(m, services);
 		}
 
 		// Set uniforms for Shadow shader
@@ -639,7 +626,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			uniform highp mat4 mWorldView;
 			uniform highp mat4 mWorldViewProj;
 			uniform mediump mat4 mTexture;
-			uniform mediump mat3 mNormal;
 
 			attribute highp vec4 inVertexPosition;
 			attribute lowp vec4 inVertexColor;
@@ -662,7 +648,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define mWorldView gl_ModelViewMatrix
 			#define mWorldViewProj gl_ModelViewProjectionMatrix
 			#define mTexture (gl_TextureMatrix[0])
-			#define mNormal gl_NormalMatrix
 
 			#define inVertexPosition gl_Vertex
 			#define inVertexColor gl_Color
