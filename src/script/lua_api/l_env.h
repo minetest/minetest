@@ -82,12 +82,12 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node_or_nil(lua_State *L);
 
-	// get_node_light(pos, timeofday)
+	// get_node_light(pos, [timeofday])
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
 	static int l_get_node_light(lua_State *L);
 
-	// get_natural_light(pos, timeofday)
+	// get_natural_light(pos, [timeofday])
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
 	static int l_get_natural_light(lua_State *L);
@@ -180,7 +180,7 @@ private:
 	// load_area(p1)
 	static int l_load_area(lua_State *L);
 
-	// emerge_area(p1, p2)
+	// emerge_area(p1, p2, [callback, [param]])
 	static int l_emerge_area(lua_State *L);
 
 	// delete_area(p1, p2) -> true/false

@@ -124,13 +124,13 @@ private:
 	// get_animation(self)
 	static int l_get_animation(lua_State *L);
 
-	// set_bone_position(self, bone, position, rotation)
+	// set_bone_position(self, [bone], [position], [rotation])
 	static int l_set_bone_position(lua_State *L);
 
 	// get_bone_position(self, bone)
 	static int l_get_bone_position(lua_State *L);
 
-	// set_attach(self, parent, bone, position, rotation)
+	// set_attach(self, parent, [bone], [position], [rotation], [force_visible])
 	static int l_set_attach(lua_State *L);
 
 	// get_attach(self)
@@ -358,7 +358,7 @@ private:
 	// get_local_animation(self)
 	static int l_get_local_animation(lua_State *L);
 
-	// set_eye_offset(self, firstperson, thirdperson)
+	// set_eye_offset(self, [firstperson], [thirdperson])
 	static int l_set_eye_offset(lua_State *L);
 
 	// get_eye_offset(self)

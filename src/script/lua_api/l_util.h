@@ -35,7 +35,7 @@ private:
 		GUIEngine instance should be in here.
 	*/
 
-	// log([level,] text)
+	// log([level], text)
 	// Writes a line to the logger.
 	// The one-argument version logs to LL_NONE.
 	// The two-argument version accepts a log level.
@@ -44,19 +44,19 @@ private:
 	// get us precision time
 	static int l_get_us_time(lua_State *L);
 
-	// parse_json(str[, nullvalue])
+	// parse_json(str, [nullvalue])
 	static int l_parse_json(lua_State *L);
 
-	// write_json(data[, styled])
+	// write_json(data, [styled])
 	static int l_write_json(lua_State *L);
 
-	// get_tool_wear_after_use(uses[, initial_wear])
+	// get_tool_wear_after_use(uses, [initial_wear])
 	static int l_get_tool_wear_after_use(lua_State *L);
 
-	// get_dig_params(groups, tool_capabilities[, wear])
+	// get_dig_params(groups, tool_capabilities, [wear])
 	static int l_get_dig_params(lua_State *L);
 
-	// get_hit_params(groups, tool_capabilities[, time_from_last_punch[, wear]])
+	// get_hit_params(groups, tool_capabilities, [time_from_last_punch], [wear])
 	static int l_get_hit_params(lua_State *L);
 
 	// check_password_entry(name, entry, password)

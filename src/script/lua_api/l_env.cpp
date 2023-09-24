@@ -359,7 +359,7 @@ int ModApiEnv::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
-// get_node_light(pos, timeofday)
+// get_node_light(pos, [timeofday])
 // pos = {x=num, y=num, z=num}
 // timeofday: nil = current time, 0 = night, 0.5 = day
 int ModApiEnv::l_get_node_light(lua_State *L)
@@ -386,7 +386,7 @@ int ModApiEnv::l_get_node_light(lua_State *L)
 }
 
 
-// get_natural_light(pos, timeofday)
+// get_natural_light(pos, [timeofday])
 // pos = {x=num, y=num, z=num}
 // timeofday: nil = current time, 0 = night, 0.5 = day
 int ModApiEnv::l_get_natural_light(lua_State *L)
@@ -1186,7 +1186,7 @@ int ModApiEnv::l_load_area(lua_State *L)
 	return 0;
 }
 
-// emerge_area(p1, p2, [callback, context])
+// emerge_area(p1, p2, [callback, [param]])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnv::l_emerge_area(lua_State *L)
 {

@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ZSTD_CLEVEL_DEFAULT 3
 #endif
 
-// log([level,] text)
+// log([level], text)
 // Writes a line to the logger.
 // The one-argument version logs to LL_NONE.
 // The two-argument version accepts a log level.
@@ -89,7 +89,7 @@ int ModApiUtil::l_get_us_time(lua_State *L)
 	return 1;
 }
 
-// parse_json(str[, nullvalue])
+// parse_json(str, [nullvalue])
 int ModApiUtil::l_parse_json(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -136,7 +136,7 @@ int ModApiUtil::l_parse_json(lua_State *L)
 	return 1;
 }
 
-// write_json(data[, styled]) -> string or nil and error message
+// write_json(data, [styled]) -> string or nil and error message
 int ModApiUtil::l_write_json(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -166,7 +166,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 	return 1;
 }
 
-// get_tool_wear_after_use(uses[, initial_wear])
+// get_tool_wear_after_use(uses, [initial_wear])
 int ModApiUtil::l_get_tool_wear_after_use(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -177,7 +177,7 @@ int ModApiUtil::l_get_tool_wear_after_use(lua_State *L)
 	return 1;
 }
 
-// get_dig_params(groups, tool_capabilities[, wear])
+// get_dig_params(groups, tool_capabilities, [wear])
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -193,7 +193,7 @@ int ModApiUtil::l_get_dig_params(lua_State *L)
 	return 1;
 }
 
-// get_hit_params(groups, tool_capabilities[, time_from_last_punch, [, wear]])
+// get_hit_params(groups, tool_capabilities, [time_from_last_punch], [wear])
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

@@ -805,7 +805,7 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	return 0;
 }
 
-// get_mapgen_edges([mapgen_limit[, chunksize]])
+// get_mapgen_edges([mapgen_limit], [chunksize])
 int ModApiMapgen::l_get_mapgen_edges(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

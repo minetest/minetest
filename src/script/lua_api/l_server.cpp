@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <algorithm>
 
-// request_shutdown()
+// request_shutdown([message], [reconnect], [delay])
 int ModApiServer::l_request_shutdown(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

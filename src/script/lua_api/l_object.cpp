@@ -435,7 +435,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	return 5;
 }
 
-// set_eye_offset(self, firstperson, thirdperson)
+// set_eye_offset(self, [firstperson], [thirdperson])
 int ObjectRef::l_set_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -508,7 +508,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 	return 1;
 }
 
-// set_bone_position(self, bone, position, rotation)
+// set_bone_position(self, [bone], [position], [rotation])
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -545,7 +545,7 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	return 2;
 }
 
-// set_attach(self, parent, bone, position, rotation, force_visible)
+// set_attach(self, parent, [bone], [position], [rotation], [force_visible])
 int ObjectRef::l_set_attach(lua_State *L)
 {
 	GET_ENV_PTR;
