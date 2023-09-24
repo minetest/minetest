@@ -676,7 +676,7 @@ Minetest namespace reference
 ### Logging
 * `minetest.debug(...)`
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
-* `minetest.log([level,] text)`
+* `minetest.log([level], text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`.  Default is `"none"`.
 
@@ -879,13 +879,13 @@ Call these functions only at load time!
     * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
 
 ### Misc.
-* `minetest.parse_json(string[, nullvalue])`: returns something
+* `minetest.parse_json(string, [nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
     * On success returns a table, a string, a number, a boolean or `nullvalue`
     * On failure outputs an error message and returns `nil`
     * Example: `parse_json("[10, {\"a\":false}]")`, returns `{10, {a = false}}`
-* `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
+* `minetest.write_json(data, [styled])`: returns a string or `nil` and an error message
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
     * Unserializable things like functions and userdata are saved as null.
@@ -922,7 +922,7 @@ Call these functions only at load time!
     * See documentation on `minetest.compress()` for supported compression
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
-* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+* `minetest.rgba(red, green, blue, [alpha])`: returns a string
     * Each argument is an 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`

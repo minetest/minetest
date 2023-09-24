@@ -192,7 +192,7 @@ Formspec
 GUI
 ---
 
-* `core.set_background(type,texturepath,[tile],[minsize])`
+* `core.set_background(type, texturepath, [tile], [minsize])`
   * `type`: "background", "overlay", "header" or "footer"
   * `tile`: tile the image instead of scaling (background only)
   * `minsize`: minimum tile size, images are scaled to at least this size prior
@@ -384,7 +384,7 @@ Helpers
   extra arguments and return the result
 * `fgettext(string, ...)` -> string
   * same as `fgettext_ne()`, but calls `core.formspec_escape` before returning result
-* `core.parse_json(string[, nullvalue])` -> something (possible in async calls)
+* `core.parse_json(string, [nullvalue])` -> something (possible in async calls)
   * see `core.parse_json` (`lua_api.md`)
 * `dump(obj, dumped={})`
   * Return object serialized as a string

@@ -3734,7 +3734,7 @@ For the following functions (and subchapters),
 `s` is a scalar (a number),
 vectors are written like this: `(x, y, z)`:
 
-* `vector.new([a[, b, c]])`:
+* `vector.new([a, [b, c]])`:
     * Returns a new vector `(a, b, c)`.
     * Deprecated: `vector.new()` does the same as `vector.zero()` and
       `vector.new(v)` does the same as `vector.copy(v)`
@@ -3742,7 +3742,7 @@ vectors are written like this: `(x, y, z)`:
     * Returns a new vector `(0, 0, 0)`.
 * `vector.copy(v)`:
     * Returns a copy of the vector `v`.
-* `vector.from_string(s[, init])`:
+* `vector.from_string(s, [init])`:
     * Returns `v, np`, where `v` is a vector read from the given string `s` and
       `np` is the next position in the string after the vector.
     * Returns `nil` on failure.
@@ -3847,7 +3847,7 @@ angles in radians.
 * `vector.rotate_around_axis(v1, v2, a)`:
     * Returns `v1` rotated around axis `v2` by `a` radians according to
       the right hand rule.
-* `vector.dir_to_rotation(direction[, up])`:
+* `vector.dir_to_rotation(direction, [up])`:
     * Returns a rotation vector for `direction` pointing forward using `up`
       as the up vector.
     * If `up` is omitted, the roll of the returned vector defaults to zero.
@@ -3957,13 +3957,13 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a
   position.
     * returns the exact position on the surface of a pointed node
-* `minetest.get_tool_wear_after_use(uses [, initial_wear])`
+* `minetest.get_tool_wear_after_use(uses, [initial_wear])`
     * Simulates a tool being used once and returns the added wear,
       such that, if only this function is used to calculate wear,
       the tool will break exactly after `uses` times of uses
     * `uses`: Number of times the tool can be used
     * `initial_wear`: The initial wear the tool starts with (default: 0)
-* `minetest.get_dig_params(groups, tool_capabilities [, wear])`:
+* `minetest.get_dig_params(groups, tool_capabilities, [wear])`:
     Simulates an item that digs a node.
     Returns a table with the following fields:
     * `diggable`: `true` if node can be dug, `false` otherwise.
@@ -3974,7 +3974,7 @@ Helper functions
     * `groups`: Table of the node groups of the node that would be dug
     * `tool_capabilities`: Tool capabilities table of the item
     * `wear`: Amount of wear the tool starts with (default: 0)
-* `minetest.get_hit_params(groups, tool_capabilities [, time_from_last_punch [, wear]])`:
+* `minetest.get_hit_params(groups, tool_capabilities, [time_from_last_punch], [wear])`:
     Simulates an item that punches an object.
     Returns a table with the following fields:
     * `hp`: How much damage the punch would cause (between -65535 and 65535).
@@ -3983,6 +3983,7 @@ Helper functions
     * `groups`: Damage groups of the object
     * `tool_capabilities`: Tool capabilities table of the item
     * `time_from_last_punch`: time in seconds since last punch action
+      (default: an amount to produce full damage instead of partial)
     * `wear`: Amount of wear the item starts with (default: 0)
 
 
@@ -5399,7 +5400,7 @@ Logging
 
 * `minetest.debug(...)`
     * Equivalent to `minetest.log(table.concat({...}, "\t"))`
-* `minetest.log([level,] text)`
+* `minetest.log([level], text)`
     * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
       `"info"`, or `"verbose"`.  Default is `"none"`.
 
@@ -5742,11 +5743,11 @@ Setting-related
 Authentication
 --------------
 
-* `minetest.string_to_privs(str[, delim])`:
+* `minetest.string_to_privs(str, [delim])`:
     * Converts string representation of privs into table form
     * `delim`: String separating the privs. Defaults to `","`.
     * Returns `{ priv1 = true, ... }`
-* `minetest.privs_to_string(privs[, delim])`:
+* `minetest.privs_to_string(privs, [delim])`:
     * Returns the string representation of `privs`
     * `delim`: String to delimit privs. Defaults to `","`.
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
@@ -5836,7 +5837,7 @@ Environment access
       returns `{name="ignore", param1=0, param2=0}` for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
-* `minetest.get_node_light(pos[, timeofday])`
+* `minetest.get_node_light(pos, [timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
       to get the light value of a neighbor.
@@ -5844,7 +5845,7 @@ Environment access
     * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
     * Returns a number between `0` and `15` or `nil`
     * `nil` is returned e.g. when the map isn't loaded at `pos`
-* `minetest.get_natural_light(pos[, timeofday])`
+* `minetest.get_natural_light(pos, [timeofday])`
     * Figures out the sunlight (or moonlight) value at pos at the given time of
       day.
     * `pos`: The position of the node
@@ -5988,7 +5989,7 @@ Environment access
       prefix `"no"` is attached, clears instead.
     * `flags` is in the same format and has the same options as `mg_flags` in
       `minetest.conf`.
-* `minetest.get_mapgen_edges([mapgen_limit[, chunksize]])`
+* `minetest.get_mapgen_edges([mapgen_limit], [chunksize])`
     * Returns the minimum and maximum possible generated node positions
       in that order.
     * `mapgen_limit` is an optional number. If it is absent, its value is that
@@ -6039,11 +6040,11 @@ Environment access
         * mode = `"quick"`: Clear objects immediately in loaded mapblocks,
                             clear objects in unloaded mapblocks only when the
                             mapblocks are next activated.
-* `minetest.load_area(pos1[, pos2])`
+* `minetest.load_area(pos1, [pos2])`
     * Load the mapblocks containing the area from `pos1` to `pos2`.
       `pos2` defaults to `pos1` if not specified.
     * This function does not trigger map generation.
-* `minetest.emerge_area(pos1, pos2, [callback], [param])`
+* `minetest.emerge_area(pos1, pos2, [callback, [param]])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be
       asynchronously fetched from memory, loaded from disk, or if inexistent,
       generates them.
@@ -6347,7 +6348,7 @@ Rollback
 Defaults for the `on_place` and `on_drop` item definition functions
 -------------------------------------------------------------------
 
-* `minetest.item_place_node(itemstack, placer, pointed_thing[, param2, prevent_after_place])`
+* `minetest.item_place_node(itemstack, placer, pointed_thing, [param2], [prevent_after_place])`
     * Place item as a node
     * `param2` overrides `facedir` and wallmounted `param2`
     * `prevent_after_place`: if set to `true`, `after_place_node` is not called
@@ -6358,7 +6359,7 @@ Defaults for the `on_place` and `on_drop` item definition functions
     * Place item as-is
     * returns the leftover itemstack
     * **Note**: This function is deprecated and will never be called.
-* `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
+* `minetest.item_place(itemstack, placer, pointed_thing, [param2])`
     * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
     * **Note**: is not called when wielded item overrides `on_place`
@@ -6373,7 +6374,7 @@ Defaults for the `on_place` and `on_drop` item definition functions
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
     * returns the leftover itemstack
-* `minetest.item_eat(hp_change[, replace_with_item])`
+* `minetest.item_eat(hp_change, [replace_with_item])`
     * Returns `function(itemstack, user, pointed_thing)` as a
       function wrapper for `minetest.do_item_eat`.
     * `replace_with_item` is the itemstring which is added to the inventory.
@@ -6487,7 +6488,7 @@ Variables:
 Server
 ------
 
-* `minetest.request_shutdown([message],[reconnect],[delay])`: request for
+* `minetest.request_shutdown([message], [reconnect], [delay])`: request for
   server shutdown. Will display `message` to clients.
     * `reconnect` == true displays a reconnect button
     * `delay` adds an optional delay (in seconds) before shutdown.
@@ -6754,13 +6755,13 @@ Misc.
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
     * Gets the name of the content with that content ID
-* `minetest.parse_json(string[, nullvalue])`: returns something
+* `minetest.parse_json(string, [nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
     * `nullvalue`: returned in place of the JSON null; defaults to `nil`
     * On success returns a table, a string, a number, a boolean or `nullvalue`
     * On failure outputs an error message and returns `nil`
     * Example: `parse_json("[10, {\"a\":false}]")`, returns `{10, {a = false}}`
-* `minetest.write_json(data[, styled])`: returns a string or `nil` and an error
+* `minetest.write_json(data, [styled])`: returns a string or `nil` and an error
   message.
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to
@@ -6778,7 +6779,7 @@ Misc.
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
     * Example: `serialize({foo="bar"})`, returns `'return { ["foo"] = "bar" }'`
-* `minetest.deserialize(string[, safe])`: returns a table
+* `minetest.deserialize(string, [safe])`: returns a table
     * Convert a string returned by `minetest.serialize` into a table
     * `string` is loaded in an empty sandbox environment.
     * Will load functions if safe is false or omitted. Although these functions
@@ -6810,7 +6811,7 @@ Misc.
     * See documentation on `minetest.compress()` for supported compression
       methods.
     * `...` indicates method-specific arguments. Currently, no methods use this
-* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+* `minetest.rgba(red, green, blue, [alpha])`: returns a string
     * Each argument is an 8 Bit unsigned integer
     * Returns the ColorString from rgb or rgba values
     * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
@@ -6895,7 +6896,7 @@ Misc.
     * You may want to cache and call the old function to allow multiple mods to
       change knockback behavior.
 
-* `minetest.forceload_block(pos[, transient[, limit]])`
+* `minetest.forceload_block(pos, [transient], [limit])`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
     * If `transient` is `false` or absent, the forceload will be persistent
@@ -6906,7 +6907,7 @@ Misc.
       absent, the limit is the value of the setting `"max_forceloaded_blocks"`.
       If the call would put the number of blocks over the limit, the call fails.
 
-* `minetest.forceload_free_block(pos[, transient])`
+* `minetest.forceload_free_block(pos, [transient])`
     * stops forceloading the position `pos`
     * If `transient` is `false` or absent, frees a persistent forceload.
       If `true`, frees a transient forceload.
@@ -7502,7 +7503,7 @@ child will follow movement and rotation of that bone.
     * Sets the frame speed of the object's animation
     * Unlike `set_animation`, this will not restart the animation
     * `frame_speed`: See `set_animation`
-* `set_attach(parent[, bone, position, rotation, forced_visible])`
+* `set_attach(parent, [bone], [position], [rotation], [forced_visible])`
     * Attaches object to `parent`
     * See 'Attachments' section for details
     * `parent`: `ObjectRef` to attach to
@@ -7519,7 +7520,7 @@ child will follow movement and rotation of that bone.
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
-* `set_bone_position([bone, position, rotation])`
+* `set_bone_position([bone], [position], [rotation])`
     * `bone`: string. Default is `""`, the root bone
     * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
@@ -7950,7 +7951,7 @@ child will follow movement and rotation of that bone.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
+* `set_eye_offset([firstperson], [thirdperson])`: defines offset vectors for
   camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)

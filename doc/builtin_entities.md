@@ -26,7 +26,7 @@ Default behavior:
 
 ### Entity fields
 
-* `set_node(self, node[, meta])`
+* `set_node(self, node, [meta])`
     * Function to initialize the falling node
     * `node` and `meta` are explained below.
     * The `meta` argument is optional.
