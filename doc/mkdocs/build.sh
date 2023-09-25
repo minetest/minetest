@@ -14,7 +14,9 @@ extra_css:
 markdown_extensions:
     - toc:
         permalink: True
-    - codehilite
+    - pymdownx.superfences
+    - pymdownx.highlight:
+        css_class: codehilite
 plugins:
     - search:
         separator: '[\s\-\.\(]+'
