@@ -125,7 +125,7 @@ static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
 
@@ -1043,27 +1043,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
-	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
-	}
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-		           << "\" failed: " << e.what()
-		           << " -- Listening on all addresses." << std::endl;
-	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		errorstream << "Unable to listen on "
-		            << bind_addr.serializeString()
-		            << L" because IPv6 is disabled" << std::endl;
-		return false;
-	}
-
 	// Database migration/compression
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
@@ -1078,7 +1057,27 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return Server::migrateModStorageDatabase(game_params, cmd_args);
 
 	if (cmd_args.getFlag("recompress"))
-		return recompress_map_database(game_params, cmd_args, bind_addr);
+		return recompress_map_database(game_params, cmd_args);
+
+	// Bind address
+	std::string bind_str = g_settings->get("bind_address");
+	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
+
+	if (g_settings->getBool("ipv6_server"))
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
+	try {
+		bind_addr.Resolve(bind_str.c_str());
+	} catch (const ResolveError &e) {
+		warningstream << "Resolving bind address \"" << bind_str
+			<< "\" failed: " << e.what()
+			<< " -- Listening on all addresses." << std::endl;
+	}
+	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+		errorstream << "Unable to listen on "
+		            << bind_addr.serializeString()
+		            << " because IPv6 is disabled" << std::endl;
+		return false;
+	}
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
@@ -1230,7 +1229,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 	return true;
 }
 
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args)
 {
 	Settings world_mt;
 	const std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
@@ -1240,7 +1239,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		return false;
 	}
 	const std::string &backend = world_mt.get("backend");
-	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
+	Server server(game_params.world_path, game_params.game_spec, false, Address(), false);
 	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
 
 	u32 count = 0;
