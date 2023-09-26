@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+if(NOT TARGET IrrlichtMt::IrrlichtMt)
+	include("${CMAKE_CURRENT_LIST_DIR}/IrrlichtMtTargets.cmake")
+endif()
