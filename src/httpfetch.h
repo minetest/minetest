@@ -35,6 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Start of regular allocated caller IDs.
 #define HTTPFETCH_CID_START 3
 
+namespace {
+	// lower bound for curl_timeout (see also settingtypes.txt)
+	constexpr long MIN_HTTPFETCH_TIMEOUT_INTERACTIVE = 1000;
+	// lower bound for curl_file_download_timeout
+	constexpr long MIN_HTTPFETCH_TIMEOUT = 5000;
+}
+
 //  Methods
 enum HttpMethod : u8
 {
