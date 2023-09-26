@@ -574,7 +574,8 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 	HTTPFetchResult fetch_result;
 	fetch_request.url = url;
 	fetch_request.caller = HTTPFETCH_SYNC;
-	fetch_request.timeout = g_settings->getS32("curl_file_download_timeout");
+	fetch_request.timeout = std::max(MIN_HTTPFETCH_TIMEOUT,
+		(long)g_settings->getS32("curl_file_download_timeout"));
 	httpfetch_sync(fetch_request, fetch_result);
 
 	if (!fetch_result.succeeded) {
