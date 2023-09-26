@@ -1394,18 +1394,15 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
 
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
-	}
-
+	if (g_settings->getBool("ipv6_server"))
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
 	try {
 		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-			   << "\" failed: " << e.what()
-			   << " -- Listening on all addresses." << std::endl;
+	} catch (const ResolveError &e) {
+		warningstream << "Resolving bind address \"" << bind_str
+			<< "\" failed: " << e.what()
+			<< " -- Listening on all addresses." << std::endl;
 	}
-
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
 		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
 			bind_addr.serializeString().c_str());
