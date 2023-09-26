@@ -47,6 +47,7 @@ HTTPFetchRequest::HTTPFetchRequest() :
 	connect_timeout(10 * 1000),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {
+	timeout = std::max(timeout, MIN_HTTPFETCH_TIMEOUT_INTERACTIVE);
 }
 
 
