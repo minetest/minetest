@@ -634,10 +634,9 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 			CGUITTGlyphPage* const page = Glyph_Pages[glyph.glyph_page];
 			page->render_positions.push_back(core::position2di(offset.X + offx, offset.Y + offy));
 			page->render_source_rects.push_back(glyph.source_rect);
-
-			// static_cast<unsigned long>(iter - utext.begin()) is a nasty hack to get the position of iter in the wtext string.
-			if (static_cast<unsigned long>(iter - utext.begin()) < colors.size())
-				page->render_colors.push_back(colors[static_cast<unsigned long>(iter - utext.begin())]);
+			const size_t iterPos = iter - utext.begin();
+			if (iterPos < colors.size())
+				page->render_colors.push_back(colors[iterPos]);
 			else
 				page->render_colors.push_back(video::SColor(255,255,255,255));
 			Render_Map[glyph.glyph_page] = page;
@@ -657,7 +656,7 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 				offset.X += fallback->getKerningWidth(l1, &l2);
 				offset.Y += fallback->getKerningHeight();
 
-				u32 current_color = static_cast<unsigned long>(iter - utext.begin());
+				const u32 current_color = iter - utext.begin();
 				fallback->draw(core::stringw(l1),
 					core::rect<s32>({offset.X-1, offset.Y-1}, position.LowerRightCorner), // ???
 					current_color < colors.size() ? colors[current_color] : video::SColor(255, 255, 255, 255),
@@ -1250,27 +1249,23 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 std::u32string CGUITTFont::convertWCharToU32String(const wchar_t* const charArray) const
 {
+	static_assert(sizeof(wchar_t) == 2 || sizeof(wchar_t) == 4, "unexpected wchar size");
+
 	if (sizeof(wchar_t) == 4) // Systems where wchar_t is UTF-32
 		return std::u32string(reinterpret_cast<const char32_t*>(charArray));
 
-	if (sizeof(wchar_t) == 2) // Systems where wchar_t is UTF-16
-	{
-		// First, convert to UTF-8
-		std::u16string utf16String(reinterpret_cast<const char16_t*>(charArray));
-		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter1;
-		std::string utf8String = converter1.to_bytes(utf16String);
+	// Systems where wchar_t is UTF-16:
+	// First, convert to UTF-8
+	std::u16string utf16String(reinterpret_cast<const char16_t*>(charArray));
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter1;
+	std::string utf8String = converter1.to_bytes(utf16String);
 
-		// Next, convert to UTF-32
-		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter2;
-		return std::u32string(converter2.from_bytes(utf8String));
+	// Next, convert to UTF-32
+	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter2;
+	return converter2.from_bytes(utf8String);
 
-		// This is inefficient, but importantly it is _correct_, rather than a hand-rolled UTF-16 to
-		// UTF-32 converter which may or may not be correct. Since I do not have a Windows system,
-		// I do not want to accidentally break Windows! Hence, I'm using what the standard library
-		// gives us.
-	}
-
-	return std::u32string(); // If this returns, something is very wrong!
+	// This is inefficient, but importantly it is _correct_, rather than a hand-rolled UTF-16 to
+	// UTF-32 converter which may or may not be correct.
 }
 
 
