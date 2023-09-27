@@ -56,6 +56,9 @@ local filter_types_titles = {
 	fgettext("Texture packs"),
 }
 
+-- Automatic package installation
+local auto_install_pkg = nil
+
 local number_downloading = 0
 local download_queue = {}
 
@@ -532,6 +535,47 @@ function confirm_overwrite.create(package, callback)
 		nil)
 end
 
+local function install_or_update_package(this, package)
+	local install_parent
+	if package.type == "mod" then
+		install_parent = core.get_modpath()
+	elseif package.type == "game" then
+		install_parent = core.get_gamepath()
+	elseif package.type == "txp" then
+		install_parent = core.get_texturepath()
+	else
+		error("Unknown package type: " .. package.type)
+	end
+
+
+	local function on_confirm()
+		local deps = get_raw_dependencies(package)
+		if deps and has_hard_deps(deps) then
+			local dlg = install_dialog.create(package, deps)
+			dlg:set_parent(this)
+			this:hide()
+			dlg:show()
+		else
+			queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
+		end
+	end
+
+	if package.type == "mod" and #pkgmgr.games == 0 then
+		local dlg = messagebox("install_game",
+			fgettext("You need to install a game before you can install a mod"))
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+	elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+		local dlg = confirm_overwrite.create(package, on_confirm)
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+	else
+		on_confirm()
+	end
+end
+
 
 local function get_file_extension(path)
 	local parts = path:split(".")
@@ -644,6 +688,46 @@ local function sort_and_filter_pkgs()
 	store.filter_packages(search_string)
 end
 
+-- Resolves the package specification stored in auto_install_pkg into an actual package.
+local function prepare_auto_install_pkg()
+	if auto_install_pkg then
+		local resolved = nil
+
+		for _, pkg in ipairs(store.packages_full_unordered) do
+			if pkg.author == auto_install_pkg.author and
+					pkg.name == auto_install_pkg.name then
+				resolved = pkg
+				break
+			end
+		end
+
+		if not resolved then
+			local store_dlg = ui.find_by_name("store")
+
+			local dlg = messagebox("error_pkg_not_found",
+					fgettext("The package $1/$2 was not found.",
+							auto_install_pkg.author, auto_install_pkg.name))
+			dlg:set_parent(store_dlg)
+			store_dlg:hide()
+			dlg:show()
+			ui.update()
+		end
+
+		auto_install_pkg = resolved
+	end
+end
+
+-- Installs the package stored in auto_install_pkg.
+-- Must only be called after prepare_auto_install_pkg().
+local function do_auto_install_pkg()
+	if auto_install_pkg then
+		local store_dlg = ui.find_by_name("store")
+
+		install_or_update_package(store_dlg, auto_install_pkg)
+		auto_install_pkg = nil
+	end
+end
+
 function store.load()
 	if store.load_ok then
 		sort_and_filter_pkgs()
@@ -662,7 +746,10 @@ function store.load()
 				store.packages_full = result.packages
 				store.packages_full_unordered = result.packages
 				store.aliases = result.aliases
+
+				prepare_auto_install_pkg()
 				sort_and_filter_pkgs()
+				do_auto_install_pkg()
 
 				store.load_ok = true
 				store.load_error = false
@@ -726,10 +813,9 @@ function store.sort_packages()
 	local ret = {}
 
 	-- Add installed content
-	for i=1, #store.packages_full_unordered do
-		local package = store.packages_full_unordered[i]
-		if package.path then
-			ret[#ret + 1] = package
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if pkg.path and pkg ~= auto_install_pkg then
+			ret[#ret + 1] = pkg
 		end
 	end
 
@@ -747,11 +833,15 @@ function store.sort_packages()
 	end)
 
 	-- Add uninstalled content
-	for i=1, #store.packages_full_unordered do
-		local package = store.packages_full_unordered[i]
-		if not package.path then
-			ret[#ret + 1] = package
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if not pkg.path and pkg ~= auto_install_pkg then
+			ret[#ret + 1] = pkg
 		end
+	end
+
+	-- Put the package that will be auto-installed at the very top
+	if auto_install_pkg then
+		table.insert(ret, 1, auto_install_pkg)
 	end
 
 	store.packages_full = ret
@@ -1048,45 +1138,7 @@ function store.handle_submit(this, fields)
 		assert(package)
 
 		if fields["install_" .. i] then
-			local install_parent
-			if package.type == "mod" then
-				install_parent = core.get_modpath()
-			elseif package.type == "game" then
-				install_parent = core.get_gamepath()
-			elseif package.type == "txp" then
-				install_parent = core.get_texturepath()
-			else
-				error("Unknown package type: " .. package.type)
-			end
-
-
-			local function on_confirm()
-				local deps = get_raw_dependencies(package)
-				if deps and has_hard_deps(deps) then
-					local dlg = install_dialog.create(package, deps)
-					dlg:set_parent(this)
-					this:hide()
-					dlg:show()
-				else
-					queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
-				end
-			end
-
-			if package.type == "mod" and #pkgmgr.games == 0 then
-				local dlg = messagebox("install_game",
-					fgettext("You need to install a game before you can install a mod"))
-				dlg:set_parent(this)
-				this:hide()
-				dlg:show()
-			elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
-				local dlg = confirm_overwrite.create(package, on_confirm)
-				dlg:set_parent(this)
-				this:hide()
-				dlg:show()
-			else
-				on_confirm()
-			end
-
+			install_or_update_package(this, package)
 			return true
 		end
 
@@ -1110,7 +1162,7 @@ function store.handle_submit(this, fields)
 	return false
 end
 
-function create_store_dlg(type)
+function create_store_dlg(type, install_pkg)
 	search_string = ""
 	cur_page = 1
 	if type then
@@ -1124,6 +1176,8 @@ function create_store_dlg(type)
 	else
 		filter_type = 1
 	end
+
+	auto_install_pkg = install_pkg
 
 	store.load()
 
