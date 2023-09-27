@@ -41,6 +41,8 @@ function check_reinstall_mtg()
 		return
 	end
 
+	mm_game_theme.reset()
+
 	local maintab = ui.find_by_name("maintab")
 
 	local dlg = create_reinstall_mtg_dlg()
