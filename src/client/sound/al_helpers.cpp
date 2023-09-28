@@ -1,5 +1,6 @@
 /*
 Minetest
+Copyright (C) 2022 DS
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 OpenAL support based on work by:
 Copyright (C) 2011 Sebastian 'Bahamada' Rühl
@@ -21,24 +22,32 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "sound_openal.h"
+#include "al_helpers.h"
 
-#include "sound_singleton.h"
-#include "proxy_sound_manager.h"
+/*
+ * RAIIALSoundBuffer
+ */
 
-std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
-
-std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
+RAIIALSoundBuffer &RAIIALSoundBuffer::operator=(RAIIALSoundBuffer &&other) noexcept
 {
-	auto smg = std::make_shared<SoundManagerSingleton>();
-	if (!smg->init()) {
-		smg.reset();
-	}
-	return smg;
+	if (&other != this)
+		reset(other.release());
+	return *this;
 }
 
-std::unique_ptr<ISoundManager> createOpenALSoundManager(SoundManagerSingleton *smg,
-		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider)
+void RAIIALSoundBuffer::reset(ALuint buf) noexcept
 {
-	return std::make_unique<ProxySoundManager>(smg, std::move(fallback_path_provider));
-};
+	if (m_buffer != 0) {
+		alDeleteBuffers(1, &m_buffer);
+		warn_if_al_error("Failed to free sound buffer");
+	}
+
+	m_buffer = buf;
+}
+
+RAIIALSoundBuffer RAIIALSoundBuffer::generate() noexcept
+{
+	ALuint buf;
+	alGenBuffers(1, &buf);
+	return RAIIALSoundBuffer(buf);
+}
