@@ -1387,6 +1387,7 @@ void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::stri
 
 	field_enter_after_edit[parts[0]] = is_yes(parts[1]);
 }
+
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts;
