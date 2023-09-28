@@ -21,6 +21,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "sound_manager.h"
 
+namespace sound {
+
 /*
  * The public ISoundManager interface
  */
@@ -69,3 +71,5 @@ public:
 	void fadeSound(sound_handle_t soundid, f32 step, f32 target_gain) override;
 	void updateSoundPosVel(sound_handle_t sound, const v3f &pos_, const v3f &vel_) override;
 };
+
+} // namespace sound

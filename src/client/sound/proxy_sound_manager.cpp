@@ -21,6 +21,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "filesys.h"
 
+namespace sound {
+
 ProxySoundManager::MsgResult ProxySoundManager::handleMsg(SoundManagerMsgToProxy &&msg)
 {
 	using namespace sound_manager_messages_to_proxy;
@@ -161,3 +163,5 @@ void ProxySoundManager::updateSoundPosVel(sound_handle_t sound, const v3f &pos_,
 {
 	send(sound_manager_messages_to_mgr::UpdateSoundPosVel{sound, pos_, vel_});
 }
+
+} // namespace sound

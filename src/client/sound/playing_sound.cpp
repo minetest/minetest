@@ -28,6 +28,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include <cmath>
 
+namespace sound {
+
 PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data,
 		bool loop, f32 volume, f32 pitch, f32 start_time,
 		const std::optional<std::pair<v3f, v3f>> &pos_vel_opt)
@@ -239,3 +241,5 @@ f32 PlayingSound::getGain() noexcept
 		gain *= 1.0f/3.0f;
 	return gain;
 }
+
+} // namespace sound

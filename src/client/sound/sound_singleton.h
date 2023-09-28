@@ -26,6 +26,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "al_helpers.h"
 
+namespace sound {
+
 /**
  * Class for the openal device and context
  */
@@ -58,3 +60,5 @@ public:
 
 	~SoundManagerSingleton();
 };
+
+} // namespace sound

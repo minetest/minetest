@@ -26,6 +26,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "sound_constants.h"
 
+namespace sound {
+
 /*
  * ISoundDataOpen struct
  */
@@ -229,3 +231,5 @@ std::tuple<ALuint, ALuint, ALuint> SoundDataOpenStream::loadBufferAt(ALuint offs
 
 	return {it->m_buffers[new_buf_i].m_buffer.get(), new_buf_end, offset - new_buf_start};
 }
+
+} // namespace sound

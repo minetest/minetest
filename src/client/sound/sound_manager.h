@@ -31,13 +31,16 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "threading/thread.h"
 #include "util/container.h" // MutexedQueue
 
+namespace sound {
+
 class SoundManagerSingleton;
 
 /*
  * The SoundManager thread
  *
  * It's not an ISoundManager. It doesn't allocate ids, and doesn't accept id 0.
- * All sound loading and interaction with OpenAL happens in this thread.
+ * All sound loading and interaction with OpenAL happens in this thread, and in
+ * SoundManagerSingleton.
  * Access from other threads happens via ProxySoundManager.
  *
  * See sound_constants.h for more details.
@@ -169,3 +172,5 @@ private:
 		send(sound_manager_messages_to_proxy::ReportRemovedSound{id});
 	}
 };
+
+} // namespace sound

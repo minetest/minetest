@@ -28,6 +28,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include <tuple>
 
+namespace sound {
+
 /**
  * Stores sound pcm data buffers.
  */
@@ -171,3 +173,5 @@ private:
 	std::tuple<ALuint, ALuint, ALuint> loadBufferAt(ALuint offset,
 			std::vector<ContiguousBuffers>::iterator after_it);
 };
+
+} // namespace sound

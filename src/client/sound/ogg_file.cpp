@@ -26,6 +26,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include <cstring> // memcpy
 
+namespace sound {
+
 /*
  * OggVorbisBufferSource struct
  */
@@ -177,3 +179,5 @@ RAIIALSoundBuffer RAIIOggFile::loadBuffer(const OggFileDecodeInfo &decode_info,
 
 	return snd_buffer_id;
 }
+
+} // namespace sound

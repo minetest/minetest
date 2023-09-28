@@ -29,6 +29,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 
+namespace sound {
+
 void OpenALSoundManager::stepStreams(f32 dtime)
 {
 	// spread work across steps
@@ -521,3 +523,5 @@ void *OpenALSoundManager::run()
 
 	return nullptr;
 }
+
+} // namespace sound

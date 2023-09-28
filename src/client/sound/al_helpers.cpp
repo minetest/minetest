@@ -24,6 +24,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "al_helpers.h"
 
+namespace sound {
+
 /*
  * RAIIALSoundBuffer
  */
@@ -51,3 +53,5 @@ RAIIALSoundBuffer RAIIALSoundBuffer::generate() noexcept
 	alGenBuffers(1, &buf);
 	return RAIIALSoundBuffer(buf);
 }
+
+} // namespace sound

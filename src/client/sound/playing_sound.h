@@ -26,6 +26,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "sound_data.h"
 
+namespace sound {
+
 /**
  * A sound that is currently played.
  * Can be streaming.
@@ -105,3 +107,5 @@ public:
 			play();
 	}
 };
+
+} // namespace sound
