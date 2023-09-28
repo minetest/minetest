@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkexceptions.h"
 
 #if USE_SOUND
-	#include "sound_openal.h"
+	#include "sound/sound_openal.h"
 #endif
 
 /* mainmenumanager.h

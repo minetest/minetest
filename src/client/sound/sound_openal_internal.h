@@ -27,7 +27,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"
 #include "sound_openal.h"
-#include "../sound.h"
+#include "../../sound.h"
 #include "threading/thread.h"
 #include "util/basic_macros.h"
 #include "util/container.h"

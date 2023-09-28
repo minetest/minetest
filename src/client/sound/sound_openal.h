@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "sound.h"
+#include "client/sound.h"
 
 #include <memory>
 
