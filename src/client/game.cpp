@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keys.h"
 #include "client/joystick_controller.h"
 #include "client/mapblock_mesh.h"
+#include "client/sound.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"
@@ -75,10 +76,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientdynamicinfo.h"
 
 #if USE_SOUND
-	#include "client/sound_openal.h"
-#else
-	#include "client/sound.h"
+	#include "client/sound/sound_openal.h"
 #endif
+
 /*
 	Text input system
 */
