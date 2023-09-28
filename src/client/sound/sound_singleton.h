@@ -1,5 +1,6 @@
 /*
 Minetest
+Copyright (C) 2022 DS
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 OpenAL support based on work by:
 Copyright (C) 2011 Sebastian 'Bahamada' Rühl
@@ -21,24 +22,39 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "sound_openal.h"
+#pragma once
 
-#include "sound_singleton.h"
-#include "proxy_sound_manager.h"
+#include "al_helpers.h"
 
-std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
-
-std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton()
+/**
+ * Class for the openal device and context
+ */
+class SoundManagerSingleton
 {
-	auto smg = std::make_shared<SoundManagerSingleton>();
-	if (!smg->init()) {
-		smg.reset();
-	}
-	return smg;
-}
+public:
+	struct AlcDeviceDeleter {
+		void operator()(ALCdevice *p)
+		{
+			alcCloseDevice(p);
+		}
+	};
 
-std::unique_ptr<ISoundManager> createOpenALSoundManager(SoundManagerSingleton *smg,
-		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider)
-{
-	return std::make_unique<ProxySoundManager>(smg, std::move(fallback_path_provider));
+	struct AlcContextDeleter {
+		void operator()(ALCcontext *p)
+		{
+			alcMakeContextCurrent(nullptr);
+			alcDestroyContext(p);
+		}
+	};
+
+	using unique_ptr_alcdevice = std::unique_ptr<ALCdevice, AlcDeviceDeleter>;
+	using unique_ptr_alccontext = std::unique_ptr<ALCcontext, AlcContextDeleter>;
+
+	unique_ptr_alcdevice  m_device;
+	unique_ptr_alccontext m_context;
+
+public:
+	bool init();
+
+	~SoundManagerSingleton();
 };

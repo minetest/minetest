@@ -1,0 +1,107 @@
+/*
+Minetest
+Copyright (C) 2022 DS
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+OpenAL support based on work by:
+Copyright (C) 2011 Sebastian 'Bahamada' Rühl
+Copyright (C) 2011 Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>
+Copyright (C) 2011 Giuseppe Bilotta <giuseppe.bilotta@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; ifnot, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+#pragma once
+
+#include "sound_data.h"
+
+/**
+ * A sound that is currently played.
+ * Can be streaming.
+ * Can be fading.
+ */
+class PlayingSound final
+{
+	struct FadeState {
+		f32 step;
+		f32 target_gain;
+	};
+
+	ALuint m_source_id;
+	std::shared_ptr<ISoundDataOpen> m_data;
+	ALuint m_next_sample_pos = 0;
+	bool m_looping;
+	bool m_is_positional;
+	bool m_stopped_means_dead = true;
+	std::optional<FadeState> m_fade_state = std::nullopt;
+
+public:
+	PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data, bool loop,
+			f32 volume, f32 pitch, f32 start_time,
+			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt);
+
+	~PlayingSound() noexcept
+	{
+		alDeleteSources(1, &m_source_id);
+	}
+
+	DISABLE_CLASS_COPY(PlayingSound)
+
+	// return false means streaming finished
+	bool stepStream();
+
+	// retruns true if it wasn't fading already
+	bool fade(f32 step, f32 target_gain) noexcept;
+
+	// returns true if more fade is needed later
+	bool doFade(f32 dtime) noexcept;
+
+	void updatePosVel(const v3f &pos, const v3f &vel) noexcept;
+
+	void setGain(f32 gain) noexcept;
+
+	f32 getGain() noexcept;
+
+	void setPitch(f32 pitch) noexcept { alSourcef(m_source_id, AL_PITCH, pitch); }
+
+	bool isStreaming() const noexcept { return m_data->isStreaming(); }
+
+	void play() noexcept { alSourcePlay(m_source_id); }
+
+	// returns one of AL_INITIAL, AL_PLAYING, AL_PAUSED, AL_STOPPED
+	ALint getState() noexcept
+	{
+		ALint state;
+		alGetSourcei(m_source_id, AL_SOURCE_STATE, &state);
+		return state;
+	}
+
+	bool isDead() noexcept
+	{
+		// streaming sounds can (but should not) stop because the queue runs empty
+		return m_stopped_means_dead && getState() == AL_STOPPED;
+	}
+
+	void pause() noexcept
+	{
+		// this is a NOP if state != AL_PLAYING
+		alSourcePause(m_source_id);
+	}
+
+	void resume() noexcept
+	{
+		if (getState() == AL_PAUSED)
+			play();
+	}
+};
