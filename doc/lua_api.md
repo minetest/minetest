@@ -2643,6 +2643,9 @@ Version History
   * Added padding[] element
 * Formspec version 6 (5.6.0):
   * Add nine-slice images, animated_image, and fgimg_middle
+* Formspec version 7 (5.8.0):
+  * style[]: Add focused state for buttons
+  * Add field_enter_after_edit[]
 
 Elements
 --------
