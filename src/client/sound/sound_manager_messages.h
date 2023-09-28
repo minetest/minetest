@@ -23,6 +23,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "../../sound.h"
 #include <variant>
 
+namespace sound {
+
 namespace sound_manager_messages_to_mgr {
 	struct PauseAll {};
 	struct ResumeAll {};
@@ -78,3 +80,5 @@ using SoundManagerMsgToProxy = std::variant<
 
 		sound_manager_messages_to_proxy::Stopped
 	>;
+
+} // namespace sound

@@ -100,6 +100,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
  *
  */
 
+namespace sound {
+
 // constants
 
 // in seconds
@@ -117,3 +119,5 @@ static_assert(MIN_STREAM_BUFFER_LENGTH > STREAM_BIGSTEP_TIME * 2.0f,
 		"See [Streaming of sounds].");
 static_assert(SOUND_DURATION_MAX_SINGLE >= MIN_STREAM_BUFFER_LENGTH * 2.0f,
 		"There's no benefit in streaming if we can't queue more than 2 buffers.");
+
+} // namespace sound

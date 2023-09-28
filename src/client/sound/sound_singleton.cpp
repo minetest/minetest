@@ -24,6 +24,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "sound_singleton.h"
 
+namespace sound {
+
 bool SoundManagerSingleton::init()
 {
 	if (!(m_device = unique_ptr_alcdevice(alcOpenDevice(nullptr)))) {
@@ -67,3 +69,5 @@ SoundManagerSingleton::~SoundManagerSingleton()
 {
 	infostream << "Audio: Global Deinitialized." << std::endl;
 }
+
+} // namespace sound

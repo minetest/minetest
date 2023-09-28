@@ -29,6 +29,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <optional>
 #include <string>
 
+namespace sound {
+
 /**
  * For vorbisfile to read from our buffer instead of from a file.
  */
@@ -92,3 +94,5 @@ struct RAIIOggFile {
 	RAIIALSoundBuffer loadBuffer(const OggFileDecodeInfo &decode_info, ALuint pcm_start,
 			ALuint pcm_end);
 };
+
+} // namespace sound

@@ -45,6 +45,8 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include <utility>
 
+namespace sound {
+
 inline const char *getAlErrorString(ALenum err) noexcept
 {
 	switch (err) {
@@ -116,3 +118,5 @@ private:
 	// > [...] the NULL buffer (i.e., 0) which can always be queued.
 	ALuint m_buffer = 0;
 };
+
+} // namespace sound
