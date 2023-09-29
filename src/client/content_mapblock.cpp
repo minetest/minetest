@@ -1724,11 +1724,6 @@ void MapblockMeshGenerator::drawNode()
 	}
 }
 
-/*
-	TODO: Fix alpha blending for special nodes
-	Currently only the last element rendered is blended correct
-	^ TODO: outdated info?
-*/
 void MapblockMeshGenerator::generate()
 {
 	for (cur_node.p.Z = 0; cur_node.p.Z < data->side_length; cur_node.p.Z++)
