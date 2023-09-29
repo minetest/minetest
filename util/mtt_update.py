@@ -444,7 +444,7 @@ def update_mod(folder):
 			for tr_file in get_existing_tr_files(folder):
 				update_tr_file(data, modname, os.path.join(folder, "locale/", tr_file))
 	else:
-		print(f"\033[31mUnable to find modname in folder {folder}.\033[0m", file=_stderr)
+		print(f"Unable to determine the mod name in folder {folder}. Missing 'name' field in mod.conf.", file=_stderr)
 		exit(1)
 
 # Determines if the folder being pointed to is a mod or a mod pack
