@@ -10,7 +10,7 @@ This script makes assumptions about your source code. Before it is usable, you f
 
 It is recommended to set the textdomain name (for `minetest.get_translator`) to be identical of the mod name as the script will automatically detect it. If the textdomain name differs, you may have to manually change the `# textdomain:` line of newly generated files.
 
-**Note:** In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in the same file are not supported and any additional textdomain line will be removed.
+**Note:** In each `*.tr` file, there **must** be only one textdomain. Multiple textdomains in the same file are not supported by this script and any additional textdomain line will be removed.
 
 ### Defining the helper functions
 
@@ -34,13 +34,23 @@ Replace `<textdomain>` above and optionally delete `NS`, `FS` and/or `NFS` if yo
 
 ### Preparing the strings
 
-Enclose any translatable strings in a function of the form `S("Some string")`. Only literal strings will be detected; variables will be ignored. For a string to be detected, it has to be written in a specific way that satisfies the following rules:
+This script can detect translatable strings of the notations listed below.
+Additional function arguments followed after a literal string are ignored.
 
-* The function brackets must contain a single literal string, or a concatenation of literal strings
-* The function brackets **must not** be omitted
-* The string **must** use `"..."`, `'...'` or `[[...]]` as string delimiters
-* If it's a concatenation of literal strings, you can't use `[[...]]` as string delimiters
-* Concatenating a literal string with a variable is **not** permitted and will lead to errors
+* `S("literal")`: one literal string enclosed by the delimiters
+  `"..."`, `'...'` or `[[...]]`
+* `S("foo " .. 'bar ' .. "baz")`: concatenation of multiple literal strings. Line
+  breaks are accepted.
+
+The `S` may also be `NS`, `FS` and `NFS` (see above).
+
+Undetectable notations:
+
+* `S"literal"`: omitted function brackets
+* `S(variable)`: requires the use of `NS`. See example below.
+* `S("literal " .. variable)`: non-static content.
+  Use placeholders (`@1`, ...) for variable text.
+* Any literal string concatenation using `[[...]]`
 
 ### A minimal example
 
