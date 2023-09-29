@@ -63,9 +63,15 @@ void ParsedText::Element::setStyle(StyleList &style)
 		this->hovercolor = color;
 
 	unsigned int font_size = std::atoi(style["fontsize"].c_str());
+
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
 		font_mode = FM_Mono;
+
+	// hypertext[] only accepts absolute font size values and has a hardcoded
+	// default font size of 16. This is the only way to make hypertext[]
+	// respect font size settings that I can think of.
+	font_size = myround(font_size / 16.0f * g_fontengine->getFontSize(font_mode));
 
 	FontSpec spec(font_size, font_mode,
 		is_yes(style["bold"]), is_yes(style["italic"]));
