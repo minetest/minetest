@@ -542,7 +542,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p + v3s16(0, -1, 0));
 	cur_liquid.c_flowing = cur_node.f->liquid_alternative_flowing_id;
 	cur_liquid.c_source = cur_node.f->liquid_alternative_source_id;
-	cur_liquid.top_is_same = (ntop.getContent() == cur_liquid.c_flowing)
+	cur_liquid.top_is_same_liquid = (ntop.getContent() == cur_liquid.c_flowing)
 			|| (ntop.getContent() == cur_liquid.c_source);
 	cur_liquid.draw_bottom = (nbottom.getContent() != cur_liquid.c_flowing)
 			&& (nbottom.getContent() != cur_liquid.c_source);
@@ -681,7 +681,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 		// at the top to which it should be connected. Again, unless the face
 		// there would be inside the liquid
 		if (neighbor.is_same_liquid) {
-			if (!cur_liquid.top_is_same)
+			if (!cur_liquid.top_is_same_liquid)
 				continue;
 			if (neighbor.top_is_same_liquid)
 				continue;
@@ -703,7 +703,7 @@ void MapblockMeshGenerator::drawLiquidSides()
 			pos.Z = (base.Z - 0.5f) * BS;
 			if (vertex.v) {
 				pos.Y = (neighbor.is_same_liquid ? cur_liquid.corner_levels[base.Z][base.X] : -0.5f) * BS;
-			} else if (cur_liquid.top_is_same) {
+			} else if (cur_liquid.top_is_same_liquid) {
 				pos.Y = 0.5f * BS;
 			} else {
 				pos.Y = cur_liquid.corner_levels[base.Z][base.X] * BS;
@@ -806,7 +806,7 @@ void MapblockMeshGenerator::drawLiquidNode()
 	getLiquidNeighborhood();
 	calculateCornerLevels();
 	drawLiquidSides();
-	if (!cur_liquid.top_is_same)
+	if (!cur_liquid.top_is_same_liquid)
 		drawLiquidTop();
 	if (cur_liquid.draw_bottom)
 		drawLiquidBottom();
