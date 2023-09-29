@@ -192,7 +192,7 @@ function make.enum(setting)
 end
 
 
-function make.path(setting)
+local function make_path(setting)
 	return {
 		info_text = setting.comment,
 		setting = setting,
@@ -233,6 +233,15 @@ function make.path(setting)
 			end
 		end,
 	}
+end
+
+if PLATFORM == "Android" then
+	-- The Irrlicht file picker doesn't work on Android.
+	make.path = make.string
+	make.filepath = make.string
+else
+	make.path = make_path
+	make.filepath = make_path
 end
 
 
@@ -362,7 +371,7 @@ function make.flags(setting)
 end
 
 
-local function noise_params(setting)
+local function make_noise_params(setting)
 	return {
 		info_text = setting.comment,
 		setting = setting,
@@ -390,9 +399,8 @@ local function noise_params(setting)
 	}
 end
 
+make.noise_params_2d = make_noise_params
+make.noise_params_3d = make_noise_params
 
-make.filepath = make.path
-make.noise_params_2d = noise_params
-make.noise_params_3d = noise_params
 
 return make
