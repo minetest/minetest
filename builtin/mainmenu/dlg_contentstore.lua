@@ -690,42 +690,50 @@ end
 
 -- Resolves the package specification stored in auto_install_pkg into an actual package.
 local function prepare_auto_install_pkg()
-	if auto_install_pkg then
-		local resolved = nil
-
-		for _, pkg in ipairs(store.packages_full_unordered) do
-			if pkg.author == auto_install_pkg.author and
-					pkg.name == auto_install_pkg.name then
-				resolved = pkg
-				break
-			end
-		end
-
-		if not resolved then
-			local store_dlg = ui.find_by_name("store")
-
-			local dlg = messagebox("error_pkg_not_found",
-					fgettext("The package $1/$2 was not found.",
-							auto_install_pkg.author, auto_install_pkg.name))
-			dlg:set_parent(store_dlg)
-			store_dlg:hide()
-			dlg:show()
-			ui.update()
-		end
-
-		auto_install_pkg = resolved
+	if not auto_install_pkg then
+		return
 	end
+
+	local resolved = nil
+
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if pkg.author == auto_install_pkg.author and
+				pkg.name == auto_install_pkg.name then
+			resolved = pkg
+			break
+		end
+	end
+
+	if not resolved then
+		gamedata.errormessage = fgettext("The package $1/$2 was not found.",
+				auto_install_pkg.author, auto_install_pkg.name)
+		ui.update()
+	end
+
+	auto_install_pkg = resolved
 end
 
 -- Installs the package stored in auto_install_pkg.
--- Must only be called after prepare_auto_install_pkg().
+-- May only be called after prepare_auto_install_pkg().
+-- Only does something if:
+-- a. The package list has beeen loaded successfully.
+-- b. The store dialog is currently visible.
 local function do_auto_install_pkg()
-	if auto_install_pkg then
-		local store_dlg = ui.find_by_name("store")
-
-		install_or_update_package(store_dlg, auto_install_pkg)
-		auto_install_pkg = nil
+	if not auto_install_pkg then
+		return
 	end
+
+	if not store.load_ok then
+		return
+	end
+
+	local store_dlg = ui.find_by_name("store")
+	if not store_dlg or store_dlg.hidden then
+		return
+	end
+
+	install_or_update_package(store_dlg, auto_install_pkg)
+	auto_install_pkg = nil
 end
 
 function store.load()
@@ -742,6 +750,8 @@ function store.load()
 		{ urlencode = urlencode },
 		function(result)
 			if result then
+				store.load_ok = true
+				store.load_error = false
 				store.packages = result.packages
 				store.packages_full = result.packages
 				store.packages_full_unordered = result.packages
@@ -750,15 +760,12 @@ function store.load()
 				prepare_auto_install_pkg()
 				sort_and_filter_pkgs()
 				do_auto_install_pkg()
-
-				store.load_ok = true
-				store.load_error = false
 			else
 				store.load_error = true
 			end
 
 			store.loading = false
-			core.event_handler("Refresh")
+			ui.update()
 		end
 	)
 end
@@ -1162,6 +1169,22 @@ function store.handle_submit(this, fields)
 	return false
 end
 
+function store.handle_events(event)
+	if event == "DialogShow" then
+		do_auto_install_pkg()
+		return true
+	end
+
+	return false
+end
+
+--- Creates a ContentDB dialog.
+---
+--- @param type string | nil
+--- Sets initial package filter. "game", "mod", "txp" or nil (no filter).
+--- @param install_pkg table | nil
+--- Package specification of the form { author = string, name = string }.
+--- Sets package to install or update automatically.
 function create_store_dlg(type, install_pkg)
 	search_string = ""
 	cur_page = 1
@@ -1177,12 +1200,15 @@ function create_store_dlg(type, install_pkg)
 		filter_type = 1
 	end
 
-	auto_install_pkg = install_pkg
+	-- Keep the old auto_install_pkg if the caller doesn't specify one.
+	if install_pkg then
+		auto_install_pkg = install_pkg
+	end
 
 	store.load()
 
 	return dialog_create("store",
 			store.get_formspec,
 			store.handle_submit,
-			nil)
+			store.handle_events)
 end
