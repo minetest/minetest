@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkexceptions.h"
 
 #if USE_SOUND
-	#include "sound_openal.h"
+	#include "sound/sound_openal.h"
 #endif
 
 /* mainmenumanager.h
@@ -277,9 +277,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 #ifdef NDEBUG
 		catch (std::exception &e) {
-			std::string error_message = "Some exception: \"";
-			error_message += e.what();
-			error_message += "\"";
+			error_message = "Some exception: ";
+			error_message.append(debug_describe_exc(e));
 			errorstream << error_message << std::endl;
 		}
 #endif
@@ -398,11 +397,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		spec.path = start_data.world_path;
 		spec.gameid = getWorldGameId(spec.path, true);
 		spec.name = _("[--world parameter]");
-
-		if (spec.gameid.empty()) {	// Create new
-			spec.gameid = g_settings->get("default_game");
-			spec.name += " [new]";
-		}
 	}
 
 	/* Show the GUI menu

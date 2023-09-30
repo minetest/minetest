@@ -133,7 +133,9 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
 
-	getintfield(L, index, "place_param2", def.place_param2);
+	int place_param2;
+	if (getintfield(L, index, "place_param2", place_param2))
+		def.place_param2 = rangelim(place_param2, 0, U8_MAX);
 }
 
 /******************************************************************************/
@@ -194,6 +196,43 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_pushstring(L, i.node_placement_prediction.c_str());
 	lua_setfield(L, -2, "node_placement_prediction");
 }
+
+/******************************************************************************/
+const std::array<const char *, 33> object_property_keys = {
+	"hp_max",
+	"breath_max",
+	"physical",
+	"collide_with_objects",
+	"collisionbox",
+	"selectionbox",
+	"pointable",
+	"visual",
+	"mesh",
+	"visual_size",
+	"textures",
+	"colors",
+	"spritediv",
+	"initial_sprite_basepos",
+	"is_visible",
+	"makes_footstep_sound",
+	"stepheight",
+	"eye_height",
+	"automatic_rotate",
+	"automatic_face_movement_dir",
+	"backface_culling",
+	"glow",
+	"nametag",
+	"nametag_color",
+	"automatic_face_movement_max_rotation_per_sec",
+	"infotext",
+	"static_save",
+	"wield_item",
+	"zoom_fov",
+	"use_texture_alpha",
+	"shaded",
+	"damage_texture_modifier",
+	"show_on_minimap"
+};
 
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
@@ -362,6 +401,9 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "show_on_minimap", prop->show_on_minimap);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/
@@ -459,6 +501,9 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "damage_texture_modifier");
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/
@@ -684,6 +729,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	lua_getfield(L, index, "post_effect_color");
 	read_color(L, -1, &f.post_effect_color);
 	lua_pop(L, 1);
+
+	getboolfield(L, index, "post_effect_color_shaded", f.post_effect_color_shaded);
 
 	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
 			ScriptApiNode::es_ContentParamType, CPT_NONE);
@@ -916,6 +963,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 
 	push_ARGB8(L, c.post_effect_color);
 	lua_setfield(L, -2, "post_effect_color");
+	lua_pushboolean(L, c.post_effect_color_shaded);
+	lua_setfield(L, -2, "post_effect_color_shaded");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
 	lua_pushnumber(L, c.leveled_max);

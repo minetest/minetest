@@ -177,6 +177,27 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
 
+	lua_pushnumber(L, phys.speed_climb);
+	lua_setfield(L, -2, "speed_climb");
+
+	lua_pushnumber(L, phys.speed_crouch);
+	lua_setfield(L, -2, "speed_crouch");
+
+	lua_pushnumber(L, phys.liquid_fluidity);
+	lua_setfield(L, -2, "liquid_fluidity");
+
+	lua_pushnumber(L, phys.liquid_fluidity_smooth);
+	lua_setfield(L, -2, "liquid_fluidity_smooth");
+
+	lua_pushnumber(L, phys.liquid_sink);
+	lua_setfield(L, -2, "liquid_sink");
+
+	lua_pushnumber(L, phys.acceleration_default);
+	lua_setfield(L, -2, "acceleration_default");
+
+	lua_pushnumber(L, phys.acceleration_air);
+	lua_setfield(L, -2, "acceleration_air");
+
 	return 1;
 }
 

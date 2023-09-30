@@ -666,7 +666,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	spec.ftype = f_ScrollBar;
 	spec.send  = true;
 	GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
-			spec.fid, rect, is_horizontal, true);
+			spec.fid, rect, is_horizontal, true, m_tsrc);
 
 	auto style = getDefaultStyleForElement("scrollbar", name);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1493,7 +1493,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	gui::IGUIEditBox *e = nullptr;
 	if (is_multiline) {
 		e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true, Environment,
-				data->current_parent, spec.fid, rect, is_editable, true);
+				data->current_parent, spec.fid, rect, m_tsrc, is_editable, true);
 	} else if (is_editable) {
 		e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
 				data->current_parent, spec.fid);
@@ -1670,8 +1670,6 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
 {
-	MY_CHECKCLIENT("hypertext");
-
 	std::vector<std::string> parts;
 	if (!precheckElement("hypertext", element, 4, 4, parts))
 		return;
@@ -4314,10 +4312,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
 				else if (event.MouseInput.Shift && button == BET_LEFT)
-					// TODO: We should craft everything with shift-left-click,
-					// but the slow crafting code limits us, so we only craft one
-					craft_amount = 1;
-					//craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
+					craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
 				else
 					craft_amount = 1;
 
@@ -4452,6 +4447,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (m_left_drag_stacks.size() > 1) {
 					// Finalize the left-dragging
 					for (auto &ds : m_left_drag_stacks) {
+						if (ds.first == *m_selected_item) {
+							// This entry is needed to properly calculate the stack sizes.
+							// The stack already exists, hence no further action needed here.
+							continue;
+						}
+
 						// Check how many items we should move to this slot,
 						// it may be less than the full split
 						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);

@@ -42,7 +42,8 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 	} catch (const char *s) {  // Catch and convert exceptions.
 		lua_pushstring(L, s);
 	} catch (std::exception &e) {
-		lua_pushstring(L, e.what());
+		std::string e_descr = debug_describe_exc(e);
+		lua_pushlstring(L, e_descr.c_str(), e_descr.size());
 	}
 	return lua_error(L);  // Rethrow as a Lua error.
 }
@@ -177,7 +178,8 @@ void log_deprecated(lua_State *L, std::string message, int stack_depth)
 	if (mode == DeprecatedHandlingMode::Ignore)
 		return;
 
-	script_log_add_source(L, message, stack_depth);
+	if (stack_depth >= 0)
+		script_log_add_source(L, message, stack_depth);
 	warningstream << message << std::endl;
 
 	if (mode == DeprecatedHandlingMode::Error)

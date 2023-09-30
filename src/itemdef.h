@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <string>
 #include <iostream>
+#include <optional>
 #include <set>
 #include "itemgroup.h"
 #include "sound.h"
@@ -87,7 +88,7 @@ struct ItemDefinition
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
 	std::string node_placement_prediction;
-	u8 place_param2;
+	std::optional<u8> place_param2;
 
 	/*
 		Some helpful methods

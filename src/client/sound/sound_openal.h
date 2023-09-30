@@ -19,11 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "sound.h"
-
+#include "client/sound.h"
 #include <memory>
 
-class SoundManagerSingleton;
+namespace sound { class SoundManagerSingleton; }
+using sound::SoundManagerSingleton;
+
 extern std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
 std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton();

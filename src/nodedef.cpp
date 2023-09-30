@@ -415,6 +415,7 @@ void ContentFeatures::reset()
 	node_dig_prediction = "air";
 	move_resistance = 0;
 	liquid_move_physics = false;
+	post_effect_color_shaded = false;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -543,6 +544,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, alpha);
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
+	writeU8(os, post_effect_color_shaded);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
@@ -656,6 +658,11 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		liquid_move_physics = tmp;
+
+		tmp = readU8(is);
+		if (is.eof())
+			throw SerializationError("");
+		post_effect_color_shaded = tmp;
 	} catch(SerializationError &e) {};
 }
 

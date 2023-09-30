@@ -43,7 +43,7 @@ public:
 		{
 		}
 
-		bool operator==(const ItemSpec& other)
+		bool operator==(const ItemSpec& other) const
 		{
 			return inventoryloc == other.inventoryloc &&
 					listname == other.listname && i == other.i;

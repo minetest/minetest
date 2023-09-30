@@ -1621,8 +1621,9 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		) / 4.0f * BS;
 		const float radius_sq = radius * radius;
 		/* Don't send short-lived spawners to distant players.
-		 * This could be replaced with proper tracking at some point. */
-		const bool distance_check = !attached_id && p.time <= 1.0f;
+		 * This could be replaced with proper tracking at some point.
+		 * A lifetime of 0 means that the spawner exists forever.*/
+		const bool distance_check = !attached_id && p.time <= 1.0f && p.time != 0.0f;
 
 		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
@@ -2513,7 +2514,7 @@ bool Server::addMediaFile(const std::string &filename,
 {
 	// If name contains illegal characters, ignore the file
 	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-		infostream << "Server: ignoring illegal file name: \""
+		warningstream << "Server: ignoring file as it has disallowed characters: \""
 				<< filename << "\"" << std::endl;
 		return false;
 	}

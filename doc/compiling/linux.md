@@ -4,7 +4,7 @@
 
 | Dependency | Version | Commentary |
 | ---------- | ------- | ---------- |
-| GCC        | 7.5+    | or Clang 6.0+ |
+| GCC        | 7.5+    | or Clang 7.0.1+ |
 | CMake      | 3.5+    |            |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
 | Freetype   | 2.0+    |            |
@@ -23,6 +23,10 @@ For Debian/Ubuntu users:
 For Fedora users:
 
     sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel openal-soft-devel libpng-devel libjpeg-devel libvorbis-devel libXi-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel spatialindex-devel libzstd-devel gettext
+
+For openSUSE users:
+
+	sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel
 
 For Arch users:
 

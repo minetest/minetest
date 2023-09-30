@@ -208,7 +208,7 @@ void ClientEnvironment::step(float dtime)
 					!lplayer->swimming_vertical &&
 					!lplayer->swimming_pitch)
 				// HACK the factor 2 for gravity is arbitrary and should be removed eventually
-				lplayer->gravity = 2 * lplayer->movement_liquid_sink;
+				lplayer->gravity = 2 * lplayer->movement_liquid_sink * lplayer->physics_override.liquid_sink;
 
 			// Movement resistance
 			if (lplayer->move_resistance > 0) {
@@ -218,20 +218,22 @@ void ClientEnvironment::step(float dtime)
 				// between 0 and 1. Should match the scale at which liquid_viscosity
 				// increase affects other liquid attributes.
 				static const f32 resistance_factor = 0.3f;
+				float fluidity = lplayer->movement_liquid_fluidity;
+				fluidity *= MYMAX(1.0f, lplayer->physics_override.liquid_fluidity);
+				fluidity = MYMAX(0.001f, fluidity); // prevent division by 0
+				float fluidity_smooth = lplayer->movement_liquid_fluidity_smooth;
+				fluidity_smooth *= lplayer->physics_override.liquid_fluidity_smooth;
+				fluidity_smooth = MYMAX(0.0f, fluidity_smooth);
 
 				v3f d_wanted;
 				bool in_liquid_stable = lplayer->in_liquid_stable || lplayer->in_liquid;
-				if (in_liquid_stable) {
-					d_wanted = -speed / lplayer->movement_liquid_fluidity;
-				} else {
+				if (in_liquid_stable)
+					d_wanted = -speed / fluidity;
+				else
 					d_wanted = -speed / BS;
-				}
 				f32 dl = d_wanted.getLength();
-				if (in_liquid_stable) {
-					if (dl > lplayer->movement_liquid_fluidity_smooth)
-						dl = lplayer->movement_liquid_fluidity_smooth;
-				}
-
+				if (in_liquid_stable)
+					dl = MYMIN(dl, fluidity_smooth);
 				dl *= (lplayer->move_resistance * resistance_factor) +
 					(1 - resistance_factor);
 				v3f d = d_wanted.normalize() * (dl * dtime_part * 100.0f);

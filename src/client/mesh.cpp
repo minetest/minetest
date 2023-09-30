@@ -337,6 +337,8 @@ bool checkMeshNormals(scene::IMesh *mesh)
 
 	for (u32 i = 0; i < buffer_count; i++) {
 		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+		if (!buffer->getVertexCount())
+			continue;
 
 		// Here we intentionally check only first normal, assuming that if buffer
 		// has it valid, then most likely all other ones are fine too. We can
@@ -502,4 +504,19 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		}
 	}
 	return dst_mesh;
+}
+
+void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic) {
+	if (trilinear)
+		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
+	else if (bilinear)
+		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_NEAREST;
+	else
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+
+	// "We don't want blurriness after all." ~ Desour, #13108
+	// (because of pixel art)
+	tex.MagFilter = video::ETMAGF_NEAREST;
+
+	tex.AnisotropicFilter = anisotropic ? 0xFF : 0;
 }

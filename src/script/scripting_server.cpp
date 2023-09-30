@@ -174,6 +174,8 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 void ServerScripting::InitializeAsync(lua_State *L, int top)
 {
 	// classes
+	ItemStackMetaRef::Register(L);
+	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);

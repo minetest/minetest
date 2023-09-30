@@ -31,13 +31,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "guiMainMenu.h"
 #include "sound.h"
-#include "client/sound_openal.h"
 #include "httpfetch.h"
 #include "log.h"
 #include "client/fontengine.h"
 #include "client/guiscalingfilter.h"
 #include "irrlicht_changes/static_text.h"
 #include "client/tile.h"
+
+#if USE_SOUND
+	#include "client/sound/sound_openal.h"
+#endif
 
 
 /******************************************************************************/

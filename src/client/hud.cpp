@@ -223,16 +223,12 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 }
 
-//NOTE: selectitem = 0 -> no selected; selectitem 1-based
+// NOTE: selectitem = 0 -> no selected; selectitem is 1-based
 // mainlist can be NULL, but draw the frame anyway.
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
-		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
+		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction,
+		bool is_hotbar)
 {
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui && inv_offset == 0)
-		g_touchscreengui->resetHud();
-#endif
-
 	s32 height  = m_hotbar_imagesize + m_padding * 2;
 	s32 width   = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
 
@@ -292,11 +288,13 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			break;
 		}
 
-		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i + 1) == selectitem);
+		core::rect<s32> item_rect = imgrect + pos + steppos;
+
+		drawItem(mainlist->getItem(i), item_rect, (i + 1) == selectitem);
 
 #ifdef HAVE_TOUCHSCREENGUI
-		if (g_touchscreengui)
-			g_touchscreengui->registerHudItem(i, (imgrect + pos + steppos));
+		if (is_hotbar && g_touchscreengui)
+			g_touchscreengui->registerHotbarRect(i, item_rect);
 #endif
 	}
 }
@@ -406,7 +404,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				if (!inv)
 					warningstream << "HUD: Unknown inventory list. name=" << e->text << std::endl;
 				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
-					inv, e->item, e->dir);
+					inv, e->item, e->dir, false);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
 				if (!calculateScreenPos(camera_offset, e, &pos))
@@ -739,15 +737,20 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir,
 }
 
 
-void Hud::drawHotbar(u16 playeritem) {
-
-	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
+void Hud::drawHotbar(u16 playeritem)
+{
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui)
+		g_touchscreengui->resetHotbarRects();
+#endif
 
 	InventoryList *mainlist = inventory->getList("main");
 	if (mainlist == NULL) {
-		//silently ignore this we may not be initialized completely
+		// Silently ignore this. We may not be initialized completely.
 		return;
 	}
+
+	v2s32 centerlowerpos(m_displaycenter.X, m_screensize.Y);
 
 	s32 hotbar_itemcount = player->hud_hotbar_itemcount;
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
@@ -757,7 +760,7 @@ void Hud::drawHotbar(u16 playeritem) {
 	if ((float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0, true);
 		}
 	} else {
 		pos.X += width/4;
@@ -767,9 +770,9 @@ void Hud::drawHotbar(u16 playeritem) {
 
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount / 2, 0,
-				mainlist, playeritem + 1, 0);
+				mainlist, playeritem + 1, 0, true);
 			drawItems(secondpos, v2s32(0, 0), hotbar_itemcount,
-				hotbar_itemcount / 2, mainlist, playeritem + 1, 0);
+				hotbar_itemcount / 2, mainlist, playeritem + 1, 0, true);
 		}
 	}
 }
@@ -777,44 +780,52 @@ void Hud::drawHotbar(u16 playeritem) {
 
 void Hud::drawCrosshair()
 {
+	auto draw_image_crosshair = [this] (video::ITexture *tex) {
+		core::dimension2di orig_size(tex->getOriginalSize());
+		core::dimension2di scaled_size(
+				core::round32(orig_size.Width * m_scale_factor),
+				core::round32(orig_size.Height * m_scale_factor));
+
+		core::rect<s32> src_rect(orig_size);
+		core::position2d pos(m_displaycenter.X - scaled_size.Width / 2,
+				m_displaycenter.Y - scaled_size.Height / 2);
+		core::rect<s32> dest_rect(pos, scaled_size);
+
+		video::SColor colors[] = { crosshair_argb, crosshair_argb,
+				crosshair_argb, crosshair_argb };
+
+		draw2DImageFilterScaled(driver, tex, dest_rect, src_rect,
+				nullptr, colors, true);
+	};
+
 	if (pointing_at_object) {
 		if (use_object_crosshair_image) {
-			video::ITexture *object_crosshair = tsrc->getTexture("object_crosshair.png");
-			v2u32 size  = object_crosshair->getOriginalSize();
-			v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-					m_displaycenter.Y - (size.Y / 2));
-			driver->draw2DImage(object_crosshair, lsize,
-					core::rect<s32>(0, 0, size.X, size.Y),
-					nullptr, crosshair_argb, true);
+			draw_image_crosshair(tsrc->getTexture("object_crosshair.png"));
 		} else {
+			s32 line_size = core::round32(OBJECT_CROSSHAIR_LINE_SIZE * m_scale_factor);
+
 			driver->draw2DLine(
-					m_displaycenter - v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE),
-					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+					m_displaycenter - v2s32(line_size, line_size),
+					m_displaycenter + v2s32(line_size, line_size),
+					crosshair_argb);
 			driver->draw2DLine(
-					m_displaycenter + v2s32(OBJECT_CROSSHAIR_LINE_SIZE,
-					-OBJECT_CROSSHAIR_LINE_SIZE),
-					m_displaycenter + v2s32(-OBJECT_CROSSHAIR_LINE_SIZE,
-					OBJECT_CROSSHAIR_LINE_SIZE), crosshair_argb);
+					m_displaycenter + v2s32(line_size, -line_size),
+					m_displaycenter + v2s32(-line_size, line_size),
+					crosshair_argb);
 		}
 
 		return;
 	}
 
 	if (use_crosshair_image) {
-		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
-		v2u32 size  = crosshair->getOriginalSize();
-		v2s32 lsize = v2s32(m_displaycenter.X - (size.X / 2),
-				m_displaycenter.Y - (size.Y / 2));
-		driver->draw2DImage(crosshair, lsize,
-				core::rect<s32>(0, 0, size.X, size.Y),
-				nullptr, crosshair_argb, true);
+		draw_image_crosshair(tsrc->getTexture("crosshair.png"));
 	} else {
-		driver->draw2DLine(m_displaycenter - v2s32(CROSSHAIR_LINE_SIZE, 0),
-				m_displaycenter + v2s32(CROSSHAIR_LINE_SIZE, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, CROSSHAIR_LINE_SIZE),
-				m_displaycenter + v2s32(0, CROSSHAIR_LINE_SIZE), crosshair_argb);
+		s32 line_size = core::round32(CROSSHAIR_LINE_SIZE * m_scale_factor);
+
+		driver->draw2DLine(m_displaycenter - v2s32(line_size, 0),
+				m_displaycenter + v2s32(line_size, 0), crosshair_argb);
+		driver->draw2DLine(m_displaycenter - v2s32(0, line_size),
+				m_displaycenter + v2s32(0, line_size), crosshair_argb);
 	}
 }
 
