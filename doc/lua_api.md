@@ -2928,6 +2928,7 @@ Elements
 
 ### `field_enter_after_edit[<name>;<enter_after_edit>]`
 
+* Experimental, may be subject to change or removal at any time.
 * Only affects Android clients.
 * `<name>` is the name of the field.
 * If `<enter_after_edit>` is true, pressing the "Done" button in the Android
