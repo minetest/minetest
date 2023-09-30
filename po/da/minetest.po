@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Danish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-01-26 12:17+0000\n"
-"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-01-11 21:48+0000\n"
+"Last-Translator: Kristian <macrofag@protonmail.com>\n"
 "Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
 "da/>\n"
 "Language: da\n"
@@ -12,19 +12,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Ryd chatkøen"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Snakkekommandoer"
+msgstr "Tøm kommando,."
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
 msgstr "Afslut til menu"
 
@@ -34,24 +32,23 @@ msgstr "Ugyldig kommando: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Sendt kommando; "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Enlig spiller"
+msgstr "Vis online spillere"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr "Online-spillere: "
+msgstr "Spillere online: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "Udgående chatkøe er nu tom."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Kommandoen er slået fra af serveren."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
@@ -71,33 +68,34 @@ msgstr "Tilgængelige kommandoer: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Kommando ikke tilgængelig; "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Få hjælp til kommandoer"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Brug .'help<cmd>' for at få mere information, eller 'help all' for at vise "
+"alt."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[all | <cmd>j"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<ingen tilgængelige>"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "Der skete en fejl i Lua scriptet, muligvis af et mod:"
+msgstr "Der skete en fejl i et Lua script:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
@@ -137,11 +135,11 @@ msgstr "Vi understøtter protokol versioner mellem $1 og $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Slået til, fejler)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Uopfyldt)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -184,7 +182,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Find flere mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -199,9 +197,8 @@ msgid "No game description provided."
 msgstr "Der er ikke nogen beskrivelse af tilgængelig af det valgte spil."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No hard dependencies"
-msgstr "Ingen afhængigheder."
+msgstr "Ingen tvungne grundlag"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -209,9 +206,8 @@ msgstr ""
 "Der er ikke nogen beskrivelse af tilgængelig af den valgte samling af mods."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No optional dependencies"
-msgstr "Valgfrie afhængigheder:"
+msgstr "Ingen valgfrie grundlag"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -232,81 +228,78 @@ msgstr "aktiveret"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" findes allerede. Vil du overskrive den?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Påkrævet grundlag for $1 og $2 vl blive installeret."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 med $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 downloader.\n"
+"$2 i kø"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "Indlæser..."
+msgstr "Henter $1..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "Pålrævede grundlag for $1 kunne ikke findes."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 will be installed, and $2 dependencies will be skipped."
 msgstr ""
+"$1 vil blive installeret, og påkrævede grundlag for $2 vil blive sprunget "
+"over."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "All packages"
 msgstr "Alle pakker"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Already installed"
-msgstr "Tast allerede i brug"
+msgstr "Allerede installeret"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
 msgstr "Tilbage til hovedmenuen"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Base Game:"
-msgstr "Vær vært for spil"
+msgstr "Basisspil:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB er ikke tilgængelig når Minetest blev compileret uden cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Downloading..."
-msgstr "Indlæser..."
+msgstr "Henter..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Fejl ved installation af \"$1\":$2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Kunne ikke hente $1"
+msgstr "Kunne ikke hente \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Kunne ikke hente $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
 msgstr ""
-"Installer mod: Filtypen \"$1\" er enten ikke understøttet, ellers er arkivet "
-"korrupt"
+"Kunne ikke pakke \"$1\" ud (ikke-understøttet filtype eller korrupt arkiv)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -317,14 +310,12 @@ msgid "Install"
 msgstr "Installer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install $1"
-msgstr "Installer"
+msgstr "Installér $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Install missing dependencies"
-msgstr "Valgfrie afhængigheder:"
+msgstr "Installér manglende grundlag"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -339,25 +330,24 @@ msgid "No results"
 msgstr "Der er ingen resultater at vise"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "No updates"
-msgstr "Opdater"
+msgstr "Ingen opdateringer"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Ikke fundet"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Overskriv"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Kontrollér venlist, at basisspillet er korrekt."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Sat i kø"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Texture packs"
@@ -373,11 +363,11 @@ msgstr "Opdater"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Opdater alle [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Se mere information i en webbrowser"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -385,103 +375,92 @@ msgstr "En verden med navnet »$1« findes allerede"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Yderligere terræn"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Altitude chill"
-msgstr "Højdekulde"
+msgstr "Højdeafkøling"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Altitude dry"
-msgstr "Højdekulde"
+msgstr "Højdeudtrørring"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biome blending"
-msgstr "Biom støj"
+msgstr "Biomblanding"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Biomes"
-msgstr "Biom støj"
+msgstr "Biomer"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caverns"
-msgstr "Hule støj"
+msgstr "Kaverner"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Caves"
-msgstr "Oktaver"
+msgstr "Huler"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
 msgstr "Skab"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Decorations"
-msgstr "Gentagelser"
+msgstr "Udsmykninger"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Advarsel: Den minimale udvikings test er kun lavet for udviklerne."
+msgstr "Udvklingstest er tiltænkt udviklere."
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Dungeons"
-msgstr "Ridge støj"
+msgstr "Fangehuller"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Flat terræn"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Flydende landmasser i skyen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Floatlands (experimental)"
-msgstr "Svævelandsniveau"
+msgstr "Svævelande (eksperimentel)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generér ikke-frakteret terræn: Have og undergrund"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "Bakker"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Humid rivers"
-msgstr "Luftfugtighedsstøj"
+msgstr "Fugtige floder"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "Øger fugtigheden omkring floder"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Installer"
+msgstr "Installér et spil"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Installér et andet spil"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Søer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
 msgstr ""
+"Lav fugtighed og høj varme får lavvandede eller tøre floder til at tørre ud"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -492,21 +471,20 @@ msgid "Mapgen flags"
 msgstr "Flag for Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Mapgen-specific flags"
-msgstr "Mapgen v5 særlige flag"
+msgstr "Mapgen-specifikke flag"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Bjerge"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Mudderløb"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Netværk af tunneller og huler"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
@@ -514,20 +492,19 @@ msgstr "Intet spil valgt"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Reducerer varme med højde"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Reducerer fugtighed med højde"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Rivers"
-msgstr "Flodstørrelse"
+msgstr "Floder"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Floder i niveau med havet"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -536,47 +513,47 @@ msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Glat overgang mellem biomer"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Strukturer som fremstår på terrænet (ingen effekt på træer og junglegræs "
+"lavet af v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Strukturer som fremkommer på terrænet, typisk træer og planter"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Tempereret, ørken"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Tempereret, ørken, jungle"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Tempereret, ørken, jungle, tundra, taigaskov"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Terrain surface erosion"
-msgstr "Terræn base støj"
+msgstr "Erosion af terrænoverflade"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Træer og junglegræs"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Vary river depth"
-msgstr "Floddybde"
+msgstr "Variér floddybde"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Meget store kaverner dybt under jorden"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -597,14 +574,12 @@ msgid "Delete"
 msgstr "Slet"
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "Modmgr: Kunne ikke slette \"$1\""
+msgstr "pkgmr: Kunne ikke slette \"$1\""
 
 #: builtin/mainmenu/dlg_delete_content.lua
-#, fuzzy
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "Modmgr: ugyldig mod-sti \"$1\""
+msgstr "pkgmgr: ugyldig sti \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -616,32 +591,29 @@ msgstr "Bekræft kodeord"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Tilslutter $1"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Missing name"
-msgstr "Mapgen-navn"
+msgstr "Manglende navn"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Password"
-msgstr "Nyt kodeord"
+msgstr "Kodeord"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Kodeordene er ikke ens!"
+msgstr "Kodeordene er ikke ens"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "Registrér"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -676,19 +648,16 @@ msgid "Browse"
 msgstr "Gennemse"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "Vælg verden:"
+msgstr "Klient mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Indhold"
+msgstr "Indhold: Spil"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Indhold"
+msgstr "Indhold: Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -703,9 +672,8 @@ msgid "Enabled"
 msgstr "aktiveret"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Lacunarity"
-msgstr "Sikkerhed"
+msgstr "Lakunaritet"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Octaves"
@@ -713,12 +681,11 @@ msgstr "Oktaver"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Forskydning"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Persistens"
+msgstr "Vedholdenhed"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -805,11 +772,11 @@ msgstr "Standard"
 #. main menu -> "All Settings".
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "eased"
-msgstr ""
+msgstr "udglattet"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "A ny version af $1 er tilgængelig"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -818,18 +785,22 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Installeret verion: $1\n"
+"Ny version: $2\n"
+"Besøg $3 for at finde ud af hvordan man får den nyeste version og holder sig "
+"opdateret med funktioner og fejlrettelser."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
-msgstr ""
+msgstr "Senere"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Aldrig"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Besøg hjemmeside"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -844,20 +815,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Kunne ikke installere $1 til $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Installer mod: Kunne ikke finde passende mappe navn for samling af mods $1"
+msgstr "Installation: Kunne ikke finde passende mappenavn til $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Kan ikke finde en korrekt mod eller samling af mods"
+msgstr "Kan ikke finde en gyldigt mod, samling af mods eller spil"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Kan ikke installere $1 som et mod"
+msgstr "Kan ikke installere $1 som et $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -869,7 +836,7 @@ msgstr "Indlæser..."
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
-msgstr ""
+msgstr "Liste med offentlige servere er slået fra"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -879,16 +846,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
 msgstr "Aktive bidragere"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
-msgstr "Aktivt objektafsendelsesinterval"
+msgstr "Aktivt renderinsværktøj:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -896,18 +862,19 @@ msgstr "Primære udviklere"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Primære hold"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Vælg mappe"
+msgstr "Åben sti med brugerdata"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
 "Opens the directory that contains user-provided worlds, games, mods,\n"
 "and texture packs in a file manager / explorer."
 msgstr ""
+"Åbner stien som indeholder brugeroprettede verdener, spil, mods,\n"
+"og teksturpakker i en stifinder."
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
@@ -919,7 +886,7 @@ msgstr "Tidligere primære udviklere"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
-msgstr ""
+msgstr "Del fejlretningslog"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -987,7 +954,7 @@ msgstr "Host Server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Installer spil fra ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
@@ -1006,9 +973,8 @@ msgid "Port"
 msgstr "Port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Select Mods"
-msgstr "Vælg verden:"
+msgstr "Vælg mods"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1019,12 +985,10 @@ msgid "Server Port"
 msgstr "Server port"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "Vær vært for spil"
+msgstr "Start spil"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Address"
 msgstr "Adresse"
 
@@ -1038,54 +1002,48 @@ msgstr "Kreativ tilstand"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Skade"
+msgstr "Skade / PvP"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Favorit"
+msgstr "Favoritter"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Inkompatible servere"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Join Game"
-msgstr "Vær vært for spil"
+msgstr "Tilslut spil"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
 msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Public Servers"
-msgstr "Meddelelsesserver"
+msgstr "Offentlige servere"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
-msgstr ""
+msgstr "Opdatér"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Fjernport"
+msgstr "Fjern favorit"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "Serverbeskrivelse"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(game support required)"
-msgstr ""
+msgstr "(Spilunderstøttelse påkrævet)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1104,18 +1062,16 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "All Settings"
-msgstr "Indstillinger"
+msgstr "Alle indstillinger"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
 msgstr "Udjævning:"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Autosave Screen Size"
-msgstr "Autogem skærmstørrelse"
+msgstr "Gem skærmstørrelse automatisk"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -1130,14 +1086,12 @@ msgid "Connected Glass"
 msgstr "Forbundet glas"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dynamic shadows"
-msgstr "Fontskygge"
+msgstr "Dynamiske skygger"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Fontskygge"
+msgstr "Dynamiske skygger:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1145,18 +1099,17 @@ msgstr "Smukke blade"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "High"
-msgstr ""
+msgstr "Høj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Low"
-msgstr ""
+msgstr "Lav"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Medium"
-msgstr ""
+msgstr "Midtimellem"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Mipmap"
 msgstr "Mipmap"
 
@@ -1209,13 +1162,12 @@ msgid "Shaders"
 msgstr "Dybdeskabere"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Shaders (experimental)"
-msgstr "Svævelandsniveau"
+msgstr "Dybdeskabere (eksperimentel)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (unavailable)"
-msgstr ""
+msgstr "Dybdeskabere (utilgængelige)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -1234,9 +1186,8 @@ msgid "Tone Mapping"
 msgstr "Toneoversættelse"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Føletærskel (px)"
+msgstr "Berøringstærskel (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1244,29 +1195,27 @@ msgstr "Tri-lineær filtréring"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very High"
-msgstr ""
+msgstr "Meget høj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Meget lav"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
 msgstr "Bølgende blade"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Liquids"
-msgstr "Bølgende blade"
+msgstr "Bølgende væsker"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
 msgstr "Bølgende planter"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Forbindelses fejl (udløbelse af tidsfrist?)"
+msgstr "Forbindelsen blev afbrudt (protkolfejl?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1323,7 +1272,7 @@ msgstr "Vælg venligst et navn!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr ""
+msgstr "Angivne kodeordsfil kunne ikke åbnes: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1363,77 +1312,69 @@ msgid "- Server Name: "
 msgstr "- Servernavn: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Der skete en fejl:"
+msgstr "Der opstod en serialiseringsfejl:"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr ""
+msgstr "Adgang nægtet. Årsag: %s"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward disabled"
-msgstr "Fremadtast"
+msgstr "Automatisk viderestilling slået fra"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Automatic forward enabled"
-msgstr "Fremadtast"
+msgstr "Automatisk viderestilling slået til"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Blokafgrænsning skjult"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Blokafgrænsning vist for alle blokke"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Blokafgrænsning vist for nuværende blok"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Blokafgrænsning vist for blokke i nærheden"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update disabled"
-msgstr "Tast til ændring af kameraopdatering"
+msgstr "Kameraopdatering slået fra"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Camera update enabled"
-msgstr "Tast til ændring af kameraopdatering"
+msgstr "Kameraopdatering slået til"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+msgstr "Kan ikke vise blokafgrænsning (slået fra af mod eller spil)"
 
 #: src/client/game.cpp
 msgid "Change Password"
 msgstr "Skift kodeord"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode disabled"
-msgstr "Tast for filmisk tilstand"
+msgstr "Filmtilstand slået fra"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Cinematic mode enabled"
-msgstr "Tast for filmisk tilstand"
+msgstr "Filmtilstand slået til"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Klient modding"
+msgstr "Klient afkoblet"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
-msgstr ""
+msgstr "Scripting på klientside er slået fra"
 
 #: src/client/game.cpp
 msgid "Connecting to server..."
@@ -1441,14 +1382,14 @@ msgstr "Forbinder til server..."
 
 #: src/client/game.cpp
 msgid "Connection failed for unknown reason"
-msgstr ""
+msgstr "Forbindelsen slog fejl af ukendt årsag"
 
 #: src/client/game.cpp
 msgid "Continue"
 msgstr "Fortsæt"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1473,17 +1414,15 @@ msgstr ""
 "- %s: hoppe/klatre\n"
 "- %s: snige/gå nedad\n"
 "- %s: smid genstand\n"
-"- %s: medbragt/lager\n"
-"- Mus: vende rundt/kigge\n"
-"- Mus venstre: grave/slå\n"
-"- Mus højre: placere/bruge\n"
-"- Musehjul: vælge genstand\n"
-"- %s: snakke (chat)\n"
+"- %s: Oppakning\n"
+"- Mus: vend rundt/kig\n"
+"- Musehjul: vælg genstand\n"
+"- %s: skriven (chat)\n"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Kunne ikke finde adressen: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1495,16 +1434,15 @@ msgstr "Opretter server ..."
 
 #: src/client/game.cpp
 msgid "Debug info and profiler graph hidden"
-msgstr ""
+msgstr "Fejlretningsinfo og profileringsgraf skjult"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Debug info shown"
-msgstr "Tast til aktivering af fejlsøgningsinfo"
+msgstr "Vis fejlsøgningsinformation"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
+msgstr "Fejlretningsinfo, profileringsgraf og wireramme skjult"
 
 #: src/client/game.cpp
 msgid ""
@@ -1536,16 +1474,16 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Disabled unlimited viewing range"
-msgstr ""
+msgstr "Slog ubegrænset sigtbarhed fra"
 
 #: src/client/game.cpp
 msgid "Enabled unlimited viewing range"
-msgstr ""
+msgstr "Slog ubegrænset sigtbarhed til"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Opretter klient ..."
+msgstr "Opretter klient: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1556,42 +1494,36 @@ msgid "Exit to OS"
 msgstr "Afslut til operativsystemet"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode disabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Hurtig tilstandshastighed deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fast mode enabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Hurtig tilstandshastighed slået til"
 
 #: src/client/game.cpp
 msgid "Fast mode enabled (note: no 'fast' privilege)"
-msgstr ""
+msgstr "Hurtig-modus slået til (bemærk: ingen 'hurtig' rettighed)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode disabled"
-msgstr "Hurtig tilstandshastighed"
+msgstr "Fly-mode deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fly mode enabled"
-msgstr "Skade aktiveret"
+msgstr "Fly-mode aktiveret"
 
 #: src/client/game.cpp
 msgid "Fly mode enabled (note: no 'fly' privilege)"
-msgstr ""
+msgstr "Flyvning slået til (bemærk: ingen 'flyvning' rettighed)"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog disabled"
-msgstr "Deaktivér alle"
+msgstr "Tåge deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Fog enabled"
-msgstr "aktiveret"
+msgstr "Tåge aktiveret"
 
 #: src/client/game.cpp
 msgid "Game info:"
@@ -1602,7 +1534,6 @@ msgid "Game paused"
 msgstr "Spil på pause"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Hosting server"
 msgstr "Hosting server"
 
@@ -1624,25 +1555,23 @@ msgstr "MiB/s"
 
 #: src/client/game.cpp
 msgid "Minimap currently disabled by game or mod"
-msgstr ""
+msgstr "Minikort er i øjeblikket slået fra af spil eller mod"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Multiplayer"
-msgstr "Enlig spiller"
+msgstr "Multiplayer"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
-msgstr ""
+msgstr "Nocliptilstand deaktiveret"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Noclip mode enabled"
-msgstr "Skade aktiveret"
+msgstr "Nocliptilstand aktiveret"
 
 #: src/client/game.cpp
 msgid "Noclip mode enabled (note: no 'noclip' privilege)"
-msgstr ""
+msgstr "Noclip tilstand er aktiveret (bemærk: ingen 'noclip' rettighed)"
 
 #: src/client/game.cpp
 msgid "Node definitions..."
@@ -1658,15 +1587,15 @@ msgstr "Til"
 
 #: src/client/game.cpp
 msgid "Pitch move mode disabled"
-msgstr ""
+msgstr "Pitchbevægelsestilstand slået fra"
 
 #: src/client/game.cpp
 msgid "Pitch move mode enabled"
-msgstr ""
+msgstr "Pitchbevægelsestilstand slået til"
 
 #: src/client/game.cpp
 msgid "Profiler graph shown"
-msgstr ""
+msgstr "Profileringsgraf vist"
 
 #: src/client/game.cpp
 msgid "Remote server"
@@ -1689,52 +1618,50 @@ msgid "Sound Volume"
 msgstr "Lydniveau"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound muted"
-msgstr "Lydniveau"
+msgstr "Lyd slået fra"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
-msgstr ""
+msgstr "Lydsystem er slået fra"
 
 #: src/client/game.cpp
 msgid "Sound system is not supported on this build"
-msgstr ""
+msgstr "Lydsystem er ikke understøttet i denne udgave"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Sound unmuted"
-msgstr "Lydniveau"
+msgstr "Lyd slået til"
 
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Serveren kører muligvis en anden version af %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kan ikke forbinde til %s fordi IPv6 er slået fra"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Kan ikke lytte på %s fordi IPv6 er slået fra"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d"
-msgstr "Lydstyrke ændret til %d%%"
+msgstr "Synafstand ændret til %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at maximum: %d"
-msgstr ""
+msgstr "Sigtbarhed er på maksimum: %d"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range is at minimum: %d"
-msgstr ""
+msgstr "Sigtbarhed er på mininum: %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1743,11 +1670,11 @@ msgstr "Lydstyrke ændret til %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
-msgstr ""
+msgstr "Wireramme vist"
 
 #: src/client/game.cpp
 msgid "Zoom currently disabled by game or mod"
-msgstr ""
+msgstr "Zoom er i øjeblikket slået fra af spil eller mod"
 
 #: src/client/game.cpp
 msgid "ok"
@@ -1755,36 +1682,39 @@ msgstr "ok"
 
 #: src/client/gameui.cpp
 #, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zoom er i øjeblikket slået fra af spil eller mod"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr "Snakketast"
+msgstr "Chat skjult"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr ""
+msgstr "Chat vist"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
-msgstr ""
+msgstr "HUD skjult"
 
 #: src/client/gameui.cpp
 msgid "HUD shown"
-msgstr ""
+msgstr "HUD vist"
 
 #: src/client/gameui.cpp
 msgid "Profiler hidden"
-msgstr ""
+msgstr "Profiler skjult"
 
 #: src/client/gameui.cpp
 #, c-format
 msgid "Profiler shown (page %d of %d)"
-msgstr ""
+msgstr "Profiler vist (side %d af %d)"
 
 #: src/client/keycode.cpp
 msgid "Apps"
-msgstr "Prg."
+msgstr "Apps"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Backspace"
 msgstr "Tilbage"
 
@@ -1947,11 +1877,11 @@ msgstr "OEM Ryd"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr ""
+msgstr "Side nedad"
 
 #: src/client/keycode.cpp
 msgid "Page up"
-msgstr ""
+msgstr "Side opad"
 
 #: src/client/keycode.cpp
 msgid "Pause"
@@ -2040,34 +1970,35 @@ msgid "Zoom"
 msgstr "Zoom"
 
 #: src/client/minimap.cpp
-#, fuzzy
 msgid "Minimap hidden"
-msgstr "Minikorttast"
+msgstr "Minikort skjult"
 
 #: src/client/minimap.cpp
 #, c-format
 msgid "Minimap in radar mode, Zoom x%d"
-msgstr ""
+msgstr "Minikort i radartilstand, zoom x%d"
 
 #: src/client/minimap.cpp
 #, c-format
 msgid "Minimap in surface mode, Zoom x%d"
-msgstr ""
+msgstr "Minikort i overfladetilstand, zoom x%d"
 
 #: src/client/minimap.cpp
 msgid "Minimap in texture mode"
-msgstr ""
+msgstr "Minikort i texturtilstand"
 
 #. ~ Error when a mod is missing dependencies. Ex: "Mod Title is missing: mod1, mod2, mod3"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s mangler:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Installér og aktivér de påkrævede mods, eller deaktivér de mods forsager "
+"fejlen."
 
 #: src/content/mod_configuration.cpp
 msgid ""
@@ -2078,38 +2009,35 @@ msgstr ""
 #: src/content/mod_configuration.cpp
 #, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Ingen afhængigheder."
+msgstr "Nogen mods har uopfyldte påkrævede grundlag:"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Kunne ikke hente $1"
+msgstr "Kunne ikke hente hjemmesiden"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Åbningshjemmeside"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
 msgstr "Fortsæt"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "\"Brug\" = klatre ned"
+msgstr "\"Aux1\" = klatre ned"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Autoforward"
-msgstr "Fremad"
+msgstr "Automatisk fremad"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Automatic jumping"
-msgstr ""
+msgstr "Automatisk hop"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Aux1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2117,12 +2045,11 @@ msgstr "Baglæns"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Blokafgrænsninger"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Change camera"
-msgstr "Skift bindinger"
+msgstr "Skift kamera"
 
 #: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Chat"
@@ -2138,7 +2065,7 @@ msgstr "Konsol"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. range"
-msgstr ""
+msgstr "Sænk afstand"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -2160,7 +2087,7 @@ msgstr "Fremad"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. range"
-msgstr ""
+msgstr "Øg afstand"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -2179,8 +2106,9 @@ msgid "Key already in use"
 msgstr "Tast allerede i brug"
 
 #: src/gui/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Keybindings."
-msgstr ""
+msgstr "Tastebindinger."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2211,14 +2139,12 @@ msgid "Sneak"
 msgstr "Snige"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle HUD"
-msgstr "Omstil flyvning"
+msgstr "Slå HUD til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle chat log"
-msgstr "Omstil hurtig"
+msgstr "Slå chat log til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -2229,14 +2155,12 @@ msgid "Toggle fly"
 msgstr "Omstil flyvning"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fog"
-msgstr "Omstil flyvning"
+msgstr "Slå tåge til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle minimap"
-msgstr "Omstil fylde"
+msgstr "Slå minikort til/fra"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
@@ -2272,12 +2196,11 @@ msgid "Exit"
 msgstr "Afslut"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy
 msgid "Muted"
-msgstr "Lydløs"
+msgstr "Sat på lydløs"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
 msgstr "Lydstyrke: %d%%"
 
@@ -2292,17 +2215,21 @@ msgstr "da"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Navnet er ikke registreret. Klik \"Registrer\" for at oprette en konto på "
+"denne server"
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Vælg venligst et navn!"
+msgstr "Navnet er taget. Vælg et andet navn"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "(Android) Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
+"(Android) Fikserer det virtuelle joysticks position. \n"
+"Hvis dette er slået fra vil joysticket vende tilbage til den oprindelige "
+"position."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2310,6 +2237,9 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
+"(Android) Brug det virtuelle joystick til at aktivere \"Aux1\" knappen.\n"
+"Hvis dette er slået til, vil joysticket også aktivere \"Aux1\" når det er "
+"udenfor hovedcirklen."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2427,7 +2357,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "Understøttelse af 3D.\n"
@@ -2523,17 +2452,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2894,6 +2812,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Klient"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3357,6 +3279,10 @@ msgid "Dungeon noise"
 msgstr "Ridge støj"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "Aktivér alle"
@@ -3382,6 +3308,18 @@ msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3543,7 +3481,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3626,7 +3564,6 @@ msgid "Filmic tone mapping"
 msgstr "Filmisk toneoversættelse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 "which PNG optimizers usually discard, often resulting in dark or\n"
@@ -3636,7 +3573,7 @@ msgstr ""
 "Filtrerede teksturer kan blande RGB-værdier med fuldt gennemsigtige naboer,\n"
 "som PNG-optimeringsprogrammer normalt fjerner, undertiden resulterende i "
 "en \n"
-"mørk eller lys kant  for gennemsigtige teksturer. Anvend dette filter for at "
+"mørk eller lys kant for gennemsigtige teksturer. Anvend dette filter for at "
 "rydde\n"
 "op i dette på indlæsningstidspunktet for tekstur."
 
@@ -3873,7 +3810,7 @@ msgstr "GUI-skaleringsfilter txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "Grafiske brugergrænseflader"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3950,7 +3887,7 @@ msgstr "HTTP-Mod'er"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4785,6 +4722,11 @@ msgstr "Mapblock mesh generation forsinkelse"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "Mapblock mesh generation forsinkelse"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "Mapblock mesh generation forsinkelse"
 
@@ -5222,6 +5164,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -5503,11 +5452,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "Gentagelser"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr ""
 
@@ -5697,11 +5641,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5727,13 +5669,6 @@ msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5781,7 +5716,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5867,6 +5802,15 @@ msgstr "Nedlukningsbesked"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5880,10 +5824,6 @@ msgid ""
 "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6167,11 +6107,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6391,6 +6329,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6676,9 +6620,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "World start time"
-msgstr "Verdens navn"
+msgstr "Verdens starttid"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6743,7 +6686,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -7794,6 +7737,10 @@ msgstr ""
 
 #~ msgid "Right key"
 #~ msgstr "Højretast"
+
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "Gentagelser"
 
 #~ msgid "Select Package File:"
 #~ msgstr "Vælg pakke fil:"

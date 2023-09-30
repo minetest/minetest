@@ -98,7 +98,8 @@ public:
 	}
 	void setBodyOrbitTilt(float body_orbit_tilt)
 	{
-		m_sky_params.body_orbit_tilt = body_orbit_tilt;
+		if (body_orbit_tilt != SkyboxParams::INVALID_SKYBOX_TILT)
+			m_sky_params.body_orbit_tilt = rangelim(body_orbit_tilt, -90.f, 90.f);
 	}
 	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
@@ -113,6 +114,11 @@ public:
 	void addTextureToSkybox(const  std::string &texture, int material_id,
 		ITextureSource *tsrc);
 	const video::SColorf &getCurrentStarColor() const { return m_star_color; }
+	void setFogDistance(s16 fog_distance) { m_sky_params.fog_distance = fog_distance; }
+	s16 getFogDistance() const { return m_sky_params.fog_distance; }
+
+	void setFogStart(float fog_start) { m_sky_params.fog_start = fog_start; }
+	float getFogStart() const { return m_sky_params.fog_start; }
 
 private:
 	aabb3f m_box;

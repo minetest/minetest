@@ -27,15 +27,10 @@ using namespace gui;
 
 //! constructor
 GUIButton::GUIButton(IGUIEnvironment* environment, IGUIElement* parent,
-			s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
-			bool noclip)
-: IGUIButton(environment, parent, id, rectangle),
-	SpriteBank(0), OverrideFont(0),
-	OverrideColorEnabled(false), OverrideColor(video::SColor(101,255,255,255)),
-	ClickTime(0), HoverTime(0), FocusTime(0),
-	ClickShiftState(false), ClickControlState(false),
-	IsPushButton(false), Pressed(false),
-	UseAlphaChannel(false), DrawBorder(true), ScaleImage(false), TSrc(tsrc)
+		s32 id, core::rect<s32> rectangle, ISimpleTextureSource *tsrc,
+		bool noclip) :
+	IGUIButton(environment, parent, id, rectangle),
+	TSrc(tsrc)
 {
 	setNotClipped(noclip);
 
@@ -200,6 +195,7 @@ bool GUIButton::OnEvent(const SEvent& event)
 			// mouse is outside of the formspec. Thus, we test the position here.
 			if ( !IsPushButton && AbsoluteClippingRect.isPointInside(
 						core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ))) {
+				Environment->setFocus(this);
 				setPressed(true);
 			}
 
@@ -258,8 +254,10 @@ void GUIButton::draw()
 	// PATCH
 	// Track hovered state, if it has changed then we need to update the style.
 	bool hovered = isHovered();
-	if (hovered != WasHovered) {
+	bool focused = isFocused();
+	if (hovered != WasHovered || focused != WasFocused) {
 		WasHovered = hovered;
+		WasFocused = focused;
 		setFromState();
 	}
 
@@ -387,7 +385,7 @@ EGUI_BUTTON_IMAGE_STATE GUIButton::getImageState(bool pressed, const ButtonImage
 {
 	// figure state we should have
 	EGUI_BUTTON_IMAGE_STATE state = EGBIS_IMAGE_DISABLED;
-	bool focused = Environment->hasFocus((IGUIElement*)this);
+	bool focused = isFocused();
 	bool mouseOver = isHovered();
 	if (isEnabled())
 	{
@@ -582,6 +580,12 @@ bool GUIButton::isHovered() const
 	IGUIElement *hovered = Environment->getHovered();
 	return  hovered == this || (hovered != nullptr && hovered->getParent() == this);
 }
+
+//! Returns if this element (or one of its direct children) is focused
+bool GUIButton::isFocused() const
+{
+	return Environment->hasFocus((IGUIElement*)this, true);
+}
 // END PATCH
 
 //! Sets the pressed state of the button if this is a pushbutton
@@ -661,6 +665,9 @@ void GUIButton::setFromState()
 
 	if (isHovered())
 		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_HOVERED);
+
+	if (isFocused())
+		state = static_cast<StyleSpec::State>(state | StyleSpec::STATE_FOCUSED);
 
 	setFromStyle(StyleSpec::getStyleFromStatePropagation(Styles, state));
 }

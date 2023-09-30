@@ -18,23 +18,18 @@
 
 ## General
 
-#    If enabled, you can place blocks at the position (feet + eye level) where you stand.
-#    This is helpful when working with nodeboxes in small areas.
-#    type: bool
-# enable_build_where_you_stand = false
-
-#    Smooths camera when looking around. Also called look or mouse smoothing.
-#    Useful for recording videos.
-#    type: bool
-# cinematic = false
-
-#    Smooths rotation of camera. 0 to disable.
+#    Smooths rotation of camera, also called look or mouse smoothing. 0 to disable.
 #    type: float min: 0 max: 0.99
 # camera_smoothing = 0.0
 
-#    Smooths rotation of camera in cinematic mode. 0 to disable.
+#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
 #    type: float min: 0 max: 0.99
 # cinematic_camera_smoothing = 0.7
+
+#    If enabled, you can place nodes at the position (feet + eye level) where you stand.
+#    This is helpful when working with nodeboxes in small areas.
+#    type: bool
+# enable_build_where_you_stand = false
 
 #    If enabled, "Aux1" key instead of "Sneak" key is used for climbing down and
 #    descending.
@@ -52,7 +47,7 @@
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
-#    type: float min: 0.25 max: 2
+#    type: float min: 0.16 max: 2
 # repeat_place_time = 0.25
 
 #    Automatically jump up single-node obstacles.
@@ -103,15 +98,22 @@
 
 ### Screen
 
-#    Width component of the initial window size. Ignored in fullscreen mode.
+#    Width component of the initial window size.
 #    type: int min: 1 max: 65535
 # screen_w = 1024
 
-#    Height component of the initial window size. Ignored in fullscreen mode.
+#    Height component of the initial window size.
 #    type: int min: 1 max: 65535
 # screen_h = 600
 
+#    Whether the window is maximized.
+#    type: bool
+# window_maximized = false
+
 #    Save window size automatically when modified.
+#    If true, screen size is saved in screen_w and screen_h, and whether the window
+#    is maximized is stored in window_maximized.
+#    (Autosaving window_maximized only works if compiled with SDL.)
 #    type: bool
 # autosave_screensize = true
 
@@ -131,7 +133,7 @@
 #    type: int min: 1 max: 4294967295
 # fps_max = 60
 
-#    Vertical screen synchronization.
+#    Vertical screen synchronization. Your system may still force VSync on even if this is disabled.
 #    type: bool
 # vsync = false
 
@@ -165,7 +167,7 @@
 
 #    Connects glass if supported by node.
 #    type: bool
-# connected_glass = true
+# connected_glass = false
 
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
@@ -191,9 +193,8 @@
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
 #    -    crossview: Cross-eyed 3d
-#    -    pageflip: quadbuffer based 3d.
 #    Note that the interlaced mode requires shaders to be enabled.
-#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview, pageflip
+#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, crossview
 # 3d_mode = none
 
 #    Strength of 3D mode parallax.
@@ -219,13 +220,6 @@
 
 ### Camera
 
-#    Camera 'near clipping plane' distance in nodes, between 0 and 0.25
-#    Only works on GLES platforms. Most users will not need to change this.
-#    Increasing can reduce artifacting on weaker GPUs.
-#    0.1 = Default, 0.25 = Good value for weaker tablets.
-#    type: float min: 0 max: 0.25
-# near_plane = 0.1
-
 #    Field of view in degrees.
 #    type: int min: 45 max: 160
 # fov = 72
@@ -243,7 +237,7 @@
 #    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
 #    set to the nearest valid value.
 #    type: float min: 0.25 max: 4
-# ambient_occlusion_gamma = 2.2
+# ambient_occlusion_gamma = 1.8
 
 ### Screenshots
 
@@ -363,6 +357,23 @@
 #    type: enum values: 0, 1, 2, 4, 8, 16
 # fsaa = 0
 
+### Occlusion Culling
+
+#    Type of occlusion_culler
+#
+#    "loops" is the legacy algorithm with nested loops and O(n³) complexity
+#    "bfs" is the new algorithm based on breadth-first-search and side culling
+#
+#    This setting should only be changed if you have performance problems.
+#    type: enum values: bfs, loops
+# occlusion_culler = bfs
+
+#    Use raytraced occlusion culling in the new culler.
+#    This flag enables use of raytraced occlusion culling test for
+#    client mesh sizes smaller than 4x4x4 map blocks.
+#    type: bool
+# enable_raytraced_culling = true
+
 ## Shaders
 
 #    Shaders allow advanced visual effects and may increase performance on some video
@@ -370,25 +381,6 @@
 #    This only works with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
-
-### Tone Mapping
-
-#    Enables Hable's 'Uncharted 2' filmic tone mapping.
-#    Simulates the tone curve of photographic film and how this approximates the
-#    appearance of high dynamic range images. Mid-range contrast is slightly
-#    enhanced, highlights and shadows are gradually compressed.
-#    type: bool
-# tone_mapping = false
-
-#    Adjust the saturation (or vividness) of the scene
-#    Values
-#    < 1.0 decrease saturation
-#    > 1.0 increase saturation
-#    1.0 = unchanged saturation
-#    0.0 = black and white
-#    (Tone mapping needs to be enabled.)
-#    type: float min: 0 max: 5
-# saturation = 1.0
 
 ### Waving Nodes
 
@@ -441,13 +433,13 @@
 
 #    Maximum distance to render shadows.
 #    type: float min: 10 max: 1000
-# shadow_map_max_distance = 120.0
+# shadow_map_max_distance = 140.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
 #    Bigger numbers create better shadows but it is also more expensive.
 #    type: int min: 128 max: 8192
-# shadow_map_texture_size = 1024
+# shadow_map_texture_size = 2048
 
 #    Sets shadow texture quality to 32 bits.
 #    On false, 16 bits texture will be used.
@@ -484,15 +476,33 @@
 #    type: float min: 1 max: 15
 # shadow_soft_radius = 5.0
 
-### Post processing
+#    Set the default tilt of Sun/Moon orbit in degrees.
+#    Games may change orbit tilt via API.
+#    Value of 0 means no tilt / vertical orbit.
+#    type: float min: -60 max: 60
+# shadow_sky_body_orbit_tilt = 0.0
 
-#    Set the exposure compensation factor.
-#    This factor is applied to linear color value 
-#    before all other post-processing effects.
-#    Value of 1.0 (default) means no exposure compensation.
-#    Range: from 0.1 to 10.0
-#    type: float min: 0.1 max: 10
-# exposure_factor = 1.0
+### Post Processing
+
+#    Enables Hable's 'Uncharted 2' filmic tone mapping.
+#    Simulates the tone curve of photographic film and how this approximates the
+#    appearance of high dynamic range images. Mid-range contrast is slightly
+#    enhanced, highlights and shadows are gradually compressed.
+#    type: bool
+# tone_mapping = false
+
+#    Enable automatic exposure correction
+#    When enabled, the post-processing engine will
+#    automatically adjust to the brightness of the scene,
+#    simulating the behavior of human eye.
+#    type: bool
+# enable_auto_exposure = false
+
+#    Set the exposure compensation in EV units.
+#    Value of 0.0 (default) means no exposure compensation.
+#    Range: from -1 to 1.0
+#    type: float min: -1 max: 1
+# exposure_compensation = 0.0
 
 ### Bloom
 
@@ -502,7 +512,7 @@
 # enable_bloom = false
 
 #    Set to true to render debugging breakdown of the bloom effect.
-#    In debug mode, the screen is split into 4 quadrants: 
+#    In debug mode, the screen is split into 4 quadrants:
 #    top-left - processed base image, top-right - final image
 #    bottom-left - raw base image, bottom-right - bloom texture.
 #    type: bool
@@ -530,7 +540,7 @@
 #    Volume of all sounds.
 #    Requires the sound system to be enabled.
 #    type: float min: 0 max: 1
-# sound_volume = 0.7
+# sound_volume = 0.8
 
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
@@ -633,7 +643,7 @@
 
 #    Optional override for chat weblink color.
 #    type: string
-# chat_weblink_color =
+# chat_weblink_color = #8888FF
 
 #    Font size of the recent chat text and chat prompt in point (pt).
 #    Value 0 will use the default font size.
@@ -682,18 +692,6 @@
 #    URL to JSON file which provides information about the newest Minetest release
 #    type: string
 # update_information_url = https://www.minetest.net/release_info.json
-
-#    Unix timestamp (integer) of when the client last checked for an update
-#    Set this value to "disabled" to never check for updates.
-#    type: string
-# update_last_checked =
-
-#    Version number which was last seen during an update check.
-#
-#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
-#    Ex: 5.5.0 is 005005000
-#    type: int
-# update_last_known = 0
 
 ## Server
 
@@ -832,7 +830,7 @@
 
 #    Amount of messages a player may send per 10 seconds.
 #    type: float min: 1
-# chat_message_limit_per_10sec = 10.0
+# chat_message_limit_per_10sec = 8.0
 
 #    Kick players who sent more than X messages per 10 seconds.
 #    type: int min: 1 max: 65535
@@ -2660,12 +2658,11 @@
 # shader_path =
 
 #    The rendering back-end.
-#    A restart is required after changing this.
-#    Note: On Android, stick with OGLES1 if unsure! App may fail to start otherwise.
-#    On other platforms, OpenGL is recommended.
-#    Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)
-#    type: enum values: opengl, ogles1, ogles2
-# video_driver = opengl
+#    Note: A restart is required after changing this!
+#    OpenGL is the default for desktop, and OGLES2 for Android.
+#    Shaders are supported by OpenGL and OGLES2 (experimental).
+#    type: enum values: , opengl, ogles1, ogles2
+# video_driver =
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
@@ -2684,7 +2681,7 @@
 
 #    Whether node texture animations should be desynchronized per mapblock.
 #    type: bool
-# desynchronize_mapblock_texture_animation = true
+# desynchronize_mapblock_texture_animation = false
 
 #    Enables caching of facedir rotated meshes.
 #    type: bool
@@ -2694,6 +2691,11 @@
 #    down the rate of mesh updates, thus reducing jitter on slower clients.
 #    type: int min: 0 max: 50
 # mesh_generation_interval = 0
+
+#    Number of threads to use for mesh generation.
+#    Value of 0 (default) will let Minetest autodetect the number of available threads.
+#    type: int min: 0 max: 8
+# mesh_generation_threads = 0
 
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
@@ -2724,6 +2726,14 @@
 #    Warning: This option is EXPERIMENTAL!
 #    type: enum values: disable, enable, force
 # autoscale_mode = disable
+
+#    Side length of a cube of map blocks that the client will consider together
+#    when generating meshes.
+#    Larger values increase the utilization of the GPU by reducing the number of
+#    draw calls, benefiting especially high-end GPUs.
+#    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
+#    type: int min: 1 max: 16
+# client_mesh_chunk = 1
 
 ### Font
 
@@ -3169,11 +3179,6 @@
 #    type: int min: 1 max: 65535
 # remote_port = 30000
 
-#    Default game when creating a new world.
-#    This will be overridden when creating a world from the main menu.
-#    type: string
-# default_game = minetest
-
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false
@@ -3210,14 +3215,6 @@
 #    type: bool
 # continuous_forward = false
 
-#    Formspec default background opacity (between 0 and 255).
-#    type: int min: 0 max: 255
-# formspec_default_bg_opacity = 140
-
-#    Formspec default background color (R,G,B).
-#    type: string
-# formspec_default_bg_color = (0,0,0)
-
 #    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
 #    setting names in All Settings.
@@ -3231,6 +3228,23 @@
 #    Changing this setting requires a restart.
 #    type: bool
 # enable_sound = true
+
+#    Unix timestamp (integer) of when the client last checked for an update
+#    Set this value to "disabled" to never check for updates.
+#    type: string
+# update_last_checked =
+
+#    Version number which was last seen during an update check.
+#
+#    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
+#    Ex: 5.5.0 is 005005000
+#    type: int
+# update_last_known = 0
+
+#    This can be bound to a key to toggle camera smoothing when looking around.
+#    Useful for recording videos
+#    type: bool
+# cinematic = false
 
 #    Key for moving the player forward.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
@@ -3264,12 +3278,14 @@
 #    type: key
 # keymap_sneak = KEY_LSHIFT
 
-#    Key for digging.
+#    Key for digging, punching or using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_dig = KEY_LBUTTON
 
-#    Key for placing.
+#    Key for placing an item/block or for using something.
+#    (Note: The actual meaning might vary on a per-game basis.)
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_place = KEY_RBUTTON
@@ -3312,7 +3328,7 @@
 #    Key for toggling pitch move mode.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
-# keymap_pitchmove = KEY_KEY_P
+# keymap_pitchmove =
 
 #    Key for toggling fast mode.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h

@@ -19,12 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <optional>
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include <iostream>
 #include <map>
 #include <vector>
-#include "util/Optional.h"
 
 struct ObjectProperties
 {
@@ -55,7 +55,7 @@ struct ObjectProperties
 	s8 glow = 0;
 	std::string nametag = "";
 	video::SColor nametag_color = video::SColor(255, 255, 255, 255);
-	Optional<video::SColor> nametag_bgcolor = nullopt;
+	std::optional<video::SColor> nametag_bgcolor = std::nullopt;
 	f32 automatic_face_movement_max_rotation_per_sec = -1.0f;
 	std::string infotext;
 	//! For dropped items, this contains item information.

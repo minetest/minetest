@@ -229,14 +229,10 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
 	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
 
-#if ENABLE_GLES
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view;
 	// Texture matrix
 	CachedVertexShaderSetting<float, 16> m_texture;
-	// Normal matrix
-	CachedVertexShaderSetting<float, 9> m_normal;
-#endif
 
 public:
 	MainShaderConstantSetter() :
@@ -256,11 +252,8 @@ public:
 		, m_perspective_bias1_pixel("xyPerspectiveBias1")
 		, m_perspective_zbias_vertex("zPerspectiveBias")
 		, m_perspective_zbias_pixel("zPerspectiveBias")
-#if ENABLE_GLES
 		, m_world_view("mWorldView")
 		, m_texture("mTexture")
-		, m_normal("mNormal")
-#endif
 	{}
 	~MainShaderConstantSetter() = default;
 
@@ -283,21 +276,11 @@ public:
 		worldViewProj *= worldView;
 		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
-#if ENABLE_GLES
-		core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
-		m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
-		m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
-
-		core::matrix4 normal;
-		worldView.getTransposed(normal);
-		sanity_check(normal.makeInverse());
-		float m[9] = {
-			normal[0], normal[1], normal[2],
-			normal[4], normal[5], normal[6],
-			normal[8], normal[9], normal[10],
-		};
-		m_normal.set(m, services);
-#endif
+		if (driver->getDriverType() == video::EDT_OGLES2) {
+			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
+			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
+			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
+		}
 
 		// Set uniforms for Shadow shader
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
@@ -492,8 +475,6 @@ u32 ShaderSource::getShader(const std::string &name,
 u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		MaterialType material_type, NodeDrawType drawtype)
 {
-	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
-
 	// Empty name means shader 0
 	if (name.empty()) {
 		infostream<<"getShaderIdDirect(): name is empty"<<std::endl;
@@ -628,10 +609,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
-	bool use_gles = false;
-#if ENABLE_GLES
-	use_gles = driver->getDriverType() == video::EDT_OGLES2;
-#endif
+	bool use_gles = driver->getDriverType() == video::EDT_OGLES2;
 	std::stringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha
@@ -648,7 +626,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			uniform highp mat4 mWorldView;
 			uniform highp mat4 mWorldViewProj;
 			uniform mediump mat4 mTexture;
-			uniform mediump mat3 mNormal;
 
 			attribute highp vec4 inVertexPosition;
 			attribute lowp vec4 inVertexColor;
@@ -671,7 +648,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 			#define mWorldView gl_ModelViewMatrix
 			#define mWorldViewProj gl_ModelViewProjectionMatrix
 			#define mTexture (gl_TextureMatrix[0])
-			#define mNormal gl_NormalMatrix
 
 			#define inVertexPosition gl_Vertex
 			#define inVertexColor gl_Color
@@ -759,8 +735,6 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	shaders_header << "#define ENABLE_WAVING_PLANTS " << g_settings->getBool("enable_waving_plants") << "\n";
 	shaders_header << "#define ENABLE_TONE_MAPPING " << g_settings->getBool("tone_mapping") << "\n";
 
-	shaders_header << "#define FOG_START " << core::clamp(g_settings->getFloat("fog_start"), 0.0f, 0.99f) << "\n";
-
 	if (g_settings->getBool("enable_dynamic_shadows")) {
 		shaders_header << "#define ENABLE_DYNAMIC_SHADOWS 1\n";
 		if (g_settings->getBool("shadow_map_color"))
@@ -786,6 +760,12 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	if (g_settings->getBool("enable_auto_exposure"))
 		shaders_header << "#define ENABLE_AUTO_EXPOSURE 1\n";
+
+	if (g_settings->get("antialiasing") == "ssaa") {
+		shaders_header << "#define ENABLE_SSAA 1\n";
+		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
+		shaders_header << "#define SSAA_SCALE " << ssaa_scale << ".\n";
+	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 

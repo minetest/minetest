@@ -38,6 +38,19 @@ private:
 	RenderTarget *m_target {nullptr};
 };
 
+class DrawWield : public RenderStep
+{
+public:
+	virtual void setRenderSource(RenderSource *) override {}
+	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
+
+	virtual void reset(PipelineContext &context) override {}
+	virtual void run(PipelineContext &context) override;
+
+private:
+	RenderTarget *m_target {nullptr};
+};
+
 /**
  * Implements a pipeline step that renders the game HUD
  */
@@ -67,17 +80,17 @@ public:
 };
 
 /**
- * UpscaleStep step performs rescaling of the image 
+ * UpscaleStep step performs rescaling of the image
  * in the source texture 0 to the size of the target.
  */
 class UpscaleStep : public RenderStep
 {
 public:
 
-    virtual void setRenderSource(RenderSource *source) override { m_source = source; }
-    virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
-    virtual void reset(PipelineContext &context) override {};
-    virtual void run(PipelineContext &context) override;
+	virtual void setRenderSource(RenderSource *source) override { m_source = source; }
+	virtual void setRenderTarget(RenderTarget *target) override { m_target = target; }
+	virtual void reset(PipelineContext &context) override {};
+	virtual void run(PipelineContext &context) override;
 private:
 	RenderSource *m_source;
 	RenderTarget *m_target;

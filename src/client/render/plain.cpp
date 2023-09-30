@@ -39,6 +39,13 @@ void Draw3D::run(PipelineContext &context)
 		return;
 	context.hud->drawBlockBounds();
 	context.hud->drawSelectionMesh();
+}
+
+void DrawWield::run(PipelineContext &context)
+{
+	if (m_target)
+		m_target->activate(context);
+
 	if (context.draw_wield_tool)
 		context.client->getCamera()->drawWieldedTool();
 }
@@ -123,6 +130,11 @@ RenderStep* addUpscaling(RenderPipeline *pipeline, RenderStep *previousStep, v2f
 	if (downscale_factor.X == 1.0f && downscale_factor.Y == 1.0f)
 		return previousStep;
 
+	// When shaders are enabled, post-processing pipeline takes care of rescaling
+	if (g_settings->getBool("enable_shaders"))
+		return previousStep;
+
+
 	// Initialize buffer
 	TextureBuffer *buffer = pipeline->createOwned<TextureBuffer>();
 	buffer->setTexture(TEXTURE_UPSCALE, downscale_factor, "upscale", video::ECF_A8R8G8B8);
@@ -144,6 +156,7 @@ void populatePlainPipeline(RenderPipeline *pipeline, Client *client)
 	auto downscale_factor = getDownscaleFactor();
 	auto step3D = pipeline->own(create3DStage(client, downscale_factor));
 	pipeline->addStep(step3D);
+	pipeline->addStep<DrawWield>();
 	pipeline->addStep<MapPostFxStep>();
 
 	step3D = addUpscaling(pipeline, step3D, downscale_factor);

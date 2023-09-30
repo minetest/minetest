@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <iostream>
 #include "config.h"
 #include "content/mods.h"
-#include <json/json.h>
+#include "json-forwards.h"
+#include <iostream>
 
 #pragma once
 

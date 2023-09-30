@@ -78,7 +78,7 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 }
 
 void ScriptApiPlayer::on_rightclickplayer(ServerActiveObject *player,
-                ServerActiveObject *clicker)
+		ServerActiveObject *clicker)
 {
 	SCRIPTAPI_PRECHECKHEADER
 	// Get core.registered_on_rightclickplayers

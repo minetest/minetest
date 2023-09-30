@@ -678,13 +678,6 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 		CGUITTGlyphPage* page = it->second;
 		++it;
 
-		if (shadow_offset) {
-			for (size_t i = 0; i < page->render_positions.size(); ++i)
-				page->render_positions[i] += core::vector2di(shadow_offset, shadow_offset);
-			Driver->draw2DImageBatch(page->texture, page->render_positions, page->render_source_rects, clip, video::SColor(shadow_alpha,0,0,0), true);
-			for (size_t i = 0; i < page->render_positions.size(); ++i)
-				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
-		}
 		// render runs of matching color in batch
 		size_t ibegin;
 		video::SColor colprev;
@@ -700,6 +693,19 @@ void CGUITTFont::draw(const EnrichedString &text, const core::rect<s32>& positio
 
 			if (!use_transparency)
 				colprev.color |= 0xff000000;
+
+			if (shadow_offset) {
+				for (size_t i = 0; i < tmp_positions.size(); ++i)
+					tmp_positions[i] += core::vector2di(shadow_offset, shadow_offset);
+
+				u32 new_shadow_alpha = core::clamp(core::round32(shadow_alpha * colprev.getAlpha() / 255.0f), 0, 255);
+				video::SColor shadow_color = video::SColor(new_shadow_alpha, 0, 0, 0);
+				Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, shadow_color, true);
+
+				for (size_t i = 0; i < tmp_positions.size(); ++i)
+					tmp_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
+			}
+
 			Driver->draw2DImageBatch(page->texture, tmp_positions, tmp_source_rects, clip, colprev, true);
 		}
 	}
@@ -1119,9 +1125,9 @@ core::array<scene::ISceneNode*> CGUITTFont::addTextSceneNode(const wchar_t* text
 
 	// the default font material
 	SMaterial mat;
-	mat.setFlag(video::EMF_LIGHTING, true);
-	mat.setFlag(video::EMF_ZWRITE_ENABLE, false);
-	mat.setFlag(video::EMF_NORMALIZE_NORMALS, true);
+	mat.Lighting = true;
+	mat.ZWriteEnable = video::EZW_OFF;
+	mat.NormalizeNormals = true;
 	mat.ColorMaterial = video::ECM_NONE;
 	mat.MaterialType = use_transparency ? video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_SOLID;
 	mat.MaterialTypeParam = 0.01f;

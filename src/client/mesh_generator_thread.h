@@ -97,7 +97,7 @@ struct MeshUpdateResult
 {
 	v3s16 p = v3s16(-1338, -1338, -1338);
 	MapBlockMesh *mesh = nullptr;
-	std::unordered_map<v3s16, u8> solid_sides;
+	u8 solid_sides;
 	std::vector<v3s16> ack_list;
 	bool urgent = false;
 	std::vector<MapBlock *> map_blocks;

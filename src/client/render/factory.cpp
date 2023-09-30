@@ -41,7 +41,7 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 {
 	CreatePipelineResult created_pipeline;
 	createPipeline(stereo_mode, device, client, hud, created_pipeline);
-	return new RenderingCore(device, client, hud, 
+	return new RenderingCore(device, client, hud,
 			created_pipeline.shadow_renderer, created_pipeline.pipeline, created_pipeline.virtual_size_scale);
 }
 

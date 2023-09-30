@@ -1,14 +1,9 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the minetest package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-10-04 06:22+0000\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-03-28 20:39+0000\n"
 "Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
@@ -17,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -140,11 +135,11 @@ msgstr "Поддържаме само изданията на протокола
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Включено, има грешки)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Неудовлетворено)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -289,7 +284,7 @@ msgstr "Изтегляне…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Грешка при инсталиране на „$1“: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -457,7 +452,7 @@ msgstr "Инсталиране $1"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Инсталиране на друга игра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -596,11 +591,11 @@ msgstr "Потвърж. на парола"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Присъединяване към $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Липсва име"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -694,9 +689,8 @@ msgid "Offset"
 msgstr "Отместване"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
-msgstr "Устойчивост"
+msgstr "Упоритост"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -740,7 +734,7 @@ msgstr "Стойността трябва да е най-много $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "X spread"
@@ -748,7 +742,7 @@ msgstr "Разпределение по X"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Y spread"
@@ -756,7 +750,7 @@ msgstr "Разпределение по Y"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Z spread"
@@ -796,6 +790,10 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Инсталирано издание: $1\n"
+"Последно издание: $2\n"
+"За да разберете как да се сдобиете с последното издание и да поличите най-"
+"новите възможности и поправки, посетете $3."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -836,7 +834,7 @@ msgstr "Грешка при инсталиране на $1 в $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr ""
+msgstr "$1 не може да бъде инсталирано като пакет с текстури"
 
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
@@ -1437,7 +1435,7 @@ msgstr ""
 "- %s: пускане на предмет\n"
 "- %s: инвентар\n"
 "- мишка: завъртане/разглеждане\n"
-"- колелце на мишка: избор на предмет\n"
+"- колелце мишка: избор на предмет\n"
 "- %s: разговор\n"
 
 #: src/client/game.cpp
@@ -1688,6 +1686,11 @@ msgstr "Мащабирането е спряно или от играта, ил�
 #: src/client/game.cpp
 msgid "ok"
 msgstr "добре"
+
+#: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Мащабирането е спряно или от играта, или от модификация"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2339,7 +2342,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 
@@ -2416,17 +2418,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2763,6 +2754,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3177,7 +3172,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Полет при двоен скок"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
@@ -3197,6 +3192,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3225,6 +3224,18 @@ msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3368,8 +3379,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
-msgstr ""
+msgid "Exposure compensation"
+msgstr "Компенсация на експозицията"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
@@ -3405,7 +3416,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Бързо движение"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3929,6 +3940,8 @@ msgid ""
 "If enabled, makes move directions relative to the player's pitch when flying "
 "or swimming."
 msgstr ""
+"Ако е включено, определя посоката на изкачване/спускане спрямо посоката на "
+"погледа на играча по време на полет или плуване."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4133,11 +4146,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Скорост на скачане"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Клавиатура и мишка"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4426,6 +4439,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock mesh generation threads"
+msgstr "Брой нишки, създаващи мрежата от блокове"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
@@ -4742,11 +4759,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чувствителност на мишката"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Множител на чувствителността на мишката."
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
@@ -4847,6 +4864,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+"Брой процесорни нишки, използвани за създаване на мрежа.\n"
+"Стойност 0 (подразбирана) ще остави Minetest автоматично да ооредели броя "
+"налични нишки."
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -4919,7 +4946,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Pitch move mode"
-msgstr ""
+msgstr "Режим на изкачване/спускане спрямо погледа"
 
 #: src/settings_translation_file.cpp
 msgid "Place repetition interval"
@@ -4930,7 +4957,7 @@ msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
-"Играчът може да лети без да се влияе от гравитацията.\n"
+"Играчът може да лети без влияние от гравитацията.\n"
 "Изисква правото „fly“ от сървъра."
 
 #: src/settings_translation_file.cpp
@@ -5119,10 +5146,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr ""
 
@@ -5289,12 +5312,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
+"Задава компенсация на експозицията в EV единици.\n"
+"Стойност 0.0 (подразбирана) означава липса на компенсация.\n"
+"Обхват: от -1.0 до 1.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5319,13 +5343,6 @@ msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5361,7 +5378,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5439,6 +5456,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5452,10 +5478,6 @@ msgid ""
 "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5733,11 +5755,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5955,6 +5975,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp

@@ -35,24 +35,18 @@ GUIButtonImage::GUIButtonImage(gui::IGUIEnvironment *environment,
 	: GUIButton(environment, parent, id, rectangle, tsrc, noclip)
 {
 	GUIButton::setScaleImage(true);
-	m_image = new GUIAnimatedImage(environment, this, id, rectangle);
-	sendToBack(m_image);
+	m_image = make_irr<GUIAnimatedImage>(environment, this, id, rectangle);
+	sendToBack(m_image.get());
 }
 
-void GUIButtonImage::setForegroundImage(video::ITexture *image,
+void GUIButtonImage::setForegroundImage(irr_ptr<video::ITexture> image,
 		const core::rect<s32> &middle)
 {
 	if (image == m_foreground_image)
 		return;
 
-	if (image != nullptr)
-		image->grab();
-
-	if (m_foreground_image != nullptr)
-		m_foreground_image->drop();
-
-	m_foreground_image = image;
-	m_image->setTexture(image);
+	m_foreground_image = std::move(image);
+	m_image->setTexture(m_foreground_image.get());
 	m_image->setMiddleRect(middle);
 }
 
@@ -67,8 +61,8 @@ void GUIButtonImage::setFromStyle(const StyleSpec &style)
 		video::ITexture *texture = style.getTexture(StyleSpec::FGIMG,
 				getTextureSource());
 
-		setForegroundImage(guiScalingImageButton(driver, texture,
-				AbsoluteRect.getWidth(), AbsoluteRect.getHeight()),
+		setForegroundImage(::grab(guiScalingImageButton(driver, texture,
+				AbsoluteRect.getWidth(), AbsoluteRect.getHeight())),
 				style.getRect(StyleSpec::FGIMG_MIDDLE, m_image->getMiddleRect()));
 	} else {
 		setForegroundImage();
@@ -80,7 +74,7 @@ GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const wchar_t *text,
 		const wchar_t *tooltiptext)
 {
-	GUIButtonImage *button = new GUIButtonImage(environment,
+	auto button = make_irr<GUIButtonImage>(environment,
 			parent ? parent : environment->getRootGUIElement(), id, rectangle, tsrc);
 
 	if (text)
@@ -89,6 +83,5 @@ GUIButtonImage *GUIButtonImage::addButton(IGUIEnvironment *environment,
 	if (tooltiptext)
 		button->setToolTipText(tooltiptext);
 
-	button->drop();
-	return button;
+	return button.get();
 }

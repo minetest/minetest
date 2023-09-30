@@ -98,9 +98,12 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 		buf->append(vertices + 4 * i, 4, indices, 6);
 		// Set default material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().Lighting = false;
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		buf->getMaterial().forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
 		// Add mesh buffer to mesh
 		mesh->addMeshBuffer(buf);
 		buf->drop();
@@ -334,6 +337,8 @@ bool checkMeshNormals(scene::IMesh *mesh)
 
 	for (u32 i = 0; i < buffer_count; i++) {
 		scene::IMeshBuffer *buffer = mesh->getMeshBuffer(i);
+		if (!buffer->getVertexCount())
+			continue;
 
 		// Here we intentionally check only first normal, assuming that if buffer
 		// has it valid, then most likely all other ones are fine too. We can
@@ -406,8 +411,11 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	for (u16 j = 0; j < 6; j++)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().Lighting = false;
+		buf->getMaterial().forEachTexture([] (auto &tex) {
+			tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+			tex.MagFilter = video::ETMAGF_NEAREST;
+		});
 		dst_mesh->addMeshBuffer(buf);
 		buf->drop();
 	}
@@ -496,4 +504,19 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		}
 	}
 	return dst_mesh;
+}
+
+void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic) {
+	if (trilinear)
+		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
+	else if (bilinear)
+		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_NEAREST;
+	else
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+
+	// "We don't want blurriness after all." ~ Desour, #13108
+	// (because of pixel art)
+	tex.MagFilter = video::ETMAGF_NEAREST;
+
+	tex.AnisotropicFilter = anisotropic ? 0xFF : 0;
 }

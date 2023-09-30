@@ -229,8 +229,8 @@ void ChatBuffer::scrollBottom()
 	m_scroll = getBottomScrollPos();
 }
 
-u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
-		std::vector<ChatFormattedLine>& destination) const
+u32 ChatBuffer::formatChatLine(const ChatLine &line, u32 cols,
+		std::vector<ChatFormattedLine> &destination) const
 {
 	u32 num_added = 0;
 	std::vector<ChatFormattedFragment> next_frags;
@@ -269,7 +269,10 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		// Very long names
 		hanging_indentation = 2;
 	}
-	//EnrichedString line_text(line.text);
+	// If there are no columns remaining after the indentation (window is very
+	// narrow), we can't write anything
+	if (hanging_indentation >= cols)
+		return 0;
 
 	next_line.first = true;
 	// Set/use forced newline after the last frag in each line
@@ -506,7 +509,7 @@ void ChatPrompt::addToHistory(const std::wstring &line)
 		auto entry = m_history.begin() + m_history_index;
 		if (entry->saved && entry->line == line) {
 			entry->line = *entry->saved;
-			entry->saved = nullopt;
+			entry->saved = std::nullopt;
 			// Remove potential duplicates
 			auto dup_before = std::find(m_history.begin(), entry, *entry);
 			if (dup_before != entry)
@@ -670,7 +673,11 @@ void ChatPrompt::reformat(u32 cols)
 
 std::wstring ChatPrompt::getVisiblePortion() const
 {
-	return m_prompt + getLineRef().substr(m_view, m_cols);
+	const std::wstring &line_ref = getLineRef();
+	if ((size_t)m_view >= line_ref.size())
+		return m_prompt;
+	else
+		return m_prompt + line_ref.substr(m_view, m_cols);
 }
 
 s32 ChatPrompt::getVisibleCursorPosition() const

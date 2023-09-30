@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/shadows/dynamicshadowsrender.h"
 #include "settings.h"
 
-RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud, 
+RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud,
 		ShadowRenderer *_shadow_renderer, RenderPipeline *_pipeline, v2f _virtual_size_scale)
-	: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer), 
+	: device(_device), client(_client), hud(_hud), shadow_renderer(_shadow_renderer),
 	pipeline(_pipeline), virtual_size_scale(_virtual_size_scale)
 {
 }
@@ -34,14 +34,6 @@ RenderingCore::~RenderingCore()
 {
 	delete pipeline;
 	delete shadow_renderer;
-}
-
-void RenderingCore::initialize()
-{
-	if (shadow_renderer)
-		pipeline->addStep<RenderShadowMapStep>();
-
-	createPipeline();
 }
 
 void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,

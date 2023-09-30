@@ -1,0 +1,91 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["Unconfirmed bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please note the following:
+        1. **Please update your Minetest Engine to the latest stable or dev version** before submitting bug reports. Make sure the bug is still reproducible on the latest version.
+        2. This page is for reporting the bugs of **the engine itself**. For bugs in a particular game, please [search for the game in the ContentDB](https://content.minetest.net/packages/?type=game) and submit a bug report in their issue trackers.
+            * For example, you can submit issues about the Minetest Game (the official game of Minetest) [in its own repository](https://github.com/minetest/minetest_game/issues).
+        3. Please provide as many details as possible for us to spot the problem quicker.
+  - type: textarea
+    attributes:
+      label: Minetest version
+      description: |
+        Paste the Minetest version below.
+        If you are on a devel version, please add a git commit hash.
+        You can use `minetest --version` to find it.
+        You can also refer to the "About" tab of the menu.
+      placeholder: |
+        Example: 
+        Minetest 5.7.0-dev-ca13c51 (Linux)
+        Using Irrlicht 1.9.0mt9
+        Using LuaJIT 2.1.0-beta3
+        BUILD_TYPE=Release
+        RUN_IN_PLACE=1
+        USE_CURL=1
+        USE_GETTEXT=1
+        USE_SOUND=1
+        STATIC_SHAREDIR="."
+        STATIC_LOCALEDIR="locale"
+      render: "true"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Active renderer
+      description: For graphical and input-related issues. You can find these in the About tab in the mainmenu.
+      placeholder: "Example: OpenGL 4.6.0"
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: Irrlicht device
+      description: 
+      placeholder: "Example: X11"
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: Operating system and version
+      description: It is recommended to upgrade your operating system to see if the problem still exists.
+      placeholder: "Example: Ubuntu 22.04"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: CPU model
+      description: Usually found in system settings. 
+      placeholder: "Example: Intel i5-2410M (4) @ 2.900GHz"
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: The GPU model and OpenGL version can be omitted if the bug is not a graphical issue.
+  - type: input
+    attributes:
+      label: GPU model
+      description: Usually found in system settings. 
+      placeholder: "Example: NVIDA GeForce RTX 4090"
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: OpenGL version
+      placeholder: "Example: 4.6"
+    validations:
+      required: false
+  - type: textarea
+    attributes: 
+      label: Summary
+      description: Describe your problem here.
+    validations:
+      required: true
+  - type: textarea
+    attributes: 
+      label: Steps to reproduce
+      description: Explain how the problem has happened, providing a minimal test (i.e. a code snippet reduced to the bone) where possible.
+    validations:
+      required: true

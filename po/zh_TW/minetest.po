@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
 "PO-Revision-Date: 2022-08-22 17:15+0000\n"
 "Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1689,6 +1689,11 @@ msgid "ok"
 msgstr "確定"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "遠近調整目前已被遊戲或模組停用"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "隱藏聊天室"
 
@@ -2342,6 +2347,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "決定每個地圖區塊中地城數量的 3D 雜訊值。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2351,7 +2357,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3D 支援。\n"
@@ -2445,17 +2450,6 @@ msgstr "調整您螢幕的 DPI 設定（並不只有 X11/Android）例如 4K 螢
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr "調整偵測到的顯示密度，用來縮放 UI 元件。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2802,6 +2796,10 @@ msgstr "在聊天室主控台輸出中可以點選網頁連結 (滑鼠中鍵或 
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "用戶端"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3262,6 +3260,10 @@ msgid "Dungeon noise"
 msgstr "地城雜訊"
 
 #: src/settings_translation_file.cpp
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable Bloom"
 msgstr "全部啟用"
@@ -3291,6 +3293,18 @@ msgid ""
 "Enable Poisson disk filtering.\n"
 "On true uses Poisson disk to make \"soft shadows\". Otherwise uses PCF "
 "filtering."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3448,7 +3462,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
+msgid "Exposure compensation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4659,6 +4673,11 @@ msgstr "地圖區塊網格生成延遲"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Mapblock mesh generation threads"
+msgstr "地圖區塊網格生成延遲"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr "地圖區塊網格生成器的地圖區塊快取大小 MB"
 
@@ -5125,6 +5144,13 @@ msgstr ""
 "記憶體耗費（根據經驗，4096=100MB）。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr "不透明液體"
 
@@ -5415,11 +5441,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "當 np_beach 超過此值時，會生成沙灘。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Saturation"
-msgstr "迭代"
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "由用戶端儲存接收到的地圖到磁碟上。"
 
@@ -5617,11 +5638,9 @@ msgstr "伺服器清單檔"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5650,13 +5669,6 @@ msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5704,7 +5716,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5791,6 +5803,15 @@ msgstr "關閉訊息"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5808,10 +5829,6 @@ msgstr ""
 "網格生成器的地圖區塊快取大小。增加這個將會\n"
 "增加快取命中率，減少從主執行緒複製資料，從\n"
 "而減少抖動。"
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -6111,11 +6128,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6360,6 +6375,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -7923,6 +7944,10 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Right key"
 #~ msgstr "右鍵"
+
+#, fuzzy
+#~ msgid "Saturation"
+#~ msgstr "迭代"
 
 #, fuzzy
 #~ msgid "Select Package File:"

@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/clientmap.h"
 #include "profiler.h"
+#include "EShaderTypes.h"
+#include "IGPUProgrammingServices.h"
+#include "IMaterialRenderer.h"
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
@@ -53,6 +56,9 @@ ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 	m_shadow_map_colored = g_settings->getBool("shadow_map_color");
 	m_shadow_samples = g_settings->getS32("shadow_filters");
 	m_map_shadow_update_frames = g_settings->getS16("shadow_update_frames");
+
+	// add at least one light
+	addDirectionalLight();
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -107,7 +113,9 @@ void ShadowRenderer::disable()
 	}
 
 	for (auto node : m_shadow_node_array)
-		node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		node.node->forEachMaterial([] (auto &mat) {
+			mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		});
 }
 
 void ShadowRenderer::initialize()
@@ -157,11 +165,8 @@ size_t ShadowRenderer::getDirectionalLightCount() const
 
 f32 ShadowRenderer::getMaxShadowFar() const
 {
-	if (!m_light_list.empty()) {
-		float zMax = m_light_list[0].getFarValue();
-		return zMax;
-	}
-	return 0.0f;
+	float zMax = m_light_list[0].getFarValue();
+	return zMax;
 }
 
 void ShadowRenderer::setShadowIntensity(float shadow_intensity)
@@ -180,12 +185,16 @@ void ShadowRenderer::addNodeToShadowList(
 	// node should never be ClientMap
 	assert(strcmp(node->getName(), "ClientMap") != 0);
 
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	node->forEachMaterial([this] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	});
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 {
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	node->forEachMaterial([] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	});
 	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
 		if (it->node == node) {
 			it = m_shadow_node_array.erase(it);
@@ -255,10 +264,12 @@ void ShadowRenderer::updateSMTextures()
 		assert(shadowMapTextureFinal != nullptr);
 
 		for (auto &node : m_shadow_node_array)
-			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			node.node->forEachMaterial([this] (auto &mat) {
+				mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			});
 	}
 
-	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
+	if (!m_shadow_node_array.empty()) {
 		bool reset_sm_texture = false;
 
 		// detect if SM should be regenerated
@@ -344,7 +355,7 @@ void ShadowRenderer::update(video::ITexture *outputTarget)
 	}
 
 
-	if (!m_shadow_node_array.empty() && !m_light_list.empty()) {
+	if (!m_shadow_node_array.empty()) {
 
 		for (DirectionalLight &light : m_light_list) {
 			// Static shader values for entities are set in updateSMTextures
@@ -463,8 +474,8 @@ void ShadowRenderer::renderShadowObjects(
 	m_driver->setTransform(video::ETS_PROJECTION, light.getProjectionMatrix());
 
 	for (const auto &shadow_node : m_shadow_node_array) {
-		// we only take care of the shadow casters
-		if (shadow_node.shadowMode == ESM_RECEIVE)
+		// we only take care of the shadow casters and only visible nodes cast shadows
+		if (shadow_node.shadowMode == ESM_RECEIVE || !shadow_node.node->isVisible())
 			continue;
 
 		// render other objects
@@ -700,7 +711,7 @@ ShadowRenderer *createShadowRenderer(IrrlichtDevice *device, Client *client)
 {
 	// disable if unsupported
 	if (g_settings->getBool("enable_dynamic_shadows") && (
-		g_settings->get("video_driver") != "opengl" ||
+		device->getVideoDriver()->getDriverType() != video::EDT_OPENGL ||
 		!g_settings->getBool("enable_shaders"))) {
 		g_settings->setBool("enable_dynamic_shadows", false);
 	}

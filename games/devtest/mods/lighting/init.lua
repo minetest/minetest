@@ -119,7 +119,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		lighting[section.n] = state
 
 		for _,v in ipairs(parameters) do
-			
+
 			if fields[section.n.."."..v.n] then
 				local event = minetest.explode_scrollbar_event(fields[section.n.."."..v.n])
 				if event.type == "CHG" then

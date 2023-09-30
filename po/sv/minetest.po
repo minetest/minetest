@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 15:37+0100\n"
-"PO-Revision-Date: 2022-07-24 09:25+0000\n"
+"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"PO-Revision-Date: 2023-01-15 19:51+0000\n"
 "Last-Translator: ROllerozxa <temporaryemail4meh+github@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -283,21 +283,21 @@ msgstr "Laddar ner..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Fel vid installation av \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Misslyckades ladda ner $1"
+msgstr "Misslyckades att ladda ner \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Misslyckades ladda ner $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Installation: Filtyp stöds inte eller trasigt arkiv"
+msgstr ""
+"Misslyckades med att extrahera \"$1\" (filtyp som inte stöds eller trasigt "
+"arkiv)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -812,19 +812,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Misslyckades installera $1 till $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Moddinstallation: lyckas ej hitta lämpligt mappnamn för moddpaket $1"
+msgstr "Installation: Kan inte hitta ett lämpligt mappnamn för $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Lyckades ej hitta lämplig modd eller moddpaket"
+msgstr "Kunde inte hitta en giltig modd, moddpack eller spel"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Misslyckades installera en modd som en $1"
+msgstr "Kunde inte installera en $1 som en $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -861,7 +858,7 @@ msgstr "Huvudutvecklare"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Huvudlaget"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1681,6 +1678,11 @@ msgid "ok"
 msgstr "ok"
 
 #: src/client/gameui.cpp
+#, fuzzy
+msgid "Chat currently disabled by game or mod"
+msgstr "Zoom är för närvarande inaktiverad av spel eller modd"
+
+#: src/client/gameui.cpp
 msgid "Chat hidden"
 msgstr "Chatt gömd"
 
@@ -1986,23 +1988,26 @@ msgstr "Minimapp i texturläge"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s saknas:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Installera och aktivera de moddar som krävs eller inaktivera de moddar som "
+"orsakar fel."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Observera: Detta kan bero på en beroendecykel, i så fall försök då att "
+"uppdatera moddarna."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Inga hårda beroenden"
+msgstr "Vissa moddar har otillfredsställda beroenden:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2351,6 +2356,7 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-brus som bestämmer antalet fängelsehålor per mappchunk."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2360,7 +2366,6 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
-"-    pageflip: quadbuffer based 3d.\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
 "3D stöd.\n"
@@ -2458,17 +2463,6 @@ msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
 "Justera den identifierade skärmdensiteten, vilket används för skalning av "
 "gränssnittet."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Adjust the saturation (or vividness) of the scene\n"
-"Values\n"
-"< 1.0 decrease saturation\n"
-"> 1.0 increase saturation\n"
-"1.0 = unchanged saturation\n"
-"0.0 = black and white\n"
-"(Tone mapping needs to be enabled.)"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2657,20 +2651,19 @@ msgstr "Distans för optimering av blockskickning"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Bloomintensitet"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Molnradie"
+msgstr "Bloomradie"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Bloomstyrkefaktor"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2836,6 +2829,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Client"
 msgstr "Klient"
+
+#: src/settings_translation_file.cpp
+msgid "Client Mesh Chunksize"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3117,6 +3114,8 @@ msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
 msgstr ""
+"Maximalt antal mappblock som tvångsladdas.\n"
+"Ställ in -1 för att inaktivera gränsen."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3172,6 +3171,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Definierar hur mycket bloom som appliceras på den återgivna bilden.\n"
+"Mindre värden gör bloomningen mindre stark.\n"
+"Intervall: från 0,01 till 1,0, standard: 0,05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3194,6 +3196,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Definierar storleken på överexponeringen av bloomningen.\n"
+"Intervall: från 0,1 till 10,0, standard: 1,0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3290,6 +3294,9 @@ msgid ""
 "Distance in nodes at which transparency depth sorting is enabled\n"
 "Use this to limit the performance impact of transparency depth sorting"
 msgstr ""
+"Avstånd i noder vid vilket sortering av transparensdjup aktiveras.\n"
+"Använd detta för att begränsa prestandapåverkan av sortering av "
+"transparensdjup"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -3320,13 +3327,16 @@ msgid "Dungeon noise"
 msgstr "Grottbrus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
+msgid "Enable Automatic Exposure"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable Bloom"
-msgstr "Aktivera allt"
+msgstr "Aktivera bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Aktivera bloomavlusning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3355,6 +3365,18 @@ msgstr ""
 "används PCF-filtrering."
 
 #: src/settings_translation_file.cpp
+msgid "Enable Raytraced Culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable automatic exposure correction\n"
+"When enabled, the post-processing engine will\n"
+"automatically adjust to the brightness of the scene,\n"
+"simulating the behavior of human eye."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
@@ -3376,7 +3398,7 @@ msgstr "Aktivera joysticks"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "Aktivera joysticks. Kräver en omstart för att fungera"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3404,7 +3426,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr ""
+msgstr "Aktivera splittrad inloggning/registrering"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3504,7 +3526,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiler"
-msgstr ""
+msgstr "Motorprofilerare"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3525,12 +3547,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Exposure Factor"
-msgstr ""
+#, fuzzy
+msgid "Exposure compensation"
+msgstr "Exponeringsfaktor"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr ""
+msgstr "Bildrutefrekvens"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3608,6 +3631,12 @@ msgid ""
 "light edges to transparent textures. Apply a filter to clean that up\n"
 "at texture load time. This is automatically enabled if mipmapping is enabled."
 msgstr ""
+"Filtrerade texturer kan blanda RGB-värden med helt genomskinliga grannar,\n"
+"som PNG-optimerare vanligtvis kastar bort, vilket ofta resulterar i mörka "
+"eller\n"
+"ljusa kanter på genomskinliga texturer. Använd ett filter för att rensa upp "
+"det\n"
+"vid texturladdning. Detta aktiveras automatiskt om mipmapping är aktiverat."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
@@ -3725,6 +3754,13 @@ msgid ""
 "be\n"
 "sized 16, 32, 48, etc., so a mod requesting a size of 25 will get 32."
 msgstr ""
+"För pixeltypsnitt som inte skalar särskilt väl, säkerställer detta att de "
+"storlekar som används\n"
+"med det här teckensnittet alltid kommer att vara delbara med det här värdet, "
+"i pixlar. Till exempel,\n"
+"ett pixelteckensnitt med en höjd på 16 pixlar ska ha värdet 16, så att det "
+"alltid bara kommer att vara\n"
+"storlek 16, 32, 48, etc., så att en modd som begär en storlek på 25 får 32."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3829,7 +3865,7 @@ msgstr "Filter för Gränssnittsskalning txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "GUIs"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -3837,7 +3873,7 @@ msgstr "Gamepads"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Generellt"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3900,7 +3936,7 @@ msgstr "HTTP-moddar"
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
@@ -4084,6 +4120,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Om denna är aktiverad tillsammans med flygläge kan spelaren flyga genom "
+"fasta noder.\n"
+"Detta kräver privilegiet \"noclip\" på servern."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4619,6 +4658,10 @@ msgid "Mapblock mesh generation delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Mapblock mesh generation threads"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
 msgstr ""
 
@@ -5037,6 +5080,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Number of threads to use for mesh generation.\n"
+"Value of 0 (default) will let Minetest autodetect the number of available "
+"threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Opaque liquids"
 msgstr ""
 
@@ -5307,10 +5357,6 @@ msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Saturation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr ""
 
@@ -5490,11 +5536,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Set the exposure compensation factor.\n"
-"This factor is applied to linear color value \n"
-"before all other post-processing effects.\n"
-"Value of 1.0 (default) means no exposure compensation.\n"
-"Range: from 0.1 to 10.0"
+"Set the exposure compensation in EV units.\n"
+"Value of 0.0 (default) means no exposure compensation.\n"
+"Range: from -1 to 1.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5520,13 +5564,6 @@ msgid ""
 "Set the soft shadow radius size.\n"
 "Lower values mean sharper shadows, bigger values mean softer shadows.\n"
 "Minimum value: 1.0; maximum value: 15.0"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Set the tilt of Sun/Moon orbit in degrees.\n"
-"Value of 0 means no tilt / vertical orbit.\n"
-"Minimum value: 0.0; maximum value: 60.0"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5562,7 +5599,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true to render debugging breakdown of the bloom effect.\n"
-"In debug mode, the screen is split into 4 quadrants: \n"
+"In debug mode, the screen is split into 4 quadrants:\n"
 "top-left - processed base image, top-right - final image\n"
 "bottom-left - raw base image, bottom-right - bloom texture."
 msgstr ""
@@ -5640,6 +5677,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Side length of a cube of map blocks that the client will consider together\n"
+"when generating meshes.\n"
+"Larger values increase the utilization of the GPU by reducing the number of\n"
+"draw calls, benefiting especially high-end GPUs.\n"
+"Systems with a low-end GPU (or no GPU) would benefit from smaller values."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING!: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
@@ -5653,10 +5699,6 @@ msgid ""
 "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Sky Body Orbit Tilt"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5931,11 +5973,9 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The rendering back-end.\n"
-"A restart is required after changing this.\n"
-"Note: On Android, stick with OGLES1 if unsure! App may fail to start "
-"otherwise.\n"
-"On other platforms, OpenGL is recommended.\n"
-"Shaders are supported by OpenGL (desktop only) and OGLES2 (experimental)"
+"Note: A restart is required after changing this!\n"
+"OpenGL is the default for desktop, and OGLES2 for Android.\n"
+"Shaders are supported by OpenGL and OGLES2 (experimental)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6151,6 +6191,12 @@ msgid ""
 "Visible spaces appear between nodes when shaders are disabled.\n"
 "If set to 0, MSAA is disabled.\n"
 "A restart is required after changing this option."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6490,7 +6536,7 @@ msgstr "Y-nivå av sjöbotten."
 
 #: src/settings_translation_file.cpp
 msgid "cURL"
-msgstr ""
+msgstr "cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"

@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "config.h" // for USE_GETTEXT
-#include <string>
 #include "porting.h"
+#include "util/string.h"
 
 #if USE_GETTEXT
 	#include <libintl.h>
@@ -46,18 +46,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
-extern wchar_t *utf8_to_wide_c(const char *str);
-
-// The returned string must be freed using delete[]
-inline const wchar_t *wgettext(const char *str)
+inline std::string strgettext(const char *str)
 {
 	// We must check here that is not an empty string to avoid trying to translate it
-	return str[0] ? utf8_to_wide_c(gettext(str)) : utf8_to_wide_c("");
+	return str[0] ? gettext(str) : "";
 }
 
-inline std::string strgettext(const std::string &text)
+inline std::string strgettext(const std::string &str)
 {
-	return text.empty() ? "" : gettext(text.c_str());
+	return strgettext(str.c_str());
+}
+
+inline std::wstring wstrgettext(const char *str)
+{
+	return utf8_to_wide(strgettext(str));
+}
+
+inline std::wstring wstrgettext(const std::string &str)
+{
+	return wstrgettext(str.c_str());
 }
 
 /**
@@ -72,9 +79,8 @@ template <typename ...Args>
 inline std::wstring fwgettext(const char *src, Args&&... args)
 {
 	wchar_t buf[255];
-	const wchar_t* str = wgettext(src);
-	swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, std::forward<Args>(args)...);
-	delete[] str;
+	swprintf(buf, sizeof(buf) / sizeof(wchar_t), wstrgettext(src).c_str(),
+			std::forward<Args>(args)...);
 	return std::wstring(buf);
 }
 

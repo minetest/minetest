@@ -85,7 +85,14 @@ int ModApiServer::l_chat_send_all(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayers(utf8_to_wide(text));
+	try {
+		server->notifyPlayers(utf8_to_wide(text));
+	} catch (PacketError &e) {
+		warningstream << "Exception caught: " << e.what() << std::endl
+			<< script_get_backtrace(L) << std::endl;
+		server->notifyPlayers(utf8_to_wide(std::string("Internal error: ") + e.what()));
+	}
+
 	return 0;
 }
 
@@ -99,7 +106,13 @@ int ModApiServer::l_chat_send_player(lua_State *L)
 	// Get server from registry
 	Server *server = getServer(L);
 	// Send
-	server->notifyPlayer(name, utf8_to_wide(text));
+	try {
+		server->notifyPlayer(name, utf8_to_wide(text));
+	} catch (PacketError &e) {
+		warningstream << "Exception caught: " << e.what() << std::endl
+			<< script_get_backtrace(L) << std::endl;
+		server->notifyPlayer(name, utf8_to_wide(std::string("Internal error: ") + e.what()));
+	}
 	return 0;
 }
 
@@ -490,7 +503,7 @@ int ModApiServer::l_sound_play(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ServerPlayingSound params;
-	read_soundspec(L, 1, params.spec);
+	read_simplesoundspec(L, 1, params.spec);
 	read_server_sound_params(L, 2, params);
 	bool ephemeral = lua_gettop(L) > 2 && readParam<bool>(L, 3);
 	if (ephemeral) {

@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "luaentity_sao.h"
 #include "collision.h"
 #include "constants.h"
+#include "inventory.h"
+#include "irrlicht_changes/printing.h"
 #include "player_sao.h"
 #include "scripting_server.h"
 #include "server.h"
@@ -69,8 +71,12 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos, const std::string &d
 		break;
 	}
 	// create object
-	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state=\""
-			 << state << "\")" << std::endl;
+	infostream << "LuaEntitySAO::create(name=\"" << name << "\" state is";
+	if (state.empty())
+		infostream << "empty";
+	else
+		infostream << state.size() << " bytes";
+	infostream << ")" << std::endl;
 
 	m_init_name = name;
 	m_init_state = state;
@@ -101,7 +107,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	if(m_registered){
 		// Get properties
 		m_env->getScriptIface()->
-			luaentity_GetProperties(m_id, this, &m_prop);
+			luaentity_GetProperties(m_id, this, &m_prop, m_init_name);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
@@ -279,7 +285,6 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 
 void LuaEntitySAO::getStaticData(std::string *result) const
 {
-	verbosestream<<FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version must be 1 to keep backwards-compatibility. See version2
 	writeU8(os, 1);
@@ -389,7 +394,7 @@ std::string LuaEntitySAO::getDescription()
 	std::ostringstream oss;
 	oss << "LuaEntitySAO \"" << m_init_name << "\" ";
 	auto pos = floatToInt(m_base_position, BS);
-	oss << "at " << PP(pos);
+	oss << "at " << pos;
 	return oss.str();
 }
 
@@ -409,7 +414,7 @@ void LuaEntitySAO::setHP(s32 hp, const PlayerHPChangeReason &reason)
 			m_env->getScriptIface()->luaentity_on_death(m_id, killer);
 		}
 		markForRemoval();
-	}	
+	}
 }
 
 u16 LuaEntitySAO::getHP() const

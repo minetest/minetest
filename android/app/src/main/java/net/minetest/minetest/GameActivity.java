@@ -23,7 +23,6 @@ package net.minetest.minetest;
 import android.app.NativeActivity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -32,7 +31,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Keep;
@@ -40,6 +38,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 
 // Native code finds these methods by name (see porting_android.cpp).
@@ -49,13 +48,11 @@ import java.util.Objects;
 public class GameActivity extends NativeActivity {
 	static {
 		System.loadLibrary("c++_shared");
-		System.loadLibrary("Minetest");
+		System.loadLibrary("minetest");
 	}
 
 	private int messageReturnCode = -1;
 	private String messageReturnValue = "";
-
-	public static native void putMessageBoxResult(String text);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,11 +61,10 @@ public class GameActivity extends NativeActivity {
 	}
 
 	private void makeFullScreen() {
-		if (Build.VERSION.SDK_INT >= 19)
-			this.getWindow().getDecorView().setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-					View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		this.getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 	}
 
 	@Override
@@ -99,21 +95,11 @@ public class GameActivity extends NativeActivity {
 		container.setOrientation(LinearLayout.VERTICAL);
 		builder.setView(container);
 		AlertDialog alertDialog = builder.create();
-		EditText editText;
-		// For multi-line, do not close the dialog after pressing back button
-		if (editType == 1) {
-			editText = new EditText(this);
-		} else {
-			editText = new CustomEditText(this);
-		}
+		CustomEditText editText = new CustomEditText(this, editType);
 		container.addView(editText);
 		editText.setMaxLines(8);
-		editText.requestFocus();
 		editText.setHint(hint);
 		editText.setText(current);
-		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-		Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED,
-				InputMethodManager.HIDE_IMPLICIT_ONLY);
 		if (editType == 1)
 			editText.setInputType(InputType.TYPE_CLASS_TEXT |
 					InputType.TYPE_TEXT_FLAG_MULTI_LINE);
@@ -122,7 +108,8 @@ public class GameActivity extends NativeActivity {
 					InputType.TYPE_TEXT_VARIATION_PASSWORD);
 		else
 			editText.setInputType(InputType.TYPE_CLASS_TEXT);
-		editText.setSelection(editText.getText().length());
+		editText.setSelection(Objects.requireNonNull(editText.getText()).length());
+		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		editText.setOnKeyListener((view, keyCode, event) -> {
 			// For multi-line, do not submit the text after pressing Enter key
 			if (keyCode == KeyEvent.KEYCODE_ENTER && editType != 1) {
@@ -146,12 +133,13 @@ public class GameActivity extends NativeActivity {
 				alertDialog.dismiss();
 			}));
 		}
-		alertDialog.show();
 		alertDialog.setOnCancelListener(dialog -> {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 			messageReturnValue = current;
 			messageReturnCode = -1;
 		});
+		alertDialog.show();
+		editText.requestFocusTryShow();
 	}
 
 	public int getDialogState() {
@@ -204,5 +192,29 @@ public class GameActivity extends NativeActivity {
 
 		Intent shareIntent = Intent.createChooser(intent, null);
 		startActivity(shareIntent);
+	}
+
+	public String getLanguage() {
+		String langCode = Locale.getDefault().getLanguage();
+
+		// getLanguage() still uses old language codes to preserve compatibility.
+		// List of code changes in ISO 639-2:
+		// https://www.loc.gov/standards/iso639-2/php/code_changes.php
+		switch (langCode) {
+			case "in":
+				langCode = "id"; // Indonesian
+				break;
+			case "iw":
+				langCode = "he"; // Hebrew
+				break;
+			case "ji":
+				langCode = "yi"; // Yiddish
+				break;
+			case "jw":
+				langCode = "jv"; // Javanese
+				break;
+		}
+
+		return langCode;
 	}
 }

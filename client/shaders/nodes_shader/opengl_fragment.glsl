@@ -3,6 +3,7 @@ uniform sampler2D baseTexture;
 uniform vec3 dayLight;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
+uniform float fogShadingParameter;
 uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
@@ -20,7 +21,7 @@ uniform float animationTimer;
 	uniform vec4 CameraPos;
 	uniform float xyPerspectiveBias0;
 	uniform float xyPerspectiveBias1;
-	
+
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
@@ -48,9 +49,6 @@ varying float nightRatio;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
-
-const float fogStart = FOG_START;
-const float fogShadingParameter = 1.0 / ( 1.0 - fogStart);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
@@ -392,7 +390,7 @@ void main(void)
 		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
 		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
 			distance_rate = 0.0;
-		float f_adj_shadow_strength = max(adj_shadow_strength-mtsmoothstep(0.9,1.1,  posLightSpace.z),0.0);
+		float f_adj_shadow_strength = max(adj_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
 
