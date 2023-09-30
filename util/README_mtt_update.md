@@ -28,7 +28,7 @@ Optionally, you can also define additional helper functions `FS`, `NS` and `NFS`
 
 Here is the list of all recognized function names. All functions return a string.
 
-* `S`: Returns translation of input. See Minetest's `lua_api.txt`. You should always have at
+* `S`: Returns translation of input. See Minetest's `lua_api.md`. You should always have at
        least this function defined.
 * `NS`: Returns the input. Useful to make a string visible to the script without actually
         translating it here.
