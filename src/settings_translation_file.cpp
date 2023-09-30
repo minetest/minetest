@@ -8,7 +8,7 @@ fake_function() {
 	gettext("Camera smoothing");
 	gettext("Smooths rotation of camera, also called look or mouse smoothing. 0 to disable.");
 	gettext("Camera smoothing in cinematic mode");
-	gettext("Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.");
+	gettext("Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.");
 	gettext("Build inside player");
 	gettext("If enabled, you can place nodes at the position (feet + eye level) where you stand.\nThis is helpful when working with nodeboxes in small areas.");
 	gettext("Aux1 key for climbing/descending");

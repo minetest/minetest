@@ -4399,7 +4399,7 @@ void Game::showPauseMenu()
 	}
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-		<< strgettext("Change Keys")  << "]";
+		<< strgettext("Controls")  << "]";
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
