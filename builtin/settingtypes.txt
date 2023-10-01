@@ -1717,7 +1717,7 @@ profiler.load (Load the game profiler) bool false
 profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-profiler.report_path (Report path) string ""
+profiler.report_path (Report path) string
 
 #    Instrument the methods of entities on registration.
 instrument.entity (Entity methods) bool true

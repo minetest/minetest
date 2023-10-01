@@ -114,7 +114,7 @@ local function get_formspec(tabview, name, tabdata)
 				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 		if gamedata.serverdescription then
-			retval = retval .. "textarea[0.25,1.85;5.2,2.75;;;" ..
+			retval = retval .. "textarea[0.25,1.85;5.25,2.7;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 	end
