@@ -474,7 +474,7 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 	push_v3f(L, player->eye_offset_first);
 	push_v3f(L, player->eye_offset_third);
 	push_v3f(L, player->eye_offset_third_front);
-	return 2;
+	return 3;
 }
 
 // send_mapblock(self, pos)
