@@ -477,6 +477,7 @@ local function get_formspec(dialogdata)
 
 		"field[0.25,0.25;", tostring(search_width), ",0.75;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",
+		"field_enter_after_edit[search_query;true]",
 		"container[", tostring(search_width + 0.25), ", 0.25]",
 			"image_button[0,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
 			"image_button[0.75,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";search_clear;]",
