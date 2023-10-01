@@ -588,3 +588,36 @@ minetest.register_node("testnodes:drowning_1", {
 	groups = {dig_immediate=3},
 })
 
+-- post_effect_color_shaded
+
+minetest.register_node("testnodes:post_effect_color_shaded_false", {
+	description = S("\"post_effect_color_shaded = false\" Node"),
+
+	drawtype = "allfaces",
+	tiles = {"testnodes_post_effect_color_shaded_false.png"},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
+	post_effect_color = {a = 128, r = 255, g = 255, b = 255},
+	post_effect_color_shaded = false,
+
+	walkable = false,
+	is_ground_content = false,
+	groups = {dig_immediate=3},
+})
+
+minetest.register_node("testnodes:post_effect_color_shaded_true", {
+	description = S("\"post_effect_color_shaded = true\" Node"),
+
+	drawtype = "allfaces",
+	tiles = {"testnodes_post_effect_color_shaded_true.png"},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
+	post_effect_color = {a = 128, r = 255, g = 255, b = 255},
+	post_effect_color_shaded = true,
+
+	walkable = false,
+	is_ground_content = false,
+	groups = {dig_immediate=3},
+})

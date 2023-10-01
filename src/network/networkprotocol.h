@@ -217,7 +217,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		[scheduled bump for 5.7.0]
 	PROTOCOL VERSION 43:
 		"start_time" added to TOCLIENT_PLAY_SOUND
-		AO_CMD_SET_BONE_POSITION extended
+		place_param2 type change u8 -> optional<u8>
+    AO_CMD_SET_BONE_POSITION extended
 		[scheduled bump for 5.8.0]
 */
 
@@ -241,7 +242,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                             // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
-#define FORMSPEC_API_VERSION 6
+#define FORMSPEC_API_VERSION 7
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 

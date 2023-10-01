@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "filesys.h"
 #include "../gui/guiSkin.h"
+#include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
@@ -123,7 +124,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
 	bool enable_fsaa = g_settings->get("antialiasing") == "fsaa";
-	u16 fsaa = enable_fsaa ? g_settings->getU16("fsaa") : 0;
+	u16 fsaa = enable_fsaa ? MYMAX(2, g_settings->getU16("fsaa")) : 0;
 
 	// Determine driver
 	auto driverType = chooseVideoDriver();
@@ -139,7 +140,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.Stencilbuffer = false;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = true;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 #endif
@@ -195,16 +195,7 @@ void RenderingEngine::cleanupMeshCache()
 
 bool RenderingEngine::setupTopLevelWindow()
 {
-	// FIXME: It would make more sense for there to be a switch of some
-	// sort here that would call the correct toplevel setup methods for
-	// the environment Minetest is running in.
-
-	/* Setting general properties for the top level window */
-	verbosestream << "Client: Configuring general top level window properties"
-			<< std::endl;
-	bool result = setWindowIcon();
-
-	return result;
+	return setWindowIcon();
 }
 
 bool RenderingEngine::setWindowIcon()
@@ -235,7 +226,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 	core::rect<s32> textrect(center - textsize / 2, center + textsize / 2);
 
 	gui::IGUIStaticText *guitext =
-			guienv->addStaticText(text.c_str(), textrect, false, false);
+			gui::StaticText::add(guienv, text, textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
 	if (sky && g_settings->getBool("menu_clouds")) {

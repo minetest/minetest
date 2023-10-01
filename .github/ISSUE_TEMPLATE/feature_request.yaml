@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: ["Feature request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please note the following:
+        1. Only submit a feature request if the feature does not exist on the latest dev version.
+        2. This page is for suggesting changes to **the engine itself**. To suggest changes to games, please [search for the game in the ContentDB](https://content.minetest.net/packages/?type=game) and submit a feature request in their issue trackers.
+  - type: textarea
+    attributes:
+      label: Problem
+      description: |
+        A clear and concise description of the problem, i.e. "Why is this needed?"
+        Example: I'm always frustrated when [...]
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Solutions
+      description: |
+        A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives
+      description: |
+        A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any other context or screenshots about the feature request here.
+    validations:
+      required: false

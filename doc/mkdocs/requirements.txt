@@ -1,2 +1,2 @@
-mkdocs~=1.3.0
-pygments~=2.12.0
+mkdocs~=1.4.3
+pygments~=2.15.1

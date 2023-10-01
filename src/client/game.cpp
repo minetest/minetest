@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keys.h"
 #include "client/joystick_controller.h"
 #include "client/mapblock_mesh.h"
+#include "client/sound.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"
@@ -75,10 +76,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientdynamicinfo.h"
 
 #if USE_SOUND
-	#include "client/sound_openal.h"
-#else
-	#include "client/sound.h"
+	#include "client/sound/sound_openal.h"
 #endif
+
 /*
 	Text input system
 */
@@ -578,7 +578,7 @@ public:
 		m_saturation_pixel.set(&saturation, services);
 	}
 
-	void onSetMaterial(const video::SMaterial &material)
+	void onSetMaterial(const video::SMaterial &material) override
 	{
 		video::ITexture *texture = material.getTexture(0);
 		if (texture) {
@@ -972,7 +972,7 @@ private:
 
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
-	bool m_game_focused;
+	bool m_game_focused = false;
 
 	bool m_does_lost_focus_pause_game = false;
 
@@ -1951,7 +1951,7 @@ void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
 	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
-		if(m_game_focused) {
+		if (m_game_focused) {
 			m_game_focused = false;
 			infostream << "Game lost focus" << std::endl;
 			input->releaseAllKeys();
@@ -2160,6 +2160,14 @@ void Game::processItemSelection(u16 *new_playeritem)
 			break;
 		}
 	}
+
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
+		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
+		if (selection)
+			*new_playeritem = *selection;
+	}
+#endif
 
 	// Clamp selection again in case it wasn't changed but max_item was
 	*new_playeritem = MYMIN(*new_playeritem, max_item);
@@ -3162,7 +3170,7 @@ void Game::updateCamera(f32 dtime)
 		v3f camera_direction = camera->getDirection();
 
 		client->getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset);
+				camera_direction, camera_fov, camera_offset, player->light_color);
 
 		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);
@@ -3619,10 +3627,10 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 	// Compare core.item_place_node() for what the server does with param2
 	MapNode predicted_node(id, 0, 0);
 
-	const u8 place_param2 = selected_def.place_param2;
+	const auto place_param2 = selected_def.place_param2;
 
 	if (place_param2) {
-		predicted_node.setParam2(place_param2);
+		predicted_node.setParam2(*place_param2);
 	} else if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
 			predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 		v3s16 dir = nodepos - neighborpos;

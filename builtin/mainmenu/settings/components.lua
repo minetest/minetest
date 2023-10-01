@@ -84,6 +84,7 @@ local function make_field(converter, validator, stringifier)
 
 				local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
 					avail_w - 1.5, setting.name, get_label(setting), core.formspec_escape(value))
+				fs = fs .. ("field_enter_after_edit[%s;true]"):format(setting.name)
 				fs = fs .. ("button[%f,0.3;1.5,0.8;%s;%s]"):format(avail_w - 1.5, "set_" .. setting.name, fgettext("Set"))
 
 				return fs, 1.1
@@ -113,7 +114,7 @@ end
 
 make.float = make_field(tonumber, is_valid_number, function(x)
 	local str = tostring(x)
-	if str:match("^%d+$") then
+	if str:match("^[+-]?%d+$") then
 		str = str .. ".0"
 	end
 	return str
@@ -161,15 +162,17 @@ function make.enum(setting)
 			local value = core.settings:get(setting.name) or setting.default
 			self.resettable = core.settings:has(setting.name)
 
+			local labels = setting.option_labels or {}
+
 			local items = {}
 			for i, option in ipairs(setting.values) do
-				items[i] = core.formspec_escape(option)
+				items[i] = core.formspec_escape(labels[option] or option)
 			end
 
 			local selected_idx = table.indexof(setting.values, value)
 			local fs = "label[0,0.1;" .. get_label(setting) .. "]"
 
-			fs = fs .. ("dropdown[0,0.3;%f,0.8;%s;%s;%d]"):format(
+			fs = fs .. ("dropdown[0,0.3;%f,0.8;%s;%s;%d;true]"):format(
 				avail_w, setting.name, table.concat(items, ","), selected_idx, value)
 
 			return fs, 1.1
@@ -177,7 +180,8 @@ function make.enum(setting)
 
 		on_submit = function(self, fields)
 			local old_value = core.settings:get(setting.name) or setting.default
-			local value = fields[setting.name]
+			local idx = tonumber(fields[setting.name]) or 0
+			local value = setting.values[idx]
 			if value == nil or value == old_value then
 				return false
 			end
@@ -189,7 +193,7 @@ function make.enum(setting)
 end
 
 
-function make.path(setting)
+local function make_path(setting)
 	return {
 		info_text = setting.comment,
 		setting = setting,
@@ -199,7 +203,7 @@ function make.path(setting)
 			self.resettable = core.settings:has(setting.name)
 
 			local fs = ("field[0,0.3;%f,0.8;%s;%s;%s]"):format(
-				avail_w - 3, setting.name, get_label(setting), value)
+				avail_w - 3, setting.name, get_label(setting), core.formspec_escape(value))
 			fs = fs .. ("button[%f,0.3;1.5,0.8;%s;%s]"):format(avail_w - 3, "pick_" .. setting.name, fgettext("Browse"))
 			fs = fs .. ("button[%f,0.3;1.5,0.8;%s;%s]"):format(avail_w - 1.5, "set_" .. setting.name, fgettext("Set"))
 
@@ -230,6 +234,15 @@ function make.path(setting)
 			end
 		end,
 	}
+end
+
+if PLATFORM == "Android" then
+	-- The Irrlicht file picker doesn't work on Android.
+	make.path = make.string
+	make.filepath = make.string
+else
+	make.path = make_path
+	make.filepath = make_path
 end
 
 
@@ -359,12 +372,16 @@ function make.flags(setting)
 end
 
 
-local function noise_params(setting)
+local function make_noise_params(setting)
 	return {
 		info_text = setting.comment,
 		setting = setting,
 
 		get_formspec = function(self, avail_w)
+			-- The "defaults" noise parameter flag doesn't reset a noise
+			-- setting to its default value, so we offer a regular reset button.
+			self.resettable = core.settings:has(setting.name)
+
 			local fs = "label[0,0.4;" .. get_label(setting) .. "]" ..
 					("button[%f,0;2.5,0.8;%s;%s]"):format(avail_w - 2.5, "edit_" .. setting.name, fgettext("Edit"))
 			return fs, 0.8
@@ -383,9 +400,8 @@ local function noise_params(setting)
 	}
 end
 
+make.noise_params_2d = make_noise_params
+make.noise_params_3d = make_noise_params
 
-make.filepath = make.path
-make.noise_params_2d = noise_params
-make.noise_params_3d = noise_params
 
 return make

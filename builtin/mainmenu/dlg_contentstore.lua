@@ -23,9 +23,18 @@ if not core.get_http_api then
 	return
 end
 
--- Unordered preserves the original order of the ContentDB API,
--- before the package list is ordered based on installed state.
-local store = { packages = {}, packages_full = {}, packages_full_unordered = {}, aliases = {} }
+local store = {
+	loading = false,
+	load_ok = false,
+	load_error = false,
+
+	-- Unordered preserves the original order of the ContentDB API,
+	-- before the package list is ordered based on installed state.
+	packages = {},
+	packages_full = {},
+	packages_full_unordered = {},
+	aliases = {},
+}
 
 local http = core.get_http_api()
 
@@ -65,7 +74,7 @@ local REASON_DEPENDENCY = "dependency"
 -- encodes for use as URL parameter or path component
 local function urlencode(str)
 	return str:gsub("[^%a%d()._~-]", function(char)
-		return string.format("%%%02X", string.byte(char))
+		return ("%%%02X"):format(char:byte())
 	end)
 end
 assert(urlencode("sample text?") == "sample%20text%3F")
@@ -432,7 +441,7 @@ function install_dialog.get_formspec()
 		"container_end[]",
 	}
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function install_dialog.handle_submit(this, fields)
@@ -577,29 +586,33 @@ local function get_screenshot(package)
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-function store.load()
+local function fetch_pkgs(param)
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. urlencode(version.string)
+		core.get_max_supp_proto() .. "&engine_version=" .. param.urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. urlencode(item)
+			url = url .. "&hide=" .. param.urlencode(item)
 		end
 	end
 
+	local http = core.get_http_api()
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
 		return
 	end
 
-	store.packages_full = core.parse_json(response.data) or {}
-	store.aliases = {}
+	local packages = core.parse_json(response.data)
+	if not packages or #packages == 0 then
+		return
+	end
+	local aliases = {}
 
-	for _, package in pairs(store.packages_full) do
+	for _, package in pairs(packages) do
 		local name_len = #package.name
 		-- This must match what store.update_paths() does!
 		package.id = package.author:lower() .. "/"
@@ -609,22 +622,58 @@ function store.load()
 			package.id = package.id .. package.name
 		end
 
-		package.url_part = urlencode(package.author) .. "/" .. urlencode(package.name)
+		package.url_part = param.urlencode(package.author) .. "/" .. param.urlencode(package.name)
 
 		if package.aliases then
 			for _, alias in ipairs(package.aliases) do
 				-- We currently don't support name changing
 				local suffix = "/" .. package.name
 				if alias:sub(-#suffix) == suffix then
-					store.aliases[alias:lower()] = package.id
+					aliases[alias:lower()] = package.id
 				end
 			end
 		end
 	end
 
-	store.packages_full_unordered = store.packages_full
-	store.packages = store.packages_full
-	store.loaded = true
+	return { packages = packages, aliases = aliases }
+end
+
+local function sort_and_filter_pkgs()
+	store.update_paths()
+	store.sort_packages()
+	store.filter_packages(search_string)
+end
+
+function store.load()
+	if store.load_ok then
+		sort_and_filter_pkgs()
+		return
+	end
+	if store.loading then
+		return
+	end
+	store.loading = true
+	core.handle_async(
+		fetch_pkgs,
+		{ urlencode = urlencode },
+		function(result)
+			if result then
+				store.packages = result.packages
+				store.packages_full = result.packages
+				store.packages_full_unordered = result.packages
+				store.aliases = result.aliases
+				sort_and_filter_pkgs()
+
+				store.load_ok = true
+				store.load_error = false
+			else
+				store.load_error = true
+			end
+
+			store.loading = false
+			core.event_handler("Refresh")
+		end
+	)
 end
 
 function store.update_paths()
@@ -684,8 +733,16 @@ function store.sort_packages()
 		end
 	end
 
-	-- Sort installed content by title
+	-- Sort installed content first by "is there an update available?", then by title
 	table.sort(ret, function(a, b)
+		local a_updatable = a.installed_release < a.release
+		local b_updatable = b.installed_release < b.release
+		if a_updatable and not b_updatable then
+			return true
+		elseif b_updatable and not a_updatable then
+			return false
+		end
+
 		return a.title < b.title
 	end)
 
@@ -735,7 +792,29 @@ function store.filter_packages(query)
 	end
 end
 
+local function get_info_formspec(text)
+	local H = 9.5
+	return table.concat({
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
+
+		"label[4,4.35;", text, "]",
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
+		"container_end[]",
+	})
+end
+
 function store.get_formspec(dlgdata)
+	if store.loading then
+		return get_info_formspec(fgettext("Loading..."))
+	end
+	if store.load_error then
+		return get_info_formspec(fgettext("No packages could be retrieved"))
+	end
+	assert(store.load_ok)
+
 	store.update_paths()
 
 	dlgdata.pagemax = math.max(math.ceil(#store.packages / num_per_page), 1)
@@ -745,82 +824,70 @@ function store.get_formspec(dlgdata)
 
 	local W = 15.75
 	local H = 9.5
-	local formspec
-	if #store.packages_full > 0 then
-		formspec = {
-			"formspec_version[3]",
-			"size[15.75,9.5]",
-			"position[0.5,0.55]",
+	local formspec = {
+		"formspec_version[6]",
+		"size[15.75,9.5]",
+		TOUCHSCREEN_GUI and "padding[0.01,0.01]" or "position[0.5,0.55]",
 
-			"style[status,downloading,queued;border=false]",
+		"style[status,downloading,queued;border=false]",
 
-			"container[0.375,0.375]",
-			"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
-			"field_close_on_enter[search_string;false]",
-			"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
-			"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
-			"dropdown[9.6,0;2.4,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
-			"container_end[]",
+		"container[0.375,0.375]",
+		"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
+		"field_enter_after_edit[search_string;true]",
+		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
+		"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
+		"dropdown[9.175,0;2.7875,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",
+		"container_end[]",
 
-			-- Page nav buttons
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0.375,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
+		-- Page nav buttons
+		"container[0,", H - 0.8 - 0.375, "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 
-			"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
-			"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
-			"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
-			"style[pagenum;border=false]",
-			"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
-			"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
-			"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
-			"container_end[]",
+		"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
+		"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
+		"image_button[0.8,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "prev_icon.png;pback;]",
+		"style[pagenum;border=false]",
+		"button[1.6,0;2,0.8;pagenum;", tonumber(cur_page), " / ", tonumber(dlgdata.pagemax), "]",
+		"image_button[3.6,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "next_icon.png;pnext;]",
+		"image_button[4.4,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "end_icon.png;pend;]",
+		"container_end[]",
 
-			"container_end[]",
-		}
+		"container_end[]",
+	}
 
-		if number_downloading > 0 then
-			formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;downloading;"
-			if #download_queue > 0 then
-				formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
-			else
-				formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+	if number_downloading > 0 then
+		formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;downloading;"
+		if #download_queue > 0 then
+			formspec[#formspec + 1] = fgettext("$1 downloading,\n$2 queued", number_downloading, #download_queue)
+		else
+			formspec[#formspec + 1] = fgettext("$1 downloading...", number_downloading)
+		end
+		formspec[#formspec + 1] = "]"
+	else
+		local num_avail_updates = 0
+		for i=1, #store.packages_full do
+			local package = store.packages_full[i]
+			if package.path and package.installed_release < package.release and
+					not (package.downloading or package.queued) then
+				num_avail_updates = num_avail_updates + 1
 			end
+		end
+
+		if num_avail_updates == 0 then
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;status;"
+			formspec[#formspec + 1] = fgettext("No updates")
 			formspec[#formspec + 1] = "]"
 		else
-			local num_avail_updates = 0
-			for i=1, #store.packages_full do
-				local package = store.packages_full[i]
-				if package.path and package.installed_release < package.release and
-						not (package.downloading or package.queued) then
-					num_avail_updates = num_avail_updates + 1
-				end
-			end
-
-			if num_avail_updates == 0 then
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;status;"
-				formspec[#formspec + 1] = fgettext("No updates")
-				formspec[#formspec + 1] = "]"
-			else
-				formspec[#formspec + 1] = "button[12.75,0.375;2.625,0.8;update_all;"
-				formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
-				formspec[#formspec + 1] = "]"
-			end
-		end
-
-		if #store.packages == 0 then
-			formspec[#formspec + 1] = "label[4,3;"
-			formspec[#formspec + 1] = fgettext("No results")
+			formspec[#formspec + 1] = "button[12.5875,0.375;2.7875,0.8;update_all;"
+			formspec[#formspec + 1] = fgettext("Update All [$1]", num_avail_updates)
 			formspec[#formspec + 1] = "]"
 		end
-	else
-		formspec = {
-			"size[12,7]",
-			"position[0.5,0.55]",
-			"label[4,3;", fgettext("No packages could be retrieved"), "]",
-			"container[0,", H - 0.8 - 0.375, "]",
-			"button[0,0;4,0.8;back;", fgettext("Back to Main Menu"), "]",
-			"container_end[]",
-		}
+	end
+
+	if #store.packages == 0 then
+		formspec[#formspec + 1] = "label[4,4.75;"
+		formspec[#formspec + 1] = fgettext("No results")
+		formspec[#formspec + 1] = "]"
 	end
 
 	-- download/queued tooltips always have the same message
@@ -849,7 +916,10 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "]"
 
 		-- buttons
-		local left_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
+		local description_width = W - 2.625 - 2 * 0.7 - 2 * 0.15
+
+		local second_base = "image_button[-1.55,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
+		local third_base = "image_button[-2.4,0;0.7,0.7;" .. core.formspec_escape(defaulttexturedir)
 		formspec[#formspec + 1] = "container["
 		formspec[#formspec + 1] = W - 0.375*2
 		formspec[#formspec + 1] = ",0.1]"
@@ -859,28 +929,28 @@ function store.get_formspec(dlgdata)
 			formspec[#formspec + 1] = core.formspec_escape(defaulttexturedir)
 			formspec[#formspec + 1] = "cdb_downloading.png;3;400;]"
 		elseif package.queued then
-			formspec[#formspec + 1] = left_base
+			formspec[#formspec + 1] = second_base
 			formspec[#formspec + 1] = "cdb_queued.png;queued;]"
 		elseif not package.path then
 			local elem_name = "install_" .. i .. ";"
 			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#71aa34]"
-			formspec[#formspec + 1] = left_base .. "cdb_add.png;" .. elem_name .. "]"
+			formspec[#formspec + 1] = second_base .. "cdb_add.png;" .. elem_name .. "]"
 			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Install") .. tooltip_colors
 		else
 			if package.installed_release < package.release then
-
 				-- The install_ action also handles updating
 				local elem_name = "install_" .. i .. ";"
 				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#28ccdf]"
-				formspec[#formspec + 1] = left_base .. "cdb_update.png;" .. elem_name .. "]"
+				formspec[#formspec + 1] = third_base .. "cdb_update.png;" .. elem_name .. "]"
 				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Update") .. tooltip_colors
-			else
 
-				local elem_name = "uninstall_" .. i .. ";"
-				formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
-				formspec[#formspec + 1] = left_base .. "cdb_clear.png;" .. elem_name .. "]"
-				formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
+				description_width = description_width - 0.7 - 0.15
 			end
+
+			local elem_name = "uninstall_" .. i .. ";"
+			formspec[#formspec + 1] = "style[" .. elem_name .. "bgcolor=#a93b3b]"
+			formspec[#formspec + 1] = second_base .. "cdb_clear.png;" .. elem_name .. "]"
+			formspec[#formspec + 1] = "tooltip[" .. elem_name .. fgettext("Uninstall") .. tooltip_colors
 		end
 
 		local web_elem_name = "view_" .. i .. ";"
@@ -891,7 +961,6 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 
 		-- description
-		local description_width = W - 0.375*5 - 0.85 - 2*0.7
 		formspec[#formspec + 1] = "textarea[1.855,0.3;"
 		formspec[#formspec + 1] = tostring(description_width)
 		formspec[#formspec + 1] = ",0.8;;;"
@@ -901,7 +970,7 @@ function store.get_formspec(dlgdata)
 		formspec[#formspec + 1] = "container_end[]"
 	end
 
-	return table.concat(formspec, "")
+	return table.concat(formspec)
 end
 
 function store.handle_submit(this, fields)
@@ -1042,16 +1111,8 @@ function store.handle_submit(this, fields)
 end
 
 function create_store_dlg(type)
-	if not store.loaded or #store.packages_full == 0 then
-		store.load()
-	end
-
-	store.update_paths()
-	store.sort_packages()
-
 	search_string = ""
 	cur_page = 1
-
 	if type then
 		-- table.indexof does not work on tables that contain `nil`
 		for i, v in pairs(filter_types_type) do
@@ -1060,9 +1121,11 @@ function create_store_dlg(type)
 				break
 			end
 		end
+	else
+		filter_type = 1
 	end
 
-	store.filter_packages(search_string)
+	store.load()
 
 	return dialog_create("store",
 			store.get_formspec,

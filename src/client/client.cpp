@@ -1317,9 +1317,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		m_chat_message_allowance -= 1.0f;
 
 		NetworkPacket pkt(TOSERVER_CHAT_MESSAGE, 2 + message.size() * sizeof(u16));
-
 		pkt << message;
-
 		Send(&pkt);
 	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size < 0) {
 		m_out_chat_queue.push(message);
@@ -1701,8 +1699,11 @@ void Client::typeChatMessage(const std::wstring &message)
 	if (message.empty())
 		return;
 
+	auto message_utf8 = wide_to_utf8(message);
+	infostream << "Typed chat message: \"" << message_utf8 << "\"" << std::endl;
+
 	// If message was consumed by script API, don't send it to server
-	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
+	if (m_mods_loaded && m_script->on_sending_message(message_utf8))
 		return;
 
 	// Send to others

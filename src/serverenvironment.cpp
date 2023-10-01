@@ -2162,10 +2162,6 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			return false;
 		}
 
-		verbosestream << "ServerEnvironment::deactivateFarObjects(): "
-					  << "object id=" << id << " is not known by clients"
-					  << "; deleting" << std::endl;
-
 		// Tell the object about removal
 		obj->removingFromEnvironment();
 		// Deregister in scripting api

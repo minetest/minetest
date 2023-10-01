@@ -91,14 +91,15 @@ bool MapBlock::onObjectsActivation()
 	if (m_static_objects.getAllStored().empty())
 		return false;
 
+	const auto count = m_static_objects.getStoredSize();
 	verbosestream << "MapBlock::onObjectsActivation(): "
-			<< "activating objects of block " << getPos() << " ("
-			<< m_static_objects.getStoredSize() << " objects)" << std::endl;
+			<< "activating " << count << "objects in block " << getPos()
+			<< std::endl;
 
-	if (m_static_objects.getStoredSize() > g_settings->getU16("max_objects_per_block")) {
+	if (count > g_settings->getU16("max_objects_per_block")) {
 		errorstream << "suspiciously large amount of objects detected: "
-			<< m_static_objects.getStoredSize() << " in "
-			<< getPos() << "; removing all of them." << std::endl;
+			<< count << " in " << getPos() << "; removing all of them."
+			<< std::endl;
 		// Clear stored list
 		m_static_objects.clearStored();
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_TOO_MANY_OBJECTS);

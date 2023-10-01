@@ -81,3 +81,9 @@ files["builtin/common/tests"] = {
 		"assert",
 	},
 }
+
+files["builtin/fstk"] = {
+	read_globals = {
+		"TOUCHSCREEN_GUI",
+	},
+}

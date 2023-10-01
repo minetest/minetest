@@ -474,8 +474,8 @@ void ShadowRenderer::renderShadowObjects(
 	m_driver->setTransform(video::ETS_PROJECTION, light.getProjectionMatrix());
 
 	for (const auto &shadow_node : m_shadow_node_array) {
-		// we only take care of the shadow casters
-		if (shadow_node.shadowMode == ESM_RECEIVE)
+		// we only take care of the shadow casters and only visible nodes cast shadows
+		if (shadow_node.shadowMode == ESM_RECEIVE || !shadow_node.node->isVisible())
 			continue;
 
 		// render other objects

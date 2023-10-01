@@ -38,7 +38,9 @@ public:
 
 	bool operator==(const KeyPress &o) const
 	{
-		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
+		if (valid_kcode(Key) && valid_kcode(o.Key))
+			return Key == o.Key;
+		return Char > 0 && Char == o.Char;
 	}
 
 	const char *sym() const;

@@ -557,7 +557,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				speedV.Y = -movement_speed_walk;
 				swimming_vertical = true;
 			} else if (is_climbing && !m_disable_descend) {
-				speedV.Y = -movement_speed_climb;
+				speedV.Y = -movement_speed_climb * physics_override.speed_climb;
 			} else {
 				// If not free movement but fast is allowed, aux1 is
 				// "Turbo button"
@@ -595,7 +595,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 				if (fast_climb)
 					speedV.Y = -movement_speed_fast;
 				else
-					speedV.Y = -movement_speed_climb;
+					speedV.Y = -movement_speed_climb * physics_override.speed_climb;
 			}
 		}
 	}
@@ -647,7 +647,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			if (fast_climb)
 				speedV.Y = movement_speed_fast;
 			else
-				speedV.Y = movement_speed_climb;
+				speedV.Y = movement_speed_climb * physics_override.speed_climb;
 		}
 	}
 
@@ -656,7 +656,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			((in_liquid || in_liquid_stable) && fast_climb))
 		speedH = speedH.normalize() * movement_speed_fast;
 	else if (control.sneak && !free_move && !in_liquid && !in_liquid_stable)
-		speedH = speedH.normalize() * movement_speed_crouch;
+		speedH = speedH.normalize() * movement_speed_crouch * physics_override.speed_crouch;
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
 
@@ -671,13 +671,13 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		if (superspeed || (fast_move && control.aux1))
 			incH = movement_acceleration_fast * BS * dtime;
 		else
-			incH = movement_acceleration_air * BS * dtime;
+			incH = movement_acceleration_air * physics_override.acceleration_air * BS * dtime;
 		incV = 0.0f; // No vertical acceleration in air
 	} else if (superspeed || (is_climbing && fast_climb) ||
 			((in_liquid || in_liquid_stable) && fast_climb)) {
 		incH = incV = movement_acceleration_fast * BS * dtime;
 	} else {
-		incH = incV = movement_acceleration_default * BS * dtime;
+		incH = incV = movement_acceleration_default * physics_override.acceleration_default * BS * dtime;
 	}
 
 	float slip_factor = 1.0f;
