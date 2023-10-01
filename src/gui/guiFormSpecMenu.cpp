@@ -3508,7 +3508,7 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 			SEvent enter;
 			enter.EventType = EET_GUI_EVENT;
 			enter.GUIEvent.Caller = editbox;
-			enter.GUIEvent.Element = 0;
+			enter.GUIEvent.Element = nullptr;
 			enter.GUIEvent.EventType = gui::EGET_EDITBOX_ENTER;
 			editbox->getParent()->OnEvent(enter);
 		}
