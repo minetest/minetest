@@ -331,6 +331,7 @@ protected:
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
+	std::unordered_map<std::string, bool> field_enter_after_edit;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
@@ -448,6 +449,7 @@ private:
 	void parseTable(parserData* data, const std::string &element);
 	void parseTextList(parserData* data, const std::string &element);
 	void parseDropDown(parserData* data, const std::string &element);
+	void parseFieldEnterAfterEdit(parserData *data, const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data, const std::string &element);
 	void parseField(parserData* data, const std::string &element, const std::string &type);

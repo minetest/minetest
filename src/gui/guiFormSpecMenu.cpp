@@ -1379,6 +1379,15 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 	}
 }
 
+void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts;
+	if (!precheckElement("field_enter_after_edit", element, 2, 2, parts))
+		return;
+
+	field_enter_after_edit[parts[0]] = is_yes(parts[1]);
+}
+
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts;
@@ -2903,6 +2912,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "field_enter_after_edit") {
+		parseFieldEnterAfterEdit(data, description);
+		return;
+	}
+
 	if (type == "field_close_on_enter") {
 		parseFieldCloseOnEnter(data, description);
 		return;
@@ -3082,6 +3096,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 	m_clickthrough_elements.clear();
+	field_enter_after_edit.clear();
 	field_close_on_enter.clear();
 	m_dropdown_index_event.clear();
 
@@ -3480,8 +3495,23 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		if (!element || element->getType() != irr::gui::EGUIET_EDIT_BOX)
 			return false;
 
+		gui::IGUIEditBox *editbox = (gui::IGUIEditBox *)element;
 		std::string text = porting::getInputDialogValue();
-		((gui::IGUIEditBox *)element)->setText(utf8_to_wide(text).c_str());
+		editbox->setText(utf8_to_wide(text).c_str());
+
+		bool enter_after_edit = false;
+		auto iter = field_enter_after_edit.find(fieldname);
+		if (iter != field_enter_after_edit.end()) {
+			enter_after_edit = iter->second;
+		}
+		if (enter_after_edit && editbox->getParent()) {
+			SEvent enter;
+			enter.EventType = EET_GUI_EVENT;
+			enter.GUIEvent.Caller = editbox;
+			enter.GUIEvent.Element = nullptr;
+			enter.GUIEvent.EventType = gui::EGET_EDITBOX_ENTER;
+			editbox->getParent()->OnEvent(enter);
+		}
 	}
 	return false;
 }

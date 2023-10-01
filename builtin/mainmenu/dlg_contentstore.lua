@@ -833,7 +833,7 @@ function store.get_formspec(dlgdata)
 
 		"container[0.375,0.375]",
 		"field[0,0;7.225,0.8;search_string;;", core.formspec_escape(search_string), "]",
-		"field_close_on_enter[search_string;false]",
+		"field_enter_after_edit[search_string;true]",
 		"image_button[7.3,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
 		"image_button[8.125,0;0.8,0.8;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";clear;]",
 		"dropdown[9.175,0;2.7875,0.8;type;", table.concat(filter_types_titles, ","), ";", filter_type, "]",

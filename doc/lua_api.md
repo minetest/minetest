@@ -2643,6 +2643,9 @@ Version History
   * Added padding[] element
 * Formspec version 6 (5.6.0):
   * Add nine-slice images, animated_image, and fgimg_middle
+* Formspec version 7 (5.8.0):
+  * style[]: Add focused state for buttons
+  * Add field_enter_after_edit[] (experimental)
 
 Elements
 --------
@@ -2890,7 +2893,7 @@ Elements
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the
+* When enter is pressed in field, `fields.key_enter_field` will be sent with the
   name of this field.
 * With the old coordinate system, fields are a set height, but will be vertically
   centered on `H`. With the new coordinate system, `H` will modify the height.
@@ -2923,12 +2926,21 @@ Elements
 * A "Proceed" button will be added automatically
 * See `field_close_on_enter` to stop enter closing the formspec
 
+### `field_enter_after_edit[<name>;<enter_after_edit>]`
+
+* Experimental, may be subject to change or removal at any time.
+* Only affects Android clients.
+* `<name>` is the name of the field.
+* If `<enter_after_edit>` is true, pressing the "Done" button in the Android
+  text input dialog will simulate an <kbd>Enter</kbd> keypress.
+* Defaults to false when not specified (i.e. no tag for a field).
+
 ### `field_close_on_enter[<name>;<close_on_enter>]`
 
-* <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the
-  form but not close it.
-* defaults to true when not specified (ie: no tag for a field)
+* `<name>` is the name of the field.
+* If `<close_on_enter>` is false, pressing <kbd>Enter</kbd> in the field will
+  submit the form but not close it.
+* Defaults to true when not specified (i.e. no tag for a field).
 
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 
