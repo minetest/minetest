@@ -2,6 +2,7 @@
    CGUITTFont FreeType class for Irrlicht
    Copyright (c) 2009-2010 John Norman
    Copyright (c) 2016 Nathanaëlle Courant
+   Copyright (c) 2023 Caleb Butler
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -35,7 +36,6 @@
 #include <ft2build.h>
 #include <vector>
 #include <map>
-#include <irrUString.h>
 #include "util/enriched_string.h"
 #include "util/basic_macros.h"
 #include FT_FREETYPE_H
@@ -289,11 +289,9 @@ namespace gui
 
 			//! Returns the dimension of a text string.
 			virtual core::dimension2d<u32> getDimension(const wchar_t* text) const;
-			virtual core::dimension2d<u32> getDimension(const core::ustring& text) const;
 
 			//! Calculates the index of the character in the text which is on a specific position.
 			virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const;
-			virtual s32 getCharacterFromPos(const core::ustring& text, s32 pixel_x) const;
 
 			//! Sets global kerning width for the font.
 			virtual void setKerningWidth(s32 kerning);
@@ -303,14 +301,13 @@ namespace gui
 
 			//! Gets kerning values (distance between letters) for the font. If no parameters are provided,
 			virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const;
-			virtual s32 getKerningWidth(const uchar32_t thisLetter=0, const uchar32_t previousLetter=0) const;
+			virtual s32 getKerningWidth(const char32_t thisLetter=0, const char32_t previousLetter=0) const;
 
 			//! Returns the distance between letters
 			virtual s32 getKerningHeight() const;
 
 			//! Define which characters should not be drawn by the font.
 			virtual void setInvisibleCharacters(const wchar_t *s);
-			virtual void setInvisibleCharacters(const core::ustring& s);
 
 			//! Get the last glyph page if there's still available slots.
 			//! If not, it will return zero.
@@ -330,7 +327,7 @@ namespace gui
 			//! Create corresponding character's software image copy from the font,
 			//! so you can use this data just like any ordinary video::IImage.
 			//! \param ch The character you need
-			virtual video::IImage* createTextureFromChar(const uchar32_t& ch);
+			virtual video::IImage* createTextureFromChar(const char32_t& ch);
 
 			//! This function is for debugging mostly. If the page doesn't exist it returns zero.
 			//! \param page_index Simply return the texture handle of a given page index.
@@ -360,6 +357,14 @@ namespace gui
 			static scene::IMesh* shared_plane_ptr_;
 			static scene::SMesh  shared_plane_;
 
+			// Helper functions for the same-named public member functions above
+			// (Since std::u32string is nicer to work with than wchar_t *)
+			core::dimension2d<u32> getDimension(const std::u32string& text) const;
+			s32 getCharacterFromPos(const std::u32string& text, s32 pixel_x) const;
+
+			// Helper function for the above helper functions :P
+			std::u32string convertWCharToU32String(const wchar_t* const) const;
+
 			CGUITTFont(IGUIEnvironment *env);
 			bool load(const io::path& filename, const u32 size, const bool antialias, const bool transparency);
 			void reset_images();
@@ -374,13 +379,13 @@ namespace gui
 				else load_flags |= FT_LOAD_TARGET_NORMAL;
 			}
 			u32 getWidthFromCharacter(wchar_t c) const;
-			u32 getWidthFromCharacter(uchar32_t c) const;
+			u32 getWidthFromCharacter(char32_t c) const;
 			u32 getHeightFromCharacter(wchar_t c) const;
-			u32 getHeightFromCharacter(uchar32_t c) const;
+			u32 getHeightFromCharacter(char32_t c) const;
 			u32 getGlyphIndexByChar(wchar_t c) const;
-			u32 getGlyphIndexByChar(uchar32_t c) const;
+			u32 getGlyphIndexByChar(char32_t c) const;
 			core::vector2di getKerning(const wchar_t thisLetter, const wchar_t previousLetter) const;
-			core::vector2di getKerning(const uchar32_t thisLetter, const uchar32_t previousLetter) const;
+			core::vector2di getKerning(const char32_t thisLetter, const char32_t previousLetter) const;
 			core::dimension2d<u32> getDimensionUntilEndOfLine(const wchar_t* p) const;
 
 			void createSharedPlane();
@@ -398,7 +403,7 @@ namespace gui
 
 			s32 GlobalKerningWidth;
 			s32 GlobalKerningHeight;
-			core::ustring Invisible;
+			std::u32string Invisible;
 			u32 shadow_offset;
 			u32 shadow_alpha;
 
