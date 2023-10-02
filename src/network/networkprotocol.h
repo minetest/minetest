@@ -751,6 +751,7 @@ enum ToClientCommand
 	/*
 		v3f1000 first
 		v3f1000 third
+		v3f1000 third_front
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
