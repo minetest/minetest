@@ -2226,11 +2226,13 @@ continuous_forward (Continuous forward) bool false
 #    Useful for recording videos
 cinematic (Cinematic mode) bool false
 
-#    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
-#    setting names in All Settings.
-#    Controlled by the checkbox in the "All settings" menu.
+#    setting names.
+#    Controlled by a checkbox in the settings menu.
 show_technical_names (Show technical names) bool false
+
+#    Controlled by a checkbox in the settings menu.
+show_advanced (Show advanced settings) bool false
 
 #    Enables the sound system.
 #    If disabled, this completely disables all sounds everywhere and the in-game
