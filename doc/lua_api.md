@@ -7962,11 +7962,16 @@ child will follow movement and rotation of that bone.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
-  camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
-    * in first person view
-    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets.
+* `set_eye_offset([firstperson, thirdperson_back, thirdperson_front])`: Sets camera offset vectors.
+    * `firstperson`: Offset in first person view.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_back`: Offset in third person back view.
+      Clamped between `vector.new(-10, -10, -5)` and `vector.new(10, 15, 5)`.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_front`: Offset in third person front view.
+      Same limits as for `thirdperson_back` apply.
+      Defaults to `thirdperson_back` if unspecified.
+* `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that
