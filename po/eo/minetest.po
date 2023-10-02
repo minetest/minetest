@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-09-18 15:01+0000\n"
-"Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
+"PO-Revision-Date: 2023-10-19 04:10+0000\n"
+"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,12 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.2\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Clear the out chat queue"
-msgstr "Maksimumo da atendantaj elaj mesaĝoj"
+msgstr "Vakigi eliran vicon de babilo"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -91,9 +90,8 @@ msgid "OK"
 msgstr "Bone"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "<none available>"
-msgstr "Komando ne uzeblas: "
+msgstr "<neniu disponebla>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -289,18 +287,16 @@ msgid "Error installing \"$1\": $2"
 msgstr "Eraro dum instalo de \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Malsukcesis elŝuti $1"
+msgstr "Malsukcesis elŝuti «$1»"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Malsukcesis elŝuti $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Instalo: Nesubtenata dosierspeco «$1» aŭ rompita arĥivo"
+msgstr "Malsukcesis elpaki «$1» (nesubtenata dosierspeco aŭ rompita arĥivo)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -411,9 +407,8 @@ msgid "Decorations"
 msgstr "Ornamoj"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Averto: La programista testo estas intencita por programistoj."
+msgstr "La programista testo estas intencita por programistoj."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -448,14 +443,12 @@ msgid "Increases humidity around rivers"
 msgstr "Plialtigas malsekecon ĉirkaŭ riveroj"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Instali $1"
+msgstr "Instali ludon"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Install another game"
-msgstr "Instalu alian ludon"
+msgstr "Instali alian ludon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
@@ -598,9 +591,8 @@ msgid "Joining $1"
 msgstr "Aliĝu al $1"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Missing name"
-msgstr "Nomo de mondestigilo"
+msgstr "Mankas nomo"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
@@ -614,11 +606,11 @@ msgstr "Pasvorto"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr "Pasvortoj ne kongruas"
+msgstr "Pasvortoj ne akordas"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr "Registri"
+msgstr "Registriĝi"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -653,19 +645,16 @@ msgid "Browse"
 msgstr "Foliumi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Client Mods"
-msgstr "Elektu Modifaĵojn"
+msgstr "Klientaj modifaĵoj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Enhavo"
+msgstr "Enhavo: Ludoj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Enhavo"
+msgstr "Enhavo: Modifaĵoj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
@@ -692,7 +681,6 @@ msgid "Offset"
 msgstr "Deŝovo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Persistence"
 msgstr "Persisteco"
 
@@ -784,9 +772,8 @@ msgid "eased"
 msgstr "faciligita"
 
 #: builtin/mainmenu/dlg_version_info.lua
-#, fuzzy
 msgid "A new $1 version is available"
-msgstr "Nova versio $1 disponeblas"
+msgstr "Nova versio de $1 disponeblas"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -797,7 +784,7 @@ msgid ""
 msgstr ""
 "instalita versio: $1\n"
 "nova version:$2\n"
-"Vizitu $3 por ekscii kiel akiri la plej novan version kaj resti ĝisdatigita "
+"Vizitu al $3 por ekscii kiel akiri la plej novan version kaj resti ĝisdata "
 "pri funkcioj kaj korektoj."
 
 #: builtin/mainmenu/dlg_version_info.lua
@@ -825,20 +812,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Malsukcesis instali $1 al $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instali modifaĵon: Ne povas trovi ĝustan dosierujan nomon por modifaĵaro $1"
+msgstr "Instalado: Ne povas trovi ĝustan dosierujan nomon por «$1»"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Ne povas trovi validan modifaĵon aŭ modifaĵaron"
+msgstr "Ne povas trovi validan modifaĵon, modifaĵaron, nek ludon"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Malsukcesis instali modifaĵon kiel $1"
+msgstr "Ne povas instali «$1» kiel «$2»"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -875,7 +858,7 @@ msgstr "Kernprogramistoj"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr "Ĉefa teamo"
+msgstr "Ĉefaj zorgantoj"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -898,9 +881,8 @@ msgid "Previous Core Developers"
 msgstr "Eksaj kernprogramistoj"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Share debug log"
-msgstr "Montri erarserĉajn informojn"
+msgstr "Montri erarserĉajn protokolon"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1016,14 +998,12 @@ msgstr "Krea reĝimo"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Difekto"
+msgstr "Vundado / LkL"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Favorites"
-msgstr "Ŝati"
+msgstr "Preferataj"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
@@ -1035,7 +1015,7 @@ msgstr "Aliĝi al ludo"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Login"
-msgstr "Ensaluti"
+msgstr "Saluti"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
@@ -1050,18 +1030,16 @@ msgid "Refresh"
 msgstr "Reŝargi"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Fora pordo"
+msgstr "Forigi el preferataj"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
 msgstr "Priskribo pri servilo"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "(game support required)"
-msgstr "(ludsubteno bezonata)"
+msgstr "(subteno de ludo bezonata)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -1108,9 +1086,8 @@ msgid "Dynamic shadows"
 msgstr "Dinamikaj ombroj"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Dynamic shadows:"
-msgstr "Dinamikaj ombroj: "
+msgstr "Dinamikaj ombroj:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -1205,18 +1182,16 @@ msgid "Tone Mapping"
 msgstr "Nuanca mapado"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Touch threshold (px):"
-msgstr "Tuŝa sojlo: (px)"
+msgstr "Tuŝa sojlo (px):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Trilineara filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Very High"
-msgstr "Altega"
+msgstr "Altegaj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
@@ -1267,9 +1242,8 @@ msgid "Connection error (timed out?)"
 msgstr "Konekta eraro (ĉu eltempiĝo?)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game: "
-msgstr "Ne povis trovi aŭ enlegi ludon \""
+msgstr "Ne povis trovi aŭ enlegi ludon: "
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -1333,14 +1307,13 @@ msgid "- Server Name: "
 msgstr "– Nomo de servilo: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Eraro okazis:"
+msgstr "Eraris datumformado:"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Access denied. Reason: %s"
-msgstr "Aliro malakceptita. Kialo: %s"
+msgstr "Aliro malakceptiĝis. Kialo: %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1356,15 +1329,15 @@ msgstr "Bloklimoj kaŝitaj"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr "Bloklimoj montritaj por ĉiuj blokoj"
+msgstr "Monderlimoj montritaj por ĉiuj blokoj"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr "Bloklimoj montritaj por nuna bloko"
+msgstr "Monderlimoj montritaj por nuna mondero"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr "Bloklimoj montritaj por proksimaj blokoj"
+msgstr "Monderlimoj montritaj por proksimaj monderoj"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1376,7 +1349,7 @@ msgstr "Ĝisdatigo de vidpunkto ŝaltita"
 
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by mod or game)"
-msgstr "Ne povas montri bloklimojn (malŝaltita de mod aŭ ludo)"
+msgstr "Ne povas montri monderlimojn (malŝaltita de ludo aŭ modifaĵo)"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1391,9 +1364,8 @@ msgid "Cinematic mode enabled"
 msgstr "Glita vidpunkto ŝaltita"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Client disconnected"
-msgstr "Klienta modifado"
+msgstr "Kliento malkonektiĝis"
 
 #: src/client/game.cpp
 msgid "Client side scripting is disabled"
@@ -1447,7 +1419,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Ne povis traduki adreson: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1506,9 +1478,9 @@ msgid "Enabled unlimited viewing range"
 msgstr "Ŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Eraro dum kreo de kliento: %s"
+msgstr "Eraris kreado de kliento: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1661,17 +1633,17 @@ msgstr "Malsilentigite"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "La servilo verŝajne uzas malsaman version de %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Ne povas konektiĝi al %s ĉar IPv6 estas malŝaltita"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Ne povas aŭskulti je %s ĉar IPv6 estas malŝaltita"
 
 #: src/client/game.cpp
 #, c-format
@@ -1706,9 +1678,8 @@ msgid "ok"
 msgstr "bone"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zomado nuntempe malŝaltita de ludo aŭ modifaĵo"
+msgstr "Babilado nun estas malŝaltita de ludo aŭ modifaĵo"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -2016,41 +1987,42 @@ msgstr "Mapeto en tekstura reĝimo"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "%s mankas:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Instalu kaj ŝaltu la bezonatajn modifaĵojn, aŭ malŝaltu la erarigajn "
+"modifaĵojn."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Noto: Ĉi tion povas kaŭzi dependa ciklo, kiuokaze provu ĝisdatigi la "
+"modifaĵojn."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Sen dependaĵoj"
+msgstr "Iuj modifaĵoj havas mankantajn dependaĵojn:"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "Malsukcesis elŝuti $1"
+msgstr "Malsukcesis malfermi retpaĝon"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
-msgstr ""
+msgstr "Malfermas retpaĝon"
 
 #: src/gui/guiFormSpecMenu.cpp
 msgid "Proceed"
 msgstr "Daŭrigi"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Aux1\" = climb down"
-msgstr "«Speciala» = malsupreniri"
+msgstr "«Help1» = malsupreniri"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Autoforward"
@@ -2062,7 +2034,7 @@ msgstr "Memaga saltado"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Aux1"
-msgstr ""
+msgstr "Help1"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -2070,7 +2042,7 @@ msgstr "Malantaŭen"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Monderlimoj"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2117,9 +2089,8 @@ msgid "Inc. volume"
 msgstr "Plilaŭtigi"
 
 #: src/gui/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inventory"
-msgstr "Inventaro"
+msgstr "Portujo"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Jump"
@@ -2131,7 +2102,7 @@ msgstr "Klavo jam estas uzata"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Klavagordo."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2222,9 +2193,9 @@ msgid "Muted"
 msgstr "Silentigita"
 
 #: src/gui/guiVolumeChange.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Sound Volume: %d%%"
-msgstr "Laŭteco: "
+msgstr "Laŭteco: %d%%"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2237,11 +2208,12 @@ msgstr "eo"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Nomo ne estas registrita. Por krei konton ĉe la servilo, klaku al "
+"«Registriĝi»."
 
 #: src/network/clientpackethandler.cpp
-#, fuzzy
 msgid "Name is taken. Please choose another name"
-msgstr "Bonvolu elekti nomon!"
+msgstr "La nomo jam estas prenita. Bonvolu elekti alian nomon."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2252,14 +2224,13 @@ msgstr ""
 "Se malŝaltita, virtuala stirstango centriĝos je la unua tuŝo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Uzi virtualan stirstangon por agigi la butonon «aux».\n"
-"Se ŝaltita, virtuala stirstango tuŝetos la butonon «aux» ankaŭ ekster la "
+"(Android) Uzi virtualan stirstangon por agigi la butonon «Help1».\n"
+"Se ŝaltita, virtuala stirstango tuŝetos la butonon «Help1» ankaŭ ekster la "
 "ĉefa ringo."
 
 #: src/settings_translation_file.cpp
@@ -2384,7 +2355,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-bruo, kiu determinas la nombron de forgeskeloj en mondoparto."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2404,12 +2374,11 @@ msgstr ""
 "–    topbottom: dividi ekranon horizontale.\n"
 "–    sidebyside: dividi ekranon vertikale.\n"
 "–    crossview: krucokula 3d-o.\n"
-"–    pageflip: kvarbufra 3d-o.\n"
 "Rimarku, ke la reĝimo «interlaced» postulas ŝaltitajn ombrigilojn."
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "3d"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2487,7 +2456,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
-msgstr ""
+msgstr "Alĝustigi trovitan ekran-densecon, por aligrandigi la fasadon."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2505,9 +2474,8 @@ msgstr ""
 "kontrolu certige) kreas solidan tavolon de fluginsulaĵo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Admin name"
-msgstr "Almeti nomon de portaĵo"
+msgstr "Nomo de administranto"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -2528,9 +2496,8 @@ msgstr ""
 "tre malmulte efikas sur natura noktlumo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly fast"
-msgstr "Ĉiam en fluga kaj rapida reĝimoj"
+msgstr "Ĉiam flugi rapide"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -2609,7 +2576,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Sono"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2628,9 +2595,8 @@ msgid "Autoscaling mode"
 msgstr "Reĝimo de memaga skalado"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Aux1 key for climbing/descending"
-msgstr "Speciala klavo por supreniri/malsupreniri"
+msgstr "Klavo «Help1» por supreniri/malsupreniri"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2661,9 +2627,8 @@ msgid "Bind address"
 msgstr "Bindi adreson"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API noise parameters"
-msgstr "Parametroj de varmeco kaj sekeco por Klimata API"
+msgstr "Parametroj de bruo por Klimata API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2675,24 +2640,23 @@ msgstr "Optimuma distanco de monder-sendado"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Lumvastiĝo"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Forteco de lumvastiĝo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Nuba duondiametro"
+msgstr "Duondiametro de lumvastiĝo"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Faktoro de forteco de lumvastiĝo"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "Balancado"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2719,9 +2683,8 @@ msgid "Builtin"
 msgstr "Primitivaĵo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera"
-msgstr "Ŝanĝi vidpunkton"
+msgstr "Vidpunkto"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2802,7 +2765,6 @@ msgid "Chat command time message threshold"
 msgstr "Sojlo de babilaj mesaĝoj antaŭ forpelo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat commands"
 msgstr "Babilaj komandoj"
 
@@ -2831,9 +2793,8 @@ msgid "Chat message max length"
 msgstr "Plejlongo de babilaj mesaĝoj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat weblinks"
-msgstr "Babilo montrita"
+msgstr "Retligiloj en babilo"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -2852,6 +2813,8 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Klakeblaj retligiloj ŝaltiĝis en konzola eligo de babilo (per klakoj meza, "
+"aŭ maldekstra kun stirklavo)."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2878,9 +2841,8 @@ msgid "Client side node lookup range restriction"
 msgstr "Limigoj de amplekso por klientflanka serĉado de monderoj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
-msgstr "Klienta modifado"
+msgstr "Klient-flanka modifado"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2948,36 +2910,28 @@ msgstr ""
 "«request_insecure_environment()»)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when saving mapblocks to disk.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Nivelo de desigo per ZLib uzota por densigi mondopecojn dum konservado sur "
-"disko.\n"
-"-1 - la implicita nivelo de densigo per Zlib\n"
+"Nivelo de densigo uzota por densigi mondopecojn dum konservado sur disko.\n"
+"-1 - la implicita nivelo de densigo\n"
 "0 - neniu densigo, plej rapida\n"
-"9 - plej bona densigo, plej malrapida\n"
-"(niveloj 1-3 uzas la \"rapidan\" metodon de Zlib; 4-9 uzas la ordinaran "
-"metodon)"
+"9 - plej bona densigo, plej malrapida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Compression level to use when sending mapblocks to the client.\n"
 "-1 - use default compression level\n"
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
-"Nivelo de desigo per ZLib uzota por densigi mondopecojn dum sendado al "
-"kliento.\n"
+"Nivelo de densigo uzota por densigi mondopecojn dum sendado al kliento.\n"
 "-1 - la implicita nivelo de densigo per Zlib\n"
 "0 - neniu densigo, plej rapida\n"
-"9 - plej bona densigo, plej malrapida\n"
-"(niveloj 1-3 uzas la \"rapidan\" metodon de Zlib; 4-9 uzas la ordinaran "
-"metodon)"
+"9 - plej bona densigo, plej malrapida"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -3121,7 +3075,7 @@ msgstr "Erarserĉa protokola nivelo"
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "Erarserĉado"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -3144,11 +3098,12 @@ msgstr ""
 "Ĝi estos transpasita kreante mondon de la ĉefmenuo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
-msgstr "Maksimuma nombro de perforte enlegitaj mondopecoj."
+msgstr ""
+"Maksimuma nombro de perforte enlegitaj mondopecoj.\n"
+"Metu -1 por malŝalti la limon."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -3172,6 +3127,9 @@ msgid ""
 "This simulates the soft shadows effect by applying a PCF or Poisson disk\n"
 "but also uses more resources."
 msgstr ""
+"Difinas kvaliton de filtrado de ombroj.\n"
+"Ĉi tio imitas la efekton de molaj ombroj per PCF aŭ disko de Poisson,\n"
+"sed samtempe bezonas pli da komputaj rimedoj."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -3201,6 +3159,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Difinas intensecon de lumvastiĝo en la bildigo.\n"
+"Malgrandaj valoroj kaŭzas pli nuancan lumvastiĝon.\n"
+"Amplekso: de 0.01 al 1.0, implicite: 0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3223,6 +3184,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Difinas intensecon de lumvastiĝa lumiĝo.\n"
+"Amplekso: de 0.1 al 10.0, implicite: 1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3296,9 +3259,8 @@ msgid "Desynchronize block animation"
 msgstr "Malsamtempigi bildmovon de monderoj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Developer Options"
-msgstr "Ornamoj"
+msgstr "Elektebloj por programistoj"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -3314,7 +3276,7 @@ msgstr "Malpermesi malplenajn pasvortojn"
 
 #: src/settings_translation_file.cpp
 msgid "Display Density Scaling Factor"
-msgstr ""
+msgstr "Grandiga faktoro de ekrana denseco"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3397,12 +3359,19 @@ msgid ""
 "automatically adjust to the brightness of the scene,\n"
 "simulating the behavior of human eye."
 msgstr ""
+"Ŝalti memagan korektadon de lumiĝo\n"
+"Pro ĉi tio, la posttrakta motoro memage\n"
+"adaptiĝos al heleco de la sceno, imitante\n"
+"konduton de la homa okulo."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable colored shadows.\n"
 "On true translucent nodes cast colored shadows. This is expensive."
 msgstr ""
+"Ŝaltas kolorajn ombrojn.\n"
+"Pro ĉi tio, tralumeblaj monderoj metas kolorajn ombrojn.\n"
+"Ĉi tio estas kompute peza."
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
@@ -3418,7 +3387,7 @@ msgstr "Ŝalti stirstangojn"
 
 #: src/settings_translation_file.cpp
 msgid "Enable joysticks. Requires a restart to take effect"
-msgstr ""
+msgstr "Ŝalti stirstangojn. Bezonas reekigon de ludo."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod channels support."
@@ -3446,7 +3415,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable split login/register"
-msgstr ""
+msgstr "Ŝaltas apartigon de saluto/registriĝo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3539,11 +3508,12 @@ msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
+"Ŝaltas kompromisojn, kiuj malpezigas komputan ŝarĝon aŭ efikigas bildigon,\n"
+"je kosto de etaj bildigaj misoj, kiuj tamen ne ĝenas ludeblecon."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine profiler"
-msgstr "Profilo de valoj"
+msgstr "Profililo de motoro"
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3554,7 +3524,6 @@ msgid "Entity methods"
 msgstr "Metodoj de estoj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3563,21 +3532,21 @@ msgid ""
 "Values < 1.0 (for example 0.25) create a more defined surface level with\n"
 "flatter lowlands, suitable for a solid floatland layer."
 msgstr ""
-"Eksponento de maldikigo de fluginsuloj. Ŝanĝas la konduton\n"
+"Potencvaloro de maldikigo de fluginsuloj. Ŝanĝas la konduton\n"
 "de maldikigo.\n"
-"Valoro = 1.0 kreas unuforman, linearan maldikigon.\n"
-"Valoroj > 1.0 kreas glatan maldikigon taŭgan por la implicitaj apartaj\n"
+"Valoro = 1.0 kreas unuforman, linian maldikigon.\n"
+"Valoroj > 1.0 kreas glatan maldikigon taŭgan por la implicitaj, apartaj\n"
 "fluginsuloj.\n"
 "Valoroj < 1.0 (ekzemple 0.25) kreas pli difinitan ternivelon kun\n"
 "pli plataj malaltejoj, taŭgaj por solida tavolo de fluginsulaĵo."
 
 #: src/settings_translation_file.cpp
 msgid "Exposure compensation"
-msgstr ""
+msgstr "Kompensado de lumiĝo"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr ""
+msgstr "Filmeroj sekunde"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
@@ -3612,12 +3581,11 @@ msgid "Fast movement"
 msgstr "Rapida moviĝo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via the \"Aux1\" key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Rapida moviĝo (per la klavo «speciala»).\n"
+"Rapida moviĝo (per la klavo «Help1»).\n"
 "Ĉi tio postulas la rajton «rapidegi» en la servilo."
 
 #: src/settings_translation_file.cpp
@@ -5689,9 +5657,8 @@ msgstr ""
 "Uzu 0 por implicita kvalito."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshots"
-msgstr "Ekrankopio"
+msgstr "Ekrankopioj"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
@@ -6850,7 +6817,7 @@ msgid ""
 "This is also used as the base node texture size for world-aligned\n"
 "texture autoscaling."
 msgstr ""
-"Dum uzo de duliniaj/triliniaj/neizotropaj filtriloj, tekstruoj je malaltaj\n"
+"Dum uzo de duliniaj/triliniaj/neizotropaj filtriloj, teksturoj je malaltaj\n"
 "distingumoj povas malklariĝi; tial memage grandigu ĝin per interpolado\n"
 "laŭ plej proksimaj bilderoj por teni klarajn bilderojn. Ĉi tio agordas la\n"
 "malplejaltan grandecon de teksturo por la grandigitaj teksturoj; pli altaj\n"
