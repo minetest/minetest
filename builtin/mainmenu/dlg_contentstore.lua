@@ -57,7 +57,7 @@ local filter_types_titles = {
 }
 
 -- Automatic package installation
-local auto_install_pkg = nil
+local auto_install_spec = nil
 
 local number_downloading = 0
 local download_queue = {}
@@ -688,17 +688,20 @@ local function sort_and_filter_pkgs()
 	store.filter_packages(search_string)
 end
 
--- Resolves the package specification stored in auto_install_pkg into an actual package.
-local function prepare_auto_install_pkg()
-	if not auto_install_pkg then
-		return
+-- Resolves the package specification stored in auto_install_spec into an actual package.
+-- May only be called after the package list has been loaded successfully.
+local function resolve_auto_install_spec()
+	assert(store.load_ok)
+
+	if not auto_install_spec then
+		return nil
 	end
 
 	local resolved = nil
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if pkg.author == auto_install_pkg.author and
-				pkg.name == auto_install_pkg.name then
+		if pkg.author == auto_install_spec.author and
+				pkg.name == auto_install_spec.name then
 			resolved = pkg
 			break
 		end
@@ -706,24 +709,26 @@ local function prepare_auto_install_pkg()
 
 	if not resolved then
 		gamedata.errormessage = fgettext("The package $1/$2 was not found.",
-				auto_install_pkg.author, auto_install_pkg.name)
+				auto_install_spec.author, auto_install_spec.name)
 		ui.update()
+
+		auto_install_spec = nil
 	end
 
-	auto_install_pkg = resolved
+	return resolved
 end
 
--- Installs the package stored in auto_install_pkg.
--- May only be called after prepare_auto_install_pkg().
+-- Installs the package specified by auto_install_spec.
 -- Only does something if:
--- a. The package list has beeen loaded successfully.
+-- a. The package list has been loaded successfully.
 -- b. The store dialog is currently visible.
-local function do_auto_install_pkg()
-	if not auto_install_pkg then
+local function do_auto_install()
+	if not store.load_ok then
 		return
 	end
 
-	if not store.load_ok then
+	local pkg = resolve_auto_install_spec()
+	if not pkg then
 		return
 	end
 
@@ -732,8 +737,8 @@ local function do_auto_install_pkg()
 		return
 	end
 
-	install_or_update_package(store_dlg, auto_install_pkg)
-	auto_install_pkg = nil
+	install_or_update_package(store_dlg, pkg)
+	auto_install_spec = nil
 end
 
 function store.load()
@@ -757,9 +762,8 @@ function store.load()
 				store.packages_full_unordered = result.packages
 				store.aliases = result.aliases
 
-				prepare_auto_install_pkg()
 				sort_and_filter_pkgs()
-				do_auto_install_pkg()
+				do_auto_install()
 			else
 				store.load_error = true
 			end
@@ -818,6 +822,8 @@ end
 
 function store.sort_packages()
 	local ret = {}
+
+	local auto_install_pkg = resolve_auto_install_spec() -- can be nil
 
 	-- Add installed content
 	for _, pkg in ipairs(store.packages_full_unordered) do
@@ -1171,7 +1177,8 @@ end
 
 function store.handle_events(event)
 	if event == "DialogShow" then
-		do_auto_install_pkg()
+		-- If the store is already loaded, auto-install packages here.
+		do_auto_install()
 		return true
 	end
 
@@ -1182,10 +1189,10 @@ end
 ---
 --- @param type string | nil
 --- Sets initial package filter. "game", "mod", "txp" or nil (no filter).
---- @param install_pkg table | nil
+--- @param install_spec table | nil
 --- Package specification of the form { author = string, name = string }.
 --- Sets package to install or update automatically.
-function create_store_dlg(type, install_pkg)
+function create_store_dlg(type, install_spec)
 	search_string = ""
 	cur_page = 1
 	if type then
@@ -1200,9 +1207,9 @@ function create_store_dlg(type, install_pkg)
 		filter_type = 1
 	end
 
-	-- Keep the old auto_install_pkg if the caller doesn't specify one.
-	if install_pkg then
-		auto_install_pkg = install_pkg
+	-- Keep the old auto_install_spec if the caller doesn't specify one.
+	if install_spec then
+		auto_install_spec = install_spec
 	end
 
 	store.load()
