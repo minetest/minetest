@@ -550,6 +550,7 @@ static bool create_userdata_path()
 }
 
 namespace {
+#if !defined(__ANDROID__)
 	std::string findProgram(const char *name)
 	{
 		char *path_c = getenv("PATH");
@@ -567,12 +568,14 @@ namespace {
 		}
 		return "";
 	}
+#endif
 
 #ifdef _WIN32
 	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
-#else
+#elif !defined(__ANDROID__)
 	const char *debuggerNames[] = {"gdb", "lldb"};
 #endif
+
 	template <class T>
 	void getDebuggerArgs(T &out, int i) {
 		if (i == 0) {
