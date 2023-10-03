@@ -117,12 +117,23 @@ const char* MSVC_LocaleLookup(const char* raw_shortname) {
 #endif
 
 /******************************************************************************/
-void init_gettext(const char *path, const std::string &configured_language,
+void init_gettext(const char *path, std::string configured_language,
 	int argc, char *argv[])
 {
 #if USE_GETTEXT
+	const auto is_lang_supported = [](const std::string &lang_code) {
+		// List of languages that are not supported. See issue #4638.
+		const auto unsupported_languages = {
+				"ar", "dv", "he", "hi", "kn", "ms_Arab", "th"};
+		return std::find(unsupported_languages.begin(), unsupported_languages.end(),
+				lang_code) == unsupported_languages.end();
+	};
+
 	// First, try to set user override environment
 	if (!configured_language.empty()) {
+		if (!is_lang_supported(configured_language))
+			configured_language = "en";
+
 #ifndef _WIN32
 		// Add user specified locale to environment
 		setenv("LANGUAGE", configured_language.c_str(), 1);
@@ -204,7 +215,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 	}
 	else {
 #ifdef __ANDROID__
-		setenv("LANG", porting::getLanguageAndroid().c_str(), 1);
+		std::string android_language = porting::getLanguageAndroid();
+		if (!is_lang_supported(android_language))
+			android_language = "en";
+		setenv("LANG", android_language.c_str(), 1);
 #endif
 		/* set current system default locale */
 		setlocale(LC_ALL, "");
@@ -212,11 +226,23 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 #if defined(_WIN32)
 	if (getenv("LANGUAGE") != 0) {
-		setlocale(LC_ALL, getenv("LANGUAGE"));
+		char *current_language = getenv("LANGUAGE");
+		if (!is_lang_supported(current_language)) {
+			current_language = "en";
+#if defined(_MSC_VER)
+			_putenv("LANGUAGE=en");
+#endif
+		}
+		setlocale(LC_ALL, current_language);
 	}
 #ifdef _MSC_VER
 	else if (getenv("LANG") != 0) {
-		setlocale(LC_ALL, getenv("LANG"));
+		char *current_language = getenv("LANG");
+		if (!is_lang_supported(current_language)) {
+			current_language = "en";
+			_putenv("LANGUAGE=en");
+		}
+		setlocale(LC_ALL, current_language);
 	}
 #endif
 #endif
