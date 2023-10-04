@@ -23,8 +23,13 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 */
 
 #include "sound_singleton.h"
+#include "settings.h"
+#include <vector>
 
 namespace sound {
+
+// Build openal context initialization attribute vector from settings
+static std::vector<ALCint> init_attrs();
 
 bool SoundManagerSingleton::init()
 {
@@ -33,7 +38,13 @@ bool SoundManagerSingleton::init()
 		return false;
 	}
 
-	if (!(m_context = unique_ptr_alccontext(alcCreateContext(m_device.get(), nullptr)))) {
+	auto sound_attrs = init_attrs();
+
+	// If there are no attributes, then preserve the original behavior
+	// where it passes nullptr to alcCreateContext for the attributes
+	ALCint const *attr_ptr = sound_attrs.empty() ? nullptr : sound_attrs.data();
+
+	if (!(m_context = unique_ptr_alccontext(alcCreateContext(m_device.get(), attr_ptr)))) {
 		errorstream << "Audio: Global Initialization: Failed to create context" << std::endl;
 		return false;
 	}
@@ -68,6 +79,39 @@ bool SoundManagerSingleton::init()
 SoundManagerSingleton::~SoundManagerSingleton()
 {
 	infostream << "Audio: Global Deinitialized." << std::endl;
+}
+
+static std::vector<ALCint> init_attrs()
+{
+	std::vector<ALCint> attrs;
+
+	s32 sound_sources_mono = -1;
+	if (!g_settings->getS32NoEx("sound_sources_mono", sound_sources_mono))
+		sound_sources_mono = -1;
+
+	s32 sound_sources_stereo = -1;
+	if (!g_settings->getS32NoEx("sound_sources_stereo", sound_sources_stereo))
+		sound_sources_stereo = -1;
+
+	if (sound_sources_mono >= 0) {
+		infostream << "Using " << sound_sources_mono << 
+			" mono (3D) sound sources" << std::endl;
+		attrs.push_back(ALC_MONO_SOURCES);
+		attrs.push_back((ALCint)sound_sources_mono);
+	}
+
+	if (sound_sources_stereo >= 0) {
+		infostream << "Using " << sound_sources_stereo << 
+			" stereo sound sources" << std::endl;
+		attrs.push_back(ALC_STEREO_SOURCES);
+		attrs.push_back((ALCint)sound_sources_stereo);
+	}
+
+	// Append a null terminator if any attributes got added
+	if (!attrs.empty())
+		attrs.push_back(0);
+
+	return attrs;
 }
 
 } // namespace sound
