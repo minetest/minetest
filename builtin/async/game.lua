@@ -36,11 +36,16 @@ do
 		setmetatable(v, {__newindex = {}})
 		-- Reassemble the other tables
 		if v.type == "node" then
+			getmetatable(v).__index = all.nodedef_default
 			all.registered_nodes[k] = v
-		elseif v.type == "craftitem" then
+		elseif v.type == "craft" then
+			getmetatable(v).__index = all.craftitemdef_default
 			all.registered_craftitems[k] = v
 		elseif v.type == "tool" then
+			getmetatable(v).__index = all.tooldef_default
 			all.registered_tools[k] = v
+		else
+			getmetatable(v).__index = all.noneitemdef_default
 		end
 	end
 

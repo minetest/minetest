@@ -42,17 +42,19 @@ static video::SMaterial baseMaterial()
 	mat.ZBuffer = video::ECFN_DISABLED;
 	mat.ZWriteEnable = video::EZW_OFF;
 	mat.AntiAliasing = 0;
-	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+	mat.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+	mat.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	mat.BackfaceCulling = false;
 	return mat;
 }
 
 static inline void disableTextureFiltering(video::SMaterial &mat)
 {
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_BILINEAR_FILTER, false);
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_TRILINEAR_FILTER, false);
-	mat.setFlag(video::E_MATERIAL_FLAG::EMF_ANISOTROPIC_FILTER, false);
+	mat.forEachTexture([] (auto &tex) {
+		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+		tex.MagFilter = video::ETMAGF_NEAREST;
+		tex.AnisotropicFilter = 0;
+	});
 }
 
 Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShaderSource *ssrc) :
@@ -98,6 +100,7 @@ Sky::Sky(s32 id, RenderingEngine *rendering_engine, ITextureSource *tsrc, IShade
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
 	m_sky_params.body_orbit_tilt = g_settings->getFloat("shadow_sky_body_orbit_tilt", -60., 60.);
+	m_sky_params.fog_start = rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f);
 
 	setStarCount(1000);
 }

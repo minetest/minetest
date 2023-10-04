@@ -70,6 +70,7 @@ class NetworkPacket;
 namespace con {
 class Connection;
 }
+using sound_handle_t = int;
 
 enum LocalClientState {
 	LC_Created,
@@ -437,10 +438,13 @@ public:
 	ModChannel *getModChannel(const std::string &channel) override;
 
 	const std::string &getFormspecPrepend() const;
+
 	inline MeshGrid getMeshGrid()
 	{
 		return m_mesh_grid;
 	}
+
+	bool inhibit_inventory_revert = false;
 
 private:
 	void loadMods();
@@ -465,7 +469,7 @@ private:
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(const std::vector<v3s16> &blocks);
-	void sendRemovedSounds(std::vector<s32> &soundList);
+	void sendRemovedSounds(const std::vector<s32> &soundList);
 
 	bool canSendChatMessage() const;
 
@@ -561,11 +565,12 @@ private:
 	// Sounds
 	float m_removed_sounds_check_timer = 0.0f;
 	// Mapping from server sound ids to our sound ids
-	std::unordered_map<s32, int> m_sounds_server_to_client;
+	std::unordered_map<s32, sound_handle_t> m_sounds_server_to_client;
 	// And the other way!
-	std::unordered_map<int, s32> m_sounds_client_to_server;
+	// This takes ownership for the sound handles.
+	std::unordered_map<sound_handle_t, s32> m_sounds_client_to_server;
 	// Relation of client id to object id
-	std::unordered_map<int, u16> m_sounds_to_objects;
+	std::unordered_map<sound_handle_t, u16> m_sounds_to_objects;
 
 	// Privileges
 	std::unordered_set<std::string> m_privileges;

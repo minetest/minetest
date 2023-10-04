@@ -44,6 +44,8 @@ struct SkyboxParams
 	video::SColor fog_moon_tint;
 	std::string fog_tint_type;
 	float body_orbit_tilt { INVALID_SKYBOX_TILT };
+	s16 fog_distance { -1 };
+	float fog_start { -1.0f };
 };
 
 struct SunParams

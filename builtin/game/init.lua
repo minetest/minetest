@@ -10,7 +10,8 @@ local builtin_shared = {}
 dofile(gamepath .. "constants.lua")
 assert(loadfile(commonpath .. "item_s.lua"))(builtin_shared)
 assert(loadfile(gamepath .. "item.lua"))(builtin_shared)
-dofile(gamepath .. "register.lua")
+assert(loadfile(commonpath .. "register.lua"))(builtin_shared)
+assert(loadfile(gamepath .. "register.lua"))(builtin_shared)
 
 if core.settings:get_bool("profiler.load") then
 	profiler = dofile(scriptpath .. "profiler" .. DIR_DELIM .. "init.lua")

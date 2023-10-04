@@ -52,7 +52,7 @@ local function reset()
 	function core.get_gamepath()
 		return games_dir
 	end
-	function env.fgettext(fmt, ...)
+	function env.fgettext_ne(fmt, ...)
 		return fmt
 	end
 

@@ -188,8 +188,9 @@ protected:
 	};
 
 	ParsedText m_text;
-	Client *m_client;
-	gui::IGUIEnvironment *m_environment;
+	Client *m_client; ///< null in the mainmenu
+	ISimpleTextureSource *m_tsrc;
+	gui::IGUIEnvironment *m_guienv;
 	s32 m_height;
 	s32 m_voffset;
 	std::vector<RectWithMargin> m_floating;
@@ -216,7 +217,7 @@ public:
 
 protected:
 	// GUI members
-	Client *m_client;
+	ISimpleTextureSource *m_tsrc;
 	GUIScrollBar *m_vscrollbar;
 	TextDrawer m_drawer;
 

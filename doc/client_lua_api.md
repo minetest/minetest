@@ -754,9 +754,9 @@ Call these functions only at load time!
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
-* `minetest.sound_stop(handle)`
+* `handle:stop()` or `minetest.sound_stop(handle)`
     * `handle` is a handle returned by `minetest.sound_play`
-* `minetest.sound_fade(handle, step, gain)`
+* `handle:fade(step, gain)` or `minetest.sound_fade(handle, step, gain)`
     * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
       Negative step will lower the sound volume, positive step will increase

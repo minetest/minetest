@@ -50,16 +50,17 @@ public:
 		return m_pos;
 	}
 
-	MapBlock * getBlockNoCreateNoEx(s16 y);
-	MapBlock * createBlankBlockNoInsert(s16 y);
-	MapBlock * createBlankBlock(s16 y);
+	MapBlock *getBlockNoCreateNoEx(s16 y);
+	std::unique_ptr<MapBlock> createBlankBlockNoInsert(s16 y);
+	MapBlock *createBlankBlock(s16 y);
 
-	void insertBlock(MapBlock *block);
+	void insertBlock(std::unique_ptr<MapBlock> block);
 
 	void deleteBlock(MapBlock *block);
 
 	// Remove a block from the map and the sector without deleting it
-	void detachBlock(MapBlock *block);
+	// Returns an owning ptr to block.
+	std::unique_ptr<MapBlock> detachBlock(MapBlock *block);
 
 	void getBlocks(MapBlockVect &dest);
 
@@ -69,7 +70,7 @@ public:
 protected:
 
 	// The pile of MapBlocks
-	std::unordered_map<s16, MapBlock*> m_blocks;
+	std::unordered_map<s16, std::unique_ptr<MapBlock>> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)

@@ -3,6 +3,7 @@ uniform sampler2D baseTexture;
 uniform vec3 dayLight;
 uniform vec4 skyBgColor;
 uniform float fogDistance;
+uniform float fogShadingParameter;
 uniform vec3 eyePosition;
 
 // The cameraOffset is the current center of the visible world.
@@ -47,9 +48,6 @@ varying vec3 eyeVec;
 varying float nightRatio;
 
 varying float vIDiff;
-
-const float fogStart = FOG_START;
-const float fogShadingParameter = 1.0 / (1.0 - fogStart);
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 

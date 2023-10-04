@@ -65,12 +65,13 @@ void GUIScene::setTexture(u32 idx, video::ITexture *texture)
 	video::SMaterial &material = m_mesh->getMaterial(idx);
 	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	material.MaterialTypeParam = 0.5f;
-	material.TextureLayer[0].Texture = texture;
-	material.setFlag(video::EMF_LIGHTING, false);
-	material.setFlag(video::EMF_FOG_ENABLE, true);
-	material.setFlag(video::EMF_BILINEAR_FILTER, false);
-	material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	material.setFlag(video::EMF_ZWRITE_ENABLE, true);
+	material.TextureLayers[0].Texture = texture;
+	material.Lighting = false;
+	material.FogEnable = true;
+	material.TextureLayers[0].MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+	material.TextureLayers[0].MagFilter = video::ETMAGF_NEAREST;
+	material.BackfaceCulling = false;
+	material.ZWriteEnable = video::EZW_AUTO;
 }
 
 void GUIScene::draw()

@@ -11,10 +11,10 @@ endif()
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-set(GCC_MINIMUM_VERSION "5.1")
-set(CLANG_MINIMUM_VERSION "3.5")
+set(GCC_MINIMUM_VERSION "7.5")
+set(CLANG_MINIMUM_VERSION "6.0")
 
 # You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 5)
@@ -137,7 +137,7 @@ elseif(BUILD_CLIENT AND TARGET IrrlichtMt::IrrlichtMt)
 	endif()
 	message(STATUS "Found IrrlichtMt ${IrrlichtMt_VERSION}")
 
-	set(TARGET_VER_S 1.9.0mt10)
+	set(TARGET_VER_S 1.9.0mt12)
 	string(REPLACE "mt" "." TARGET_VER ${TARGET_VER_S})
 	if(IrrlichtMt_VERSION VERSION_LESS ${TARGET_VER})
 		message(FATAL_ERROR "At least IrrlichtMt ${TARGET_VER_S} is required to build")

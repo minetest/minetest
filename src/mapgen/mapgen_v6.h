@@ -83,8 +83,6 @@ struct MapgenV6Params : public MapgenParams {
 
 class MapgenV6 : public Mapgen {
 public:
-	EmergeParams *m_emerge;
-
 	int ystride;
 	u32 spflags;
 

@@ -59,9 +59,9 @@ struct ShaderInfo {
 	Setter of constants for shaders
 */
 
-namespace irr { namespace video {
+namespace irr::video {
 	class IMaterialRendererServices;
-} }
+}
 
 
 class IShaderConstantSetter {

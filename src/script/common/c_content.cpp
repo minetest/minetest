@@ -104,10 +104,10 @@ void read_item_definition(lua_State* L, int index,
 	if (!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "place");
-		read_soundspec(L, -1, def.sound_place);
+		read_simplesoundspec(L, -1, def.sound_place);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "place_failed");
-		read_soundspec(L, -1, def.sound_place_failed);
+		read_simplesoundspec(L, -1, def.sound_place_failed);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
@@ -117,10 +117,10 @@ void read_item_definition(lua_State* L, int index,
 	if (!lua_isnil(L, -1)) {
 		luaL_checktype(L, -1, LUA_TTABLE);
 		lua_getfield(L, -1, "punch_use");
-		read_soundspec(L, -1, def.sound_use);
+		read_simplesoundspec(L, -1, def.sound_use);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "punch_use_air");
-		read_soundspec(L, -1, def.sound_use_air);
+		read_simplesoundspec(L, -1, def.sound_use_air);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
@@ -133,7 +133,9 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
 
-	getintfield(L, index, "place_param2", def.place_param2);
+	int place_param2;
+	if (getintfield(L, index, "place_param2", place_param2))
+		def.place_param2 = rangelim(place_param2, 0, U8_MAX);
 }
 
 /******************************************************************************/
@@ -187,13 +189,50 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	}
 	push_groups(L, i.groups);
 	lua_setfield(L, -2, "groups");
-	push_soundspec(L, i.sound_place);
+	push_simplesoundspec(L, i.sound_place);
 	lua_setfield(L, -2, "sound_place");
-	push_soundspec(L, i.sound_place_failed);
+	push_simplesoundspec(L, i.sound_place_failed);
 	lua_setfield(L, -2, "sound_place_failed");
 	lua_pushstring(L, i.node_placement_prediction.c_str());
 	lua_setfield(L, -2, "node_placement_prediction");
 }
+
+/******************************************************************************/
+const std::array<const char *, 33> object_property_keys = {
+	"hp_max",
+	"breath_max",
+	"physical",
+	"collide_with_objects",
+	"collisionbox",
+	"selectionbox",
+	"pointable",
+	"visual",
+	"mesh",
+	"visual_size",
+	"textures",
+	"colors",
+	"spritediv",
+	"initial_sprite_basepos",
+	"is_visible",
+	"makes_footstep_sound",
+	"stepheight",
+	"eye_height",
+	"automatic_rotate",
+	"automatic_face_movement_dir",
+	"backface_culling",
+	"glow",
+	"nametag",
+	"nametag_color",
+	"automatic_face_movement_max_rotation_per_sec",
+	"infotext",
+	"static_save",
+	"wield_item",
+	"zoom_fov",
+	"use_texture_alpha",
+	"shaded",
+	"damage_texture_modifier",
+	"show_on_minimap"
+};
 
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
@@ -337,7 +376,7 @@ void read_object_properties(lua_State *L, int index,
 			if (read_color(L, -1, &color))
 				prop->nametag_bgcolor = color;
 		} else {
-			prop->nametag_bgcolor = nullopt;
+			prop->nametag_bgcolor = std::nullopt;
 		}
 	}
 	lua_pop(L, 1);
@@ -362,6 +401,9 @@ void read_object_properties(lua_State *L, int index,
 	getboolfield(L, -1, "show_on_minimap", prop->show_on_minimap);
 
 	getstringfield(L, -1, "damage_texture_modifier", prop->damage_texture_modifier);
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/
@@ -459,6 +501,9 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "damage_texture_modifier");
 	lua_pushboolean(L, prop->show_on_minimap);
 	lua_setfield(L, -2, "show_on_minimap");
+
+	// Remember to update object_property_keys above
+	// when adding a new property
 }
 
 /******************************************************************************/
@@ -478,6 +523,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 			// "break" is omitted here intentionaly, as PLANTLIKE
 			// FIRELIKE drawtype both should default to having
 			// backface_culling to false.
+			[[fallthrough]];
 		case NDT_MESH:
 		case NDT_LIQUID:
 			default_culling = false;
@@ -684,6 +730,8 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	read_color(L, -1, &f.post_effect_color);
 	lua_pop(L, 1);
 
+	getboolfield(L, index, "post_effect_color_shaded", f.post_effect_color_shaded);
+
 	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
 			ScriptApiNode::es_ContentParamType, CPT_NONE);
 	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
@@ -820,13 +868,13 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	lua_getfield(L, index, "sounds");
 	if(lua_istable(L, -1)){
 		lua_getfield(L, -1, "footstep");
-		read_soundspec(L, -1, f.sound_footstep);
+		read_simplesoundspec(L, -1, f.sound_footstep);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "dig");
-		read_soundspec(L, -1, f.sound_dig);
+		read_simplesoundspec(L, -1, f.sound_dig);
 		lua_pop(L, 1);
 		lua_getfield(L, -1, "dug");
-		read_soundspec(L, -1, f.sound_dug);
+		read_simplesoundspec(L, -1, f.sound_dug);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
@@ -915,6 +963,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 
 	push_ARGB8(L, c.post_effect_color);
 	lua_setfield(L, -2, "post_effect_color");
+	lua_pushboolean(L, c.post_effect_color_shaded);
+	lua_setfield(L, -2, "post_effect_color_shaded");
 	lua_pushnumber(L, c.leveled);
 	lua_setfield(L, -2, "leveled");
 	lua_pushnumber(L, c.leveled_max);
@@ -964,11 +1014,11 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	push_nodebox(L, c.collision_box);
 	lua_setfield(L, -2, "collision_box");
 	lua_newtable(L);
-	push_soundspec(L, c.sound_footstep);
+	push_simplesoundspec(L, c.sound_footstep);
 	lua_setfield(L, -2, "sound_footstep");
-	push_soundspec(L, c.sound_dig);
+	push_simplesoundspec(L, c.sound_dig);
 	lua_setfield(L, -2, "sound_dig");
-	push_soundspec(L, c.sound_dug);
+	push_simplesoundspec(L, c.sound_dug);
 	lua_setfield(L, -2, "sound_dug");
 	lua_setfield(L, -2, "sounds");
 	lua_pushboolean(L, c.legacy_facedir_simple);
@@ -1066,10 +1116,11 @@ void read_server_sound_params(lua_State *L, int index,
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if(lua_istable(L, index)){
+	if (lua_istable(L, index)) {
 		// Functional overlap: this may modify SimpleSoundSpec contents
 		getfloatfield(L, index, "fade", params.spec.fade);
 		getfloatfield(L, index, "pitch", params.spec.pitch);
+		getfloatfield(L, index, "start_time", params.spec.start_time);
 		getboolfield(L, index, "loop", params.spec.loop);
 
 		getfloatfield(L, index, "gain", params.gain);
@@ -1100,7 +1151,7 @@ void read_server_sound_params(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
+void read_simplesoundspec(lua_State *L, int index, SoundSpec &spec)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -1117,7 +1168,7 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 	}
 }
 
-void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
+void push_simplesoundspec(lua_State *L, const SoundSpec &spec)
 {
 	lua_createtable(L, 0, 3);
 	lua_pushstring(L, spec.name.c_str());

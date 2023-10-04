@@ -33,7 +33,7 @@ void SetColorMaskStep::run(PipelineContext &context)
 	video::SOverrideMaterial &mat = context.device->getVideoDriver()->getOverrideMaterial();
 	mat.reset();
 	mat.Material.ColorMask = color_mask;
-	mat.EnableFlags = video::EMF_COLOR_MASK;
+	mat.EnableProps = video::EMP_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
 			   scene::ESNRP_TRANSPARENT | scene::ESNRP_TRANSPARENT_EFFECT |
 			   scene::ESNRP_SHADOW;
