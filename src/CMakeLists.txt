@@ -660,8 +660,8 @@ if(BUILD_SERVER)
 	endif()
 endif(BUILD_SERVER)
 
-# Blacklisted locales that don't work.
-# see issue #4638
+# List of languages that are not supported. See issue #4638.
+# Must be kept in sync with unsupportedLanguages in android/app/build.gradle.
 set(GETTEXT_BLACKLISTED_LOCALES
 	ar
 	dv

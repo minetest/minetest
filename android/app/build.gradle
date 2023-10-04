@@ -56,6 +56,7 @@ task prepareAssets() {
 	def projRoot = rootDir.parent
 	def gameToCopy = "minetest_game"
 	// List of languages that are not supported. See issue #4638.
+	// Must be kept in sync with GETTEXT_BLACKLISTED_LOCALES in src/CMakeLists.txt.
 	def unsupportedLanguages = ["ar", "dv", "he", "hi", "kn", "ms_Arab", "th"]
 
 	doFirst {
