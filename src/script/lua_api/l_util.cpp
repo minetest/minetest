@@ -393,8 +393,10 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 	const char *d = luaL_checklstring(L, 1, &size);
 	const std::string data = std::string(d, size);
 
-	if (!base64_is_valid(data))
-		return 0;
+	if (!base64_is_valid(data)) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	std::string out = base64_decode(data);
 

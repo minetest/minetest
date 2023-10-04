@@ -63,7 +63,8 @@ void NetworkPacket::putRawPacket(const u8 *data, u32 datasize, session_t peer_id
 
 	// split command and datas
 	m_command = readU16(&data[0]);
-	memcpy(m_data.data(), &data[2], m_datasize);
+	if (m_datasize > 0)
+		memcpy(m_data.data(), &data[2], m_datasize);
 }
 
 void NetworkPacket::clear()
@@ -553,7 +554,8 @@ Buffer<u8> NetworkPacket::oldForgePacket()
 {
 	Buffer<u8> sb(m_datasize + 2);
 	writeU16(&sb[0], m_command);
-	memcpy(&sb[2], m_data.data(), m_datasize);
+	if (m_datasize > 0)
+		memcpy(&sb[2], m_data.data(), m_datasize);
 
 	return sb;
 }

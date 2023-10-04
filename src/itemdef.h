@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <string>
 #include <iostream>
+#include <optional>
 #include <set>
 #include "itemgroup.h"
 #include "sound.h"
@@ -78,16 +79,16 @@ struct ItemDefinition
 	// May be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
 	ItemGroupList groups;
-	SimpleSoundSpec sound_place;
-	SimpleSoundSpec sound_place_failed;
-	SimpleSoundSpec sound_use, sound_use_air;
+	SoundSpec sound_place;
+	SoundSpec sound_place_failed;
+	SoundSpec sound_use, sound_use_air;
 	f32 range;
 
 	// Client shall immediately place this node when player places the item.
 	// Server will update the precise end result a moment later.
 	// "" = no prediction
 	std::string node_placement_prediction;
-	u8 place_param2;
+	std::optional<u8> place_param2;
 
 	/*
 		Some helpful methods

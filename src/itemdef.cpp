@@ -117,13 +117,13 @@ void ItemDefinition::reset()
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
-	sound_place = SimpleSoundSpec();
-	sound_place_failed = SimpleSoundSpec();
-	sound_use = SimpleSoundSpec();
-	sound_use_air = SimpleSoundSpec();
+	sound_place = SoundSpec();
+	sound_place_failed = SoundSpec();
+	sound_use = SoundSpec();
+	sound_use_air = SoundSpec();
 	range = -1;
 	node_placement_prediction.clear();
-	place_param2 = 0;
+	place_param2.reset();
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -158,8 +158,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString16(node_placement_prediction);
 
 	// Version from ContentFeatures::serialize to keep in sync
-	sound_place.serialize(os, protocol_version);
-	sound_place_failed.serialize(os, protocol_version);
+	sound_place.serializeSimple(os, protocol_version);
+	sound_place_failed.serializeSimple(os, protocol_version);
 
 	writeF32(os, range);
 	os << serializeString16(palette_image);
@@ -169,10 +169,20 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 
 	os << serializeString16(short_description);
 
-	os << place_param2;
+	if (protocol_version <= 43) {
+		// Uncertainity whether 0 is the specified prediction or means disabled
+		if (place_param2)
+			os << *place_param2;
+		else
+			os << (u8)0;
+	}
 
-	sound_use.serialize(os, protocol_version);
-	sound_use_air.serialize(os, protocol_version);
+	sound_use.serializeSimple(os, protocol_version);
+	sound_use_air.serializeSimple(os, protocol_version);
+
+	os << (u8)place_param2.has_value(); // protocol_version >= 43
+	if (place_param2)
+		os << *place_param2;
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -212,8 +222,8 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 	node_placement_prediction = deSerializeString16(is);
 
-	sound_place.deSerialize(is, protocol_version);
-	sound_place_failed.deSerialize(is, protocol_version);
+	sound_place.deSerializeSimple(is, protocol_version);
+	sound_place_failed.deSerializeSimple(is, protocol_version);
 
 	range = readF32(is);
 	palette_image = deSerializeString16(is);
@@ -226,10 +236,21 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 	try {
 		short_description = deSerializeString16(is);
 
-		place_param2 = readU8(is); // 0 if missing
+		if (protocol_version <= 43) {
+			place_param2 = readU8(is);
+			// assume disabled prediction
+			if (place_param2 == 0)
+				place_param2.reset();
+		}
 
-		sound_use.deSerialize(is, protocol_version);
-		sound_use_air.deSerialize(is, protocol_version);
+		sound_use.deSerializeSimple(is, protocol_version);
+		sound_use_air.deSerializeSimple(is, protocol_version);
+
+		if (is.eof())
+			throw SerializationError("");
+
+		if (readU8(is)) // protocol_version >= 43
+			place_param2 = readU8(is);
 	} catch(SerializationError &e) {};
 }
 
@@ -332,13 +353,13 @@ public:
 		if (!inventory_overlay.empty())
 			cache_key += ":" + inventory_overlay;
 
-		infostream << "Lazily creating item texture and mesh for \""
-				<< cache_key << "\""<<std::endl;
-
 		// Skip if already in cache
 		auto it = m_clientcached.find(cache_key);
 		if (it != m_clientcached.end())
 			return it->second.get();
+
+		infostream << "Lazily creating item texture and mesh for \""
+				<< cache_key << "\"" << std::endl;
 
 		ITextureSource *tsrc = client->getTextureSource();
 

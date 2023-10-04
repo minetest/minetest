@@ -215,9 +215,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		new fields for TOCLIENT_SET_LIGHTING and TOCLIENT_SET_SKY
 		Send forgotten TweenedParameter properties
 		[scheduled bump for 5.7.0]
+	PROTOCOL VERSION 43:
+		"start_time" added to TOCLIENT_PLAY_SOUND
+		place_param2 type change u8 -> optional<u8>
+		[scheduled bump for 5.8.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 42
+#define LATEST_PROTOCOL_VERSION 43
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -237,7 +241,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                             // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
-#define FORMSPEC_API_VERSION 6
+#define FORMSPEC_API_VERSION 7
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -454,15 +458,18 @@ enum ToClientCommand
 
 	TOCLIENT_PLAY_SOUND = 0x3f,
 	/*
-		s32 sound_id
+		s32 server_id
 		u16 len
 		u8[len] sound name
-		s32 gain*1000
-		u8 type (0=local, 1=positional, 2=object)
-		s32[3] pos_nodes*10000
+		f32 gain
+		u8 type (SoundLocation: 0=local, 1=positional, 2=object)
+		v3f pos_nodes (in BS-space)
 		u16 object_id
 		u8 loop (bool)
+		f32 fade
+		f32 pitch
 		u8 ephemeral (bool)
+		f32 start_time (in seconds)
 	*/
 
 	TOCLIENT_STOP_SOUND = 0x40,
@@ -744,6 +751,7 @@ enum ToClientCommand
 	/*
 		v3f1000 first
 		v3f1000 third
+		v3f1000 third_front
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,

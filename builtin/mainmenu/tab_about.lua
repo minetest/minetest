@@ -172,10 +172,18 @@ return {
 			"scrollbar[15,0.1;0.4,6.9;vertical;scroll_credits;0]"
 
 		-- Render information
+		local active_renderer_info = fgettext("Active renderer:") .. " " ..
+			core.formspec_escape(core.get_active_renderer())
 		fs = fs .. "style[label_button2;border=false]" ..
-			"button[0.1,6;5.3,1;label_button2;" ..
-			fgettext("Active renderer:") .. "\n" ..
-			core.formspec_escape(core.get_active_renderer()) .. "]"
+			"button[0.1,6;5.3,0.5;label_button2;" .. active_renderer_info .. "]"..
+			"tooltip[label_button2;" .. active_renderer_info .. "]"
+
+		-- Irrlicht device information
+		local irrlicht_device_info = fgettext("Irrlicht device:") .. " " ..
+			core.formspec_escape(core.get_active_irrlicht_device())
+		fs = fs .. "style[label_button3;border=false]" ..
+			"button[0.1,6.5;5.3,0.5;label_button3;" .. irrlicht_device_info .. "]"..
+			"tooltip[label_button3;" .. irrlicht_device_info .. "]"
 
 		if PLATFORM == "Android" then
 			fs = fs .. "button[0.5,5.1;4.5,0.8;share_debug;" .. fgettext("Share debug log") .. "]"
@@ -186,7 +194,7 @@ return {
 			fs = fs .. "button[0.5,5.1;4.5,0.8;userdata;" .. fgettext("Open User Data Directory") .. "]"
 		end
 
-		return fs, "size[15.5,7.1,false]real_coordinates[true]"
+		return fs
 	end,
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then

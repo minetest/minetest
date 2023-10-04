@@ -50,14 +50,14 @@ MapSettingsManager::~MapSettingsManager()
 
 
 bool MapSettingsManager::getMapSetting(
-	const std::string &name, std::string *value_out)
+	const std::string &name, std::string *value_out) const
 {
 	return m_map_settings->getNoEx(name, *value_out);
 }
 
 
 bool MapSettingsManager::getMapSettingNoiseParams(
-	const std::string &name, NoiseParams *value_out)
+	const std::string &name, NoiseParams *value_out) const
 {
 	// TODO: Rename to "getNoiseParams"
 	return m_map_settings->getNoiseParams(name, *value_out);

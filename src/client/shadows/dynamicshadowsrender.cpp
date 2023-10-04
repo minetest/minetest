@@ -113,7 +113,9 @@ void ShadowRenderer::disable()
 	}
 
 	for (auto node : m_shadow_node_array)
-		node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		node.node->forEachMaterial([] (auto &mat) {
+			mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+		});
 }
 
 void ShadowRenderer::initialize()
@@ -183,12 +185,16 @@ void ShadowRenderer::addNodeToShadowList(
 	// node should never be ClientMap
 	assert(strcmp(node->getName(), "ClientMap") != 0);
 
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	node->forEachMaterial([this] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+	});
 }
 
 void ShadowRenderer::removeNodeFromShadowList(scene::ISceneNode *node)
 {
-	node->setMaterialTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	node->forEachMaterial([] (auto &mat) {
+		mat.setTexture(TEXTURE_LAYER_SHADOW, nullptr);
+	});
 	for (auto it = m_shadow_node_array.begin(); it != m_shadow_node_array.end();) {
 		if (it->node == node) {
 			it = m_shadow_node_array.erase(it);
@@ -258,7 +264,9 @@ void ShadowRenderer::updateSMTextures()
 		assert(shadowMapTextureFinal != nullptr);
 
 		for (auto &node : m_shadow_node_array)
-			node.node->setMaterialTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			node.node->forEachMaterial([this] (auto &mat) {
+				mat.setTexture(TEXTURE_LAYER_SHADOW, shadowMapTextureFinal);
+			});
 	}
 
 	if (!m_shadow_node_array.empty()) {
@@ -466,8 +474,8 @@ void ShadowRenderer::renderShadowObjects(
 	m_driver->setTransform(video::ETS_PROJECTION, light.getProjectionMatrix());
 
 	for (const auto &shadow_node : m_shadow_node_array) {
-		// we only take care of the shadow casters
-		if (shadow_node.shadowMode == ESM_RECEIVE)
+		// we only take care of the shadow casters and only visible nodes cast shadows
+		if (shadow_node.shadowMode == ESM_RECEIVE || !shadow_node.node->isVisible())
 			continue;
 
 		// render other objects

@@ -374,6 +374,11 @@ Client::~Client()
 	if (m_mod_storage_database)
 		m_mod_storage_database->endSave();
 	delete m_mod_storage_database;
+
+	// Free sound ids
+	for (auto &csp : m_sounds_client_to_server)
+		m_sound->freeId(csp.first);
+	m_sounds_client_to_server.clear();
 }
 
 void Client::connect(Address address, bool is_local_server)
@@ -682,7 +687,7 @@ void Client::step(float dtime)
 		the local inventory (so the player notices the lag problem
 		and knows something is wrong).
 	*/
-	if (m_inventory_from_server) {
+	if (m_inventory_from_server && !inhibit_inventory_revert) {
 		float interval = 10.0f;
 		float count_before = std::floor(m_inventory_from_server_age / interval);
 
@@ -703,12 +708,13 @@ void Client::step(float dtime)
 	*/
 	{
 		for (auto &m_sounds_to_object : m_sounds_to_objects) {
-			int client_id = m_sounds_to_object.first;
+			sound_handle_t client_id = m_sounds_to_object.first;
 			u16 object_id = m_sounds_to_object.second;
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (!cao)
 				continue;
-			m_sound->updateSoundPosition(client_id, cao->getPosition());
+			m_sound->updateSoundPosVel(client_id, cao->getPosition() * (1.0f/BS),
+					cao->getVelocity() * (1.0f/BS));
 		}
 	}
 
@@ -719,22 +725,24 @@ void Client::step(float dtime)
 	if(m_removed_sounds_check_timer >= 2.32) {
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
+		std::vector<sound_handle_t> removed_client_ids = m_sound->pollRemovedSounds();
 		std::vector<s32> removed_server_ids;
-		for (std::unordered_map<s32, int>::iterator i = m_sounds_server_to_client.begin();
-				i != m_sounds_server_to_client.end();) {
-			s32 server_id = i->first;
-			int client_id = i->second;
-			++i;
-			if(!m_sound->soundExists(client_id)) {
+		for (sound_handle_t client_id : removed_client_ids) {
+			auto client_to_server_id_it = m_sounds_client_to_server.find(client_id);
+			if (client_to_server_id_it == m_sounds_client_to_server.end())
+				continue;
+			s32 server_id = client_to_server_id_it->second;
+			m_sound->freeId(client_id);
+			m_sounds_client_to_server.erase(client_to_server_id_it);
+			if (server_id != -1) {
 				m_sounds_server_to_client.erase(server_id);
-				m_sounds_client_to_server.erase(client_id);
-				m_sounds_to_objects.erase(client_id);
 				removed_server_ids.push_back(server_id);
 			}
+			m_sounds_to_objects.erase(client_id);
 		}
 
 		// Sync to server
-		if(!removed_server_ids.empty()) {
+		if (!removed_server_ids.empty()) {
 			sendRemovedSounds(removed_server_ids);
 		}
 	}
@@ -762,7 +770,6 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 
 	const char *image_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
-		".pcx", ".ppm", ".psd", ".wal", ".rgb",
 		NULL
 	};
 	name = removeStringEnd(filename, image_ext);
@@ -800,13 +807,17 @@ bool Client::loadMedia(const std::string &data, const std::string &filename,
 	};
 	name = removeStringEnd(filename, sound_ext);
 	if (!name.empty()) {
-		TRACESTREAM(<< "Client: Attempting to load sound "
-			<< "file \"" << filename << "\"" << std::endl);
-		return m_sound->loadSoundData(name, data);
+		TRACESTREAM(<< "Client: Attempting to load sound file \""
+				<< filename << "\"" << std::endl);
+		if (!m_sound->loadSoundData(filename, std::string(data)))
+			return false;
+		// "name[.num].ogg" is in group "name"
+		m_sound->addSoundToGroup(filename, name);
+		return true;
 	}
 
 	const char *model_ext[] = {
-		".x", ".b3d", ".md2", ".obj",
+		".x", ".b3d", ".obj",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);
@@ -1205,7 +1216,7 @@ void Client::sendGotBlocks(const std::vector<v3s16> &blocks)
 	Send(&pkt);
 }
 
-void Client::sendRemovedSounds(std::vector<s32> &soundList)
+void Client::sendRemovedSounds(const std::vector<s32> &soundList)
 {
 	size_t server_ids = soundList.size();
 	assert(server_ids <= 0xFFFF);
@@ -1306,9 +1317,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		m_chat_message_allowance -= 1.0f;
 
 		NetworkPacket pkt(TOSERVER_CHAT_MESSAGE, 2 + message.size() * sizeof(u16));
-
 		pkt << message;
-
 		Send(&pkt);
 	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size < 0) {
 		m_out_chat_queue.push(message);
@@ -1690,8 +1699,11 @@ void Client::typeChatMessage(const std::wstring &message)
 	if (message.empty())
 		return;
 
+	auto message_utf8 = wide_to_utf8(message);
+	infostream << "Typed chat message: \"" << message_utf8 << "\"" << std::endl;
+
 	// If message was consumed by script API, don't send it to server
-	if (m_mods_loaded && m_script->on_sending_message(wide_to_utf8(message)))
+	if (m_mods_loaded && m_script->on_sending_message(message_utf8))
 		return;
 
 	// Send to others

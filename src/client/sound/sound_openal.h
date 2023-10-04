@@ -19,13 +19,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "client/sound.h"
 #include <memory>
 
-#include "sound.h"
+namespace sound { class SoundManagerSingleton; }
+using sound::SoundManagerSingleton;
 
-class SoundManagerSingleton;
 extern std::shared_ptr<SoundManagerSingleton> g_sound_manager_singleton;
 
 std::shared_ptr<SoundManagerSingleton> createSoundManagerSingleton();
-ISoundManager *createOpenALSoundManager(
-		SoundManagerSingleton *smg, OnDemandSoundFetcher *fetcher);
+std::unique_ptr<ISoundManager> createOpenALSoundManager(
+		SoundManagerSingleton *smg,
+		std::unique_ptr<SoundFallbackPathProvider> fallback_path_provider);

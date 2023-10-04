@@ -49,18 +49,14 @@ local function get_formspec(dialogdata)
 	-- Final formspec will be created at the end of this function
 	-- Default values below, may be changed depending on setting type
 	local width = 10
-	local height = 3.5
-	local description_height = 3
+	local height = 2
+	local description_height = 1.5
 
 	local t = get_current_np_group(setting)
 	local dimension = 3
 	if setting.type == "noise_params_2d" then
 		dimension = 2
 	end
-
-	-- More space for 3x3 fields
-	description_height = description_height - 1.5
-	height = height - 1.5
 
 	local fields = {}
 	local function add_field(x, name, label, value)
@@ -109,21 +105,21 @@ local function get_formspec(dialogdata)
 			.. "checkbox[0.5," .. height - 0.6 .. ";cb_defaults;"
 			--[[~ "defaults" is a noise parameter flag.
 			It describes the default processing options
-			for noise settings in main menu -> "All Settings". ]]
+			for noise settings in the settings menu. ]]
 			.. fgettext("defaults") .. ";" -- defaults
 			.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
 			.. "checkbox[5," .. height - 0.6 .. ";cb_eased;"
 			--[[~ "eased" is a noise parameter flag.
 			It is used to make the map smoother and
 			can be enabled in noise settings in
-			main menu -> "All Settings". ]]
+			the settings menu. ]]
 			.. fgettext("eased") .. ";" -- eased
 			.. tostring(flags["eased"] == true) .. "]"
 			.. "checkbox[5," .. height - 0.15 .. ";cb_absvalue;"
 			--[[~ "absvalue" is a noise parameter flag.
 			It is short for "absolute value".
 			It can be enabled in noise settings in
-			main menu -> "All Settings". ]]
+			the settings menu. ]]
 			.. fgettext("absvalue") .. ";" -- absvalue
 			.. tostring(flags["absvalue"] == true) .. "]"
 
@@ -204,7 +200,7 @@ local function buttonhandler(this, fields)
 		checkboxes = {}
 
 		if setting.type == "noise_params_2d" then
-			 fields["te_spready"] = fields["te_spreadz"]
+			fields["te_spready"] = fields["te_spreadz"]
 		end
 		local new_value = {
 			offset = fields["te_offset"],
@@ -230,6 +226,13 @@ local function buttonhandler(this, fields)
 	if fields["btn_cancel"] then
 		this:delete()
 		return true
+	end
+
+	for name, value in pairs(fields) do
+		if name:sub(1, 3) == "cb_" then
+			checkboxes[name] = core.is_yes(value)
+			return false -- Don't update the formspec!
+		end
 	end
 
 	return false

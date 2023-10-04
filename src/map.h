@@ -452,7 +452,7 @@ protected:
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 
 private:
-	friend class LuaVoxelManip;
+	friend class ModApiMapgen; // for m_transforming_liquid
 
 	// Emerge manager
 	EmergeManager *m_emerge;
@@ -465,7 +465,7 @@ private:
 	std::set<v3s16> m_chunks_in_progress;
 
 	// used by deleteBlock() and deleteDetachedBlocks()
-	MapBlockVect m_detached_blocks;
+	std::vector<std::unique_ptr<MapBlock>> m_detached_blocks;
 
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;

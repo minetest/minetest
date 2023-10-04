@@ -131,6 +131,9 @@ Compiling
 
 Docker
 ------
+
+- [Developing minetestserver with Docker](doc/developing/docker.md)
+
 We provide Minetest server Docker images using the GitLab mirror registry.
 
 Images are built on each commit and available using the following tag scheme:

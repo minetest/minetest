@@ -236,6 +236,7 @@ local function get_formspec(page, name)
 	"label[9,5.1;"..F(S("Trash:")).."]" ..
 	"list[detached:chest_of_everything_trash_"..name..";main;9,5.5;1,1]" ..
 	"field[2.2,5.75;4,1;search;;"..F(search_text).."]" ..
+	"field_enter_after_edit[search;true]" ..
 	"field_close_on_enter[search;false]" ..
 	"button[6,5.45;1.6,1;search_button_start;"..F(S("Search")).."]" ..
 	"button[7.6,5.45;0.8,1;search_button_reset;"..F(S("X")).."]" ..

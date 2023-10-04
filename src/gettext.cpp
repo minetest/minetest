@@ -203,7 +203,10 @@ void init_gettext(const char *path, const std::string &configured_language,
 #endif // ifndef _WIN32
 	}
 	else {
-		 /* set current system default locale */
+#ifdef __ANDROID__
+		setenv("LANG", porting::getLanguageAndroid().c_str(), 1);
+#endif
+		/* set current system default locale */
 		setlocale(LC_ALL, "");
 	}
 
