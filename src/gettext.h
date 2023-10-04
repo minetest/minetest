@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define gettext_noop(String) (String)
 #define N_(String) gettext_noop((String))
 
-void init_gettext(const char *path, std::string configured_language,
+void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
 inline std::string strgettext(const char *str)
