@@ -53,10 +53,10 @@ be loaded or have limited functionality. See setting `csm_restriction_flags` for
         * Linux: `$HOME/.minetest`
         * Windows: `C:/users/<user>/AppData/minetest` (maybe)
 
-## Mod load path
+## Mod Load Path
 
 Generic:
-
+aa
 * `$path_share/clientmods/`
 * `$path_user/clientmods/` (User-installed mods)
 
@@ -88,11 +88,11 @@ Mod directory structure
     │   ├── init.lua
     └── another
 
-### modname
+### `modname`
 
 The location of this directory.
 
-### mod.conf
+### `mod.conf`
 
 An (optional) settings file that provides meta information about the mod.
 
@@ -199,7 +199,7 @@ Examples of sound parameter tables:
 
 Looped sounds must either be connected to an object or played locationless.
 
-## SimpleSoundSpec
+## `SimpleSoundSpec`
 
 * e.g. `""`
 * e.g. `"default_place_node"`
@@ -617,7 +617,8 @@ For the following functions `x` can be either a vector or a number:
 
 
 
-# Helper functions
+# Helper Functions
+
 * `dump2(obj, name="_", dumped={})`
      * Return object serialized as a string, handles reference loops
 * `dump(obj, dumped={})`
@@ -653,7 +654,7 @@ For the following functions `x` can be either a vector or a number:
 
 
 
-# Minetest namespace reference
+# Minetest Namespace Reference
 
 ## Utilities
 
@@ -885,7 +886,7 @@ Call these functions only at load time!
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
 
-## Mod channels
+## Mod Channels
 
 ![Mod channels communication scheme](docs/mod channels.png)
 
@@ -998,7 +999,7 @@ Call these functions only at load time!
 
 # Class Reference
 
-## ModChannel
+## `ModChannel`
 
 An interface to use mod channels on client and server
 

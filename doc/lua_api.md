@@ -332,7 +332,7 @@ minetest.register_alias("stuff", "epiclylongmodname:stuff")
 
 and be able to use `/giveme stuff`.
 
-## Mapgen aliases
+## Mapgen Aliases
 
 In a game, a certain number of these must be set to tell core mapgens which
 of the game's nodes are to be used for core mapgen generation. For example:
@@ -341,7 +341,7 @@ of the game's nodes are to be used for core mapgen generation. For example:
 minetest.register_alias("mapgen_stone", "default:stone")
 ```
 
-### Aliases for non-V6 Mapgens
+### Aliases for Non-V6 Mapgens
 
 #### Essential Aliases
 

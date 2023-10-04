@@ -1,4 +1,4 @@
-# Minetest Android build
+# Minetest Android Build
 All Minetest builds, including the Android variant, are based on the same code.
 However, additional Java code is used for proper Android integration.
 
