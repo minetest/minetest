@@ -7792,7 +7792,7 @@ child will follow movement and rotation of that bone.
           when jumping or falling (default: `1`)
             * Note: The actual acceleration is the product of `speed` and `acceleration_air`
         * `acceleration_fast`: multiplier to acceleration in Fast Mode (default: `1`)
-            * Note: The actual acceleration is the product of `speed_fast` and `acceleration_fast`
+            * Note: The actual acceleration is the product of `speed` and `acceleration_fast`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
