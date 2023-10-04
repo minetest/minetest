@@ -19,8 +19,8 @@
 local component_funcs =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
 		"settings" .. DIR_DELIM .. "components.lua")
 
-local quick_shader_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
-		"settings" .. DIR_DELIM .. "shader_component.lua")
+local shadows_component =  dofile(core.get_mainmenu_path() .. DIR_DELIM ..
+		"settings" .. DIR_DELIM .. "shadows_component.lua")
 
 
 local full_settings = settingtypes.parse_config_file(false, true)
@@ -49,6 +49,9 @@ end
 
 local change_keys = {
 	query_text = "Change keys",
+	requires = {
+		keyboard_mouse = true,
+	},
 	get_formspec = function(self, avail_w)
 		local btn_w = math.min(avail_w, 3)
 		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change keys")), 0.8
@@ -62,34 +65,11 @@ local change_keys = {
 
 
 add_page({
-	id = "most_used",
-	title = gettext("Most Used"),
-	content = {
-		change_keys,
-		"language",
-		"fullscreen",
-		PLATFORM ~= "Android" and "autosave_screensize" or false,
-		"touchscreen_threshold",
-		{ heading = gettext("Scaling") },
-		"gui_scaling",
-		"hud_scaling",
-		{ heading = gettext("Graphics / Performance") },
-		"smooth_lighting",
-		"enable_particles",
-		"enable_3d_clouds",
-		"opaque_water",
-		"connected_glass",
-		"node_highlighting",
-		"leaves_style",
-		{ heading = gettext("Shaders") },
-		quick_shader_component,
-	},
-})
-
-add_page({
 	id = "accessibility",
 	title = gettext("Accessibility"),
 	content = {
+		"language",
+		{ heading = gettext("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
@@ -155,6 +135,11 @@ end
 load_settingtypes()
 
 table.insert(page_by_id.controls_keyboard_and_mouse.content, 1, change_keys)
+do
+	local content = page_by_id.graphics_and_audio_shaders.content
+	local idx = table.indexof(content, "enable_dynamic_shadows")
+	table.insert(content, idx, shadows_component)
+end
 
 
 local function get_setting_info(name)
@@ -166,6 +151,72 @@ local function get_setting_info(name)
 
 	return nil
 end
+
+
+-- These must not be translated, as they need to show in the local
+-- language no matter the user's current language.
+get_setting_info("language").option_labels = {
+	[""] = fgettext_ne("(Use system language)"),
+	--ar = " [ar]", blacklisted
+	be = "Беларуская [be]",
+	bg = "Български [bg]",
+	ca = "Català [ca]",
+	cs = "Česky [cs]",
+	cy = "Cymraeg [cy]",
+	da = "Dansk [da]",
+	de = "Deutsch [de]",
+	--dv = " [dv]", blacklisted
+	el = "Ελληνικά [el]",
+	en = "English [en]",
+	eo = "Esperanto [eo]",
+	es = "Español [es]",
+	et = "Eesti [et]",
+	eu = "Euskara [eu]",
+	fi = "Suomi [fi]",
+	fil = "Wikang Filipino [fil]",
+	fr = "Français [fr]",
+	gd = "Gàidhlig [gd]",
+	gl = "Galego [gl]",
+	--he = " [he]", blacklisted
+	--hi = " [hi]", blacklisted
+	hu = "Magyar [hu]",
+	id = "Bahasa Indonesia [id]",
+	it = "Italiano [it]",
+	ja = "日本語 [ja]",
+	jbo = "Lojban [jbo]",
+	kk = "Қазақша [kk]",
+	--kn = " [kn]", blacklisted
+	ko = "한국어 [ko]",
+	ky = "Kırgızca / Кыргызча [ky]",
+	lt = "Lietuvių [lt]",
+	lv = "Latviešu [lv]",
+	mn = "Монгол [mn]",
+	mr = "मराठी [mr]",
+	ms = "Bahasa Melayu [ms]",
+	--ms_Arab = " [ms_Arab]", blacklisted
+	nb = "Norsk Bokmål [nb]",
+	nl = "Nederlands [nl]",
+	nn = "Norsk Nynorsk [nn]",
+	oc = "Occitan [oc]",
+	pl = "Polski [pl]",
+	pt = "Português [pt]",
+	pt_BR = "Português do Brasil [pt_BR]",
+	ro = "Română [ro]",
+	ru = "Русский [ru]",
+	sk = "Slovenčina [sk]",
+	sl = "Slovenščina [sl]",
+	sr_Cyrl = "Српски [sr_Cyrl]",
+	sr_Latn = "Srpski (Latinica) [sr_Latn]",
+	sv = "Svenska [sv]",
+	sw = "Kiswahili [sw]",
+	--th = " [th]", blacklisted
+	tr = "Türkçe [tr]",
+	tt = "Tatarça [tt]",
+	uk = "Українська [uk]",
+	vi = "Tiếng Việt [vi]",
+	zh_CN = "中文 (简体) [zh_CN]",
+	zh_TW = "正體中文 (繁體) [zh_TW]",
+}
 
 
 -- See if setting matches keywords
@@ -193,7 +244,7 @@ end
 
 local function filter_page_content(page, query_keywords)
 	if #query_keywords == 0 then
-		return page.content
+		return page.content, 0
 	end
 
 	local retval = {}
@@ -229,12 +280,6 @@ local function update_filtered_pages(query)
 	filtered_pages = {}
 	filtered_page_by_id = {}
 
-	if query == "" or query == nil then
-		filtered_pages = all_pages
-		filtered_page_by_id = page_by_id
-		return filtered_pages[1].id
-	end
-
 	local query_keywords = {}
 	for word in query:lower():gmatch("%S+") do
 		table.insert(query_keywords, word)
@@ -245,7 +290,7 @@ local function update_filtered_pages(query)
 
 	for _, page in ipairs(all_pages) do
 		local content, page_weight = filter_page_content(page, query_keywords)
-		if #content > 0 then
+		if page_has_contents(content) then
 			local new_page = table.copy(page)
 			new_page.content = content
 
@@ -263,28 +308,113 @@ local function update_filtered_pages(query)
 end
 
 
-local function build_page_components(page)
-	local retval = {}
-	local j = 1
-	for i, content in ipairs(page.content) do
-		if content == false then
-			-- false is used to disable components conditionally (ie: Android specific)
-			j = j - 1
-		elseif type(content) == "string" then
-			local setting = get_setting_info(content)
-			assert(setting, "Unknown setting: " .. content)
+local function check_requirements(name, requires)
+	if requires == nil then
+		return true
+	end
 
+	local video_driver = core.get_active_driver()
+	local shaders_support = video_driver == "opengl" or video_driver == "ogles2"
+	local special = {
+		android = PLATFORM == "Android",
+		desktop = PLATFORM ~= "Android",
+		touchscreen_gui = TOUCHSCREEN_GUI,
+		keyboard_mouse = not TOUCHSCREEN_GUI,
+		shaders_support = shaders_support,
+		shaders = core.settings:get_bool("enable_shaders") and shaders_support,
+		opengl = video_driver == "opengl",
+		gles = video_driver:sub(1, 5) == "ogles",
+	}
+
+	for req_key, req_value in pairs(requires) do
+		if special[req_key] == nil then
+			local required_setting = get_setting_info(req_key)
+			if required_setting == nil then
+				core.log("warning", "Unknown setting " .. req_key .. " required by " .. name)
+			end
+			local actual_value = core.settings:get_bool(req_key,
+				required_setting and core.is_yes(required_setting.default))
+			if actual_value ~= req_value  then
+				return false
+			end
+		elseif special[req_key] ~= req_value then
+			return false
+		end
+	end
+
+	return true
+end
+
+
+function page_has_contents(content)
+	for _, item in ipairs(content) do
+		if item == false or item.heading then --luacheck: ignore
+			-- skip
+		elseif type(item) == "string" then
+			local setting = get_setting_info(item)
+			assert(setting, "Unknown setting: " .. item)
+			if check_requirements(setting.name, setting.requires) then
+				return true
+			end
+		elseif item.get_formspec then
+			if check_requirements(item.id, item.requires) then
+				return true
+			end
+		else
+			error("Unknown content in page: " .. dump(item))
+		end
+	end
+
+	return false
+end
+
+
+local function build_page_components(page)
+	-- Filter settings based on requirements
+	local content = {}
+	local last_heading
+	for _, item in ipairs(page.content) do
+		if item == false then --luacheck: ignore
+			-- skip
+		elseif item.heading then
+			last_heading = item
+		else
+			local name, requires
+			if type(item) == "string" then
+				local setting = get_setting_info(item)
+				assert(setting, "Unknown setting: " .. item)
+				name = setting.name
+				requires = setting.requires
+			elseif item.get_formspec then
+				name = item.id
+				requires = item.requires
+			else
+				error("Unknown content in page: " .. dump(item))
+			end
+
+			if check_requirements(name, requires) then
+				if last_heading then
+					content[#content + 1] = last_heading
+					last_heading = nil
+				end
+				content[#content + 1] = item
+			end
+		end
+	end
+
+	-- Create components
+	local retval = {}
+	for i, item in ipairs(content) do
+		if type(item) == "string" then
+			local setting = get_setting_info(item)
 			local component_func = component_funcs[setting.type]
 			assert(component_func, "Unknown setting type: " .. setting.type)
-			retval[j] = component_func(setting)
-		elseif content.get_formspec then
-			retval[j] = content
-		elseif content.heading then
-			retval[j] = component_funcs.heading(content.heading)
-		else
-			error("Unknown content in page: " .. dump(content))
+			retval[i] = component_func(setting)
+		elseif item.get_formspec then
+			retval[i] = item
+		elseif item.heading then
+			retval[i] = component_funcs.heading(item.heading)
 		end
-		j = j + 1
 	end
 	return retval
 end
@@ -347,6 +477,7 @@ local function get_formspec(dialogdata)
 
 		"field[0.25,0.25;", tostring(search_width), ",0.75;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",
+		"field_enter_after_edit[search_query;true]",
 		"container[", tostring(search_width + 0.25), ", 0.25]",
 			"image_button[0,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
 			"image_button[0.75,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";search_clear;]",
@@ -363,7 +494,8 @@ local function get_formspec(dialogdata)
 	local last_section = nil
 	for _, other_page in ipairs(filtered_pages) do
 		if other_page.section ~= last_section then
-			fs[#fs + 1] = ("label[0.1,%f;%s]"):format(y + 0.41, core.colorize("#ff0", fgettext(other_page.section)))
+			fs[#fs + 1] = ("label[0.1,%f;%s]"):format(
+				y + 0.41, core.colorize("#ff0", fgettext(other_page.section)))
 			last_section = other_page.section
 			y = y + 0.82
 		end
@@ -507,10 +639,15 @@ local function buttonhandler(this, fields)
 
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
+			-- Clear components so they regenerate
+			dialogdata.components = nil
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
+
+			-- Clear components so they regenerate
+			dialogdata.components = nil
 			return true
 		end
 	end

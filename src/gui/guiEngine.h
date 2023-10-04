@@ -115,30 +115,20 @@ private:
 	std::vector<video::ITexture*> m_to_delete;
 };
 
-/** GUIEngine specific implementation of OnDemandSoundFetcher */
-class MenuMusicFetcher: public OnDemandSoundFetcher
+/** GUIEngine specific implementation of SoundFallbackPathProvider */
+class MenuMusicFetcher final : public SoundFallbackPathProvider
 {
-public:
-	/**
-	 * get sound file paths according to sound name
-	 * @param name sound name
-	 * @param dst_paths receives possible paths to sound files
-	 * @param dst_datas receives binary sound data (not used here)
-	 */
-	void fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
-			std::set<std::string> &dst_datas);
-
-private:
-	/** set of fetched sound names */
-	std::set<std::string> m_fetched;
+protected:
+	void addThePaths(const std::string &name,
+			std::vector<std::string> &paths) override;
 };
 
 /** implementation of main menu based uppon formspecs */
 class GUIEngine {
 	/** grant ModApiMainMenu access to private members */
 	friend class ModApiMainMenu;
-	friend class ModApiSound;
+	friend class ModApiMainMenuSound;
+	friend class MainMenuSoundHandle;
 
 public:
 	/**
@@ -197,8 +187,6 @@ private:
 	MainMenuData                         *m_data = nullptr;
 	/** texture source */
 	std::unique_ptr<ISimpleTextureSource> m_texture_source;
-	/** sound fetcher, used by sound manager*/
-	MenuMusicFetcher                      m_soundfetcher{};
 	/** sound manager*/
 	std::unique_ptr<ISoundManager>        m_sound_manager;
 
@@ -296,11 +284,4 @@ private:
 	bool        m_clouds_enabled = true;
 	/** data used to draw clouds */
 	clouddata   m_cloud;
-
-	/** start playing a sound and return handle */
-	s32 playSound(const SimpleSoundSpec &spec);
-	/** stop playing a sound started with playSound() */
-	void stopSound(s32 handle);
-
-
 };

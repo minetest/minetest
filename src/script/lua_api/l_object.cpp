@@ -435,7 +435,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	return 5;
 }
 
-// set_eye_offset(self, firstperson, thirdperson)
+// set_eye_offset(self, firstperson, thirdperson_back, thirdperson_front)
 int ObjectRef::l_set_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -446,14 +446,19 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 
 	v3f offset_first = readParam<v3f>(L, 2, v3f(0, 0, 0));
 	v3f offset_third = readParam<v3f>(L, 3, v3f(0, 0, 0));
+	v3f offset_third_front = readParam<v3f>(L, 4, offset_third);
 
 	// Prevent abuse of offset values (keep player always visible)
-	offset_third.X = rangelim(offset_third.X,-10,10);
-	offset_third.Z = rangelim(offset_third.Z,-5,5);
-	/* TODO: if possible: improve the camera collision detection to allow Y <= -1.5) */
-	offset_third.Y = rangelim(offset_third.Y,-10,15); //1.5*BS
+	auto clamp_third = [] (v3f &vec) {
+		vec.X = rangelim(vec.X, -10, 10);
+		vec.Z = rangelim(vec.Z, -5, 5);
+		/* TODO: if possible: improve the camera collision detection to allow Y <= -1.5) */
+		vec.Y = rangelim(vec.Y, -10, 15); // 1.5 * BS
+	};
+	clamp_third(offset_third);
+	clamp_third(offset_third_front);
 
-	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third);
+	getServer(L)->setPlayerEyeOffset(player, offset_first, offset_third, offset_third_front);
 	return 0;
 }
 
@@ -468,7 +473,8 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 
 	push_v3f(L, player->eye_offset_first);
 	push_v3f(L, player->eye_offset_third);
-	return 2;
+	push_v3f(L, player->eye_offset_third_front);
+	return 3;
 }
 
 // send_mapblock(self, pos)
@@ -716,7 +722,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 			if (read_color(L, -1, &color))
 				prop->nametag_bgcolor = color;
 		} else {
-			prop->nametag_bgcolor = nullopt;
+			prop->nametag_bgcolor = std::nullopt;
 		}
 	}
 	lua_pop(L, 1);
@@ -1435,6 +1441,13 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		modified |= getboolfield(L, 2, "sneak", phys.sneak);
 		modified |= getboolfield(L, 2, "sneak_glitch", phys.sneak_glitch);
 		modified |= getboolfield(L, 2, "new_move", phys.new_move);
+		modified |= getfloatfield(L, 2, "speed_climb", phys.speed_climb);
+		modified |= getfloatfield(L, 2, "speed_crouch", phys.speed_crouch);
+		modified |= getfloatfield(L, 2, "liquid_fluidity", phys.liquid_fluidity);
+		modified |= getfloatfield(L, 2, "liquid_fluidity_smooth", phys.liquid_fluidity_smooth);
+		modified |= getfloatfield(L, 2, "liquid_sink", phys.liquid_sink);
+		modified |= getfloatfield(L, 2, "acceleration_default", phys.acceleration_default);
+		modified |= getfloatfield(L, 2, "acceleration_air", phys.acceleration_air);
 		if (modified)
 			playersao->m_physics_override_sent = false;
 	} else {
@@ -1481,6 +1494,20 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "sneak_glitch");
 	lua_pushboolean(L, phys.new_move);
 	lua_setfield(L, -2, "new_move");
+	lua_pushnumber(L, phys.speed_climb);
+	lua_setfield(L, -2, "speed_climb");
+	lua_pushnumber(L, phys.speed_crouch);
+	lua_setfield(L, -2, "speed_crouch");
+	lua_pushnumber(L, phys.liquid_fluidity);
+	lua_setfield(L, -2, "liquid_fluidity");
+	lua_pushnumber(L, phys.liquid_fluidity_smooth);
+	lua_setfield(L, -2, "liquid_fluidity_smooth");
+	lua_pushnumber(L, phys.liquid_sink);
+	lua_setfield(L, -2, "liquid_sink");
+	lua_pushnumber(L, phys.acceleration_default);
+	lua_setfield(L, -2, "acceleration_default");
+	lua_pushnumber(L, phys.acceleration_air);
+	lua_setfield(L, -2, "acceleration_air");
 	return 1;
 }
 
@@ -1803,6 +1830,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 			// pop "sky_color" table
 			lua_pop(L, 1);
 		}
+		lua_getfield(L, 2, "fog");
+		if (lua_istable(L, -1)) {
+			sky_params.fog_distance = getintfield_default(L, -1,  "fog_distance", sky_params.fog_distance);
+			sky_params.fog_start = getfloatfield_default(L, -1,  "fog_start", sky_params.fog_start);
+		}
 	} else {
 		// Handle old set_sky calls, and log deprecated:
 		log_deprecated(L, "Deprecated call to set_sky, please check lua_api.md");
@@ -1923,7 +1955,6 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_pushnumber(L, skybox_params.body_orbit_tilt);
 		lua_setfield(L, -2, "body_orbit_tilt");
 	}
-
 	lua_newtable(L);
 	s16 i = 1;
 	for (const std::string &texture : skybox_params.textures) {
@@ -1936,6 +1967,14 @@ int ObjectRef::l_get_sky(lua_State *L)
 
 	push_sky_color(L, skybox_params);
 	lua_setfield(L, -2, "sky_color");
+
+	lua_newtable(L); // fog
+	lua_pushinteger(L, skybox_params.fog_distance >= 0 ? skybox_params.fog_distance : -1);
+	lua_setfield(L, -2, "fog_distance");
+	lua_pushnumber(L, skybox_params.fog_start >= 0 ? skybox_params.fog_start : -1.0f);
+	lua_setfield(L, -2, "fog_start");
+	lua_setfield(L, -2, "fog");
+
 	return 1;
 }
 

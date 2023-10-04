@@ -36,9 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PATH_DELIM ":"
 #endif
 
-namespace irr { namespace io {
+namespace irr::io {
 class IFileSystem;
-}}
+}
 
 namespace fs
 {

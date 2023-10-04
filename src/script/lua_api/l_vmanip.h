@@ -71,6 +71,8 @@ public:
 	// LuaVoxelManip()
 	// Creates a LuaVoxelManip and leaves it on top of stack
 	static int create_object(lua_State *L);
+	// Not callable from Lua
+	static void create(lua_State *L, MMVManip *mmvm, bool is_mapgen_vm);
 
 	static void *packIn(lua_State *L, int idx);
 	static void packOut(lua_State *L, void *ptr);

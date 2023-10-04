@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _MSC_VER
 	#include <dbghelp.h>
+	#include <windows.h>
+	#include <eh.h>
 	#include "version.h"
 	#include "filesys.h"
 #endif
@@ -72,6 +74,13 @@ void fatal_error_fn(const char *msg, const char *file,
 		<< ": A fatal error occurred: " << msg << std::endl;
 
 	abort();
+}
+
+std::string debug_describe_exc(const std::exception &e)
+{
+	if (dynamic_cast<const std::bad_alloc*>(&e))
+		return "C++ out of memory";
+	return std::string("\"").append(e.what()).append("\"");
 }
 
 #ifdef _MSC_VER

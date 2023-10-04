@@ -25,15 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "log.h"
 
-#ifdef _WIN32
-	#include <windows.h>
-	#ifdef _MSC_VER
-		#include <eh.h>
-	#endif
-	#define NORETURN __declspec(noreturn)
+#ifdef _MSC_VER
 	#define FUNCTION_NAME __FUNCTION__
 #else
-	#define NORETURN __attribute__ ((__noreturn__))
 	#define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
 
@@ -48,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* Abort program execution immediately
  */
-NORETURN extern void fatal_error_fn(
+[[noreturn]] extern void fatal_error_fn(
 		const char *msg, const char *file,
 		unsigned int line, const char *function);
 
@@ -66,7 +60,7 @@ NORETURN extern void fatal_error_fn(
 	defined)
 */
 
-NORETURN extern void sanity_check_fn(
+[[noreturn]] extern void sanity_check_fn(
 		const char *assertion, const char *file,
 		unsigned int line, const char *function);
 
@@ -77,6 +71,7 @@ NORETURN extern void sanity_check_fn(
 
 #define sanity_check(expr) SANITY_CHECK(expr)
 
+std::string debug_describe_exc(const std::exception &e);
 
 void debug_set_exception_handler();
 
@@ -88,9 +83,10 @@ void debug_set_exception_handler();
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
 	#define END_DEBUG_EXCEPTION_HANDLER                        \
 		} catch (std::exception &e) {                          \
+			std::string e_descr = debug_describe_exc(e);       \
 			errorstream << "An unhandled exception occurred: " \
-				<< e.what() << std::endl;                      \
-			FATAL_ERROR(e.what());                             \
+				<< e_descr << std::endl;                       \
+			FATAL_ERROR(e_descr.c_str());                      \
 		}
 #else
 	// Dummy ones

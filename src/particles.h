@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <ctgmath>
 #include <type_traits>
+#include "irrlicht_changes/printing.h"
 #include "irrlichttypes_bloated.h"
 #include "tileanimation.h"
 #include "mapnode.h"
@@ -138,10 +139,7 @@ namespace ParticleParamTypes
 	inline std::string dump(const VectorParameter<T,N>& v)
 	{
 		std::ostringstream oss;
-		if (N == 3)
-			oss << PP(v.val);
-		else
-			oss << PP2(v.val);
+		oss << v.val;
 		return oss.str();
 	}
 

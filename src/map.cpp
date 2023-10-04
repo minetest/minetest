@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "util/directiontables.h"
-#include "util/basic_macros.h"
 #include "rollback_interface.h"
 #include "environment.h"
 #include "reflowscan.h"
@@ -45,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "database/database-sqlite3.h"
 #include "script/scripting_server.h"
+#include "irrlicht_changes/printing.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
@@ -174,7 +174,7 @@ static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
 				<<" while trying to replace \""
 				<<nodedef->get(block->getNodeNoCheck(relpos)).name
-				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+				<<"\" at "<<p<<" (block "<<blockpos<<")"<<std::endl;
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
@@ -917,7 +917,7 @@ std::vector<v3s16> Map::findNodesWithMetadata(v3s16 p1, v3s16 p2)
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if (!block) {
 			verbosestream << "Map::getNodeMetadata(): Need to emerge "
-				<< PP(blockpos) << std::endl;
+				<< blockpos << std::endl;
 			block = emergeBlock(blockpos, false);
 		}
 		if (!block) {
@@ -947,7 +947,7 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
@@ -966,7 +966,7 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeMetadata(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
@@ -999,7 +999,7 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::getNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
@@ -1020,7 +1020,7 @@ void Map::setNodeTimer(const NodeTimer &t)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(!block){
 		infostream<<"Map::setNodeTimer(): Need to emerge "
-				<<PP(blockpos)<<std::endl;
+				<<blockpos<<std::endl;
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
@@ -1348,7 +1348,7 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 		return false;
 
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
-	EMERGE_DBG_OUT("initBlockMake(): " PP(bpmin) " - " PP(bpmax));
+	EMERGE_DBG_OUT("initBlockMake(): " << bpmin << " - " << bpmax);
 
 	v3s16 extra_borders(1, 1, 1);
 	v3s16 full_bpmin = bpmin - extra_borders;
@@ -1410,7 +1410,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	v3s16 bpmax = data->blockpos_max;
 
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
-	EMERGE_DBG_OUT("finishBlockMake(): " PP(bpmin) " - " PP(bpmax));
+	EMERGE_DBG_OUT("finishBlockMake(): " << bpmin << " - " << bpmax);
 
 	/*
 		Blit generated stuff to map
@@ -1803,8 +1803,11 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			block = block_created_new.get();
 		}
 
+		{
+		ScopeProfiler sp(g_profiler, "ServerMap: deSer block", SPT_AVG);
 		// Read basic data
 		block->deSerialize(is, version, true);
+		}
 
 		// If it's a new block, insert it to the map
 		if (block_created_new) {
@@ -1845,6 +1848,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
+	ScopeProfiler sp(g_profiler, "ServerMap: load block", SPT_AVG);
 	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);

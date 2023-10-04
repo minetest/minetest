@@ -666,7 +666,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, const std::string &elemen
 	spec.ftype = f_ScrollBar;
 	spec.send  = true;
 	GUIScrollBar *e = new GUIScrollBar(Environment, data->current_parent,
-			spec.fid, rect, is_horizontal, true);
+			spec.fid, rect, is_horizontal, true, m_tsrc);
 
 	auto style = getDefaultStyleForElement("scrollbar", name);
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
@@ -1379,6 +1379,15 @@ void GUIFormSpecMenu::parseDropDown(parserData* data, const std::string &element
 	}
 }
 
+void GUIFormSpecMenu::parseFieldEnterAfterEdit(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts;
+	if (!precheckElement("field_enter_after_edit", element, 2, 2, parts))
+		return;
+
+	field_enter_after_edit[parts[0]] = is_yes(parts[1]);
+}
+
 void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data, const std::string &element)
 {
 	std::vector<std::string> parts;
@@ -1493,7 +1502,7 @@ void GUIFormSpecMenu::createTextField(parserData *data, FieldSpec &spec,
 	gui::IGUIEditBox *e = nullptr;
 	if (is_multiline) {
 		e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true, Environment,
-				data->current_parent, spec.fid, rect, is_editable, true);
+				data->current_parent, spec.fid, rect, m_tsrc, is_editable, true);
 	} else if (is_editable) {
 		e = Environment->addEditBox(spec.fdefault.c_str(), rect, true,
 				data->current_parent, spec.fid);
@@ -1670,8 +1679,6 @@ void GUIFormSpecMenu::parseField(parserData* data, const std::string &element,
 
 void GUIFormSpecMenu::parseHyperText(parserData *data, const std::string &element)
 {
-	MY_CHECKCLIENT("hypertext");
-
 	std::vector<std::string> parts;
 	if (!precheckElement("hypertext", element, 4, 4, parts))
 		return;
@@ -2905,6 +2912,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "field_enter_after_edit") {
+		parseFieldEnterAfterEdit(data, description);
+		return;
+	}
+
 	if (type == "field_close_on_enter") {
 		parseFieldCloseOnEnter(data, description);
 		return;
@@ -3053,7 +3065,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	} else {
 		// Don't keep old focus value
-		m_focused_element = nullopt;
+		m_focused_element = std::nullopt;
 	}
 
 	removeAll();
@@ -3084,6 +3096,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	theme_by_name.clear();
 	theme_by_type.clear();
 	m_clickthrough_elements.clear();
+	field_enter_after_edit.clear();
 	field_close_on_enter.clear();
 	m_dropdown_index_event.clear();
 
@@ -3482,8 +3495,23 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		if (!element || element->getType() != irr::gui::EGUIET_EDIT_BOX)
 			return false;
 
+		gui::IGUIEditBox *editbox = (gui::IGUIEditBox *)element;
 		std::string text = porting::getInputDialogValue();
-		((gui::IGUIEditBox *)element)->setText(utf8_to_wide(text).c_str());
+		editbox->setText(utf8_to_wide(text).c_str());
+
+		bool enter_after_edit = false;
+		auto iter = field_enter_after_edit.find(fieldname);
+		if (iter != field_enter_after_edit.end()) {
+			enter_after_edit = iter->second;
+		}
+		if (enter_after_edit && editbox->getParent()) {
+			SEvent enter;
+			enter.EventType = EET_GUI_EVENT;
+			enter.GUIEvent.Caller = editbox;
+			enter.GUIEvent.Element = nullptr;
+			enter.GUIEvent.EventType = gui::EGET_EDITBOX_ENTER;
+			editbox->getParent()->OnEvent(enter);
+		}
 	}
 	return false;
 }
@@ -4314,10 +4342,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
 				else if (event.MouseInput.Shift && button == BET_LEFT)
-					// TODO: We should craft everything with shift-left-click,
-					// but the slow crafting code limits us, so we only craft one
-					craft_amount = 1;
-					//craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
+					craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
 				else
 					craft_amount = 1;
 
@@ -4376,7 +4401,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					ItemStack slct = list_selected->getItem(m_selected_item->i);
 
-					for (s32 i = 0; i < list_s->getSize(); i++) {
+					for (s32 i = 0; i < (s32)list_s->getSize(); i++) {
 						// Skip the selected slot
 						if (i == m_selected_item->i)
 							continue;
@@ -4452,6 +4477,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if (m_left_drag_stacks.size() > 1) {
 					// Finalize the left-dragging
 					for (auto &ds : m_left_drag_stacks) {
+						if (ds.first == *m_selected_item) {
+							// This entry is needed to properly calculate the stack sizes.
+							// The stack already exists, hence no further action needed here.
+							continue;
+						}
+
 						// Check how many items we should move to this slot,
 						// it may be less than the full split
 						Inventory *inv_to = m_invmgr->getInventory(ds.first.inventoryloc);
@@ -4556,7 +4587,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// Pickup all of the item from the list
 			if (slct.count > 0) {
-				for (s32 i = 0; i < list_s->getSize(); i++) {
+				for (s32 i = 0; i < (s32)list_s->getSize(); i++) {
 					// Skip the selected slot
 					if (i == s.i)
 						continue;
@@ -4816,7 +4847,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;
@@ -4861,7 +4892,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (s.ftype == f_Button || s.ftype == f_CheckBox) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 
 					s.send = true;
 					if (s.is_exit) {
@@ -4886,7 +4917,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput(quit_mode_no);
 
@@ -4904,7 +4935,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					s.fdefault.clear();
 				} else if (s.ftype == f_Unknown || s.ftype == f_HyperText) {
 					if (!s.sound.empty() && m_sound_manager)
-						m_sound_manager->playSound(SimpleSoundSpec(s.sound, 1.0f));
+						m_sound_manager->playSound(0, SoundSpec(s.sound, 1.0f));
 					s.send = true;
 					acceptInput();
 					s.send = false;

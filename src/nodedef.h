@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Client;
 #endif
 #include "itemgroup.h"
-#include "sound.h" // SimpleSoundSpec
+#include "sound.h" // SoundSpec
 #include "constants.h" // BS
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
@@ -364,6 +364,7 @@ struct ContentFeatures
 	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
+	bool post_effect_color_shaded;
 	// Flowing liquid or leveled nodebox, value = default level
 	u8 leveled;
 	// Maximum value for leveled nodes
@@ -434,9 +435,9 @@ struct ContentFeatures
 
 	// --- SOUND PROPERTIES ---
 
-	SimpleSoundSpec sound_footstep;
-	SimpleSoundSpec sound_dig;
-	SimpleSoundSpec sound_dug;
+	SoundSpec sound_footstep;
+	SoundSpec sound_dig;
+	SoundSpec sound_dug;
 
 	// --- LEGACY ---
 

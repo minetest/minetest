@@ -103,7 +103,7 @@ private:
 	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
 
-	// True if EMF_LIGHTING should be enabled.
+	// True if SMaterial::Lighting should be enabled.
 	bool m_lighting;
 
 	bool m_enable_shaders;

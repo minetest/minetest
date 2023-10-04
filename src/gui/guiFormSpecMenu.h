@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <optional>
 #include <utility>
 #include <stack>
 #include <unordered_set>
@@ -33,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTable.h"
 #include "network/networkprotocol.h"
 #include "client/joystick_controller.h"
-#include "util/Optional.h"
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
@@ -331,6 +331,7 @@ protected:
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
+	std::unordered_map<std::string, bool> field_enter_after_edit;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
@@ -374,13 +375,13 @@ protected:
 	video::SColor m_default_tooltip_color;
 
 private:
-	IFormSource          *m_form_src;
-	TextDest             *m_text_dst;
-	std::string           m_last_formname;
-	u16                   m_formspec_version = 1;
-	Optional<std::string> m_focused_element = nullopt;
-	JoystickController   *m_joystick;
-	bool                  m_show_debug = false;
+	IFormSource               *m_form_src;
+	TextDest                  *m_text_dst;
+	std::string                m_last_formname;
+	u16                        m_formspec_version = 1;
+	std::optional<std::string> m_focused_element = std::nullopt;
+	JoystickController        *m_joystick;
+	bool                       m_show_debug = false;
 
 	struct parserData {
 		bool explicit_size;
@@ -448,6 +449,7 @@ private:
 	void parseTable(parserData* data, const std::string &element);
 	void parseTextList(parserData* data, const std::string &element);
 	void parseDropDown(parserData* data, const std::string &element);
+	void parseFieldEnterAfterEdit(parserData *data, const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data, const std::string &element);
 	void parseField(parserData* data, const std::string &element, const std::string &type);

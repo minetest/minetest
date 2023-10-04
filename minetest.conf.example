@@ -433,7 +433,7 @@
 
 #    Maximum distance to render shadows.
 #    type: float min: 10 max: 1000
-# shadow_map_max_distance = 200.0
+# shadow_map_max_distance = 140.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
@@ -3178,11 +3178,6 @@
 #    Note that the port field in the main menu overrides this setting.
 #    type: int min: 1 max: 65535
 # remote_port = 30000
-
-#    Default game when creating a new world.
-#    This will be overridden when creating a world from the main menu.
-#    type: string
-# default_game = minetest
 
 #    Enable players getting damage and dying.
 #    type: bool

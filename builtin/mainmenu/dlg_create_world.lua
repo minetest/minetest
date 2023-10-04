@@ -91,16 +91,6 @@ local mgv6_biomes = {
 
 local function create_world_formspec(dialogdata)
 
-	-- Point the player to ContentDB when no games are found
-	if #pkgmgr.games == 0 then
-		return "size[8,2.5,true]" ..
-			"style[label_button;border=false]" ..
-			"button[0.5,0.5;7,0.5;label_button;" ..
-			fgettext("You have no games installed.") .. "]" ..
-			"button[0.5,1.5;2.5,0.5;world_create_open_cdb;" .. fgettext("Install a game") .. "]" ..
-			"button[5.0,1.5;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
-	end
-
 	local current_mg = dialogdata.mg
 	local mapgens = core.get_mapgen_names()
 
@@ -310,8 +300,8 @@ local function create_world_formspec(dialogdata)
 		"label[0,2;" .. fgettext("Mapgen") .. "]"..
 		"dropdown[0,2.5;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]"
 
-	-- Warning if only devtest is installed
-	if #pkgmgr.games == 1 and pkgmgr.games[1].id == "devtest" then
+	-- Warning when making a devtest world
+	if game.id == "devtest" then
 		retval = retval ..
 			"container[0,3.5]" ..
 			"box[0,0;5.8,1.7;#ff8800]" ..

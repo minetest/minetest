@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Keep;
@@ -96,21 +95,11 @@ public class GameActivity extends NativeActivity {
 		container.setOrientation(LinearLayout.VERTICAL);
 		builder.setView(container);
 		AlertDialog alertDialog = builder.create();
-		EditText editText;
-		// For multi-line, do not close the dialog after pressing back button
-		if (editType == 1) {
-			editText = new EditText(this);
-		} else {
-			editText = new CustomEditText(this);
-		}
+		CustomEditText editText = new CustomEditText(this, editType);
 		container.addView(editText);
 		editText.setMaxLines(8);
-		editText.requestFocus();
 		editText.setHint(hint);
 		editText.setText(current);
-		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-		Objects.requireNonNull(imm).toggleSoftInput(InputMethodManager.SHOW_FORCED,
-				InputMethodManager.HIDE_IMPLICIT_ONLY);
 		if (editType == 1)
 			editText.setInputType(InputType.TYPE_CLASS_TEXT |
 					InputType.TYPE_TEXT_FLAG_MULTI_LINE);
@@ -119,7 +108,8 @@ public class GameActivity extends NativeActivity {
 					InputType.TYPE_TEXT_VARIATION_PASSWORD);
 		else
 			editText.setInputType(InputType.TYPE_CLASS_TEXT);
-		editText.setSelection(editText.getText().length());
+		editText.setSelection(Objects.requireNonNull(editText.getText()).length());
+		final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		editText.setOnKeyListener((view, keyCode, event) -> {
 			// For multi-line, do not submit the text after pressing Enter key
 			if (keyCode == KeyEvent.KEYCODE_ENTER && editType != 1) {
@@ -143,12 +133,13 @@ public class GameActivity extends NativeActivity {
 				alertDialog.dismiss();
 			}));
 		}
-		alertDialog.show();
 		alertDialog.setOnCancelListener(dialog -> {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 			messageReturnValue = current;
 			messageReturnCode = -1;
 		});
+		alertDialog.show();
+		editText.requestFocusTryShow();
 	}
 
 	public int getDialogState() {

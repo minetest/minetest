@@ -58,6 +58,7 @@ public:
 	void testEulerConversion();
 	void testBase64();
 	void testSanitizeDirName();
+	void testIsBlockInSight();
 };
 
 static TestUtilities g_test_instance;
@@ -90,6 +91,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testEulerConversion);
 	TEST(testBase64);
 	TEST(testSanitizeDirName);
+	TEST(testIsBlockInSight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -635,4 +637,70 @@ void TestUtilities::testSanitizeDirName()
 	UASSERT(sanitizeDirName("cOm\u00B2", "~") == "~cOm\u00B2");
 	UASSERT(sanitizeDirName("cOnIn$", "~") == "~cOnIn$");
 	UASSERT(sanitizeDirName(" cOnIn$ ", "~") == "_cOnIn$_");
+}
+
+template <typename F, typename C>
+C apply_all(const C &co, F functor)
+{
+	C ret;
+	for (auto it = co.begin(); it != co.end(); it++)
+		ret.push_back(functor(*it));
+	return ret;
+}
+
+#define cast_v3(T, other) T((other).X, (other).Y, (other).Z)
+
+void TestUtilities::testIsBlockInSight()
+{
+	const std::vector<v3s16> testdata1 = {
+		{0, 1 * (int)BS, 0}, // camera_pos
+		{1, 0, 0},           // camera_dir
+
+		{ 2, 0, 0},
+		{-2, 0, 0},
+		{0, 0,  3},
+		{0, 0, -3},
+		{0, 0, 0},
+		{6, 0, 0}
+	};
+	auto test1 = [] (const std::vector<v3s16> &data) {
+		float range = BS * MAP_BLOCKSIZE * 4;
+		float fov = 72 * core::DEGTORAD;
+		v3f cam_pos = cast_v3(v3f, data[0]), cam_dir = cast_v3(v3f, data[1]);
+		UASSERT( isBlockInSight(data[2], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[3], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[4], cam_pos, cam_dir, fov, range));
+		UASSERT(!isBlockInSight(data[5], cam_pos, cam_dir, fov, range));
+
+		// camera block must be visible
+		UASSERT(isBlockInSight(data[6], cam_pos, cam_dir, fov, range));
+
+		// out of range is never visible
+		UASSERT(!isBlockInSight(data[7], cam_pos, cam_dir, fov, range));
+	};
+	// XZ rotations
+	for (int j = 0; j < 4; j++) {
+		auto tmpdata = apply_all(testdata1, [&] (v3s16 v) -> v3s16 {
+			v.rotateXZBy(j*90);
+			return v;
+		});
+		test1(tmpdata);
+	}
+	// just two for XY
+	for (int j = 0; j < 2; j++) {
+		auto tmpdata = apply_all(testdata1, [&] (v3s16 v) -> v3s16 {
+			v.rotateXYBy(90+j*180);
+			return v;
+		});
+		test1(tmpdata);
+	}
+
+	{
+		float range = BS * MAP_BLOCKSIZE * 2;
+		float fov = 72 * core::DEGTORAD;
+		v3f cam_pos(-(MAP_BLOCKSIZE - 1) * BS, 0, 0), cam_dir(1, 0, 0);
+		// we're looking at X+ but are so close to block (-1,0,0) that it
+		// should still be considered visible
+		UASSERT(isBlockInSight({-1, 0, 0}, cam_pos, cam_dir, fov, range));
+	}
 }

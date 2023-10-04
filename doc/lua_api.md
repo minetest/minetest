@@ -250,7 +250,18 @@ time, if necessary. (See [`Settings`])
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
-the clients (see [Translations]).
+the clients (see [Translations]). Accepted characters for names are:
+
+    a-zA-Z0-9_.-
+
+Accepted formats are:
+
+    images: .png, .jpg, .bmp, (deprecated) .tga
+    sounds: .ogg vorbis
+    models: .x, .b3d, .obj
+
+Other formats won't be sent to the client (e.g. you can store .blend files
+in a folder for convenience, without the risk that such files are transferred)
 
 It is suggested to use the folders for the purpose they are thought for,
 eg. put textures into `textures`, translation files into `locale`,
@@ -983,16 +994,19 @@ Only Ogg Vorbis files are supported.
 For positional playing of sounds, only single-channel (mono) files are
 supported. Otherwise OpenAL will play them non-positionally.
 
-Mods should generally prefix their sounds with `modname_`, e.g. given
-the mod name "`foomod`", a sound could be called:
+Mods should generally prefix their sound files with `modname_`, e.g. given
+the mod name `foomod`, a sound could be called:
 
     foomod_foosound.ogg
 
-Sounds are referred to by their name with a dot, a single digit and the
-file extension stripped out. When a sound is played, the actual sound file
-is chosen randomly from the matching sounds.
+## Sound Group
 
-When playing the sound `foomod_foosound`, the sound is chosen randomly
+A sound group is the set of all sound files, whose filenames are of the following
+format: `<sound-group name>[.<single digit>].ogg`
+When a sound group is played, one the files in the group is chosen at random.
+Sound files can only be referred to by their sound-group name.
+
+Example: When playing the sound `foomod_foosound`, the sound is chosen randomly
 from the available ones of the following files:
 
 * `foomod_foosound.ogg`
@@ -1001,20 +1015,109 @@ from the available ones of the following files:
 * (...)
 * `foomod_foosound.9.ogg`
 
-Examples of sound parameter tables:
+## `SimpleSoundSpec`
+
+Specifies a sound name, gain (volume), pitch and fade.
+This is either a string or a table.
+
+In string form, you just specify the sound name or
+the empty string for no sound.
+
+Table form has the following fields:
+
+* `name`:
+  Sound group name.
+  If == `""`, no sound is played.
+* `gain`:
+  Volume (`1.0` = 100%), must be non-negative.
+  At the end, OpenAL clamps sound gain to a maximum of `1.0`. By setting gain for
+  a positional sound higher than `1.0`, one can increase the radius inside which
+  maximal gain is reached.
+  Furthermore, gain of positional sounds doesn't increase inside a 1 node radius.
+  The gain given here describes the gain at a distance of 3 nodes.
+* `pitch`:
+  Applies a pitch-shift to the sound.
+  Each factor of `2.0` results in a pitch-shift of +12 semitones.
+  Must be positive.
+* `fade`:
+  If > `0.0`, the sound is faded in, with this value in gain per second, until
+  `gain` is reached.
+
+`gain`, `pitch` and `fade` are optional and default to `1.0`, `1.0` and `0.0`.
+
+Examples:
+
+* `""`: No sound
+* `{}`: No sound
+* `"default_place_node"`: Play e.g. `default_place_node.ogg`
+* `{name = "default_place_node"}`: Same as above
+* `{name = "default_place_node", gain = 0.5}`: 50% volume
+* `{name = "default_place_node", gain = 0.9, pitch = 1.1}`: 90% volume, 110% pitch
+
+## Sound Parameter Table
+
+Table used to specify how a sound is played:
+
+```lua
+{
+    gain = 1.0,
+    -- Scales the gain specified in `SimpleSoundSpec`.
+
+    pitch = 1.0,
+    -- Overwrites the pitch specified in `SimpleSoundSpec`.
+
+    fade = 0.0,
+    -- Overwrites the fade specified in `SimpleSoundSpec`.
+
+    start_time = 0.0,
+    -- Start with a time-offset into the sound.
+    -- The behavior is as if the sound was already playing for this many seconds.
+    -- Negative values are relative to the sound's length, so the sound reaches
+    -- its end in `-start_time` seconds.
+    -- It is unspecified what happens if `loop` is false and `start_time` is
+    -- smaller than minus the sound's length.
+
+    loop = false,
+    -- If true, sound is played in a loop.
+
+    pos = {x = 1, y = 2, z = 3},
+    -- Play sound at a position.
+    -- Can't be used together with `object`.
+
+    object = <an ObjectRef>,
+    -- Attach the sound to an object.
+    -- Can't be used together with `pos`.
+
+    to_player = name,
+    -- Only play for this player.
+    -- Can't be used together with `exclude_player`.
+
+    exclude_player = name,
+    -- Don't play sound for this player.
+    -- Can't be used together with `to_player`.
+
+    max_hear_distance = 32,
+    -- Only play for players that are at most this far away when the sound
+    -- starts playing.
+    -- Needs `pos` or `object` to be set.
+    -- `32` is the default.
+}
+```
+
+Examples:
 
 ```lua
 -- Play locationless on all clients
 {
     gain = 1.0,   -- default
-    fade = 0.0,   -- default, change to a value > 0 to fade the sound in
+    fade = 0.0,   -- default
     pitch = 1.0,  -- default
 }
 -- Play locationless to one player
 {
     to_player = name,
     gain = 1.0,   -- default
-    fade = 0.0,   -- default, change to a value > 0 to fade the sound in
+    fade = 0.0,   -- default
     pitch = 1.0,  -- default
 }
 -- Play locationless to one player, looped
@@ -1023,17 +1126,18 @@ Examples of sound parameter tables:
     gain = 1.0,  -- default
     loop = true,
 }
--- Play at a location
+-- Play at a location, start the sound at offset 5 seconds
 {
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0,  -- default
-    max_hear_distance = 32,  -- default, uses a Euclidean metric
+    max_hear_distance = 32,  -- default
+    start_time = 5.0,
 }
 -- Play connected to an object, looped
 {
     object = <an ObjectRef>,
     gain = 1.0,  -- default
-    max_hear_distance = 32,  -- default, uses a Euclidean metric
+    max_hear_distance = 32,  -- default
     loop = true,
 }
 -- Play at a location, heard by anyone *but* the given player
@@ -1044,8 +1148,7 @@ Examples of sound parameter tables:
 }
 ```
 
-Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name`.
+## Special Sound Groups
 
 A positional sound will only be heard by players that are within
 `max_hear_distance` of the sound position, at the start of the sound.
@@ -2030,6 +2133,9 @@ to games.
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
   or if their feet are in the node. Note: not supported for `new_move = false`
+* `disable_descend`: Player (and possibly other things) cannot *actively*
+  descend in node using Sneak or Aux1 key (for liquids and climbable nodes
+  only). Note: not supported for `new_move = false`
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
@@ -2510,6 +2616,9 @@ background elements are drawn before all other elements.
   * Added `padding[]` element
 * Formspec version 6 (5.6.0):
   * Add nine-slice images, `animated_image`, and `fgimg_middle`
+* Formspec version 7 (5.8.0):
+  * `style[]`: Add focused state for buttons
+  * Add `field_enter_after_edit[]` (experimental)
 
 ## Elements
 
@@ -2789,12 +2898,21 @@ background elements are drawn before all other elements.
 * A "Proceed" button will be added automatically
 * See `field_close_on_enter` to stop enter closing the formspec
 
+### `field_enter_after_edit[<name>;<enter_after_edit>]`
+
+* Experimental, may be subject to change or removal at any time.
+* Only affects Android clients.
+* `<name>` is the name of the field.
+* If `<enter_after_edit>` is true, pressing the "Done" button in the Android
+  text input dialog will simulate an <kbd>Enter</kbd> keypress.
+* Defaults to false when not specified (i.e. no tag for a field).
+
 ### `field_close_on_enter[<name>;<close_on_enter>]`
 
-* `<name>` is the name of the field
-* if `<close_on_enter>` is false, pressing enter in the field will submit the
+* `<name>` is the name of the field.
+* If `<close_on_enter>` is false, pressing enter in the field will submit the
   form but not close it.
-* defaults to true when not specified (ie: no tag for a field)
+* Defaults to true when not specified (i.e. no tag for a field)
 
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 
@@ -4458,10 +4576,12 @@ differences:
 
 * The Mapgen VoxelManip object is retrieved using:
   `minetest.get_mapgen_object("voxelmanip")`
+
 * This VoxelManip object already has the region of map just generated loaded
   into it; it's not necessary to call `VoxelManip:read_from_map()`.
   Note that the region of map it has loaded is NOT THE SAME as the `minp`, `maxp`
   parameters of `on_generated()`. Refer to `minetest.get_mapgen_object` docs.
+
 * The `on_generated()` callbacks of some mods may place individual nodes in the
   generated area using non-VoxelManip map modification methods. Because the
   same Mapgen VoxelManip object is passed through each `on_generated()`
@@ -4470,6 +4590,7 @@ differences:
   `minetest.add_node()`, `minetest.set_node()` or `minetest.swap_node()`
   will also update the Mapgen VoxelManip object's internal state active on the
   current thread.
+
 * After modifying the Mapgen VoxelManip object's internal buffer, it may be
   necessary to update lighting information using either:
   `VoxelManip:calc_lighting()` or `VoxelManip:set_lighting()`.
@@ -4496,13 +4617,25 @@ inside the VoxelManip.
 * Attempting to read data from a VoxelManip object before map is read will
   result in a zero-length array table for `VoxelManip:get_data()`, and an
   "ignore" node at any position for `VoxelManip:get_node_at()`.
-* If either a region of map has not yet been generated or is out-of-bounds of
-  the map, that region is filled with "ignore" nodes.
-* Other mods, or the core itself, could possibly modify the area of map
+
+* If you attempt to use a VoxelManip to read a region of the map that has
+  already been generated, but is not currently loaded, that region will be
+  loaded from disk. This means that reading a region of the map with a
+  VoxelManip has a similar effect as calling `minetest.load_area` on that
+  region.
+
+* If a region of the map has either not yet been generated or is outside the
+  map boundaries, it is filled with "ignore" nodes. Writing to regions of the
+  map that are not yet generated may result in unexpected behavior. You
+  can use `minetest.emerge_area` to make sure that the area you want to
+  read/write is already generated.
+
+* Other mods, or the core itself, could possibly modify the area of the map
   currently loaded into a VoxelManip object. With the exception of Mapgen
   VoxelManips (see above section), the internal buffers are not updated. For
   this reason, it is strongly encouraged to complete the usage of a particular
   VoxelManip object in the same callback it had been created.
+
 * If a VoxelManip object will be used often, such as in an `on_generated()`
   callback, consider passing a file-scoped table as the optional parameter to
   `VoxelManip:get_data()`, which serves as a static buffer the function can use
@@ -6222,6 +6355,7 @@ This allows you easy interoperability for delegating work to jobs.
 ### List of APIs Available in an Async Environment
 
 Classes:
+* `AreaStore`
 * `ItemStack`
 * `PerlinNoise`
 * `PerlinNoiseMap`
@@ -7169,15 +7303,19 @@ child will follow movement and rotation of that bone.
 
 ### Methods
 
-* `get_pos()`: returns `{x=num, y=num, z=num}`
-* `set_pos(pos)`: `pos`=`{x=num, y=num, z=num}`
+* `get_pos()`: returns position as vector `{x=num, y=num, z=num}`
+* `set_pos(pos)`:
+    * Sets the position of the object.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
+    * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
     * In comparison to using get_velocity, adding the velocity and then using
       set_velocity, add_velocity is supposed to avoid synchronization problems.
       Additionally, players also do not support set_velocity.
-    * If a player:
+    * If object is a player:
         * Does not apply during free_move.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
@@ -7189,11 +7327,19 @@ child will follow movement and rotation of that bone.
     * If `continuous` is true, the Lua entity will not be moved to the current
       position before starting the interpolated move.
     * For players this does the same as `set_pos`,`continuous` is ignored.
-* `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
-    * `puncher` = another `ObjectRef`,
-    * `time_from_last_punch` = time since last punch action of the puncher
-    * `direction`: can be `nil`
-* `right_click(clicker)`; `clicker` is another `ObjectRef`
+    * no-op if object is attached
+* `punch(puncher, time_from_last_punch, tool_capabilities, dir)`
+    * punches the object, triggering all consequences a normal punch would have
+    * `puncher`: another `ObjectRef` which punched the object
+    * `dir`: direction vector of punch
+    * Other arguments: See `on_punch` for entities
+    * All arguments except `puncher` can be `nil`, in which case a default
+      value will be used
+* `right_click(clicker)`:
+    * simulates using the 'place/use' key on the object
+    * triggers all consequences as if a real player had done this
+    * `clicker` is another `ObjectRef` which has clicked
+    * note: this is called `right_click` for historical reasons only
 * `get_hp()`: returns number of health points
 * `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
@@ -7202,46 +7348,74 @@ child will follow movement and rotation of that bone.
 * `get_inventory()`: returns an `InvRef` for players, otherwise returns `nil`
 * `get_wield_list()`: returns the name of the inventory list the wielded item
    is in.
-* `get_wield_index()`: returns the index of the wielded item
-* `get_wielded_item()`: returns an `ItemStack`
+* `get_wield_index()`: returns the wield list index of the wielded item (starting with 1)
+* `get_wielded_item()`: returns a copy of the wielded item as an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if
   successful.
+* `get_armor_groups()`:
+    * returns a table with all of the object's armor group ratings
+    * syntax: the table keys are the armor group names,
+      the table values are the corresponding group ratings
+    * see section '`ObjectRef` armor groups' for details
 * `set_armor_groups({group1=rating, group2=rating, ...})`
-* `get_armor_groups()`: returns a table with the armor group ratings
+    * sets the object's full list of armor groups
+    * same table syntax as for `get_armor_groups`
+    * note: all armor groups not in the table will be removed
 * `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
-    * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
-    * `frame_speed`: number, default: `15.0`
+    * Sets the object animation parameters and (re)starts the animation
+    * Animations only work with a `"mesh"` visual
+    * `frame_range`: Beginning and end frame (as specified in the mesh file).
+       * Syntax: `{x=start_frame, y=end_frame}`
+       * Animation interpolates towards the end frame but stops when it is reached
+       * If looped, there is no interpolation back to the start frame
+       * If looped, the model should look identical at start and end
+       * Only integer numbers are supported
+       * default: `{x=1, y=1}`
+    * `frame_speed`: How fast the animation plays, in frames per second (number)
+       * default: `15.0`
     * `frame_blend`: number, default: `0.0`
-    * `frame_loop`: boolean, default: `true`
-* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and
-  `frame_loop`.
+    * `frame_loop`: If `true`, animation will loop. If false, it will play once
+       * default: `true`
+* `get_animation()`: returns current animation parameters set by `set_animation`:
+    * `frame_range`, `frame_speed`, `frame_blend`, `frame_loop`.
 * `set_animation_frame_speed(frame_speed)`
-    * `frame_speed`: number, default: `15.0`
+    * Sets the frame speed of the object's animation
+    * Unlike `set_animation`, this will not restart the animation
+    * `frame_speed`: See `set_animation`
 * `set_attach(parent[, bone, position, rotation, forced_visible])`
+    * Attaches object to `parent`
+    * See 'Attachments' section for details
     * `parent`: `ObjectRef` to attach to
-    * `bone`: default `""` (the root bone)
+    * `bone`: Bone to attach to. Default is `""` (the root bone)
     * `position`: relative position, default `{x=0, y=0, z=0}`
     * `rotation`: relative rotation in degrees, default `{x=0, y=0, z=0}`
     * `forced_visible`: Boolean to control whether the attached entity
        should appear in first person, default `false`.
-    * Please also read the [Attachments] section above.
     * This command may fail silently (do nothing) when it would result
       in circular attachments.
-* `get_attach()`: returns parent, bone, position, rotation, forced_visible,
-    or nil if it isn't attached.
+* `get_attach()`:
+    * returns current attachment parameters or nil if it isn't attached
+    * If attached, returns `parent`, `bone`, `position`, `rotation`, `forced_visible`
 * `get_children()`: returns a list of ObjectRefs that are attached to the
     object.
-* `set_detach()`
+* `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
     * `bone`: string. Default is `""`, the root bone
     * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
     * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
-* `get_bone_position(bone)`: returns position and rotation of the bone
-* `set_properties(object property table)`
-* `get_properties()`: returns object property table
+* `get_bone_position(bone)`:
+    * returns bone parameters previously set by `set_bone_position`
+    * returns `position, rotation` of the specified bone (as vectors)
+    * note: position is relative to the object
+* `set_properties(object property table)`:
+    * set a number of object properties in the given table
+    * only properties listed in the table will be changed
+    * see the 'Object properties' section for details
+* `get_properties()`: returns a table of all object properties
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
+    * a nametag is a HUD text rendered above the object
     * ```lua
       {
           text = "",
@@ -7271,11 +7445,14 @@ child will follow movement and rotation of that bone.
       itself instantly becomes unusable with all further method calls having
       no effect and returning `nil`.
 * `set_velocity(vel)`
+    * Sets the velocity
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `set_acceleration(acc)`
+    * Sets the acceleration
     * `acc` is a vector
 * `get_acceleration()`: returns the acceleration, a vector
 * `set_rotation(rot)`
+    * Sets the rotation
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
     * Does not reset rotation incurred through `automatic_rotate`.
@@ -7287,9 +7464,10 @@ child will follow movement and rotation of that bone.
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
     * `mod` the texture modifier. See [Texture modifiers].
-* `get_texture_mod()` returns current texture modifier
+* `get_texture_mod()`: returns current texture modifier
 * `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
+    * Only used by `sprite` and `upright_sprite` visuals
     * Animations iterate along the frame `y` position.
     * `start_frame`: {x=column number, y=row number}, the coordinate of the
       first frame, default: `{x=0, y=0}`
@@ -7303,17 +7481,15 @@ child will follow movement and rotation of that bone.
         * Fourth column: subject looking to the right
         * Fifth column: subject viewed from above
         * Sixth column: subject viewed from below
-* `get_entity_name()`
-  > **Warning**: Deprecated, will be removed in a future version, use the field `self.name` instead
+* `get_entity_name()`: (**Deprecated**: Will be removed in a future version, use the field `self.name` instead)
 * `get_luaentity()`
 
 #### Player Only (No-Op for Other Objects)
 
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: table {x, y, z} representing the player's instantaneous velocity in nodes/s
-  > **Warning**: Deprecated, use `get_velocity` instead
-* `add_player_velocity(vel)`:
-  > **Warning**: Deprecated, use `add_velocity(vel)` instead
+* `get_player_velocity()`: **Deprecated**, use `get_velocity()` instead.
+  table {x, y, z} representing the player's instantaneous velocity in nodes/s
+* `add_player_velocity(vel)`: **Deprecated**, use `add_velocity(vel)` instead.
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_vertical()`: pitch in radians
     * Angle ranges between -pi/2 and pi/2, which are straight up and down
@@ -7343,7 +7519,7 @@ child will follow movement and rotation of that bone.
         * See [Object properties] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
-    * `fov`: FOV value.
+    * `fov`: Field of View (FOV) value.
     * `is_multiplier`: Set to `true` if the FOV value is a multiplier.
       Defaults to `false`.
     * `transition_time`: If defined, enables smooth FOV transition.
@@ -7363,7 +7539,7 @@ child will follow movement and rotation of that bone.
 * `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
     * Returns value (a string) for extra attribute.
     * Returns `nil` if no attribute found.
-* `get_meta()`: Returns a PlayerMetaRef.
+* `get_meta()`: Returns metadata associated with the player (a PlayerMetaRef).
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
@@ -7398,16 +7574,44 @@ child will follow movement and rotation of that bone.
         * `9` - zoom
     * Returns `0` (no bits set) if the object is not a player.
 * `set_physics_override(override_table)`
+    * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default walking speed value (default: `1`)
+        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed_climb`: multiplier to default climb speed value (default: `1`)
+            * Note: The actual climb speed is the product of `speed` and `speed_climb`
+        * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
+            * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
+        * `liquid_fluidity`: multiplier to liquid movement resistance value
+          (for nodes with `liquid_move_physics`); the higher this value, the lower the
+          resistance to movement. At `math.huge`, the resistance is zero and you can
+          move through any liquid like air. (default: `1`)
+            * Warning: Values below 1 are currently unsupported.
+        * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value
+          (for nodes with `liquid_move_physics`); controls deceleration when entering
+          node at high speed. At higher values you come to a halt more quickly
+          (default: `1`)
+        * `liquid_sink`: multiplier to default liquid sinking speed value;
+          (for nodes with `liquid_move_physics`) (default: `1`)
+        * `acceleration_default`: multiplier to horizontal and vertical acceleration
+          on ground or when climbing (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_default`
+        * `acceleration_air`: multiplier to acceleration
+          when jumping or falling (default: `1`)
+            * Note: The actual acceleration is the product of `speed` and `acceleration_air`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
+    * Note: All numeric fields above modify a corresponding `movement_*` setting.
+    * For games, we recommend for simpler code to first modify the `movement_*`
+      settings (e.g. via the game's `minetest.conf`) to set a global base value
+      for all players and only use `set_physics_override` when you need to change
+      from the base value on a per-player basis
+
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
@@ -7516,6 +7720,18 @@ child will follow movement and rotation of that bone.
                 abides by, `"custom"` uses `sun_tint` and `moon_tint`, while
                 `"default"` uses the classic Minetest sun and moon tinting.
                 Will use tonemaps, if set to `"default"`. (default: `"default"`)
+        * `fog`: A table with following optional fields:
+            * `fog_distance`: integer, set an upper bound the client's viewing_range (inluding range_all).
+               By default, fog_distance is controlled by the client's viewing_range, and this field is not set.
+               Any value >= 0 sets the desired upper bound for the client's viewing_range and disables range_all.
+               Any value < 0, resets the behavior to being client-controlled.
+               (default: -1)
+            * `fog_start`: float, override the client's fog_start.
+               Fraction of the visible distance at which fog starts to be rendered.
+               By default, fog_start is controlled by the client's `fog_start` setting, and this field is not set.
+               Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
+               Any value < 0, resets the behavior to being client-controlled.
+               (default: -1)
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
@@ -7611,11 +7827,16 @@ child will follow movement and rotation of that bone.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
-  camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
-    * in first person view
-    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets.
+* `set_eye_offset([firstperson, thirdperson_back, thirdperson_front])`: Sets camera offset vectors.
+    * `firstperson`: Offset in first person view.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_back`: Offset in third person back view.
+      Clamped between `vector.new(-10, -10, -5)` and `vector.new(10, 15, 5)`.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_front`: Offset in third person front view.
+      Same limits as for `thirdperson_back` apply.
+      Defaults to `thirdperson_back` if unspecified.
+* `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that
@@ -8453,7 +8674,11 @@ Used by `minetest.register_node`.
     -- Only when `paramtype2` supports palettes.
 
     post_effect_color = "#00000000",
-    -- Screen tint if player is inside node, see "ColorSpec"
+    -- Screen tint if a player is inside this node, see `ColorSpec`.
+    -- Color is alpha-blended over the screen.
+
+    post_effect_color_shaded = false,
+    -- Determines whether `post_effect_color` is affected by lighting.
 
     paramtype = "none",  -- See "Nodes"
 
@@ -8546,6 +8771,10 @@ Used by `minetest.register_node`.
     -- * nil: Will be treated as true if `liquidtype ~= "none"`
     --   and as false otherwise.
 
+    air_equivalent = nil,
+    -- unclear meaning, the engine sets this to true for 'air' and 'ignore'
+    -- deprecated.
+
     leveled = 0,
     -- Only valid for "nodebox" drawtype with 'type = "leveled"'.
     -- Allows defining the nodebox height without using param2.
@@ -8617,7 +8846,10 @@ Used by `minetest.register_node`.
 
         footstep = <SimpleSoundSpec>,
         -- If walkable, played when object walks on it. If node is
-        -- climbable or a liquid, played when object moves through it
+        -- climbable or a liquid, played when object moves through it.
+        -- Sound is played at the base of the object's collision-box.
+        -- Gain is multiplied by `0.6`.
+        -- For local player, it's played position-less, with normal gain.
 
         dig = <SimpleSoundSpec> or "__group",
         -- While digging node.
@@ -9378,8 +9610,13 @@ See [Decoration types]. Used by `minetest.register_decoration`.
 
     spawn_by = "default:water",
     -- Node (or list of nodes) that the decoration only spawns next to.
-    -- Checks the 8 neighboring nodes on the same Y, and also the ones
-    -- at Y+1, excluding both center nodes.
+    -- Checks the 8 neighboring nodes on the same height,
+    -- and also the ones at the height plus the check_offset, excluding both center nodes.
+
+    check_offset = -1,
+    -- Specifies the offset that spawn_by should also check
+    -- The default value of -1 is useful to e.g check for water next to the base node.
+    -- 0 disables additional checks, valid values: {-1, 0, 1}
 
     num_spawn_by = 1,
     -- Number of spawn_by nodes that must be surrounding the decoration

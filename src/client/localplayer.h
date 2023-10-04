@@ -34,7 +34,7 @@ class ClientEnvironment;
 class IGameDef;
 struct collisionMoveResult;
 
-enum LocalPlayerAnimations
+enum class LocalPlayerAnimation
 {
 	NO_ANIM,
 	WALK_ANIM,
@@ -90,7 +90,7 @@ public:
 
 	bool makes_footstep_sound = true;
 
-	int last_animation = NO_ANIM;
+	LocalPlayerAnimation last_animation = LocalPlayerAnimation::NO_ANIM;
 	float last_animation_speed = 0.0f;
 
 	std::string hotbar_image = "";
@@ -191,6 +191,7 @@ private:
 
 	bool m_can_jump = false;
 	bool m_disable_jump = false;
+	bool m_disable_descend = false;
 	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	f32 m_yaw = 0.0f;
 	f32 m_pitch = 0.0f;

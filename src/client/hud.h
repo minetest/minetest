@@ -101,7 +101,7 @@ private:
 
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			s32 inv_offset, InventoryList *mainlist, u16 selectitem,
-			u16 direction);
+			u16 direction, bool is_hotbar);
 
 	void drawItem(const ItemStack &item, const core::rect<s32> &rect, bool selected);
 

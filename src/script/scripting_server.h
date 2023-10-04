@@ -51,6 +51,9 @@ public:
 
 	// use ScriptApiBase::loadMod() to load mods
 
+	// Save globals that are copied into other Lua envs
+	void saveGlobals();
+
 	// Initialize async engine, call this AFTER loading all mods
 	void initAsync();
 

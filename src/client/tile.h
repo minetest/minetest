@@ -32,7 +32,7 @@ class IGameDef;
 struct TileSpec;
 struct TileDef;
 
-namespace irr { namespace video { class IVideoDriver; } }
+namespace irr::video { class IVideoDriver; }
 
 typedef std::vector<video::SColor> Palette;
 
@@ -230,10 +230,10 @@ struct TileLayer
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
@@ -241,12 +241,12 @@ struct TileLayer
 	{
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
-			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
-			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
-			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+			material.TextureLayers[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
 
@@ -295,6 +295,13 @@ struct TileLayer
 	u8 scale = 1;
 };
 
+enum class TileRotation: u8 {
+	None,
+	R90,
+	R180,
+	R270,
+};
+
 /*!
  * Defines a face of a node. May have up to two layers.
  */
@@ -305,7 +312,7 @@ struct TileSpec
 	//! If true, the tile rotation is ignored.
 	bool world_aligned = false;
 	//! Tile rotation.
-	u8 rotation = 0;
+	TileRotation rotation = TileRotation::None;
 	//! This much light does the tile emit.
 	u8 emissive_light = 0;
 	//! The first is base texture, the second is overlay.

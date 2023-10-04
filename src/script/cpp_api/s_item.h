@@ -21,14 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
-#include "util/Optional.h"
+#include <optional>
 
 struct PointedThing;
 struct ItemStack;
 class ServerActiveObject;
 struct ItemDefinition;
 class LuaItemStack;
-class ModApiItemMod;
+class ModApiItem;
 class InventoryList;
 struct InventoryLocation;
 
@@ -37,7 +37,7 @@ class ScriptApiItem
 {
 public:
 	/*
-	 * Functions with Optional<ItemStack> are for callbacks where Lua may
+	 * Functions with std::optional<ItemStack> are for callbacks where Lua may
 	 * want to prevent the engine from modifying the inventory after it's done.
 	 * This has a longer backstory where on_use may need to empty the player's
 	 * inventory without the engine interfering (see issue #6546).
@@ -45,11 +45,11 @@ public:
 
 	bool item_OnDrop(ItemStack &item,
 			ServerActiveObject *dropper, v3f pos);
-	bool item_OnPlace(Optional<ItemStack> &item,
+	bool item_OnPlace(std::optional<ItemStack> &item,
 			ServerActiveObject *placer, const PointedThing &pointed);
-	bool item_OnUse(Optional<ItemStack> &item,
+	bool item_OnUse(std::optional<ItemStack> &item,
 			ServerActiveObject *user, const PointedThing &pointed);
-	bool item_OnSecondaryUse(Optional<ItemStack> &item,
+	bool item_OnSecondaryUse(std::optional<ItemStack> &item,
 			ServerActiveObject *user, const PointedThing &pointed);
 	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
 			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
@@ -58,7 +58,7 @@ public:
 
 protected:
 	friend class LuaItemStack;
-	friend class ModApiItemMod;
+	friend class ModApiItem;
 
 	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
 	/*!
