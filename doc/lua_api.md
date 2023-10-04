@@ -7010,7 +7010,7 @@ An `InvRef` is a reference to an inventory.
 
 ### Callbacks
 
-Detached & nodemeta inventories provide the following callbacks for move actions:
+Detached and nodemeta inventories provide the following callbacks for move actions:
 
 #### Before
 
@@ -7456,7 +7456,7 @@ child will follow movement and rotation of that bone.
     * `rot` is a vector (radians). X is pitch (elevation), Y is yaw (heading)
       and Z is roll (bank).
     * Does not reset rotation incurred through `automatic_rotate`.
-      Remove & readd your objects to force a certain rotation.
+      Remove and readd your objects to force a certain rotation.
 * `get_rotation()`: returns the rotation, a vector (radians)
 * `set_yaw(yaw)`: sets the yaw in radians (heading).
 * `get_yaw()`: returns number in radians
@@ -7998,16 +7998,16 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ### Limitations
 
-Raycasts don't always work properly for attached objects as the server has no knowledge of models & bones.
+Raycasts don't always work properly for attached objects as the server has no knowledge of models and bones.
 
 **Rotated selectionboxes paired with `automatic_rotate` are not reliable** either since the server
 can't reliably know the total rotation of the objects on different clients (which may differ on a per-client basis).
 The server calculates the total rotation incurred through `automatic_rotate` as a "best guess"
-assuming the object was active & rotating on the client all the time since its creation.
+assuming the object was active and rotating on the client all the time since its creation.
 This may be significantly out of sync with what clients see.
-Additionally, network latency and delayed property sending may create a mismatch of client- & server rotations.
+Additionally, network latency and delayed property sending may create a mismatch of client- and server rotations.
 
-In singleplayer mode, raycasts on objects with rotated selectionboxes & automatic rotate will usually only be slightly off;
+In singleplayer mode, raycasts on objects with rotated selectionboxes and automatic rotate will usually only be slightly off;
 toggling automatic rotation may however cause errors to add up.
 
 In multiplayer mode, the error may be arbitrarily large.

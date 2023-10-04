@@ -37,7 +37,8 @@ Contributions are welcome! Here's how you can help:
       [Lua](https://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     * Check your code works as expected and document any changes to the Lua API.
 
-4. Commit & [push](https://help.github.com/articles/pushing-to-a-remote/) your changes to a new branch (not `master`, one change per branch)
+4. Commit and [push](https://help.github.com/articles/pushing-to-a-remote/) your changes
+   to a new branch (not `master`, one change per branch)
     * Commit messages should:
         * Use the present tense.
         * Be descriptive. See the commit messages by core developers for examples.
