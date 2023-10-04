@@ -660,17 +660,9 @@ if(BUILD_SERVER)
 	endif()
 endif(BUILD_SERVER)
 
-# List of languages that are not supported. See issue #4638.
-# Must be kept in sync with unsupportedLanguages in android/app/build.gradle.
-set(GETTEXT_BLACKLISTED_LOCALES
-	ar
-	dv
-	he
-	hi
-	kn
-	ms_Arab
-	th
-)
+# See issue #4638
+FILE(READ "${CMAKE_SOURCE_DIR}/src/unsupported_language_list.txt" GETTEXT_BLACKLISTED_LOCALES)
+STRING(REGEX REPLACE "\n" ";" GETTEXT_BLACKLISTED_LOCALES "${GETTEXT_BLACKLISTED_LOCALES}")
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid known broken locales" TRUE)
 
