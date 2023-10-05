@@ -177,7 +177,14 @@ struct LocalFormspecHandler : public TextDest
 		}
 
 		if (m_formname == "MT_DEATH_SCREEN") {
-			assert(m_client != 0);
+			// This is needed because key_up and key_down are pending formspec
+			// key events (see GUIFormSpecMenu::fs_key_pending) so those events
+			// will enter this part of code. See issue #13863.
+			if (fields.find("key_up") != fields.end() ||
+					fields.find("key_down") != fields.end())
+				return;
+
+			assert(m_client != nullptr);
 			m_client->sendRespawn();
 			return;
 		}
