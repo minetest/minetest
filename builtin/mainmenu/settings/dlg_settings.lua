@@ -155,6 +155,7 @@ end
 
 -- These must not be translated, as they need to show in the local
 -- language no matter the user's current language.
+-- This list must be kept in sync with src/unsupported_language_list.txt.
 get_setting_info("language").option_labels = {
 	[""] = fgettext_ne("(Use system language)"),
 	--ar = " [ar]", blacklisted
