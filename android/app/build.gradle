@@ -56,6 +56,9 @@ task prepareAssets() {
 	def projRoot = rootDir.parent
 	def gameToCopy = "minetest_game"
 
+	// See issue #4638
+	def unsupportedLanguages = new File("${projRoot}/src/unsupported_language_list.txt").text.readLines()
+
 	doFirst {
 		logger.lifecycle('Preparing assets at {}', assetsFolder)
 	}
@@ -86,7 +89,9 @@ task prepareAssets() {
 		}
 
 		// compile translations
-		fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
+		fileTree("${projRoot}/po").include("**/*.po").grep {
+			it.parentFile.name !in unsupportedLanguages
+		}.forEach { poFile ->
 			def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
 			file(moPath).mkdirs()
 			exec {
