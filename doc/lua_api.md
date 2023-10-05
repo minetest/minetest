@@ -7277,8 +7277,12 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `set_string(key, value)`: Value of `""` will delete the key.
 * `get_string(key)`: Returns `""` if key not present.
 * `set_int(key, value)`
+    * The range for the value is system-dependent (usually 32 bits).
+      The value will be converted into a string when stored.
 * `get_int(key)`: Returns `0` if key not present.
 * `set_float(key, value)`
+    * The range for the value is system-dependent (usually 32 bits).
+      The value will be converted into a string when stored.
 * `get_float(key)`: Returns `0` if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
 * `to_table()`:
