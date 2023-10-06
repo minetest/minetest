@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-06-16 21:58+0000\n"
-"Last-Translator: Roland Meier <roland@meier69.de>\n"
+"PO-Revision-Date: 2023-10-07 08:11+0000\n"
+"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -326,7 +326,7 @@ msgstr "Es konnten keine Pakete abgerufen werden"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No results"
-msgstr "Keine Treffer"
+msgstr "Keine Ergebnisse"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
