@@ -5494,6 +5494,8 @@ Utilities
       lsystem_decoration_type = true,
       -- Overrideable pointing range using the itemstack meta key `"range"` (5.9.0)
       item_meta_range = true,
+      -- Node/Item texture variants is supported (5.9.0)
+      texture_variants = true,
   }
   ```
 
