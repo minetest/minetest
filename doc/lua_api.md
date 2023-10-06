@@ -5507,6 +5507,8 @@ Utilities
       moveresult_new_pos = true,
       -- Allow removing definition fields in `minetest.override_item` (5.9.0)
       override_item_remove_fields = true,
+      -- Node/Item texture variants is supported (5.9.0)
+      texture_variants = true,
   }
   ```
 
