@@ -5590,6 +5590,8 @@ Utilities
       bulk_lbms = true,
       -- ABM supports field without_neighbors (5.10.0)
       abm_without_neighbors = true,
+      -- Node/Item texture variants is supported (5.9.0)
+      texture_variants = true,
   }
   ```
 
