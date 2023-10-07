@@ -347,7 +347,9 @@ end
 
 
 function page_has_contents(page, actual_content)
-	local is_advanced = page.id:sub(1, #"mapgen") == "mapgen" or
+	local is_advanced =
+			page.id:sub(1, #"client_and_server") == "client_and_server" or
+			page.id:sub(1, #"mapgen") == "mapgen" or
 			page.id:sub(1, #"advanced") == "advanced"
 	local show_advanced = core.settings:get_bool("show_advanced")
 	if is_advanced and not show_advanced then
