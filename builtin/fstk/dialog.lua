@@ -38,8 +38,18 @@ local dialog_metatable = {
 	handle_events  = function(self,event)
 				if not self.hidden then return self.eventhandler(self,event) end
 			end,
-	hide = function(self) self.hidden = true end,
-	show = function(self) self.hidden = false end,
+	hide = function(self)
+		if not self.hidden then
+			self.hidden = true
+			self.eventhandler(self, "DialogHide")
+		end
+	end,
+	show = function(self)
+		if self.hidden then
+			self.hidden = false
+			self.eventhandler(self, "DialogShow")
+		end
+	end,
 	delete = function(self)
 			if self.parent ~= nil then
 				self.parent:show()

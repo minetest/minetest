@@ -2250,6 +2250,10 @@ update_last_checked (Last update check) string
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
 
+#    If this is set to true, the user will never (again) be shown the
+#    "reinstall Minetest Game" notification.
+no_mtg_notification (Don't show "reinstall Minetest Game" notification) bool false
+
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W
 
