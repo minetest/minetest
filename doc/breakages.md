@@ -8,6 +8,5 @@ This document contains a list of breaking changes to be made in the next major v
 * remove `depends.txt` / `description.txt` (would simplify ContentDB and Minetest code a little)
 * `get_sky()` returns a table (without arg)
 * rotate moon texture by 180°, making it coherent with the sun (see https://github.com/minetest/minetest/pull/11902)
-* remove `shadow_sky_body_orbit_tilt` setting (see https://github.com/minetest/minetest/issues/13705#issuecomment-1658508029)
 * remove undocumented `set_physics_override(num, num, num)`
 * remove special handling of `${key}` syntax in metadata values

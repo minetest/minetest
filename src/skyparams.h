@@ -33,8 +33,6 @@ struct SkyColor
 
 struct SkyboxParams
 {
-	static constexpr float INVALID_SKYBOX_TILT = -1024.f;
-
 	video::SColor bgcolor;
 	std::string type;
 	std::vector<std::string> textures;
@@ -43,7 +41,7 @@ struct SkyboxParams
 	video::SColor fog_sun_tint;
 	video::SColor fog_moon_tint;
 	std::string fog_tint_type;
-	float body_orbit_tilt { INVALID_SKYBOX_TILT };
+	float body_orbit_tilt { 0.0f };
 	s16 fog_distance { -1 };
 	float fog_start { -1.0f };
 };

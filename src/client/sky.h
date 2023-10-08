@@ -98,8 +98,7 @@ public:
 	}
 	void setBodyOrbitTilt(float body_orbit_tilt)
 	{
-		if (body_orbit_tilt != SkyboxParams::INVALID_SKYBOX_TILT)
-			m_sky_params.body_orbit_tilt = rangelim(body_orbit_tilt, -90.f, 90.f);
+		m_sky_params.body_orbit_tilt = rangelim(body_orbit_tilt, -60.f, 60.f);
 	}
 	void overrideColors(video::SColor bgcolor, video::SColor skycolor)
 	{
