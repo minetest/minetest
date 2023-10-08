@@ -1,0 +1,12 @@
+--- toc.py.original	2023-10-08 09:45:54.930463477 +0800
++++ toc.py.patched	2023-10-08 09:57:27.594445803 +0800
+@@ -29,6 +29,9 @@
+         # Replace Extended Latin characters with ASCII, i.e. žlutý → zluty
+         value = unicodedata.normalize('NFKD', value)
+         value = value.encode('ascii', 'ignore').decode('ascii')
++    value = re.sub(r'(\w+)\[[^\]\[]*\]', r'\1[]', value)
++    value = re.sub(r'(\[\w+)[^"]*', r'\1', value)
++    value = re.sub(r' *\([^()]*\)', '', value)
+     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
+     return re.sub(r'[{}\s]+'.format(separator), separator, value)
+ 

@@ -130,7 +130,7 @@ Mods
 Mod load path
 -------------
 
-Paths are relative to the directories listed in the [Paths] section above.
+Paths are relative to the directories listed in the [[Paths]] section above.
 
 * `games/<gameid>/mods/`
 * `mods/`
@@ -253,13 +253,13 @@ wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
 `minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See [`Settings`])
+time, if necessary. (See [[Settings]])
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
 
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod and translation files for
-the clients (see [Translations]). Accepted characters for names are:
+the clients (see [[Translations]]). Accepted characters for names are:
 
     a-zA-Z0-9_.-
 
@@ -1178,8 +1178,8 @@ These sound-groups are played back by the engine if provided.
 Registered definitions
 ======================
 
-Anything added using certain [Registration functions] gets added to one or more
-of the global [Registered definition tables].
+Anything added using certain [[Registration functions]] gets added to one or more
+of the global [[Registered definition tables]].
 
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
@@ -1212,7 +1212,7 @@ The definition of a node is stored and can be accessed by using
 minetest.registered_nodes[node.name]
 ```
 
-See [Registered definitions].
+See [[Registered definitions]].
 
 Nodes are passed by value between Lua and the engine.
 They are represented by a table:
@@ -1370,7 +1370,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * `param2` will not be used by the engine and can be used to store
       an arbitrary value
 
-Nodes can also contain extra data. See [Node Metadata].
+Nodes can also contain extra data. See [[Node Metadata]].
 
 Node drawtypes
 --------------
@@ -1464,7 +1464,7 @@ Look for examples in `games/devtest` or `games/minetest_game`.
 * `nodebox`
     * Often used for stairs and slabs.
     * Allows defining nodes consisting of an arbitrary number of boxes.
-    * See [Node boxes] below for more information.
+    * See [[Node boxes]] below for more information.
 * `mesh`
     * Uses models for nodes.
     * Tiles should hold model materials textures.
@@ -1793,7 +1793,7 @@ Vector (ie. a position)
 vector.new(x, y, z)
 ```
 
-See [Spatial Vectors] for details.
+See [[Spatial Vectors]] for details.
 
 `pointed_thing`
 ---------------
@@ -1989,7 +1989,7 @@ An apple:
 ### `ItemStack`
 
 A native C++ format with many helper methods. Useful for converting
-between formats. See the [Class reference] section for details.
+between formats. See the [[ItemStack]] section for details.
 
 
 
@@ -2045,7 +2045,7 @@ Groups of entities
 
 For entities, groups are, as of now, used only for calculating damage.
 The rating is the percentage of damage caused by items with this damage group.
-See [Entity damage mechanism].
+See [[Entity damage mechanism]].
 
 ```lua
 object:get_armor_groups() --> a group-rating table (e.g. {fleshy=100})
@@ -2162,7 +2162,7 @@ to games.
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-     * See also: `leveldiff` in [Tool Capabilities]
+     * See also: `leveldiff` in [[Tool Capabilities]]
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
 
@@ -2320,7 +2320,7 @@ i.e. players can more quickly click the nodes away instead of holding LMB.
 
 ### Damage groups
 
-List of damage for groups of entities. See [Entity damage mechanism].
+List of damage for groups of entities. See [[Entity damage mechanism]].
 
 ### Punch attack uses (tools only)
 
@@ -2442,7 +2442,7 @@ Node Metadata
 -------------
 
 The instance of a node in the world normally only contains the three values
-mentioned in [Nodes]. However, it is possible to insert extra data into a node.
+mentioned in [[Nodes]]. However, it is possible to insert extra data into a node.
 It is called "node metadata"; See `NodeMetaRef`.
 
 Node metadata contains two things:
@@ -2454,7 +2454,7 @@ Some of the values in the key-value store are handled specially:
 
 * `formspec`: Defines an inventory menu that is opened with the
               'place/use' key. Only works if no `on_rightclick` was
-              defined for the node. See also [Formspec].
+              defined for the node. See also [[Formspec]].
 * `infotext`: Text shown on the screen when the node is pointed at.
               Line-breaks will be applied automatically.
               If the infotext is very long, it will be truncated.
@@ -2502,16 +2502,16 @@ meta:from_table({
 Item Metadata
 -------------
 
-Item stacks can store metadata too. See [`ItemStackMetaRef`].
+Item stacks can store metadata too. See [[ItemStackMetaRef]].
 
 Item metadata only contains a key-value store.
 
 Some of the values in the key-value store are handled specially:
 
 * `description`: Set the item stack's description.
-  See also: `get_description` in [`ItemStack`]
+  See also: `get_description` in [[ItemStack]]
 * `short_description`: Set the item stack's short description.
-  See also: `get_short_description` in [`ItemStack`]
+  See also: `get_short_description` in [[ItemStack]]
 * `inventory_image`: Override inventory_image
 * `inventory_overlay`: Override inventory_overlay
 * `wield_image`: Override wield_image
@@ -2597,7 +2597,7 @@ reserved to pass key press events to formspec!
 **WARNING**: Minetest allows you to add elements to every single formspec instance
 using `player:set_formspec_prepend()`, which may be the reason backgrounds are
 appearing when you don't expect them to, or why things are styled differently
-to normal. See [`no_prepend[]`] and [Styling Formspecs].
+to normal. See [[ no_prepend[] ]] and [[Styling Formspecs]].
 
 Examples
 --------
@@ -2658,7 +2658,7 @@ Elements
 * Clients older than this version can neither show newer elements nor display
   elements with new arguments correctly.
 * Available since feature `formspec_version_element`.
-* See also: [Version History]
+* See also: [[Version History]]
 
 ### `size[<W>,<H>,<fixed_size>]`
 
@@ -2713,8 +2713,8 @@ Elements
   (if present), the form size will use the new coordinate system.
 * **Note**: Formspec prepends are not affected by the coordinates in the main form.
   They must enable it explicitly.
-* For information on converting forms to the new coordinate system, see `Migrating
-  to Real Coordinates`.
+* For information on converting forms to the new coordinate system, see
+  [[Migrating to Real Coordinates]].
 
 ### `container[<X>,<Y>]`
 
@@ -2764,7 +2764,7 @@ Elements
   `starting item index`.
 * **Note**: With the new coordinate system, the spacing between inventory
   slots is one-fourth the size of an inventory slot by default. Also see
-  [Styling Formspecs] for changing the size of slots and spacing.
+  [[Styling Formspecs]] for changing the size of slots and spacing.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2815,12 +2815,13 @@ Elements
 * Show an image.
 * `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
     * Requires formspec version >= 6.
-    * See `background9[]` documentation for more information.
+    * See [[ background9[] ]]
+      documentation for more information.
 
 ### `animated_image[<X>,<Y>;<W>,<H>;<name>;<texture name>;<frame count>;<frame duration>;<frame start>;<middle>]`
 
 * Show an animated image. The image is drawn like a "vertical_frames" tile
-  animation (See [Tile animation definition]), but uses a frame count/duration for simplicity
+  animation (See [[Tile animation definition]]), but uses a frame count/duration for simplicity
 * `name`: Element name to send when an event occurs. The event value is the index of the current frame.
 * `texture name`: The image to use.
 * `frame count`: The number of frames animating the image.
@@ -2828,7 +2829,8 @@ Elements
 * `frame start` (optional): The index of the frame to start on. Default `1`.
 * `middle` (optional): Makes the image render in 9-sliced mode and defines the middle rect.
     * Requires formspec version >= 6.
-    * See `background9[]` documentation for more information.
+    * See [[ background9[] ]]
+      documentation for more information.
 
 ### `model[<X>,<Y>;<W>,<H>;<name>;<mesh>;<textures>;<rotation X,Y>;<continuous>;<mouse control>;<frame loop range>;<animation speed>]`
 
@@ -2878,7 +2880,7 @@ Elements
 
 ### `background9[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>;<middle>]`
 
-* 9-sliced background. See https://en.wikipedia.org/wiki/9-slice_scaling
+* 9-sliced background. See <https://en.wikipedia.org/wiki/9-slice_scaling>
 * Middle is a rect which defines the middle of the 9-slice.
     * `x` - The middle will be x pixels from all sides.
     * `x,y` - The middle will be x pixels from the horizontal and y from the vertical.
@@ -2899,7 +2901,7 @@ Elements
   centered on `H`. With the new coordinate system, `H` will modify the height.
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
-* See `field_close_on_enter` to stop enter closing the formspec
+* See [[ field_close_on_enter[] ]] to stop enter closing the formspec
 
 ### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 
@@ -2914,7 +2916,7 @@ Elements
     * `default` may contain variable references such as `${text}` which
       will fill the value from the metadata value `text`
     * **Note**: no extra text or more than a single variable is supported ATM.
-* See `field_close_on_enter` to stop enter closing the formspec
+* See [[ field_close_on_enter[] ]] to stop enter closing the formspec
 
 ### `field[<name>;<label>;<default>]`
 
@@ -2924,7 +2926,7 @@ Elements
 * Special field for creating simple forms, such as sign text input
 * Must be used without a `size[]` element
 * A "Proceed" button will be added automatically
-* See `field_close_on_enter` to stop enter closing the formspec
+* See [[ field_close_on_enter[] ]] to stop enter closing the formspec
 
 ### `field_enter_after_edit[<name>;<enter_after_edit>]`
 
@@ -3228,7 +3230,7 @@ Elements
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
 * Note: this **must** be before the element is defined.
-* See [Styling Formspecs].
+* See [[Styling Formspecs]].
 
 
 ### `style_type[<selector 1>,<selector 2>,...;<prop1>;<prop2>;...]`
@@ -3240,7 +3242,7 @@ Elements
 * `state` is a list of states separated by the `+` character.
     * If a state is provided, the style will only take effect when the element is in that state.
     * All provided states must be active for the style to apply.
-* See [Styling Formspecs].
+* See [[Styling Formspecs]].
 
 ### `set_focus[<name>;<force>]`
 
@@ -3394,7 +3396,7 @@ Some types may inherit styles from parent types.
     * bgimg_hovered - background image when hovered. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
     * bgimg_middle - Makes the bgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details. This property also pads the
+                     See [[ background9[] ]] documentation for more details. This property also pads the
                      button's content when set.
     * bgimg_pressed - background image when pressed. Defaults to bgimg when not provided.
         * This is deprecated, use states instead.
@@ -3453,7 +3455,7 @@ Some types may inherit styles from parent types.
     * fgimg_pressed - image when pressed. Defaults to fgimg when not provided.
         * This is deprecated, use states instead.
     * fgimg_middle - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
-                     See background9[] documentation for more details.
+                     See [[ background9[] ]] documentation for more details.
     * NOTE: The parameters of any given image_button will take precedence over fgimg/fgimg_pressed
     * sound - a sound to be played when triggered.
 * scrollbar
@@ -3677,7 +3679,7 @@ Spatial Vectors
 Minetest stores 3-dimensional spatial vectors in Lua as tables of 3 coordinates,
 and has a class to represent them (`vector.*`), which this chapter is about.
 For details on what a spatial vectors is, please refer to Wikipedia:
-https://en.wikipedia.org/wiki/Euclidean_vector.
+<https://en.wikipedia.org/wiki/Euclidean_vector>.
 
 Spatial vectors are used for various things, including, but not limited to:
 
@@ -4081,7 +4083,7 @@ The file should be a text file, with the following format:
 * All other empty lines or lines beginning with `#` are ignored.
 * Other lines should be in the format `original=translated`. Both `original`
   and `translated` can contain escape sequences beginning with `@` to insert
-  arguments, literal `@`, `=` or newline (See [Escapes] below).
+  arguments, literal `@`, `=` or newline (See [[Escapes]] below).
   There must be no extraneous whitespace around the `=` or at the beginning or
   the end of the line.
 
@@ -4413,7 +4415,7 @@ The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
 Ore attributes
 --------------
 
-See section [Flag Specifier Format].
+See section [[Flag Specifier Format]].
 
 Currently supported flags:
 `puff_cliffs`, `puff_additive_composition`.
@@ -4502,7 +4504,7 @@ About probability values:
 Schematic attributes
 --------------------
 
-See section [Flag Specifier Format].
+See section [[Flag Specifier Format]].
 
 Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
                            `force_placement`.
@@ -4571,11 +4573,11 @@ Nodes in a VoxelManip object may also be read in bulk to a flat array table
 using:
 
 * `VoxelManip:get_data()` for node content (in Content ID form, see section
-  [Content IDs]),
+  [[Content IDs]]),
 * `VoxelManip:get_light_data()` for node light levels, and
 * `VoxelManip:get_param2_data()` for the node type-dependent "param2" values.
 
-See section [Flat array format] for more details.
+See section [[Flat array format]] for more details.
 
 It is very important to understand that the tables returned by any of the above
 three functions represent a snapshot of the VoxelManip's internal state at the
@@ -4588,7 +4590,7 @@ Once the bulk data has been edited to your liking, the internal VoxelManip
 state can be set using:
 
 * `VoxelManip:set_data()` for node content (in Content ID form, see section
-  [Content IDs]),
+  [[Content IDs]]),
 * `VoxelManip:set_light_data()` for node light levels, and
 * `VoxelManip:set_param2_data()` for the node type-dependent `param2` values.
 
@@ -4629,7 +4631,7 @@ and the array index for a position p contained completely in p1..p2 is:
 
 Note that this is the same "flat 3D array" format as
 `PerlinNoiseMap:get3dMap_flat()`.
-VoxelArea objects (see section [`VoxelArea`]) can be used to simplify calculation
+VoxelArea objects (see section [[VoxelArea]]) can be used to simplify calculation
 of the index for a single point in a flat VoxelManip array.
 
 ### Content IDs
@@ -5439,7 +5441,7 @@ Call these functions only at load time!
 * `minetest.register_lbm(lbm definition)`
 * `minetest.register_alias(alias, original_name)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
-      mapgens. See [Mapgen aliases] section above.
+      mapgens. See [[Mapgen aliases]] section above.
 * `minetest.register_alias_force(alias, original_name)`
 * `minetest.register_ore(ore definition)`
     * Returns an integer object handle uniquely identifying the registered
@@ -5500,8 +5502,8 @@ Call these functions only at load time!
 * `minetest.unregister_chatcommand(name)`
     * Unregisters a chatcommands registered with `register_chatcommand`.
 * `minetest.register_privilege(name, definition)`
-    * `definition` can be a description or a definition table (see [Privilege
-      definition]).
+    * `definition` can be a description or a definition table (see
+      [[Privilege definition]]).
     * If it is a description, the priv will be granted to singleplayer and admin
       by default.
     * To allow players with `basic_privs` to grant, see the `basic_privs`
@@ -5659,7 +5661,7 @@ Call these functions only at load time!
           the Enter key and the focus was either nowhere (causing the formspec
           to be closed) or on a button. If the focus was on a text field,
           additionally, the index `key_enter_field` contains the name of the
-          text field. See also: `field_close_on_enter`.
+          text field. See also: [[ field_close_on_enter[] ]].
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
 * `minetest.register_on_craft(function(itemstack, player, old_craft_grid, craft_inv))`
@@ -5790,7 +5792,7 @@ Authentication
 * `minetest.get_auth_handler()`: Return the currently active auth handler
     * Must be called *after* load time, to ensure that any custom auth handler was
       already registered.
-    * See the [Authentication handler definition]
+    * See the [[Authentication handler definition]]
     * Use this to e.g. get the authentication data for a player:
       `local auth_data = minetest.get_auth_handler().get_auth(playername)`
 * `minetest.notify_authentication_modified(name)`
@@ -5958,7 +5960,7 @@ Environment access
     * Returns the decoration ID number for the provided decoration name string,
       or `nil` on failure.
 * `minetest.get_mapgen_object(objectname)`
-    * Return requested mapgen object if available (see [Mapgen objects])
+    * Return requested mapgen object if available (see [[Mapgen objects]])
 * `minetest.get_heat(pos)`
     * Returns the heat at the position, or `nil` on failure.
 * `minetest.get_humidity(pos)`
@@ -6181,7 +6183,7 @@ Inventory
     * `{type="detached", name="creative"}`
 * `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns
   an `InvRef`.
-    * `callbacks`: See [Detached inventory callbacks]
+    * `callbacks`: See [[Detached inventory callbacks]]
     * `player_name`: Make detached inventory available to one player
       exclusively, by default they will be sent to every player (even if not
       used).
@@ -6628,7 +6630,7 @@ Schematics
     * Saves schematic in the Minetest Schematic format to filename.
 
 * `minetest.place_schematic(pos, schematic, rotation, replacements, force_placement, flags)`
-    * Place the schematic specified by schematic (see [Schematic specifier]) at
+    * Place the schematic specified by schematic (see [[Schematic specifier]]) at
       `pos`.
     * `rotation` can equal `"0"`, `"90"`, `"180"`, `"270"`, or `"random"`.
     * If the `rotation` parameter is omitted, the schematic is not rotated.
@@ -6663,7 +6665,7 @@ Schematics
 
 * `minetest.serialize_schematic(schematic, format, options)`
     * Return the serialized schematic specified by schematic
-      (see [Schematic specifier])
+      (see [[Schematic specifier]])
     * in the `format` of either "mts" or "lua".
     * "mts" - a string containing the binary MTS data used in the MTS file
       format.
@@ -6678,8 +6680,8 @@ Schematics
           instead of a tab character.
 
 * `minetest.read_schematic(schematic, options)`
-    * Returns a Lua table representing the schematic (see: [Schematic specifier])
-    * `schematic` is the schematic to read (see: [Schematic specifier])
+    * Returns a Lua table representing the schematic (see: [[Schematic specifier]])
+    * `schematic` is the schematic to read (see: [[Schematic specifier]])
     * `options` is a table containing the following optional parameters:
         * `write_yslice_prob`: string value:
             * `none`: no `write_yslice_prob` table is inserted,
@@ -7009,7 +7011,7 @@ Global tables
 
 ### Registered callback tables
 
-All callbacks registered with [Global callback registration functions] are added
+All callbacks registered with [[Global callback registration functions]] are added
 to corresponding `minetest.registered_*` tables.
 
 
@@ -7185,13 +7187,13 @@ an itemstring, a table or `nil`.
 * `get_description()`: returns the description shown in inventory list tooltips.
     * The engine uses this when showing item descriptions in tooltips.
     * Fields for finding the description, in order:
-        * `description` in item metadata (See [Item Metadata].)
+        * `description` in item metadata (See [[Item Metadata]].)
         * `description` in item definition
         * item name
 * `get_short_description()`: returns the short description or nil.
     * Unlike the description, this does not include new lines.
     * Fields for finding the short description, in order:
-        * `short_description` in item metadata (See [Item Metadata].)
+        * `short_description` in item metadata (See [[Item Metadata]].)
         * `short_description` in item definition
         * first line of the description (From item meta or def, see `get_description()`.)
         * Returns nil if none of the above are set
@@ -7261,8 +7263,8 @@ Can be obtained via `item:get_meta()`.
 `MetaDataRef`
 -------------
 
-Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
-and [`PlayerMetaRef`].
+Base class used by [[StorageRef]], [[NodeMetaRef]],
+[[ItemStackMetaRef]], and [[PlayerMetaRef]].
 
 Note: If a metadata value is in the format `${k}`, an attempt to get the value
 will return the value associated with key `k`. There is a low recursion limit.
@@ -7599,7 +7601,7 @@ child will follow movement and rotation of that bone.
 * `set_texture_mod(mod)`
     * Set a texture modifier to the base texture, for sprites and meshes.
     * When calling `set_texture_mod` again, the previous one is discarded.
-    * `mod` the texture modifier. See [Texture modifiers].
+    * `mod` the texture modifier. See [[Texture modifiers]].
 * `get_texture_mod()` returns current texture modifier
 * `set_sprite(start_frame, num_frames, framelength, select_x_by_camera)`
     * Specifies and starts a sprite animation
@@ -7652,7 +7654,7 @@ child will follow movement and rotation of that bone.
     * values:
         * `0`: player is drowning
         * max: bubbles bar is not shown
-        * See [Object properties] for more information
+        * See [[Object properties]] for more information
     * Is limited to range 0 ... 65535 (2^16 - 1)
 * `set_fov(fov, is_multiplier, transition_time)`: Sets player's FOV
     * `fov`: Field of View (FOV) value.
@@ -8431,7 +8433,7 @@ Used by `minetest.register_entity`.
         mesh = "boats_boat.obj",
         ...,
     },
-    -- A table of object properties, see the `Object properties` section.
+    -- A table of object properties, see the [[Object properties]] section.
     -- The properties in this table are applied to the object
     -- once when it is spawned.
 
@@ -8448,7 +8450,7 @@ Used by `minetest.register_entity`.
     get_staticdata = function(self) end,
 
     _custom_field = whatever,
-    -- You can define arbitrary member variables here (see Item definition
+    -- You can define arbitrary member variables here (see [[Item definition]]
     -- for more info) by using a '_' prefix
 }
 ```
@@ -8601,12 +8603,12 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 {
     description = "",
     -- Can contain new lines. "\n" has to be used as new line character.
-    -- See also: `get_description` in [`ItemStack`]
+    -- See also: `get_description` in [[ItemStack]]
 
     short_description = "",
     -- Must not contain new lines.
     -- Defaults to nil.
-    -- Use an [`ItemStack`] to get the short description, e.g.:
+    -- Use an [[ItemStack]] to get the short description, e.g.:
     --   ItemStack(itemname):get_short_description()
 
     groups = {},
@@ -8662,7 +8664,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- A value outside the range 0 to minetest.LIGHT_MAX causes undefined
     -- behavior.
 
-    -- See "Tool Capabilities" section for an example including explanation
+    -- See [[Tool Capabilities]] section for an example including explanation
     tool_capabilities = {
         full_punch_interval = 1.0,
         max_drop_level = 0,
@@ -8783,7 +8785,7 @@ Used by `minetest.register_node`.
 {
     -- <all fields allowed in item definitions>
 
-    drawtype = "normal",  -- See "Node drawtypes"
+    drawtype = "normal",  -- See [[Node drawtypes]]
 
     visual_scale = 1.0,
     -- Supported for drawtypes "plantlike", "signlike", "torchlike",
@@ -8834,7 +8836,7 @@ Used by `minetest.register_node`.
     -- Only when `paramtype2` supports palettes.
 
     post_effect_color = "#00000000",
-    -- Screen tint if a player is inside this node, see `ColorSpec`.
+    -- Screen tint if a player is inside this node, see [[ColorSpec]].
     -- Color is alpha-blended over the screen.
 
     post_effect_color_shaded = false,
@@ -8957,7 +8959,7 @@ Used by `minetest.register_node`.
     damage_per_second = 0,
     -- If player is inside node, this damage is caused
 
-    node_box = {type = "regular"},  -- See "Node boxes"
+    node_box = {type = "regular"},  -- See [[Node boxes]]
 
     connects_to = {},
     -- Used for nodebox nodes with the type == "connected".
@@ -8972,14 +8974,14 @@ Used by `minetest.register_node`.
     -- File name of mesh when using "mesh" drawtype
 
     selection_box = {
-        -- see [Node boxes] for possibilities
+        -- see [[Node boxes]] for possibilities
     },
     -- Custom selection box definition. Multiple boxes can be defined.
     -- If "nodebox" drawtype is used and selection_box is nil, then node_box
     -- definition is used for the selection box.
 
     collision_box = {
-        -- see [Node boxes] for possibilities
+        -- see [[Node boxes]] for possibilities
     },
     -- Custom collision box definition. Multiple boxes can be defined.
     -- If "nodebox" drawtype is used and collision_box is nil, then node_box
@@ -9129,7 +9131,7 @@ Used by `minetest.register_node`.
     -- * `oldmeta`: metadata of node before it was deleted, as a metadata table
     -- * `drops`: a table of `ItemStack`s, so any metadata to be preserved can
     --   be added directly to one or more of the dropped items. See
-    --   "ItemStackMetaRef".
+    --   [[ItemStackMetaRef]].
     -- default: `nil`
 
     after_place_node = function(pos, placer, itemstack, pointed_thing),
@@ -9177,7 +9179,7 @@ Used by `minetest.register_node`.
 
     on_timer = function(pos, elapsed),
     -- default: nil
-    -- called by NodeTimers, see minetest.get_node_timer and NodeTimerRef.
+    -- called by NodeTimers, see minetest.get_node_timer and [[NodeTimerRef]].
     -- elapsed is the total time passed since the timer was started.
     -- return true to run the timer for another cycle with the same timeout
     -- value.
@@ -9234,7 +9236,7 @@ Craft recipes are registered by `minetest.register_craft` and use a
 table format. The accepted parameters are listed below.
 
 Recipe input items can either be specified by item name (item count = 1)
-or by group (see "Groups in crafting recipes" for details).
+or by group (see [[Groups in crafting recipes]] for details).
 
 The following sections describe the types and syntaxes of recipes.
 
@@ -9521,7 +9523,7 @@ Ore definition
 
 Used by `minetest.register_ore`.
 
-See [Ores] section above for essential information.
+See [[Ores]] section above for essential information.
 
 ```lua
 {
@@ -9555,7 +9557,7 @@ See [Ores] section above for essential information.
     -- Lower and upper limits for ore (inclusive)
 
     flags = "",
-    -- Attributes for the ore generation, see 'Ore attributes' section above
+    -- Attributes for the ore generation, see [[Ore attributes]] section above
 
     noise_threshold = 0,
     -- If noise is above this threshold, ore is placed. Not needed for a
@@ -9720,7 +9722,7 @@ performance and computing power the practical limit is much lower.
 Decoration definition
 ---------------------
 
-See [Decoration types]. Used by `minetest.register_decoration`.
+See [[Decoration types]]. Used by `minetest.register_decoration`.
 
 ```lua
 {
@@ -9859,13 +9861,13 @@ See [Decoration types]. Used by `minetest.register_decoration`.
     },
     -- Alternative schematic specification by supplying a table. The fields
     -- size and data are mandatory whereas yslice_prob is optional.
-    -- See 'Schematic specifier' for details.
+    -- See [[Schematic specifier]] for details.
 
     replacements = {["oldname"] = "convert_to", ...},
     -- Map of node names to replace in the schematic after reading it.
 
     flags = "place_center_x, place_center_y, place_center_z",
-    -- Flags for schematic decorations. See 'Schematic attributes'.
+    -- Flags for schematic decorations. See [[Schematic attributes]].
 
     rotation = "90",
     -- Rotation can be "0", "90", "180", "270", or "random"
@@ -9900,7 +9902,7 @@ description fields is shown when the "/help" chatcommand is issued.
 
     privs = {},
     -- Required privileges to run. See `minetest.check_player_privs()` for
-    -- the format and see [Privileges] for an overview of privileges.
+    -- the format and see [[Privileges]] for an overview of privileges.
 
     func = function(name, param),
     -- Called when command is run.
@@ -10005,7 +10007,7 @@ HUD Definition
 --------------
 
 Since most values have multiple different functions, please see the
-documentation in [HUD] section.
+documentation in [[HUD]] section.
 
 Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
@@ -10618,7 +10620,7 @@ Bit Library
 
 Functions: bit.tobit, bit.tohex, bit.bnot, bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift, bit.rol, bit.ror, bit.bswap
 
-See http://bitop.luajit.org/ for advanced information.
+See <http://bitop.luajit.org/> for advanced information.
 
 Error Handling
 --------------
