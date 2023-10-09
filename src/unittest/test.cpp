@@ -254,7 +254,10 @@ bool run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
 	        << "Catch test results: " << std::endl;
-	Catch::Session().run();
+    auto catch_test_failures = Catch::Sesion().run();
+	if (catch_test_failures > 0) {
+		++num_modules_failed;
+	}
 
 	return num_modules_failed == 0;
 }
