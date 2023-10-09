@@ -28,83 +28,9 @@ function core.get_pointed_thing_position(pointed_thing, above)
 	end
 end
 
-function core.dir_to_facedir(dir, is6d)
-	--account for y if requested
-	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
-
-		--from above
-		if dir.y < 0 then
-			if math.abs(dir.x) > math.abs(dir.z) then
-				if dir.x < 0 then
-					return 19
-				else
-					return 13
-				end
-			else
-				if dir.z < 0 then
-					return 10
-				else
-					return 4
-				end
-			end
-
-		--from below
-		else
-			if math.abs(dir.x) > math.abs(dir.z) then
-				if dir.x < 0 then
-					return 15
-				else
-					return 17
-				end
-			else
-				if dir.z < 0 then
-					return 6
-				else
-					return 8
-				end
-			end
-		end
-
-	--otherwise, place horizontally
-	elseif math.abs(dir.x) > math.abs(dir.z) then
-		if dir.x < 0 then
-			return 3
-		else
-			return 1
-		end
-	else
-		if dir.z < 0 then
-			return 2
-		else
-			return 0
-		end
-	end
-end
-
--- Table of possible dirs
-local facedir_to_dir = {
-	vector.new( 0,  0,  1),
-	vector.new( 1,  0,  0),
-	vector.new( 0,  0, -1),
-	vector.new(-1,  0,  0),
-	vector.new( 0, -1,  0),
-	vector.new( 0,  1,  0),
-}
--- Mapping from facedir value to index in facedir_to_dir.
-local facedir_to_dir_map = {
-	[0]=1, 2, 3, 4,
-	5, 2, 6, 4,
-	6, 2, 5, 4,
-	1, 5, 3, 6,
-	1, 6, 3, 5,
-	1, 4, 3, 2,
-}
-function core.facedir_to_dir(facedir)
-	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
-end
-
 -- Map each facedir to the result of applying
--- right-hand rotation around y+ or z+ vector
+-- right-hand rotation around y+ or z+ vector,
+-- further axes are precomputed on startup
 local rotated_facedir_map = {
 	["y+"] = {
 		[0] = 3, 0, 1, 2,
@@ -124,32 +50,30 @@ local rotated_facedir_map = {
 	},
 }
 
--- Map rotations on all 6 orthogonal vectors to
--- rotations around just y+ and z+
-local vector_lambda_map = {
-	["x+"] = function (f, r, x)
-		return f(3, "y+", f(r, "z+", f(1, "y+", x))) end,
-	["x-"] = function (f, r, x)
-		return f(1, "y+", f(r, "z+", f(3, "y+", x))) end,
-	["y+"] = function (f, r, x)
-		return f(r, "y+", x) end,
-	["y-"] = function (f, r, x)
-		return f(4 - r, "y+", x) end,
-	["z+"] = function (f, r, x)
-		return f(r, "z+", x) end,
-	["z-"] = function (f, r, x)
-		return f(4 - r, "z+", x) end,
+function core.rotate_facedir(rotation, vector_name, facedir)
+    if r == 0 then return x end
+    return lookup_function(r - 1, n, rotated_facedir_map[n][x])
+end
+
+-- Define rotations around the four remaining axes
+local rotate_remaining = {
+	["x+"] = function (r, x)
+		return core.rotate_facedir(3, "y+", core.rotate_facedir(r, "z+", core.rotate_facedir(1, "y+", x))) end,
+	["x-"] = function (r, x)
+		return core.rotate_facedir(1, "y+", core.rotate_facedir(r, "z+", core.rotate_facedir(3, "y+", x))) end,
+	["y-"] = function (r, x)
+		return core.rotate_facedir(4 - r, "y+", x) end,
+	["z-"] = function (r, x)
+		return core.rotate_facedir(4 - r, "z+", x) end,
 }
 
-function core.rotate_facedir(rotation, vector_name, facedir)
-	facedir = facedir or 0
-	local function lookup_function(r, n, x)
-		if r == 0 then return x end
-		return lookup_function(r - 1, n, rotated_facedir_map[n][x])
-	end
-	local translation_function = vector_lambda_map[vector_name]
-		or function (f, r, x) return nil end
-	return translation_function(lookup_function, rotation % 4, facedir)
+-- Precompute remaining axes
+for axis, rotate in pairs(rotate_remaining) do
+    local rotated_facedirs = {}
+    for x in 0..23 do
+        rotated_facedirs[x] = rotate(1, x)
+    end
+    rotated_facedir_map[axis] = rotated_facedirs
 end
 
 function core.dir_to_wallmounted(dir)
