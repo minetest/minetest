@@ -27,14 +27,12 @@ namespace server
 
 void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)> &cb)
 {
-	// make a defensive copy in case the
-	// passed callback changes the set of active objects
-	auto cloned_map(m_active_objects);
-
-	for (auto &it : cloned_map) {
+	for (auto &it : m_active_objects.iter()) {
+		if (!it.second)
+			continue;
 		if (cb(it.second, it.first)) {
 			// Remove reference from m_active_objects
-			m_active_objects.erase(it.first);
+			m_active_objects.remove(it.first);
 		}
 	}
 }
@@ -42,8 +40,12 @@ void ActiveObjectMgr::clear(const std::function<bool(ServerActiveObject *, u16)>
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ServerActiveObject *)> &f)
 {
-	g_profiler->avg("ActiveObjectMgr: SAO count [#]", m_active_objects.size());
-	for (auto &ao_it : m_active_objects) {
+	size_t count = m_active_objects.size();
+	assert(count != decltype(m_active_objects)::unknown);
+	g_profiler->avg("ActiveObjectMgr: SAO count [#]", count);
+	for (auto &ao_it : m_active_objects.iter()) {
+		if (!ao_it.second)
+			continue;
 		f(ao_it.second);
 	}
 }
@@ -85,7 +87,7 @@ bool ActiveObjectMgr::registerObject(ServerActiveObject *obj)
 		return false;
 	}
 
-	m_active_objects[obj->getId()] = obj;
+	m_active_objects.put(obj->getId(), obj);
 
 	verbosestream << "Server::ActiveObjectMgr::addActiveObjectRaw(): "
 			<< "Added id=" << obj->getId() << "; there are now "
@@ -104,7 +106,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 		return;
 	}
 
-	m_active_objects.erase(id);
+	m_active_objects.remove(id);
 	delete obj;
 }
 
@@ -114,8 +116,10 @@ void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
 	float r2 = radius * radius;
-	for (auto &activeObject : m_active_objects) {
+	for (auto &activeObject : m_active_objects.iter()) {
 		ServerActiveObject *obj = activeObject.second;
+		if (!obj)
+			continue;
 		const v3f &objectpos = obj->getBasePosition();
 		if (objectpos.getDistanceFromSQ(pos) > r2)
 			continue;
@@ -129,8 +133,10 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)
 {
-	for (auto &activeObject : m_active_objects) {
+	for (auto &activeObject : m_active_objects.iter()) {
 		ServerActiveObject *obj = activeObject.second;
+		if (!obj)
+			continue;
 		const v3f &objectpos = obj->getBasePosition();
 		if (!box.isPointInside(objectpos))
 			continue;
@@ -151,7 +157,7 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(const v3f &player_pos, f32 
 		- discard objects that are found in current_objects.
 		- add remaining objects to added_objects
 	*/
-	for (auto &ao_it : m_active_objects) {
+	for (auto &ao_it : m_active_objects.iter()) {
 		u16 id = ao_it.first;
 
 		// Get object

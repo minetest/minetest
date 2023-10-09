@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <map>
+#include "util/container.h"
 #include "irrlichttypes.h"
 
 class TestClientActiveObjectMgr;
@@ -38,8 +38,7 @@ public:
 
 	T *getActiveObject(u16 id)
 	{
-		auto n = m_active_objects.find(id);
-		return (n != m_active_objects.end() ? n->second : nullptr);
+		return m_active_objects.get(id);
 	}
 
 protected:
@@ -58,8 +57,9 @@ protected:
 
 	bool isFreeId(u16 id) const
 	{
-		return id != 0 && m_active_objects.find(id) == m_active_objects.end();
+		return id != 0 && m_active_objects.get(id) == nullptr;
 	}
 
-	std::map<u16, T *> m_active_objects; // ordered to fix #10985 
+	// Note that this is ordered to fix #10985
+	ModifySafeMap<u16, T *> m_active_objects;
 };

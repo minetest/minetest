@@ -28,10 +28,12 @@ namespace client
 void ActiveObjectMgr::clear()
 {
 	// delete active objects
-	for (auto &active_object : m_active_objects) {
+	for (auto &active_object : m_active_objects.iter()) {
+		if (!active_object.second)
+			continue;
 		delete active_object.second;
 		// Object must be marked as gone when children try to detach
-		active_object.second = nullptr;
+		m_active_objects.remove(active_object.first);
 	}
 	m_active_objects.clear();
 }
@@ -40,7 +42,9 @@ void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
 	g_profiler->avg("ActiveObjectMgr: CAO count [#]", m_active_objects.size());
-	for (auto &ao_it : m_active_objects) {
+	for (auto &ao_it : m_active_objects.iter()) {
+		if (!ao_it.second)
+			continue;
 		f(ao_it.second);
 	}
 }
@@ -69,7 +73,7 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 	}
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
 			<< "added (id=" << obj->getId() << ")" << std::endl;
-	m_active_objects[obj->getId()] = obj;
+	m_active_objects.put(obj->getId(), obj);
 	return true;
 }
 
@@ -84,7 +88,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 		return;
 	}
 
-	m_active_objects.erase(id);
+	m_active_objects.remove(id);
 
 	obj->removeFromScene(true);
 	delete obj;
@@ -95,8 +99,10 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
 	f32 max_d2 = max_d * max_d;
-	for (auto &ao_it : m_active_objects) {
+	for (auto &ao_it : m_active_objects.iter()) {
 		ClientActiveObject *obj = ao_it.second;
+		if (!obj)
+			continue;
 
 		f32 d2 = (obj->getPosition() - origin).getLengthSQ();
 
@@ -113,8 +119,10 @@ std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObje
 	f32 max_d = shootline.getLength();
 	v3f dir = shootline.getVector().normalize();
 
-	for (auto &ao_it : m_active_objects) {
+	for (auto &ao_it : m_active_objects.iter()) {
 		ClientActiveObject *obj = ao_it.second;
+		if (!obj)
+			continue;
 
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))

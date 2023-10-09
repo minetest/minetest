@@ -28,9 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <queue>
+#include <cassert>
 
 /*
-Queue with unique values with fast checking of value existence
+	Queue with unique values with fast checking of value existence
 */
 
 template<typename Value>
@@ -75,6 +76,10 @@ private:
 	std::queue<Value> m_queue;
 };
 
+/*
+	Thread-safe map
+*/
+
 template<typename Key, typename Value>
 class MutexedMap
 {
@@ -116,7 +121,9 @@ private:
 };
 
 
-// Thread-safe Double-ended queue
+/*
+	Thread-safe double-ended queue
+*/
 
 template<typename T>
 class MutexedQueue
@@ -237,6 +244,10 @@ protected:
 	Semaphore m_signal;
 };
 
+/*
+	LRU cache
+*/
+
 template<typename K, typename V>
 class LRUCache
 {
@@ -304,4 +315,158 @@ private:
 	cache_type m_map;
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
+};
+
+/*
+	Map that can be safely modified (insertion, deletion) during iteration
+	Caveats:
+	- be careful of nullptr elements when using iter(), those are ones already deleted
+	- size() and empty() will not function during iteration
+	- not thread-safe in any way
+*/
+
+template<typename K, typename V>
+class ModifySafeMap
+{
+public:
+	static_assert(std::is_pointer<V>::value, "Data structure requires pointer values");
+	// TODO is_default_constructible + is_convertible to bool?
+
+	ModifySafeMap() = default;
+	~ModifySafeMap() { assert(!m_iterating); }
+
+	V get(const K &key) const {
+		if (m_iterating) {
+			auto it = m_new.find(key);
+			if (it != m_new.end())
+				return it->second;
+		}
+		auto it = m_values.find(key);
+		return it == m_values.end() ? nullptr : it->second;
+	}
+
+	void put(const K &key, V value) {
+		assert(value);
+		if (m_iterating) {
+			m_new.emplace(key, value);
+		} else
+			m_values.emplace(key, value);
+	}
+
+	bool remove(const K &key) {
+		bool ret = false;
+		if (m_iterating) {
+			auto it = m_new.find(key);
+			if (it != m_new.end()) {
+				m_new.erase(it);
+				ret = true;
+			}
+		}
+		auto it = m_values.find(key);
+		if (it == m_values.end())
+			return ret;
+		if (m_iterating) {
+			it->second = nullptr;
+			m_garbage++;
+		} else {
+			m_values.erase(it);
+		}
+		return true;
+	}
+
+	size_t size() const {
+		if (m_iterating) {
+			// This is by no means impossible to determine, it's just annoying
+			// to code and we happen to not need this.
+			return unknown;
+		}
+		assert(m_new.empty());
+		if (m_garbage == 0)
+			return m_values.size();
+		size_t n = 0;
+		for (auto it : m_values)
+			n += it.second == nullptr ? 0 : 1;
+		return n;
+	}
+
+	bool empty() const {
+		if (m_iterating)
+			return false; // maybe
+		if (m_garbage == 0)
+			return m_values.empty();
+		for (auto it : m_values) {
+			if (!(it.second == nullptr))
+				return false;
+		}
+		return true;
+	}
+
+	auto iter() { return IterationHelper(this); }
+
+	void clear() {
+		if (m_iterating) {
+			for (auto &it : m_values)
+				it.second = nullptr;
+			m_garbage = m_values.size();
+		} else {
+			m_values.clear();
+			assert(m_new.empty());
+			m_garbage = 0;
+		}
+	}
+
+protected:
+	void merge_new() {
+		assert(!m_iterating);
+		if (!m_new.empty()) {
+			m_new.merge(m_values); // entries in m_new take precedence
+			m_values.clear();
+			std::swap(m_values, m_new);
+		}
+	}
+
+	void collect_garbage() {
+		assert(!m_iterating);
+		if (m_values.size() < GC_MIN_SIZE || m_garbage < m_values.size() / 2)
+			return;
+		for (auto it = m_values.begin(); it != m_values.end(); ) {
+			if (it->second == nullptr)
+				it = m_values.erase(it);
+			else
+				it++;
+		}
+		m_garbage = 0;
+	}
+
+	// returned by size() if called during iteration
+	static constexpr size_t unknown = static_cast<size_t>(-1);
+
+	// not reentrant!
+	struct IterationHelper {
+		friend class ModifySafeMap<K, V>;
+		~IterationHelper() {
+			m_map->m_iterating = false;
+			m_map->merge_new();
+			m_map->collect_garbage();
+		}
+
+		typename std::map<K, V>::const_iterator begin() { return m_map->m_values.cbegin(); }
+		typename std::map<K, V>::const_iterator end() { return m_map->m_values.cend(); }
+
+	private:
+		IterationHelper(ModifySafeMap<K, V> *parent) : m_map(parent) {
+			assert(!m_map->m_iterating);
+			m_map->m_iterating = true;
+		}
+
+		ModifySafeMap<K, V> *m_map;
+	};
+
+private:
+	std::map<K, V> m_values;
+	std::map<K, V> m_new;
+	bool m_iterating = false;
+	size_t m_garbage = 0; // upper bound for nullptr-placeholders in m_values
+
+	static constexpr size_t GC_MIN_SIZE = 42;
 };
