@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <catch.hpp>
 
+#include <utility>
+
 class TestClientActiveObject : public ClientActiveObject
 {
 public:
@@ -70,26 +72,31 @@ void TestClientActiveObjectMgr::runTests(IGameDef *gamedef)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static TestClientActiveObject* register_default_test_object(
+		client::ActiveObjectMgr &caomgr) {
+	auto test_obj = std::make_unique<TestClientActiveObject>();
+	auto result = test_obj.get();
+	REQUIRE(caomgr.registerObject(std::move(test_obj)));
+	return result;
+}
+
 TEST_CASE("test client active object manager")
 {
 	client::ActiveObjectMgr caomgr;
-	auto tcao1 = new TestClientActiveObject();
-	REQUIRE(caomgr.registerObject(tcao1) == true);
+	auto tcao1 = register_default_test_object(caomgr);
 
 	SECTION("When we register a client object, "
 			"then it should be assigned a unique ID.")
 	{
 		for (int i = 0; i < UINT8_MAX; ++i) {
-			auto other_tcao = new TestClientActiveObject();
-			REQUIRE(caomgr.registerObject(other_tcao) == true);
+			auto other_tcao = register_default_test_object(caomgr);
 			CHECK(other_tcao->getId() != tcao1->getId());
 		}
 	}
 
 	SECTION("two registered objects")
 	{
-		auto tcao2 = new TestClientActiveObject();
-		REQUIRE(caomgr.registerObject(tcao2) == true);
+		auto tcao2 = register_default_test_object(caomgr);
 		auto tcao2_id = tcao2->getId();
 
 		auto obj1 = caomgr.getActiveObject(tcao1->getId());
