@@ -76,69 +76,6 @@ for axis, rotate in pairs(rotate_remaining) do
     rotated_facedir_map[axis] = rotated_facedirs
 end
 
-function core.dir_to_wallmounted(dir)
-	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
-		if dir.y < 0 then
-			return 1
-		else
-			return 0
-		end
-	elseif math.abs(dir.x) > math.abs(dir.z) then
-		if dir.x < 0 then
-			return 3
-		else
-			return 2
-		end
-	else
-		if dir.z < 0 then
-			return 5
-		else
-			return 4
-		end
-	end
-end
-
--- table of dirs in wallmounted order
-local wallmounted_to_dir = {
-	[0] = vector.new( 0,  1,  0),
-	vector.new( 0, -1,  0),
-	vector.new( 1,  0,  0),
-	vector.new(-1,  0,  0),
-	vector.new( 0,  0,  1),
-	vector.new( 0,  0, -1),
-}
-function core.wallmounted_to_dir(wallmounted)
-	return wallmounted_to_dir[wallmounted % 8]
-end
-
-function core.dir_to_yaw(dir)
-	return -math.atan2(dir.x, dir.z)
-end
-
-function core.yaw_to_dir(yaw)
-	return vector.new(-math.sin(yaw), 0, math.cos(yaw))
-end
-
-function core.is_colored_paramtype(ptype)
-	return (ptype == "color") or (ptype == "colorfacedir") or
-		(ptype == "colorwallmounted") or (ptype == "colordegrotate")
-end
-
-function core.strip_param2_color(param2, paramtype2)
-	if not core.is_colored_paramtype(paramtype2) then
-		return nil
-	end
-	if paramtype2 == "colorfacedir" then
-		param2 = math.floor(param2 / 32) * 32
-	elseif paramtype2 == "colorwallmounted" then
-		param2 = math.floor(param2 / 8) * 8
-	elseif paramtype2 == "colordegrotate" then
-		param2 = math.floor(param2 / 32) * 32
-	end
-	-- paramtype2 == "color" requires no modification.
-	return param2
-end
-
 local function has_all_groups(tbl, required_groups)
 	if type(required_groups) == "string" then
 		return (tbl[required_groups] or 0) ~= 0
