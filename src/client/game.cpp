@@ -177,8 +177,11 @@ struct LocalFormspecHandler : public TextDest
 		}
 
 		if (m_formname == "MT_DEATH_SCREEN") {
-			assert(m_client != 0);
-			m_client->sendRespawn();
+			assert(m_client != nullptr);
+
+			if (fields.find("quit") != fields.end())
+				m_client->sendRespawn();
+
 			return;
 		}
 
