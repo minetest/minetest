@@ -416,8 +416,8 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 				fetch_request.url = url;
 				fetch_request.caller = m_httpfetch_caller;
 				fetch_request.request_id = m_httpfetch_next_id;
-				fetch_request.timeout =
-					g_settings->getS32("curl_file_download_timeout");
+				fetch_request.timeout = std::max(MIN_HTTPFETCH_TIMEOUT,
+					(long)g_settings->getS32("curl_file_download_timeout"));
 				httpfetch_async(fetch_request);
 
 				m_remote_file_transfers.insert(std::make_pair(

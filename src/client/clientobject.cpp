@@ -38,7 +38,7 @@ ClientActiveObject::~ClientActiveObject()
 	removeFromScene(true);
 }
 
-ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
+std::unique_ptr<ClientActiveObject> ClientActiveObject::create(ActiveObjectType type,
 		Client *client, ClientEnvironment *env)
 {
 	// Find factory function
@@ -47,11 +47,11 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 		// If factory is not found, just return.
 		warningstream << "ClientActiveObject: No factory for type="
 				<< (int)type << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	Factory f = n->second;
-	ClientActiveObject *object = (*f)(client, env);
+	std::unique_ptr<ClientActiveObject> object = (*f)(client, env);
 	return object;
 }
 

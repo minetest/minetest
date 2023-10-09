@@ -2099,7 +2099,7 @@ num_emerge_threads (Number of emerge threads) int 1 0 32767
 [**cURL]
 
 #    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
-curl_timeout (cURL interactive timeout) int 20000 100 2147483647
+curl_timeout (cURL interactive timeout) int 20000 1000 2147483647
 
 #    Limits number of parallel HTTP requests. Affects:
 #    -    Media fetch if server uses remote_media setting.
@@ -2109,7 +2109,7 @@ curl_timeout (cURL interactive timeout) int 20000 100 2147483647
 curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
-curl_file_download_timeout (cURL file download timeout) int 300000 100 2147483647
+curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Misc]
 
@@ -2226,11 +2226,13 @@ continuous_forward (Continuous forward) bool false
 #    Useful for recording videos
 cinematic (Cinematic mode) bool false
 
-#    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
-#    setting names in All Settings.
-#    Controlled by the checkbox in the "All settings" menu.
+#    setting names.
+#    Controlled by a checkbox in the settings menu.
 show_technical_names (Show technical names) bool false
+
+#    Controlled by a checkbox in the settings menu.
+show_advanced (Show advanced settings) bool false
 
 #    Enables the sound system.
 #    If disabled, this completely disables all sounds everywhere and the in-game
@@ -2247,6 +2249,10 @@ update_last_checked (Last update check) string
 #    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
+
+#    If this is set to true, the user will never (again) be shown the
+#    "reinstall Minetest Game" notification.
+no_mtg_notification (Don't show "reinstall Minetest Game" notification) bool false
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W

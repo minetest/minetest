@@ -67,10 +67,6 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s){};
 	// Called before removing from environment
 	virtual void removingFromEnvironment(){};
-	// Returns true if object's deletion is the job of the
-	// environment
-	virtual bool environmentDeletes() const
-	{ return true; }
 
 	// Safely mark the object for removal or deactivation
 	void markForRemoval();
