@@ -131,15 +131,13 @@ local function get_formspec(tabview, name, tabdata)
 				core.colorize("#BFBFBF", selected_pkg.name)
 		end
 
-		table.insert_all(retval, {
-			"image[7.1,0.2;3,2;", core.formspec_escape(modscreenshot), "]",
-			"label[10.5,1;", core.formspec_escape(title_and_name), "]",
-			"box[7.1,2.4;8,3.1;#000]"
-		})
+		local desc_height = 3.2
 
 		if selected_pkg.is_modpack then
+			desc_height = 2.1
+
 			table.insert_all(retval, {
-				"button[11.1,5.8;4,0.9;btn_mod_mgr_rename_modpack;",
+				"button[7.1,4.7;8,0.9;btn_mod_mgr_rename_modpack;",
 				fgettext("Rename"), "]"
 			})
 		elseif selected_pkg.type == "mod" then
@@ -163,31 +161,38 @@ local function get_formspec(tabview, name, tabdata)
 				end
 			end
 		elseif selected_pkg.type == "txp" then
+			desc_height = 2.1
+
 			if selected_pkg.enabled then
 				table.insert_all(retval, {
-					"button[9.766,5.8;2.666,0.9;btn_mod_mgr_disable_txp;",
+					"button[7.1,4.7;8,0.9;btn_mod_mgr_disable_txp;",
 					fgettext("Disable Texture Pack"), "]"
 				})
 			else
 				table.insert_all(retval, {
-					"button[9.766,5.8;2.666,0.9;btn_mod_mgr_use_txp;",
+					"button[7.1,4.7;8,0.9;btn_mod_mgr_use_txp;",
 					fgettext("Use Texture Pack"), "]"
 				})
 			end
 		end
 
-		table.insert_all(retval, {"textarea[7.1,2.4;8,3.1;;;", desc, "]"})
+		table.insert_all(retval, {
+			"image[7.1,0.2;3,2;", core.formspec_escape(modscreenshot), "]",
+			"label[10.5,1;", core.formspec_escape(title_and_name), "]",
+			"box[7.1,2.4;8,", tostring(desc_height), ";#000]",
+			"textarea[7.1,2.4;8,", tostring(desc_height), ";;;", desc, "]",
+		})
 
 		if core.may_modify_path(selected_pkg.path) then
 			table.insert_all(retval, {
-				"button[7.1,5.8;2.666,0.9;btn_mod_mgr_delete_mod;",
+				"button[7.1,5.8;4,0.9;btn_mod_mgr_delete_mod;",
 				fgettext("Uninstall"), "]"
 			})
 		end
 
 		if update_icons[selected_pkg.virtual_path or selected_pkg.path] then
 			table.insert_all(retval, {
-				"button[12.433,5.8;2.66,0.9;btn_mod_mgr_update;",
+				"button[11.1,5.8;4,0.9;btn_mod_mgr_update;",
 				fgettext("Update"), "]"
 			})
 		end
