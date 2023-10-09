@@ -51,8 +51,8 @@ local rotated_facedir_map = {
 }
 
 function core.rotate_facedir(rotation, vector_name, facedir)
-    if r == 0 then return x end
-    return lookup_function(r - 1, n, rotated_facedir_map[n][x])
+    if rotation == 0 then return facedir end
+    return lookup_function(rotation - 1, vector_name, rotated_facedir_map[vector_name][facedir])
 end
 
 -- Define rotations around the four remaining axes
