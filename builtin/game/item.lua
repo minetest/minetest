@@ -70,7 +70,7 @@ local rotate_remaining = {
 -- Precompute remaining axes
 for axis, rotate in pairs(rotate_remaining) do
     local rotated_facedirs = {}
-    for x in 0..23 do
+    for x=0,23 do
         rotated_facedirs[x] = rotate(1, x)
     end
     rotated_facedir_map[axis] = rotated_facedirs
