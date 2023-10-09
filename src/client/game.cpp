@@ -404,6 +404,10 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
 	float m_bloom_radius;
 	CachedPixelShaderSetting<float> m_saturation_pixel;
+	CachedPixelShaderSetting<float, 3> m_sun_position_pixel;
+	CachedPixelShaderSetting<float> m_sun_brightness_pixel;
+	CachedPixelShaderSetting<float, 3> m_moon_position_pixel;
+	CachedPixelShaderSetting<float> m_moon_brightness_pixel;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -461,7 +465,11 @@ public:
 		m_bloom_intensity_pixel("bloomIntensity"),
 		m_bloom_strength_pixel("bloomStrength"),
 		m_bloom_radius_pixel("bloomRadius"),
-		m_saturation_pixel("saturation")
+		m_saturation_pixel("saturation"),
+		m_sun_position_pixel("sunPositionScreen"),
+		m_sun_brightness_pixel("sunBrightness"),
+		m_moon_position_pixel("moonPositionScreen"),
+		m_moon_brightness_pixel("moonBrightness")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
@@ -579,6 +587,51 @@ public:
 		}
 		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
 		m_saturation_pixel.set(&saturation, services);
+
+		// Map directional light to screen space
+		auto camera_node = m_client->getCamera()->getCameraNode();
+		core::matrix4 transform = camera_node->getProjectionMatrix();
+		transform *= camera_node->getViewMatrix();
+
+		if (m_sky->getSunVisible()) {
+			v3f sun_position = camera_node->getAbsolutePosition() + 
+					10000. * m_sky->getSunDirection();
+			transform.transformVect(sun_position);
+			sun_position.normalize();
+
+			float sun_position_array[3] = { sun_position.X, sun_position.Y, sun_position.Z};
+			m_sun_position_pixel.set(sun_position_array, services);
+
+			float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+			m_sun_brightness_pixel.set(&sun_brightness, services);
+		}
+		else {
+			float sun_position_array[3] = { 0.f, 0.f, -1.f };
+			m_sun_position_pixel.set(sun_position_array, services);
+
+			float sun_brightness = 0.f;
+			m_sun_brightness_pixel.set(&sun_brightness, services);
+		}
+
+		if (m_sky->getMoonVisible()) {
+			v3f moon_position = camera_node->getAbsolutePosition() + 
+					10000. * m_sky->getMoonDirection();
+			transform.transformVect(moon_position);
+			moon_position.normalize();
+
+			float moon_position_array[3] = { moon_position.X, moon_position.Y, moon_position.Z};
+			m_moon_position_pixel.set(moon_position_array, services);
+
+			float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+			m_moon_brightness_pixel.set(&moon_brightness, services);
+		}
+		else {
+			float moon_position_array[3] = { 0.f, 0.f, -1.f };
+			m_moon_position_pixel.set(moon_position_array, services);
+
+			float moon_brightness = 0.f;
+			m_moon_brightness_pixel.set(&moon_brightness, services);
+		}
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override

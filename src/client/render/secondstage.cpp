@@ -171,7 +171,7 @@ RenderStep *addPostProcessing(RenderPipeline *pipeline, RenderStep *previousStep
 
 			// get bright spots
 			u32 shader_id = client->getShaderSource()->getShader("extract_bloom", TILE_MATERIAL_PLAIN, NDT_MESH);
-			RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_EXPOSURE_1 });
+			RenderStep *extract_bloom = pipeline->addStep<PostProcessingStep>(shader_id, std::vector<u8> { TEXTURE_COLOR, TEXTURE_EXPOSURE_1, TEXTURE_DEPTH });
 			extract_bloom->setRenderSource(buffer);
 			extract_bloom->setRenderTarget(pipeline->createOwned<TextureBufferOutput>(buffer, TEXTURE_BLOOM));
 			source = TEXTURE_BLOOM;
