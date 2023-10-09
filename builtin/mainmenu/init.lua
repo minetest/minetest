@@ -50,6 +50,7 @@ dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
 
 local tabs = {
 	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
@@ -121,9 +122,11 @@ local function init_globals()
 	})
 
 	ui.set_default("maintab")
-	check_new_version()
 	tv_main:show()
 	ui.update()
+
+	check_reinstall_mtg()
+	check_new_version()
 end
 
 init_globals()

@@ -53,15 +53,6 @@ void TestServerActiveObjectMgr::runTests(IGameDef *gamedef)
 	TEST(testGetAddedActiveObjectsAroundPos);
 }
 
-void clearSAOMgr(server::ActiveObjectMgr *saomgr)
-{
-	auto clear_cb = [](ServerActiveObject *obj, u16 id) {
-		delete obj;
-		return true;
-	};
-	saomgr->clear(clear_cb);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 void TestServerActiveObjectMgr::testFreeID()
@@ -78,8 +69,9 @@ void TestServerActiveObjectMgr::testFreeID()
 	// Register basic objects, ensure we never found
 	for (u8 i = 0; i < UINT8_MAX; i++) {
 		// Register an object
-		auto sao = new MockServerActiveObject();
-		saomgr.registerObject(sao);
+		auto sao_u = std::make_unique<MockServerActiveObject>();
+		auto sao = sao_u.get();
+		saomgr.registerObject(std::move(sao_u));
 		aoids.push_back(sao->getId());
 
 		// Ensure next id is not in registered list
@@ -87,14 +79,15 @@ void TestServerActiveObjectMgr::testFreeID()
 				aoids.end());
 	}
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testRegisterObject()
 {
 	server::ActiveObjectMgr saomgr;
-	auto sao = new MockServerActiveObject();
-	UASSERT(saomgr.registerObject(sao));
+	auto sao_u = std::make_unique<MockServerActiveObject>();
+	auto sao = sao_u.get();
+	UASSERT(saomgr.registerObject(std::move(sao_u)));
 
 	u16 id = sao->getId();
 
@@ -102,19 +95,21 @@ void TestServerActiveObjectMgr::testRegisterObject()
 	UASSERT(saoToCompare->getId() == id);
 	UASSERT(saoToCompare == sao);
 
-	sao = new MockServerActiveObject();
-	UASSERT(saomgr.registerObject(sao));
+	sao_u = std::make_unique<MockServerActiveObject>();
+	sao = sao_u.get();
+	UASSERT(saomgr.registerObject(std::move(sao_u)));
 	UASSERT(saomgr.getActiveObject(sao->getId()) == sao);
 	UASSERT(saomgr.getActiveObject(sao->getId()) != saoToCompare);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testRemoveObject()
 {
 	server::ActiveObjectMgr saomgr;
-	auto sao = new MockServerActiveObject();
-	UASSERT(saomgr.registerObject(sao));
+	auto sao_u = std::make_unique<MockServerActiveObject>();
+	auto sao = sao_u.get();
+	UASSERT(saomgr.registerObject(std::move(sao_u)));
 
 	u16 id = sao->getId();
 	UASSERT(saomgr.getActiveObject(id) != nullptr)
@@ -122,7 +117,7 @@ void TestServerActiveObjectMgr::testRemoveObject()
 	saomgr.removeObject(sao->getId());
 	UASSERT(saomgr.getActiveObject(id) == nullptr);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
@@ -137,7 +132,7 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	};
 
 	for (const auto &p : sao_pos) {
-		saomgr.registerObject(new MockServerActiveObject(nullptr, p));
+		saomgr.registerObject(std::make_unique<MockServerActiveObject>(nullptr, p));
 	}
 
 	std::vector<ServerActiveObject *> result;
@@ -160,7 +155,7 @@ void TestServerActiveObjectMgr::testGetObjectsInsideRadius()
 	saomgr.getObjectsInsideRadius(v3f(), 750000, result, include_obj_cb);
 	UASSERTCMP(int, ==, result.size(), 4);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }
 
 void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
@@ -175,7 +170,7 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 	};
 
 	for (const auto &p : sao_pos) {
-		saomgr.registerObject(new MockServerActiveObject(nullptr, p));
+		saomgr.registerObject(std::make_unique<MockServerActiveObject>(nullptr, p));
 	}
 
 	std::queue<u16> result;
@@ -188,5 +183,5 @@ void TestServerActiveObjectMgr::testGetAddedActiveObjectsAroundPos()
 	saomgr.getAddedActiveObjectsAroundPos(v3f(), 740, 50, cur_objects, result);
 	UASSERTCMP(int, ==, result.size(), 2);
 
-	clearSAOMgr(&saomgr);
+	saomgr.clear();
 }

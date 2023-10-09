@@ -633,9 +633,9 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 	session_t peer_id, bool is_singleplayer)
 {
-	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
+	auto playersao = std::make_unique<PlayerSAO>(this, player, peer_id, is_singleplayer);
 	// Create player if it doesn't exist
-	if (!m_player_database->loadPlayer(player, playersao)) {
+	if (!m_player_database->loadPlayer(player, playersao.get())) {
 		*new_player = true;
 		// Set player position
 		infostream << "Server: Finding spawn place for player \""
@@ -662,12 +662,13 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 	player->clearHud();
 
 	/* Add object to environment */
-	addActiveObject(playersao);
+	PlayerSAO *ret = playersao.get();
+	addActiveObject(std::move(playersao));
 
 	// Update active blocks quickly for a bit so objects in those blocks appear on the client
 	m_fast_active_block_divider = 10;
 
-	return playersao;
+	return ret;
 }
 
 void ServerEnvironment::saveMeta()
@@ -1230,13 +1231,10 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 		m_script->removeObjectReference(obj);
 
 		// Delete active object
-		if (obj->environmentDeletes())
-			delete obj;
-
 		return true;
 	};
 
-	m_ao_manager.clear(cb_removal);
+	m_ao_manager.clearIf(cb_removal);
 
 	// Get list of loaded blocks
 	std::vector<v3s16> loaded_blocks;
@@ -1675,11 +1673,11 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 	}
 }
 
-u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
+u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> object)
 {
 	assert(object);	// Pre-condition
 	m_added_objects++;
-	u16 id = addActiveObjectRaw(object, true, 0);
+	u16 id = addActiveObjectRaw(std::move(object), true, 0);
 	return id;
 }
 
@@ -1831,10 +1829,11 @@ void ServerEnvironment::getSelectedActiveObjects(
 	************ Private methods *************
 */
 
-u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
+u16 ServerEnvironment::addActiveObjectRaw(std::unique_ptr<ServerActiveObject> object_u,
 	bool set_changed, u32 dtime_s)
 {
-	if (!m_ao_manager.registerObject(object)) {
+	auto object = object_u.get();
+	if (!m_ao_manager.registerObject(std::move(object_u))) {
 		return 0;
 	}
 
@@ -1925,13 +1924,10 @@ void ServerEnvironment::removeRemovedObjects()
 		m_script->removeObjectReference(obj);
 
 		// Delete
-		if (obj->environmentDeletes())
-			delete obj;
-
 		return true;
 	};
 
-	m_ao_manager.clear(clear_cb);
+	m_ao_manager.clearIf(clear_cb);
 }
 
 static void print_hexdump(std::ostream &o, const std::string &data)
@@ -1968,12 +1964,12 @@ static void print_hexdump(std::ostream &o, const std::string &data)
 	}
 }
 
-ServerActiveObject* ServerEnvironment::createSAO(ActiveObjectType type, v3f pos,
-		const std::string &data)
+std::unique_ptr<ServerActiveObject> ServerEnvironment::createSAO(ActiveObjectType type,
+		v3f pos, const std::string &data)
 {
 	switch (type) {
 		case ACTIVEOBJECT_TYPE_LUAENTITY:
-			return new LuaEntitySAO(this, pos, data);
+			return std::make_unique<LuaEntitySAO>(this, pos, data);
 		default:
 			warningstream << "ServerActiveObject: No factory for type=" << type << std::endl;
 	}
@@ -1995,7 +1991,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	std::vector<StaticObject> new_stored;
 	for (const StaticObject &s_obj : block->m_static_objects.getAllStored()) {
 		// Create an active object from the data
-		ServerActiveObject *obj =
+		std::unique_ptr<ServerActiveObject> obj =
 				createSAO((ActiveObjectType)s_obj.type, s_obj.pos, s_obj.data);
 		// If couldn't create object, store static data back.
 		if (!obj) {
@@ -2012,7 +2008,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 			<< "activated static object pos=" << (s_obj.pos / BS)
 			<< " type=" << (int)s_obj.type << std::endl;
 		// This will also add the object to the active static list
-		addActiveObjectRaw(obj, false, dtime_s);
+		addActiveObjectRaw(std::move(obj), false, dtime_s);
 		if (block->isOrphan())
 			return;
 	}
@@ -2168,13 +2164,10 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		m_script->removeObjectReference(obj);
 
 		// Delete active object
-		if (obj->environmentDeletes())
-			delete obj;
-
 		return true;
 	};
 
-	m_ao_manager.clear(cb_deactivate);
+	m_ao_manager.clearIf(cb_deactivate);
 }
 
 void ServerEnvironment::deleteStaticFromBlock(

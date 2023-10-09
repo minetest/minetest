@@ -660,17 +660,9 @@ if(BUILD_SERVER)
 	endif()
 endif(BUILD_SERVER)
 
-# Blacklisted locales that don't work.
-# see issue #4638
-set(GETTEXT_BLACKLISTED_LOCALES
-	ar
-	dv
-	he
-	hi
-	kn
-	ms_Arab
-	th
-)
+# See issue #4638
+FILE(READ "${CMAKE_SOURCE_DIR}/src/unsupported_language_list.txt" GETTEXT_BLACKLISTED_LOCALES)
+STRING(REGEX REPLACE "\n" ";" GETTEXT_BLACKLISTED_LOCALES "${GETTEXT_BLACKLISTED_LOCALES}")
 
 option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid known broken locales" TRUE)
 

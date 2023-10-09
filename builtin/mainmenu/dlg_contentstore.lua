@@ -56,6 +56,9 @@ local filter_types_titles = {
 	fgettext("Texture packs"),
 }
 
+-- Automatic package installation
+local auto_install_spec = nil
+
 local number_downloading = 0
 local download_queue = {}
 
@@ -532,6 +535,47 @@ function confirm_overwrite.create(package, callback)
 		nil)
 end
 
+local function install_or_update_package(this, package)
+	local install_parent
+	if package.type == "mod" then
+		install_parent = core.get_modpath()
+	elseif package.type == "game" then
+		install_parent = core.get_gamepath()
+	elseif package.type == "txp" then
+		install_parent = core.get_texturepath()
+	else
+		error("Unknown package type: " .. package.type)
+	end
+
+
+	local function on_confirm()
+		local deps = get_raw_dependencies(package)
+		if deps and has_hard_deps(deps) then
+			local dlg = install_dialog.create(package, deps)
+			dlg:set_parent(this)
+			this:hide()
+			dlg:show()
+		else
+			queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
+		end
+	end
+
+	if package.type == "mod" and #pkgmgr.games == 0 then
+		local dlg = messagebox("install_game",
+			fgettext("You need to install a game before you can install a mod"))
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+	elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
+		local dlg = confirm_overwrite.create(package, on_confirm)
+		dlg:set_parent(this)
+		this:hide()
+		dlg:show()
+	else
+		on_confirm()
+	end
+end
+
 
 local function get_file_extension(path)
 	local parts = path:split(".")
@@ -644,6 +688,59 @@ local function sort_and_filter_pkgs()
 	store.filter_packages(search_string)
 end
 
+-- Resolves the package specification stored in auto_install_spec into an actual package.
+-- May only be called after the package list has been loaded successfully.
+local function resolve_auto_install_spec()
+	assert(store.load_ok)
+
+	if not auto_install_spec then
+		return nil
+	end
+
+	local resolved = nil
+
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if pkg.author == auto_install_spec.author and
+				pkg.name == auto_install_spec.name then
+			resolved = pkg
+			break
+		end
+	end
+
+	if not resolved then
+		gamedata.errormessage = fgettext("The package $1/$2 was not found.",
+				auto_install_spec.author, auto_install_spec.name)
+		ui.update()
+
+		auto_install_spec = nil
+	end
+
+	return resolved
+end
+
+-- Installs the package specified by auto_install_spec.
+-- Only does something if:
+-- a. The package list has been loaded successfully.
+-- b. The store dialog is currently visible.
+local function do_auto_install()
+	if not store.load_ok then
+		return
+	end
+
+	local pkg = resolve_auto_install_spec()
+	if not pkg then
+		return
+	end
+
+	local store_dlg = ui.find_by_name("store")
+	if not store_dlg or store_dlg.hidden then
+		return
+	end
+
+	install_or_update_package(store_dlg, pkg)
+	auto_install_spec = nil
+end
+
 function store.load()
 	if store.load_ok then
 		sort_and_filter_pkgs()
@@ -658,20 +755,21 @@ function store.load()
 		{ urlencode = urlencode },
 		function(result)
 			if result then
+				store.load_ok = true
+				store.load_error = false
 				store.packages = result.packages
 				store.packages_full = result.packages
 				store.packages_full_unordered = result.packages
 				store.aliases = result.aliases
-				sort_and_filter_pkgs()
 
-				store.load_ok = true
-				store.load_error = false
+				sort_and_filter_pkgs()
+				do_auto_install()
 			else
 				store.load_error = true
 			end
 
 			store.loading = false
-			core.event_handler("Refresh")
+			ui.update()
 		end
 	)
 end
@@ -725,11 +823,12 @@ end
 function store.sort_packages()
 	local ret = {}
 
+	local auto_install_pkg = resolve_auto_install_spec() -- can be nil
+
 	-- Add installed content
-	for i=1, #store.packages_full_unordered do
-		local package = store.packages_full_unordered[i]
-		if package.path then
-			ret[#ret + 1] = package
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if pkg.path and pkg ~= auto_install_pkg then
+			ret[#ret + 1] = pkg
 		end
 	end
 
@@ -747,11 +846,15 @@ function store.sort_packages()
 	end)
 
 	-- Add uninstalled content
-	for i=1, #store.packages_full_unordered do
-		local package = store.packages_full_unordered[i]
-		if not package.path then
-			ret[#ret + 1] = package
+	for _, pkg in ipairs(store.packages_full_unordered) do
+		if not pkg.path and pkg ~= auto_install_pkg then
+			ret[#ret + 1] = pkg
 		end
+	end
+
+	-- Put the package that will be auto-installed at the very top
+	if auto_install_pkg then
+		table.insert(ret, 1, auto_install_pkg)
 	end
 
 	store.packages_full = ret
@@ -1048,45 +1151,7 @@ function store.handle_submit(this, fields)
 		assert(package)
 
 		if fields["install_" .. i] then
-			local install_parent
-			if package.type == "mod" then
-				install_parent = core.get_modpath()
-			elseif package.type == "game" then
-				install_parent = core.get_gamepath()
-			elseif package.type == "txp" then
-				install_parent = core.get_texturepath()
-			else
-				error("Unknown package type: " .. package.type)
-			end
-
-
-			local function on_confirm()
-				local deps = get_raw_dependencies(package)
-				if deps and has_hard_deps(deps) then
-					local dlg = install_dialog.create(package, deps)
-					dlg:set_parent(this)
-					this:hide()
-					dlg:show()
-				else
-					queue_download(package, package.path and REASON_UPDATE or REASON_NEW)
-				end
-			end
-
-			if package.type == "mod" and #pkgmgr.games == 0 then
-				local dlg = messagebox("install_game",
-					fgettext("You need to install a game before you can install a mod"))
-				dlg:set_parent(this)
-				this:hide()
-				dlg:show()
-			elseif not package.path and core.is_dir(install_parent .. DIR_DELIM .. package.name) then
-				local dlg = confirm_overwrite.create(package, on_confirm)
-				dlg:set_parent(this)
-				this:hide()
-				dlg:show()
-			else
-				on_confirm()
-			end
-
+			install_or_update_package(this, package)
 			return true
 		end
 
@@ -1110,7 +1175,24 @@ function store.handle_submit(this, fields)
 	return false
 end
 
-function create_store_dlg(type)
+function store.handle_events(event)
+	if event == "DialogShow" then
+		-- If the store is already loaded, auto-install packages here.
+		do_auto_install()
+		return true
+	end
+
+	return false
+end
+
+--- Creates a ContentDB dialog.
+---
+--- @param type string | nil
+--- Sets initial package filter. "game", "mod", "txp" or nil (no filter).
+--- @param install_spec table | nil
+--- Package specification of the form { author = string, name = string }.
+--- Sets package to install or update automatically.
+function create_store_dlg(type, install_spec)
 	search_string = ""
 	cur_page = 1
 	if type then
@@ -1125,10 +1207,15 @@ function create_store_dlg(type)
 		filter_type = 1
 	end
 
+	-- Keep the old auto_install_spec if the caller doesn't specify one.
+	if install_spec then
+		auto_install_spec = install_spec
+	end
+
 	store.load()
 
 	return dialog_create("store",
 			store.get_formspec,
 			store.handle_submit,
-			nil)
+			store.handle_events)
 end

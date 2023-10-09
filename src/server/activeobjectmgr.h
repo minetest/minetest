@@ -26,13 +26,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace server
 {
-class ActiveObjectMgr : public ::ActiveObjectMgr<ServerActiveObject>
+class ActiveObjectMgr final : public ::ActiveObjectMgr<ServerActiveObject>
 {
 public:
-	void clear(const std::function<bool(ServerActiveObject *, u16)> &cb);
+	~ActiveObjectMgr() override;
+
+	// If cb returns true, the obj will be deleted
+	void clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb);
 	void step(float dtime,
 			const std::function<void(ServerActiveObject *)> &f) override;
-	bool registerObject(ServerActiveObject *obj) override;
+	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
 	void getObjectsInsideRadius(const v3f &pos, float radius,

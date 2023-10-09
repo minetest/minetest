@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "constants.h"
 #include <cassert>
+#include <memory>
 
 class Camera;
 class Client;
@@ -139,9 +140,9 @@ public:
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
+	static std::unique_ptr<ClientActiveObject> create(Client *client, ClientEnvironment *env)
 	{
-		return new GenericCAO(client, env);
+		return std::make_unique<GenericCAO>(client, env);
 	}
 
 	inline ActiveObjectType getType() const override

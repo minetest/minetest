@@ -90,8 +90,9 @@ void TestClientActiveObjectMgr::testFreeID()
 	// Register basic objects, ensure we never found
 	for (u8 i = 0; i < UINT8_MAX; i++) {
 		// Register an object
-		auto tcao = new TestClientActiveObject();
-		caomgr.registerObject(tcao);
+		auto tcao_u = std::make_unique<TestClientActiveObject>();
+		auto tcao = tcao_u.get();
+		caomgr.registerObject(std::move(tcao_u));
 		aoids.push_back(tcao->getId());
 
 		// Ensure next id is not in registered list
@@ -105,8 +106,9 @@ void TestClientActiveObjectMgr::testFreeID()
 void TestClientActiveObjectMgr::testRegisterObject()
 {
 	client::ActiveObjectMgr caomgr;
-	auto tcao = new TestClientActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
+	auto tcao_u = std::make_unique<TestClientActiveObject>();
+	auto tcao = tcao_u.get();
+	UASSERT(caomgr.registerObject(std::move(tcao_u)));
 
 	u16 id = tcao->getId();
 
@@ -114,8 +116,9 @@ void TestClientActiveObjectMgr::testRegisterObject()
 	UASSERT(tcaoToCompare->getId() == id);
 	UASSERT(tcaoToCompare == tcao);
 
-	tcao = new TestClientActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
+	tcao_u = std::make_unique<TestClientActiveObject>();
+	tcao = tcao_u.get();
+	UASSERT(caomgr.registerObject(std::move(tcao_u)));
 	UASSERT(caomgr.getActiveObject(tcao->getId()) == tcao);
 	UASSERT(caomgr.getActiveObject(tcao->getId()) != tcaoToCompare);
 
@@ -125,8 +128,9 @@ void TestClientActiveObjectMgr::testRegisterObject()
 void TestClientActiveObjectMgr::testRemoveObject()
 {
 	client::ActiveObjectMgr caomgr;
-	auto tcao = new TestClientActiveObject();
-	UASSERT(caomgr.registerObject(tcao));
+	auto tcao_u = std::make_unique<TestClientActiveObject>();
+	auto tcao = tcao_u.get();
+	UASSERT(caomgr.registerObject(std::move(tcao_u)));
 
 	u16 id = tcao->getId();
 	UASSERT(caomgr.getActiveObject(id) != nullptr)
@@ -140,8 +144,10 @@ void TestClientActiveObjectMgr::testRemoveObject()
 void TestClientActiveObjectMgr::testGetActiveSelectableObjects()
 {
 	client::ActiveObjectMgr caomgr;
-	auto obj = new TestSelectableClientActiveObject({v3f{-1, -1, -1}, v3f{1, 1, 1}});
-	UASSERT(caomgr.registerObject(obj));
+	auto obj_u = std::make_unique<TestSelectableClientActiveObject>(
+			aabb3f{v3f{-1, -1, -1}, v3f{1, 1, 1}});
+	auto obj = obj_u.get();
+	UASSERT(caomgr.registerObject(std::move(obj_u)));
 
 	auto assert_obj_selected = [&] (v3f a, v3f b) {
 		auto actual = caomgr.getActiveSelectableObjects({a, b});
