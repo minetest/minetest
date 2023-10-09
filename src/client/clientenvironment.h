@@ -101,7 +101,7 @@ public:
 		Returns the id of the object.
 		Returns 0 if not added and thus deleted.
 	*/
-	u16 addActiveObject(ClientActiveObject *object);
+	u16 addActiveObject(std::unique_ptr<ClientActiveObject> object);
 
 	void addActiveObject(u16 id, u8 type, const std::string &init_data);
 	void removeActiveObject(u16 id);

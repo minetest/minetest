@@ -199,7 +199,7 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
+	static std::unique_ptr<ClientActiveObject> create(Client *client, ClientEnvironment *env);
 
 	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 	void removeFromScene(bool permanent);
@@ -227,9 +227,9 @@ TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject::registerType(getType(), create);
 }
 
-ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
+std::unique_ptr<ClientActiveObject> TestCAO::create(Client *client, ClientEnvironment *env)
 {
-	return new TestCAO(client, env);
+	return std::make_unique<TestCAO>(client, env);
 }
 
 void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
@@ -326,7 +326,7 @@ void TestCAO::processMessage(const std::string &data)
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)
 {
-	if (client == NULL) {
+	if (!client) {
 		ClientActiveObject::registerType(getType(), create);
 	} else {
 		m_client = client;

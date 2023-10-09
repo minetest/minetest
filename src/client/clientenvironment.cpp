@@ -364,26 +364,26 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 	return NULL;
 }
 
-u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
+u16 ClientEnvironment::addActiveObject(std::unique_ptr<ClientActiveObject> object)
 {
+	auto obj = object.get();
 	// Register object. If failed return zero id
-	if (!m_ao_manager.registerObject(object))
+	if (!m_ao_manager.registerObject(std::move(object)))
 		return 0;
 
-	object->addToScene(m_texturesource, m_client->getSceneManager());
+	obj->addToScene(m_texturesource, m_client->getSceneManager());
 
 	// Update lighting immediately
-	object->updateLight(getDayNightRatio());
-	return object->getId();
+	obj->updateLight(getDayNightRatio());
+	return obj->getId();
 }
 
 void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	const std::string &init_data)
 {
-	ClientActiveObject* obj =
+	std::unique_ptr<ClientActiveObject> obj =
 		ClientActiveObject::create((ActiveObjectType) type, m_client, this);
-	if(obj == NULL)
-	{
+	if (!obj) {
 		infostream<<"ClientEnvironment::addActiveObject(): "
 			<<"id="<<id<<" type="<<type<<": Couldn't create object"
 			<<std::endl;
@@ -392,12 +392,9 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 
 	obj->setId(id);
 
-	try
-	{
+	try {
 		obj->initialize(init_data);
-	}
-	catch(SerializationError &e)
-	{
+	} catch(SerializationError &e) {
 		errorstream<<"ClientEnvironment::addActiveObject():"
 			<<" id="<<id<<" type="<<type
 			<<": SerializationError in initialize(): "
@@ -406,12 +403,12 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 			<<std::endl;
 	}
 
-	u16 new_id = addActiveObject(obj);
+	u16 new_id = addActiveObject(std::move(obj));
 	// Object initialized:
-	if ((obj = getActiveObject(new_id))) {
+	if (ClientActiveObject *obj2 = getActiveObject(new_id)) {
 		// Final step is to update all children which are already known
 		// Data provided by AO_CMD_SPAWN_INFANT
-		const auto &children = obj->getAttachmentChildIds();
+		const auto &children = obj2->getAttachmentChildIds();
 		for (auto c_id : children) {
 			if (auto *o = getActiveObject(c_id))
 				o->updateAttachments();
