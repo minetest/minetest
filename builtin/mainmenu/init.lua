@@ -89,7 +89,7 @@ local function init_globals()
 	menudata.worldlist:set_sortmode("alphabetic")
 
 	mm_game_theme.init()
-	mm_game_theme.reset()
+	mm_game_theme.set_engine() -- This is just a fallback.
 
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 15.5, y = 7.1}, {x = 0, y = 0})

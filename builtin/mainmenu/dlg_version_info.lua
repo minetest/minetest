@@ -71,6 +71,15 @@ local function version_info_buttonhandler(this, fields)
 	return false
 end
 
+local function version_info_eventhandler(event)
+	if event == "DialogShow" then
+		mm_game_theme.set_engine()
+		return true
+	end
+
+	return false
+end
+
 local function create_version_info_dlg(new_version, url)
 	assert(type(new_version) == "string")
 	assert(type(url) == "string")
@@ -78,7 +87,7 @@ local function create_version_info_dlg(new_version, url)
 	local retval = dialog_create("version_info",
 		version_info_formspec,
 		version_info_buttonhandler,
-		nil)
+		version_info_eventhandler)
 
 	retval.data.new_version = new_version
 	retval.data.url = url

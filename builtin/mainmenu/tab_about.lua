@@ -122,6 +122,7 @@ end
 return {
 	name = "about",
 	caption = fgettext("About"),
+
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
 		local version = core.get_version()
@@ -196,6 +197,7 @@ return {
 
 		return fs
 	end,
+
 	cbf_button_handler = function(this, fields, name, tabdata)
 		if fields.homepage then
 			core.open_url("https://www.minetest.net")
@@ -208,6 +210,12 @@ return {
 
 		if fields.userdata then
 			core.open_dir(core.get_user_path())
+		end
+	end,
+
+	on_change = function(type)
+		if type == "ENTER" then
+			mm_game_theme.set_engine()
 		end
 	end,
 }

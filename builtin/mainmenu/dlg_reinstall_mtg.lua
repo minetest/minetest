@@ -41,8 +41,6 @@ function check_reinstall_mtg()
 		return
 	end
 
-	mm_game_theme.reset()
-
 	local maintab = ui.find_by_name("maintab")
 
 	local dlg = create_reinstall_mtg_dlg()
@@ -96,7 +94,10 @@ local function buttonhandler(this, fields)
 end
 
 local function eventhandler(event)
-	if event == "MenuQuit" then
+	if event == "DialogShow" then
+		mm_game_theme.set_engine()
+		return true
+	elseif event == "MenuQuit" then
 		-- Don't allow closing the dialog with ESC, but still allow exiting
 		-- Minetest.
 		core.close()
