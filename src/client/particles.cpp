@@ -79,14 +79,16 @@ Particle::Particle(
 
 Particle::~Particle()
 {
-	if (buffer)
-		buffer->release(index);
+	if (m_buffer)
+		m_buffer->release(m_index);
 }
 
 bool Particle::attachToBuffer(ParticleBuffer *buffer)
 {
-	if (buffer->allocate(index)) {
-		this->buffer = buffer;
+	auto index_opt = buffer->allocate();
+	if (index_opt) {
+		m_index = index_opt.value();
+		m_buffer = buffer;
 		return true;
 	}
 	return false;
@@ -200,10 +202,10 @@ void Particle::updateVertices()
 	f32 tx0, tx1, ty0, ty1;
 	v2f scale;
 
-	if (!buffer)
+	if (!m_buffer)
 		return;
 
-	video::S3DVertex *vertices = buffer->getVertices(index);
+	video::S3DVertex *vertices = m_buffer->getVertices(m_index);
 
 	if (m_texture.tex != nullptr)
 		scale = m_texture.tex -> scale.blend(m_time / (m_expiration+0.1));
@@ -506,7 +508,8 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	if (p.size.start.max > 0.0f || p.size.end.max > 0.0f)
 		pp.size = r_size.pickWithin();
 
-	if (pp.pos.getDistanceFrom(env->getLocalPlayer()->getPosition() / BS) > PARTICLES_MAX_DISTANCE_NODES)
+	if (pp.pos.getDistanceFrom(env->getLocalPlayer()->getPosition() / BS)
+			> PARTICLES_MAX_DISTANCE_NODES)
 		return;
 
 	++m_active;
@@ -641,8 +644,10 @@ ParticleBuffer::~ParticleBuffer()
 
 static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
 
-bool ParticleBuffer::allocate(u16 &index)
+std::optional<u16> ParticleBuffer::allocate()
 {
+	u16 index;
+
 	if (!free_list.empty()) {
 		index = free_list.back();
 		free_list.pop_back();
@@ -652,17 +657,17 @@ bool ParticleBuffer::allocate(u16 &index)
 			vertices[4 * index + i] = video::S3DVertex();
 		for (u16 i = 0; i < 6; i++)
 			indices[6 * index + i] = 4 * index + quad_indices[i];
-		return true;
+		return index;
 	}
 
 	if (count >= 16000)
-		return false;
+		return std::nullopt;
 
 	// append new vertices
 	std::array<video::S3DVertex, 4> vertices {};
 	buffer->append(&vertices.front(), 4, quad_indices, 6);
 	index = count++;
-	return true;
+	return index;
 }
 
 void ParticleBuffer::release(u16 index)
@@ -1029,7 +1034,6 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 	m_particles.push_back(std::move(toadd));
 	return true;
 }
-
 
 void ParticleManager::addParticleSpawner(u64 id, std::unique_ptr<ParticleSpawner> toadd)
 {

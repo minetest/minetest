@@ -32,8 +32,8 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 
-#define MAX_PARTICLES 64000
-#define PARTICLES_MAX_DISTANCE_NODES 200
+constexpr size_t MAX_PARTICLES = 64000;
+constexpr u32 PARTICLES_MAX_DISTANCE_NODES = 200;
 
 struct ClientParticleTexture
 {
@@ -104,8 +104,9 @@ private:
 	void updateVertices();
 	void setVertexAlpha(float a);
 
-	ParticleBuffer *buffer{nullptr};
-	u16 index;
+	ParticleBuffer *m_buffer = nullptr;
+	u16 m_index; // index in m_buffer
+
 	float m_time = 0.0f;
 	float m_expiration;
 
@@ -175,7 +176,7 @@ public:
 	ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &texture);
 	~ParticleBuffer();
 
-	bool allocate(u16 &index);
+	std::optional<u16> allocate();
 	void release(u16 index);
 
 	video::S3DVertex *getVertices(u16 index);
@@ -247,6 +248,7 @@ private:
 	std::vector<std::unique_ptr<Particle>> m_particles;
 	std::unordered_map<u64, std::unique_ptr<ParticleSpawner>> m_particle_spawners;
 	std::vector<std::unique_ptr<ParticleSpawner>> m_dying_particle_spawners;
+	// FIXME: std::hash is not suitable for aligned pointers (it's identity)
 	std::unordered_map<video::ITexture *, ParticleBuffer *> m_particle_buffers;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
