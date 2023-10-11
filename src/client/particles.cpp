@@ -733,9 +733,9 @@ ParticleManager::ParticleManager(ClientEnvironment *env) :
 ParticleManager::~ParticleManager()
 {
 	clearAll();
-	for (const auto it : m_particle_buffers) {
+	for (auto &it : m_particle_buffers) {
 		it.second->remove();
-		it.second->drop();
+		it.second.reset();
 	}
 }
 
@@ -1016,16 +1016,16 @@ bool ParticleManager::addParticle(std::unique_ptr<Particle> toadd)
 		return false;
 
 	video::ITexture *texture = toadd->getTextureRef().ref;
-	ParticleBuffer *buffer = nullptr;
-	decltype(m_particle_buffers)::iterator entry = m_particle_buffers.find(texture);
+	irr_ptr<ParticleBuffer> buffer;
+	auto entry = m_particle_buffers.find(texture);
 	if (entry == m_particle_buffers.end()) {
-		buffer = new ParticleBuffer(m_env, toadd->getTextureRef());
+		buffer = make_irr<ParticleBuffer>(m_env, toadd->getTextureRef());
 		m_particle_buffers[texture] = buffer;
 	} else {
 		buffer = entry->second;
 	}
 
-	if (!toadd->attachToBuffer(buffer))
+	if (!toadd->attachToBuffer(buffer.get()))
 		return false;
 	m_particles.push_back(std::move(toadd));
 	return true;
