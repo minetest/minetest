@@ -580,13 +580,13 @@ ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRe
 	: scene::ISceneNode(
 			env->getGameDef()->getSceneManager()->getRootSceneNode(),
 			env->getGameDef()->getSceneManager()),
-	texture(_texture.tex == nullptr ? default_particle_texture : *_texture.tex, _texture.ref),
-	buffer(new scene::SMeshBuffer())
+	m_texture(_texture.tex == nullptr ? default_particle_texture : *_texture.tex, _texture.ref),
+	m_mesh_buffer(new scene::SMeshBuffer())
 {
 	// translate blend modes to GL blend functions
 	video::E_BLEND_FACTOR bfsrc, bfdst;
 	video::E_BLEND_OPERATION blendop;
-	const auto blendmode = texture.tex.blendmode;
+	const auto blendmode = m_texture.tex.blendmode;
 
 	switch (blendmode) {
 		case ParticleParamTypes::BlendMode::add:
@@ -614,7 +614,7 @@ ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRe
 		break;
 	}
 
-	video::SMaterial &material = buffer->getMaterial();
+	video::SMaterial &material = m_mesh_buffer->getMaterial();
 	// Texture
 	material.Lighting = false;
 	material.BackfaceCulling = false;
@@ -634,12 +634,12 @@ ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRe
 			video::EMFN_MODULATE_1X,
 			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
 	material.BlendOperation = blendop;
-	material.setTexture(0, texture.ref);
+	material.setTexture(0, m_texture.ref);
 }
 
 ParticleBuffer::~ParticleBuffer()
 {
-	buffer->drop();
+	m_mesh_buffer->drop();
 }
 
 static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -648,11 +648,12 @@ std::optional<u16> ParticleBuffer::allocate()
 {
 	u16 index;
 
-	if (!free_list.empty()) {
-		index = free_list.back();
-		free_list.pop_back();
-		u16 *indices = buffer->getIndices();
-		video::S3DVertex *vertices = static_cast<video::S3DVertex*>(buffer->getVertices());
+	if (!m_free_list.empty()) {
+		index = m_free_list.back();
+		m_free_list.pop_back();
+		u16 *indices = m_mesh_buffer->getIndices();
+		video::S3DVertex *vertices =
+				static_cast<video::S3DVertex *>(m_mesh_buffer->getVertices());
 		for (u16 i = 0; i < 4; i++)
 			vertices[4 * index + i] = video::S3DVertex();
 		for (u16 i = 0; i < 6; i++)
@@ -660,30 +661,30 @@ std::optional<u16> ParticleBuffer::allocate()
 		return index;
 	}
 
-	if (count >= 16000)
+	if (m_count >= 16000)
 		return std::nullopt;
 
 	// append new vertices
 	std::array<video::S3DVertex, 4> vertices {};
-	buffer->append(&vertices.front(), 4, quad_indices, 6);
-	index = count++;
+	m_mesh_buffer->append(&vertices.front(), 4, quad_indices, 6);
+	index = m_count++;
 	return index;
 }
 
 void ParticleBuffer::release(u16 index)
 {
-	u16 *indices = buffer->getIndices();
+	u16 *indices = m_mesh_buffer->getIndices();
 	for (u16 i = 0; i < 6; i++)
 		indices[6 * index + i] = 0;
-	free_list.push_back(index);
+	m_free_list.push_back(index);
 }
 
 video::S3DVertex *ParticleBuffer::getVertices(u16 index)
 {
-	if (index >= count)
+	if (index >= m_count)
 		return nullptr;
-	bounding_box_dirty = true;
-	return &(static_cast<video::S3DVertex*>(buffer->getVertices())[4 * index]);
+	m_bounding_box_dirty = true;
+	return &(static_cast<video::S3DVertex *>(m_mesh_buffer->getVertices())[4 * index]);
 }
 
 void ParticleBuffer::OnRegisterSceneNode()
@@ -693,28 +694,28 @@ void ParticleBuffer::OnRegisterSceneNode()
 	scene::ISceneNode::OnRegisterSceneNode();
 }
 
-const core::aabbox3d<f32>& ParticleBuffer::getBoundingBox() const
+const core::aabbox3d<f32> &ParticleBuffer::getBoundingBox() const
 {
-	if (!bounding_box_dirty)
-		return buffer->BoundingBox;
+	if (!m_bounding_box_dirty)
+		return m_mesh_buffer->BoundingBox;
 	bool first = true;
-	for (u16 i = 0; i < count; i++) {
-		if (buffer->getIndices()[6 * i + 1] == 0)
+	for (u16 i = 0; i < m_count; i++) {
+		if (m_mesh_buffer->getIndices()[6 * i + 1] == 0)
 			continue;
 
 		for (u16 j = 0; j < 4; j++) {
 			if (first) {
-				buffer->BoundingBox.reset(buffer->getPosition(i * 4 + j));
+				m_mesh_buffer->BoundingBox.reset(m_mesh_buffer->getPosition(i * 4 + j));
 				first = false;
 			}
 			else {
-				buffer->BoundingBox.addInternalPoint(buffer->getPosition(i * 4 + j));
+				m_mesh_buffer->BoundingBox.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
 			}
 		}
 	}
 
-	const_cast<bool &>(bounding_box_dirty) = false;
-	return buffer->BoundingBox;
+	const_cast<bool &>(m_bounding_box_dirty) = false;
+	return m_mesh_buffer->BoundingBox;
 }
 
 void ParticleBuffer::render()
@@ -722,8 +723,8 @@ void ParticleBuffer::render()
 	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
-	driver->setMaterial(buffer->getMaterial());
-	driver->drawMeshBuffer(buffer);
+	driver->setMaterial(m_mesh_buffer->getMaterial());
+	driver->drawMeshBuffer(m_mesh_buffer);
 }
 
 /*

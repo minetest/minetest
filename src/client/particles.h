@@ -185,11 +185,11 @@ public:
 	virtual void render() override;
 	virtual void OnRegisterSceneNode() override;
 private:
-	ClientParticleTexture texture;
-	scene::SMeshBuffer *buffer;
-	u16 count = 0;
-	std::vector<u16> free_list;
-	bool bounding_box_dirty = true;
+	ClientParticleTexture m_texture;
+	scene::SMeshBuffer *m_mesh_buffer;
+	u16 m_count = 0;
+	std::vector<u16> m_free_list;
+	bool m_bounding_box_dirty = true;
 };
 
 /**
