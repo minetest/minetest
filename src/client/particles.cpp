@@ -576,12 +576,12 @@ void ParticleSpawner::step(float dtime, ClientEnvironment *env)
 static const ParticleTexture default_particle_texture {
 		false, ParticleParamTypes::BlendMode::alpha, { TAT_NONE, { 0, 0, 0.f } } };
 
-ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &_texture)
+ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &texture)
 	: scene::ISceneNode(
 			env->getGameDef()->getSceneManager()->getRootSceneNode(),
 			env->getGameDef()->getSceneManager()),
-	m_texture(_texture.tex == nullptr ? default_particle_texture : *_texture.tex, _texture.ref),
-	m_mesh_buffer(new scene::SMeshBuffer())
+	m_texture(texture.tex == nullptr ? default_particle_texture : *texture.tex, texture.ref),
+	m_mesh_buffer(make_irr<scene::SMeshBuffer>())
 {
 	// translate blend modes to GL blend functions
 	video::E_BLEND_FACTOR bfsrc, bfdst;
@@ -635,11 +635,6 @@ ParticleBuffer::ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRe
 			video::EAS_TEXTURE | video::EAS_VERTEX_COLOR);
 	material.BlendOperation = blendop;
 	material.setTexture(0, m_texture.ref);
-}
-
-ParticleBuffer::~ParticleBuffer()
-{
-	m_mesh_buffer->drop();
 }
 
 static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -724,7 +719,7 @@ void ParticleBuffer::render()
 
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->setMaterial(m_mesh_buffer->getMaterial());
-	driver->drawMeshBuffer(m_mesh_buffer);
+	driver->drawMeshBuffer(m_mesh_buffer.get());
 }
 
 /*

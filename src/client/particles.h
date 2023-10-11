@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <vector>
 #include "irrlichttypes_extrabloated.h"
+#include "irr_ptr.h"
 #include "client/tile.h"
 #include "localplayer.h"
 #include "../particles.h"
@@ -88,6 +89,8 @@ public:
 	);
 
 	~Particle();
+
+	DISABLE_CLASS_COPY(Particle)
 
 	void step(float dtime);
 
@@ -174,7 +177,9 @@ class ParticleBuffer : public scene::ISceneNode
 {
 public:
 	ParticleBuffer(ClientEnvironment *env, const ClientParticleTexRef &texture);
-	~ParticleBuffer();
+
+	// for pointer stability
+	DISABLE_CLASS_COPY(ParticleBuffer)
 
 	std::optional<u16> allocate();
 	void release(u16 index);
@@ -186,7 +191,7 @@ public:
 	virtual void OnRegisterSceneNode() override;
 private:
 	ClientParticleTexture m_texture;
-	scene::SMeshBuffer *m_mesh_buffer;
+	irr_ptr<scene::SMeshBuffer> m_mesh_buffer;
 	u16 m_count = 0;
 	std::vector<u16> m_free_list;
 	bool m_bounding_box_dirty = true;
