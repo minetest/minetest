@@ -29,19 +29,32 @@ static inline void fill(TestMap &map, size_t n)
 {
 	map.clear();
 	for (size_t i = 0; i < n; i++)
-		map.put(i, reinterpret_cast<void*>(0x40000U + i));
+		map.put(i, reinterpret_cast<TestMap::mapped_type>(0x40000U + i));
+}
+
+static inline void pollute(TestMap &map)
+{
+	auto dummy = reinterpret_cast<TestMap::mapped_type>(123);
+	// produce some garbage to avoid best case behaviour
+	map.put(0xffff, dummy);
+	for (auto it : map.iter()) {
+		(void)it;
+		map.remove(0xffff);
+		break;
+	}
 }
 
 static inline void remove(TestMap &map, size_t offset, size_t count)
 {
 	for (size_t i = 0; i < count; i++)
-		map.remove(static_cast<u16>(i + offset));
+		map.remove(static_cast<TestMap::key_type>(i + offset));
 }
 
-#define BENCH_ITERATE(_count) \
-	BENCHMARK_ADVANCED("iterate_" #_count)(Catch::Benchmark::Chronometer meter) { \
+#define BENCH_ITERATE_(_label, _count, _best) \
+	BENCHMARK_ADVANCED(_label)(Catch::Benchmark::Chronometer meter) { \
 		TestMap map; \
 		fill(map, _count); \
+		if (!_best) pollute(map); \
 		meter.measure([&] { \
 			size_t x = map.size(); \
 			for (auto &it : map.iter()) { \
@@ -53,8 +66,12 @@ static inline void remove(TestMap &map, size_t offset, size_t count)
 		}); \
 	};
 
-#define BENCH_DEL_DURING_ITER(_count) \
-	BENCHMARK_ADVANCED("remove_during_iterate_" #_count)(Catch::Benchmark::Chronometer meter) { \
+#define BENCH_ITERATE(_count) \
+	BENCH_ITERATE_("iterate_" #_count, _count, 0) \
+	BENCH_ITERATE_("iterate_bestcase_" #_count, _count, 1)
+
+#define BENCH_REMOVE(_count) \
+	BENCHMARK_ADVANCED("remove_" #_count)(Catch::Benchmark::Chronometer meter) { \
 		TestMap map; \
 		fill(map, _count); \
 		meter.measure([&] { \
@@ -71,9 +88,9 @@ TEST_CASE("ModifySafeMap") {
 	BENCH_ITERATE(400)
 	BENCH_ITERATE(1000)
 
-	BENCH_DEL_DURING_ITER(50)
-	BENCH_DEL_DURING_ITER(400)
-	BENCH_DEL_DURING_ITER(100)
+	BENCH_REMOVE(50)
+	BENCH_REMOVE(400)
+	BENCH_REMOVE(100)
 }
 
 using TestMap2 = std::map<u16, void*>;
@@ -82,7 +99,7 @@ static inline void fill2(TestMap2 &map, size_t n)
 {
 	map.clear();
 	for (size_t i = 0; i < n; i++)
-		map.emplace(i, reinterpret_cast<void*>(0x40000U + i));
+		map.emplace(i, reinterpret_cast<TestMap2::mapped_type>(0x40000U + i));
 }
 
 static inline void remove2(TestMap2 &map, size_t offset, size_t count)
@@ -112,8 +129,8 @@ static inline void remove2(TestMap2 &map, size_t offset, size_t count)
 		}); \
 	};
 
-#define BENCH2_DEL_DURING_ITER(_count) \
-	BENCHMARK_ADVANCED("remove_during_iterate_" #_count)(Catch::Benchmark::Chronometer meter) { \
+#define BENCH2_REMOVE(_count) \
+	BENCHMARK_ADVANCED("remove_" #_count)(Catch::Benchmark::Chronometer meter) { \
 		TestMap2 map; \
 		fill2(map, _count); \
 		meter.measure([&] { \
@@ -128,8 +145,8 @@ TEST_CASE("plain std::map") {
 	BENCH2_ITERATE(400)
 	BENCH2_ITERATE(1000)
 
-	BENCH2_DEL_DURING_ITER(50)
-	BENCH2_DEL_DURING_ITER(400)
-	BENCH2_DEL_DURING_ITER(100)
+	BENCH2_REMOVE(50)
+	BENCH2_REMOVE(400)
+	BENCH2_REMOVE(100)
 }
 #endif

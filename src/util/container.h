@@ -334,6 +334,9 @@ public:
 	static_assert(std::is_pointer<V>::value, "Data structure requires pointer values");
 	// TODO is_default_constructible + is_convertible to bool?
 
+	typedef K key_type;
+	typedef V mapped_type;
+
 	ModifySafeMap() = default;
 	~ModifySafeMap() { assert(!m_iterating); }
 
