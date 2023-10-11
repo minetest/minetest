@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <queue>
 #include <cassert>
+#include <limits>
 
 /*
 	Queue with unique values with fast checking of value existence
@@ -320,8 +321,9 @@ private:
 /*
 	Map that can be safely modified (insertion, deletion) during iteration
 	Caveats:
-	- be careful of nullptr elements when using iter(), those are ones already deleted
-	- size() and empty() will not function during iteration
+	- you cannot insert null elements
+	- you have to check for null elements during iteration, those are ones already deleted
+	- size() and empty() don't work during iteration
 	- not thread-safe in any way
 */
 
@@ -346,10 +348,13 @@ public:
 	}
 
 	void put(const K &key, V value) {
-		assert(value);
-		if (m_iterating) {
+		if (!value) {
+			assert(false);
+			return;
+		}
+		if (m_iterating)
 			m_new.emplace(key, value);
-		} else
+		else
 			m_values.emplace(key, value);
 	}
 
@@ -415,6 +420,9 @@ public:
 		}
 	}
 
+	// returned by size() if called during iteration
+	static constexpr size_t unknown = static_cast<size_t>(-1);
+
 protected:
 	void merge_new() {
 		assert(!m_iterating);
@@ -438,34 +446,34 @@ protected:
 		m_garbage = 0;
 	}
 
-	// returned by size() if called during iteration
-	static constexpr size_t unknown = static_cast<size_t>(-1);
-
 	// not reentrant!
 	struct IterationHelper {
 		friend class ModifySafeMap<K, V>;
 		~IterationHelper() {
-			m_map->m_iterating = false;
-			m_map->merge_new();
-			m_map->collect_garbage();
+			assert(m->m_iterating);
+			m->m_iterating--;
+			if (!m->m_iterating) {
+				m->merge_new();
+				m->collect_garbage();
+			}
 		}
 
-		typename std::map<K, V>::const_iterator begin() { return m_map->m_values.cbegin(); }
-		typename std::map<K, V>::const_iterator end() { return m_map->m_values.cend(); }
+		auto begin() { return m->m_values.cbegin(); }
+		auto end() { return m->m_values.cend(); }
 
 	private:
-		IterationHelper(ModifySafeMap<K, V> *parent) : m_map(parent) {
-			assert(!m_map->m_iterating);
-			m_map->m_iterating = true;
+		IterationHelper(ModifySafeMap<K, V> *parent) : m(parent) {
+			assert(m->m_iterating < std::numeric_limits<decltype(m_iterating)>::max());
+			m->m_iterating++;
 		}
 
-		ModifySafeMap<K, V> *m_map;
+		ModifySafeMap<K, V> *m;
 	};
 
 private:
 	std::map<K, V> m_values;
 	std::map<K, V> m_new;
-	bool m_iterating = false;
+	unsigned int m_iterating = 0;
 	size_t m_garbage = 0; // upper bound for nullptr-placeholders in m_values
 
 	static constexpr size_t GC_MIN_SIZE = 42;
