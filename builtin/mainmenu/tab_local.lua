@@ -441,6 +441,8 @@ local function on_change(type)
 		local game = current_game()
 		if game then
 			apply_game(game)
+		else
+			mm_game_theme.set_engine()
 		end
 
 		if singleplayer_refresh_gamebar() then
