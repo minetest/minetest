@@ -53,7 +53,6 @@ end
 
 -- Apply menu changes from given game
 function apply_game(game)
-	core.set_topleft_text(game.name)
 	core.settings:set("menu_last_game", game.id)
 	menudata.worldlist:set_filtercriteria(game.id)
 
@@ -454,7 +453,6 @@ local function on_change(type)
 		if gamebar then
 			gamebar:hide()
 		end
-		core.set_topleft_text("")
 	end
 end
 

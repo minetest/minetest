@@ -35,6 +35,8 @@ function mm_game_theme.set_neutral()
 	mm_game_theme.gameid = nil
 	mm_game_theme.stop_music()
 
+	core.set_topleft_text("")
+
 	mm_game_theme.clear_single("overlay")
 	mm_game_theme.clear_single("background")
 	mm_game_theme.clear_single("header")
@@ -51,6 +53,8 @@ end
 function mm_game_theme.set_engine()
 	mm_game_theme.gameid = nil
 	mm_game_theme.stop_music()
+
+	core.set_topleft_text("")
 
 	local have_bg      = false
 	local have_overlay = mm_game_theme.set_engine_single("overlay")
@@ -82,6 +86,8 @@ function mm_game_theme.set_game(gamedetails)
 	end
 	mm_game_theme.gameid = gamedetails.id
 	mm_game_theme.set_music(gamedetails)
+
+	core.set_topleft_text(gamedetails.name)
 
 	local have_bg      = false
 	local have_overlay = mm_game_theme.set_game_single("overlay", gamedetails)
@@ -135,10 +141,6 @@ end
 
 --------------------------------------------------------------------------------
 function mm_game_theme.set_game_single(identifier, gamedetails)
-	if gamedetails == nil then
-		return false
-	end
-
 	if mm_game_theme.texturepack ~= nil then
 		local path = mm_game_theme.texturepack .. DIR_DELIM ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
