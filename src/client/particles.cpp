@@ -656,7 +656,7 @@ std::optional<u16> ParticleBuffer::allocate()
 		return index;
 	}
 
-	if (m_count >= 16000)
+	if (m_count >= MAX_PARTICLES_PER_BUFFER)
 		return std::nullopt;
 
 	// append new vertices
@@ -702,8 +702,7 @@ const core::aabbox3d<f32> &ParticleBuffer::getBoundingBox() const
 			if (first) {
 				m_mesh_buffer->BoundingBox.reset(m_mesh_buffer->getPosition(i * 4 + j));
 				first = false;
-			}
-			else {
+			} else {
 				m_mesh_buffer->BoundingBox.addInternalPoint(m_mesh_buffer->getPosition(i * 4 + j));
 			}
 		}

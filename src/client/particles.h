@@ -35,6 +35,7 @@ struct ContentFeatures;
 
 constexpr size_t MAX_PARTICLES = 64000;
 constexpr u32 PARTICLES_MAX_DISTANCE_NODES = 200;
+constexpr u16 MAX_PARTICLES_PER_BUFFER = 16000;
 
 struct ClientParticleTexture
 {
@@ -186,7 +187,7 @@ public:
 
 	video::S3DVertex *getVertices(u16 index);
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const override;
+	virtual const core::aabbox3d<f32> &getBoundingBox() const override;
 	virtual void render() override;
 	virtual void OnRegisterSceneNode() override;
 private:
