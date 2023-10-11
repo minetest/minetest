@@ -20,9 +20,6 @@ mm_game_theme = {}
 
 --------------------------------------------------------------------------------
 function mm_game_theme.init()
-	mm_game_theme.defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
-						DIR_DELIM .. "pack" .. DIR_DELIM
-
 	mm_game_theme.texturepack = core.settings:get("texture_path")
 
 	mm_game_theme.gameid = nil
@@ -81,6 +78,8 @@ end
 
 --------------------------------------------------------------------------------
 function mm_game_theme.set_game(gamedetails)
+	assert(gamedetails ~= nil)
+
 	if mm_game_theme.gameid == gamedetails.id then
 		return
 	end
@@ -128,12 +127,9 @@ function mm_game_theme.set_engine_single(identifier)
 		end
 	end
 
-	if mm_game_theme.defaulttexturedir ~= nil then
-		local path = mm_game_theme.defaulttexturedir .. DIR_DELIM .."menu_" ..
-										identifier .. ".png"
-		if core.set_background(identifier,path) then
-			return true
-		end
+	local path = defaulttexturedir .. DIR_DELIM .. "menu_" .. identifier .. ".png"
+	if core.set_background(identifier, path) then
+		return true
 	end
 
 	return false
@@ -141,6 +137,8 @@ end
 
 --------------------------------------------------------------------------------
 function mm_game_theme.set_game_single(identifier, gamedetails)
+	assert(gamedetails ~= nil)
+
 	if mm_game_theme.texturepack ~= nil then
 		local path = mm_game_theme.texturepack .. DIR_DELIM ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
@@ -201,6 +199,8 @@ end
 --------------------------------------------------------------------------------
 function mm_game_theme.set_music(gamedetails)
 	mm_game_theme.stop_music()
+
+	assert(gamedetails ~= nil)
 
 	local music_path = gamedetails.path .. DIR_DELIM .. "menu" .. DIR_DELIM .. "theme"
 	mm_game_theme.music_handle = core.sound_play(music_path, true)
