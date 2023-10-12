@@ -14,7 +14,7 @@ set(PROJECT_NAME_CAPITALIZED "Minetest")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(GCC_MINIMUM_VERSION "7.5")
-set(CLANG_MINIMUM_VERSION "6.0")
+set(CLANG_MINIMUM_VERSION "7.0.1")
 
 # You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 5)
