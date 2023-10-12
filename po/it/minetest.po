@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-03-28 20:39+0000\n"
-"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
+"PO-Revision-Date: 2023-10-13 10:02+0000\n"
+"Last-Translator: Filippo Alfieri <fire.alpha.t@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1193,9 +1193,8 @@ msgid "Trilinear Filter"
 msgstr "Filtro Trilineare"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Very High"
-msgstr "Ultra"
+msgstr "Molto Alto"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Very Low"
@@ -2077,7 +2076,7 @@ msgstr "Doppio \"salta\" per volare"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr "Butta"
+msgstr "Getta via"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Forward"
@@ -2366,7 +2365,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "Rumore 3D che stabilisce il numero di segrete per blocco di mondo."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2380,15 +2378,14 @@ msgid ""
 msgstr ""
 "Supporto 3D.\n"
 "Attualmente supportati:\n"
-"-    nessuno: nessuna resa 3D.\n"
-"-    anaglifo: 3D a colori ciano/magenta.\n"
-"-    intrecciato: supporto polarizzazione schermo basato sulle linee pari/"
-"dispari.\n"
-"-    sopra-sotto: divide lo schermo sopra-sotto.\n"
-"-    fianco-a-fianco: divide lo schermo fianco a fianco.\n"
-"-    vista incrociata: 3D a occhi incrociati.\n"
-"-    inversione pagina: 3D basato su quadbuffer.\n"
-"Si noti che la modalità intrecciata richiede l'abilitazione degli shader."
+"-    nessuno (none): nessuna effetto 3D.\n"
+"-    anaglifo (anaglyph): effetto 3D con filtro ciano/magenta.\n"
+"-    interlacciato (interlaced): per schermi 3D con visualizzazione a linee "
+"pari/dispari.\n"
+"-    sopra-sotto (topbottom): divide lo schermo sopra/sotto.\n"
+"-    fianco-a-fianco (sidebyside): divide lo schermo fianco a fianco.\n"
+"-    vista incrociata (crossview): 3D a occhi incrociati.\n"
+"Si noti che la modalità interlacciata richiede l'abilitazione degli shader."
 
 #: src/settings_translation_file.cpp
 msgid "3d"
