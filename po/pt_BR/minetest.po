@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Portuguese (Brazil) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-10-01 14:02+0000\n"
-"Last-Translator: José Douglas <josedouglas20002014@gmail.com>\n"
+"PO-Revision-Date: 2023-10-16 04:19+0000\n"
+"Last-Translator: Jorge Batista Ramos Junior <jorgebramosjr@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -813,20 +813,16 @@ msgid "Failed to install $1 to $2"
 msgstr "Não foi possível instalar $1 em $2"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instalação de mod: não foi possível encontrar o nome da pasta adequado para "
-"o modpack $1"
+msgstr "Instalação: Não foi possível encontrar o nome da pasta adequado para $1"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to find a valid mod, modpack, or game"
 msgstr "Incapaz de encontrar um mod, modpack, ou jogo válido"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Não foi possível instalar um mod como um $1"
+msgstr "Não foi possível instalar um $1 como um $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -936,7 +932,7 @@ msgstr "Anunciar Servidor"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
-msgstr "Endereço"
+msgstr "Endereço de vinculação"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
@@ -1687,17 +1683,16 @@ msgid "ok"
 msgstr "Ok"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Zoom atualmente desabilitado por jogo ou mod"
+msgstr "Bate-papo atualmente desativado por jogo ou mod"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
-msgstr "Conversa oculta"
+msgstr "Bate-papo oculto"
 
 #: src/client/gameui.cpp
 msgid "Chat shown"
-msgstr "Conversa mostrada"
+msgstr "Bate-papo mostrada"
 
 #: src/client/gameui.cpp
 msgid "HUD hidden"
@@ -2000,11 +1995,10 @@ msgid "%s is missing:"
 msgstr "%s falta:"
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
-"Instala e habilita os mods necessários, ou desativa os mods que causam erros."
+"Instala e habilita os Mods necessários, ou desativa os Mods que causam erros."
 
 #: src/content/mod_configuration.cpp
 msgid ""
@@ -2015,9 +2009,8 @@ msgstr ""
 "atualizar os mods."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Alguns mods têm dependências insatisfeitas:"
+msgstr "Alguns Mods têm dependências insatisfeitas:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -2669,20 +2662,19 @@ msgstr "Distância otimizada de envio de bloco"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Floração"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Intensidade de floração"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Raio das nuvens"
+msgstr "Raio de Floração"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Fator de força da floração"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
@@ -2851,7 +2843,7 @@ msgstr "Cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Tamanho do pedaço de malha do cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -3191,6 +3183,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Define quanto brilho é aplicado à imagem renderizada\n"
+"Valores menores tornam o florescimento mais sutil\n"
+"Intervalo: de 0,01 a 1,0, padrão: 0,05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3213,6 +3208,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Define a magnitude da superexposição do brilho.\n"
+"Intervalo: de 0,1 a 10,0, padrão: 1,0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3347,13 +3344,12 @@ msgid "Enable Automatic Exposure"
 msgstr "Habilita Exposição Automática"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Habilitar todos"
+msgstr "Habilitar floração"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Habilitar depuração da floração"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4019,7 +4015,7 @@ msgstr "Parâmetros de mistura de ruido do gerador de mundo \"heat\""
 
 #: src/settings_translation_file.cpp
 msgid "Heat noise"
-msgstr "Ruído nas cavernas #1"
+msgstr "Ruído de calor"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4717,6 +4713,10 @@ msgid ""
 "from the bright objects.\n"
 "Range: from 0.1 to 8, default: 1"
 msgstr ""
+"Valor lógico que controla até que ponto o efeito de florescimento se "
+"espalha\n"
+"dos objetos brilhantes.\n"
+"Intervalo: de 0,1 a 8, padrão: 1"
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
@@ -5563,7 +5563,7 @@ msgstr "Substitui o menu principal padrão por um personalizado."
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
-msgstr "Diretorio de reporte"
+msgstr "Caminho do relatório"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6893,10 +6893,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Quando gui_scaling_filter_txr2img é true, copie essas imagens\n"
-"de hardware para software para dimensionamento. Quando false,\n"
-"voltará para o velho método de dimensionamento, para drivers de\n"
-"vídeo que não suportem propriedades baixas de texturas voltam do hardware."
+"Quando gui_scaling_filter_txr2img for verdadeiro, copie essas imagens\n"
+"do hardware ao software para dimensionamento. Quando falso, volte\n"
+"ao antigo método de dimensionamento, para drivers de vídeo que não\n"
+"suportam adequadamente o download de texturas do hardware."
 
 #: src/settings_translation_file.cpp
 msgid ""
