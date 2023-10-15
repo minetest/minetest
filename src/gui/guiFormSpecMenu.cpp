@@ -4420,9 +4420,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 				} else if (button == BET_LEFT && (empty || matching)) {
-					// We don't know if the user is left-dragging or just moving
-					// the item, so assume that they are left-dragging,
-					// and wait for the next event before moving the item
+					// We don't know if the user is left-dragging, just moving
+					// the item, or doing a pickup-all via doubleclick, so assume
+					// that they are left-dragging, and wait for the next event
+					// before moving the item, or doing a pickup-all
 					m_left_dragging = true;
 					m_client->inhibit_inventory_revert = true;
 					m_left_drag_stack = list_selected->getItem(m_selected_item->i);
@@ -4570,6 +4571,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// Some other mouse event has occured
 			// Currently only left-double-click should trigger this
 			if (!s.isValid() || event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
+				break;
+
+			// Only do the pickup all thing when putting down an item.
+			// Doubleclick events are triggered after press-down events, so if
+			// m_left_dragging is true here, the user just put down an itemstack,
+			// but didn't yet release the button to make it happen.
+			if (!m_left_dragging)
 				break;
 
 			// Abort left-dragging
