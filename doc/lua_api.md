@@ -6050,8 +6050,8 @@ Item handling
       rotation is performed around this vector.
     * `rotation` is in quarter-turns, always right-handed around the chosen vector
       (see https://en.wikipedia.org/wiki/Right-hand_rule#Rotations). Basically,
-      if ones places the right hand so that its thumb points outwards from the
-      specified face, the curled fingers then describe this rotation.
+      if ones places the right hand so that its thumb is pointing in the direction
+      of the specified vector, the curled fingers then describe this rotation.
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for
       `paramtype2="wallmounted"`.
