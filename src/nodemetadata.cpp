@@ -225,8 +225,13 @@ void NodeMetadataList::remove(v3s16 p)
 {
 	NodeMetadata *olddata = get(p);
 	if (olddata) {
-		if (m_is_metadata_owner)
+		if (m_is_metadata_owner) {
+			// clearing can throw an exception due to the invlist resize lock,
+			// which we don't want to happen in the noexcept destructor
+			// => call clear before
+			olddata->clear();
 			delete olddata;
+		}
 		m_data.erase(p);
 	}
 }
