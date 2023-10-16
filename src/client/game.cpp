@@ -1239,12 +1239,11 @@ void Game::run()
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 
-		this->updatePauseState();
-		if (m_is_paused) {
+		updatePauseState();
+		if (m_is_paused)
 			dtime = 0.0f;
-		} else {
+		else
 			step(dtime);
-		}
 
 		processClientEvents(&cam_view_target);
 		updateDebugState();
