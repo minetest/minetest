@@ -695,7 +695,7 @@ end
 local function eventhandler(event)
 	if event == "DialogShow" then
 		-- Don't show the "MINETEST" header behind the dialog.
-		mm_game_theme.set_neutral()
+		mm_game_theme.set_engine(true)
 		return true
 	end
 

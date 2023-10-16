@@ -28,26 +28,7 @@ function mm_game_theme.init()
 end
 
 --------------------------------------------------------------------------------
-function mm_game_theme.set_neutral()
-	mm_game_theme.gameid = nil
-	mm_game_theme.stop_music()
-
-	core.set_topleft_text("")
-
-	mm_game_theme.clear_single("overlay")
-	mm_game_theme.clear_single("background")
-	mm_game_theme.clear_single("header")
-	mm_game_theme.clear_single("footer")
-
-	if core.settings:get_bool("menu_clouds") then
-		core.set_clouds(true)
-	else
-		mm_game_theme.set_dirt_bg()
-	end
-end
-
---------------------------------------------------------------------------------
-function mm_game_theme.set_engine()
+function mm_game_theme.set_engine(hide_decorations)
 	mm_game_theme.gameid = nil
 	mm_game_theme.stop_music()
 
@@ -64,8 +45,10 @@ function mm_game_theme.set_engine()
 	mm_game_theme.clear_single("footer")
 	core.set_clouds(false)
 
-	mm_game_theme.set_engine_single("header")
-	mm_game_theme.set_engine_single("footer")
+	if not hide_decorations then
+		mm_game_theme.set_engine_single("header")
+		mm_game_theme.set_engine_single("footer")
+	end
 
 	if not have_bg then
 		if core.settings:get_bool("menu_clouds") then

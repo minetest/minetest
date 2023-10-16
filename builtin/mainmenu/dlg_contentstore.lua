@@ -1177,12 +1177,8 @@ end
 
 function store.handle_events(event)
 	if event == "DialogShow" then
-		if TOUCHSCREEN_GUI then
-			-- Don't show the "MINETEST" header behind the dialog.
-			mm_game_theme.set_neutral()
-		else
-			mm_game_theme.set_engine()
-		end
+		-- On mobile, don't show the "MINETEST" header behind the dialog.
+		mm_game_theme.set_engine(TOUCHSCREEN_GUI)
 
 		-- If the store is already loaded, auto-install packages here.
 		do_auto_install()
