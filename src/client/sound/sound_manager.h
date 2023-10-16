@@ -77,6 +77,9 @@ private:
 	// if true, all sounds will be directly paused after creation
 	bool m_is_paused = false;
 
+	// used for printing warnings only once
+	std::unordered_set<std::string> m_warned_positional_stereo_sounds;
+
 public:
 	// used for communication with ProxySoundManager
 	MutexedQueue<SoundManagerMsgToMgr> m_queue_to_mgr;
