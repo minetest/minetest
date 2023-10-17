@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-04-27 17:03+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"PO-Revision-Date: 2023-10-19 04:10+0000\n"
+"Last-Translator: watilin <weblate.sagging615@passmail.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1162,7 +1162,7 @@ msgstr "Paramètres"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Shaders"
+msgstr "Nuanceurs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
