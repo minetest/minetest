@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-08-06 09:44+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"PO-Revision-Date: 2023-10-20 20:44+0000\n"
+"Last-Translator: Gábriel <gabriel1379@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/hu/>\n"
 "Language: hu\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -282,9 +282,8 @@ msgid "Downloading..."
 msgstr "Letöltés…"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Error installing \"$1\": $2"
-msgstr "Hiba a telepítésben \"$1\":$2"
+msgstr "Hiba \"$1\" telepítése közben: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
@@ -861,7 +860,7 @@ msgstr "Játékmotor-fejlesztők"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr "Alapcsapat"
+msgstr "Csapat magja"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -3177,6 +3176,9 @@ msgid ""
 "Smaller values make bloom more subtle\n"
 "Range: from 0.01 to 1.0, default: 0.05"
 msgstr ""
+"Meghatározza, hogy mennyire bloomozódjon a renderelt kép.\n"
+"Az alacsonyabb értékek finomabb bloomot eredményeznek.\n"
+"Értékhatár: 0.01-től 1.0-ig. Alapértelmezett érték: 0.05"
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -3199,6 +3201,8 @@ msgid ""
 "Defines the magnitude of bloom overexposure.\n"
 "Range: from 0.1 to 10.0, default: 1.0"
 msgstr ""
+"Meghatározza a bloom túlexpozíció mértékét.\n"
+"Értékhetár: 0.1-től 10.0-ig. Alapértelmezett érték: 1.0"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
@@ -3329,16 +3333,15 @@ msgstr "Tömlöc zaj"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Automatikus expozíció engedélyezése"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Bloom"
-msgstr "Összes engedélyezése"
+msgstr "Bloom engedélyezése"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom Debug"
-msgstr ""
+msgstr "Bloom debug engedélyezése"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3546,7 +3549,6 @@ msgid "Entity methods"
 msgstr "Entitás metódusok"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Exponent of the floatland tapering. Alters the tapering behavior.\n"
 "Value = 1.0 creates a uniform, linear tapering.\n"
@@ -3557,11 +3559,11 @@ msgid ""
 msgstr ""
 "A lebegő földek vékonyításának kitevője. A vékonyítás módján változtat.\n"
 "Érték = 1,0 egyeneletes, lineáris vékonyítás.\n"
-"Értékek > 1,0 az alapértelmezett különálló lebegő földekhez illő könnyed\n"
+"Érték > 1,0 az alapértelmezett, különálló lebegő földekhez illő, könnyed\n"
 "vékonyítás.\n"
-"Értékek < 1,0 (például 0,25) határozottab felszínt képez laposabb "
-"alföldekkel,\n"
-"egybefüggű lebegő föld réteghez használható."
+"Érték < 1,0 (például 0,25) határozottab felszínt képez, laposabb alföldekkel,"
+"\n"
+"egybefüggő lebegő földréteghez használható."
 
 #: src/settings_translation_file.cpp
 msgid "Exposure compensation"
@@ -4524,9 +4526,8 @@ msgid "Last known version update"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Last update check"
-msgstr "Folyadékfrissítés tick"
+msgstr "Legutóbbi frissítéskeresés"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4836,9 +4837,8 @@ msgid "Mapblock mesh generation delay"
 msgstr "Térképblokk háló generálási késleltetés"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation threads"
-msgstr "Térképblokk háló generálási késleltetés"
+msgstr "Térképblokk-hálógenerálási szálak"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size in MB"
