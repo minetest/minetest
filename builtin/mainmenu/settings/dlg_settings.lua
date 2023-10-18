@@ -692,8 +692,19 @@ local function buttonhandler(this, fields)
 end
 
 
+local function eventhandler(event)
+	if event == "DialogShow" then
+		-- Don't show the "MINETEST" header behind the dialog.
+		mm_game_theme.set_engine(true)
+		return true
+	end
+
+	return false
+end
+
+
 function create_settings_dlg()
-	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, eventhandler)
 
 	dlg.data.page_id = update_filtered_pages("")
 

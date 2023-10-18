@@ -46,6 +46,7 @@ end
 
 local function on_change(type)
 	if type == "ENTER" then
+		mm_game_theme.set_engine()
 		update_packages()
 	end
 end
@@ -171,7 +172,7 @@ local function handle_doubleclick(pkg)
 		packages = nil
 
 		mm_game_theme.init()
-		mm_game_theme.reset()
+		mm_game_theme.set_engine()
 	end
 end
 
@@ -225,7 +226,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 		packages = nil
 
 		mm_game_theme.init()
-		mm_game_theme.reset()
+		mm_game_theme.set_engine()
 		return true
 	end
 
