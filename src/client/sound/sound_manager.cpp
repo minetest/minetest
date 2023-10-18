@@ -164,10 +164,13 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 		return nullptr;
 	}
 
-	if (lsnd->m_decode_info.is_stereo && pos_vel_opt.has_value()) {
+	if (lsnd->m_decode_info.is_stereo && pos_vel_opt.has_value()
+			&& m_warned_positional_stereo_sounds.find(sound_name)
+					== m_warned_positional_stereo_sounds.end()) {
 		warningstream << "OpenALSoundManager::createPlayingSound: "
 				<< "Creating positional stereo sound \"" << sound_name << "\"."
 				<< std::endl;
+		m_warned_positional_stereo_sounds.insert(sound_name);
 	}
 
 	ALuint source_id;
