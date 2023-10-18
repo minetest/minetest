@@ -788,6 +788,7 @@ protected:
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
+	void updatePauseState();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
@@ -1238,23 +1239,12 @@ void Game::run()
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 
-		{
-			bool was_paused = m_is_paused;
-			m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
-			if (m_is_paused)
-				dtime = 0.0f;
-
-			if (!was_paused && m_is_paused) {
-				pauseAnimation();
-				sound_manager->pauseAll();
-			} else if (was_paused && !m_is_paused) {
-				resumeAnimation();
-				sound_manager->resumeAll();
-			}
-		}
-
-		if (!m_is_paused)
+		updatePauseState();
+		if (m_is_paused)
+			dtime = 0.0f;
+		else
 			step(dtime);
+
 		processClientEvents(&cam_view_target);
 		updateDebugState();
 		updateCamera(dtime);
@@ -2694,6 +2684,20 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	client->setPlayerControl(control);
 
 	//tt.stop();
+}
+
+void Game::updatePauseState()
+{
+	bool was_paused = this->m_is_paused;
+	this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
+
+	if (!was_paused && this->m_is_paused) {
+		this->pauseAnimation();
+		this->sound_manager->pauseAll();
+	} else if (was_paused && !this->m_is_paused) {
+		this->resumeAnimation();
+		this->sound_manager->resumeAll();
+	}
 }
 
 
