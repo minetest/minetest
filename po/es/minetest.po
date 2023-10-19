@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Spanish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-09 15:54+0100\n"
-"PO-Revision-Date: 2023-08-09 16:48+0000\n"
-"Last-Translator: Jynweythek Vordhosbn <jynweythek.nmk5s@simplelogin.fr>\n"
+"PO-Revision-Date: 2023-10-20 20:44+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -1160,7 +1160,7 @@ msgstr "Ajustes"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Sombreadores"
+msgstr "Shaders (Sombreador)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Shaders (experimental)"
@@ -3914,7 +3914,7 @@ msgstr "Filtro de escala de IGU \"txr2img\""
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr "GUIs"
+msgstr "Interfaz gráfica de usuario"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
