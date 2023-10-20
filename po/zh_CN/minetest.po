@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2023-09-11 13:54+0000\n"
 "Last-Translator: Claybiokiller <569735195@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -145,7 +145,7 @@ msgstr "（不满足）"
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "取消"
@@ -210,7 +210,8 @@ msgid "Optional dependencies:"
 msgstr "可选依赖项："
 
 #: builtin/mainmenu/dlg_config_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "保存"
 
@@ -311,6 +312,11 @@ msgstr "安装$1"
 msgid "Install missing dependencies"
 msgstr "安装缺失的依赖项"
 
+#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
+msgid "Loading..."
+msgstr "加载中..."
+
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
 msgstr "Mod"
@@ -320,6 +326,7 @@ msgid "No packages could be retrieved"
 msgstr "无法检索任何包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
 msgstr "无结果"
 
@@ -348,6 +355,10 @@ msgid "Texture packs"
 msgstr "材质包"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "The package $1/$2 was not found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
 msgstr "卸载"
 
@@ -362,6 +373,10 @@ msgstr "更新所有 [$1]"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
 msgstr "在网络浏览器中查看更多信息"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -440,10 +455,6 @@ msgid "Increases humidity around rivers"
 msgstr "增加河流周边湿度"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Install a game"
-msgstr "安装子游戏"
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
 msgstr "安装另一个子游戏"
 
@@ -500,7 +511,7 @@ msgid "Sea level rivers"
 msgstr "海平面河流"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
 msgstr "种子"
 
@@ -549,10 +560,6 @@ msgstr "地下深处的大型洞穴"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "世界名称"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "You have no games installed."
-msgstr "你没有安装任何子游戏。"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -606,6 +613,32 @@ msgstr "密码不匹配"
 msgid "Register"
 msgstr "注册"
 
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Dismiss"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"For a long time, the Minetest engine shipped with a default game called "
+"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
+"game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"If you want to continue playing in your Minetest Game worlds, you need to "
+"reinstall Minetest Game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Minetest Game is no longer installed by default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+#, fuzzy
+msgid "Reinstall Minetest Game"
+msgstr "安装另一个子游戏"
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "接受"
@@ -620,150 +653,6 @@ msgid ""
 "override any renaming here."
 msgstr ""
 "此 mod 包在它的 modpack.conf 中有一个明确的名称，它将覆盖这里的任何重命名。"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "(No description of setting given)"
-msgstr "(没有关于此设置的信息)"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "2D Noise"
-msgstr "2D 噪声"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "< Back to Settings page"
-msgstr "< 返回设置页面"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Browse"
-msgstr "浏览"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Client Mods"
-msgstr "客户端 Mods"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Content: Games"
-msgstr "内容：子游戏"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Content: Mods"
-msgstr "内容：模组"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "禁用"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Edit"
-msgstr "编辑"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Enabled"
-msgstr "启用"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Lacunarity"
-msgstr "空白"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Octaves"
-msgstr "八音"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "补偿"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Persistence"
-msgstr "持续性"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid integer."
-msgstr "请输入一个整数类型。"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid number."
-msgstr "请输入一个合法的数字。"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Restore Default"
-msgstr "恢复初始设置"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "比例"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "搜索"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select directory"
-msgstr "选择目录"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select file"
-msgstr "选择文件"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Show technical names"
-msgstr "显示高级名称"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be at least $1."
-msgstr "这个值必须至少为 $1。"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must not be larger than $1."
-msgstr "这个值必须不大于$1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X"
-msgstr "X"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X spread"
-msgstr "x 点差"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y"
-msgstr "Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y spread"
-msgstr "y 点差"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z"
-msgstr "Z"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z spread"
-msgstr "z 点差"
-
-#. ~ "absvalue" is a noise parameter flag.
-#. It is short for "absolute value".
-#. It can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "absvalue"
-msgstr "绝对值"
-
-#. ~ "defaults" is a noise parameter flag.
-#. It describes the default processing options
-#. for noise settings in main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "defaults"
-msgstr "默认值"
-
-#. ~ "eased" is a noise parameter flag.
-#. It is used to make the map smoother and
-#. can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "eased"
-msgstr "缓解"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -791,6 +680,10 @@ msgstr "从不"
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
 msgstr "访问网站"
+
+#: builtin/mainmenu/init.lua
+msgid "Settings"
+msgstr "设置"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -822,10 +715,6 @@ msgstr "无法将$1 作为 $2 安装为mod"
 msgid "Unable to install a $1 as a texture pack"
 msgstr "无法将$1安装为材质包"
 
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "加载中..."
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "已禁用公共服务器列表"
@@ -833,6 +722,181 @@ msgstr "已禁用公共服务器列表"
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr "请尝试重新启用公共服务器列表并检查您的网络连接。"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Browse"
+msgstr "浏览"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Edit"
+msgstr "编辑"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select directory"
+msgstr "选择目录"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select file"
+msgstr "选择文件"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Set"
+msgstr "选择键"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "(No description of setting given)"
+msgstr "(没有关于此设置的信息)"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "2D Noise"
+msgstr "2D 噪声"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Lacunarity"
+msgstr "空白"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Octaves"
+msgstr "八音"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "补偿"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "Persistence"
+msgstr "持续性"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "比例"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "X spread"
+msgstr "x 点差"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Y spread"
+msgstr "y 点差"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Z spread"
+msgstr "z 点差"
+
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "absvalue"
+msgstr "绝对值"
+
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "defaults"
+msgstr "默认值"
+
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "eased"
+msgstr "缓解"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(Use system language)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "后退"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Change keys"
+msgstr "更改键位设置"
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+#: src/client/keycode.cpp
+msgid "Clear"
+msgstr "Clear键"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Reset setting to default"
+msgstr "恢复初始设置"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Reset setting to default ($1)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "搜索"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show advanced settings"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show technical names"
+msgstr "显示高级名称"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Client Mods"
+msgstr "客户端 Mods"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Content: Games"
+msgstr "内容：子游戏"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Content: Mods"
+msgstr "内容：模组"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "(The game will need to enable shadows as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Custom"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "禁用"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#: src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr "动态阴影"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "High"
+msgstr "高"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Low"
+msgstr "低"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Medium"
+msgstr "中"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very High"
+msgstr "极高"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very Low"
+msgstr "极低"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
@@ -853,6 +917,10 @@ msgstr "核心开发者"
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
 msgstr "核心团队"
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Irrlicht device:"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -889,10 +957,6 @@ msgstr "内容"
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
 msgstr "禁用材质包"
-
-#: builtin/mainmenu/tab_content.lua
-msgid "Information:"
-msgstr "信息："
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -943,6 +1007,10 @@ msgid "Host Server"
 msgstr "建立服务器"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Install a game"
+msgstr "安装子游戏"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
 msgstr "从 ContentDB 安装游戏"
 
@@ -978,13 +1046,13 @@ msgstr "服务器端口"
 msgid "Start Game"
 msgstr "启动游戏"
 
+#: builtin/mainmenu/tab_local.lua
+msgid "You have no games installed."
+msgstr "你没有安装任何子游戏。"
+
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "地址"
-
-#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
-msgid "Clear"
-msgstr "Clear键"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1030,178 +1098,6 @@ msgstr "移除收藏"
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
 msgstr "服务器描述"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "(game support required)"
-msgstr "（需要子游戏支持）"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "2x"
-msgstr "两倍"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "3D Clouds"
-msgstr "3D 云彩"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "4x"
-msgstr "四倍"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "8x"
-msgstr "八倍"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "All Settings"
-msgstr "所有设置"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Antialiasing:"
-msgstr "抗锯齿："
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Autosave Screen Size"
-msgstr "自动保存屏幕尺寸"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bilinear Filter"
-msgstr "双线性过滤"
-
-#: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "更改键位设置"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Connected Glass"
-msgstr "连通玻璃"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Dynamic shadows"
-msgstr "动态阴影"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows:"
-msgstr "动态阴影："
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Fancy Leaves"
-msgstr "华丽树叶"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "High"
-msgstr "高"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Low"
-msgstr "低"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Medium"
-msgstr "中"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap"
-msgstr "Mip 贴图"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap + Aniso. Filter"
-msgstr "Mip 贴图 + 各向异性过滤"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Filter"
-msgstr "无过滤"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Mipmap"
-msgstr "无 Mip 贴图"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
-msgstr "方块高亮"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Outlining"
-msgstr "方块轮廓"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "None"
-msgstr "无"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Leaves"
-msgstr "不透明树叶"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Water"
-msgstr "不透明水"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Particles"
-msgstr "粒子效果"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr "屏幕："
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Settings"
-msgstr "设置"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "着色器"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (experimental)"
-msgstr "着色器（实验性）"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (unavailable)"
-msgstr "着色器 (不可用)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Simple Leaves"
-msgstr "简单树叶"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Smooth Lighting"
-msgstr "平滑光照"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Texturing:"
-msgstr "材质:"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "色调映射"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Touch threshold (px):"
-msgstr "触控阈值（像素）："
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Trilinear Filter"
-msgstr "三线性过滤"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very High"
-msgstr "极高"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very Low"
-msgstr "极低"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Leaves"
-msgstr "飘动树叶"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Liquids"
-msgstr "摇动流体"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "摇摆植物"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1267,7 +1163,7 @@ msgstr "提供的密码文件无法打开: "
 msgid "Provided world path doesn't exist: "
 msgstr "提供的世界路径不存在: "
 
-#: src/client/game.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1343,8 +1239,12 @@ msgstr "已启用镜头更新"
 
 #: src/client/game.cpp
 #, fuzzy
-msgid "Can't show block bounds (disabled by mod or game)"
+msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "无法显示方块的边界 （需要“basic_debug”权限）"
+
+#: src/client/game.cpp
+msgid "Change Keys"
+msgstr "更改键位设置"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1379,7 +1279,7 @@ msgid "Continue"
 msgstr "继续"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1387,7 +1287,7 @@ msgid ""
 "- %s: move left\n"
 "- %s: move right\n"
 "- %s: jump/climb up\n"
-"- %s: dig/punch\n"
+"- %s: dig/punch/use\n"
 "- %s: place/use\n"
 "- %s: sneak/climb down\n"
 "- %s: drop item\n"
@@ -1410,6 +1310,35 @@ msgstr ""
 "- 鼠标:转身/环顾\n"
 "- 鼠标滚轮: 选择物品\n"
 "- %s：聊天\n"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid ""
+"Controls:\n"
+"No menu open:\n"
+"- slide finger: look around\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
+"Menu/inventory open:\n"
+"- double tap (outside):\n"
+" --> close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"默认控制:\n"
+"菜单不可见时:\n"
+"- 单击: 激活按钮\n"
+"- 双击: 放置/使用\n"
+"- 滑动手指: 改变视角\n"
+"菜单/物品栏可见时:\n"
+"- 双击 (界面区域外):\n"
+" --> 关闭\n"
+"- 点击物品, 然后点击栏位:\n"
+" --> 移动一组物品\n"
+"- 点击物品并拖动, 然后另一手指点击\n"
+" --> 移动一个物品\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1435,42 +1364,6 @@ msgstr "调试信息已显示"
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "调试信息、性能分析图和线框已隐藏"
-
-#: src/client/game.cpp
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-"默认控制:\n"
-"菜单不可见时:\n"
-"- 单击: 激活按钮\n"
-"- 双击: 放置/使用\n"
-"- 滑动手指: 改变视角\n"
-"菜单/物品栏可见时:\n"
-"- 双击 (界面区域外):\n"
-" --> 关闭\n"
-"- 点击物品, 然后点击栏位:\n"
-" --> 移动一组物品\n"
-"- 点击物品并拖动, 然后另一手指点击\n"
-" --> 移动一个物品\n"
-
-#: src/client/game.cpp
-msgid "Disabled unlimited viewing range"
-msgstr "禁用无限视野"
-
-#: src/client/game.cpp
-msgid "Enabled unlimited viewing range"
-msgstr "启用无限视野"
 
 #: src/client/game.cpp
 #, c-format
@@ -1641,19 +1534,49 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "无法监听 %s，因为 IPv6 已禁用"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range disabled"
+msgstr "启用无限视野"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range enabled"
+msgstr "启用无限视野"
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled, but forbidden by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing changed to %d (the minimum)"
+msgstr "视野范围已达到最小：%d"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "视野范围已改变至%d"
 
 #: src/client/game.cpp
-#, c-format
-msgid "Viewing range is at maximum: %d"
-msgstr "视野范围已达到最大：%d"
+#, fuzzy, c-format
+msgid "Viewing range changed to %d (the maximum)"
+msgstr "视野范围已改变至%d"
 
 #: src/client/game.cpp
 #, c-format
-msgid "Viewing range is at minimum: %d"
-msgstr "视野范围已达到最小：%d"
+msgid ""
+"Viewing range changed to %d (the maximum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing range changed to %d, but limited to %d by game or mod"
+msgstr "视野范围已改变至%d"
 
 #: src/client/game.cpp
 #, c-format
@@ -2204,22 +2127,10 @@ msgstr "名称未注册。如想要在当前服务器创建一个账户，请点
 msgid "Name is taken. Please choose another name"
 msgstr "名称已被占用。请选择其他名称"
 
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Fixes the position of virtual joystick.\n"
-"If disabled, virtual joystick will center to first-touch's position."
-msgstr ""
-"（Android）修复虚拟操纵杆的位置。\n"
-"如果禁用，虚拟操纵杆将居中至第一次触摸的位置。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
-"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
-"circle."
-msgstr ""
-"（安卓）使用虚拟操纵杆触发\"Aux1\"按钮。\n"
-"如果启用，虚拟操纵杆在主圆圈外会点击\"Aux1\"按钮。"
+#: src/server.cpp
+#, fuzzy, c-format
+msgid "%s while shutting down: "
+msgstr "关闭中..."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2469,6 +2380,14 @@ msgstr "高级"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names.\n"
+"Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2508,6 +2427,16 @@ msgstr "公开服务器"
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
 msgstr "向服务器表公开服务器。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Anti-aliasing scale"
+msgstr "抗锯齿："
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Antialiasing method"
+msgstr "抗锯齿："
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2573,10 +2502,6 @@ msgid "Automatically report to the serverlist."
 msgstr "自动报告到服务器列表。"
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
-msgstr "自动保存屏幕大小"
-
-#: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr "自动缩放模式"
 
@@ -2591,6 +2516,11 @@ msgstr "平地级别"
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
 msgstr "基础地形高度。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base texture size"
+msgstr "最小材质大小"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2673,18 +2603,6 @@ msgstr "内置"
 #: src/settings_translation_file.cpp
 msgid "Camera"
 msgstr "相机"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
-"相机在节点附近的“剪切平面附近”距离，介于0到0.25之间。\n"
-"大多数用户不需要更改此设置。\n"
-"增加可以减少较弱GPU上的伪影。\n"
-"0.1 =默认值，0.25 =对于较弱的平板电脑来说是不错的值。"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2789,10 +2707,6 @@ msgstr "块大小"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "电影模式"
-
-#: src/settings_translation_file.cpp
-msgid "Clean transparent textures"
-msgstr "干净透明材质"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2967,6 +2881,10 @@ msgstr ""
 "再次按下自动前进键或后退以关闭。"
 
 #: src/settings_translation_file.cpp
+msgid "Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "控制"
 
@@ -3068,18 +2986,6 @@ msgid "Default acceleration"
 msgstr "默认加速度"
 
 #: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr "默认游戏"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-"创建新世界时的默认游戏。\n"
-"从主菜单创建一个新世界时这将被覆盖。"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
@@ -3147,6 +3053,12 @@ msgstr "定义大尺寸的河道结构。"
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
 msgstr "定义所选的山和湖的位置与地形。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
@@ -3259,6 +3171,10 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "服务器域名，将显示在服务器列表。"
 
 #: src/settings_translation_file.cpp
+msgid "Don't show \"reinstall Minetest Game\" notification"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "双击“跳跃”键飞行"
 
@@ -3363,6 +3279,10 @@ msgstr "启用 mod 频道支持。"
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
 msgstr "启用 mod 安全"
+
+#: src/settings_translation_file.cpp
+msgid "Enable mouse wheel (scroll) for item selection in hotbar."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -3516,10 +3436,6 @@ msgid "FPS when unfocused or paused"
 msgstr "游戏暂停时最高 FPS"
 
 #: src/settings_translation_file.cpp
-msgid "FSAA"
-msgstr "FSAA"
-
-#: src/settings_translation_file.cpp
 msgid "Factor noise"
 msgstr "系数噪声"
 
@@ -3581,18 +3497,6 @@ msgid "Filmic tone mapping"
 msgstr "电影色调映射"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, often resulting in dark or\n"
-"light edges to transparent textures. Apply a filter to clean that up\n"
-"at texture load time. This is automatically enabled if mipmapping is enabled."
-msgstr ""
-"经过滤的材质会与邻近的全透明材质混合RGB值，\n"
-"该值通常会被PNG优化器丢弃，某些时候会给透明材质产生暗色或\n"
-"亮色的边缘。应用该过滤器将在材质加载时移除该效果。\n"
-"该过滤器将在启用mipmapping的时候被自动应用。"
-
-#: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
 msgstr "过滤和抗锯齿"
 
@@ -3611,6 +3515,15 @@ msgstr "固定地图种子"
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
 msgstr "固定虚拟摇杆"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Fixes the position of virtual joystick.\n"
+"If disabled, virtual joystick will center to first-touch's position."
+msgstr ""
+"（Android）修复虚拟操纵杆的位置。\n"
+"如果禁用，虚拟操纵杆将居中至第一次触摸的位置。"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
@@ -3721,28 +3634,12 @@ msgid "Format of screenshots."
 msgstr "屏幕截图格式。"
 
 #: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr "窗口默认背景色"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr "窗口默认背景不透明度"
-
-#: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
 msgstr "窗口全屏背景色"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
 msgstr "窗口全屏背景不透明度"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr "窗口默认背景色(红,绿,蓝)。"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "窗口默认背景不透明度(0~255)。"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
@@ -3921,8 +3818,8 @@ msgid "Heat noise"
 msgstr "热噪声"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+#, fuzzy
+msgid "Height component of the initial window size."
 msgstr "初始窗口高度，全屏模式下忽略该值。"
 
 #: src/settings_translation_file.cpp
@@ -3932,6 +3829,11 @@ msgstr "高度噪声"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr "高度选择噪声"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hide: Temporary Settings"
+msgstr "临时设置"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -3986,14 +3888,22 @@ msgstr ""
 "单位为方块每二次方秒。"
 
 #: src/settings_translation_file.cpp
+msgid "Hotbar: Enable mouse wheel for selection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar: Invert mouse wheel direction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr "生成河流多深。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
-"If negative, liquid waves will move backwards.\n"
-"Requires waving liquids to be enabled."
+"If negative, liquid waves will move backwards."
 msgstr ""
 "液体波移动多快。更高值=更快。\n"
 "如果为负，液体波向后移动。\n"
@@ -4126,9 +4036,10 @@ msgid ""
 msgstr "如果启用，玩家将无法在没有密码的情况下加入或修改密码为空密码。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place blocks at the position (feet + eye level) where "
-"you stand.\n"
+"If enabled, you can place nodes at the position (feet + eye level) where you "
+"stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "如果启用，您可以将方块放置在您站立的位置（脚+视线水平）。\n"
@@ -4162,6 +4073,12 @@ msgstr ""
 "这个文件将被移动到debug.txt.1， \n"
 "如果存在较旧的debug.txt.1，则旧的将被删除。 \n"
 "仅当此设置为正时，才会移动 debug.txt。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If this is set to true, the user will never (again) be shown the\n"
+"\"reinstall Minetest Game\" notification."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4237,6 +4154,10 @@ msgstr "物品清单物品动画"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
 msgstr "反转鼠标"
+
+#: src/settings_translation_file.cpp
+msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4432,12 +4353,9 @@ msgstr ""
 "时间间隔。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Length of liquid waves.\n"
-"Requires waving liquids to be enabled."
-msgstr ""
-"液体波长度。\n"
-"需要波动液体启用。"
+#, fuzzy
+msgid "Length of liquid waves."
+msgstr "波动液体波动速度"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4987,10 +4905,6 @@ msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr "每个地图块的随机大型洞穴数的下限。"
 
 #: src/settings_translation_file.cpp
-msgid "Minimum texture size"
-msgstr "最小材质大小"
-
-#: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mip 贴图"
 
@@ -5095,10 +5009,6 @@ msgid ""
 msgstr "服务器名称，将显示在提供给玩家的服务器列表。"
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr "近平面"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
@@ -5179,6 +5089,15 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Occlusion Culling"
+msgstr "服务器端遮挡删除"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5299,13 +5218,16 @@ msgstr ""
 "请注意，主菜单中的端口字段将覆盖此设置。"
 
 #: src/settings_translation_file.cpp
-msgid "Post processing"
+msgid "Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Prevent digging and placing from repeating when holding the mouse buttons.\n"
-"Enable this when you dig or place too often by accident."
+"Prevent digging and placing from repeating when holding the respective "
+"buttons.\n"
+"Enable this when you dig or place too often by accident.\n"
+"On touchscreens, this only affects digging."
 msgstr ""
 "按住鼠标时，防止重复破坏和重复放置。 \n"
 "当您意外地频繁破坏或放置方块时启用此功能。"
@@ -5374,6 +5296,11 @@ msgstr "最近聊天消息"
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
 msgstr "常规字体路径"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Remember screen size"
+msgstr "自动保存屏幕大小"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5492,8 +5419,13 @@ msgid "Save the map received by the client on disk."
 msgstr "将客户端接收到的地图保存在磁盘上。"
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
-msgstr "当窗口大小改变时自动保存。"
+msgid ""
+"Save window size automatically when modified.\n"
+"If true, screen size is saved in screen_w and screen_h, and whether the "
+"window\n"
+"is maximized is stored in window_maximized.\n"
+"(Autosaving window_maximized only works if compiled with SDL.)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5566,6 +5498,28 @@ msgstr "定义通道的2个3D噪音的第二项。"
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "见 https://www.sqlite.org/pragma.html#pragma_synchronous"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Select the antialiasing method to apply.\n"
+"\n"
+"* None - No antialiasing (default)\n"
+"\n"
+"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
+"shaders)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Smoothens out block edges but does not affect the insides of textures.\n"
+"A restart is required to change this option.\n"
+"\n"
+"* FXAA - Fast approximate antialiasing (requires shaders)\n"
+"Applies a post-processing filter to detect and smoothen high-contrast "
+"edges.\n"
+"Provides balance between speed and image quality.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (requires shaders)\n"
+"Renders higher-resolution image of the scene, then scales down to reduce\n"
+"the aliasing effects. This is the slowest and the most accurate method."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -5677,6 +5631,17 @@ msgid "Serverlist file"
 msgstr "服务器列表文件"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Set the default tilt of Sun/Moon orbit in degrees.\n"
+"Games may change orbit tilt via API.\n"
+"Value of 0 means no tilt / vertical orbit."
+msgstr ""
+"以度为单位设置太阳/月亮轨道的倾斜度\n"
+"值 0 表示没有倾斜/垂直轨道。\n"
+"最小值 0.0 和最大值 60.0"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
@@ -5720,9 +5685,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid ""
-"Set to true to enable Shadow Mapping.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable Shadow Mapping."
 msgstr ""
 "设置为真以启用飘动树叶。\n"
 "需要启用着色器。"
@@ -5734,25 +5697,22 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving leaves."
 msgstr ""
 "设置为真以启用飘动树叶。\n"
 "需要启用着色器。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving liquids (like water).\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving liquids (like water)."
 msgstr ""
 "设置为真以启用摇动流体（例如水）。\n"
 "需要启用着色器。"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving plants."
 msgstr ""
 "设置为真以启用摆动植物。\n"
 "需要启用着色器。"
@@ -5778,6 +5738,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Shader path"
 msgstr "着色器路径"
+
+#: src/settings_translation_file.cpp
+msgid "Shaders"
+msgstr "着色器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5885,6 +5849,10 @@ msgstr ""
 "减少抖动。"
 
 #: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
+msgstr "天体轨道倾斜"
+
+#: src/settings_translation_file.cpp
 msgid "Slice w"
 msgstr "切片 w"
 
@@ -5913,20 +5881,18 @@ msgid "Smooth lighting"
 msgstr "平滑光照"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Smooths camera when looking around. Also called look or mouse smoothing.\n"
-"Useful for recording videos."
-msgstr ""
-"当转动视角时让摄影机变流畅。也称为观看或鼠标流畅。\n"
-"对录影很有用。"
-
-#: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
+"Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
+"cinematic mode by using the key set in Change Keys."
 msgstr "在电影模式中让摄影机旋转变流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera. 0 to disable."
-msgstr "让旋转摄影机时较流畅。设为 0 以停用。"
+#, fuzzy
+msgid ""
+"Smooths rotation of camera, also called look or mouse smoothing. 0 to "
+"disable."
+msgstr "在电影模式中让摄影机旋转变流畅。设为 0 以停用。"
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -6059,10 +6025,6 @@ msgid "Temperature variation for biomes."
 msgstr "生物群系的温度变化。"
 
 #: src/settings_translation_file.cpp
-msgid "Temporary Settings"
-msgstr "临时设置"
-
-#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr "地形替代噪声"
 
@@ -6135,6 +6097,10 @@ msgid "The URL for the content repository"
 msgstr "内容存储库的 URL"
 
 #: src/settings_translation_file.cpp
+msgid "The base node texture size used for world-aligned texture autoscaling."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "摇杆的无效区"
@@ -6160,7 +6126,8 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
+#, fuzzy
+msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr "开始触摸屏交互所需的长度（以像素为单位）。"
 
 #: src/settings_translation_file.cpp
@@ -6168,8 +6135,7 @@ msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
-"Default is 1.0 (1/2 node).\n"
-"Requires waving liquids to be enabled."
+"Default is 1.0 (1/2 node)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6264,6 +6230,15 @@ msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "定义tunnels的最初2个3D噪音。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"This can be bound to a key to toggle camera smoothing when looking around.\n"
+"Useful for recording videos"
+msgstr ""
+"当转动视角时让摄影机变流畅。也称为观看或鼠标流畅。\n"
+"对录影很有用。"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6301,12 +6276,23 @@ msgid "Tooltip delay"
 msgstr "工具提示延迟"
 
 #: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
+#, fuzzy
+msgid "Touchscreen"
 msgstr "触屏阈值"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Touchscreen"
+msgid "Touchscreen sensitivity"
+msgstr "鼠标灵敏度"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen sensitivity multiplier."
+msgstr "鼠标灵敏度倍数。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen threshold"
 msgstr "触屏阈值"
 
 #: src/settings_translation_file.cpp
@@ -6338,6 +6324,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
 msgstr "可信 mod"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Type of occlusion_culler\n"
+"\n"
+"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6396,11 +6392,13 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "主菜单背景使用云动画。"
 
 #: src/settings_translation_file.cpp
-msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+#, fuzzy
+msgid "Use anisotropic filtering when looking at textures from an angle."
+msgstr "缩放材质时使用三线过滤。"
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures."
+#, fuzzy
+msgid "Use bilinear filtering when scaling textures down."
 msgstr "缩放材质时使用双线过滤。"
 
 #: src/settings_translation_file.cpp
@@ -6415,31 +6413,34 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmapping to scale textures. May slightly increase performance,\n"
+"Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
-"Gamma correct downscaling is not supported."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
-"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
-"but it doesn't affect the insides of textures\n"
-"(which is especially noticeable with transparent textures).\n"
-"Visible spaces appear between nodes when shaders are disabled.\n"
-"If set to 0, MSAA is disabled.\n"
-"A restart is required after changing this option."
+"Gamma-correct downscaling is not supported."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test"
+"This flag enables use of raytraced occlusion culling test for\n"
+"client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use trilinear filtering when scaling textures."
-msgstr "缩放材质时使用三线过滤。"
+msgid ""
+"Use trilinear filtering when scaling textures down.\n"
+"If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
+"is applied."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
+"circle."
+msgstr ""
+"（安卓）使用虚拟操纵杆触发\"Aux1\"按钮。\n"
+"如果启用，虚拟操纵杆在主圆圈外会点击\"Aux1\"按钮。"
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
@@ -6516,8 +6517,10 @@ msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
-msgstr "屏幕垂直同步。"
+msgid ""
+"Vertical screen synchronization. Your system may still force VSync on even "
+"if this is disabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6632,18 +6635,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
-"can be blurred, so automatically upscale them with nearest-neighbor\n"
-"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
-"for the upscaled textures; higher values look sharper, but require more\n"
-"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-"bilinear/trilinear/anisotropic filtering is enabled.\n"
-"This is also used as the base node texture size for world-aligned\n"
-"texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6656,6 +6647,10 @@ msgstr ""
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether the window is maximized."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6684,27 +6679,22 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to show technical names.\n"
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names in All Settings.\n"
-"Controlled by the checkbox in the \"All settings\" menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr "是否显示客户端调试信息（与按 F5 的效果相同）。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
+msgid "Width component of the initial window size."
 msgstr "初始窗口大小的宽度。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Width of the selection box lines around nodes."
 msgstr "结点周围的选择框的线宽。"
+
+#: src/settings_translation_file.cpp
+msgid "Window maximized"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6803,6 +6793,9 @@ msgstr "cURL 超时"
 msgid "cURL parallel limit"
 msgstr "cURL 并发限制"
 
+#~ msgid "(game support required)"
+#~ msgstr "（需要子游戏支持）"
+
 #~ msgid "- Creative Mode: "
 #~ msgstr "- 创造模式: "
 
@@ -6816,6 +6809,21 @@ msgstr "cURL 并发限制"
 #~ "0 = 利用梯度信息进行视差遮蔽 (较快).\n"
 #~ "1 = 浮雕映射 (较慢, 但准确)."
 
+#~ msgid "2x"
+#~ msgstr "两倍"
+
+#~ msgid "3D Clouds"
+#~ msgstr "3D 云彩"
+
+#~ msgid "4x"
+#~ msgstr "四倍"
+
+#~ msgid "8x"
+#~ msgstr "八倍"
+
+#~ msgid "< Back to Settings page"
+#~ msgstr "< 返回设置页面"
+
 #~ msgid "Address / Port"
 #~ msgstr "地址/端口"
 
@@ -6827,23 +6835,29 @@ msgstr "cURL 并发限制"
 #~ "调整亮度表的伽玛编码。较高的数值会较亮。\n"
 #~ "这个设定是给客户端使用的，会被服务器忽略。"
 
+#~ msgid "All Settings"
+#~ msgstr "所有设置"
+
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "你确定要重置你的单人世界吗？"
 
 #~ msgid "Automatic forward key"
 #~ msgstr "自动前进键"
 
+#~ msgid "Autosave Screen Size"
+#~ msgstr "自动保存屏幕尺寸"
+
 #~ msgid "Aux1 key"
 #~ msgstr "Aux1键"
-
-#~ msgid "Back"
-#~ msgstr "后退"
 
 #~ msgid "Backward key"
 #~ msgstr "后退键"
 
 #~ msgid "Basic"
 #~ msgstr "基础"
+
+#~ msgid "Bilinear Filter"
+#~ msgstr "双线性过滤"
 
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "全屏模式中的位每像素（又称色彩深度）。"
@@ -6853,6 +6867,17 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Bumpmapping"
 #~ msgstr "凹凸贴图"
+
+#~ msgid ""
+#~ "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+#~ "Only works on GLES platforms. Most users will not need to change this.\n"
+#~ "Increasing can reduce artifacting on weaker GPUs.\n"
+#~ "0.1 = Default, 0.25 = Good value for weaker tablets."
+#~ msgstr ""
+#~ "相机在节点附近的“剪切平面附近”距离，介于0到0.25之间。\n"
+#~ "大多数用户不需要更改此设置。\n"
+#~ "增加可以减少较弱GPU上的伪影。\n"
+#~ "0.1 =默认值，0.25 =对于较弱的平板电脑来说是不错的值。"
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "镜头更新启用/禁用键"
@@ -6879,6 +6904,9 @@ msgstr "cURL 并发限制"
 #~ msgid "Cinematic mode key"
 #~ msgstr "电影模式键"
 
+#~ msgid "Clean transparent textures"
+#~ msgstr "干净透明材质"
+
 #~ msgid "Command key"
 #~ msgstr "命令键"
 
@@ -6890,6 +6918,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Connect"
 #~ msgstr "连接"
+
+#~ msgid "Connected Glass"
+#~ msgstr "连通玻璃"
 
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "控制在液体中的下沉速度。"
@@ -6924,6 +6955,16 @@ msgstr "cURL 并发限制"
 #~ msgid "Dec. volume key"
 #~ msgstr "音量减小键"
 
+#~ msgid "Default game"
+#~ msgstr "默认游戏"
+
+#~ msgid ""
+#~ "Default game when creating a new world.\n"
+#~ "This will be overridden when creating a world from the main menu."
+#~ msgstr ""
+#~ "创建新世界时的默认游戏。\n"
+#~ "从主菜单创建一个新世界时这将被覆盖。"
+
 #~ msgid ""
 #~ "Default timeout for cURL, stated in milliseconds.\n"
 #~ "Only has an effect if compiled with cURL."
@@ -6951,6 +6992,9 @@ msgstr "cURL 并发限制"
 #~ msgid "Dig key"
 #~ msgstr "挖掘键"
 
+#~ msgid "Disabled unlimited viewing range"
+#~ msgstr "禁用无限视野"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "从 minetest.net 下载一个子游戏，例如 minetest_game"
 
@@ -6963,11 +7007,17 @@ msgstr "cURL 并发限制"
 #~ msgid "Drop item key"
 #~ msgstr "丢弃物品键"
 
+#~ msgid "Dynamic shadows:"
+#~ msgstr "动态阴影："
+
 #~ msgid "Enable VBO"
 #~ msgstr "启用 VBO"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "启用注册确认"
+
+#~ msgid "Enabled"
+#~ msgstr "启用"
 
 #~ msgid ""
 #~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
@@ -7009,6 +7059,9 @@ msgstr "cURL 并发限制"
 #~ msgid "FPS in pause menu"
 #~ msgstr "暂停菜单 FPS"
 
+#~ msgid "FSAA"
+#~ msgstr "FSAA"
+
 #~ msgid "Fallback font shadow"
 #~ msgstr "后备字体阴影"
 
@@ -7018,8 +7071,23 @@ msgstr "cURL 并发限制"
 #~ msgid "Fallback font size"
 #~ msgstr "后备字体大小"
 
+#~ msgid "Fancy Leaves"
+#~ msgstr "华丽树叶"
+
 #~ msgid "Fast key"
 #~ msgstr "快速键"
+
+#~ msgid ""
+#~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
+#~ "which PNG optimizers usually discard, often resulting in dark or\n"
+#~ "light edges to transparent textures. Apply a filter to clean that up\n"
+#~ "at texture load time. This is automatically enabled if mipmapping is "
+#~ "enabled."
+#~ msgstr ""
+#~ "经过滤的材质会与邻近的全透明材质混合RGB值，\n"
+#~ "该值通常会被PNG优化器丢弃，某些时候会给透明材质产生暗色或\n"
+#~ "亮色的边缘。应用该过滤器将在材质加载时移除该效果。\n"
+#~ "该过滤器将在启用mipmapping的时候被自动应用。"
 
 #~ msgid "Filtering"
 #~ msgstr "过滤"
@@ -7035,6 +7103,18 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Font size of the fallback font in point (pt)."
 #~ msgstr "后备字体大小，单位pt。"
+
+#~ msgid "Formspec Default Background Color"
+#~ msgstr "窗口默认背景色"
+
+#~ msgid "Formspec Default Background Opacity"
+#~ msgstr "窗口默认背景不透明度"
+
+#~ msgid "Formspec default background color (R,G,B)."
+#~ msgstr "窗口默认背景色(红,绿,蓝)。"
+
+#~ msgid "Formspec default background opacity (between 0 and 255)."
+#~ msgstr "窗口默认背景不透明度(0~255)。"
 
 #~ msgid "Forward key"
 #~ msgstr "前进键"
@@ -7176,6 +7256,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Inc. volume key"
 #~ msgstr "音量增大键"
+
+#~ msgid "Information:"
+#~ msgstr "信息："
 
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "安装mod：无法找到$1的真实mod名称"
@@ -7850,6 +7933,13 @@ msgstr "cURL 并发限制"
 #~ msgid "Left key"
 #~ msgstr "左方向键"
 
+#~ msgid ""
+#~ "Length of liquid waves.\n"
+#~ "Requires waving liquids to be enabled."
+#~ msgstr ""
+#~ "液体波长度。\n"
+#~ "需要波动液体启用。"
+
 #~ msgid "Limit of emerge queues on disk"
 #~ msgstr "磁盘上的生产队列限制"
 
@@ -7880,6 +7970,12 @@ msgstr "cURL 并发限制"
 #~ msgid "Minimap key"
 #~ msgstr "小地图键"
 
+#~ msgid "Mipmap"
+#~ msgstr "Mip 贴图"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "Mip 贴图 + 各向异性过滤"
+
 #~ msgid "Mute key"
 #~ msgstr "静音按键"
 
@@ -7889,11 +7985,29 @@ msgstr "cURL 并发限制"
 #~ msgid "Name/Password"
 #~ msgstr "用户名/密码"
 
+#~ msgid "Near plane"
+#~ msgstr "近平面"
+
 #~ msgid "No"
 #~ msgstr "否"
 
+#~ msgid "No Filter"
+#~ msgstr "无过滤"
+
+#~ msgid "No Mipmap"
+#~ msgstr "无 Mip 贴图"
+
 #~ msgid "Noclip key"
 #~ msgstr "穿墙键"
+
+#~ msgid "Node Highlighting"
+#~ msgstr "方块高亮"
+
+#~ msgid "Node Outlining"
+#~ msgstr "方块轮廓"
+
+#~ msgid "None"
+#~ msgstr "无"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "法线贴图采样"
@@ -7906,6 +8020,12 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Ok"
 #~ msgstr "确定"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "不透明树叶"
+
+#~ msgid "Opaque Water"
+#~ msgstr "不透明水"
 
 #~ msgid ""
 #~ "Opaqueness (alpha) of the shadow behind the fallback font, between 0 and "
@@ -7939,6 +8059,9 @@ msgstr "cURL 并发限制"
 #~ msgid "Parallax occlusion strength"
 #~ msgstr "视差遮蔽强度"
 
+#~ msgid "Particles"
+#~ msgstr "粒子效果"
+
 #~ msgid "Path to TrueTypeFont or bitmap."
 #~ msgstr "TrueType 字体或位图的路径。"
 
@@ -7953,6 +8076,12 @@ msgstr "cURL 并发限制"
 
 #~ msgid "Player name"
 #~ msgstr "玩家名称"
+
+#~ msgid "Please enter a valid integer."
+#~ msgstr "请输入一个整数类型。"
+
+#~ msgid "Please enter a valid number."
+#~ msgstr "请输入一个合法的数字。"
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "性能分析启用/禁用键"
@@ -7976,6 +8105,12 @@ msgstr "cURL 并发限制"
 #~ msgid "Saturation"
 #~ msgstr "迭代"
 
+#~ msgid "Save window size automatically when modified."
+#~ msgstr "当窗口大小改变时自动保存。"
+
+#~ msgid "Screen:"
+#~ msgstr "屏幕："
+
 #~ msgid "Select Package File:"
 #~ msgstr "选择包文件："
 
@@ -7992,15 +8127,11 @@ msgstr "cURL 并发限制"
 #~ "较低的值意味着阴影和贴图更新更快，但会消耗更多资源。\n"
 #~ "最小值 0.001 秒 最大值 0.2 秒"
 
-#, fuzzy
-#~ msgid ""
-#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
-#~ "Value of 0 means no tilt / vertical orbit.\n"
-#~ "Minimum value: 0.0; maximum value: 60.0"
-#~ msgstr ""
-#~ "以度为单位设置太阳/月亮轨道的倾斜度\n"
-#~ "值 0 表示没有倾斜/垂直轨道。\n"
-#~ "最小值 0.0 和最大值 60.0"
+#~ msgid "Shaders (experimental)"
+#~ msgstr "着色器（实验性）"
+
+#~ msgid "Shaders (unavailable)"
+#~ msgstr "着色器 (不可用)"
 
 #, fuzzy
 #~ msgid "Shadow limit"
@@ -8011,8 +8142,14 @@ msgstr "cURL 并发限制"
 #~ "not be drawn."
 #~ msgstr "后备字体阴影偏移（单位为像素），0 表示不绘制阴影。"
 
-#~ msgid "Sky Body Orbit Tilt"
-#~ msgstr "天体轨道倾斜"
+#~ msgid "Simple Leaves"
+#~ msgstr "简单树叶"
+
+#~ msgid "Smooth Lighting"
+#~ msgstr "平滑光照"
+
+#~ msgid "Smooths rotation of camera. 0 to disable."
+#~ msgstr "让旋转摄影机时较流畅。设为 0 以停用。"
 
 #~ msgid "Sneak key"
 #~ msgstr "潜行键"
@@ -8029,6 +8166,15 @@ msgstr "cURL 并发限制"
 #~ msgid "Strength of generated normalmaps."
 #~ msgstr "生成的一般地图强度。"
 
+#~ msgid "Texturing:"
+#~ msgstr "材质:"
+
+#~ msgid "The value must be at least $1."
+#~ msgstr "这个值必须至少为 $1。"
+
+#~ msgid "The value must not be larger than $1."
+#~ msgstr "这个值必须不大于$1."
+
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "用于特定语言的字体。"
 
@@ -8041,11 +8187,23 @@ msgstr "cURL 并发限制"
 #~ msgid "Toggle camera mode key"
 #~ msgstr "启用/禁用拍照模式键"
 
+#~ msgid "Tone Mapping"
+#~ msgstr "色调映射"
+
+#~ msgid "Touch threshold (px):"
+#~ msgstr "触控阈值（像素）："
+
+#~ msgid "Trilinear Filter"
+#~ msgstr "三线性过滤"
+
 #~ msgid "Unable to install a game as a $1"
 #~ msgstr "无法将$1安装为子游戏"
 
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "无法将$1安装为mod包"
+
+#~ msgid "Vertical screen synchronization."
+#~ msgstr "屏幕垂直同步。"
 
 #~ msgid "View"
 #~ msgstr "视野"
@@ -8059,11 +8217,30 @@ msgstr "cURL 并发限制"
 #~ msgid "View zoom key"
 #~ msgstr "检视缩放键"
 
+#, c-format
+#~ msgid "Viewing range is at maximum: %d"
+#~ msgstr "视野范围已达到最大：%d"
+
+#~ msgid "Waving Leaves"
+#~ msgstr "飘动树叶"
+
+#~ msgid "Waving Liquids"
+#~ msgstr "摇动流体"
+
+#~ msgid "Waving Plants"
+#~ msgstr "摇摆植物"
+
 #~ msgid "Waving Water"
 #~ msgstr "流动的水面"
 
 #~ msgid "Waving water"
 #~ msgstr "摇动水"
+
+#~ msgid "X"
+#~ msgstr "X"
+
+#~ msgid "Y"
+#~ msgstr "Y"
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."
@@ -8087,6 +8264,9 @@ msgstr "cURL 并发限制"
 
 #~ msgid "You died."
 #~ msgstr "您已经死亡."
+
+#~ msgid "Z"
+#~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"

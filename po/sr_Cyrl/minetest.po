@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Serbian (cyrillic) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2022-07-12 16:18+0000\n"
 "Last-Translator: OrbitalPetrol <ccorporation981@gmail.com>\n"
 "Language-Team: Serbian (cyrillic) <https://hosted.weblate.org/projects/"
@@ -147,7 +147,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Прекини"
@@ -214,7 +214,8 @@ msgid "Optional dependencies:"
 msgstr "Необавезне зависности:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "Сачувај"
 
@@ -317,6 +318,11 @@ msgstr "Инсталирај $1"
 msgid "Install missing dependencies"
 msgstr "Инсталирај недостајуће зависности"
 
+#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
+msgid "Loading..."
+msgstr "Учитавање..."
+
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
 msgstr "Модови"
@@ -326,6 +332,7 @@ msgid "No packages could be retrieved"
 msgstr "Ниједан пакет није било могуће преузети"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
 msgstr "Нема резултата"
 
@@ -354,6 +361,10 @@ msgid "Texture packs"
 msgstr "Сетови текстура"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "The package $1/$2 was not found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
 msgstr "Деинсталирај"
 
@@ -368,6 +379,10 @@ msgstr "Ажурирај све [$1]"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
 msgstr "Погледај још информација у веб претраживачу"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -447,11 +462,6 @@ msgid "Increases humidity around rivers"
 msgstr "Повећава влажност око река"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
-msgid "Install a game"
-msgstr "Инсталирај $1"
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
 msgstr ""
 
@@ -508,7 +518,7 @@ msgid "Sea level rivers"
 msgstr "Реке на нивоу мора"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
 msgstr "Семе"
 
@@ -559,10 +569,6 @@ msgstr "Веома велике пећине дубоко у подземљу"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "Име света"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "You have no games installed."
-msgstr "Нема инсталираних подигара."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -618,6 +624,31 @@ msgstr "Шифре се не поклапају!"
 msgid "Register"
 msgstr ""
 
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Dismiss"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"For a long time, the Minetest engine shipped with a default game called "
+"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
+"game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"If you want to continue playing in your Minetest Game worlds, you need to "
+"reinstall Minetest Game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Minetest Game is no longer installed by default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Reinstall Minetest Game"
+msgstr ""
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "Прихвати"
@@ -633,157 +664,6 @@ msgid ""
 msgstr ""
 "Ова група модова има специфично име дато у свом modpack.conf које ће "
 "преписати било које име дато овде."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "(No description of setting given)"
-msgstr "(Није дат опис поставке)"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "2D Noise"
-msgstr "2D бука"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "< Back to Settings page"
-msgstr "< Назад на страну са поставкама"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Browse"
-msgstr "Прегледај"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "Одабери свет:"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Games"
-msgstr "Настави"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Mods"
-msgstr "Настави"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "Онемогућено"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Edit"
-msgstr "Промени"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Enabled"
-msgstr "Омогућено"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Lacunarity"
-msgstr "Лакунарност"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Octaves"
-msgstr "Октаве"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "Помак"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Persistence"
-msgstr "Упорност"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid integer."
-msgstr "Молим вас унесите дозвољен цео број."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid number."
-msgstr "Молим вас унесите валидан број."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Restore Default"
-msgstr "Поврати подразумевано"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Скала"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Тражи"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Select directory"
-msgstr "Изаберите фајл мода:"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Select file"
-msgstr "Изаберите фајл мода:"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Show technical names"
-msgstr "Прикажи техничка имена"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be at least $1."
-msgstr "Вредност мора бити најмање $1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must not be larger than $1."
-msgstr "Вредност не сме бити већа од $1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X spread"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y spread"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z spread"
-msgstr ""
-
-#. ~ "absvalue" is a noise parameter flag.
-#. It is short for "absolute value".
-#. It can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "absvalue"
-msgstr ""
-
-#. ~ "defaults" is a noise parameter flag.
-#. It describes the default processing options
-#. for noise settings in main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "defaults"
-msgstr "Уобичајена игра"
-
-#. ~ "eased" is a noise parameter flag.
-#. It is used to make the map smoother and
-#. can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "eased"
-msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -808,6 +688,10 @@ msgstr ""
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
 msgstr ""
+
+#: builtin/mainmenu/init.lua
+msgid "Settings"
+msgstr "Поставке"
 
 #: builtin/mainmenu/pkgmgr.lua
 #, fuzzy
@@ -847,10 +731,6 @@ msgstr "Неуспела инсталација $1 у $2"
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Неуспела инсталација $1 у $2"
 
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Учитавање..."
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr ""
@@ -860,6 +740,188 @@ msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 "Покушајте да поновно укључите листу сервера и проверите вашу интернет "
 "конекцију."
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Browse"
+msgstr "Прегледај"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Edit"
+msgstr "Промени"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Select directory"
+msgstr "Изаберите фајл мода:"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Изаберите фајл мода:"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Set"
+msgstr "Одабери"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "(No description of setting given)"
+msgstr "(Није дат опис поставке)"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "2D Noise"
+msgstr "2D бука"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Lacunarity"
+msgstr "Лакунарност"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Octaves"
+msgstr "Октаве"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "Помак"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "Persistence"
+msgstr "Упорност"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Скала"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "X spread"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Y spread"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Z spread"
+msgstr ""
+
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "absvalue"
+msgstr ""
+
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "defaults"
+msgstr "Уобичајена игра"
+
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "eased"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(Use system language)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "Назад"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Change keys"
+msgstr "Подеси контроле"
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+#: src/client/keycode.cpp
+msgid "Clear"
+msgstr "Очисти"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Reset setting to default"
+msgstr "Поврати подразумевано"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Reset setting to default ($1)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "Тражи"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show advanced settings"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show technical names"
+msgstr "Прикажи техничка имена"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Client Mods"
+msgstr "Одабери свет:"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Games"
+msgstr "Настави"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Mods"
+msgstr "Настави"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "(The game will need to enable shadows as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Custom"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "Онемогућено"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#: src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Low"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Medium"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very Low"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
@@ -880,6 +942,10 @@ msgstr "Главни развијачи"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
@@ -918,11 +984,6 @@ msgstr "Настави"
 #, fuzzy
 msgid "Disable Texture Pack"
 msgstr "Одабери сет текстура:"
-
-#: builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Information:"
-msgstr "Информације о моду:"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -977,6 +1038,11 @@ msgid "Host Server"
 msgstr "Направи сервер"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Install a game"
+msgstr "Инсталирај $1"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
 msgstr ""
 
@@ -1015,14 +1081,14 @@ msgstr "Серверски порт"
 msgid "Start Game"
 msgstr "Направи игру"
 
+#: builtin/mainmenu/tab_local.lua
+msgid "You have no games installed."
+msgstr "Нема инсталираних подигара."
+
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Address"
 msgstr "- Адреса: "
-
-#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
-msgid "Clear"
-msgstr "Очисти"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1074,182 +1140,6 @@ msgstr "Обриши Омиљени"
 #, fuzzy
 msgid "Server Description"
 msgstr "Серверски порт"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "(game support required)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "2x"
-msgstr "2x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "3D Clouds"
-msgstr "3Д Облаци"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "4x"
-msgstr "4x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "8x"
-msgstr "8x"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "All Settings"
-msgstr "Поставке"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Antialiasing:"
-msgstr "Гланчање текстура:"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Autosave Screen Size"
-msgstr "Аутоматски сачувај величину екрана"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bilinear Filter"
-msgstr "Билинеарни филтер"
-
-#: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Подеси контроле"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Connected Glass"
-msgstr "Спојено стакло"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Dynamic shadows"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows:"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Fancy Leaves"
-msgstr "Елегантно лишће"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Medium"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap"
-msgstr "Мипмап"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap + Aniso. Filter"
-msgstr "Mipmap + Анизотропни филтер"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Filter"
-msgstr "Без филтера"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Mipmap"
-msgstr "Без Mipmap-а"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
-msgstr "Истицање блокова"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Outlining"
-msgstr "Обцртавање блокова"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "None"
-msgstr "Ништа"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Leaves"
-msgstr "Непровидно лишће"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Water"
-msgstr "Непрозирна вода"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Particles"
-msgstr "Честице"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr "Екран:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Settings"
-msgstr "Поставке"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "Шејдери"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (experimental)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (unavailable)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Simple Leaves"
-msgstr "Једноставно лишће"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Smooth Lighting"
-msgstr "Глатко осветљење"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Texturing:"
-msgstr "Филтери за текстуре:"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "Тонско Мапирање"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touch threshold (px):"
-msgstr "Праг додиривања (px)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Trilinear Filter"
-msgstr "Трилинеарни филтер"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Leaves"
-msgstr "Лепршајуће лишће"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Waving Liquids"
-msgstr "Лепршајуће лишће"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Лепршајуће биљке"
 
 #: src/client/client.cpp
 #, fuzzy
@@ -1318,7 +1208,7 @@ msgstr ""
 msgid "Provided world path doesn't exist: "
 msgstr "Дата локација света не постоји: "
 
-#: src/client/game.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1398,8 +1288,12 @@ msgid "Camera update enabled"
 msgstr "Кључ за укључивање/искључивање освежавања камере"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (disabled by mod or game)"
+msgid "Can't show block bounds (disabled by game or mod)"
 msgstr ""
+
+#: src/client/game.cpp
+msgid "Change Keys"
+msgstr "Подеси контроле"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1445,7 +1339,7 @@ msgid ""
 "- %s: move left\n"
 "- %s: move right\n"
 "- %s: jump/climb up\n"
-"- %s: dig/punch\n"
+"- %s: dig/punch/use\n"
 "- %s: place/use\n"
 "- %s: sneak/climb down\n"
 "- %s: drop item\n"
@@ -1468,6 +1362,35 @@ msgstr ""
 "- Десни клик: постављање/коришћење\n"
 "- Точкић миша: одабирање ставке\n"
 "- %s: причање\n"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid ""
+"Controls:\n"
+"No menu open:\n"
+"- slide finger: look around\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
+"Menu/inventory open:\n"
+"- double tap (outside):\n"
+" --> close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"Подразумеване контроле:\n"
+"Ни један приказан мени:\n"
+"- један тап: копај\n"
+"- дупли тап: постави блок/користи\n"
+"- превуци прстом: гледај около\n"
+"Мени/Инвертар приказан:\n"
+"- дупли тап (изван):\n"
+" -->Искључи\n"
+"- додирни ствари, додирни празно место:\n"
+" --> помери ствари\n"
+"- држи и превлачи, тапни другим прстом:\n"
+" --> пребаци само једну ствар из групе\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1493,42 +1416,6 @@ msgstr "Кључ за укључивање debug информација"
 
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
-msgstr ""
-
-#: src/client/game.cpp
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-"Подразумеване контроле:\n"
-"Ни један приказан мени:\n"
-"- један тап: копај\n"
-"- дупли тап: постави блок/користи\n"
-"- превуци прстом: гледај около\n"
-"Мени/Инвертар приказан:\n"
-"- дупли тап (изван):\n"
-" -->Искључи\n"
-"- додирни ствари, додирни празно место:\n"
-" --> помери ствари\n"
-"- држи и превлачи, тапни другим прстом:\n"
-" --> пребаци само једну ствар из групе\n"
-
-#: src/client/game.cpp
-msgid "Disabled unlimited viewing range"
-msgstr ""
-
-#: src/client/game.cpp
-msgid "Enabled unlimited viewing range"
 msgstr ""
 
 #: src/client/game.cpp
@@ -1708,19 +1595,47 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
 #: src/client/game.cpp
+msgid "Unlimited viewing range disabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled"
+msgstr ""
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled, but forbidden by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing changed to %d (the minimum)"
+msgstr "Јачина звука промењена на %d%%"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
 #, fuzzy, c-format
 msgid "Viewing range changed to %d"
 msgstr "Јачина звука промењена на %d%%"
 
 #: src/client/game.cpp
-#, c-format
-msgid "Viewing range is at maximum: %d"
-msgstr ""
+#, fuzzy, c-format
+msgid "Viewing range changed to %d (the maximum)"
+msgstr "Јачина звука промењена на %d%%"
 
 #: src/client/game.cpp
 #, c-format
-msgid "Viewing range is at minimum: %d"
+msgid ""
+"Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing range changed to %d, but limited to %d by game or mod"
+msgstr "Јачина звука промењена на %d%%"
 
 #: src/client/game.cpp
 #, c-format
@@ -2287,18 +2202,10 @@ msgstr ""
 msgid "Name is taken. Please choose another name"
 msgstr "Молим одаберите име!"
 
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Fixes the position of virtual joystick.\n"
-"If disabled, virtual joystick will center to first-touch's position."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
-"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
-"circle."
-msgstr ""
+#: src/server.cpp
+#, fuzzy, c-format
+msgid "%s while shutting down: "
+msgstr "Искључивање..."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2531,6 +2438,14 @@ msgstr "Напредно"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names.\n"
+"Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2567,6 +2482,16 @@ msgstr "Јавни сервер"
 #, fuzzy
 msgid "Announce to this serverlist."
 msgstr "Јавни сервер"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Anti-aliasing scale"
+msgstr "Гланчање текстура:"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Antialiasing method"
+msgstr "Гланчање текстура:"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2633,10 +2558,6 @@ msgid "Automatically report to the serverlist."
 msgstr "Аутоматски пријави сервер-листи."
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
-msgstr "Аутоматски сачувај величину екрана"
-
-#: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr ""
 
@@ -2651,6 +2572,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base texture size"
+msgstr "Сетови текстура"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2735,14 +2661,6 @@ msgstr "Уграђено"
 #, fuzzy
 msgid "Camera"
 msgstr "Промени дугмад"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2852,10 +2770,6 @@ msgstr "Величина комада"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Синематски мод"
-
-#: src/settings_translation_file.cpp
-msgid "Clean transparent textures"
-msgstr "Очисти провидне трекстуре"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3020,6 +2934,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Контроле"
 
@@ -3114,18 +3032,6 @@ msgid "Default acceleration"
 msgstr "Уобичајено убрзање"
 
 #: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr "Уобичајена игра"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-"Уобичајена игра при стварању новог света.\n"
-"Ово се може премостити при стварању новог света из главног менија."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
@@ -3188,6 +3094,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3299,6 +3211,10 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Don't show \"reinstall Minetest Game\" notification"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr ""
 
@@ -3395,6 +3311,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3520,10 +3440,6 @@ msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FSAA"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Factor noise"
 msgstr ""
 
@@ -3584,14 +3500,6 @@ msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, often resulting in dark or\n"
-"light edges to transparent textures. Apply a filter to clean that up\n"
-"at texture load time. This is automatically enabled if mipmapping is enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Filtering and Antialiasing"
 msgstr "Гланчање текстура:"
@@ -3610,6 +3518,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Fixes the position of virtual joystick.\n"
+"If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3718,27 +3632,11 @@ msgid "Format of screenshots."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3900,8 +3798,7 @@ msgid "Heat noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+msgid "Height component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3912,6 +3809,11 @@ msgstr "Десни Windows"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hide: Temporary Settings"
+msgstr "Поставке"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -3960,14 +3862,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Hotbar: Enable mouse wheel for selection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar: Invert mouse wheel direction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
-"If negative, liquid waves will move backwards.\n"
-"Requires waving liquids to be enabled."
+"If negative, liquid waves will move backwards."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4077,9 +3986,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place blocks at the position (feet + eye level) where "
-"you stand.\n"
+"If enabled, you can place nodes at the position (feet + eye level) where you "
+"stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "Ако је укључено, можете стављати блокове унутар позиције где стојите.\n"
@@ -4104,6 +4014,12 @@ msgid ""
 "this setting when it is opened, the file is moved to debug.txt.1,\n"
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If this is set to true, the user will never (again) be shown the\n"
+"\"reinstall Minetest Game\" notification."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4174,6 +4090,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4341,10 +4261,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Length of liquid waves.\n"
-"Requires waving liquids to be enabled."
-msgstr ""
+#, fuzzy
+msgid "Length of liquid waves."
+msgstr "Лепршајуће лишће"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4838,10 +4757,6 @@ msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimum texture size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr ""
 
@@ -4936,10 +4851,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
@@ -5004,6 +4915,14 @@ msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5113,13 +5032,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Post processing"
+msgid "Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Prevent digging and placing from repeating when holding the mouse buttons.\n"
-"Enable this when you dig or place too often by accident."
+"Prevent digging and placing from repeating when holding the respective "
+"buttons.\n"
+"Enable this when you dig or place too often by accident.\n"
+"On touchscreens, this only affects digging."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5179,6 +5100,11 @@ msgstr ""
 #, fuzzy
 msgid "Regular font path"
 msgstr "Одабери локацију за пријаве"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Remember screen size"
+msgstr "Аутоматски сачувај величину екрана"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5286,7 +5212,12 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
+msgid ""
+"Save window size automatically when modified.\n"
+"If true, screen size is saved in screen_w and screen_h, and whether the "
+"window\n"
+"is maximized is stored in window_maximized.\n"
+"(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5353,6 +5284,28 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Select the antialiasing method to apply.\n"
+"\n"
+"* None - No antialiasing (default)\n"
+"\n"
+"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
+"shaders)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Smoothens out block edges but does not affect the insides of textures.\n"
+"A restart is required to change this option.\n"
+"\n"
+"* FXAA - Fast approximate antialiasing (requires shaders)\n"
+"Applies a post-processing filter to detect and smoothen high-contrast "
+"edges.\n"
+"Provides balance between speed and image quality.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (requires shaders)\n"
+"Renders higher-resolution image of the scene, then scales down to reduce\n"
+"the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5468,6 +5421,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the default tilt of Sun/Moon orbit in degrees.\n"
+"Games may change orbit tilt via API.\n"
+"Value of 0 means no tilt / vertical orbit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
@@ -5499,9 +5459,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable Shadow Mapping.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable Shadow Mapping."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5511,21 +5469,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving leaves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving liquids (like water).\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving liquids (like water)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving plants."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5546,6 +5498,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Shader path"
+msgstr "Шејдери"
+
+#: src/settings_translation_file.cpp
+msgid "Shaders"
 msgstr "Шејдери"
 
 #: src/settings_translation_file.cpp
@@ -5635,6 +5591,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Slice w"
 msgstr ""
 
@@ -5664,16 +5624,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when looking around. Also called look or mouse smoothing.\n"
-"Useful for recording videos."
+"Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera. 0 to disable."
+msgid ""
+"Smooths rotation of camera, also called look or mouse smoothing. 0 to "
+"disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5782,11 +5740,6 @@ msgid "Temperature variation for biomes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Temporary Settings"
-msgstr "Поставке"
-
-#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr ""
 
@@ -5850,6 +5803,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The base node texture size used for world-aligned texture autoscaling."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr ""
 
@@ -5873,7 +5830,7 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
+msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5881,8 +5838,7 @@ msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
-"Default is 1.0 (1/2 node).\n"
-"Requires waving liquids to be enabled."
+"Default is 1.0 (1/2 node)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5970,6 +5926,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"This can be bound to a key to toggle camera smoothing when looking around.\n"
+"Useful for recording videos"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
@@ -6004,12 +5966,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Touch screen threshold"
+msgid "Touchscreen"
 msgstr "Граница семена за плаже"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Touchscreen"
+msgid "Touchscreen sensitivity"
+msgstr "Граница семена за плаже"
+
+#: src/settings_translation_file.cpp
+msgid "Touchscreen sensitivity multiplier."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen threshold"
 msgstr "Граница семена за плаже"
 
 #: src/settings_translation_file.cpp
@@ -6037,6 +6008,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Type of occlusion_culler\n"
+"\n"
+"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6097,11 +6078,11 @@ msgid "Use a cloud animation for the main menu background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use anisotropic filtering when viewing at textures from an angle."
+msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures."
+msgid "Use bilinear filtering when scaling textures down."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6116,30 +6097,30 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmapping to scale textures. May slightly increase performance,\n"
+"Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
-"Gamma correct downscaling is not supported."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
-"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
-"but it doesn't affect the insides of textures\n"
-"(which is especially noticeable with transparent textures).\n"
-"Visible spaces appear between nodes when shaders are disabled.\n"
-"If set to 0, MSAA is disabled.\n"
-"A restart is required after changing this option."
+"Gamma-correct downscaling is not supported."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test"
+"This flag enables use of raytraced occlusion culling test for\n"
+"client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use trilinear filtering when scaling textures."
+msgid ""
+"Use trilinear filtering when scaling textures down.\n"
+"If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
+"is applied."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
+"circle."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6215,7 +6196,9 @@ msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
+msgid ""
+"Vertical screen synchronization. Your system may still force VSync on even "
+"if this is disabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6330,18 +6313,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
-"can be blurred, so automatically upscale them with nearest-neighbor\n"
-"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
-"for the upscaled textures; higher values look sharper, but require more\n"
-"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-"bilinear/trilinear/anisotropic filtering is enabled.\n"
-"This is also used as the base node texture size for world-aligned\n"
-"texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6354,6 +6325,10 @@ msgstr ""
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether the window is maximized."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6380,24 +6355,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to show technical names.\n"
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names in All Settings.\n"
-"Controlled by the checkbox in the \"All settings\" menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
+msgid "Width component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Window maximized"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6508,6 +6478,21 @@ msgstr ""
 #~ "0 =  parallax occlusion са информацијама о нагибима (брже)\n"
 #~ "1 = мапирање рељефа (спорије, прецизније)."
 
+#~ msgid "2x"
+#~ msgstr "2x"
+
+#~ msgid "3D Clouds"
+#~ msgstr "3Д Облаци"
+
+#~ msgid "4x"
+#~ msgstr "4x"
+
+#~ msgid "8x"
+#~ msgstr "8x"
+
+#~ msgid "< Back to Settings page"
+#~ msgstr "< Назад на страну са поставкама"
+
 #~ msgid "Address / Port"
 #~ msgstr "Адреса / Порт"
 
@@ -6519,6 +6504,10 @@ msgstr ""
 #~ "Подеси осветљење унутар игре. Веће вредности су светлије.\n"
 #~ "Ово подешавање је само за клијента, сервер га игнорише."
 
+#, fuzzy
+#~ msgid "All Settings"
+#~ msgstr "Поставке"
+
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Да ли сте сигурни да желите да ресетујете ваш свет?"
 
@@ -6526,14 +6515,18 @@ msgstr ""
 #~ msgid "Automatic forward key"
 #~ msgstr "Кључ за синематски мод"
 
-#~ msgid "Back"
-#~ msgstr "Назад"
+#, fuzzy
+#~ msgid "Autosave Screen Size"
+#~ msgstr "Аутоматски сачувај величину екрана"
 
 #~ msgid "Backward key"
 #~ msgstr "Кључ за назад"
 
 #~ msgid "Basic"
 #~ msgstr "Основно"
+
+#~ msgid "Bilinear Filter"
+#~ msgstr "Билинеарни филтер"
 
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Битови по пикселу (или дубина боје) у моду целог екрана."
@@ -6556,6 +6549,9 @@ msgstr ""
 #~ msgid "Cinematic mode key"
 #~ msgstr "Кључ за синематски мод"
 
+#~ msgid "Clean transparent textures"
+#~ msgstr "Очисти провидне трекстуре"
+
 #~ msgid "Command key"
 #~ msgstr "Кључ за команду"
 
@@ -6567,6 +6563,9 @@ msgstr ""
 
 #~ msgid "Connect"
 #~ msgstr "Прикључи се"
+
+#~ msgid "Connected Glass"
+#~ msgstr "Спојено стакло"
 
 #, fuzzy
 #~ msgid ""
@@ -6591,6 +6590,16 @@ msgstr ""
 #~ msgid "Debug info toggle key"
 #~ msgstr "Кључ за укључивање debug информација"
 
+#~ msgid "Default game"
+#~ msgstr "Уобичајена игра"
+
+#~ msgid ""
+#~ "Default game when creating a new world.\n"
+#~ "This will be overridden when creating a world from the main menu."
+#~ msgstr ""
+#~ "Уобичајена игра при стварању новог света.\n"
+#~ "Ово се може премостити при стварању новог света из главног менија."
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Преузми подигру, као што је minetest_game, са minetest.net"
 
@@ -6601,11 +6610,21 @@ msgstr ""
 #~ msgid "Downloading and installing $1, please wait..."
 #~ msgstr "Преузима се $1, молим вас сачекајте..."
 
+#~ msgid "Enabled"
+#~ msgstr "Омогућено"
+
 #~ msgid "Enter "
 #~ msgstr "Уреду "
 
+#~ msgid "Fancy Leaves"
+#~ msgstr "Елегантно лишће"
+
 #~ msgid "Game"
 #~ msgstr "Игра"
+
+#, fuzzy
+#~ msgid "Information:"
+#~ msgstr "Информације о моду:"
 
 #, fuzzy
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
@@ -6628,6 +6647,12 @@ msgstr ""
 #~ msgid "Main menu style"
 #~ msgstr "Главни мени"
 
+#~ msgid "Mipmap"
+#~ msgstr "Мипмап"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "Mipmap + Анизотропни филтер"
+
 #~ msgid "Name / Password"
 #~ msgstr "Име / Шифра"
 
@@ -6637,8 +6662,29 @@ msgstr ""
 #~ msgid "No"
 #~ msgstr "Не"
 
+#~ msgid "No Filter"
+#~ msgstr "Без филтера"
+
+#~ msgid "No Mipmap"
+#~ msgstr "Без Mipmap-а"
+
+#~ msgid "Node Highlighting"
+#~ msgstr "Истицање блокова"
+
+#~ msgid "Node Outlining"
+#~ msgstr "Обцртавање блокова"
+
+#~ msgid "None"
+#~ msgstr "Ништа"
+
 #~ msgid "Ok"
 #~ msgstr "Уреду"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "Непровидно лишће"
+
+#~ msgid "Opaque Water"
+#~ msgstr "Непрозирна вода"
 
 #~ msgid "Parallax Occlusion"
 #~ msgstr "Parallax Occlusion Мапирање"
@@ -6646,6 +6692,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "Parallax occlusion scale"
 #~ msgstr "Parallax Occlusion Мапирање"
+
+#~ msgid "Particles"
+#~ msgstr "Честице"
 
 #, fuzzy
 #~ msgid "Pitch move key"
@@ -6655,15 +6704,30 @@ msgstr ""
 #~ msgid "Place key"
 #~ msgstr "Кључ за синематски мод"
 
+#~ msgid "Please enter a valid integer."
+#~ msgstr "Молим вас унесите дозвољен цео број."
+
+#~ msgid "Please enter a valid number."
+#~ msgstr "Молим вас унесите валидан број."
+
 #~ msgid "PvP enabled"
 #~ msgstr "Туча омогућена"
 
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Ресетуј свет"
 
+#~ msgid "Screen:"
+#~ msgstr "Екран:"
+
 #, fuzzy
 #~ msgid "Select Package File:"
 #~ msgstr "Изаберите фајл мода:"
+
+#~ msgid "Simple Leaves"
+#~ msgstr "Једноставно лишће"
+
+#~ msgid "Smooth Lighting"
+#~ msgstr "Глатко осветљење"
 
 #, fuzzy
 #~ msgid "Special key"
@@ -6672,11 +6736,30 @@ msgstr ""
 #~ msgid "Start Singleplayer"
 #~ msgstr "Започни игру за једног играча"
 
+#~ msgid "Texturing:"
+#~ msgstr "Филтери за текстуре:"
+
+#~ msgid "The value must be at least $1."
+#~ msgstr "Вредност мора бити најмање $1."
+
+#~ msgid "The value must not be larger than $1."
+#~ msgstr "Вредност не сме бити већа од $1."
+
 #~ msgid "To enable shaders the OpenGL driver needs to be used."
 #~ msgstr "Да би се омогућили шејдери мора се користити OpenGL драјвер."
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Укључи/Искључи Cinematic мод"
+
+#~ msgid "Tone Mapping"
+#~ msgstr "Тонско Мапирање"
+
+#, fuzzy
+#~ msgid "Touch threshold (px):"
+#~ msgstr "Праг додиривања (px)"
+
+#~ msgid "Trilinear Filter"
+#~ msgstr "Трилинеарни филтер"
 
 #, fuzzy
 #~ msgid "Unable to install a game as a $1"
@@ -6685,6 +6768,16 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "Неуспела инсталација $1 у $2"
+
+#~ msgid "Waving Leaves"
+#~ msgstr "Лепршајуће лишће"
+
+#, fuzzy
+#~ msgid "Waving Liquids"
+#~ msgstr "Лепршајуће лишће"
+
+#~ msgid "Waving Plants"
+#~ msgstr "Лепршајуће биљке"
 
 #~ msgid "Yes"
 #~ msgstr "Да"

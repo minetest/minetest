@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2023-08-09 16:48+0000\n"
 "Last-Translator: Skrripy <rozihrash.ya6w7@simplelogin.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
@@ -147,7 +147,7 @@ msgstr "(Незадоволений)"
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "Скасувати"
@@ -214,7 +214,8 @@ msgid "Optional dependencies:"
 msgstr "Необовʼязкові залежності:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "Зберегти"
 
@@ -315,6 +316,11 @@ msgstr "Встановити $1"
 msgid "Install missing dependencies"
 msgstr "Встановити відсутні залежності"
 
+#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
+msgid "Loading..."
+msgstr "Завантаження..."
+
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
 msgstr "Моди"
@@ -324,6 +330,7 @@ msgid "No packages could be retrieved"
 msgstr "Не вдалося отримати пакунки"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
 msgstr "Нічого не знайдено"
 
@@ -352,6 +359,10 @@ msgid "Texture packs"
 msgstr "Набори текстур"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "The package $1/$2 was not found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
 msgstr "Видалити"
 
@@ -366,6 +377,10 @@ msgstr "Оновити все [$1]"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
 msgstr "Переглянути більше інформації у веб-браузері"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -446,10 +461,6 @@ msgid "Increases humidity around rivers"
 msgstr "Підвищує вологість навколо річок"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "Install a game"
-msgstr "Встановити гру"
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
 msgstr "Встановити іншу гру"
 
@@ -506,7 +517,7 @@ msgid "Sea level rivers"
 msgstr "Річки на рівні моря"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
 msgstr "Зерно"
 
@@ -557,10 +568,6 @@ msgstr "Дуже великі каверни глибоко під землею"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "Назва світу"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "You have no games installed."
-msgstr "Ви не маєте встановлених ігор."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -614,6 +621,32 @@ msgstr "Паролі не збігаються"
 msgid "Register"
 msgstr "Зареєструватися"
 
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Dismiss"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"For a long time, the Minetest engine shipped with a default game called "
+"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
+"game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"If you want to continue playing in your Minetest Game worlds, you need to "
+"reinstall Minetest Game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Minetest Game is no longer installed by default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+#, fuzzy
+msgid "Reinstall Minetest Game"
+msgstr "Встановити іншу гру"
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "Прийняти"
@@ -628,149 +661,6 @@ msgid ""
 "override any renaming here."
 msgstr ""
 "Цей пакмод має явну назву в modpack.conf, на що не вплине перейменування."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "(No description of setting given)"
-msgstr "(не задані описи налаштувань)"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "2D Noise"
-msgstr "2D-шум"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "< Back to Settings page"
-msgstr "< Назад до налаштувань"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Browse"
-msgstr "Оглянути"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Client Mods"
-msgstr "Клієнтські моди"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Content: Games"
-msgstr "Вміст: Ігри"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Content: Mods"
-msgstr "Вміст: Моди"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "Вимкнено"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Edit"
-msgstr "Редагувати"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Enabled"
-msgstr "Увімкнено"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Lacunarity"
-msgstr "Порожнистість"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Octaves"
-msgstr "Октави"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "Зсув"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistence"
-msgstr "Постійність"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid integer."
-msgstr "Введіть коректне ціле число."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid number."
-msgstr "Введіть коректне число."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Restore Default"
-msgstr "Відновити типові"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "Шкала"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "Пошук"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select directory"
-msgstr "Виберіть каталог"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select file"
-msgstr "Виберіть файл"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Show technical names"
-msgstr "Показувати технічні назви"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be at least $1."
-msgstr "Значенням має бути щонайменше $1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must not be larger than $1."
-msgstr "Значення має бути не більше $1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X"
-msgstr "Х"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X spread"
-msgstr "Поширення по X"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y"
-msgstr "Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y spread"
-msgstr "Поширення по Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z"
-msgstr "Z"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z spread"
-msgstr "Поширення по Z"
-
-#. ~ "absvalue" is a noise parameter flag.
-#. It is short for "absolute value".
-#. It can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "absvalue"
-msgstr "Абс. величина"
-
-#. ~ "defaults" is a noise parameter flag.
-#. It describes the default processing options
-#. for noise settings in main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "defaults"
-msgstr "За замовчанням"
-
-#. ~ "eased" is a noise parameter flag.
-#. It is used to make the map smoother and
-#. can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "eased"
-msgstr "полегшений"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -795,6 +685,10 @@ msgstr ""
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
 msgstr ""
+
+#: builtin/mainmenu/init.lua
+msgid "Settings"
+msgstr "Налаштування"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -828,10 +722,6 @@ msgstr "Не вдалося встановити мод як $1"
 msgid "Unable to install a $1 as a texture pack"
 msgstr "Не вдалося встановити $1 як набір текстур"
 
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "Завантаження..."
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "Список публічних серверів вимкнено"
@@ -841,6 +731,180 @@ msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 "Спробуйте оновити список публічних серверів та перевірте своє Інтернет-"
 "з'єднання."
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Browse"
+msgstr "Оглянути"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Edit"
+msgstr "Редагувати"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select directory"
+msgstr "Виберіть каталог"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select file"
+msgstr "Виберіть файл"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Set"
+msgstr "Вибрати"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "(No description of setting given)"
+msgstr "(не задані описи налаштувань)"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "2D Noise"
+msgstr "2D-шум"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Lacunarity"
+msgstr "Порожнистість"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Octaves"
+msgstr "Октави"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "Зсув"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Persistence"
+msgstr "Постійність"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "Шкала"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "X spread"
+msgstr "Поширення по X"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Y spread"
+msgstr "Поширення по Y"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Z spread"
+msgstr "Поширення по Z"
+
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "absvalue"
+msgstr "Абс. величина"
+
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "defaults"
+msgstr "За замовчанням"
+
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "eased"
+msgstr "полегшений"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(Use system language)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "Назад"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Change keys"
+msgstr "Змінити клавіші"
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+#: src/client/keycode.cpp
+msgid "Clear"
+msgstr "Очистити"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Reset setting to default"
+msgstr "Відновити типові"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Reset setting to default ($1)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "Пошук"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show advanced settings"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show technical names"
+msgstr "Показувати технічні назви"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Client Mods"
+msgstr "Клієнтські моди"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Content: Games"
+msgstr "Вміст: Ігри"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+msgid "Content: Mods"
+msgstr "Вміст: Моди"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "(The game will need to enable shadows as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Custom"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "Вимкнено"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#: src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr "Динамічні тіні"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Low"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Medium"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very Low"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
@@ -860,6 +924,10 @@ msgstr "Основні розробники"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
@@ -897,10 +965,6 @@ msgstr "Вміст"
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
 msgstr "Вимкнути набір текстур"
-
-#: builtin/mainmenu/tab_content.lua
-msgid "Information:"
-msgstr "Інформація:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -951,6 +1015,10 @@ msgid "Host Server"
 msgstr "Сервер"
 
 #: builtin/mainmenu/tab_local.lua
+msgid "Install a game"
+msgstr "Встановити гру"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
 msgstr "Встановити ігри з ContentDB"
 
@@ -986,13 +1054,13 @@ msgstr "Порт сервера"
 msgid "Start Game"
 msgstr "Почати гру"
 
+#: builtin/mainmenu/tab_local.lua
+msgid "You have no games installed."
+msgstr "Ви не маєте встановлених ігор."
+
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "Адреса"
-
-#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
-msgid "Clear"
-msgstr "Очистити"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1038,178 +1106,6 @@ msgstr "Видалити улюблений"
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
 msgstr "Опис сервера"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "(game support required)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "2x"
-msgstr "2x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "3D Clouds"
-msgstr "3D хмари"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "4x"
-msgstr "4x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "8x"
-msgstr "8x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "All Settings"
-msgstr "Усі налаштування"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Antialiasing:"
-msgstr "Згладжування:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Autosave Screen Size"
-msgstr "Зберігати розмір вікна"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bilinear Filter"
-msgstr "Дволінійне фільтрування"
-
-#: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "Змінити клавіші"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Connected Glass"
-msgstr "Зʼєднане скло"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Dynamic shadows"
-msgstr "Динамічні тіні"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows:"
-msgstr "Динамічні тіні:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Fancy Leaves"
-msgstr "Гарне листя"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Medium"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap"
-msgstr "Міпмапи"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap + Aniso. Filter"
-msgstr "Міпмапи і анізотропний фільтр"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Filter"
-msgstr "Без фільтрування"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Mipmap"
-msgstr "Без міпмап"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
-msgstr "Підсвічувати блок"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Outlining"
-msgstr "Виділяти блок рамкою"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "None"
-msgstr "Нічого"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Leaves"
-msgstr "Непрозоре листя"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Water"
-msgstr "Непрозора вода"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Particles"
-msgstr "Часточки"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr "Екран:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Settings"
-msgstr "Налаштування"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "Відтінювачі"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (experimental)"
-msgstr "Відтінювачі (експериментальне)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (unavailable)"
-msgstr "Відтінювачі (недоступно)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Simple Leaves"
-msgstr "Просте листя"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Smooth Lighting"
-msgstr "Згладжене освітлення"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Texturing:"
-msgstr "Текстурування:"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "Тоновий шейдер"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Touch threshold (px):"
-msgstr "Чутливість дотику (пкс):"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Trilinear Filter"
-msgstr "Трилінійна фільтрація"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Leaves"
-msgstr "Коливати листя"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Liquids"
-msgstr "Хвилясті Рідини"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "Коливати квіти"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
@@ -1275,7 +1171,7 @@ msgstr "Не вдалося відкрити файл паролю: "
 msgid "Provided world path doesn't exist: "
 msgstr "Вказаний шлях до світу не існує: "
 
-#: src/client/game.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1350,8 +1246,13 @@ msgid "Camera update enabled"
 msgstr "Оновлення камери увімкнено"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+#, fuzzy
+msgid "Can't show block bounds (disabled by game or mod)"
+msgstr "Наближення (бінокль) вимкнено грою або модифікацією"
+
+#: src/client/game.cpp
+msgid "Change Keys"
+msgstr "Змінити клавіші"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1386,7 +1287,7 @@ msgid "Continue"
 msgstr "Продовжити"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1394,7 +1295,7 @@ msgid ""
 "- %s: move left\n"
 "- %s: move right\n"
 "- %s: jump/climb up\n"
-"- %s: dig/punch\n"
+"- %s: dig/punch/use\n"
 "- %s: place/use\n"
 "- %s: sneak/climb down\n"
 "- %s: drop item\n"
@@ -1417,6 +1318,35 @@ msgstr ""
 "- Миша: поворот/дивитися\n"
 "- Коліщатко миші: вибір предмета\n"
 "- %s: чат\n"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid ""
+"Controls:\n"
+"No menu open:\n"
+"- slide finger: look around\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
+"Menu/inventory open:\n"
+"- double tap (outside):\n"
+" --> close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"Стандартне керування дотиком:\n"
+"Коли меню не відображається:\n"
+"- один дотик: активувати кнопку\n"
+"- дотикнутися двічі: встановити/використати\n"
+"- провести пальцем: роззирнутися\n"
+"Коли відображається меню або інвертар:\n"
+"- дотикнутися двічі (поза межами):\n"
+" --> закрити\n"
+"- Торкнутися купи, торкнутися комірки:\n"
+" --> перемістити купу\n"
+"- Торкнутися і тягнути, дотикнутися лругим пальцем\n"
+" --> помістити один предмет у комірку\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1442,42 +1372,6 @@ msgstr "Інформація для налагодження увімкнена"
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "Інформація по швидкодії, налагодженню і показ трикутників вимкнено"
-
-#: src/client/game.cpp
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-"Стандартне керування дотиком:\n"
-"Коли меню не відображається:\n"
-"- один дотик: активувати кнопку\n"
-"- дотикнутися двічі: встановити/використати\n"
-"- провести пальцем: роззирнутися\n"
-"Коли відображається меню або інвертар:\n"
-"- дотикнутися двічі (поза межами):\n"
-" --> закрити\n"
-"- Торкнутися купи, торкнутися комірки:\n"
-" --> перемістити купу\n"
-"- Торкнутися і тягнути, дотикнутися лругим пальцем\n"
-" --> помістити один предмет у комірку\n"
-
-#: src/client/game.cpp
-msgid "Disabled unlimited viewing range"
-msgstr "Обмежена видимість"
-
-#: src/client/game.cpp
-msgid "Enabled unlimited viewing range"
-msgstr "Необмежена видимість (повільно)"
 
 #: src/client/game.cpp
 #, c-format
@@ -1648,19 +1542,49 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range disabled"
+msgstr "Необмежена видимість (повільно)"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range enabled"
+msgstr "Необмежена видимість (повільно)"
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled, but forbidden by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing changed to %d (the minimum)"
+msgstr "Видимість на мінімумі: %d"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "Видимість змінено до %d"
 
 #: src/client/game.cpp
-#, c-format
-msgid "Viewing range is at maximum: %d"
-msgstr "Видимість на максимумі: %d"
+#, fuzzy, c-format
+msgid "Viewing range changed to %d (the maximum)"
+msgstr "Видимість змінено до %d"
 
 #: src/client/game.cpp
 #, c-format
-msgid "Viewing range is at minimum: %d"
-msgstr "Видимість на мінімумі: %d"
+msgid ""
+"Viewing range changed to %d (the maximum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing range changed to %d, but limited to %d by game or mod"
+msgstr "Видимість змінено до %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -2213,25 +2137,10 @@ msgstr ""
 msgid "Name is taken. Please choose another name"
 msgstr "Будь-ласка оберіть інше імʼя!"
 
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Fixes the position of virtual joystick.\n"
-"If disabled, virtual joystick will center to first-touch's position."
-msgstr ""
-"(Android) Закріплює позицію віртуального джойстика.\n"
-"Якщо вимкнено, віртуальний джойстик буде відцентровано до першого місця "
-"дотику."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
-"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
-"circle."
-msgstr ""
-"(Android) Використовувати віртуальний джойстик для активації кнопки "
-"\"Aux1\".\n"
-"Якщо ввімкнено, віртуальний джойстик також натисне \"Aux1\", коли поза "
-"межами головного кола."
+#: src/server.cpp
+#, fuzzy, c-format
+msgid "%s while shutting down: "
+msgstr "Вимкнення..."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2486,6 +2395,14 @@ msgstr "Додатково"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names.\n"
+"Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2525,6 +2442,16 @@ msgstr "Публічний сервер"
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
 msgstr "Анонсувати сервер в цей перелік серверів."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Anti-aliasing scale"
+msgstr "Згладжування:"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Antialiasing method"
+msgstr "Згладжування:"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2582,10 +2509,6 @@ msgid "Automatically report to the serverlist."
 msgstr "Автоматично звітувати у список серверів."
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
-msgstr "Зберігати розмір вікна"
-
-#: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr "Режим автомасштабування"
 
@@ -2600,6 +2523,11 @@ msgstr "Базовий рівень землі"
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
 msgstr "Висота основної поверхні."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base texture size"
+msgstr "Викор. набір текстур"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2681,14 +2609,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Camera"
 msgstr "Камера"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2791,10 +2711,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "Кінорежим"
-
-#: src/settings_translation_file.cpp
-msgid "Clean transparent textures"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2949,6 +2865,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "Керування"
 
@@ -3037,18 +2957,6 @@ msgid "Default acceleration"
 msgstr "Стандартне прискорення"
 
 #: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr "Стандартна гра"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-"Стандартна гра, коли створюєте новий світ.\n"
-"Буде перезаписана при створені світу з головного меню."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
@@ -3110,6 +3018,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3219,6 +3133,10 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Доменне ім'я сервера, яке буде показуватися у списку серверів."
 
 #: src/settings_translation_file.cpp
+msgid "Don't show \"reinstall Minetest Game\" notification"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "Подвійне натискання стрибка для польоту"
 
@@ -3314,6 +3232,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3439,10 +3361,6 @@ msgid "FPS when unfocused or paused"
 msgstr "FPS, коли призупинено або поза фокусом"
 
 #: src/settings_translation_file.cpp
-msgid "FSAA"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Factor noise"
 msgstr ""
 
@@ -3500,14 +3418,6 @@ msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, often resulting in dark or\n"
-"light edges to transparent textures. Apply a filter to clean that up\n"
-"at texture load time. This is automatically enabled if mipmapping is enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
 msgstr "Фільтрування і Згладжування:"
 
@@ -3526,6 +3436,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Fixes the position of virtual joystick.\n"
+"If disabled, virtual joystick will center to first-touch's position."
+msgstr ""
+"(Android) Закріплює позицію віртуального джойстика.\n"
+"Якщо вимкнено, віртуальний джойстик буде відцентровано до першого місця "
+"дотику."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
@@ -3632,27 +3552,11 @@ msgid "Format of screenshots."
 msgstr "Формат знімків екрана."
 
 #: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3812,8 +3716,7 @@ msgid "Heat noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+msgid "Height component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3823,6 +3726,11 @@ msgstr "Висотний шум"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hide: Temporary Settings"
+msgstr "Тимчасові Налаштування"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -3871,14 +3779,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Hotbar: Enable mouse wheel for selection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar: Invert mouse wheel direction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr "Як глибоко робити ріки."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
-"If negative, liquid waves will move backwards.\n"
-"Requires waving liquids to be enabled."
+"If negative, liquid waves will move backwards."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3989,8 +3904,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, you can place blocks at the position (feet + eye level) where "
-"you stand.\n"
+"If enabled, you can place nodes at the position (feet + eye level) where you "
+"stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 
@@ -4013,6 +3928,12 @@ msgid ""
 "this setting when it is opened, the file is moved to debug.txt.1,\n"
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If this is set to true, the user will never (again) be shown the\n"
+"\"reinstall Minetest Game\" notification."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4084,6 +4005,10 @@ msgstr "Анімація предметів інвентаря"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
 msgstr "Інвертувати мишку"
+
+#: src/settings_translation_file.cpp
+msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4250,10 +4175,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Length of liquid waves.\n"
-"Requires waving liquids to be enabled."
-msgstr ""
+#, fuzzy
+msgid "Length of liquid waves."
+msgstr "Швидкість хвилі хвилястих рідин"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4740,10 +4664,6 @@ msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimum texture size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mіп-текстурування"
 
@@ -4838,10 +4758,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
@@ -4905,6 +4821,14 @@ msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5011,13 +4935,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Post processing"
+msgid "Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Prevent digging and placing from repeating when holding the mouse buttons.\n"
-"Enable this when you dig or place too often by accident."
+"Prevent digging and placing from repeating when holding the respective "
+"buttons.\n"
+"Enable this when you dig or place too often by accident.\n"
+"On touchscreens, this only affects digging."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5076,6 +5002,11 @@ msgstr "Останні повідомлення чату"
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
 msgstr "Шлях до звичайного шрифту"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Remember screen size"
+msgstr "Зберігати розмір вікна"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5182,7 +5113,12 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
+msgid ""
+"Save window size automatically when modified.\n"
+"If true, screen size is saved in screen_w and screen_h, and whether the "
+"window\n"
+"is maximized is stored in window_maximized.\n"
+"(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5247,6 +5183,28 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Select the antialiasing method to apply.\n"
+"\n"
+"* None - No antialiasing (default)\n"
+"\n"
+"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
+"shaders)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Smoothens out block edges but does not affect the insides of textures.\n"
+"A restart is required to change this option.\n"
+"\n"
+"* FXAA - Fast approximate antialiasing (requires shaders)\n"
+"Applies a post-processing filter to detect and smoothen high-contrast "
+"edges.\n"
+"Provides balance between speed and image quality.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (requires shaders)\n"
+"Renders higher-resolution image of the scene, then scales down to reduce\n"
+"the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5340,6 +5298,13 @@ msgstr "Файл списку серверів"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the default tilt of Sun/Moon orbit in degrees.\n"
+"Games may change orbit tilt via API.\n"
+"Value of 0 means no tilt / vertical orbit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
@@ -5373,9 +5338,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable Shadow Mapping.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable Shadow Mapping."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5385,21 +5348,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving leaves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving liquids (like water).\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving liquids (like water)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving plants."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5420,6 +5377,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Shader path"
 msgstr "Шлях до шейдерів"
+
+#: src/settings_translation_file.cpp
+msgid "Shaders"
+msgstr "Відтінювачі"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5510,6 +5471,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Slice w"
 msgstr ""
 
@@ -5539,16 +5504,14 @@ msgstr "Згладжене освітлення"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when looking around. Also called look or mouse smoothing.\n"
-"Useful for recording videos."
+"Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera. 0 to disable."
+msgid ""
+"Smooths rotation of camera, also called look or mouse smoothing. 0 to "
+"disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5655,10 +5618,6 @@ msgid "Temperature variation for biomes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Temporary Settings"
-msgstr "Тимчасові Налаштування"
-
-#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr ""
 
@@ -5722,6 +5681,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The base node texture size used for world-aligned texture autoscaling."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Мертва зона джойстика"
 
@@ -5745,7 +5708,7 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
+msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5753,8 +5716,7 @@ msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
-"Default is 1.0 (1/2 node).\n"
-"Requires waving liquids to be enabled."
+"Default is 1.0 (1/2 node)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5842,6 +5804,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"This can be bound to a key to toggle camera smoothing when looking around.\n"
+"Useful for recording videos"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
@@ -5875,12 +5843,22 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
-msgstr "Межа чутливості дотику"
-
-#: src/settings_translation_file.cpp
 msgid "Touchscreen"
 msgstr "Сенсорний екран"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen sensitivity"
+msgstr "Сенсорний екран"
+
+#: src/settings_translation_file.cpp
+msgid "Touchscreen sensitivity multiplier."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen threshold"
+msgstr "Межа чутливості дотику"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
@@ -5907,6 +5885,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Type of occlusion_culler\n"
+"\n"
+"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5966,11 +5954,11 @@ msgid "Use a cloud animation for the main menu background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use anisotropic filtering when viewing at textures from an angle."
+msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures."
+msgid "Use bilinear filtering when scaling textures down."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5985,31 +5973,36 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmapping to scale textures. May slightly increase performance,\n"
+"Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
-"Gamma correct downscaling is not supported."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
-"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
-"but it doesn't affect the insides of textures\n"
-"(which is especially noticeable with transparent textures).\n"
-"Visible spaces appear between nodes when shaders are disabled.\n"
-"If set to 0, MSAA is disabled.\n"
-"A restart is required after changing this option."
+"Gamma-correct downscaling is not supported."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test"
+"This flag enables use of raytraced occlusion culling test for\n"
+"client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use trilinear filtering when scaling textures."
+msgid ""
+"Use trilinear filtering when scaling textures down.\n"
+"If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
+"is applied."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
+"circle."
+msgstr ""
+"(Android) Використовувати віртуальний джойстик для активації кнопки "
+"\"Aux1\".\n"
+"Якщо ввімкнено, віртуальний джойстик також натисне \"Aux1\", коли поза "
+"межами головного кола."
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
@@ -6084,7 +6077,9 @@ msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
+msgid ""
+"Vertical screen synchronization. Your system may still force VSync on even "
+"if this is disabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6197,18 +6192,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
-"can be blurred, so automatically upscale them with nearest-neighbor\n"
-"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
-"for the upscaled textures; higher values look sharper, but require more\n"
-"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-"bilinear/trilinear/anisotropic filtering is enabled.\n"
-"This is also used as the base node texture size for world-aligned\n"
-"texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6221,6 +6204,10 @@ msgstr ""
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether the window is maximized."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6247,24 +6234,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to show technical names.\n"
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names in All Settings.\n"
-"Controlled by the checkbox in the \"All settings\" menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
+msgid "Width component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Window maximized"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6373,8 +6355,26 @@ msgstr ""
 #~ "0 = технологія \"parallax occlusion\" з інформацією про криві (швидше).\n"
 #~ "1 = технологія \"relief mapping\" (повільніше, більш акуратніше)."
 
+#~ msgid "2x"
+#~ msgstr "2x"
+
+#~ msgid "3D Clouds"
+#~ msgstr "3D хмари"
+
+#~ msgid "4x"
+#~ msgstr "4x"
+
+#~ msgid "8x"
+#~ msgstr "8x"
+
+#~ msgid "< Back to Settings page"
+#~ msgstr "< Назад до налаштувань"
+
 #~ msgid "Address / Port"
 #~ msgstr "Адреса / Порт"
+
+#~ msgid "All Settings"
+#~ msgstr "Усі налаштування"
 
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Ви впевнені, що бажаєте скинути свій світ одиночної гри?"
@@ -6382,17 +6382,20 @@ msgstr ""
 #~ msgid "Automatic forward key"
 #~ msgstr "Клавіша автоматичного руху вперед"
 
+#~ msgid "Autosave Screen Size"
+#~ msgstr "Зберігати розмір вікна"
+
 #~ msgid "Aux1 key"
 #~ msgstr "Клавіша Aux1"
-
-#~ msgid "Back"
-#~ msgstr "Назад"
 
 #~ msgid "Backward key"
 #~ msgstr "Клавіша Назад"
 
 #~ msgid "Basic"
 #~ msgstr "Основи"
+
+#~ msgid "Bilinear Filter"
+#~ msgstr "Дволінійне фільтрування"
 
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Бітів на піксель (глибина кольору) в повноекранному режимі."
@@ -6427,6 +6430,9 @@ msgstr ""
 #~ msgid "Connect"
 #~ msgstr "Зʼєднатися"
 
+#~ msgid "Connected Glass"
+#~ msgstr "Зʼєднане скло"
+
 #~ msgid "Content Store"
 #~ msgstr "Додатки"
 
@@ -6442,11 +6448,24 @@ msgstr ""
 #~ msgid "Dec. volume key"
 #~ msgstr "Клавіша зменш. гучності"
 
+#~ msgid "Default game"
+#~ msgstr "Стандартна гра"
+
+#~ msgid ""
+#~ "Default game when creating a new world.\n"
+#~ "This will be overridden when creating a world from the main menu."
+#~ msgstr ""
+#~ "Стандартна гра, коли створюєте новий світ.\n"
+#~ "Буде перезаписана при створені світу з головного меню."
+
 #~ msgid "Del. Favorite"
 #~ msgstr "Видалити зі закладок"
 
 #~ msgid "Dig key"
 #~ msgstr "Клавіша Копати"
+
+#~ msgid "Disabled unlimited viewing range"
+#~ msgstr "Обмежена видимість"
 
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Завантажте гру, наприклад, Minetest Game з minetest.net"
@@ -6460,11 +6479,20 @@ msgstr ""
 #~ msgid "Drop item key"
 #~ msgstr "Клавіша викидання предметів"
 
+#~ msgid "Dynamic shadows:"
+#~ msgstr "Динамічні тіні:"
+
 #~ msgid "Enable VBO"
 #~ msgstr "Увімкнути VBO"
 
+#~ msgid "Enabled"
+#~ msgstr "Увімкнено"
+
 #~ msgid "Enter "
 #~ msgstr "Ввід "
+
+#~ msgid "Fancy Leaves"
+#~ msgstr "Гарне листя"
 
 #~ msgid "Fast key"
 #~ msgstr "Швидка клавіша"
@@ -6597,6 +6625,9 @@ msgstr ""
 
 #~ msgid "Inc. volume key"
 #~ msgstr "Клавіша збільш. гучності"
+
+#~ msgid "Information:"
+#~ msgstr "Інформація:"
 
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "Встановлення мода: не вдається знайти справжню назву для: $1"
@@ -6901,6 +6932,12 @@ msgstr ""
 #~ msgid "Minimap key"
 #~ msgstr "Клавіша мінімапи"
 
+#~ msgid "Mipmap"
+#~ msgstr "Міпмапи"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "Міпмапи і анізотропний фільтр"
+
 #~ msgid "Mute key"
 #~ msgstr "Вимкнути звук"
 
@@ -6913,11 +6950,32 @@ msgstr ""
 #~ msgid "No"
 #~ msgstr "Ні"
 
+#~ msgid "No Filter"
+#~ msgstr "Без фільтрування"
+
+#~ msgid "No Mipmap"
+#~ msgstr "Без міпмап"
+
 #~ msgid "Noclip key"
 #~ msgstr "Клавіша проходу крізь стіни"
 
+#~ msgid "Node Highlighting"
+#~ msgstr "Підсвічувати блок"
+
+#~ msgid "Node Outlining"
+#~ msgstr "Виділяти блок рамкою"
+
+#~ msgid "None"
+#~ msgstr "Нічого"
+
 #~ msgid "Ok"
 #~ msgstr "Добре"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "Непрозоре листя"
+
+#~ msgid "Opaque Water"
+#~ msgstr "Непрозора вода"
 
 #~ msgid "Parallax Occlusion"
 #~ msgstr "Паралаксова оклюзія"
@@ -6928,6 +6986,9 @@ msgstr ""
 #~ msgid "Parallax occlusion scale"
 #~ msgstr "Ступінь паралаксової оклюзії"
 
+#~ msgid "Particles"
+#~ msgstr "Часточки"
+
 #~ msgid "Pitch move key"
 #~ msgstr "Клавіша зміни висоти"
 
@@ -6936,6 +6997,12 @@ msgstr ""
 
 #~ msgid "Player name"
 #~ msgstr "Імʼя гравця"
+
+#~ msgid "Please enter a valid integer."
+#~ msgstr "Введіть коректне ціле число."
+
+#~ msgid "Please enter a valid number."
+#~ msgstr "Введіть коректне число."
 
 #~ msgid "PvP enabled"
 #~ msgstr "Бої увімкнено"
@@ -6953,11 +7020,26 @@ msgstr ""
 #~ msgid "Saturation"
 #~ msgstr "Ітерації"
 
+#~ msgid "Screen:"
+#~ msgstr "Екран:"
+
 #~ msgid "Select Package File:"
 #~ msgstr "Виберіть файл пакунку:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "Сервер / Одиночна гра"
+
+#~ msgid "Shaders (experimental)"
+#~ msgstr "Відтінювачі (експериментальне)"
+
+#~ msgid "Shaders (unavailable)"
+#~ msgstr "Відтінювачі (недоступно)"
+
+#~ msgid "Simple Leaves"
+#~ msgstr "Просте листя"
+
+#~ msgid "Smooth Lighting"
+#~ msgstr "Згладжене освітлення"
 
 #~ msgid "Sneak key"
 #~ msgstr "Крастися"
@@ -6971,11 +7053,29 @@ msgstr ""
 #~ msgid "Start Singleplayer"
 #~ msgstr "Почати одиночну гру"
 
+#~ msgid "Texturing:"
+#~ msgstr "Текстурування:"
+
+#~ msgid "The value must be at least $1."
+#~ msgstr "Значенням має бути щонайменше $1."
+
+#~ msgid "The value must not be larger than $1."
+#~ msgstr "Значення має бути не більше $1."
+
 #~ msgid "To enable shaders the OpenGL driver needs to be used."
 #~ msgstr "Для того, щоб увімкнути шейдери, потрібно мати драйвер OpenGL."
 
 #~ msgid "Toggle Cinematic"
 #~ msgstr "Кінематографічний режим"
+
+#~ msgid "Tone Mapping"
+#~ msgstr "Тоновий шейдер"
+
+#~ msgid "Touch threshold (px):"
+#~ msgstr "Чутливість дотику (пкс):"
+
+#~ msgid "Trilinear Filter"
+#~ msgstr "Трилінійна фільтрація"
 
 #~ msgid "Unable to install a game as a $1"
 #~ msgstr "Не вдалося встановити гру як $1"
@@ -6985,6 +7085,25 @@ msgstr ""
 
 #~ msgid "View"
 #~ msgstr "Вид"
+
+#, c-format
+#~ msgid "Viewing range is at maximum: %d"
+#~ msgstr "Видимість на максимумі: %d"
+
+#~ msgid "Waving Leaves"
+#~ msgstr "Коливати листя"
+
+#~ msgid "Waving Liquids"
+#~ msgstr "Хвилясті Рідини"
+
+#~ msgid "Waving Plants"
+#~ msgstr "Коливати квіти"
+
+#~ msgid "X"
+#~ msgstr "Х"
+
+#~ msgid "Y"
+#~ msgstr "Y"
 
 #~ msgid "Yes"
 #~ msgstr "Так"
@@ -7007,6 +7126,9 @@ msgstr ""
 #, fuzzy
 #~ msgid "You died."
 #~ msgstr "Ви загинули"
+
+#~ msgid "Z"
+#~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "no"
