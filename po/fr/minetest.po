@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-10-19 04:10+0000\n"
-"Last-Translator: watilin <weblate.sagging615@passmail.net>\n"
+"PO-Revision-Date: 2023-10-22 17:18+0000\n"
+"Last-Translator: Translator <kvb@tuta.io>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -361,7 +361,7 @@ msgstr "Packs de textures"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "Le paquet $1/$2 n'a pas été trouvé."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -381,7 +381,7 @@ msgstr "Voir plus d'informations dans un navigateur web"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Vous devez installer un jeu pour pouvoir installer un mod"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -624,8 +624,9 @@ msgid "Register"
 msgstr "S'inscrire"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
+#, fuzzy
 msgid "Dismiss"
-msgstr ""
+msgstr "Refuser"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -633,6 +634,9 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Pendant longtemps, le moteur Minetest était par défaut installer avec le « "
+"jeu Minetest ». À partir de la version 5.8.0, aucun jeu n'est intallé avec "
+"Minetest."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
