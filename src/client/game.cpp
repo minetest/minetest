@@ -2066,29 +2066,29 @@ void Game::processKeyInput()
 #endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
-	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
+	} else if (wasKeyPressed(KeyType::SCREENSHOT)) {
 		client->makeScreenshot();
-	} else if (wasKeyDown(KeyType::TOGGLE_BLOCK_BOUNDS)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_BLOCK_BOUNDS)) {
 		toggleBlockBounds();
-	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_HUD)) {
 		m_game_ui->toggleHud();
-	} else if (wasKeyDown(KeyType::MINIMAP)) {
+	} else if (wasKeyPressed(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
-	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat(client);
-	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera();
-	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug();
-	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_PROFILER)) {
 		m_game_ui->toggleProfiler();
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
 		increaseViewRange();
 	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
 		decreaseViewRange();
-	} else if (wasKeyDown(KeyType::RANGESELECT)) {
+	} else if (wasKeyPressed(KeyType::RANGESELECT)) {
 		toggleFullViewRange();
 	} else if (wasKeyDown(KeyType::ZOOM)) {
 		checkZoomEnabled();
@@ -3138,7 +3138,7 @@ void Game::updateCamera(f32 dtime)
 
 	v3s16 old_camera_offset = camera->getOffset();
 
-	if (wasKeyDown(KeyType::CAMERA_MODE)) {
+	if (wasKeyPressed(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
 
 		// If playercao not loaded, don't change camera
