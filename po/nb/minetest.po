@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Norwegian Bokmål (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2022-06-11 17:19+0000\n"
-"Last-Translator: Kenneth LNOR <kennethlnor@gmail.com>\n"
+"PO-Revision-Date: 2023-10-22 17:18+0000\n"
+"Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "minetest/minetest/nb_NO/>\n"
 "Language: nb\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -288,9 +288,8 @@ msgid "Error installing \"$1\": $2"
 msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Kunne ikke laste ned $1"
+msgstr "Kunne ikke laste ned \"$1\""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -424,9 +423,8 @@ msgid "Decorations"
 msgstr "Dekorasjoner"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Advarsel: Utviklingstesten er tiltenkt utviklere."
+msgstr "Utviklingstesten er tiltenkt utviklere."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
@@ -614,14 +612,12 @@ msgid "Password"
 msgstr "Passord"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Passordene samsvarer ikke!"
+msgstr "Passordene samsvarer ikke"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Registrer og logg inn"
+msgstr "Registrer"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
@@ -710,14 +706,12 @@ msgid "Install: Unable to find suitable folder name for $1"
 msgstr "Install Mod: Kan ikke finne passende mappenavn for modpack $1"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Kan ikke finne en gyldig mod eller modpakke"
+msgstr "Kan ikke finne en gyldig mod, modpakke eller spill"
 
 #: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "Kan ikke installere en mod som en $1"
+msgstr "Kan ikke installere $1 som en $2"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
@@ -827,7 +821,6 @@ msgid "Back"
 msgstr "Tilbake"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Change keys"
 msgstr "Endre taster"
 
@@ -863,14 +856,12 @@ msgid "Client Mods"
 msgstr "Velg endringer"
 
 #: builtin/mainmenu/settings/settingtypes.lua
-#, fuzzy
 msgid "Content: Games"
-msgstr "Innhold"
+msgstr "Innhold: Spill"
 
 #: builtin/mainmenu/settings/settingtypes.lua
-#, fuzzy
 msgid "Content: Mods"
-msgstr "Innhold"
+msgstr "Innhold: Mods"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -902,7 +893,6 @@ msgid "Medium"
 msgstr "Medium"
 
 #: builtin/mainmenu/settings/shadows_component.lua
-#, fuzzy
 msgid "Very High"
 msgstr "Ultrahøy"
 
@@ -919,7 +909,6 @@ msgid "Active Contributors"
 msgstr "Aktive bidragsytere"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Active renderer:"
 msgstr "Aktiv grafisk tegner:"
 
@@ -936,9 +925,8 @@ msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Open User Data Directory"
-msgstr "Velg mappe"
+msgstr "Åpen brukerdatamappe"
 
 #: builtin/mainmenu/tab_about.lua
 msgid ""
@@ -957,9 +945,8 @@ msgid "Previous Core Developers"
 msgstr "Tidligere kjerneutviklere"
 
 #: builtin/mainmenu/tab_about.lua
-#, fuzzy
 msgid "Share debug log"
-msgstr "Vis feilsøkingsinfo"
+msgstr "Dele feilsøkingslogg"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
@@ -1022,9 +1009,8 @@ msgid "Host Server"
 msgstr "Vertstjener"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Install a game"
-msgstr "Installere $1"
+msgstr "Installere et spill"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
@@ -1076,9 +1062,8 @@ msgstr "Kreativ modus"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Damage / PvP"
-msgstr "Skade"
+msgstr "Skade / PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
@@ -1109,19 +1094,16 @@ msgid "Refresh"
 msgstr "Oppdater"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Remove favorite"
-msgstr "Eksterne media"
+msgstr "Ta bort favoritt"
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Server Description"
 msgstr "Serverbeskrivelse"
 
 #: src/client/client.cpp
-#, fuzzy
 msgid "Connection aborted (protocol error?)."
-msgstr "Tilkoblingsfeil (tidsavbrudd?)"
+msgstr "Tilkobling avbrutt (protokollfeil?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1217,9 +1199,8 @@ msgid "- Server Name: "
 msgstr "- Tjenernavn: "
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "A serialization error occurred:"
-msgstr "Det oppstod en feil:"
+msgstr "En serialiseringsfeil oppstod:"
 
 #: src/client/game.cpp
 #, c-format
@@ -1259,9 +1240,8 @@ msgid "Camera update enabled"
 msgstr "Kameraoppdatering slått på"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
-msgstr "Kan ikke vise block bounds (trenger 'basic_debug' tillatelser)"
+msgstr "Kan ikke vise blockbounds (deaktivert av spill eller mod)"
 
 #: src/client/game.cpp
 msgid "Change Keys"
@@ -1387,9 +1367,9 @@ msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "Feilsøkingsinformasjon, profileringsgraf og wireframe skjult"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating client: %s"
-msgstr "Oppretter klient…"
+msgstr "Feil ved oppretting av klient: %s"
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
@@ -1555,12 +1535,10 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Kan ikke lytte på %s fordi IPv6 er deaktivert"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Ubegrenset synsrekkevidde aktivert"
+msgstr "Ubegrenset synsrekkevidde deaktivert"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
 msgstr "Ubegrenset synsrekkevidde aktivert"
 
@@ -1595,9 +1573,9 @@ msgid ""
 msgstr ""
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Visningsområde endret til %d"
+msgstr "Visningsområde endret til %d men begrenset til %d av spill eller mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -2154,9 +2132,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "Vennligst velg et navn!"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Slår av..."
+msgstr "%s under avslutning: "
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2276,7 +2254,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-støytall som avgjør antall grotter per kartchunk."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2292,12 +2269,11 @@ msgstr ""
 "For øyeblikket støttes følgende alternativer:\n"
 "-    none: Ingen 3D-utdata.\n"
 "-    anaglyph: Cyan/magenta farge-3D.\n"
-"-    interlaced: Skjermstøtte for partall/oddetall-linjebasert "
-"polarisering.\n"
+"-    interlaced: Skjermstøtte for partall/oddetall-linjebasert polarisering."
+"\n"
 "-    topbottom: Del skjermen i topp og bunn.\n"
 "-    sidebyside: Del skjermen side om side.\n"
 "-    crossview: Skjele-3d\n"
-"-    pageflip: Quadbuffer-basert 3d.\n"
 "Vær klar over at interlace-modus krever at skyggelegging er påslått."
 
 #: src/settings_translation_file.cpp
