@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Swedish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-07-09 14:49+0000\n"
+"PO-Revision-Date: 2023-10-22 17:19+0000\n"
 "Last-Translator: ROllerozxa <rollerozxa@voxelmanip.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
 "minetest/sv/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -360,7 +360,7 @@ msgstr "Texturpaket"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "Paketet $1/$2 kunde inte hittas."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -380,7 +380,7 @@ msgstr "Visa mer information i en webbläsare"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Du behöver installera ett spel innan du kan installera en modd"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -621,7 +621,7 @@ msgstr "Registrera"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Nej tack"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -629,21 +629,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Under en lång period kom Minetest med det förinstallerat spelet \"Minetest "
+"Game\". Sedan Minetest 5.8.0 kommer Minetest utan ett standardspel "
+"inkluderat."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Om du vill fortsätta spela i dina världar skapade i Minetest Game behöver du "
+"ominstallera Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game är inte längre installerat som standard"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Installera ett annat spel"
+msgstr "Ominstallera Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -747,9 +751,8 @@ msgid "Select file"
 msgstr "Välj fil"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Välj"
+msgstr "Sätt"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -818,16 +821,15 @@ msgstr "lättad"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Använd systemspråk)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Tillbaka"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Change keys"
-msgstr "Ändra Tangenter"
+msgstr "Ändra tangenter"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 #: src/client/keycode.cpp
@@ -835,13 +837,12 @@ msgid "Clear"
 msgstr "Rensa"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Återställ till Ursprungsvärden"
+msgstr "Återställ inställning till ursprungsvärden"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Återställ inställning till standardvärde ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -849,7 +850,7 @@ msgstr "Sök"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Visa avancerade inställningar"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show technical names"
@@ -869,11 +870,11 @@ msgstr "Innehåll: Moddar"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Spelet behöver även aktivera skuggor för att visas)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Anpassad"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -926,7 +927,7 @@ msgstr "Huvudlaget"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Irrlicht-device:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1244,9 +1245,8 @@ msgid "Camera update enabled"
 msgstr "Kamerauppdatering aktiverat"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
-msgstr "Kan inte visa blockgränser (avaktiverad av modd eller spel)"
+msgstr "Kan inte visa blockgränser (avaktiverad av spel eller modd)"
 
 #: src/client/game.cpp
 msgid "Change Keys"
@@ -1285,7 +1285,7 @@ msgid "Continue"
 msgstr "Fortsätt"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1308,8 +1308,8 @@ msgstr ""
 "- %s: rör dig åt vänster\n"
 "- %s: rör dig åt höger\n"
 "- %s: hoppa/klättra\n"
-"- %s: gräv/slå\n"
-"- %s: använd\n"
+"- %s: gräv/slå/använd\n"
+"- %s: placera/använd\n"
 "- %s: smyg/rör dig nedåt\n"
 "- %s: släpp föremål\n"
 "- %s: förråd\n"
@@ -1318,7 +1318,6 @@ msgstr ""
 "- %s: chatt\n"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1335,14 +1334,14 @@ msgid ""
 msgstr ""
 "Standardkontroller:\n"
 "Ingen meny syns:\n"
-"- tryck en gång: aktivera knapp\n"
-"- tryck två gånger: placera/använd\n"
 "- dra finger: titta omkring\n"
+"- tryck en gång: placera/använd\n"
+"- tryck två gånger: gräv/slå/använd\n"
 "Meny/Förråd syns:\n"
 "- tryck två gånger (utanför):\n"
 " -->stäng\n"
-"- rör trave, rör låda:\n"
-" --> flytta trave\n"
+"- rör stapel, rör låda:\n"
+" --> flytta stapel\n"
 "- tryck&dra, tryck med andra fingret\n"
 " --> placera ett föremål i låda\n"
 
@@ -1540,28 +1539,29 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Kan inte lyssna på %s eftersom IPv6 är inaktiverad"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Aktiverat obegränsat visningsområde"
+msgstr "Avaktiverat obegränsat visningsområde"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
 msgstr "Aktiverat obegränsat visningsområde"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr ""
+"Obegränsad visningsområde aktiverad, men tillåts inte av spel eller modd"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Visningsområde är vid sitt minimala: %d"
+msgstr "Visningsområde ändras till %d (det minsta)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Visningsområde ändrat till %d (det minsta), men begränsad till %d av spel "
+"eller modd"
 
 #: src/client/game.cpp
 #, c-format
@@ -1569,20 +1569,22 @@ msgid "Viewing range changed to %d"
 msgstr "Visningsområde ändrad till %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Visningsområde ändrad till %d"
+msgstr "Visningsområde ändrad till %d (det maximala)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Visningsområde ändrat till %d (det högsta), men begränsad till %d av spel "
+"eller modd"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Visningsområde ändrad till %d"
+msgstr "Visningsområde ändrad till %d, men begränsad till %d av spel eller modd"
 
 #: src/client/game.cpp
 #, c-format
@@ -2140,9 +2142,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "Namnet är redan taget. Var snäll välj ett annat namn"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Stänger av..."
+msgstr "%s under avstängning: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2401,6 +2403,10 @@ msgid ""
 "setting names.\n"
 "Controlled by a checkbox in the settings menu."
 msgstr ""
+"Påverkar moddar och texturpaket i Innehåll- och Välj moddar-menyerna, och "
+"även\n"
+"inställningsnamn.\n"
+"Styrs av en checkruta i inställningsmenyn."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2446,14 +2452,12 @@ msgid "Announce to this serverlist."
 msgstr "Annonsera till serverlistan."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Kantutjämning:"
+msgstr "Kantutjämningsskala"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Kantutjämning:"
+msgstr "Kantutjämningsmetod"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2539,9 +2543,8 @@ msgid "Base terrain height."
 msgstr "Bas för terränghöjd."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Använd Texturpaket"
+msgstr "Texturstorleksbas"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2741,7 +2744,7 @@ msgstr "Klient"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Klientsidig meshchunkstorlek"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -2906,7 +2909,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
+msgstr "Kontrolleras av en checkruta i inställningsmenyn."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -3556,12 +3559,11 @@ msgid "Fixed virtual joystick"
 msgstr "Fast virtuell joystick"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fixes the position of virtual joystick.\n"
 "If disabled, virtual joystick will center to first-touch's position."
 msgstr ""
-"(Android) Fastställer den virtuella joystickens position.\n"
+"Fastställer den virtuella joystickens position.\n"
 "Om inaktiverad centreras den virtuella joysticken till det första "
 "fingertryckets position."
 
@@ -3858,9 +3860,8 @@ msgid "Heat noise"
 msgstr "Värmebrus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height component of the initial window size."
-msgstr "Höjden av den inledande fönsterstorleken. Ignorerad i fullskärmsläge."
+msgstr "Höjden av den inledande fönsterstorleken."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -3871,7 +3872,6 @@ msgid "Height select noise"
 msgstr "Höjdvalbrus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hide: Temporary Settings"
 msgstr "Temporära inställningar"
 
@@ -3940,14 +3940,12 @@ msgid "How deep to make rivers."
 msgstr "Hur djupt floder ska gå."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
 "If negative, liquid waves will move backwards."
 msgstr ""
 "Hur snabbt vätskevågor förflyttas. Högre = snabbare.\n"
-"Om negativt kommer vågorna förflyttas bakåt.\n"
-"Kräver vajande vätskor för att aktiveras."
+"Om negativt kommer vågorna förflyttas bakåt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4343,9 +4341,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "Våghastighet för vajande vätskor"
+msgstr "Längd för vågor av vätskor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5171,9 +5168,8 @@ msgid "Regular font path"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remember screen size"
-msgstr "Spara fönsterstorlek automatiskt"
+msgstr "Kom ihåg skärmstorlek"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -6027,16 +6023,14 @@ msgid "Touchscreen"
 msgstr "Pekskärm"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen sensitivity"
-msgstr "Pekskärm"
+msgstr "Pekskärmskänslighet"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity multiplier."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Touchscreen threshold"
 msgstr "Tröskelvärde för pekskärm"
 
@@ -6173,13 +6167,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use virtual joystick to trigger \"Aux1\" button.\n"
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"(Android) Använd den virtuella joysticken för \"Aux1\"-knappen.\n"
+"Använd den virtuella joysticken för \"Aux1\"-knappen.\n"
 "Om aktiverad kommer den virtuella joysticken att aktivera \"Aux1\"-knappen "
 "när den är utanför huvudcirkeln."
 
@@ -6415,9 +6408,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width component of the initial window size."
-msgstr "Höjden av den inledande fönsterstorleken. Ignorerad i fullskärmsläge."
+msgstr "Bredden av den inledande fönsterstorleken."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
