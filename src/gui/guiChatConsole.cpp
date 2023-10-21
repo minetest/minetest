@@ -645,7 +645,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Tab or Shift-Tab pressed
 			// Nick completion
-			std::list<std::string> names = m_client->getConnectedPlayerNames();
+			auto names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;

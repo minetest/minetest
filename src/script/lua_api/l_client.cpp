@@ -150,13 +150,12 @@ int ModApiClient::l_get_player_names(lua_State *L)
 	if (checkCSMRestrictionFlag(CSM_RF_READ_PLAYERINFO))
 		return 0;
 
-	const std::list<std::string> &plist = getClient(L)->getConnectedPlayerNames();
+	auto plist = getClient(L)->getConnectedPlayerNames();
 	lua_createtable(L, plist.size(), 0);
 	int newTable = lua_gettop(L);
 	int index = 1;
-	std::list<std::string>::const_iterator iter;
-	for (iter = plist.begin(); iter != plist.end(); ++iter) {
-		lua_pushstring(L, (*iter).c_str());
+	for (const std::string &name : plist) {
+		lua_pushstring(L, name.c_str());
 		lua_rawseti(L, newTable, index);
 		index++;
 	}
