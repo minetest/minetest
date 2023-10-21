@@ -57,6 +57,7 @@ public:
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(false);
 		m_stack.push_back(menu);
+		guienv->setFocus(m_stack.back());
 	}
 
 	virtual void deletingMenu(gui::IGUIElement *menu)
@@ -64,8 +65,10 @@ public:
 		// Remove all entries if there are duplicates
 		m_stack.remove(menu);
 
-		if(!m_stack.empty())
+		if(!m_stack.empty()) {
 			m_stack.back()->setVisible(true);
+			guienv->setFocus(m_stack.back());
+		}
 	}
 
 	// Returns true to prevent further processing

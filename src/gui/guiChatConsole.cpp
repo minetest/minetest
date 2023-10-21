@@ -114,7 +114,6 @@ void GUIChatConsole::openConsole(f32 scale)
 	reformatConsole();
 	m_animate_time_old = porting::getTimeMs();
 	IGUIElement::setVisible(true);
-	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 }
 

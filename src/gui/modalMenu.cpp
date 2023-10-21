@@ -49,7 +49,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 #endif
 
 	setVisible(true);
-	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 
 	m_doubleclickdetect[0].time = 0;
