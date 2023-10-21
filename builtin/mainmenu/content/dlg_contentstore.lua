@@ -789,6 +789,16 @@ function store.update_paths()
 		if game.author ~= "" and game.release > 0 then
 			local id = game.author:lower() .. "/" .. game.id
 			game_hash[store.aliases[id] or id] = game
+
+		-- Until Minetest 5.8.0, Minetest Game was bundled with Minetest.
+		-- Unfortunately, the bundled MTG was not versioned (missing "release"
+		-- field in game.conf).
+		-- Therefore, we consider any installation of MTG that is not versioned,
+		-- has not been cloned from Git, and is not system-wide to be updatable.
+		elseif game.id == "minetest" and game.release == 0 and
+				not core.is_dir(game.path .. "/.git") and core.may_modify_path(game.path) then
+			local id = "minetest/minetest"
+			game_hash[store.aliases[id] or id] = game
 		end
 	end
 
@@ -815,6 +825,7 @@ function store.update_paths()
 			package.installed_release = content.release or 0
 		else
 			package.path = nil
+			package.installed_release = nil
 		end
 	end
 end
