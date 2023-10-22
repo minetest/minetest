@@ -2003,9 +2003,9 @@ active_block_range (Active block range) int 4 1 65535
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 max_block_send_distance (Max block send distance) int 12 1 65535
 
-#    Default maximum number of force-loaded mapblocks.
+#    Default maximum number of forceloaded mapblocks.
 #    Set this to -1 to disable the limit.
-max_forceloaded_blocks (Maximum force-loaded blocks) int 16 -1
+max_forceloaded_blocks (Maximum forceloaded blocks) int 16 -1
 
 #    Interval of sending time of day to clients, stated in seconds.
 time_send_interval (Time send interval) float 5.0 0.001
@@ -2054,10 +2054,10 @@ liquid_update (Liquid update tick) float 1.0 0.001
 #    Stated in mapblocks (16 nodes).
 block_send_optimize_distance (Block send optimize distance) int 4 2 32767
 
-#    If enabled the server will perform map block occlusion culling based on
+#    If enabled, the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
 #    sent to the client 50-80%. The client will no longer receive most invisible
-#    so that the utility of noclip mode is reduced.
+#    blocks, so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server-side occlusion culling) bool true
 
 [**Mapgen]
