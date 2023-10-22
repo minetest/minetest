@@ -122,7 +122,6 @@ return {
 
 		local hypertext = {
 			"<tag name=heading color=#ff0>",
-			"<tag name=spacer size=1>",
 			"<tag name=gray color=#aaa>",
 		}
 
@@ -132,28 +131,27 @@ return {
 			"Minetest developer Jude Melton-Houghton (TurkeyMcMac)\n",
 			"who died on February 1, 2023.\n",
 			"Our thoughts are with his family and friends.\n",
-
-			"<spacer></spacer>\n",
+			"\n",
 			"<heading>", fgettext_ne("Core Developers"), "</heading>\n",
 		})
 		prepare_credits(hypertext, core_developers)
 		table.insert_all(hypertext, {
-			"<spacer></spacer>\n",
+			"\n",
 			"<heading>", fgettext_ne("Core Team"), "</heading>\n",
 		})
 		prepare_credits(hypertext, core_team)
 		table.insert_all(hypertext, {
-			"<spacer></spacer>\n",
+			"\n",
 			"<heading>", fgettext_ne("Active Contributors"), "</heading>\n",
 		})
 		prepare_credits(hypertext, active_contributors)
 		table.insert_all(hypertext, {
-			"<spacer></spacer>\n",
+			"\n",
 			"<heading>", fgettext_ne("Previous Core Developers"), "</heading>\n",
 		})
 		prepare_credits(hypertext, previous_core_developers)
 		table.insert_all(hypertext, {
-			"<spacer></spacer>\n",
+			"\n",
 			"<heading>", fgettext_ne("Previous Contributors"), "</heading>\n",
 		})
 		prepare_credits(hypertext, previous_contributors)
