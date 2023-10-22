@@ -592,16 +592,21 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		Report move to endpoints
 	*/
 	list_to.reset();
+	list_from.reset();
 
 	// Source = destination => move
 	if (from_inv == to_inv) {
 		onMove(count, player);
 		if (did_swap) {
 			// Item is now placed in source list
-			src_item = list_from->getItem(from_i);
-			swapDirections();
-			onMove(src_item.count, player);
-			swapDirections();
+			list_from = get_borrow_checked_invlist(inv_from, from_list);
+			if (list_from) {
+				src_item = list_from->getItem(from_i);
+				list_from.reset();
+				swapDirections();
+				onMove(src_item.count, player);
+				swapDirections();
+			}
 		}
 		mgr->setInventoryModified(from_inv);
 	} else {
@@ -616,10 +621,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			src_item.count = src_item_count;
 		if (did_swap) {
 			// Item is now placed in source list
-			src_item = list_from->getItem(from_i);
-			swapDirections();
-			onPutAndOnTake(src_item, player);
-			swapDirections();
+			list_from = get_borrow_checked_invlist(inv_from, from_list);
+			if (list_from) {
+				src_item = list_from->getItem(from_i);
+				list_from.reset();
+				swapDirections();
+				onPutAndOnTake(src_item, player);
+				swapDirections();
+			}
 		}
 		mgr->setInventoryModified(to_inv);
 		mgr->setInventoryModified(from_inv);
