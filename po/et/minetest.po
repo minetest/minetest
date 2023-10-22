@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Estonian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-07-12 10:53+0000\n"
+"PO-Revision-Date: 2023-10-22 17:18+0000\n"
 "Last-Translator: Janar Leas <janarleas+ubuntuone@googlemail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
 "minetest/et/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -3417,11 +3417,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Lendamine"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Udu"
 
 #: src/settings_translation_file.cpp
 msgid "Fog start"
@@ -3600,15 +3600,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Ilme"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics Effects"
-msgstr ""
+msgstr "Mulje ilmestused"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics and Audio"
-msgstr ""
+msgstr "Ilme ja heli"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -3628,11 +3628,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD"
-msgstr ""
+msgstr "Kuvaliides"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scaling"
-msgstr "Liidese suurus"
+msgstr "Kuvaliidese suurus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3771,7 +3771,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
@@ -4057,7 +4057,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Klaviatuur ja hiir"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
@@ -4073,7 +4073,7 @@ msgstr "Järvede lävi"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Keel"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -4428,7 +4428,7 @@ msgstr "Maailma tekitus-valemi nimi"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr ""
+msgstr "Suurim klotsi tekitus kaugus"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
@@ -4448,7 +4448,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Enim kaadrit sekundis"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
@@ -4456,15 +4456,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "Varjude kuvamise kaugus."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Enim sundlaetud klotse"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr ""
+msgstr "Suurim tarvikuriba laius"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
@@ -4573,7 +4573,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "Enim kasutajaid"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
@@ -4581,11 +4581,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Päevasõnum"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
-msgstr ""
+msgstr "Päevasõnum mida näidatakse ühenduvaile mängjaile."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
@@ -4597,7 +4597,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Pisikaart"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
@@ -4633,7 +4633,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the HUD elements."
-msgstr ""
+msgstr "Kohandab kuvaliidese osiste suurust."
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
