@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2023-10-22 21:02+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"Last-Translator: Lemente <crafted.by.lemente@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -333,7 +333,7 @@ msgstr "Aucun paquet n'a pu être récupéré"
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
-msgstr "Aucun résultat"
+msgstr "Pas de résultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
