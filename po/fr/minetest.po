@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-10-22 17:18+0000\n"
-"Last-Translator: Translator <kvb@tuta.io>\n"
+"PO-Revision-Date: 2023-10-22 21:02+0000\n"
+"Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -361,7 +361,7 @@ msgstr "Packs de textures"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr "Le paquet $1/$2 n'a pas été trouvé."
+msgstr "Le paquet « $2 » de $1 n'a pas été trouvé."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -381,7 +381,7 @@ msgstr "Voir plus d'informations dans un navigateur web"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr "Vous devez installer un jeu pour pouvoir installer un mod"
+msgstr "Vous devez installer un jeu avant d'installer un mod"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -624,7 +624,6 @@ msgid "Register"
 msgstr "S'inscrire"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Dismiss"
 msgstr "Refuser"
 
@@ -634,24 +633,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
-"Pendant longtemps, le moteur Minetest était par défaut installer avec le « "
-"jeu Minetest ». À partir de la version 5.8.0, aucun jeu n'est intallé avec "
-"Minetest."
+"Pendant longtemps, le moteur Minetest était livré avec un jeu par défaut "
+"appelé « Minetest Game ». Depuis Minetest version 5.8.0, Minetest est livré "
+"sans jeu par défaut."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Si vous souhaitez continuer à jouer dans vos mondes Minetest Game, vous "
+"devez réinstaller Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game n'est plus installé par défaut"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Installer un autre jeu"
+msgstr "Reinstaller Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -757,9 +757,8 @@ msgid "Select file"
 msgstr "Choisir un fichier"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Sélectionner"
+msgstr "Définir"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -828,14 +827,13 @@ msgstr "Lissé"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Utiliser la langue du système)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Retour"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Change keys"
 msgstr "Changer les touches"
 
@@ -845,13 +843,12 @@ msgid "Clear"
 msgstr "Effacer"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Réinitialiser"
+msgstr "Réinitialiser le réglage par défaut"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Réinitialiser le réglage par défaut ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -859,7 +856,7 @@ msgstr "Rechercher"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Afficher les paramètres avancés"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show technical names"
@@ -879,11 +876,11 @@ msgstr "Contenu : Mods"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Le jeu doit également activer les ombres)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Personnalisé"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -936,7 +933,7 @@ msgstr "Équipe principale"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Périphérique Irrlicht :"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1255,7 +1252,6 @@ msgid "Camera update enabled"
 msgstr "Mise à jour de la caméra activée"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr ""
 "Impossible d'afficher les limites des blocs (désactivé par un jeu ou un mod)"
@@ -1297,7 +1293,7 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1320,7 +1316,7 @@ msgstr ""
 "– %s : à gauche\n"
 "– %s : à droite\n"
 "– %s : sauter/grimper\n"
-"– %s : creuser/actionner\n"
+"– %s : creuser/taper/utiliser\n"
 "– %s : placer/utiliser\n"
 "– %s : marcher lentement/descendre\n"
 "– %s : lâcher un objet\n"
@@ -1330,7 +1326,6 @@ msgstr ""
 "– %s : tchat\n"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1345,14 +1340,14 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Touches par défaut :\n"
-"Sans menu visible :\n"
-"– un seul appui : touche d'activation\n"
-"– double-appui : placement / utilisation\n"
-"– Glissement du doigt : regarder autour\n"
-"Menu / Inventaire visible :\n"
-"– double-appui (en dehors) : fermeture\n"
-"– objets dans l'inventaire : déplacement\n"
+"Contrôles :\n"
+"Sans menu ouvert :\n"
+"– glissement du doigt : regarder autour\n"
+"– appui : placer/utiliser\n"
+"– appui long : creuser/taper/utiliser\n"
+"Menu/Inventaire ouvert :\n"
+"– double-appui (en dehors) : fermer\n"
+"– appui sur objets dans l'inventaire : déplacer\n"
 "– appui, glissement et appui : pose d'un seul objet par emplacement\n"
 
 #: src/client/game.cpp
@@ -1551,28 +1546,28 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Impossible d’écouter sur %s car IPv6 est désactivé"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "La limite de vue a été désactivée"
+msgstr "Distance de vue illimitée désactivée"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
-msgstr "La limite de vue a été désactivée"
+msgstr "Distance de vue illimitée activée"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Distance de vue illimitée activée, mais interdite par un jeu ou un mod"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Distance de vue minimale : %d"
+msgstr "Distance de vue modifiée à %d (le minimum)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Distance de vue modifiée à %d (le minimum), mais limitée à %d par un jeu ou "
+"un mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -1580,20 +1575,22 @@ msgid "Viewing range changed to %d"
 msgstr "Distance de vue réglée sur %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Distance de vue réglée sur %d"
+msgstr "Distance de vue modifiée à %d (le maximum)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Distance de vue modifiée à %d (le maximum), mais limitée à %d par un jeu ou "
+"un mod"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Distance de vue réglée sur %d"
+msgstr "Distance de vue modifiée à %d, mais limitée à %d par un jeu ou un mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -2151,9 +2148,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "Le nom est pris. Veuillez choisir un autre nom."
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Fermeture du jeu…"
+msgstr "%s lors de l'arrêt : "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2365,7 +2362,7 @@ msgid ""
 msgstr ""
 "Adresse où se connecter.\n"
 "Laisser vide pour démarrer un serveur local.\n"
-"Noter que le champ adresse dans le menu principal remplace ce paramètre."
+"Noter que le champ de l'adresse dans le menu principal remplace ce paramètre."
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
@@ -2410,18 +2407,15 @@ msgid "Advanced"
 msgstr "Avancé"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Affects mods and texture packs in the Content and Select Mods menus, as well "
 "as\n"
 "setting names.\n"
 "Controlled by a checkbox in the settings menu."
 msgstr ""
-"Détermine si les noms techniques doivent être affichés.\n"
-"Affecte les mods et les packs de textures dans les menus « Contenu » et "
-"« Sélectionner les mods », ainsi que les noms de paramètres dans « Tous les "
-"paramètres ».\n"
-"Contrôlé par la case à cocher dans le menu « Tous les paramètres »."
+"Affecte les mods et les packs de textures dans les menus « Contenu » et « "
+"Sélectionner les mods », ainsi que les noms de paramètres.\n"
+"Contrôlé par la case à cocher dans le menu des paramètres."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2467,14 +2461,12 @@ msgid "Announce to this serverlist."
 msgstr "Annoncer à cette liste de serveurs."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Anticrénelage :"
+msgstr "Échelle de l'anticrénelage"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Anticrénelage :"
+msgstr "Méthode de l'anticrénelage"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2557,9 +2549,8 @@ msgid "Base terrain height."
 msgstr "Hauteur du terrain de base."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Taille minimale des textures"
+msgstr "Taille de base des textures"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2926,7 +2917,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
+msgstr "Contrôlé par la case à cocher dans le menu des paramètres."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -3110,6 +3101,9 @@ msgid ""
 "Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
+"Définit la taille de la grille d'échantillonnage pour les méthodes "
+"d'anticrénelage FSAA et SSAA.\n"
+"La valeur 2 signifie que l'on prend 2 × 2 = 4 échantillons."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
@@ -3235,7 +3229,7 @@ msgstr "Nom de domaine du serveur affichée sur la liste des serveurs."
 
 #: src/settings_translation_file.cpp
 msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
+msgstr "Ne pas afficher la notification « réinstaller Minetest Game »"
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -3350,6 +3344,8 @@ msgstr "Activer la sécurité des mods"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
+"Activer le défilement de la molette de la souris pour la sélection d'objets "
+"de la barre d'inventaire."
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -3936,9 +3932,8 @@ msgid "Height select noise"
 msgstr "Bruit de sélection de hauteur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hide: Temporary Settings"
-msgstr "Paramètres temporaires"
+msgstr "Cacher : Paramètres temporaires"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
