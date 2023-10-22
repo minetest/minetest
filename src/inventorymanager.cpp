@@ -244,44 +244,37 @@ int IMoveAction::allowMove(int try_take_count, ServerActiveObject *player) const
 
 void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
-	Inventory *inv_from = mgr->getInventory(from_inv);
-	Inventory *inv_to = mgr->getInventory(to_inv);
-
-	if (!inv_from) {
-		infostream << "IMoveAction::apply(): FAIL: source inventory not found: "
-			<< "from_inv=\""<<from_inv.dump() << "\""
-			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
-		return;
-	}
-	if (!inv_to) {
-		infostream << "IMoveAction::apply(): FAIL: destination inventory not found: "
-			<< "from_inv=\"" << from_inv.dump() << "\""
-			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
-		return;
-	}
-
-	auto get_borrow_checked_invlist = [](Inventory *inv, const std::string &listname)
-			-> InventoryList::ResizeLocked
+	auto get_borrow_checked_invlist = [mgr](const InventoryLocation &invloc,
+			const std::string &listname) -> InventoryList::ResizeLocked
 	{
+		Inventory *inv = mgr->getInventory(invloc);
+		if (!inv)
+			return nullptr;
 		InventoryList *list = inv->getList(listname);
 		if (!list)
 			return nullptr;
 		return list->resizeLock();
 	};
 
-	auto list_from = get_borrow_checked_invlist(inv_from, from_list);
-	auto list_to = get_borrow_checked_invlist(inv_to, to_list);
+	auto list_from = get_borrow_checked_invlist(from_inv, from_list);
+	auto list_to = get_borrow_checked_invlist(to_inv, to_list);
 
 	if (!list_from) {
-		infostream << "IMoveAction::apply(): FAIL: source list not found: "
-			<< "from_inv=\"" << from_inv.dump() << "\""
-			<< ", from_list=\"" << from_list << "\"" << std::endl;
+		infostream << "IMoveAction::apply(): FAIL: source inventory or list not found: "
+				<< "from_inv=\"" << from_inv.dump() << "\""
+				<< ", from_list=\"" << from_list << "\""
+				<< ", to_inv=\"" << to_inv.dump() << "\""
+				<< ", to_list=\"" << to_list << "\""
+				<< std::endl;
 		return;
 	}
 	if (!list_to) {
-		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
-			<< "to_inv=\"" << to_inv.dump() << "\""
-			<< ", to_list=\"" << to_list << "\"" << std::endl;
+		infostream << "IMoveAction::apply(): FAIL: destination inventory or list not found: "
+				<< "from_inv=\"" << from_inv.dump() << "\""
+				<< ", from_list=\"" << from_list << "\""
+				<< ", to_inv=\"" << to_inv.dump() << "\""
+				<< ", to_list=\"" << to_list << "\""
+				<< std::endl;
 		return;
 	}
 
@@ -314,7 +307,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			assert(move_count <= count);
 			count -= move_count;
 
-			list_to = get_borrow_checked_invlist(inv_to, to_list);
+			list_to = get_borrow_checked_invlist(to_inv, to_list);
 			if (!list_to) {
 				// list_to was removed. simulate an empty list
 				dest_size = 0;
@@ -599,7 +592,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		onMove(count, player);
 		if (did_swap) {
 			// Item is now placed in source list
-			list_from = get_borrow_checked_invlist(inv_from, from_list);
+			list_from = get_borrow_checked_invlist(from_inv, from_list);
 			if (list_from) {
 				src_item = list_from->getItem(from_i);
 				list_from.reset();
@@ -621,7 +614,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			src_item.count = src_item_count;
 		if (did_swap) {
 			// Item is now placed in source list
-			list_from = get_borrow_checked_invlist(inv_from, from_list);
+			list_from = get_borrow_checked_invlist(from_inv, from_list);
 			if (list_from) {
 				src_item = list_from->getItem(from_i);
 				list_from.reset();
