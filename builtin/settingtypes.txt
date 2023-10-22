@@ -721,7 +721,7 @@ contentdb_url (ContentDB URL) string https://content.minetest.net
 #    as defined by the Free Software Foundation.
 #    You can also specify content ratings.
 #    These flags are independent from Minetest versions,
-#    so, see a full list at https://content.minetest.net/help/content_flags/
+#    so see a full list at https://content.minetest.net/help/content_flags/
 contentdb_flag_blacklist (ContentDB Flag Blacklist) string nonfree, desktop_default
 
 #    Maximum number of concurrent downloads. Downloads exceeding this limit will be queued.
@@ -1619,7 +1619,7 @@ mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3
 #    Second of two 3D noises that together define tunnels.
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
-#    The depth of dirt or other-biome filler node.
+#    Variation of biome filler depth.
 mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
 #    3D noise defining giant caverns.
@@ -1919,9 +1919,9 @@ lighting_boost_spread (Light curve boost spread) float 0.2 0.0 0.4
 #    Metrics can be fetched on http://127.0.0.1:30000/metrics
 prometheus_listener_address (Prometheus listener address) string 127.0.0.1:30000
 
-#    Maximum size of the out-chat queue.
+#    Maximum size of the outgoing chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.
-max_out_chat_queue_size (Maximum size of the out chat queue) int 20 -1 32767
+max_out_chat_queue_size (Maximum size of the outgoing chat queue) int 20 -1 32767
 
 #    Timeout for client to remove unused map data from memory, in seconds.
 client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
