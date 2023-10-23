@@ -263,7 +263,7 @@ performance_tradeoffs (Tradeoffs for performance) bool false
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
-[**3d]
+[**3D]
 
 #    3D support.
 #    Currently supported:
@@ -635,7 +635,7 @@ mute_sound (Mute sound) bool false
 #    A restart is required after changing this.
 language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
 
-[**GUIs]
+[**GUI]
 
 #    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.
@@ -953,7 +953,7 @@ mapgen_limit (Map generation limit) int 31007 0 31007
 #    and jungle grass, in all other mapgens this flag controls all decorations.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
 
-[*Biome API noise parameters]
+[*Biome API Noises]
 
 #    Temperature variation for biomes.
 mg_biome_np_heat (Heat noise) noise_params_2d 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0, eased
@@ -1745,7 +1745,7 @@ instrument.builtin (Builtin) bool false
 #     * Instrument the sampler being used to update the statistics.
 instrument.profiler (Profiler) bool false
 
-[**Engine profiler]
+[**Engine Profiler]
 
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
