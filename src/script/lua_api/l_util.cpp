@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
+#include "network/networkprotocol.h"
 #include "serialization.h"
 #include <json/json.h>
 #include <zstd.h>
@@ -392,8 +393,10 @@ int ModApiUtil::l_decode_base64(lua_State *L)
 	const char *d = luaL_checklstring(L, 1, &size);
 	const std::string data = std::string(d, size);
 
-	if (!base64_is_valid(data))
-		return 0;
+	if (!base64_is_valid(data)) {
+		lua_pushnil(L);
+		return 1;
+	}
 
 	std::string out = base64_decode(data);
 
@@ -526,6 +529,12 @@ int ModApiUtil::l_get_version(lua_State *L)
 
 	lua_pushstring(L, g_version_string);
 	lua_setfield(L, table, "string");
+
+	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MIN);
+	lua_setfield(L, table, "proto_min");
+
+	lua_pushnumber(L, SERVER_PROTOCOL_VERSION_MAX);
+	lua_setfield(L, table, "proto_max");
 
 	if (strcmp(g_version_string, g_version_hash) != 0) {
 		lua_pushstring(L, g_version_hash);

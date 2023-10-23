@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "exceptions.h"
 #include "remoteplayer.h"
+#include "irrlicht_changes/printing.h"
 #include "server/player_sao.h"
 #include "util/serialize.h"
 #include "util/string.h"
@@ -45,14 +46,11 @@ Database_LevelDB::Database_LevelDB(const std::string &savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
+	leveldb::DB *db;
 	leveldb::Status status = leveldb::DB::Open(options,
-		savedir + DIR_DELIM + "map.db", &m_database);
+		savedir + DIR_DELIM + "map.db", &db);
 	ENSURE_STATUS_OK(status);
-}
-
-Database_LevelDB::~Database_LevelDB()
-{
-	delete m_database;
+	m_database.reset(db);
 }
 
 bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
@@ -61,7 +59,7 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 			i64tos(getBlockAsInteger(pos)), data);
 	if (!status.ok()) {
 		warningstream << "saveBlock: LevelDB error saving block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< pos << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
@@ -83,7 +81,7 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 			i64tos(getBlockAsInteger(pos)));
 	if (!status.ok()) {
 		warningstream << "deleteBlock: LevelDB error deleting block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< pos << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
@@ -92,26 +90,22 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 
 void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
+	std::unique_ptr<leveldb::Iterator> it(m_database->NewIterator(leveldb::ReadOptions()));
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		dst.push_back(getIntegerAsBlock(stoi64(it->key().ToString())));
 	}
 	ENSURE_STATUS_OK(it->status());  // Check for any errors found during the scan
-	delete it;
 }
 
 PlayerDatabaseLevelDB::PlayerDatabaseLevelDB(const std::string &savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
+	leveldb::DB *db;
 	leveldb::Status status = leveldb::DB::Open(options,
-		savedir + DIR_DELIM + "players.db", &m_database);
+		savedir + DIR_DELIM + "players.db", &db);
 	ENSURE_STATUS_OK(status);
-}
-
-PlayerDatabaseLevelDB::~PlayerDatabaseLevelDB()
-{
-	delete m_database;
+	m_database.reset(db);
 }
 
 void PlayerDatabaseLevelDB::savePlayer(RemotePlayer *player)
@@ -202,26 +196,22 @@ bool PlayerDatabaseLevelDB::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 
 void PlayerDatabaseLevelDB::listPlayers(std::vector<std::string> &res)
 {
-	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
+	std::unique_ptr<leveldb::Iterator> it(m_database->NewIterator(leveldb::ReadOptions()));
 	res.clear();
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		res.push_back(it->key().ToString());
 	}
-	delete it;
 }
 
 AuthDatabaseLevelDB::AuthDatabaseLevelDB(const std::string &savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
+	leveldb::DB *db;
 	leveldb::Status status = leveldb::DB::Open(options,
-		savedir + DIR_DELIM + "auth.db", &m_database);
+		savedir + DIR_DELIM + "auth.db", &db);
 	ENSURE_STATUS_OK(status);
-}
-
-AuthDatabaseLevelDB::~AuthDatabaseLevelDB()
-{
-	delete m_database;
+	m_database.reset(db);
 }
 
 bool AuthDatabaseLevelDB::getAuth(const std::string &name, AuthEntry &res)
@@ -293,12 +283,11 @@ bool AuthDatabaseLevelDB::deleteAuth(const std::string &name)
 
 void AuthDatabaseLevelDB::listNames(std::vector<std::string> &res)
 {
-	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
+	std::unique_ptr<leveldb::Iterator> it(m_database->NewIterator(leveldb::ReadOptions()));
 	res.clear();
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
 		res.emplace_back(it->key().ToString());
 	}
-	delete it;
 }
 
 void AuthDatabaseLevelDB::reload()

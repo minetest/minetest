@@ -150,13 +150,12 @@ int ModApiClient::l_get_player_names(lua_State *L)
 	if (checkCSMRestrictionFlag(CSM_RF_READ_PLAYERINFO))
 		return 0;
 
-	const std::list<std::string> &plist = getClient(L)->getConnectedPlayerNames();
+	auto plist = getClient(L)->getConnectedPlayerNames();
 	lua_createtable(L, plist.size(), 0);
 	int newTable = lua_gettop(L);
 	int index = 1;
-	std::list<std::string>::const_iterator iter;
-	for (iter = plist.begin(); iter != plist.end(); ++iter) {
-		lua_pushstring(L, (*iter).c_str());
+	for (const std::string &name : plist) {
+		lua_pushstring(L, name.c_str());
 		lua_rawseti(L, newTable, index);
 		index++;
 	}
@@ -258,63 +257,6 @@ int ModApiClient::l_get_meta(lua_State *L)
 	NodeMetadata *meta = getEnv(L)->getMap().getNodeMetadata(p);
 	NodeMetaRef::createClient(L, meta);
 	return 1;
-}
-
-// sound_play(spec, parameters)
-int ModApiClient::l_sound_play(lua_State *L)
-{
-	ISoundManager *sound = getClient(L)->getSoundManager();
-
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-
-	SoundLocation type = SoundLocation::Local;
-	float gain = 1.0f;
-	v3f position;
-
-	if (lua_istable(L, 2)) {
-		getfloatfield(L, 2, "gain", gain);
-		getfloatfield(L, 2, "pitch", spec.pitch);
-		getboolfield(L, 2, "loop", spec.loop);
-
-		lua_getfield(L, 2, "pos");
-		if (!lua_isnil(L, -1)) {
-			position = read_v3f(L, -1) * BS;
-			type = SoundLocation::Position;
-			lua_pop(L, 1);
-		}
-	}
-
-	spec.gain *= gain;
-
-	s32 handle;
-	if (type == SoundLocation::Local)
-		handle = sound->playSound(spec);
-	else
-		handle = sound->playSoundAt(spec, position);
-
-	lua_pushinteger(L, handle);
-	return 1;
-}
-
-// sound_stop(handle)
-int ModApiClient::l_sound_stop(lua_State *L)
-{
-	s32 handle = luaL_checkinteger(L, 1);
-
-	getClient(L)->getSoundManager()->stopSound(handle);
-
-	return 0;
-}
-
-// sound_fade(handle, step, gain)
-int ModApiClient::l_sound_fade(lua_State *L)
-{
-	s32 handle = luaL_checkinteger(L, 1);
-	float step = readParam<float>(L, 2);
-	float gain = readParam<float>(L, 3);
-	getClient(L)->getSoundManager()->fadeSound(handle, step, gain);
-	return 0;
 }
 
 // get_server_info()
@@ -433,9 +375,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node_or_nil);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
-	API_FCT(sound_fade);
 	API_FCT(get_server_info);
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);

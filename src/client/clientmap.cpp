@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmap.h"
 #include "client.h"
+#include "client/mesh.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
@@ -48,7 +49,7 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 	for (MeshBufList &l : list) {
 		// comparing a full material is quite expensive so we don't do it if
 		// not even first texture is equal
-		if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
+		if (l.m.TextureLayers[0].Texture != m.TextureLayers[0].Texture)
 			continue;
 
 		if (l.m == m) {
@@ -124,7 +125,7 @@ ClientMap::~ClientMap()
 	g_settings->deregisterChangedCallback("enable_raytraced_culling", on_settings_changed, this);
 }
 
-void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
+void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset, video::SColor light_color)
 {
 	v3s16 previous_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 previous_block = getContainerPos(previous_node, MAP_BLOCKSIZE);
@@ -133,6 +134,7 @@ void ClientMap::updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	m_camera_direction = dir;
 	m_camera_fov = fov;
 	m_camera_offset = offset;
+	m_camera_light_color = light_color;
 
 	v3s16 current_node = floatToInt(m_camera_position, BS) + m_camera_offset;
 	v3s16 current_block = getContainerPos(current_node, MAP_BLOCKSIZE);
@@ -623,6 +625,8 @@ void ClientMap::touchMapBlocks()
 	if (m_control.range_all || m_loops_occlusion_culler)
 		return;
 
+	ScopeProfiler sp(g_profiler, "CM::touchMapBlocks()", SPT_AVG);
+
 	v3s16 cam_pos_nodes = floatToInt(m_camera_position, BS);
 
 	v3s16 p_blocks_min;
@@ -840,32 +844,29 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			auto &material = buf->getMaterial();
 
 			// Apply filter settings
-			material.setFlag(video::EMF_TRILINEAR_FILTER,
-				m_cache_trilinear_filter);
-			material.setFlag(video::EMF_BILINEAR_FILTER,
-				m_cache_bilinear_filter);
-			material.setFlag(video::EMF_ANISOTROPIC_FILTER,
-				m_cache_anistropic_filter);
-			material.setFlag(video::EMF_WIREFRAME,
-				m_control.show_wireframe);
+			material.forEachTexture([this] (auto &tex) {
+				setMaterialFilters(tex, m_cache_bilinear_filter, m_cache_trilinear_filter,
+						m_cache_anistropic_filter);
+			});
+			material.Wireframe = m_control.show_wireframe;
 
 			// pass the shadow map texture to the buffer texture
 			ShadowRenderer *shadow = m_rendering_engine->get_shadow_renderer();
 			if (shadow && shadow->is_active()) {
-				auto &layer = material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW];
+				auto &layer = material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW];
 				layer.Texture = shadow->get_texture();
 				layer.TextureWrapU = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				layer.TextureWrapV = video::E_TEXTURE_CLAMP::ETC_CLAMP_TO_EDGE;
 				// Do not enable filter on shadow texture to avoid visual artifacts
 				// with colored shadows.
 				// Filtering is done in shader code anyway
-				layer.BilinearFilter = false;
-				layer.AnisotropicFilter = false;
-				layer.TrilinearFilter = false;
+				layer.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
+				layer.MagFilter = video::ETMAGF_NEAREST;
+				layer.AnisotropicFilter = 0;
 			}
 			driver->setMaterial(material);
 			++material_swaps;
-			material.TextureLayer[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
+			material.TextureLayers[ShadowRenderer::TEXTURE_LAYER_SHADOW].Texture = nullptr;
 		}
 
 		v3f block_wpos = intToFloat(mesh_grid.getMeshPos(descriptor.m_pos) * MAP_BLOCKSIZE, BS);
@@ -1057,21 +1058,30 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	MapNode n = getNode(floatToInt(m_camera_position, BS));
 
 	const ContentFeatures& features = m_nodedef->get(n);
-	video::SColor post_effect_color = features.post_effect_color;
+	video::SColor post_color = features.post_effect_color;
+
+	if (features.post_effect_color_shaded) {
+		auto apply_light = [] (u32 color, u32 light) {
+			return core::clamp(core::round32(color * light / 255.0f), 0, 255);
+		};
+		post_color.setRed(apply_light(post_color.getRed(), m_camera_light_color.getRed()));
+		post_color.setGreen(apply_light(post_color.getGreen(), m_camera_light_color.getGreen()));
+		post_color.setBlue(apply_light(post_color.getBlue(), m_camera_light_color.getBlue()));
+	}
 
 	// If the camera is in a solid node, make everything black.
 	// (first person mode only)
 	if (features.solidness == 2 && cam_mode == CAMERA_MODE_FIRST &&
-		!m_control.allow_noclip) {
-		post_effect_color = video::SColor(255, 0, 0, 0);
+			!m_control.allow_noclip) {
+		post_color = video::SColor(255, 0, 0, 0);
 	}
 
-	if (post_effect_color.getAlpha() != 0) {
+	if (post_color.getAlpha() != 0) {
 		// Draw a full-screen rectangle
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(post_effect_color, rect);
+		driver->draw2DRectangle(post_color, rect);
 	}
 }
 
@@ -1188,8 +1198,14 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 			// override some material properties
 			video::SMaterial local_material = buf->getMaterial();
 			local_material.MaterialType = material.MaterialType;
-			local_material.BackfaceCulling = material.BackfaceCulling;
-			local_material.FrontfaceCulling = material.FrontfaceCulling;
+			// do not override culling if the original material renders both back
+			// and front faces in solid mode (e.g. plantlike)
+			// Transparent plants would still render shadows only from one side,
+			// but this conflicts with water which occurs much more frequently
+			if (is_transparent_pass || local_material.BackfaceCulling || local_material.FrontfaceCulling) {
+				local_material.BackfaceCulling = material.BackfaceCulling;
+				local_material.FrontfaceCulling = material.FrontfaceCulling;
+			}
 			local_material.BlendOperation = material.BlendOperation;
 			local_material.Lighting = false;
 			driver->setMaterial(local_material);

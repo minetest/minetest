@@ -57,6 +57,25 @@
 # Comments and (Readable name) are handled by gettext.
 # Comments should be complete sentences that describe the setting and possibly
 #  give the user additional useful insight.
+# The last line of a comment can contain the requirements for the setting, ie:
+#
+#    # This is a comment
+#    #
+#    # Requires: shaders, enable_dynamic_shadows, !touchscreen_gui
+#    name (Readable name) type type_args
+#
+# A requirement can be the name of a boolean setting or an engine-defined value.
+# These requirements may be:
+#
+# * The value of a boolean setting, such as enable_dynamic_shadows
+# * An engine-defined value:
+#     * shaders_support (a video driver that supports shaders, may not be enabled)
+#     * shaders (both enable_shaders and shaders_support)
+#     * desktop / android
+#     * touchscreen_gui / keyboard_mouse
+#     * opengl / gles
+# * You can negate any requirement by prepending with !
+#
 # Sections are marked by a single line in the format: [Section Name]
 # Sub-section are marked by adding * in front of the section name: [*Sub-section]
 # Sub-sub-sections have two * etc.
@@ -72,6 +91,8 @@
 camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
 #    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#
+#    Requires: keyboard_mouse
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
 
 #    If enabled, you can place nodes at the position (feet + eye level) where you stand.
@@ -91,38 +112,68 @@ always_fly_fast (Always fly fast) bool true
 
 #    The time in seconds it takes between repeated node placements when holding
 #    the place button.
+#
+#    Requires: keyboard_mouse
 repeat_place_time (Place repetition interval) float 0.25 0.16 2
 
 #    Automatically jump up single-node obstacles.
 autojump (Automatic jumping) bool false
 
-#    Prevent digging and placing from repeating when holding the mouse buttons.
+#    Prevent digging and placing from repeating when holding the respective buttons.
 #    Enable this when you dig or place too often by accident.
+#    On touchscreens, this only affects digging.
 safe_dig_and_place (Safe digging and placing) bool false
 
 [*Keyboard and Mouse]
 
 #    Invert vertical mouse movement.
+#
+#    Requires: keyboard_mouse
 invert_mouse (Invert mouse) bool false
 
 #    Mouse sensitivity multiplier.
+#
+#    Requires: keyboard_mouse
 mouse_sensitivity (Mouse sensitivity) float 0.2 0.001 10.0
+
+#    Enable mouse wheel (scroll) for item selection in hotbar.
+#
+#    Requires: keyboard_mouse
+enable_hotbar_mouse_wheel (Hotbar: Enable mouse wheel for selection) bool true
+
+#    Invert mouse wheel (scroll) direction for item selection in hotbar.
+#
+#    Requires: keyboard_mouse
+invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
-#    The length in pixels it takes for touch screen interaction to start.
-touchscreen_threshold (Touch screen threshold) int 20 0 100
+#    The length in pixels it takes for touchscreen interaction to start.
+#
+#    Requires: touchscreen_gui
+touchscreen_threshold (Touchscreen threshold) int 20 0 100
+
+#    Touchscreen sensitivity multiplier.
+#
+#    Requires: touchscreen_gui
+touchscreen_sensitivity (Touchscreen sensitivity) float 0.2 0.001 10.0
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
+#
+#    Requires: touchscreen_gui
 touch_use_crosshair (Use crosshair for touch screen) bool false
 
-#    (Android) Fixes the position of virtual joystick.
+#    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
+#
+#    Requires: touchscreen_gui
 fixed_virtual_joystick (Fixed virtual joystick) bool false
 
-#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
+#
+#    Requires: touchscreen_gui
 virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool false
 
 
@@ -133,25 +184,37 @@ virtual_joystick_triggers_aux1 (Virtual joystick triggers Aux1 button) bool fals
 [**Screen]
 
 #    Width component of the initial window size.
+#
+#    Requires: desktop
 screen_w (Screen width) int 1024 1 65535
 
 #    Height component of the initial window size.
+#
+#    Requires: desktop
 screen_h (Screen height) int 600 1 65535
 
 #    Whether the window is maximized.
+#
+#    Requires: desktop
 window_maximized (Window maximized) bool false
 
 #    Save window size automatically when modified.
 #    If true, screen size is saved in screen_w and screen_h, and whether the window
 #    is maximized is stored in window_maximized.
 #    (Autosaving window_maximized only works if compiled with SDL.)
+#
+#    Requires: desktop
 autosave_screensize (Remember screen size) bool true
 
 #    Fullscreen mode.
+#
+#    Requires: desktop
 fullscreen (Full screen) bool false
 
 #    Open the pause menu when the window's focus is lost. Does not pause if a formspec is
 #    open.
+#
+#    Requires: desktop
 pause_on_lost_focus (Pause on lost window focus) bool false
 
 [**FPS]
@@ -252,14 +315,20 @@ ambient_occlusion_gamma (Ambient occlusion gamma) float 1.8 0.25 4.0
 
 #    Path to save screenshots at. Can be an absolute or relative path.
 #    The folder will be created if it doesn't already exist.
+#
+#    Requires: desktop
 screenshot_path (Screenshot folder) path screenshots
 
 #    Format of screenshots.
+#
+#    Requires: desktop
 screenshot_format (Screenshot format) enum png png,jpg
 
 #    Screenshot quality. Only used for JPEG format.
 #    1 means worst quality; 100 means best quality.
 #    Use 0 for default quality.
+#
+#    Requires: desktop
 screenshot_quality (Screenshot quality) int 0 0 100
 
 [**Node and Entity Highlighting]
@@ -291,9 +360,13 @@ crosshair_alpha (Crosshair alpha) int 255 0 255
 enable_fog (Fog) bool true
 
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
+#
+#    Requires: enable_fog
 directional_colored_fog (Colored fog) bool true
 
 #    Fraction of the visible distance at which fog starts to be rendered
+#
+#    Requires: enable_fog
 fog_start (Fog start) float 0.4 0.0 0.99
 
 [**Clouds]
@@ -302,48 +375,49 @@ fog_start (Fog start) float 0.4 0.0 0.99
 enable_clouds (Clouds) bool true
 
 #    Use 3D cloud look instead of flat.
+#
+#    Requires: enable_clouds
 enable_3d_clouds (3D clouds) bool true
 
 [**Filtering and Antialiasing]
 
-#    Use mipmapping to scale textures. May slightly increase performance,
+#    Use mipmaps when scaling textures down. May slightly increase performance,
 #    especially when using a high resolution texture pack.
-#    Gamma correct downscaling is not supported.
+#    Gamma-correct downscaling is not supported.
 mip_map (Mipmapping) bool false
 
-#    Use anisotropic filtering when viewing at textures from an angle.
-anisotropic_filter (Anisotropic filtering) bool false
-
-#    Use bilinear filtering when scaling textures.
+#    Use bilinear filtering when scaling textures down.
 bilinear_filter (Bilinear filtering) bool false
 
-#    Use trilinear filtering when scaling textures.
+#    Use trilinear filtering when scaling textures down.
+#    If both bilinear and trilinear filtering are enabled, trilinear filtering
+#    is applied.
 trilinear_filter (Trilinear filtering) bool false
 
-#    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, often resulting in dark or
-#    light edges to transparent textures. Apply a filter to clean that up
-#    at texture load time. This is automatically enabled if mipmapping is enabled.
-texture_clean_transparent (Clean transparent textures) bool false
+#    Use anisotropic filtering when looking at textures from an angle.
+anisotropic_filter (Anisotropic filtering) bool false
 
-#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
-#    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels. This sets the minimum texture size
-#    for the upscaled textures; higher values look sharper, but require more
-#    memory. Powers of 2 are recommended. This setting is ONLY applied if
-#    bilinear/trilinear/anisotropic filtering is enabled.
-#    This is also used as the base node texture size for world-aligned
-#    texture autoscaling.
-texture_min_size (Minimum texture size) int 64 1 32768
+#    Select the antialiasing method to apply.
+#
+#    * None - No antialiasing (default)
+#
+#    * FSAA - Hardware-provided full-screen antialiasing (incompatible with shaders)
+#             A.K.A multi-sample antialiasing (MSAA)
+#             Smoothens out block edges but does not affect the insides of textures.
+#             A restart is required to change this option.
+#
+#    * FXAA - Fast approximate antialiasing (requires shaders)
+#             Applies a post-processing filter to detect and smoothen high-contrast edges.
+#             Provides balance between speed and image quality.
+#
+#    * SSAA - Super-sampling antialiasing (requires shaders)
+#             Renders higher-resolution image of the scene, then scales down to reduce
+#             the aliasing effects. This is the slowest and the most accurate method.
+antialiasing (Antialiasing method) enum none none,fsaa,fxaa,ssaa
 
-#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
-#    This algorithm smooths out the 3D viewport while keeping the image sharp,
-#    but it doesn't affect the insides of textures
-#    (which is especially noticeable with transparent textures).
-#    Visible spaces appear between nodes when shaders are disabled.
-#    If set to 0, MSAA is disabled.
-#    A restart is required after changing this option.
-fsaa (FSAA) enum 0 0,1,2,4,8,16
+#    Defines size of the sampling grid for FSAA and SSAA antializasing methods.
+#    Value of 2 means taking 2x2 = 4 samples.
+fsaa (Anti-aliasing scale) enum 2 2,4,8,16
 
 [**Occlusion Culling]
 
@@ -367,89 +441,118 @@ enable_raytraced_culling (Enable Raytraced Culling) bool true
 #    Shaders allow advanced visual effects and may increase performance on some video
 #    cards.
 #    This only works with the OpenGL video backend.
+#
+#    Requires: shaders_support
 enable_shaders (Shaders) bool true
 
 [**Waving Nodes]
 
 #    Set to true to enable waving leaves.
-#    Requires shaders to be enabled.
+#
+#    Requires: shaders
 enable_waving_leaves (Waving leaves) bool false
 
 #    Set to true to enable waving plants.
-#    Requires shaders to be enabled.
+#
+#    Requires: shaders
 enable_waving_plants (Waving plants) bool false
 
 #    Set to true to enable waving liquids (like water).
-#    Requires shaders to be enabled.
+#
+#    Requires: shaders
 enable_waving_water (Waving liquids) bool false
 
 #    The maximum height of the surface of waving liquids.
 #    4.0 = Wave height is two nodes.
 #    0.0 = Wave doesn't move at all.
 #    Default is 1.0 (1/2 node).
-#    Requires waving liquids to be enabled.
+#
+#    Requires: shaders, enable_waving_water
 water_wave_height (Waving liquids wave height) float 1.0 0.0 4.0
 
 #    Length of liquid waves.
-#    Requires waving liquids to be enabled.
+#
+#    Requires: shaders, enable_waving_water
 water_wave_length (Waving liquids wavelength) float 20.0 0.1
 
 #    How fast liquid waves will move. Higher = faster.
 #    If negative, liquid waves will move backwards.
-#    Requires waving liquids to be enabled.
+#
+#    Requires: shaders, enable_waving_water
 water_wave_speed (Waving liquids wave speed) float 5.0
 
 [**Dynamic shadows]
 
 #    Set to true to enable Shadow Mapping.
-#    Requires shaders to be enabled.
+#
+#    Requires: shaders, opengl
 enable_dynamic_shadows (Dynamic shadows) bool false
 
 #    Set the shadow strength gamma.
 #    Adjusts the intensity of in-game dynamic shadows.
 #    Lower value means lighter shadows, higher value means darker shadows.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 
 #    Maximum distance to render shadows.
-shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 200.0 10.0 1000.0
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 140.0 10.0 1000.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
 #    Bigger numbers create better shadows but it is also more expensive.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_map_texture_size (Shadow map texture size) int 2048 128 8192
 
 #    Sets shadow texture quality to 32 bits.
 #    On false, 16 bits texture will be used.
 #    This can cause much more artifacts in the shadow.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_map_texture_32bit (Shadow map texture in 32 bits) bool true
 
 #    Enable Poisson disk filtering.
 #    On true uses Poisson disk to make "soft shadows". Otherwise uses PCF filtering.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_poisson_filter (Poisson filtering) bool true
 
-#   Define shadow filtering quality.
-#   This simulates the soft shadows effect by applying a PCF or Poisson disk
-#   but also uses more resources.
+#    Define shadow filtering quality.
+#    This simulates the soft shadows effect by applying a PCF or Poisson disk
+#    but also uses more resources.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_filters (Shadow filter quality) enum 1 0,1,2
 
 #    Enable colored shadows.
 #    On true translucent nodes cast colored shadows. This is expensive.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_map_color (Colored shadows) bool false
 
 #    Spread a complete update of shadow map over given amount of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
 #    Minimum value: 1; maximum value: 16
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_update_frames (Map shadows update frames) int 8 1 16
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.
 #    Minimum value: 1.0; maximum value: 15.0
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_soft_radius (Soft shadow radius) float 5.0 1.0 15.0
 
 #    Set the default tilt of Sun/Moon orbit in degrees.
 #    Games may change orbit tilt via API.
 #    Value of 0 means no tilt / vertical orbit.
+#
+#    Requires: shaders, enable_dynamic_shadows, opengl
 shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 
 [**Post Processing]
@@ -458,43 +561,59 @@ shadow_sky_body_orbit_tilt (Sky Body Orbit Tilt) float 0.0 -60.0 60.0
 #    Simulates the tone curve of photographic film and how this approximates the
 #    appearance of high dynamic range images. Mid-range contrast is slightly
 #    enhanced, highlights and shadows are gradually compressed.
+#
+#    Requires: shaders
 tone_mapping (Filmic tone mapping) bool false
 
 #    Enable automatic exposure correction
 #    When enabled, the post-processing engine will
 #    automatically adjust to the brightness of the scene,
 #    simulating the behavior of human eye.
+#
+#    Requires: shaders
 enable_auto_exposure (Enable Automatic Exposure) bool false
 
 #    Set the exposure compensation in EV units.
 #    Value of 0.0 (default) means no exposure compensation.
 #    Range: from -1 to 1.0
+#
+#    Requires: shaders, enable_auto_exposure
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
 [**Bloom]
 
 #    Set to true to enable bloom effect.
 #    Bright colors will bleed over the neighboring objects.
+#
+#    Requires: shaders
 enable_bloom (Enable Bloom) bool false
 
 #    Set to true to render debugging breakdown of the bloom effect.
 #    In debug mode, the screen is split into 4 quadrants:
 #    top-left - processed base image, top-right - final image
 #    bottom-left - raw base image, bottom-right - bloom texture.
+#
+#    Requires: shaders, enable_bloom
 enable_bloom_debug (Enable Bloom Debug) bool false
 
 #    Defines how much bloom is applied to the rendered image
 #    Smaller values make bloom more subtle
 #    Range: from 0.01 to 1.0, default: 0.05
+#
+#    Requires: shaders, enable_bloom
 bloom_intensity (Bloom Intensity) float 0.05 0.01 1.0
 
 #    Defines the magnitude of bloom overexposure.
 #    Range: from 0.1 to 10.0, default: 1.0
+#
+#    Requires: shaders, enable_bloom
 bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 
 #    Logical value that controls how far the bloom effect spreads
 #    from the bright objects.
 #    Range: from 0.1 to 8, default: 1
+#
+#    Requires: shaders, enable_bloom
 bloom_radius (Bloom Radius) float 1 0.1 8
 
 
@@ -1661,7 +1780,7 @@ profiler.load (Load the game profiler) bool false
 profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-profiler.report_path (Report path) string ""
+profiler.report_path (Report path) string
 
 #    Instrument the methods of entities on registration.
 instrument.entity (Entity methods) bool true
@@ -1709,6 +1828,8 @@ ignore_world_load_errors (Ignore world errors) bool false
 [**Graphics]
 
 #    Path to shader directory. If no path is defined, default location will be used.
+#
+#    Requires: shaders
 shader_path (Shader path) path
 
 #    The rendering back-end.
@@ -1730,7 +1851,7 @@ enable_vbo (VBO) bool true
 cloud_radius (Cloud radius) int 12 1 62
 
 #    Whether node texture animations should be desynchronized per mapblock.
-desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
+desynchronize_mapblock_texture_animation (Desynchronize block animation) bool false
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
@@ -1742,7 +1863,6 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Number of threads to use for mesh generation.
 #    Value of 0 (default) will let Minetest autodetect the number of available threads.
 mesh_generation_threads (Mapblock mesh generation threads) int 0 0 8
-
 
 #    Size of the MapBlock cache of the mesh generator. Increasing this will
 #    increase the cache hit %, reducing the data being copied from the main
@@ -1769,6 +1889,9 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    See also texture_min_size.
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
+
+#    The base node texture size used for world-aligned texture autoscaling.
+texture_min_size (Base texture size) int 64 1 32768
 
 #    Side length of a cube of map blocks that the client will consider together
 #    when generating meshes.
@@ -2039,7 +2162,7 @@ num_emerge_threads (Number of emerge threads) int 1 0 32767
 [**cURL]
 
 #    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
-curl_timeout (cURL interactive timeout) int 20000 100 2147483647
+curl_timeout (cURL interactive timeout) int 20000 1000 2147483647
 
 #    Limits number of parallel HTTP requests. Affects:
 #    -    Media fetch if server uses remote_media setting.
@@ -2049,7 +2172,7 @@ curl_timeout (cURL interactive timeout) int 20000 100 2147483647
 curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
-curl_file_download_timeout (cURL file download timeout) int 300000 100 2147483647
+curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
 [**Misc]
 
@@ -2114,7 +2237,7 @@ joystick_deadzone (Joystick dead zone) int 2048 0 65535
 joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170.0 0.001
 
 
-[*Temporary Settings]
+[*Hide: Temporary Settings]
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path
@@ -2133,10 +2256,6 @@ address (Server address) string
 #    Port to connect to (UDP).
 #    Note that the port field in the main menu overrides this setting.
 remote_port (Remote port) int 30000 1 65535
-
-#    Default game when creating a new world.
-#    This will be overridden when creating a world from the main menu.
-default_game (Default game) string minetest
 
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
@@ -2170,11 +2289,13 @@ continuous_forward (Continuous forward) bool false
 #    Useful for recording videos
 cinematic (Cinematic mode) bool false
 
-#    Whether to show technical names.
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
-#    setting names in All Settings.
-#    Controlled by the checkbox in the "All settings" menu.
+#    setting names.
+#    Controlled by a checkbox in the settings menu.
 show_technical_names (Show technical names) bool false
+
+#    Controlled by a checkbox in the settings menu.
+show_advanced (Show advanced settings) bool false
 
 #    Enables the sound system.
 #    If disabled, this completely disables all sounds everywhere and the in-game
@@ -2191,6 +2312,10 @@ update_last_checked (Last update check) string
 #    Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch
 #    Ex: 5.5.0 is 005005000
 update_last_known (Last known version update) int 0
+
+#    If this is set to true, the user will never (again) be shown the
+#    "reinstall Minetest Game" notification.
+no_mtg_notification (Don't show "reinstall Minetest Game" notification) bool false
 
 #    Key for moving the player forward.
 keymap_forward (Forward key) key KEY_KEY_W

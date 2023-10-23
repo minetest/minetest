@@ -74,6 +74,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database/database-dummy.h"
 #include "gameparams.h"
 #include "particles.h"
+#include "gettext.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -235,7 +236,7 @@ Server::Server(
 		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface,
-		std::string *on_shutdown_errmsg
+		std::string *shutdown_errmsg
 	):
 	m_bind_addr(bind_addr),
 	m_path_world(path_world),
@@ -254,7 +255,7 @@ Server::Server(
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
 	m_admin_chat(iface),
-	m_on_shutdown_errmsg(on_shutdown_errmsg),
+	m_shutdown_errmsg(shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	if (m_path_world.empty())
@@ -353,14 +354,7 @@ Server::~Server()
 		try {
 			m_script->on_shutdown();
 		} catch (ModError &e) {
-			errorstream << "ModError: " << e.what() << std::endl;
-			if (m_on_shutdown_errmsg) {
-				if (m_on_shutdown_errmsg->empty()) {
-					*m_on_shutdown_errmsg = std::string("ModError: ") + e.what();
-				} else {
-					*m_on_shutdown_errmsg += std::string("\nModError: ") + e.what();
-				}
-			}
+			addShutdownError(e);
 		}
 
 		infostream << "Server: Saving environment metadata" << std::endl;
@@ -460,6 +454,8 @@ void Server::init()
 	m_gamespec.checkAndLog();
 	m_modmgr->loadMods(m_script);
 
+	m_script->saveGlobals();
+
 	// Read Textures and calculate sha1 sums
 	fillMediaCache();
 
@@ -544,13 +540,22 @@ void Server::start()
 	m_thread->start();
 
 	// ASCII art for the win!
-	std::cerr
-		<< "         __.               __.                 __.  " << std::endl
-		<< "  _____ |__| ____   _____ /  |_  _____  _____ /  |_ " << std::endl
-		<< " /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\" << std::endl
-		<< "|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  " << std::endl
-		<< "|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  " << std::endl
-		<< "      \\/ \\/     \\/         \\/                  \\/   " << std::endl;
+	const char *art[] = {
+		"         __.               __.                 __.  ",
+		"  _____ |__| ____   _____ /  |_  _____  _____ /  |_ ",
+		" /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\",
+		"|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  ",
+		"|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  ",
+		"      \\/ \\/     \\/         \\/                  \\/   "
+	};
+
+	if (!m_admin_chat) {
+		// we're not printing to rawstream to avoid it showing up in the logs.
+		// however it would then mess up the ncurses terminal (m_admin_chat),
+		// so we skip it in that case.
+		for (auto line : art)
+			std::cerr << line << std::endl;
+	}
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
@@ -1625,8 +1630,9 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		) / 4.0f * BS;
 		const float radius_sq = radius * radius;
 		/* Don't send short-lived spawners to distant players.
-		 * This could be replaced with proper tracking at some point. */
-		const bool distance_check = !attached_id && p.time <= 1.0f;
+		 * This could be replaced with proper tracking at some point.
+		 * A lifetime of 0 means that the spawner exists forever.*/
+		const bool distance_check = !attached_id && p.time <= 1.0f && p.time != 0.0f;
 
 		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
@@ -1844,6 +1850,7 @@ void Server::SendSetSky(session_t peer_id, const SkyboxParams &params)
 		}
 
 		pkt << params.body_orbit_tilt;
+		pkt << params.fog_distance << params.fog_start;
 	}
 
 	Send(&pkt);
@@ -1983,10 +1990,10 @@ void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames
 	Send(&pkt);
 }
 
-void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third)
+void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_front)
 {
 	NetworkPacket pkt(TOCLIENT_EYE_OFFSET, 0, peer_id);
-	pkt << first << third;
+	pkt << first << third << third_front;
 	Send(&pkt);
 }
 
@@ -2231,7 +2238,7 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 	pkt << id << params.spec.name << gain
 			<< (u8) params.type << pos << params.object
 			<< params.spec.loop << params.spec.fade << params.spec.pitch
-			<< ephemeral;
+			<< ephemeral << params.spec.start_time;
 
 	bool as_reliable = !ephemeral;
 
@@ -2516,7 +2523,7 @@ bool Server::addMediaFile(const std::string &filename,
 {
 	// If name contains illegal characters, ignore the file
 	if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
-		infostream << "Server: ignoring illegal file name: \""
+		warningstream << "Server: ignoring file as it has disallowed characters: \""
 				<< filename << "\"" << std::endl;
 		return false;
 	}
@@ -3407,12 +3414,13 @@ void Server::setLocalPlayerAnimations(RemotePlayer *player,
 	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
 }
 
-void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third)
+void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front)
 {
 	sanity_check(player);
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
-	SendEyeOffset(player->getPeerId(), first, third);
+	player->eye_offset_third_front = third_front;
+	SendEyeOffset(player->getPeerId(), first, third, third_front);
 }
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params)
@@ -3754,6 +3762,23 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+// Not thread-safe.
+void Server::addShutdownError(const ModError &e)
+{
+	// DO NOT TRANSLATE the `ModError`, it's used by `ui.lua`
+	std::string msg = fmtgettext("%s while shutting down: ", "ModError") +
+			e.what() + strgettext("\nCheck debug.txt for details.");
+	errorstream << msg << std::endl;
+
+	if (m_shutdown_errmsg) {
+		if (m_shutdown_errmsg->empty()) {
+			*m_shutdown_errmsg = msg;
+		} else {
+			*m_shutdown_errmsg += "\n\n" + msg;
+		}
+	}
 }
 
 v3f Server::findSpawnPos()

@@ -28,6 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define VERSION_GITHASH VERSION_STRING
 #endif
 
+#define STRINGIFY(x) #x
+#define STR(x) STRINGIFY(x)
+
 const char *g_version_string = VERSION_STRING;
 const char *g_version_hash = VERSION_GITHASH;
 const char *g_build_info =

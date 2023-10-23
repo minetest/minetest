@@ -275,6 +275,18 @@ int LuaSettings::l_get_names(lua_State* L)
 	return 1;
 }
 
+// has(self, key) -> boolean
+int LuaSettings::l_has(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings* o = checkObject<LuaSettings>(L, 1);
+
+	std::string key = std::string(luaL_checkstring(L, 2));
+	lua_pushboolean(L, o->m_settings->existsLocal(key));
+
+	return 1;
+}
+
 // write(self) -> success
 int LuaSettings::l_write(lua_State* L)
 {
@@ -320,7 +332,6 @@ int LuaSettings::l_to_table(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkObject<LuaSettings>(L, 1);
 
-	MutexAutoLock(o->m_settings->m_mutex);
 	push_settings_table(L, o->m_settings);
 	return 1;
 }
@@ -364,6 +375,7 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, set_np_group),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
+	luamethod(LuaSettings, has),
 	luamethod(LuaSettings, write),
 	luamethod(LuaSettings, to_table),
 	{0,0}

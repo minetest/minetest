@@ -13,6 +13,7 @@ General options and their default values:
     BUILD_SERVER=FALSE         - Build Minetest server
     BUILD_UNITTESTS=TRUE       - Build unittest sources
     BUILD_BENCHMARKS=FALSE     - Build benchmark sources
+    BUILD_DOCUMENTATION=TRUE   - Build doxygen documentation
     CMAKE_BUILD_TYPE=Release   - Type of build (Release vs. Debug)
         Release                - Release build
         Debug                  - Debug build
@@ -43,8 +44,6 @@ Library specific options:
     CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
     CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
     CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
-    EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
-    EGL_LIBRARY                     - Only if building with GLES; path to libEGL.a/libEGL.so
     EXTRA_DLL                       - Only on Windows; optional paths to additional DLLs that should be packaged
     FREETYPE_INCLUDE_DIR_freetype2  - Directory that contains files such as ftimage.h
     FREETYPE_INCLUDE_DIR_ft2build   - Directory that contains ft2build.h

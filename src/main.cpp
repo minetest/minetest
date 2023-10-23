@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
+#include "irrlicht_changes/printing.h"
 #include "benchmark/benchmark.h"
 #include "chat_interface.h"
 #include "debug.h"
@@ -124,7 +125,7 @@ static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
 
@@ -217,7 +218,10 @@ int main(int argc, char *argv[])
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
 #if BUILD_UNITTESTS
-		return run_tests();
+		if (cmd_args.exists("test-module"))
+			return run_tests(cmd_args.get("test-module")) ? 0 : 1;
+		else
+			return run_tests() ? 0 : 1;
 #else
 		errorstream << "Unittest support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_UNITTESTS=1 flag."
@@ -327,6 +331,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Run the unit tests and exit"))));
 	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
 			_("Run the benchmarks and exit"))));
+	allowed_options->insert(std::make_pair("test-module", ValueSpec(VALUETYPE_STRING,
+			_("Only run the specified test module"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
@@ -707,10 +713,10 @@ static void uninit_common()
 
 static void startup_message()
 {
-	infostream << PROJECT_NAME << " " << _("with")
-	           << " SER_FMT_VER_HIGHEST_READ="
-               << (int)SER_FMT_VER_HIGHEST_READ << ", "
-               << g_build_info << std::endl;
+	infostream << PROJECT_NAME_C << " " << g_version_hash
+		<< "\nwith SER_FMT_VER_HIGHEST_READ="
+		<< (int)SER_FMT_VER_HIGHEST_READ << ", "
+		<< g_build_info << std::endl;
 }
 
 static bool read_config_file(const Settings &cmd_args)
@@ -988,15 +994,15 @@ static bool determine_subgame(GameParams *game_params)
 		if (game_params->game_spec.isValid()) {
 			gamespec = game_params->game_spec;
 			infostream << "Using commanded gameid [" << gamespec.id << "]" << std::endl;
-		} else { // Otherwise we will be using "minetest"
-			gamespec = findSubgame(g_settings->get("default_game"));
-			infostream << "Using default gameid [" << gamespec.id << "]" << std::endl;
-			if (!gamespec.isValid()) {
-				errorstream << "Game specified in default_game ["
-				            << g_settings->get("default_game")
-				            << "] is invalid." << std::endl;
-				return false;
+		} else {
+			if (game_params->is_dedicated_server) {
+				// If this is a dedicated server and no gamespec has been specified,
+				// print a friendly error pointing to ContentDB.
+				errorstream << "To run a " PROJECT_NAME_C " server, you need to select a game using the '--gameid' argument." << std::endl
+				            << "Check out https://content.minetest.net for a selection of games to pick from and download." << std::endl;
 			}
+
+			return false;
 		}
 	} else { // World exists
 		std::string world_gameid = getWorldGameId(game_params->world_path, false);
@@ -1037,27 +1043,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
-	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
-	}
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-		           << "\" failed: " << e.what()
-		           << " -- Listening on all addresses." << std::endl;
-	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		errorstream << "Unable to listen on "
-		            << bind_addr.serializeString()
-		            << L" because IPv6 is disabled" << std::endl;
-		return false;
-	}
-
 	// Database migration/compression
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
@@ -1072,7 +1057,27 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return Server::migrateModStorageDatabase(game_params, cmd_args);
 
 	if (cmd_args.getFlag("recompress"))
-		return recompress_map_database(game_params, cmd_args, bind_addr);
+		return recompress_map_database(game_params, cmd_args);
+
+	// Bind address
+	std::string bind_str = g_settings->get("bind_address");
+	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
+
+	if (g_settings->getBool("ipv6_server"))
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
+	try {
+		bind_addr.Resolve(bind_str.c_str());
+	} catch (const ResolveError &e) {
+		warningstream << "Resolving bind address \"" << bind_str
+			<< "\" failed: " << e.what()
+			<< " -- Listening on all addresses." << std::endl;
+	}
+	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+		errorstream << "Unable to listen on "
+		            << bind_addr.serializeString()
+		            << " because IPv6 is disabled" << std::endl;
+		return false;
+	}
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
@@ -1199,7 +1204,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		if (!data.empty()) {
 			new_db->saveBlock(*it, data);
 		} else {
-			errorstream << "Failed to load block " << PP(*it) << ", skipping it." << std::endl;
+			errorstream << "Failed to load block " << *it << ", skipping it." << std::endl;
 		}
 		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
 			std::cerr << " Migrated " << count << " blocks, "
@@ -1224,7 +1229,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 	return true;
 }
 
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args)
 {
 	Settings world_mt;
 	const std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
@@ -1234,7 +1239,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		return false;
 	}
 	const std::string &backend = world_mt.get("backend");
-	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
+	Server server(game_params.world_path, game_params.game_spec, false, Address(), false);
 	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
 
 	u32 count = 0;
@@ -1254,7 +1259,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		std::string data;
 		db->loadBlock(*it, &data);
 		if (data.empty()) {
-			errorstream << "Failed to load block " << PP(*it) << std::endl;
+			errorstream << "Failed to load block " << *it << std::endl;
 			return false;
 		}
 

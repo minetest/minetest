@@ -298,6 +298,7 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 		// can't throw from here so we're stuck with this
 		isErrored = true;
 	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/

@@ -534,7 +534,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 		-- There's no good way to detect a texture pack, so let's just assume
 		-- it's correct for now.
 		if basefolder and basefolder.type ~= "invalid" and basefolder.type ~= "txp" then
-			return nil, fgettext("Unable to install a $1 as a texture pack", basefolder.type)
+			return nil, fgettext_ne("Unable to install a $1 as a texture pack", basefolder.type)
 		end
 
 		local from = basefolder and basefolder.path or path
@@ -544,17 +544,17 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 		core.delete_dir(targetpath)
 		if not core.copy_dir(from, targetpath, false) then
 			return nil,
-				fgettext("Failed to install $1 to $2", basename, targetpath)
+				fgettext_ne("Failed to install $1 to $2", basename, targetpath)
 		end
 		return targetpath, nil
 
 	elseif not basefolder then
-		return nil, fgettext("Unable to find a valid mod, modpack, or game")
+		return nil, fgettext_ne("Unable to find a valid mod, modpack, or game")
 	end
 
 	-- Check type
 	if basefolder.type ~= expected_type and (basefolder.type ~= "modpack" or expected_type ~= "mod") then
-		return nil, fgettext("Unable to install a $1 as a $2", basefolder.type, expected_type)
+		return nil, fgettext_ne("Unable to install a $1 as a $2", basefolder.type, expected_type)
 	end
 
 	-- Set targetpath if not predetermined
@@ -575,7 +575,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 			targetpath = content_path .. DIR_DELIM .. basename
 		else
 			return nil,
-				fgettext("Install: Unable to find suitable folder name for $1", path)
+				fgettext_ne("Install: Unable to find suitable folder name for $1", path)
 		end
 	end
 
@@ -583,7 +583,7 @@ function pkgmgr.install_dir(expected_type, path, basename, targetpath)
 	core.delete_dir(targetpath)
 	if not core.copy_dir(basefolder.path, targetpath, false) then
 		return nil,
-			fgettext("Failed to install $1 to $2", basename, targetpath)
+			fgettext_ne("Failed to install $1 to $2", basename, targetpath)
 	end
 
 	if basefolder.type == "game" then

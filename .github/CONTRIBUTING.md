@@ -19,7 +19,7 @@ Contributions are welcome! Here's how you can help:
    developers.
 
    Any Pull Request that isn't a bug fix and isn't covered by
-   [the roadmap](../doc/direction.md) will be closed within a week unless it
+   [the roadmap](../doc/direction.md) will be closed within a month unless it
    receives a concept approval from a Core Developer. For this reason, it is
    recommended that you open an issue for any such pull requests before doing
    the work, to avoid disappointment.

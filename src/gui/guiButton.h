@@ -185,11 +185,9 @@ protected:
 
 	struct ButtonImage
 	{
-		ButtonImage() : Texture(0), SourceRect(core::rect<s32>(0,0,0,0))
-		{
-		}
+		ButtonImage() = default;
 
-		ButtonImage(const ButtonImage& other) : Texture(0), SourceRect(core::rect<s32>(0,0,0,0))
+		ButtonImage(const ButtonImage& other)
 		{
 			*this = other;
 		}
@@ -220,8 +218,8 @@ protected:
 		}
 
 
-		video::ITexture* Texture;
-		core::rect<s32> SourceRect;
+		video::ITexture* Texture = nullptr;
+		core::rect<s32> SourceRect = core::rect<s32>(0,0,0,0);
 	};
 
 	gui::EGUI_BUTTON_IMAGE_STATE getImageState(bool pressed, const ButtonImage* images) const;
@@ -230,43 +228,41 @@ private:
 
 	struct ButtonSprite
 	{
-		ButtonSprite() : Index(-1), Loop(false), Scale(false)
-		{
-		}
-
-		bool operator==(const ButtonSprite& other) const
+		bool operator==(const ButtonSprite &other) const
 		{
 			return Index == other.Index && Color == other.Color && Loop == other.Loop && Scale == other.Scale;
 		}
 
-		s32 Index;
+		s32 Index = -1;
 		video::SColor Color;
-		bool Loop;
-		bool Scale;
+		bool Loop = false;
+		bool Scale = false;
 	};
 
 	ButtonSprite ButtonSprites[gui::EGBS_COUNT];
-	gui::IGUISpriteBank* SpriteBank;
+	gui::IGUISpriteBank* SpriteBank = nullptr;
 
 	ButtonImage ButtonImages[gui::EGBIS_COUNT];
 
 	std::array<StyleSpec, StyleSpec::NUM_STATES> Styles;
 
-	gui::IGUIFont* OverrideFont;
+	gui::IGUIFont* OverrideFont = nullptr;
 
-	bool OverrideColorEnabled;
-	video::SColor OverrideColor;
+	bool OverrideColorEnabled = false;
+	video::SColor OverrideColor = video::SColor(101,255,255,255);
 
-	u32 ClickTime, HoverTime, FocusTime;
+	u32 ClickTime = 0;
+	u32 HoverTime = 0;
+	u32 FocusTime = 0;
 
-	bool ClickShiftState;
-	bool ClickControlState;
+	bool ClickShiftState = false;
+	bool ClickControlState = false;
 
-	bool IsPushButton;
-	bool Pressed;
-	bool UseAlphaChannel;
-	bool DrawBorder;
-	bool ScaleImage;
+	bool IsPushButton = false;
+	bool Pressed = false;
+	bool UseAlphaChannel = false;
+	bool DrawBorder = true;
+	bool ScaleImage = false;
 
 	video::SColor Colors[4];
 	// PATCH
@@ -279,6 +275,6 @@ private:
 	core::rect<s32> BgMiddle;
 	core::rect<s32> Padding;
 	core::vector2d<s32> ContentOffset;
-	video::SColor BgColor;
+	video::SColor BgColor = video::SColor(0xFF,0xFF,0xFF,0xFF);
 	// END PATCH
 };

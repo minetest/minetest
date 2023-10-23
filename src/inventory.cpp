@@ -392,6 +392,13 @@ bool ItemStack::itemFits(ItemStack newitem,
 	return newitem.empty();
 }
 
+bool ItemStack::stacksWith(ItemStack other) const
+{
+	return (this->name == other.name &&
+			this->wear == other.wear &&
+			this->metadata == other.metadata);
+}
+
 ItemStack ItemStack::takeItem(u32 takecount)
 {
 	if(takecount == 0 || count == 0)
@@ -964,15 +971,16 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 {
 	setModified();
 
-	// Remove existing lists
+	// Reset existing lists instead of re-creating if possible.
+	// InventoryAction::apply() largely caches InventoryList pointers which must not be
+	// invalidated by Lua API calls (e.g. InvRef:set_list), hence do resize & clear which
+	// also include the neccessary resize lock checks.
 	s32 i = getListIndex(name);
 	if (i != -1) {
-		m_lists[i]->checkResizeLock();
-		delete m_lists[i];
-
-		m_lists[i] = new InventoryList(name, size, m_itemdef);
-		m_lists[i]->setModified();
-		return m_lists[i];
+		InventoryList *list = m_lists[i];
+		list->setSize(size);
+		list->clearItems();
+		return list;
 	}
 
 	//don't create list with invalid name

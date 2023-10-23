@@ -11,17 +11,19 @@ the arrow buttons where there is insufficient space.
 */
 
 #include "guiScrollBar.h"
-#include <IGUIButton.h>
+#include "guiButton.h"
 #include <IGUISkin.h>
 
 GUIScrollBar::GUIScrollBar(IGUIEnvironment *environment, IGUIElement *parent, s32 id,
-		core::rect<s32> rectangle, bool horizontal, bool auto_scale) :
+		core::rect<s32> rectangle, bool horizontal, bool auto_scale,
+		ISimpleTextureSource *tsrc) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
 		up_button(nullptr), down_button(nullptr), is_dragging(false),
 		is_horizontal(horizontal), is_auto_scaling(auto_scale),
 		dragged_by_slider(false), tray_clicked(false), scroll_pos(0),
 		draw_center(0), thumb_size(0), min_pos(0), max_pos(100), small_step(10),
-		large_step(50), drag_offset(0), page_size(100), border_size(0)
+		large_step(50), drag_offset(0), page_size(100), border_size(0),
+		m_tsrc(tsrc)
 {
 	refreshControls();
 	setNotClipped(false);
@@ -343,8 +345,9 @@ void GUIScrollBar::refreshControls()
 		s32 h = RelativeRect.getHeight();
 		border_size = RelativeRect.getWidth() < h * 4 ? 0 : h;
 		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, h, h), this);
+			core::rect<s32> up_button_rect(0, 0, h, h);
+			up_button = GUIButton::addButton(Environment, up_button_rect, m_tsrc,
+					this, -1, L"");
 			up_button->setSubElement(true);
 			up_button->setTabStop(false);
 		}
@@ -361,10 +364,12 @@ void GUIScrollBar::refreshControls()
 		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT,
 				EGUIA_LOWERRIGHT);
 		if (!down_button) {
-			down_button = Environment->addButton(
-					core::rect<s32>(RelativeRect.getWidth() - h, 0,
-							RelativeRect.getWidth(), h),
-					this);
+			core::rect<s32> down_button_rect(
+					RelativeRect.getWidth() - h, 0,
+					RelativeRect.getWidth(), h
+				);
+			down_button = GUIButton::addButton(Environment, down_button_rect, m_tsrc,
+					this, -1, L"");
 			down_button->setSubElement(true);
 			down_button->setTabStop(false);
 		}
@@ -386,8 +391,9 @@ void GUIScrollBar::refreshControls()
 		s32 w = RelativeRect.getWidth();
 		border_size = RelativeRect.getHeight() < w * 4 ? 0 : w;
 		if (!up_button) {
-			up_button = Environment->addButton(
-					core::rect<s32>(0, 0, w, w), this);
+			core::rect<s32> up_button_rect(0, 0, w, w);
+			up_button = GUIButton::addButton(Environment, up_button_rect, m_tsrc,
+					this, -1, L"");
 			up_button->setSubElement(true);
 			up_button->setTabStop(false);
 		}
@@ -404,10 +410,12 @@ void GUIScrollBar::refreshControls()
 		up_button->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT,
 				EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 		if (!down_button) {
-			down_button = Environment->addButton(
-					core::rect<s32>(0, RelativeRect.getHeight() - w,
-							w, RelativeRect.getHeight()),
-					this);
+			core::rect<s32> down_button_rect(
+					0, RelativeRect.getHeight() - w,
+					w, RelativeRect.getHeight()
+				);
+			down_button = GUIButton::addButton(Environment, down_button_rect, m_tsrc,
+					this, -1, L"");
 			down_button->setSubElement(true);
 			down_button->setTabStop(false);
 		}

@@ -33,9 +33,9 @@ enum ToServerConnectionState {
 };
 struct ToServerCommandHandler
 {
-    const std::string name;
-    ToServerConnectionState state;
-    void (Server::*handler)(NetworkPacket* pkt);
+	const std::string name;
+	ToServerConnectionState state;
+	void (Server::*handler)(NetworkPacket* pkt);
 };
 
 struct ClientCommandFactory

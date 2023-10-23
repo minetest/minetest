@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hebrew (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2021-04-17 07:27+0000\n"
 "Last-Translator: Omer I.S. <omeritzicschwartz@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -152,7 +152,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "ביטול"
@@ -219,7 +219,8 @@ msgid "Optional dependencies:"
 msgstr "תלויות אופציונאליות:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "שמירה"
 
@@ -321,6 +322,11 @@ msgstr "התקנת $1"
 msgid "Install missing dependencies"
 msgstr "מתקין תלויות חסרות"
 
+#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
+msgid "Loading..."
+msgstr "כעת בטעינה..."
+
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
 msgstr "שיפורים"
@@ -330,6 +336,7 @@ msgid "No packages could be retrieved"
 msgstr "לא ניתן להביא את החבילות"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
 msgstr "אין תוצאות"
 
@@ -358,6 +365,10 @@ msgid "Texture packs"
 msgstr "חבילות טקסטורה (מרקם)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "The package $1/$2 was not found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
 msgstr "הסרה"
 
@@ -372,6 +383,10 @@ msgstr "עדכן הכל [$1]"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
 msgstr "צפה במידע נוסף בדפדפן האינטרנט"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -451,11 +466,6 @@ msgid "Increases humidity around rivers"
 msgstr "הגברת הלחות בסביבת נהרות"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
-msgid "Install a game"
-msgstr "התקנת $1"
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
 msgstr ""
 
@@ -512,7 +522,7 @@ msgid "Sea level rivers"
 msgstr "נהרות בגובה פני הים"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
 msgstr "זרע"
 
@@ -561,10 +571,6 @@ msgstr "מערות גדולות מאוד עמוק מתחת לאדמה"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "שם העולם"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "You have no games installed."
-msgstr "אין לך משחקים מותקנים."
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -620,6 +626,31 @@ msgstr "סיסמאות לא תואמות!"
 msgid "Register"
 msgstr "הרשם והצטרף"
 
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Dismiss"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"For a long time, the Minetest engine shipped with a default game called "
+"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
+"game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"If you want to continue playing in your Minetest Game worlds, you need to "
+"reinstall Minetest Game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Minetest Game is no longer installed by default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Reinstall Minetest Game"
+msgstr ""
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "הסכמה"
@@ -635,153 +666,6 @@ msgid ""
 msgstr ""
 "לערכת שיפורים זו יש שם מפורש שניתן בקובץ modpack.conf שלה שיעקוף כל שינוי שם "
 "מכאן."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "(No description of setting given)"
-msgstr "(לא נוסף תיאור להגדרה)"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "2D Noise"
-msgstr "רעש דו-מיימדי"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "< Back to Settings page"
-msgstr "חזור לדף ההגדרות >"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Browse"
-msgstr "דפדף"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "בחירת שיפורים"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Games"
-msgstr "תוכן"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Mods"
-msgstr "תוכן"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "מושבת"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Edit"
-msgstr "עריכה"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Enabled"
-msgstr "מופעל"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Lacunarity"
-msgstr "מרווחיות"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Octaves"
-msgstr "אוקטבות"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "היסט"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Persistence"
-msgstr "התמדה"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid integer."
-msgstr "הכנס מספר שלם חוקי."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid number."
-msgstr "הכנס מספר חוקי."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Restore Default"
-msgstr "שחזור לברירת המחדל"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "קנה מידה"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "חיפוש"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select directory"
-msgstr "נא לבחור תיקיה"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select file"
-msgstr "נא לבחור קובץ"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Show technical names"
-msgstr "הצגת שמות טכניים"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be at least $1."
-msgstr "הערך חייב להיות לפחות $1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must not be larger than $1."
-msgstr "הערך לא יכול להיות גדול מ־$1."
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X"
-msgstr "X"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X spread"
-msgstr "מרווחיות X"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y"
-msgstr "Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y spread"
-msgstr "מרווחיות Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z"
-msgstr "Z"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z spread"
-msgstr "מרווחיות Z"
-
-#. ~ "absvalue" is a noise parameter flag.
-#. It is short for "absolute value".
-#. It can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "absvalue"
-msgstr "ערך מוחלט"
-
-#. ~ "defaults" is a noise parameter flag.
-#. It describes the default processing options
-#. for noise settings in main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "defaults"
-msgstr "ברירת מחדל"
-
-#. ~ "eased" is a noise parameter flag.
-#. It is used to make the map smoother and
-#. can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "eased"
-msgstr "החלקת ערכים"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -806,6 +690,10 @@ msgstr ""
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
 msgstr ""
+
+#: builtin/mainmenu/init.lua
+msgid "Settings"
+msgstr "הגדרות"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -838,10 +726,6 @@ msgstr "אין אפשרות להתקין שיפור בשם $1"
 msgid "Unable to install a $1 as a texture pack"
 msgstr "לא ניתן להתקין $1 כחבילת טקסטורות"
 
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "כעת בטעינה..."
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "רשימת השרתים הציבורים מושבתת"
@@ -850,6 +734,185 @@ msgstr "רשימת השרתים הציבורים מושבתת"
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 "נא לנסות לצאת ולהיכנס מחדש לרשימת השרתים ולבדוק את החיבור שלך לאינטרנט."
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Browse"
+msgstr "דפדף"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Edit"
+msgstr "עריכה"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select directory"
+msgstr "נא לבחור תיקיה"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select file"
+msgstr "נא לבחור קובץ"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Set"
+msgstr "Select"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "(No description of setting given)"
+msgstr "(לא נוסף תיאור להגדרה)"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "2D Noise"
+msgstr "רעש דו-מיימדי"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Lacunarity"
+msgstr "מרווחיות"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Octaves"
+msgstr "אוקטבות"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "היסט"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "Persistence"
+msgstr "התמדה"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "קנה מידה"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "X spread"
+msgstr "מרווחיות X"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Y spread"
+msgstr "מרווחיות Y"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Z spread"
+msgstr "מרווחיות Z"
+
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "absvalue"
+msgstr "ערך מוחלט"
+
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "defaults"
+msgstr "ברירת מחדל"
+
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "eased"
+msgstr "החלקת ערכים"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(Use system language)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Back"
+msgstr "אחורה"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Change keys"
+msgstr "שנה מקשים"
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+#: src/client/keycode.cpp
+msgid "Clear"
+msgstr "נקה"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Reset setting to default"
+msgstr "שחזור לברירת המחדל"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Reset setting to default ($1)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "חיפוש"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show advanced settings"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show technical names"
+msgstr "הצגת שמות טכניים"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Client Mods"
+msgstr "בחירת שיפורים"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Games"
+msgstr "תוכן"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Mods"
+msgstr "תוכן"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "(The game will need to enable shadows as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Custom"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "מושבת"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#: src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Low"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Medium"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very High"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very Low"
+msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
@@ -870,6 +933,10 @@ msgstr "מפתחים עיקריים"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
@@ -907,10 +974,6 @@ msgstr "תוכן"
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
 msgstr "השבתת חבילת המרקם"
-
-#: builtin/mainmenu/tab_content.lua
-msgid "Information:"
-msgstr "מידע:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -961,6 +1024,11 @@ msgid "Host Server"
 msgstr "אכסון שרת"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Install a game"
+msgstr "התקנת $1"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
 msgstr "התקנת משחק מContentDB"
 
@@ -996,14 +1064,14 @@ msgstr "פורט לשרת"
 msgid "Start Game"
 msgstr "התחלת המשחק"
 
+#: builtin/mainmenu/tab_local.lua
+msgid "You have no games installed."
+msgstr "אין לך משחקים מותקנים."
+
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Address"
 msgstr "- כתובת: "
-
-#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
-msgid "Clear"
-msgstr "נקה"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1054,179 +1122,6 @@ msgstr "מחק מועדף"
 #, fuzzy
 msgid "Server Description"
 msgstr "פורט לשרת"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "(game support required)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "2x"
-msgstr "x2"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "3D Clouds"
-msgstr "עננים תלת מימדיים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "4x"
-msgstr "x4"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "8x"
-msgstr "x8"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "All Settings"
-msgstr "כל ההגדרות"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Antialiasing:"
-msgstr "החלקת קצוות (AA):"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Autosave Screen Size"
-msgstr "שמור אוטומטית גודל מסך"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bilinear Filter"
-msgstr "פילטר בילינארי"
-
-#: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "שנה מקשים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Connected Glass"
-msgstr "זכוכיות מחוברות"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Dynamic shadows"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Dynamic shadows:"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Fancy Leaves"
-msgstr "עלים מגניבים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Medium"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap"
-msgstr "מיפמאפ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap + Aniso. Filter"
-msgstr "מיפמאפ + פילטר אניסוטרופי"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Filter"
-msgstr "בלי פילטר"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Mipmap"
-msgstr "בלי מיפמאפ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
-msgstr "הבלטת קוביות"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Outlining"
-msgstr "הדגשת מסגרת קוביות"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "None"
-msgstr "ללא"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Leaves"
-msgstr "עלים אטומים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Water"
-msgstr "מים אטומים לאור"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Particles"
-msgstr "חלקיקים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr "מסך:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Settings"
-msgstr "הגדרות"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "שיידרים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (experimental)"
-msgstr "שיידרים (נסיוני)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (unavailable)"
-msgstr "שיידרים (לא זמינים)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Simple Leaves"
-msgstr "עלים פשוטים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Smooth Lighting"
-msgstr "החלקת תאורה"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Texturing:"
-msgstr "טקסטורות:"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "מיפוי גוונים"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touch threshold (px):"
-msgstr "סף נגיעה: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Trilinear Filter"
-msgstr "פילטר תלת לינארי"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very High"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very Low"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Leaves"
-msgstr "עלים מתנופפים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Liquids"
-msgstr "נוזלים עם גלים"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "צמחים מתנוענעים"
 
 #: src/client/client.cpp
 #, fuzzy
@@ -1294,7 +1189,7 @@ msgstr "הסיסמה שניתנה לא פתחה: "
 msgid "Provided world path doesn't exist: "
 msgstr "נתיב העולם שניתן לא קיים: "
 
-#: src/client/game.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1370,8 +1265,13 @@ msgid "Camera update enabled"
 msgstr "עדכון מצלמה מופעל"
 
 #: src/client/game.cpp
-msgid "Can't show block bounds (disabled by mod or game)"
-msgstr ""
+#, fuzzy
+msgid "Can't show block bounds (disabled by game or mod)"
+msgstr "המבט מקרוב מושבת על ידי המשחק או השיפור"
+
+#: src/client/game.cpp
+msgid "Change Keys"
+msgstr "שנה מקשים"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1407,7 +1307,7 @@ msgid "Continue"
 msgstr "המשך"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1415,7 +1315,7 @@ msgid ""
 "- %s: move left\n"
 "- %s: move right\n"
 "- %s: jump/climb up\n"
-"- %s: dig/punch\n"
+"- %s: dig/punch/use\n"
 "- %s: place/use\n"
 "- %s: sneak/climb down\n"
 "- %s: drop item\n"
@@ -1438,6 +1338,35 @@ msgstr ""
 "- עכבר: כדי להסתובב או להסתכל\n"
 "- גלגלת העכבר: כדי לבחור פריט\n"
 "- %s: כדי לפתוח את הצ׳אט\n"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid ""
+"Controls:\n"
+"No menu open:\n"
+"- slide finger: look around\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
+"Menu/inventory open:\n"
+"- double tap (outside):\n"
+" --> close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"פקדי ברירת מחדל:\n"
+"לא נראה תפריט:\n"
+"- לחיצה בודדת: הפעלת כפתור\n"
+"- הקשה כפולה: מקום / שימוש\n"
+"- החלק אצבע: הביט סביב\n"
+"תפריט / מלאי גלוי:\n"
+"- לחיצה כפולה (בחוץ):\n"
+"--> סגור\n"
+"- מחסנית מגע, חריץ מגע:\n"
+"--> הזז מחסנית\n"
+"- גע וגרור, הקש על האצבע השנייה\n"
+"--> מקם פריט יחיד לחריץ\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1463,42 +1392,6 @@ msgstr "מידע דיבאג מוצג"
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "מידע דיבאג, גרף פרופיילר, ומצב שלד מוסתר"
-
-#: src/client/game.cpp
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-"פקדי ברירת מחדל:\n"
-"לא נראה תפריט:\n"
-"- לחיצה בודדת: הפעלת כפתור\n"
-"- הקשה כפולה: מקום / שימוש\n"
-"- החלק אצבע: הביט סביב\n"
-"תפריט / מלאי גלוי:\n"
-"- לחיצה כפולה (בחוץ):\n"
-"--> סגור\n"
-"- מחסנית מגע, חריץ מגע:\n"
-"--> הזז מחסנית\n"
-"- גע וגרור, הקש על האצבע השנייה\n"
-"--> מקם פריט יחיד לחריץ\n"
-
-#: src/client/game.cpp
-msgid "Disabled unlimited viewing range"
-msgstr "ביטול טווח ראיה בלתי מוגבל"
-
-#: src/client/game.cpp
-msgid "Enabled unlimited viewing range"
-msgstr "הפעלת טווח ראיה בלתי מוגבל"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1670,19 +1563,49 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr ""
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range disabled"
+msgstr "הפעלת טווח ראיה בלתי מוגבל"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range enabled"
+msgstr "הפעלת טווח ראיה בלתי מוגבל"
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled, but forbidden by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing changed to %d (the minimum)"
+msgstr "טווח ראיה הגיע למינימום: %d"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "טווח ראיה השתנה ל %d"
 
 #: src/client/game.cpp
-#, c-format
-msgid "Viewing range is at maximum: %d"
-msgstr "טווח ראיה הגיע למקסימום: %d"
+#, fuzzy, c-format
+msgid "Viewing range changed to %d (the maximum)"
+msgstr "טווח ראיה השתנה ל %d"
 
 #: src/client/game.cpp
 #, c-format
-msgid "Viewing range is at minimum: %d"
-msgstr "טווח ראיה הגיע למינימום: %d"
+msgid ""
+"Viewing range changed to %d (the maximum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing range changed to %d, but limited to %d by game or mod"
+msgstr "טווח ראיה השתנה ל %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -2238,24 +2161,10 @@ msgstr ""
 msgid "Name is taken. Please choose another name"
 msgstr "נא לבחור שם!"
 
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Fixes the position of virtual joystick.\n"
-"If disabled, virtual joystick will center to first-touch's position."
-msgstr ""
-"(Android) מתקן את המיקום של הג'ויסטיק הווירטואלי.\n"
-"אם מושבת, הג'ויסטיק הווירטואלי יעמוד במיקום המגע הראשון."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
-"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
-"circle."
-msgstr ""
-"(Android) השתמש בג'ויסטיק וירטואלי כדי להפעיל את כפתור \"aux\".\n"
-"אם הוא מופעל, הג'ויסטיק הווירטואלי ילחץ גם על כפתור \"aux\" כשהוא מחוץ למעגל "
-"הראשי."
+#: src/server.cpp
+#, fuzzy, c-format
+msgid "%s while shutting down: "
+msgstr "מכבה..."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2506,6 +2415,14 @@ msgstr "מתקדם"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names.\n"
+"Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2546,6 +2463,16 @@ msgstr "הכרזת שרת"
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
 msgstr "הכרז לרשימת השרתים."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Anti-aliasing scale"
+msgstr "החלקת קצוות (AA):"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Antialiasing method"
+msgstr "החלקת קצוות (AA):"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2611,10 +2538,6 @@ msgid "Automatically report to the serverlist."
 msgstr "דווח אוטומטית לרשימת השרתים."
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
-msgstr "שמור אוטומטית גודל מסך"
-
-#: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr "מצב סקאלה אוטומטית (Autoscale)"
 
@@ -2629,6 +2552,11 @@ msgstr "מפלס בסיס האדמה"
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
 msgstr "גובה השטח."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base texture size"
+msgstr "שימוש בחבילת המרקם"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2711,18 +2639,6 @@ msgstr "בילדאין"
 #, fuzzy
 msgid "Camera"
 msgstr "שנה מצלמה"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
-"מרחק מצלמה 'קרוב לקיר' בקוביות, בין 0 ל -0.25\n"
-"עובד רק בפלטפורמות GLES. רוב המשתמשים לא יצטרכו לשנות זאת.\n"
-"הגדלה יכולה להפחית חפצים על גרפי GPU חלשים יותר.\n"
-"0.1 = ברירת מחדל, 0.25 = ערך טוב לטאבלטים חלשים יותר."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2830,10 +2746,6 @@ msgstr "גודל חתיכה"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "מצב קולנועי"
-
-#: src/settings_translation_file.cpp
-msgid "Clean transparent textures"
-msgstr "טקסטורות נקיות ושקופות"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2990,6 +2902,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr ""
 
@@ -3078,16 +2994,6 @@ msgid "Default acceleration"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
 "Set this to -1 to disable the limit."
@@ -3149,6 +3055,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3260,6 +3172,10 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Don't show \"reinstall Minetest Game\" notification"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "הקשה כפולה על \"קפיצה\" לתעופה"
 
@@ -3355,6 +3271,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3480,10 +3400,6 @@ msgid "FPS when unfocused or paused"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "FSAA"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Factor noise"
 msgstr ""
 
@@ -3541,14 +3457,6 @@ msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, often resulting in dark or\n"
-"light edges to transparent textures. Apply a filter to clean that up\n"
-"at texture load time. This is automatically enabled if mipmapping is enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Filtering and Antialiasing"
 msgstr "החלקת קצוות (AA):"
@@ -3568,6 +3476,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Fixes the position of virtual joystick.\n"
+"If disabled, virtual joystick will center to first-touch's position."
+msgstr ""
+"(Android) מתקן את המיקום של הג'ויסטיק הווירטואלי.\n"
+"אם מושבת, הג'ויסטיק הווירטואלי יעמוד במיקום המגע הראשון."
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
@@ -3674,27 +3591,11 @@ msgid "Format of screenshots."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3858,8 +3759,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+msgid "Height component of the initial window size."
 msgstr "רכיב רוחב של גודל החלון הראשוני."
 
 #: src/settings_translation_file.cpp
@@ -3869,6 +3769,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hide: Temporary Settings"
+msgstr "הגדרות"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -3917,14 +3822,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Hotbar: Enable mouse wheel for selection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar: Invert mouse wheel direction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
-"If negative, liquid waves will move backwards.\n"
-"Requires waving liquids to be enabled."
+"If negative, liquid waves will move backwards."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4035,8 +3947,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, you can place blocks at the position (feet + eye level) where "
-"you stand.\n"
+"If enabled, you can place nodes at the position (feet + eye level) where you "
+"stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 
@@ -4059,6 +3971,12 @@ msgid ""
 "this setting when it is opened, the file is moved to debug.txt.1,\n"
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If this is set to true, the user will never (again) be shown the\n"
+"\"reinstall Minetest Game\" notification."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4129,6 +4047,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4296,10 +4218,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Length of liquid waves.\n"
-"Requires waving liquids to be enabled."
-msgstr ""
+#, fuzzy
+msgid "Length of liquid waves."
+msgstr "מהירות גל של נוזלים עם גלים"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4792,10 +4713,6 @@ msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimum texture size"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "מיפמאפינג"
 
@@ -4890,10 +4807,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
@@ -4958,6 +4871,14 @@ msgid ""
 "Number of threads to use for mesh generation.\n"
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5065,13 +4986,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Post processing"
+msgid "Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Prevent digging and placing from repeating when holding the mouse buttons.\n"
-"Enable this when you dig or place too often by accident."
+"Prevent digging and placing from repeating when holding the respective "
+"buttons.\n"
+"Enable this when you dig or place too often by accident.\n"
+"On touchscreens, this only affects digging."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5130,6 +5053,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Remember screen size"
+msgstr "שמור אוטומטית גודל מסך"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5236,7 +5164,12 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
+msgid ""
+"Save window size automatically when modified.\n"
+"If true, screen size is saved in screen_w and screen_h, and whether the "
+"window\n"
+"is maximized is stored in window_maximized.\n"
+"(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5303,6 +5236,28 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Select the antialiasing method to apply.\n"
+"\n"
+"* None - No antialiasing (default)\n"
+"\n"
+"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
+"shaders)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Smoothens out block edges but does not affect the insides of textures.\n"
+"A restart is required to change this option.\n"
+"\n"
+"* FXAA - Fast approximate antialiasing (requires shaders)\n"
+"Applies a post-processing filter to detect and smoothen high-contrast "
+"edges.\n"
+"Provides balance between speed and image quality.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (requires shaders)\n"
+"Renders higher-resolution image of the scene, then scales down to reduce\n"
+"the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5398,6 +5353,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Set the default tilt of Sun/Moon orbit in degrees.\n"
+"Games may change orbit tilt via API.\n"
+"Value of 0 means no tilt / vertical orbit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
 "Range: from -1 to 1.0"
@@ -5430,9 +5392,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid ""
-"Set to true to enable Shadow Mapping.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable Shadow Mapping."
 msgstr ""
 "עוצמת הקול של כל הצלילים.\n"
 "דורש הפעלת מערכת הקול."
@@ -5444,21 +5404,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving leaves."
 msgstr ""
+"עוצמת הקול של כל הצלילים.\n"
+"דורש הפעלת מערכת הקול."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving liquids (like water).\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving liquids (like water)."
 msgstr ""
+"עוצמת הקול של כל הצלילים.\n"
+"דורש הפעלת מערכת הקול."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
+msgid "Set to true to enable waving plants."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5479,6 +5439,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Shader path"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Shaders"
+msgstr "שיידרים"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5567,6 +5531,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Slice w"
 msgstr ""
 
@@ -5596,16 +5564,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when looking around. Also called look or mouse smoothing.\n"
-"Useful for recording videos."
+"Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
+"cinematic mode by using the key set in Change Keys."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera. 0 to disable."
+msgid ""
+"Smooths rotation of camera, also called look or mouse smoothing. 0 to "
+"disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5712,11 +5678,6 @@ msgid "Temperature variation for biomes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Temporary Settings"
-msgstr "הגדרות"
-
-#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr ""
 
@@ -5780,6 +5741,10 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "The base node texture size used for world-aligned texture autoscaling."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr ""
 
@@ -5803,7 +5768,7 @@ msgid "The identifier of the joystick to use"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
+msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5811,8 +5776,7 @@ msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
-"Default is 1.0 (1/2 node).\n"
-"Requires waving liquids to be enabled."
+"Default is 1.0 (1/2 node)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5900,6 +5864,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"This can be bound to a key to toggle camera smoothing when looking around.\n"
+"Useful for recording videos"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
@@ -5933,12 +5903,21 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
+msgid "Touchscreen"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Touchscreen"
+msgid "Touchscreen sensitivity"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Touchscreen sensitivity multiplier."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen threshold"
+msgstr "סף נגיעה: (px)"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
@@ -5965,6 +5944,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Type of occlusion_culler\n"
+"\n"
+"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6024,11 +6013,11 @@ msgid "Use a cloud animation for the main menu background."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use anisotropic filtering when viewing at textures from an angle."
+msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures."
+msgid "Use bilinear filtering when scaling textures down."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6043,31 +6032,35 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmapping to scale textures. May slightly increase performance,\n"
+"Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
-"Gamma correct downscaling is not supported."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
-"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
-"but it doesn't affect the insides of textures\n"
-"(which is especially noticeable with transparent textures).\n"
-"Visible spaces appear between nodes when shaders are disabled.\n"
-"If set to 0, MSAA is disabled.\n"
-"A restart is required after changing this option."
+"Gamma-correct downscaling is not supported."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test"
+"This flag enables use of raytraced occlusion culling test for\n"
+"client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use trilinear filtering when scaling textures."
+msgid ""
+"Use trilinear filtering when scaling textures down.\n"
+"If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
+"is applied."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
+"circle."
+msgstr ""
+"(Android) השתמש בג'ויסטיק וירטואלי כדי להפעיל את כפתור \"aux\".\n"
+"אם הוא מופעל, הג'ויסטיק הווירטואלי ילחץ גם על כפתור \"aux\" כשהוא מחוץ למעגל "
+"הראשי."
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
@@ -6142,7 +6135,9 @@ msgid "Vertical climbing speed, in nodes per second."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
+msgid ""
+"Vertical screen synchronization. Your system may still force VSync on even "
+"if this is disabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6256,18 +6251,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
-"can be blurred, so automatically upscale them with nearest-neighbor\n"
-"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
-"for the upscaled textures; higher values look sharper, but require more\n"
-"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-"bilinear/trilinear/anisotropic filtering is enabled.\n"
-"This is also used as the base node texture size for world-aligned\n"
-"texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6280,6 +6263,10 @@ msgstr ""
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Whether the window is maximized."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6306,25 +6293,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to show technical names.\n"
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names in All Settings.\n"
-"Controlled by the checkbox in the \"All settings\" menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
+msgid "Width component of the initial window size."
 msgstr "רכיב רוחב של גודל החלון הראשוני."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Window maximized"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6428,11 +6410,32 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "- Damage: "
 #~ msgstr "- חבלה: "
 
+#~ msgid "2x"
+#~ msgstr "x2"
+
+#~ msgid "3D Clouds"
+#~ msgstr "עננים תלת מימדיים"
+
+#~ msgid "4x"
+#~ msgstr "x4"
+
+#~ msgid "8x"
+#~ msgstr "x8"
+
+#~ msgid "< Back to Settings page"
+#~ msgstr "חזור לדף ההגדרות >"
+
 #~ msgid "Address / Port"
 #~ msgstr "כתובת / פורט"
 
+#~ msgid "All Settings"
+#~ msgstr "כל ההגדרות"
+
 #~ msgid "Automatic forward key"
 #~ msgstr "מקש התקדמות אוטומטית"
+
+#~ msgid "Autosave Screen Size"
+#~ msgstr "שמור אוטומטית גודל מסך"
 
 #, fuzzy
 #~ msgid "Aux1 key"
@@ -6444,8 +6447,22 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Basic"
 #~ msgstr "בסיסי"
 
+#~ msgid "Bilinear Filter"
+#~ msgstr "פילטר בילינארי"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "ביטים לפיקסל (עומק צבע) במצב מסך מלא."
+
+#~ msgid ""
+#~ "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+#~ "Only works on GLES platforms. Most users will not need to change this.\n"
+#~ "Increasing can reduce artifacting on weaker GPUs.\n"
+#~ "0.1 = Default, 0.25 = Good value for weaker tablets."
+#~ msgstr ""
+#~ "מרחק מצלמה 'קרוב לקיר' בקוביות, בין 0 ל -0.25\n"
+#~ "עובד רק בפלטפורמות GLES. רוב המשתמשים לא יצטרכו לשנות זאת.\n"
+#~ "הגדלה יכולה להפחית חפצים על גרפי GPU חלשים יותר.\n"
+#~ "0.1 = ברירת מחדל, 0.25 = ערך טוב לטאבלטים חלשים יותר."
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "מקש החלפת עדכון המצלמה"
@@ -6459,11 +6476,17 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Cinematic mode key"
 #~ msgstr "מקש מצב קולנועי"
 
+#~ msgid "Clean transparent textures"
+#~ msgstr "טקסטורות נקיות ושקופות"
+
 #~ msgid "Configure"
 #~ msgstr "קביעת תצורה"
 
 #~ msgid "Connect"
 #~ msgstr "התחברות"
+
+#~ msgid "Connected Glass"
+#~ msgstr "זכוכיות מחוברות"
 
 #~ msgid "Credits"
 #~ msgstr "תודות"
@@ -6475,6 +6498,9 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Dig key"
 #~ msgstr "מקש התזוזה ימינה"
 
+#~ msgid "Disabled unlimited viewing range"
+#~ msgstr "ביטול טווח ראיה בלתי מוגבל"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "הורדת משחק, כמו משחק Minetest, מאתר minetest.net"
 
@@ -6485,14 +6511,23 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Enable VBO"
 #~ msgstr "אפשר בכל"
 
+#~ msgid "Enabled"
+#~ msgstr "מופעל"
+
 #~ msgid "Enter "
 #~ msgstr "הכנס "
+
+#~ msgid "Fancy Leaves"
+#~ msgstr "עלים מגניבים"
 
 #~ msgid "Forward key"
 #~ msgstr "מקש התזוזה קדימה"
 
 #~ msgid "Game"
 #~ msgstr "משחק"
+
+#~ msgid "Information:"
+#~ msgstr "מידע:"
 
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "התקנת שיפור: לא ניתן למצוא את שם השיפור האמיתי עבור: $1"
@@ -6513,14 +6548,50 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Main menu style"
 #~ msgstr "סגנון התפריט הראשי"
 
+#~ msgid "Mipmap"
+#~ msgstr "מיפמאפ"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "מיפמאפ + פילטר אניסוטרופי"
+
 #~ msgid "Name / Password"
 #~ msgstr "שם/סיסמה"
 
 #~ msgid "No"
 #~ msgstr "לא"
 
+#~ msgid "No Filter"
+#~ msgstr "בלי פילטר"
+
+#~ msgid "No Mipmap"
+#~ msgstr "בלי מיפמאפ"
+
+#~ msgid "Node Highlighting"
+#~ msgstr "הבלטת קוביות"
+
+#~ msgid "Node Outlining"
+#~ msgstr "הדגשת מסגרת קוביות"
+
+#~ msgid "None"
+#~ msgstr "ללא"
+
 #~ msgid "Ok"
 #~ msgstr "אישור"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "עלים אטומים"
+
+#~ msgid "Opaque Water"
+#~ msgstr "מים אטומים לאור"
+
+#~ msgid "Particles"
+#~ msgstr "חלקיקים"
+
+#~ msgid "Please enter a valid integer."
+#~ msgstr "הכנס מספר שלם חוקי."
+
+#~ msgid "Please enter a valid number."
+#~ msgstr "הכנס מספר חוקי."
 
 #~ msgid "PvP enabled"
 #~ msgstr "לאפשר קרבות"
@@ -6532,11 +6603,41 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #~ msgid "Right key"
 #~ msgstr "מקש התזוזה ימינה"
 
+#~ msgid "Screen:"
+#~ msgstr "מסך:"
+
+#~ msgid "Shaders (experimental)"
+#~ msgstr "שיידרים (נסיוני)"
+
+#~ msgid "Shaders (unavailable)"
+#~ msgstr "שיידרים (לא זמינים)"
+
+#~ msgid "Simple Leaves"
+#~ msgstr "עלים פשוטים"
+
+#~ msgid "Smooth Lighting"
+#~ msgstr "החלקת תאורה"
+
 #~ msgid "Special"
 #~ msgstr "מיוחד"
 
+#~ msgid "Texturing:"
+#~ msgstr "טקסטורות:"
+
+#~ msgid "The value must be at least $1."
+#~ msgstr "הערך חייב להיות לפחות $1."
+
+#~ msgid "The value must not be larger than $1."
+#~ msgstr "הערך לא יכול להיות גדול מ־$1."
+
 #~ msgid "To enable shaders the OpenGL driver needs to be used."
 #~ msgstr "כדי לאפשר שיידרים יש להשתמש בדרייבר של OpenGL."
+
+#~ msgid "Tone Mapping"
+#~ msgstr "מיפוי גוונים"
+
+#~ msgid "Trilinear Filter"
+#~ msgstr "פילטר תלת לינארי"
 
 #~ msgid "Unable to install a game as a $1"
 #~ msgstr "לא ניתן להתקין משחק בתור $1"
@@ -6555,6 +6656,25 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 
 #~ msgid "View zoom key"
 #~ msgstr "מקש זום (משקפת)"
+
+#, c-format
+#~ msgid "Viewing range is at maximum: %d"
+#~ msgstr "טווח ראיה הגיע למקסימום: %d"
+
+#~ msgid "Waving Leaves"
+#~ msgstr "עלים מתנופפים"
+
+#~ msgid "Waving Liquids"
+#~ msgstr "נוזלים עם גלים"
+
+#~ msgid "Waving Plants"
+#~ msgstr "צמחים מתנוענעים"
+
+#~ msgid "X"
+#~ msgstr "X"
+
+#~ msgid "Y"
+#~ msgstr "Y"
 
 #~ msgid "Yes"
 #~ msgstr "כן"
@@ -6576,6 +6696,9 @@ msgstr "(cURL) מגבלה לפעולות במקביל"
 #, fuzzy
 #~ msgid "You died."
 #~ msgstr "מתת"
+
+#~ msgid "Z"
+#~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"

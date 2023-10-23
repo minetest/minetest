@@ -29,9 +29,6 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
-			<<name<<"\""<<std::endl;
-
 	// Get core.registered_entities[name]
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_entities");
@@ -59,8 +56,7 @@ bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 	// This should be userdata with metatable ObjectRef
 	push_objectRef(L, id);
 	luaL_checktype(L, -1, LUA_TUSERDATA);
-	if (!luaL_checkudata(L, -1, "ObjectRef"))
-		luaL_typerror(L, -1, "ObjectRef");
+	luaL_checkudata(L, -1, "ObjectRef");
 	lua_setfield(L, -2, "object");
 
 	// core.luaentities[id] = object
@@ -78,8 +74,6 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 		const std::string &staticdata, u32 dtime_s)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	verbosestream << "scriptapi_luaentity_activate: id=" << id << std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -107,8 +101,6 @@ void ScriptApiEntity::luaentity_Deactivate(u16 id, bool removal)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "scriptapi_luaentity_deactivate: id=" << id << std::endl;
-
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get the entity
@@ -133,8 +125,6 @@ void ScriptApiEntity::luaentity_Remove(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	verbosestream << "scriptapi_luaentity_rm: id=" << id << std::endl;
-
 	// Get core.luaentities table
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "luaentities");
@@ -152,8 +142,6 @@ void ScriptApiEntity::luaentity_Remove(u16 id)
 std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
@@ -182,12 +170,41 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 	return std::string(s, len);
 }
 
+void ScriptApiEntity::logDeprecationForExistingProperties(lua_State *L, int index, const std::string &name)
+{
+	if (deprecation_warned_init_properties.find(name) != deprecation_warned_init_properties.end())
+		return;
+
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if (!lua_istable(L, index))
+		return;
+
+	for (const char *key : object_property_keys) {
+		lua_getfield(L, index, key);
+		bool exists = !lua_isnil(L, -1);
+		lua_pop(L, 1);
+
+		if (exists) {
+			std::ostringstream os;
+
+			os << "Reading initial object properties directly from an entity definition is deprecated, "
+				<< "move it to the 'initial_properties' table instead. "
+				<< "(Property '" << key << "' in entity '" << name << "')" << std::endl;
+
+			log_deprecated(L, os.str(), -1);
+
+			deprecation_warned_init_properties.insert(name);
+			break;
+		}
+	}
+}
+
 void ScriptApiEntity::luaentity_GetProperties(u16 id,
-		ServerActiveObject *self, ObjectProperties *prop)
+		ServerActiveObject *self, ObjectProperties *prop, const std::string &entity_name)
 {
 	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
 
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
@@ -196,6 +213,7 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	prop->hp_max = 10;
 
 	// Deprecated: read object properties directly
+	logDeprecationForExistingProperties(L, -1, entity_name);
 	read_object_properties(L, -1, self, prop, getServer()->idef());
 
 	// Read initial_properties

@@ -67,6 +67,7 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		-- Search
 		"field[0.25,0.25;7,0.75;te_search;;" .. core.formspec_escape(tabdata.search_for) .. "]" ..
+		"field_enter_after_edit[te_search;true]" ..
 		"container[7.25,0.25]" ..
 		"image_button[0,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "search.png") .. ";btn_mp_search;]" ..
 		"image_button[0.75,0;0.75,0.75;" .. core.formspec_escape(defaulttexturedir .. "clear.png") .. ";btn_mp_clear;]" ..
@@ -114,7 +115,7 @@ local function get_formspec(tabview, name, tabdata)
 				"server_favorite_delete.png") .. ";btn_delete_favorite;]"
 		end
 		if gamedata.serverdescription then
-			retval = retval .. "textarea[0.25,1.85;5.2,2.75;;;" ..
+			retval = retval .. "textarea[0.25,1.85;5.25,2.7;;;" ..
 				core.formspec_escape(gamedata.serverdescription) .. "]"
 		end
 	end
@@ -180,7 +181,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. ";0]"
 	end
 
-	return retval, "size[15.5,7.1,false]real_coordinates[true]"
+	return retval
 end
 
 --------------------------------------------------------------------------------
@@ -415,9 +416,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	return false
 end
 
-local function on_change(type, old_tab, new_tab)
-	if type == "LEAVE" then return end
-	serverlistmgr.sync()
+local function on_change(type)
+	if type == "ENTER" then
+		mm_game_theme.set_engine()
+		serverlistmgr.sync()
+	end
 end
 
 return {

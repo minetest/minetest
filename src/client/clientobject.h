@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -47,7 +48,8 @@ public:
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
-	virtual const v3f getPosition() const { return v3f(0.0f); }
+	virtual const v3f getPosition() const { return v3f(0.0f); } // in BS-space
+	virtual const v3f getVelocity() const { return v3f(0.0f); } // in BS-space
 	virtual scene::ISceneNode *getSceneNode() const
 	{ return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() const
@@ -77,8 +79,8 @@ public:
 	virtual void initialize(const std::string &data) {}
 
 	// Create a certain type of ClientActiveObject
-	static ClientActiveObject *create(ActiveObjectType type, Client *client,
-		ClientEnvironment *env);
+	static std::unique_ptr<ClientActiveObject> create(ActiveObjectType type,
+			Client *client, ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server
 	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem = nullptr,
@@ -86,7 +88,7 @@ public:
 
 protected:
 	// Used for creating objects based on type
-	typedef ClientActiveObject *(*Factory)(Client *client, ClientEnvironment *env);
+	typedef std::unique_ptr<ClientActiveObject> (*Factory)(Client *client, ClientEnvironment *env);
 	static void registerType(u16 type, Factory f);
 	Client *m_client;
 	ClientEnvironment *m_env;

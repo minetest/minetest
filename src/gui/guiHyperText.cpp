@@ -63,9 +63,15 @@ void ParsedText::Element::setStyle(StyleList &style)
 		this->hovercolor = color;
 
 	unsigned int font_size = std::atoi(style["fontsize"].c_str());
+
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
 		font_mode = FM_Mono;
+
+	// hypertext[] only accepts absolute font size values and has a hardcoded
+	// default font size of 16. This is the only way to make hypertext[]
+	// respect font size settings that I can think of.
+	font_size = myround(font_size / 16.0f * g_fontengine->getFontSize(font_mode));
 
 	FontSpec spec(font_size, font_mode,
 		is_yes(style["bold"]), is_yes(style["italic"]));
@@ -600,8 +606,7 @@ u32 ParsedText::parseTag(const wchar_t *text, u32 cursor)
 
 TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 		gui::IGUIEnvironment *environment, ISimpleTextureSource *tsrc) :
-		m_text(text),
-		m_client(client), m_environment(environment)
+		m_text(text), m_client(client), m_tsrc(tsrc), m_guienv(environment)
 {
 	// Size all elements
 	for (auto &p : m_text.m_paragraphs) {
@@ -632,7 +637,7 @@ TextDrawer::TextDrawer(const wchar_t *text, Client *client,
 
 				if (e.type == ParsedText::ELEMENT_IMAGE) {
 					video::ITexture *texture =
-						m_client->getTextureSource()->
+						m_tsrc->
 							getTexture(stringw_to_utf8(e.text));
 					if (texture)
 						dim = texture->getOriginalSize();
@@ -914,7 +919,7 @@ void TextDrawer::place(const core::rect<s32> &dest_rect)
 void TextDrawer::draw(const core::rect<s32> &clip_rect,
 		const core::position2d<s32> &dest_offset)
 {
-	irr::video::IVideoDriver *driver = m_environment->getVideoDriver();
+	irr::video::IVideoDriver *driver = m_guienv->getVideoDriver();
 	core::position2d<s32> offset = dest_offset;
 	offset.Y += m_voffset;
 
@@ -958,10 +963,10 @@ void TextDrawer::draw(const core::rect<s32> &clip_rect,
 
 			case ParsedText::ELEMENT_IMAGE: {
 				video::ITexture *texture =
-						m_client->getTextureSource()->getTexture(
+						m_tsrc->getTexture(
 								stringw_to_utf8(el.text));
 				if (texture != 0)
-					m_environment->getVideoDriver()->draw2DImage(
+					m_guienv->getVideoDriver()->draw2DImage(
 							texture, rect,
 							irr::core::rect<s32>(
 									core::position2d<s32>(0, 0),
@@ -970,15 +975,15 @@ void TextDrawer::draw(const core::rect<s32> &clip_rect,
 			} break;
 
 			case ParsedText::ELEMENT_ITEM: {
-				IItemDefManager *idef = m_client->idef();
-				ItemStack item;
-				item.deSerialize(stringw_to_utf8(el.text), idef);
+				if (m_client) {
+					IItemDefManager *idef = m_client->idef();
+					ItemStack item;
+					item.deSerialize(stringw_to_utf8(el.text), idef);
 
-				drawItemStack(
-						m_environment->getVideoDriver(),
-						g_fontengine->getFont(), item, rect, &clip_rect,
-						m_client, IT_ROT_OTHER, el.angle, el.rotation
-				);
+					drawItemStack(m_guienv->getVideoDriver(),
+							g_fontengine->getFont(), item, rect, &clip_rect, m_client,
+							IT_ROT_OTHER, el.angle, el.rotation);
+				}
 			} break;
 			}
 		}
@@ -993,7 +998,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 		IGUIElement *parent, s32 id, const core::rect<s32> &rectangle,
 		Client *client, ISimpleTextureSource *tsrc) :
 		IGUIElement(EGUIET_ELEMENT, environment, parent, id, rectangle),
-		m_client(client), m_vscrollbar(nullptr),
+		m_tsrc(tsrc), m_vscrollbar(nullptr),
 		m_drawer(text, client, environment, tsrc), m_text_scrollpos(0, 0)
 {
 
@@ -1011,7 +1016,7 @@ GUIHyperText::GUIHyperText(const wchar_t *text, IGUIEnvironment *environment,
 			RelativeRect.getWidth() - m_scrollbar_width, 0,
 			RelativeRect.getWidth(), RelativeRect.getHeight());
 
-	m_vscrollbar = new GUIScrollBar(Environment, this, -1, rect, false, true);
+	m_vscrollbar = new GUIScrollBar(Environment, this, -1, rect, false, true, tsrc);
 	m_vscrollbar->setVisible(false);
 }
 

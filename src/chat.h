@@ -22,10 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 #include <list>
+#include <optional>
 
 #include "irrlichttypes.h"
 #include "util/enriched_string.h"
-#include "util/Optional.h"
 #include "settings.h"
 
 // Chat console related classes
@@ -190,7 +190,7 @@ public:
 	void historyNext();
 
 	// Nick completion
-	void nickCompletion(const std::list<std::string>& names, bool backwards);
+	void nickCompletion(const std::set<std::string> &names, bool backwards);
 
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
@@ -247,7 +247,7 @@ private:
 	struct HistoryEntry {
 		std::wstring line;
 		// If line is edited, saved holds the unedited version.
-		Optional<std::wstring> saved;
+		std::optional<std::wstring> saved;
 
 		HistoryEntry(const std::wstring &line): line(line) {}
 

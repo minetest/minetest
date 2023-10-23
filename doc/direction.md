@@ -21,7 +21,7 @@ This should be reviewed approximately yearly, or when goals are achieved.
 
 Pull requests that address one of these goals will be labeled as "Roadmap".
 PRs that are not on the roadmap will be closed unless they receive a concept
-approval within a week, issues can be used for preapproval.
+approval within a month, issues can be used for preapproval.
 Bug fixes are exempt for this, and are always accepted and prioritized.
 See [CONTRIBUTING.md](../.github/CONTRIBUTING.md) for more info.
 

@@ -1,9 +1,0 @@
-@@ -75,7 +75,7 @@
-                  css_class="codehilite", lang=None, style='default',
-                  noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
-         self.src = src
--        self.lang = lang
-+        self.lang = "lua"
-         self.linenums = linenums
-         self.guess_lang = guess_lang
-         self.css_class = css_class

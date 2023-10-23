@@ -25,28 +25,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace client
 {
 
-void ActiveObjectMgr::clear()
+ActiveObjectMgr::~ActiveObjectMgr()
 {
-	// delete active objects
-	for (auto &active_object : m_active_objects) {
-		delete active_object.second;
-		// Object must be marked as gone when children try to detach
-		active_object.second = nullptr;
+	if (!m_active_objects.empty()) {
+		warningstream << "client::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+				<< std::endl;
+		clear();
 	}
-	m_active_objects.clear();
 }
 
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ClientActiveObject *)> &f)
 {
 	g_profiler->avg("ActiveObjectMgr: CAO count [#]", m_active_objects.size());
-	for (auto &ao_it : m_active_objects) {
-		f(ao_it.second);
+
+	// Same as in server activeobjectmgr.
+	std::vector<u16> ids = getAllIds();
+
+	for (u16 id : ids) {
+		auto it = m_active_objects.find(id);
+		if (it == m_active_objects.end())
+			continue; // obj was removed
+		f(it->second.get());
 	}
 }
 
 // clang-format off
-bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
+bool ActiveObjectMgr::registerObject(std::unique_ptr<ClientActiveObject> obj)
 {
 	assert(obj); // Pre-condition
 	if (obj->getId() == 0) {
@@ -55,7 +60,6 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 			infostream << "Client::ActiveObjectMgr::registerObject(): "
 					<< "no free id available" << std::endl;
 
-			delete obj;
 			return false;
 		}
 		obj->setId(new_id);
@@ -64,12 +68,11 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 	if (!isFreeId(obj->getId())) {
 		infostream << "Client::ActiveObjectMgr::registerObject(): "
 				<< "id is not free (" << obj->getId() << ")" << std::endl;
-		delete obj;
 		return false;
 	}
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
 			<< "added (id=" << obj->getId() << ")" << std::endl;
-	m_active_objects[obj->getId()] = obj;
+	m_active_objects[obj->getId()] = std::move(obj);
 	return true;
 }
 
@@ -77,17 +80,17 @@ void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Client::ActiveObjectMgr::removeObject(): "
 			<< "id=" << id << std::endl;
-	ClientActiveObject *obj = getActiveObject(id);
-	if (!obj) {
+	auto it = m_active_objects.find(id);
+	if (it == m_active_objects.end()) {
 		infostream << "Client::ActiveObjectMgr::removeObject(): "
 				<< "id=" << id << " not found" << std::endl;
 		return;
 	}
 
-	m_active_objects.erase(id);
+	std::unique_ptr<ClientActiveObject> obj = std::move(it->second);
+	m_active_objects.erase(it);
 
 	obj->removeFromScene(true);
-	delete obj;
 }
 
 // clang-format on
@@ -96,7 +99,7 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 {
 	f32 max_d2 = max_d * max_d;
 	for (auto &ao_it : m_active_objects) {
-		ClientActiveObject *obj = ao_it.second;
+		ClientActiveObject *obj = ao_it.second.get();
 
 		f32 d2 = (obj->getPosition() - origin).getLengthSQ();
 
@@ -107,46 +110,37 @@ void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 	}
 }
 
-void ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootline,
-		std::vector<DistanceSortedActiveObject> &dest)
+std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObjects(const core::line3d<f32> &shootline)
 {
-	// Imagine a not-axis-aligned cuboid oriented into the direction of the shootline,
-	// with the width of the object's selection box radius * 2 and with length of the
-	// shootline (+selection box radius forwards and backwards). We check whether
-	// the selection box center is inside this cuboid.
-
+	std::vector<DistanceSortedActiveObject> dest;
 	f32 max_d = shootline.getLength();
 	v3f dir = shootline.getVector().normalize();
-	// arbitrary linearly independent vector and orthogonal dirs
-	v3f li2dir = dir + (std::fabs(dir.X) < 0.5f ? v3f(1,0,0) : v3f(0,1,0));
-	v3f dir_ortho1 = dir.crossProduct(li2dir).normalize();
-	v3f dir_ortho2 = dir.crossProduct(dir_ortho1);
 
 	for (auto &ao_it : m_active_objects) {
-		ClientActiveObject *obj = ao_it.second;
+		ClientActiveObject *obj = ao_it.second.get();
 
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		// possible optimization: get rid of the sqrt here
-		f32 selection_box_radius = selection_box.getRadius();
+		v3f obj_center = obj->getPosition() + selection_box.getCenter();
+		f32 obj_radius_sq = selection_box.getExtent().getLengthSQ() / 4;
 
-		v3f pos_diff = obj->getPosition() + selection_box.getCenter() - shootline.start;
+		v3f c = obj_center - shootline.start;
+		f32 a = dir.dotProduct(c);           // project c onto dir
+		f32 b_sq = c.getLengthSQ() - a * a;  // distance from shootline to obj_center, squared
 
-		f32 d = dir.dotProduct(pos_diff);
+		if (b_sq > obj_radius_sq)
+			continue;
 
 		// backward- and far-plane
-		if (d + selection_box_radius < 0.0f || d - selection_box_radius > max_d)
+		f32 obj_radius = std::sqrt(obj_radius_sq);
+		if (a < -obj_radius || a > max_d + obj_radius)
 			continue;
 
-		// side-planes
-		if (std::fabs(dir_ortho1.dotProduct(pos_diff)) > selection_box_radius
-				|| std::fabs(dir_ortho2.dotProduct(pos_diff)) > selection_box_radius)
-			continue;
-
-		dest.emplace_back(obj, d);
+		dest.emplace_back(obj, a);
 	}
+	return dest;
 }
 
 } // namespace client

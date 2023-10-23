@@ -26,23 +26,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace client
 {
-class ActiveObjectMgr : public ::ActiveObjectMgr<ClientActiveObject>
+class ActiveObjectMgr final : public ::ActiveObjectMgr<ClientActiveObject>
 {
 public:
-	void clear();
+	~ActiveObjectMgr() override;
+
 	void step(float dtime,
 			const std::function<void(ClientActiveObject *)> &f) override;
-	bool registerObject(ClientActiveObject *obj) override;
+	bool registerObject(std::unique_ptr<ClientActiveObject> obj) override;
 	void removeObject(u16 id) override;
 
 	void getActiveObjects(const v3f &origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
-	// Similar to above, but takes selection box sizes, and line direction into
-	// account.
-	// Objects without selectionbox are not returned.
-	// Returned distances are in direction of shootline.
-	// Distance check is coarse.
-	void getActiveSelectableObjects(const core::line3d<f32> &shootline,
-			std::vector<DistanceSortedActiveObject> &dest);
+
+	/// Gets all CAOs whose selection boxes may intersect the @p shootline.
+	/// @note CAOs without a selection box are not returned.
+	/// @note Distances are along the @p shootline.
+	std::vector<DistanceSortedActiveObject> getActiveSelectableObjects(const core::line3d<f32> &shootline);
 };
 } // namespace client

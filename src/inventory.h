@@ -162,6 +162,10 @@ struct ItemStack
 			ItemStack *restitem,  // may be NULL
 			IItemDefManager *itemdef) const;
 
+	// Checks if another itemstack would stack with this one.
+	// Does not check if the item actually fits in the stack.
+	bool stacksWith(ItemStack other) const;
+
 	// Takes some items.
 	// If there are not enough, takes as many as it can.
 	// Returns empty item if couldn't take any.
