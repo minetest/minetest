@@ -584,10 +584,10 @@ exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 #    Dithering significantly increases the size of losslessly-compressed
 #    screenshots and it works incorrectly if the display or operating system
 #    performs additional dithering or if the colour channels are not quantized
-#    to 8 bits. Therefore it is disabled by default.
+#    to 8 bits.
 #
 #    Requires: shaders
-dithering (Enable Dithering) bool false
+debanding (Enable Debanding) bool true
 
 [**Bloom]
 

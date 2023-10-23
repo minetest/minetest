@@ -512,9 +512,9 @@
 #    Dithering significantly increases the size of losslessly-compressed
 #    screenshots and it works incorrectly if the display or operating system
 #    performs additional dithering or if the colour channels are not quantized
-#    to 8 bits. Therefore it is disabled by default.
+#    to 8 bits.
 #    type: bool
-# dithering = false
+# debanding = true
 
 
 ### Bloom
