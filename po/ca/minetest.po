@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Catalan (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2023-11-09 02:08+0000\n"
+"Last-Translator: Spurnita <joaquim.puig@upc.edu>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
 "minetest/ca/>\n"
 "Language: ca\n"
@@ -12,102 +12,95 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.9-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr ""
+msgstr "Netejar la cua de sortida del xat"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Empty command."
-msgstr "Comands de xat"
+msgstr "Ordre buida"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Exit to main menu"
-msgstr "Eixir al menú"
+msgstr "Sortir al menú"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Invalid command: "
-msgstr "Comands de xat"
+msgstr "Comanda invàlida: "
 
 #: builtin/client/chatcommands.lua
 msgid "Issued command: "
-msgstr ""
+msgstr "Comanda executada "
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "List online players"
-msgstr "Un jugador"
+msgstr "Llistar els jugadors online"
 
 #: builtin/client/chatcommands.lua
-#, fuzzy
 msgid "Online players: "
-msgstr "Un jugador"
+msgstr "Jugadors en línia: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr ""
+msgstr "La cua de sortida del xat està buida."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
-msgstr ""
+msgstr "Aquesta ordre està deshabilitada pel servidor"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
 msgstr "Reaparèixer"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
-#, fuzzy
 msgid "You died"
-msgstr "Has mort."
+msgstr "Has mort"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands:"
-msgstr "Comands de xat"
+msgstr "Comandes disponibles:"
 
 #: builtin/common/chatcommands.lua
-#, fuzzy
 msgid "Available commands: "
-msgstr "Comands de xat"
+msgstr "Comandes disponibles: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "Comanda no disponible: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
-msgstr ""
+msgstr "Obteniu ajuda per a les comandes"
 
 #: builtin/common/chatcommands.lua
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
+"Useu '.help <cmd>' per obtenir més informació, o bé '.help all' per llistar-"
+"ho tot."
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr ""
+msgstr "[tot | <cmd>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "D'acord"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<cap disponible>"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "An error occurred in a Lua script:"
-msgstr "S'ha produït un error en un script Lua, com per exemple un mod."
+msgstr "S'ha produït un error en un script Lua:"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
 msgid "An error occurred:"
-msgstr "Ha ocorregut un error:"
+msgstr "S'ha produït un error:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -144,11 +137,11 @@ msgstr "Nosaltres suportem versions del protocol entre la versió $1 i la $2."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Habilitat, té algún error)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(No satisfet)"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_create_world.lua
@@ -172,43 +165,39 @@ msgstr "Desactivar tot"
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
 msgid "Disable modpack"
-msgstr "Desactivat"
+msgstr "Desactiva el modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "Activar tot"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable modpack"
-msgstr "Reanomenar el paquet de mods:"
+msgstr "Activar modpack"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"Error al habilitar el mod \"$1\" perquè conté caràcters no permesos. Només "
+"Error a l'habilitar el mod \"$1\" perquè conté caràcters no permesos. Només "
 "estan permesos els caràcters [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Trobeu Més Mods"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No (optional) dependencies"
-msgstr "Dependències opcionals:"
+msgstr "No hi ha dependències (opcionals)"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "No game description provided."
-msgstr "Cap descripció del mod disponible"
+msgstr "Cap descripció del joc disponible."
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -244,22 +233,26 @@ msgid "enabled"
 msgstr "Activat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
+msgstr "\"$1\" ja existeix. Vols sobreescriure-la?"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "Les dependències $1 i $2 s'instal·laran ."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 per $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 descarregant,\n"
+"$2 en cua"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -268,15 +261,17 @@ msgstr "Carregant ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
-msgstr ""
+msgstr "$1 dependències requerides no s'han pogut trobar."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
+msgstr "s'instal·laran $1, i es saltaran $2 dependències."
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "All packages"
-msgstr ""
+msgstr "Tots els paquets"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -295,7 +290,7 @@ msgstr "Ocultar Joc"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
+msgstr "ContentDB no és disponible quan Minetest s'ha compilat sense cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -304,7 +299,7 @@ msgstr "Carregant ..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Error instal·lant \"$1\": $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -352,32 +347,34 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "No s'ha pogut obtenir cap paquet"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
 msgid "No results"
-msgstr ""
+msgstr "Cap resultat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#, fuzzy
 msgid "No updates"
-msgstr ""
+msgstr "Cap actualització"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "No s'ha trobat"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Sobreescriure"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
-msgstr ""
+msgstr "Si us plau, comproveu que el joc base és correcte."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "En cua"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -386,7 +383,7 @@ msgstr "Textures"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "El paquet $1/$2 no s'ha trobat."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #, fuzzy
@@ -395,11 +392,11 @@ msgstr "Instal·lar"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update"
-msgstr ""
+msgstr "Actualitza"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Actualització Tot [$1]"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -542,7 +539,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
-msgstr ""
+msgstr "Redueix la humitat amb l'altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -551,7 +548,7 @@ msgstr "Soroll de cova #1"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr ""
+msgstr "Rius a nivell del mar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
@@ -560,45 +557,48 @@ msgstr "Llavor"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr ""
+msgstr "Transició suau entre els biomes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
+"Estructures que apareixen en el terreny (sense efecte sobre els arbres i l’"
+"herba de la selva creats per la v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr ""
+msgstr "Estructures que apareixen en el terreny, típicament arbres i plantes"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Temperate, Desert"
-msgstr ""
+msgstr "Temperat, Desert"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle"
-msgstr ""
+msgstr "Temperat, Desert, Jungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert, Jungle, Tundra, Taiga"
-msgstr ""
+msgstr "Temperat, Desert, Jungla, Tundra, Taigà"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr ""
+msgstr "Erosió superficial del terreny"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
-msgstr ""
+msgstr "Arbres i herba de jungla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Vary river depth"
-msgstr ""
+msgstr "Variar la profunditat del riu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr ""
+msgstr "Grans cavernes del fons subterrani"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -634,16 +634,16 @@ msgstr "Confirma contrasenya"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
-msgstr ""
+msgstr "Uneix-te a $1"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Missing name"
-msgstr ""
+msgstr "Manca el nom"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
