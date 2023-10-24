@@ -72,18 +72,20 @@ above when `auth_backend` is set to `sqlite3` in world.mt.
 
 This database contains two tables: `auth`, and `user_privileges`:
 
-    CREATE TABLE `auth` (
-      `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-      `name` VARCHAR(32) UNIQUE,
-      `password` VARCHAR(512),
-      `last_login` INTEGER
-    );
-    CREATE TABLE `user_privileges` (
-      `id` INTEGER,
-      `privilege` VARCHAR(32),
-      PRIMARY KEY (id, privilege)
-      CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE
-    );
+```sql
+CREATE TABLE `auth` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `name` VARCHAR(32) UNIQUE,
+    `password` VARCHAR(512),
+    `last_login` INTEGER
+);
+CREATE TABLE `user_privileges` (
+    `id` INTEGER,
+    `privilege` VARCHAR(32),
+    PRIMARY KEY (id, privilege)
+    CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE
+);
+```
 
 The `name` and `password` fields of the auth table are the same as the auth.txt
 fields (with modern password hash). The `last_login` field is the last login
@@ -275,7 +277,9 @@ that part.
 `map.sqlite` is a `SQLite3` database, containing a single table, called
 `blocks`. It looks like this:
 
-    CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY,`data` BLOB);
+```sql
+CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY,`data` BLOB);
+```
 
 ## Position Hashing
 
