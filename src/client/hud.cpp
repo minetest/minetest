@@ -1096,6 +1096,7 @@ void drawItemStack(
 		video::SColor basecolor =
 			client->idef()->getItemstackColor(item, client);
 
+		video::SMaterial &prev_material = driver->getMaterial2D();
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 j = 0; j < mc; ++j) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
@@ -1116,9 +1117,13 @@ void drawItemStack(
 				setMeshBufferColor(buf, c);
 
 			video::SMaterial &material = buf->getMaterial();
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			material.Lighting = false;
-			driver->setMaterial(material);
+			// only set material if it is not already set
+			if ( (0 == j) || (prev_material != material) ) {
+				material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+				material.Lighting = false;
+				driver->setMaterial(material);
+			}
+			prev_material = material;
 			driver->drawMeshBuffer(buf);
 		}
 
