@@ -17,14 +17,14 @@ done by detecting if the files and data indeed follows it.
 Everything is contained in a directory, the name of which is freeform, but
 often serves as the name of the world.
 
-Currently the authentication and ban data is stored on a per-world basis.
+Currently, the authentication and ban data is stored on a per-world basis.
 It can be copied over from an old world to a newly created world.
 
     World
     ├── auth.txt ───── Authentication data
     ├── auth.sqlite ── Authentication data (SQLite alternative)
     ├── env_meta.txt ─ Environment metadata
-    ├── ipban.txt ──── Banned ips/users
+    ├── ipban.txt ──── Banned IPs/users
     ├── map_meta.txt ─ Map metadata
     ├── map.sqlite ─── Map data
     ├── players ────── Player directory
@@ -34,7 +34,7 @@ It can be copied over from an old world to a newly created world.
 
 ## `auth.txt`
 
-Contains authentication data, player per line.
+Contains authentication data, one player per line.
 
     <name>:<password hash>:<privilege1,...>
 
@@ -43,6 +43,7 @@ in base64.
 
 Format (since 0.4.13) of password hash is `#1#<salt>#<verifier>`, with the
 parts inside `<>` encoded in base64.
+
 `<verifier>` is an RFC 2945 compatible SRP verifier,
 of the given salt, password, and the player's name lowercased,
 using the 2048-bit group specified in RFC 5054 and the SHA-256 hash function.
@@ -56,7 +57,7 @@ Example lines:
     ```
     foo:iEPX+SQWIR3p67lj/0zigSWTKHg:shout
     ```
-* Player "Foo", password "bar", privilege "shout", with a 0.4.13 pw hash:
+* Player "Foo", password "bar", privilege "shout", with a 0.4.13 password hash:
     ```
     foo:#1#hPpy4O3IAn1hsNK00A6wNw#Kpu6rj7McsrPCt4euTb5RA5ltF7wdcWGoYMcRngwDi11cZhPuuR9i5Bo7o6A877TgcEwoc//HNrj9EjR/CGjdyTFmNhiermZOADvd8eu32FYK1kf7RMC0rXWxCenYuOQCG4WF9mMGiyTPxC63VAjAMuc1nCZzmy6D9zt0SIKxOmteI75pAEAIee2hx4OkSXRIiU4Zrxo1Xf7QFxkMY4x77vgaPcvfmuzom0y/fU1EdSnZeopGPvzMpFx80ODFx1P34R52nmVl0W8h4GNo0k8ZiWtRCdrJxs8xIg7z5P1h3Th/BJ0lwexpdK8sQZWng8xaO5ElthNuhO8UQx1l6FgEA:shout
     ```
@@ -67,10 +68,10 @@ Example lines:
 
 ## `auth.sqlite`
 
-Contains authentification data as an SQLite database. This replaces auth.txt
+Contains authentication data as an SQLite database. This replaces auth.txt
 above when `auth_backend` is set to `sqlite3` in world.mt.
 
-This database contains two tables: `auth`, and `user_privileges`:
+This database contains two tables: `auth` and `user_privileges`:
 
 ```sql
 CREATE TABLE `auth` (
@@ -82,14 +83,14 @@ CREATE TABLE `auth` (
 CREATE TABLE `user_privileges` (
     `id` INTEGER,
     `privilege` VARCHAR(32),
-    PRIMARY KEY (id, privilege)
+    PRIMARY KEY (id, privilege),
     CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES auth (id) ON DELETE CASCADE
 );
 ```
 
 The `name` and `password` fields of the auth table are the same as the auth.txt
 fields (with modern password hash). The `last_login` field is the last login
-time as a unix time stamp.
+time as a Unix time stamp.
 
 The `user_privileges` table contains one entry per privilege and player.
 A player with "interact" and "shout" privileges will have two entries, one
@@ -98,6 +99,7 @@ with `privilege="interact"` and the second with `privilege="shout"`.
 ## `env_meta.txt`
 
 Simple global environment variables.
+
 Example content:
 
     game_time = 73471
@@ -107,6 +109,7 @@ Example content:
 ## `ipban.txt`
 
 Banned IP addresses and usernames.
+
 Example content:
 
     123.456.78.9|foo
@@ -115,7 +118,8 @@ Example content:
 ## `map_meta.txt`
 
 Simple global map variables.
-Example content (added indentation):
+
+Example content:
 
     seed = 7980462765762429666
     [end_of_params]
@@ -123,13 +127,16 @@ Example content (added indentation):
 ## `map.sqlite`
 
 Map data.
-See Map File Format below.
+
+See [Map File Format](#map-file-format) below.
 
 ## `player1`, `Foo`
 
 Player data.
+
 Filename can be anything.
-See Player File Format below.
+
+See [Player File Format](#player-file-format) below.
 
 ## `world.mt`
 
@@ -140,7 +147,7 @@ World metadata.
     creative_mode = false         - whether creative mode is enabled or not
     backend = sqlite3             - which DB backend to use for blocks (sqlite3, dummy, leveldb, redis, postgresql)
     player_backend = sqlite3      - which DB backend to use for player data
-    readonly_backend = sqlite3    - optionally readonly seed DB (DB file _must_ be located in "readonly" subfolder)
+    readonly_backend = sqlite3    - optionally read-only seed DB (DB file _must_ be located in "readonly" subfolder)
     auth_backend = files          - which DB backend to use for authentication data
     mod_storage_backend = sqlite3 - which DB backend to use for mod storage
     server_announce = false       - whether the server is publicly announced or not
@@ -152,10 +159,10 @@ For `load_mod_<mod>`, the possible values are:
 * `true` - Load the mod from wherever it is found (may cause conflicts if the same mod appears also in some other place).
 * `mods/modpack/moddir` - Relative path to the mod
     * Must be one of the following:
-        * `mods/`: mods in the user path's mods folder (ex `/home/user/.minetest/mods`)
-        * `share/`: mods in the share's mods folder (ex: `/usr/share/minetest/mods`)
+        * `mods/`: mods in the user path's mods folder (ex. `/home/user/.minetest/mods`)
+        * `share/`: mods in the share's mods folder (ex. `/usr/share/minetest/mods`)
         * `/path/to/env`: you can use absolute paths to mods inside folders specified with the `MINETEST_MOD_PATH` `env` variable.
-    * Other locations and absolute paths are not supported
+    * Other locations and absolute paths are not supported.
     * Note that `moddir` is the directory name, not the mod name specified in mod.conf.
 
 `PostgreSQL` backend specific settings:
@@ -170,8 +177,8 @@ For `load_mod_<mod>`, the possible values are:
 
     redis_address = 127.0.0.1  - Redis server address
     redis_hash = foo           - Database hash
-    redis_port = 6379          - (optional) connection port
-    redis_password = hunter2   - (optional) server password
+    redis_port = 6379          - (optional) Connection port
+    redis_password = hunter2   - (optional) Server password
 
 # Player File Format
 
@@ -259,17 +266,17 @@ For example, the `MapBlock` at `(0, 1, -2)` was this file:
     sectors2/000/ffd/0001
 
 Eventually Minetest outgrew this directory structure, as filesystems were
-struggling under the amount of files and directories.
+struggling under the number of files and directories.
 
 Large servers seriously needed a new format, and thus the base of the
 current format was invented, suggested by celeron55 and implemented by
 JacobF.
 
-`SQLite3` was implemented, and blocks files were directly inserted as blobs
+`SQLite3` was implemented. Blocks files were directly inserted as blobs
 in a single table, indexed by integer primary keys, which were hashed
 coordinates.
 
-Today we know that `SQLite3` allows multiple primary keys (which would allow
+Today, we know that `SQLite3` allows multiple primary keys (which would allow
 storing coordinates separately), but the format has been kept unchanged for
 that part.
 
@@ -278,7 +285,7 @@ that part.
 `blocks`. It looks like this:
 
 ```sql
-CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY,`data` BLOB);
+CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY, `data` BLOB);
 ```
 
 ## Position Hashing
@@ -324,7 +331,7 @@ See below for description.
 
 # MapBlock Serialization Format
 
-> **Note**:
+> **Notes**:
 >  * NOTE: Byte order is MSB first (big-endian).
 >  * NOTE: Zlib data is in such a format that Python's `zlib` at least can
 >          directly decompress.
@@ -352,7 +359,7 @@ See below for description.
       `is_underground=0`. It most likely won't work properly.
 
     * `0x08`: `generated`: True if the block has been generated. If false, block
-      is mostly filled with `CONTENT_IGNORE` and is likely to contain eg. parts
+      is mostly filled with `CONTENT_IGNORE` and is likely to contain e.g. parts
       of trees of neighboring blocks.
 
 `u16` lighting_complete
@@ -376,7 +383,7 @@ See below for description.
   to indicate if direct sunlight spreading is finished.
 
 * Example: if the block at `(0, 0, 0)` has `lighting_complete = 0b1111111111111110`,
-  then Minetest will correct lighting in the day light bank when the block at
+  Minetest will correct lighting in the day light bank when the block at
   `(1, 0, 0)` is also loaded.
 
 Timestamp and node ID mappings were introduced in map format version 29.
@@ -494,7 +501,7 @@ Before map format version 29:
         * `u16` `name_len`
         * `u8[name_len]` `name`
 
-EOF.
+End of File (EOF).
 
 # Format of Nodes
 
@@ -512,7 +519,7 @@ The purpose of `param1` and `param2` depend on the definition of the node.
 
 # Name-ID-Mapping
 
-The mapping maps node content ids to node names.
+The mapping maps node content IDs to node names.
 
 # Node Metadata Format (Before Map Format Version 23)
 
@@ -589,11 +596,11 @@ Older formats:
 * `'NodeItem default:dirt 5'`
 * `'ToolItem WPick 21323'`
 
-The wear value in tools is 0...65535
+The wear value in tools is 0...65535.
 
 # Inventory Serialization Format
 
-* The inventory serialization format is line-based
+* The inventory serialization format is line-based.
 * The newline character used is `\n`
 * The end condition of a serialized inventory is always `EndInventory\n`
 * All the slots in a list must always be serialized.
