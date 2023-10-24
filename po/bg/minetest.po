@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-08-04 21:06+0000\n"
-"Last-Translator: Salif Mehmed <mail@salif.eu>\n"
+"PO-Revision-Date: 2023-10-24 20:27+0000\n"
+"Last-Translator: 109247019824 <stoyan@gmx.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/minetest/"
 "minetest/bg/>\n"
 "Language: bg\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1.1-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -288,18 +288,17 @@ msgid "Error installing \"$1\": $2"
 msgstr "Грешка при инсталиране на „$1“: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to download \"$1\""
-msgstr "Грешка при изтеглянето на $1"
+msgstr "Грешка при изтеглянето на „$1“"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
 msgstr "Грешка при изтеглянето на $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Инсталиране: Неподдържан вид на файл или повреден архив"
+msgstr ""
+"Грешка при извличане на „$1“ (неподдържан вид на файл или повреден архив)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -361,7 +360,7 @@ msgstr "Пакети с текстури"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "Добавката $1/$2 не е намерена."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -381,7 +380,7 @@ msgstr "Вижте повече в браузъра"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Необходимо е да инсталирате игра преди да инсталирате модификация"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -424,13 +423,12 @@ msgid "Decorations"
 msgstr "Декорации"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Development Test is meant for developers."
-msgstr "Внимание: Тестът за разработка е предназначен за разработчици."
+msgstr "Тестът за разработка е предназначен за разработчици."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr "Тъмници"
+msgstr "Подземия"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
@@ -614,18 +612,16 @@ msgid "Password"
 msgstr "Парола"
 
 #: builtin/mainmenu/dlg_register.lua
-#, fuzzy
 msgid "Passwords do not match"
-msgstr "Паролите не съвпадат!"
+msgstr "Паролите не съвпадат"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Register"
-msgstr "Регистриране и вход"
+msgstr "Регистриране"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Пропускане"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -633,6 +629,9 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Дълго време двигателят на играта Minetest се предоставяше с игра на име „"
+"Minetest Game“. От Minetest 5.8.0, Minetest ще се предоставя без игра по "
+"подразбиране."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
