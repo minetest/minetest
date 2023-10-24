@@ -2495,7 +2495,14 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
 		}
 		lua_pop(L, 1); // exposure
-	}
+
+		lua_getfield(L, 2, "volumetric_light");
+		if (lua_istable(L, -1)) {
+			getfloatfield(L, -1, "strength", lighting.volumetric_light_strength);
+			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
+		}
+		lua_pop(L, 1); // volumetric_light
+}
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;
@@ -2533,6 +2540,10 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.exposure.center_weight_power);
 	lua_setfield(L, -2, "center_weight_power");
 	lua_setfield(L, -2, "exposure");
+	lua_newtable(L); // "volumetric_light"
+	lua_pushnumber(L, lighting.volumetric_light_strength);
+	lua_setfield(L, -2, "strength");
+	lua_setfield(L, -2, "volumetric_light");
 	return 1;
 }
 

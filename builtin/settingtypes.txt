@@ -627,6 +627,10 @@ bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 #    Requires: shaders, enable_bloom
 bloom_radius (Bloom Radius) float 1 0.1 8
 
+#    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
+#
+#    Requires: shaders, enable_bloom
+enable_volumetric_lighting (Volumetric lighting) bool false
 
 [*Audio]
 
