@@ -8036,6 +8036,9 @@ child will follow movement and rotation of that bone.
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
+      * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
+        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
+           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.

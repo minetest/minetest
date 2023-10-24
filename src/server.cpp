@@ -1919,6 +1919,8 @@ void Server::SendSetLighting(session_t peer_id, const Lighting &lighting)
 			<< lighting.exposure.speed_bright_dark
 			<< lighting.exposure.center_weight_power;
 
+	pkt << lighting.volumetric_light_strength;
+
 	Send(&pkt);
 }
 

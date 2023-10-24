@@ -770,6 +770,10 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	if (g_settings->getBool("debanding"))
 		shaders_header << "#define ENABLE_DITHERING 1\n";
 
+	if (g_settings->getBool("enable_volumetric_lighting")) {
+		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
+	}
+
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
 
 	std::string common_header = shaders_header.str();

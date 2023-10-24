@@ -126,7 +126,6 @@ void main(void)
 #endif
 	}
 
-
 #ifdef ENABLE_BLOOM
 	color = applyBloom(color, uv);
 #endif
