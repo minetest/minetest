@@ -1,0 +1,256 @@
+name: build
+
+# build on c/cpp changes or workflow changes
+on:
+  - push
+  - pull_request
+
+jobs:
+
+  linux-gl:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:bionic
+      env: { LANG: "C.UTF-8" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install g++ cmake libxi-dev libgl1-mesa-dev libpng-dev libjpeg-dev zlib1g-dev -qyy
+
+      - name: Build
+        run: |
+          cmake .
+          make VERBOSE=1 -j2
+
+      - name: Package
+        run: |
+          make DESTDIR=$PWD/_install install
+          tar -c -I "gzip -9" -f irrlicht-linux.tar.gz -C ./_install/usr/local .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: irrlicht-linux
+          path: ./irrlicht-linux.tar.gz
+
+  linux-gles:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:bionic
+      env: { LANG: "C.UTF-8" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install g++ cmake libxi-dev libgles2-mesa-dev libpng-dev libjpeg-dev zlib1g-dev xvfb -qyy
+
+      - name: Build
+        run: |
+          cmake . -DBUILD_EXAMPLES=1 -DENABLE_OPENGL=OFF -DENABLE_GLES2=ON
+          make -j2
+
+      - name: Test (headless)
+        run: |
+          cd bin/Linux
+          ./AutomatedTest null
+
+      - name: Test (Xvfb)
+        run: |
+          cd bin/Linux
+          LIBGL_ALWAYS_SOFTWARE=true xvfb-run ./AutomatedTest ogles2
+
+  linux-sdl:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:jammy
+      env: { LANG: "C.UTF-8" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install g++ cmake libsdl2-dev libpng-dev libjpeg-dev zlib1g-dev -qyy
+
+      - name: Build
+        run: |
+          cmake . -DBUILD_EXAMPLES=1 -DUSE_SDL2=ON
+          make -j2
+
+      - name: Test (headless)
+        run: |
+          cd bin/Linux
+          ./AutomatedTest null
+
+  linux-sdl-gl3:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:jammy
+      env: { LANG: "C.UTF-8" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install g++ cmake libsdl2-dev libpng-dev libjpeg-dev zlib1g-dev xvfb -qyy
+
+      - name: Build
+        run: |
+          cmake . -DBUILD_EXAMPLES=1 -DUSE_SDL2=ON -DENABLE_OPENGL=OFF -DENABLE_OPENGL3=ON
+          make -j2
+
+      - name: Test (headless)
+        run: |
+          cd bin/Linux
+          ./AutomatedTest null
+
+      - name: Test (Xvfb)
+        run: |
+          cd bin/Linux
+          LIBGL_ALWAYS_SOFTWARE=true xvfb-run ./AutomatedTest opengl3
+
+  linux-sdl-gles2:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:jammy
+      env: { LANG: "C.UTF-8" }
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install g++ cmake libsdl2-dev libpng-dev libjpeg-dev zlib1g-dev xvfb -qyy
+
+      - name: Build
+        run: |
+          cmake . -DBUILD_EXAMPLES=1 -DUSE_SDL2=ON -DENABLE_OPENGL=OFF -DENABLE_GLES2=ON
+          make -j2
+
+      - name: Test (headless)
+        run: |
+          cd bin/Linux
+          ./AutomatedTest null
+
+      - name: Test (Xvfb)
+        run: |
+          cd bin/Linux
+          LIBGL_ALWAYS_SOFTWARE=true xvfb-run ./AutomatedTest ogles2
+
+  mingw:
+    name: "MinGW ${{matrix.config.variant}}${{matrix.config.extras}}"
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {variant: win32, arch: i686}
+          - {variant: win64, arch: x86_64}
+          - {variant: win32, arch: i686, extras: "-sdl"}
+          - {variant: win64, arch: x86_64, extras: "-sdl"}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install compiler
+        run: |
+          sudo apt-get update && sudo apt-get install cmake -qyy
+          wget http://minetest.kitsunemimi.pw/mingw-w64-${{matrix.config.arch}}_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
+          sudo tar -xaf mingw.tar.xz -C /usr
+
+      - name: Build
+        run: |
+          ./scripts/ci-build-mingw.sh package
+        env:
+          CC: ${{matrix.config.arch}}-w64-mingw32-gcc
+          CXX: ${{matrix.config.arch}}-w64-mingw32-g++
+          extras: ${{matrix.config.extras}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: irrlicht-${{matrix.config.variant}}${{matrix.config.extras}}
+          path: ./irrlicht-${{matrix.config.variant}}${{matrix.config.extras}}.zip
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          brew update
+          brew install cmake libpng jpeg
+
+      - name: Build
+        run: |
+          cmake . -DCMAKE_FIND_FRAMEWORK=LAST -DBUILD_EXAMPLES=1
+          make -j3
+
+      - name: Test (headless)
+        run: |
+          ./bin/OSX/AutomatedTest null
+
+  msvc:
+    name: VS 2019 ${{ matrix.config.arch }} ${{ matrix.sdl.label }}
+    runs-on: windows-2019
+    env:
+      VCPKG_VERSION: 14e7bb4ae24616ec54ff6b2f6ef4e8659434ea44
+        # 2022.05.10
+      vcpkg_packages: zlib libpng libjpeg-turbo opengl-registry
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          -
+            arch: x86
+            generator: "-G'Visual Studio 16 2019' -A Win32"
+            vcpkg_triplet: x86-windows
+          -
+            arch: x64
+            generator: "-G'Visual Studio 16 2019' -A x64"
+            vcpkg_triplet: x64-windows
+        sdl:
+          -
+            use: FALSE
+            label: '(no SDL)'
+          -
+            use: TRUE
+            label: '(with SDL)'
+            vcpkg_packages: sdl2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Restore from cache and run vcpkg
+        uses: lukka/run-vcpkg@v7
+        with:
+          vcpkgArguments: ${{env.vcpkg_packages}} ${{matrix.sdl.vcpkg_packages}}
+          vcpkgDirectory: '${{ github.workspace }}\vcpkg'
+          appendedCacheKey: ${{ matrix.config.vcpkg_triplet }}
+          vcpkgGitCommitId: ${{ env.VCPKG_VERSION }}
+          vcpkgTriplet: ${{ matrix.config.vcpkg_triplet }}
+
+      - name: CMake
+        run: |
+            cmake ${{matrix.config.generator}}  `
+            -DUSE_SDL2=${{matrix.sdl.use}}  `
+            -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake"  `
+            -DCMAKE_BUILD_TYPE=Release .
+
+      - name: Build
+        run: cmake --build . --config Release
+
+      - name: Create artifact folder
+        run: |
+          mkdir artifact/
+          mkdir artifact/lib/
+
+      - name: Move dlls into artifact folder
+        run: move bin\Win32-VisualStudio\Release\* artifact\lib\
+
+      - name: Move includes into artifact folder
+        run: move include artifact/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: msvc-${{ matrix.config.arch }}
+          path: artifact/

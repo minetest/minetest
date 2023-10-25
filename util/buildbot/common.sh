@@ -16,6 +16,8 @@ luajit_version=20230221
 leveldb_version=1.23
 zlib_version=1.2.13
 zstd_version=1.5.5
+libjpeg_version=2.1.5.1
+libpng_version=1.6.39
 
 download () {
 	local url=$1
@@ -84,6 +86,12 @@ add_cmake_libs () {
 		-DZLIB_INCLUDE_DIR=$libdir/zlib/include
 		-DZLIB_LIBRARY=$libdir/zlib/lib/libz.dll.a
 		-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll
+
+		-DJPEG_LIBRARY=$libdir/libjpeg/lib/libjpeg.dll.a
+		-DJPEG_INCLUDE_DIR=$libdir/libjpeg/include
+
+		-DPNG_LIBRARY=$libdir/libpng/lib/libpng.dll.a
+		-DPNG_PNG_INCLUDE_DIR=$libdir/libpng/include
 
 		-DZSTD_INCLUDE_DIR=$libdir/zstd/include
 		-DZSTD_LIBRARY=$libdir/zstd/lib/libzstd.dll.a
