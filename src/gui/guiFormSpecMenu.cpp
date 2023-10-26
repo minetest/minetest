@@ -247,6 +247,15 @@ std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &
 	return NULL;
 }
 
+// This will only return a meaningful value if called after drawMenu().
+core::rect<s32> GUIFormSpecMenu::getAbsoluteRect()
+{
+	core::rect<s32> rect = AbsoluteRect;
+	// Some extra space in case there is a tabheader[] element.
+	rect.UpperLeftCorner.Y -= imgsize.Y * 0.85f;
+	return rect;
+}
+
 v2s32 GUIFormSpecMenu::getElementBasePos(const std::vector<std::string> *v_pos)
 {
 	v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
