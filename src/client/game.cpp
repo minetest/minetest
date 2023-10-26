@@ -1384,7 +1384,15 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
+	std::string bind_str;
+	if (simple_singleplayer_mode) {
+		// Make the simple singleplayer server only accept connections from localhost,
+		// which also makes Windows Defender not show a warning.
+		bind_str = "127.0.0.1";
+	} else {
+		bind_str = g_settings->get("bind_address");
+	}
+	
 	Address bind_addr(0, 0, 0, 0, port);
 
 	if (g_settings->getBool("ipv6_server"))
