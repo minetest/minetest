@@ -76,15 +76,15 @@ enum DirectionWallmounted {
 	DWM_XN,
 	DWM_ZP,
 	DWM_ZN,
-	DWM_COUNT,
 	// There are 6 wallmounted directions, but 8 possible states (3 bits).
 	// So we have 2 additional states, which drawtypes might use for
 	// special ("S") behavior.
 	DWM_S1,
-	DWM_S2
+	DWM_S2,
+	DWM_COUNT
 };
 
-extern const v3s16 g_6dirs[DWM_COUNT];
+extern const v3s16 g_6dirs[6];
 
 extern const v3s16 g_7dirs[7];
 
@@ -93,9 +93,9 @@ extern const v3s16 g_26dirs[26];
 // 26th is (0,0,0)
 extern const v3s16 g_27dirs[27];
 
-extern const u8 wallmounted_to_facedir[8];
+extern const u8 wallmounted_to_facedir[DWM_COUNT];
 
-extern const v3s16 wallmounted_dirs[8];
+extern const v3s16 wallmounted_dirs[DWM_COUNT];
 
 extern const v3s16 facedir_dirs[32];
 
