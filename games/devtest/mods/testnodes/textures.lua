@@ -298,3 +298,13 @@ minetest.register_node("testnodes:tga_type10_32bpp_tb", {
 	use_texture_alpha = "blend",
 	groups = { dig_immediate = 2 },
 })
+
+minetest.register_node("testnodes:bmp_24bpp", {
+	description = S("BMP 24bpp Test Node (BMP is deprecated)"),
+	tiles = { "testnodes_bmp_24bpp.bmp" },
+})
+
+minetest.register_node("testnodes:bmp_24bpp_inband", {
+	description = S("BMP 24bpp In-Band Test Node (BMP is deprecated)"),
+	tiles = { "[png:Qk1GAAAAAAAAADYAAAAoAAAAAgAAAAIAAAABABgAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAP//AAAAAP8A/wAAAA=="  },
+})
