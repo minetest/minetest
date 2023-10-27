@@ -1136,7 +1136,7 @@ mgv7_floatland_density (Floatland density) float -0.6
 #    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
 #    upper tapering).
 #    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
-#    When enabling water placement, the floatlands must be configured and tested
+#    When enabling water placement, floatlands must be configured and tested
 #    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
 #    required value depending on 'mgv7_np_floatland'), to avoid
 #    server-intensive extreme water flow and to avoid vast flooding of the
@@ -2056,8 +2056,8 @@ block_send_optimize_distance (Block send optimize distance) int 4 2 32767
 
 #    If enabled, the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
-#    sent to the client 50-80%. The client will no longer receive most invisible
-#    blocks, so that the utility of noclip mode is reduced.
+#    sent to the client by 50-80%. Clients will no longer receive most
+#    invisible blocks, so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server-side occlusion culling) bool true
 
 [**Mapgen]
@@ -2111,7 +2111,7 @@ curl_parallel_limit (cURL parallel limit) int 8 1 2147483647
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
 curl_file_download_timeout (cURL file download timeout) int 300000 5000 2147483647
 
-[**Misc.]
+[**Miscellaneous]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 screen_dpi (DPI) int 72 1

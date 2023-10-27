@@ -99,19 +99,21 @@ static const struct table_key table[] = {
 	// Keys without a Char
 	DEFINEKEY1(KEY_LBUTTON, N_("Left Button"))
 	DEFINEKEY1(KEY_RBUTTON, N_("Right Button"))
-	DEFINEKEY1(KEY_CANCEL, N_("Break")) // Usually paired with the Pause key
+	//~ Usually paired with the Pause key
+	DEFINEKEY1(KEY_CANCEL, N_("Break Key"))
 	DEFINEKEY1(KEY_MBUTTON, N_("Middle Button"))
 	DEFINEKEY1(KEY_XBUTTON1, N_("X Button 1"))
 	DEFINEKEY1(KEY_XBUTTON2, N_("X Button 2"))
 	DEFINEKEY1(KEY_BACK, N_("Backspace"))
 	DEFINEKEY1(KEY_TAB, N_("Tab"))
 	DEFINEKEY1(KEY_CLEAR, N_("Clear Key"))
-	DEFINEKEY1(KEY_RETURN, N_("Return"))
-	DEFINEKEY1(KEY_SHIFT, N_("Shift"))
-	DEFINEKEY1(KEY_CONTROL, N_("Control"))
+	DEFINEKEY1(KEY_RETURN, N_("Return Key"))
+	DEFINEKEY1(KEY_SHIFT, N_("Shift Key"))
+	DEFINEKEY1(KEY_CONTROL, N_("Control Key"))
 	//~ Key name, common on Windows keyboards
-	DEFINEKEY1(KEY_MENU, N_("Menu"))
-	DEFINEKEY1(KEY_PAUSE, N_("Pause")) // Usually paired with the Break key
+	DEFINEKEY1(KEY_MENU, N_("Menu Key"))
+	//~ Usually paired with the Break key
+	DEFINEKEY1(KEY_PAUSE, N_("Pause Key"))
 	DEFINEKEY1(KEY_CAPITAL, N_("Caps Lock"))
 	DEFINEKEY1(KEY_SPACE, N_("Space"))
 	DEFINEKEY1(KEY_PRIOR, N_("Page Up"))
