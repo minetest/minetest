@@ -48,7 +48,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../build/macos/ \
             -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE \
             -DINSTALL_DEVTEST=TRUE
-          make -j2
+          cmake --build . -j$(sysctl -n hw.logicalcpu)
           make install
 
       - name: Test
