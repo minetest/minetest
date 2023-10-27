@@ -10,4 +10,5 @@ dofile(commonpath .. "chatcommands.lua")
 dofile(clientpath .. "chatcommands.lua")
 dofile(clientpath .. "death_formspec.lua")
 dofile(clientpath .. "misc.lua")
+dofile(clientpath .. "help_formspec.lua")
 assert(loadfile(commonpath .. "item_s.lua"))({}) -- Just for push/read node functions
