@@ -21,3 +21,5 @@ The CMake profiles can be later configured in `"Settings" > "Build, Execution, D
 The configuration of the CMake project created the CMake run configurations that can be accessed from the toolbar to build, run and debug the program. At the left there is the dropdown to change the CMake profile.
 
 ![Jetbrains Run Toolbar](jetbrains_run_toolbar.png)
+
+From the recent project view when you start CLion, you can rightclick the project and change it's icon to make it easier to navigate your projects.
