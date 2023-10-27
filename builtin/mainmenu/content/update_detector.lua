@@ -30,21 +30,12 @@ local has_fetched = false
 local latest_releases
 
 
--- encodes for use as URL parameter or path component
-local function urlencode(str)
-	return str:gsub("[^%a%d()._~-]", function(char)
-		return ("%%%02X"):format(char:byte())
-	end)
-end
-assert(urlencode("sample text?") == "sample%20text%3F")
-
-
-local function fetch_latest_releases(param)
+local function fetch_latest_releases()
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 			"/api/updates/?type=mod&type=game&type=txp&protocol_version=" ..
-			core.get_max_supp_proto() .. "&engine_version=" .. param.urlencode(version.string)
+			core.get_max_supp_proto() .. "&engine_version=" .. core.urlencode(version.string)
 	local http = core.get_http_api()
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
@@ -59,10 +50,7 @@ end
 ---
 --- @param callback function that takes a single argument, table or nil
 local function get_latest_releases(callback)
-	core.handle_async(
-			fetch_latest_releases,
-			{ urlencode = urlencode },
-			callback)
+	core.handle_async(fetch_latest_releases, nil, callback)
 end
 
 
