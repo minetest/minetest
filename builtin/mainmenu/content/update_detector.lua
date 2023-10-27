@@ -124,6 +124,10 @@ function update_detector.get_all()
 			end
 
 			local latest_release = latest_releases[id]
+			if not latest_release and content.type == "game" then
+				latest_release = latest_releases[id .. "_game"]
+			end
+
 			if latest_release and latest_release > content.release then
 				ret[#ret + 1] = content
 			end
