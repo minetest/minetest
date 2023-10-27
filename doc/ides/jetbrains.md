@@ -1,6 +1,4 @@
-# Developper Instructions
-
-## IntellIJ CLion
+# Jetbrains IntellIJ CLion
 
 When opening the folder for the first time, select "Open as CMake project"
 
