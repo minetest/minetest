@@ -651,7 +651,9 @@ int ModApiUtil::l_set_last_run_mod(lua_State *L)
 	return 0;
 }
 
-int ModApiUtil::l_urlencode(lua_State *L) {
+// urlencode(modname)
+int ModApiUtil::l_urlencode(lua_State *L)
+{
 	NO_MAP_LOCK_REQUIRED;
 
 	const char *value = luaL_checkstring(L, 1);
