@@ -125,8 +125,7 @@ function update_detector.get_all()
 
 	local ret = {}
 	local all_content = pkgmgr.get_all()
-	for i = 1, #all_content do
-		local content = all_content[i]
+	for _, content in ipairs(all_content) do
 		if content.author and content.release > 0 then
 			-- The backend will account for aliases in `latest_releases`
 			local id = content.author:lower() .. "/"

@@ -19,8 +19,7 @@
 
 local function get_content_icons(packages_with_updates)
 	local ret = {}
-	for i = 1, #packages_with_updates do
-		local content = packages_with_updates[i]
+	for _, content in ipairs(packages_with_updates) do
 		ret[content.virtual_path or content.path] = { type = "update" }
 	end
 	return ret
@@ -79,10 +78,8 @@ local function get_formspec(tabview, name, tabdata)
 	local contentdb_label
 	if update_count == 0 then
 		contentdb_label = fgettext("Browse online content")
-	elseif update_count == 1 then
-		contentdb_label = fgettext("Browse online content [1 update]")
 	else
-		contentdb_label = fgettext("Browse online content [$1 updates]", update_count)
+		contentdb_label = fgettext("Browse online content [$1]", update_count)
 	end
 
 	local retval = {

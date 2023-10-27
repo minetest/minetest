@@ -308,7 +308,7 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_icon)
 			for j = 1, #rawlist do
 				if rawlist[j].modpack == list[i].name then
 					if with_icon then
-						update_icon_info(with_icon[rawlist[j].virtual_path])
+						update_icon_info(with_icon[rawlist[j].virtual_path or rawlist[j].path])
 					end
 
 					if rawlist[j].enabled then
@@ -327,7 +327,7 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_icon)
 			if v.type == "game" and with_icon then
 				for j = 1, #rawlist do
 					if rawlist[j].is_game_content then
-						update_icon_info(with_icon[rawlist[j].virtual_path])
+						update_icon_info(with_icon[rawlist[j].virtual_path or rawlist[j].path])
 					end
 				end
 			end
@@ -346,7 +346,7 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_icon)
 			elseif icon_info.type == "update" then
 				icon = 4
 			else
-				icon_info("Unknown error type " .. icon_info.type)
+				error("Unknown icon type " .. icon_info.type)
 			end
 		end
 
