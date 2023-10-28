@@ -28,7 +28,7 @@ From the recent project view when you start CLion, you can rightclick the projec
 
 Under Windows, you need to install the [Visual Studio](https://visualstudio.microsoft.com) compiler.
 
-From the Visual Studio installer, you need to install the `Desktop development with C++` Workload. CMake is bundled in CLion, but if you want to use CMake from anywhere you need to make sure the `C++ CMake tools for Windows` component is included in the installation details panel.
+From the Visual Studio installer, you need to install the `Desktop development with C++` Workload. CMake is already bundled in CLion.
 
 The open project wisard will look like this at first, you can pick `Visual Studio` from the list and press next:
 
@@ -38,11 +38,15 @@ Then, the process is roughly similar to Linux, you just need to pick `Visual Stu
 
 ![image](https://github.com/AFCMS/minetest/assets/61794590/7cc87b5e-c7cf-444d-aa2e-760b43241a40)
 
-After that, you need to let CLion know about a `vcpkg` installation to let the bundled CMake use the dependencies and get IDE integration.
+[Vcpkg](https://vcpkg.io) is the recommended way of installing Minetest dependencies.
 
-Go to `View > Tool Windows > Vcpkg` and click the add button. I will open a popup allowing you to add a Vcpkg installation. By default it will download a new one that you can use to install your dependencies, but if you already have one installed or you do not plan on using CLion only then install Vcpkg by hand and select you can select your installation folder. Don't forget to check `Add vcpkg installation to existing CMake profiles`. If you haven't already installed Minetest dependencies in your vcpkg installation, you can do it right from CLion's Vcpkg tool window.
+You need to let CLion know about a `vcpkg` installation to let the bundled CMake use the dependencies seamlessly and get IDE integration. (Require CLion 2023 or later)
+
+Go to `View > Tool Windows > Vcpkg` and click the add button. I will open a popup allowing you to add a Vcpkg installation. By default it will download a new one that you can use to install your dependencies, but if you already have one installed or you do not plan on using CLion only then install Vcpkg by hand and select your installation directory. Don't forget to check `Add vcpkg installation to existing CMake profiles`. If you haven't already installed Minetest dependencies in your vcpkg installation, you can do it right from CLion's Vcpkg tool window.
 
 ![image](https://github.com/AFCMS/minetest/assets/61794590/0a524aa2-1dc8-443d-b9ce-143a11b56218)
 
 Reloading the CMake project (should happen automatically, or display a notification for outdated CMake project) will now load the dependencies.
+
+[More infos on Vcpkg integration in CLion](https://blog.jetbrains.com/clion/2023/01/support-for-vcpkg-in-clion)
 
