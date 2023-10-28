@@ -16,7 +16,7 @@ Make sure to switch the Generator to `Let CMake decide` or `Unix Makefiles`.
 
 You can change the build options passed to Make, for exemple if you want to change the number of threads used to build the project (`-j`).
 
-The CMake profiles can be later configured in `"Settings" > "Build, Execution, Deployment" > "CMake"`.
+The CMake profiles can be later configured in `Settings > Build, Execution, Deployment > CMake`.
 
 The configuration of the CMake project created the CMake run configurations that can be accessed from the toolbar to build, run and debug the program. At the left there is the dropdown to change the CMake profile.
 
@@ -38,8 +38,11 @@ Then, the process is roughly similar to Linux, you just need to pick `Visual Stu
 
 ![image](https://github.com/AFCMS/minetest/assets/61794590/7cc87b5e-c7cf-444d-aa2e-760b43241a40)
 
-After that, you need to let CLion use `vcpkg` for dependencies.
+After that, you need to let CLion know about a `vcpkg` installation to let the bundled CMake use the dependencies and get IDE integration.
 
-Go to `View > Tool Windows > Vcpkg` and click the add button. I will open a popup allowing you to add a Vcpkg installation. By default it will download a new one, but if you already have one installed you can select your installation folder.
+Go to `View > Tool Windows > Vcpkg` and click the add button. I will open a popup allowing you to add a Vcpkg installation. By default it will download a new one that you can use to install your dependencies, but if you already have one installed or you do not plan on using CLion only then install Vcpkg by hand and select you can select your installation folder. Don't forget to check `Add vcpkg installation to existing CMake profiles`. If you haven't already installed Minetest dependencies in your vcpkg installation, you can do it right from CLion's Vcpkg tool window.
 
+![image](https://github.com/AFCMS/minetest/assets/61794590/0a524aa2-1dc8-443d-b9ce-143a11b56218)
+
+Reloading the CMake project (should happen automatically, or display a notification for outdated CMake project) will now be able to load the dependencies.
 
