@@ -516,7 +516,7 @@ void *OpenALSoundManager::run()
 		if (stop_requested)
 			break;
 
-		f32 dtime = get_time_since_last_step();
+		f32 dtime = get_time_since_last_step() * 1.0e-3f;
 		t_step_start = porting::getTimeMs();
 		step(dtime);
 	}
