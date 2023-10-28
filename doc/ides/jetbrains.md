@@ -44,5 +44,5 @@ Go to `View > Tool Windows > Vcpkg` and click the add button. I will open a popu
 
 ![image](https://github.com/AFCMS/minetest/assets/61794590/0a524aa2-1dc8-443d-b9ce-143a11b56218)
 
-Reloading the CMake project (should happen automatically, or display a notification for outdated CMake project) will now be able to load the dependencies.
+Reloading the CMake project (should happen automatically, or display a notification for outdated CMake project) will now load the dependencies.
 
