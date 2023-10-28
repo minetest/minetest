@@ -778,6 +778,29 @@ function pkgmgr.update_gamelist()
 end
 
 --------------------------------------------------------------------------------
+function pkgmgr.get_contentdb_id(pkg)
+	-- core.get_games() will return "" instead of nil if there is no "author" field.
+	if pkg.author and pkg.author ~= "" and pkg.release > 0 then
+		if pkg.type == "game" then
+			return pkg.author:lower() .. "/" .. pkg.id
+		end
+		return pkg.author:lower() .. "/" .. pkg.name
+	end
+
+	-- Until Minetest 5.8.0, Minetest Game was bundled with Minetest.
+	-- Unfortunately, the bundled MTG was not versioned (missing "release"
+	-- field in game.conf).
+	-- Therefore, we consider any installation of MTG that is not versioned,
+	-- has not been cloned from Git, and is not system-wide to be updatable.
+	if pkg.type == "game" and pkg.id == "minetest" and pkg.release == 0 and
+			not core.is_dir(pkg.path .. "/.git") and core.may_modify_path(pkg.path) then
+		return "minetest/minetest"
+	end
+
+	return nil
+end
+
+--------------------------------------------------------------------------------
 -- read initial data
 --------------------------------------------------------------------------------
 pkgmgr.update_gamelist()

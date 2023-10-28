@@ -777,36 +777,26 @@ function store.update_paths()
 	local mod_hash = {}
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-		if mod.author and mod.release > 0 then
-			local id = mod.author:lower() .. "/" .. mod.name
-			mod_hash[store.aliases[id] or id] = mod
+		local cdb_id = pkgmgr.get_contentdb_id(mod)
+		if cdb_id then
+			mod_hash[store.aliases[cdb_id] or cdb_id] = mod
 		end
 	end
 
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		if game.author ~= "" and game.release > 0 then
-			local id = game.author:lower() .. "/" .. game.id
-			game_hash[store.aliases[id] or id] = game
-
-		-- Until Minetest 5.8.0, Minetest Game was bundled with Minetest.
-		-- Unfortunately, the bundled MTG was not versioned (missing "release"
-		-- field in game.conf).
-		-- Therefore, we consider any installation of MTG that is not versioned,
-		-- has not been cloned from Git, and is not system-wide to be updatable.
-		elseif game.id == "minetest" and game.release == 0 and
-				not core.is_dir(game.path .. "/.git") and core.may_modify_path(game.path) then
-			local id = "minetest/minetest"
-			game_hash[store.aliases[id] or id] = game
+		local cdb_id = pkgmgr.get_contentdb_id(game)
+		if cdb_id then
+			game_hash[store.aliases[cdb_id] or cdb_id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
-		if txp.author and txp.release > 0 then
-			local id = txp.author:lower() .. "/" .. txp.name
-			txp_hash[store.aliases[id] or id] = txp
+		local cdb_id = pkgmgr.get_contentdb_id(txp)
+		if cdb_id then
+			txp_hash[store.aliases[cdb_id] or cdb_id] = txp
 		end
 	end
 
