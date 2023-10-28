@@ -184,8 +184,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 			volume, pitch, start_time, pos_vel_opt);
 
 	sound->play();
-	if (m_is_paused)
-		sound->pause();
+
 	warn_if_al_error("createPlayingSound");
 	return sound;
 }
