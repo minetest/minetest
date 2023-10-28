@@ -699,7 +699,8 @@ local function resolve_auto_install_spec()
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
 		if pkg.author == auto_install_spec.author and
-				pkg.name == auto_install_spec.name then
+				(pkg.name == auto_install_spec.name or
+					(pkg.type == "game" and pkg.name == auto_install_spec.name .. "_game")) then
 			resolved = pkg
 			break
 		end
