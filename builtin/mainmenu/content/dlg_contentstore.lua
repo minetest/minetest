@@ -193,6 +193,10 @@ local function start_install(package, reason)
 end
 
 local function queue_download(package, reason)
+	if package.queued or package.downloading then
+		return
+	end
+
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
 	if number_downloading < math.max(max_concurrent_downloads, 1) then
 		start_install(package, reason)
@@ -538,6 +542,9 @@ local function install_or_update_package(this, package)
 		error("Unknown package type: " .. package.type)
 	end
 
+	if package.queued or package.downloading then
+		return
+	end
 
 	local function on_confirm()
 		local deps = get_raw_dependencies(package)
