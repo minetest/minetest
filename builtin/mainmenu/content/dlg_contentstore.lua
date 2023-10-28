@@ -698,9 +698,7 @@ local function resolve_auto_install_spec()
 	local resolved = nil
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if pkg.author == auto_install_spec.author and
-				(pkg.name == auto_install_spec.name or
-					(pkg.type == "game" and pkg.name == auto_install_spec.name .. "_game")) then
+		if pkg.id == auto_install_spec then
 			resolved = pkg
 			break
 		end
@@ -1194,7 +1192,7 @@ end
 --- @param type string | nil
 --- Sets initial package filter. "game", "mod", "txp" or nil (no filter).
 --- @param install_spec table | nil
---- Package specification of the form { author = string, name = string }.
+--- ContentDB ID of package as returned by pkgmgr.get_contentdb_id().
 --- Sets package to install or update automatically.
 function create_store_dlg(type, install_spec)
 	search_string = ""
