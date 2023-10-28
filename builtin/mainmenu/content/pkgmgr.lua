@@ -177,6 +177,7 @@ function pkgmgr.get_mods(path, virtual_path, listing, modpack)
 	end
 end
 
+--------------------------------------------------------------------------------
 function pkgmgr.get_texture_packs()
 	local txtpath = core.get_texturepath()
 	local txtpath_system = core.get_texturepath_share()
@@ -193,6 +194,23 @@ function pkgmgr.get_texture_packs()
 	end)
 
 	return retval
+end
+
+--------------------------------------------------------------------------------
+function pkgmgr.get_all()
+	local result = {}
+
+	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
+		result[#result + 1] = mod
+	end
+	for _, game in pairs(pkgmgr.games) do
+		result[#result + 1] = game
+	end
+	for _, txp in pairs(pkgmgr.get_texture_packs()) do
+		result[#result + 1] = txp
+	end
+
+	return result
 end
 
 --------------------------------------------------------------------------------
@@ -260,7 +278,10 @@ function pkgmgr.is_valid_modname(modpath)
 end
 
 --------------------------------------------------------------------------------
-function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
+--- @param render_list filterlist
+--- @param use_technical_names boolean to show technical names instead of human-readable titles
+--- @param with_icon table or nil, from virtual path to icon object
+function pkgmgr.render_packagelist(render_list, use_technical_names, with_icon)
 	if not render_list then
 		if not pkgmgr.global_mods then
 			pkgmgr.refresh_globals()
@@ -273,10 +294,10 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 	for i, v in ipairs(list) do
 		local color = ""
 		local icon = 0
-		local error = with_error and with_error[v.virtual_path]
-		local function update_error(val)
-			if val and (not error or (error.type == "warning" and val.type == "error")) then
-				error = val
+		local icon_info = with_icon and with_icon[v.virtual_path or v.path]
+		local function update_icon_info(val)
+			if val and (not icon_info or (icon_info.type == "warning" and val.type == "error")) then
+				icon_info = val
 			end
 		end
 
@@ -286,8 +307,8 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 
 			for j = 1, #rawlist do
 				if rawlist[j].modpack == list[i].name then
-					if with_error then
-						update_error(with_error[rawlist[j].virtual_path])
+					if with_icon then
+						update_icon_info(with_icon[rawlist[j].virtual_path or rawlist[j].path])
 					end
 
 					if rawlist[j].enabled then
@@ -303,10 +324,10 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 			color = mt_color_blue
 
 			local rawlist = render_list:get_raw_list()
-			if v.type == "game" and with_error then
+			if v.type == "game" and with_icon then
 				for j = 1, #rawlist do
 					if rawlist[j].is_game_content then
-						update_error(with_error[rawlist[j].virtual_path])
+						update_icon_info(with_icon[rawlist[j].virtual_path or rawlist[j].path])
 					end
 				end
 			end
@@ -315,13 +336,17 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 			color = mt_color_green
 		end
 
-		if error then
-			if error.type == "warning" then
+		if icon_info then
+			if icon_info.type == "warning" then
 				color = mt_color_orange
 				icon = 2
-			else
+			elseif icon_info.type == "error" then
 				color = mt_color_red
 				icon = 3
+			elseif icon_info.type == "update" then
+				icon = 4
+			else
+				error("Unknown icon type " .. icon_info.type)
 			end
 		end
 
@@ -332,7 +357,7 @@ function pkgmgr.render_packagelist(render_list, use_technical_names, with_error)
 			retval[#retval + 1] = "0"
 		end
 
-		if with_error then
+		if with_icon then
 			retval[#retval + 1] = icon
 		end
 

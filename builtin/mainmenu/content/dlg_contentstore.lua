@@ -74,15 +74,6 @@ local REASON_UPDATE = "update"
 local REASON_DEPENDENCY = "dependency"
 
 
--- encodes for use as URL parameter or path component
-local function urlencode(str)
-	return str:gsub("[^%a%d()._~-]", function(char)
-		return ("%%%02X"):format(char:byte())
-	end)
-end
-assert(urlencode("sample text?") == "sample%20text%3F")
-
-
 local function get_download_url(package, reason)
 	local base_url = core.settings:get("contentdb_url")
 	local ret = base_url .. ("/packages/%s/releases/%d/download/"):format(
@@ -202,6 +193,10 @@ local function start_install(package, reason)
 end
 
 local function queue_download(package, reason)
+	if package.queued or package.downloading then
+		return
+	end
+
 	local max_concurrent_downloads = tonumber(core.settings:get("contentdb_max_concurrent_downloads"))
 	if number_downloading < math.max(max_concurrent_downloads, 1) then
 		start_install(package, reason)
@@ -222,7 +217,7 @@ local function get_raw_dependencies(package)
 	local url_fmt = "/api/packages/%s/dependencies/?only_hard=1&protocol_version=%s&engine_version=%s"
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
-	local url = base_url .. url_fmt:format(package.url_part, core.get_max_supp_proto(), urlencode(version.string))
+	local url = base_url .. url_fmt:format(package.url_part, core.get_max_supp_proto(), core.urlencode(version.string))
 
 	local response = http.fetch_sync({ url = url })
 	if not response.succeeded then
@@ -547,6 +542,9 @@ local function install_or_update_package(this, package)
 		error("Unknown package type: " .. package.type)
 	end
 
+	if package.queued or package.downloading then
+		return
+	end
 
 	local function on_confirm()
 		local deps = get_raw_dependencies(package)
@@ -630,17 +628,17 @@ local function get_screenshot(package)
 	return defaulttexturedir .. "loading_screenshot.png"
 end
 
-local function fetch_pkgs(param)
+local function fetch_pkgs()
 	local version = core.get_version()
 	local base_url = core.settings:get("contentdb_url")
 	local url = base_url ..
 		"/api/packages/?type=mod&type=game&type=txp&protocol_version=" ..
-		core.get_max_supp_proto() .. "&engine_version=" .. param.urlencode(version.string)
+		core.get_max_supp_proto() .. "&engine_version=" .. core.urlencode(version.string)
 
 	for _, item in pairs(core.settings:get("contentdb_flag_blacklist"):split(",")) do
 		item = item:trim()
 		if item ~= "" then
-			url = url .. "&hide=" .. param.urlencode(item)
+			url = url .. "&hide=" .. core.urlencode(item)
 		end
 	end
 
@@ -666,7 +664,7 @@ local function fetch_pkgs(param)
 			package.id = package.id .. package.name
 		end
 
-		package.url_part = param.urlencode(package.author) .. "/" .. param.urlencode(package.name)
+		package.url_part = core.urlencode(package.author) .. "/" .. core.urlencode(package.name)
 
 		if package.aliases then
 			for _, alias in ipairs(package.aliases) do
@@ -701,7 +699,8 @@ local function resolve_auto_install_spec()
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
 		if pkg.author == auto_install_spec.author and
-				pkg.name == auto_install_spec.name then
+				(pkg.name == auto_install_spec.name or
+					(pkg.type == "game" and pkg.name == auto_install_spec.name .. "_game")) then
 			resolved = pkg
 			break
 		end
@@ -752,7 +751,7 @@ function store.load()
 	store.loading = true
 	core.handle_async(
 		fetch_pkgs,
-		{ urlencode = urlencode },
+		nil,
 		function(result)
 			if result then
 				store.load_ok = true
