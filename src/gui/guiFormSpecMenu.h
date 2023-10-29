@@ -502,6 +502,9 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
+
+	// used by getAbsoluteRect
+	s32 m_tabheader_upper_edge = 0;
 };
 
 class FormspecFormSource: public IFormSource
