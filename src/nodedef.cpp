@@ -1773,8 +1773,9 @@ bool NodeDefManager::nodeboxConnects(MapNode from, MapNode to,
 			};
 			if (f2.param_type_2 == CPT2_FACEDIR ||
 					f2.param_type_2 == CPT2_COLORED_FACEDIR) {
+				// FIXME: support arbitrary rotations (to.param2 & 0x1F) (#7696)
 				return (f2.connect_sides
-					& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
+					& rot[(connect_face * 4) + (to.param2 & 0x03)]);
 			} else if (f2.param_type_2 == CPT2_4DIR ||
 					f2.param_type_2 == CPT2_COLORED_4DIR) {
 				return (f2.connect_sides
