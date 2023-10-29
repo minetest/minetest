@@ -48,13 +48,13 @@ end
 
 
 local change_keys = {
-	query_text = "Change keys",
+	query_text = "Change Keys",
 	requires = {
 		keyboard_mouse = true,
 	},
 	get_formspec = function(self, avail_w)
 		local btn_w = math.min(avail_w, 3)
-		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change keys")), 0.8
+		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change Keys")), 0.8
 	end,
 	on_submit = function(self, fields)
 		if fields.btn_change_keys then
