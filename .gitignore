@@ -26,7 +26,8 @@ gtags.files
 # Codelite
 *.project
 # Visual Studio Code & plugins
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 build/.cmake/
 # Fleet
 .fleet
