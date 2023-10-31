@@ -110,7 +110,9 @@ src/cmake_config_githash.h
 *.iml
 test_config.h
 cmake-build-debug/
+cmake-build-minsizerel/
 cmake-build-release/
+cmake-build-relwithdebinfo/
 cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*
