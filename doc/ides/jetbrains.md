@@ -30,18 +30,28 @@ to navigate your projects.
 
 ## Windows
 
-Under Windows, you need to install the [Visual Studio](https://visualstudio.microsoft.com) compiler.
+Under Windows, you the recommended compiler is the [Visual Studio](https://visualstudio.microsoft.com) compiler.
 
 From the Visual Studio installer, you need to install the `Desktop development with C++` Workload. CMake is already
 bundled in CLion.
 
-The open project wisard will look like this at first, you can pick `Visual Studio` from the list and press next:
+By default, CLion have a MinGW compiler bundled, so if you want to use Visual Studio, you need to configure it as the default compiler.
+
+CLion may ask you in the open project wisard for your compilers, with MinGW and Visual Studio if you have installed it predefined. You can use the arrows to make `Visual Studio` the default.
+
+If not you can go to `Settings > Build, Execution, Deployment > Toolchains` to change it.
 
 ![Jetbrains Open Project Wizard](jetbrains_open_project_wizard_windows_compiler.png)
+
+
+
 
 Then, the process is roughly similar to Linux, you just need to pick `Visual Studio` as toolchain.
 
 ![Jetbrains Open Project Wizard](jetbrains_open_project_wizard_windows_cmake.png)
+
+
+
 
 [Vcpkg](https://vcpkg.io) is the recommended way of installing Minetest dependencies.
 
