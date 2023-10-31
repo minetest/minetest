@@ -1,5 +1,8 @@
 ## Editors and development environments
 *~
+.cmake
+CMakeUserPresets.json
+Testing/*
 *.swp
 *.bak*
 *.orig
