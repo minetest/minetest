@@ -4111,9 +4111,9 @@ On some specific cases, server translation could be useful. For example, filter
 a list on labels and send results to client. A method is supplied to achieve
 that:
 
-`minetest.get_translated_string(lang_code, string)`: Translates `string` using
-translations for `lang_code` language. It gives the same result as if the string
-was translated by the client.
+`minetest.get_translated_string(lang_code, S(string))`: returns the translation in
+`lang_code` language of `S(string)`. It gives the same result as if the string was
+translated by the client.
 
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
