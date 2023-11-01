@@ -298,3 +298,61 @@ minetest.register_node("testnodes:tga_type10_32bpp_tb", {
 	use_texture_alpha = "blend",
 	groups = { dig_immediate = 2 },
 })
+
+--[[
+
+The following nodes are monochrome checkerboard nodes.
+Their textures have odd sizes that are sometimes used,
+e.g. in texture packs that use other sizes than 16×16.
+
+Those nodes are useful to see how textures are scaled:
+You may be able to find rendering bugs with the nodes,
+e.g. artifacts when scaling non-power-of-two textures.
+
+The choice of uncompressed monochrome TGAs is for debugging –
+it is easy to understand the generated images with a hexdump.
+(If you have never done that, it is not your place to judge.)
+
+]]--
+
+
+function encode_tga_type_3(w, h, ...)
+	assert((w <= 256) and (h <= 256) and (w * h == #{...}))
+	local bytes = string.char
+	local header = bytes(0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, w, 0, h, 0, 8, 0)
+	local footer = bytes(0, 0, 0, 0, 0, 0, 0, 0) .. "TRUEVISION-XFILE." .. bytes(0)
+	return(header .. bytes(...) .. footer)
+end
+
+function generate_checkerboard(width, height)
+	local pixels = {}
+	for h = 1,height do
+		for w = 1,width do
+			-- off-white and off-black to stand out in the hexdumps
+			pixels[#pixels + 1] = (w % 2 ~= h % 2) and 0xEE or 0x11
+		end
+	end
+	return pixels
+end
+
+function generate_checkerboard_node(width, height)
+	local id = "cb_bw_" .. width .. "x" .. height
+	local filename = id .. ".tga"
+	local pixels = generate_checkerboard(width, height)
+	minetest.safe_file_write(
+		textures_path .. filename,
+		encode_tga_type_3(width, height, unpack(pixels))
+	)
+	local nodename = "testnodes:" .. id
+	minetest.register_node(nodename, {
+		description = S(
+			"Checkerboard Test Node: " .. width .. "×" .. height
+		),
+		groups = { dig_immediate = 2 },
+		tiles = { filename },
+	})
+end
+
+for i = 2,16,1 do generate_checkerboard_node(i, i) end
+for i = 2,6,1 do generate_checkerboard_node(i, 16) end
+for i = 2,6,1 do generate_checkerboard_node(32, i) end
