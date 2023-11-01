@@ -4114,7 +4114,7 @@ that:
 `minetest.get_translated_string(lang_code, S(string))`: resolves translations in
 the given string just like the client would, using the translation files for
 `lang_code`. For this to have any effect, the string needs to contain translation
-markup (as made by `minetest.translate`, `get_translator`, or `S()`).
+markup (as made by `minetest.translate` or `S()`).
 
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
