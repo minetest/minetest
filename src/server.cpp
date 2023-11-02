@@ -2594,7 +2594,9 @@ void Server::fillMediaCache()
 	// ordered in descending priority
 	paths.push_back(getBuiltinLuaPath() + DIR_DELIM + "locale");
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
-	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
+	for (auto name : ServerModManager::media_folders)
+		fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + name);
+
 	m_modmgr->getModsMediaPaths(paths);
 
 	// Collect media file information from paths into cache

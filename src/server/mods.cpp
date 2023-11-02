@@ -24,6 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content/subgames.h"
 #include "porting.h"
 
+const char *ServerModManager::media_folders[5] = {
+	"textures", "sounds", "media", "models", "locale"
+};
+
 /**
  * Manage server mods
  *
@@ -99,10 +103,7 @@ void ServerModManager::getModsMediaPaths(std::vector<std::string> &paths) const
 	const auto &mods = configuration.getMods();
 	for (auto it = mods.crbegin(); it != mods.crend(); it++) {
 		const ModSpec &spec = *it;
-		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "textures");
-		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "sounds");
-		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "media");
-		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "models");
-		fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + "locale");
+		for (auto name : media_folders)
+			fs::GetRecursiveDirs(paths, spec.path + DIR_DELIM + name);
 	}
 }

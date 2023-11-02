@@ -70,4 +70,6 @@ public:
 	 * @param paths result vector
 	 */
 	void getModsMediaPaths(std::vector<std::string> &paths) const;
+
+	static const char *media_folders[5];
 };

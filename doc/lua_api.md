@@ -97,9 +97,11 @@ The game directory can contain the following files:
   In the same format as the one in builtin.
   This settingtypes.txt will be parsed by the menu and the settings will be
   displayed in the "Games" category in the advanced settings tab.
-* If the game contains a folder called `textures` the server will load it as a
-  texturepack, overriding mod textures.
-  Any server texturepack will override mod textures and the game texturepack.
+* `textures`, `sounds`, `media`, `models` and `locale` folders can be put in
+  the game folder, intended to contain the respective media type. These
+  folders take precedence if media files with the same name exist in a mod.
+  * A texture pack can be put in `textures` to be loaded by the server and
+    applies `override.txt` if one exists.
 
 Menu images
 -----------
