@@ -2,31 +2,39 @@
 
 ## Linux
 
-When opening the folder for the first time, select "Open as CMake project"
+When opening the folder for the first time, select `Open as CMake project` if the IDE ask you between Make and CMake.
 
 The IDE will open the folder and display the open project wizard:
 
-![Open Project Wizard](jetbrains_open_project_wizard.png)
+![Open Project Wizard](jetbrains_open_project_wizard_profiles.png)
 
-In this wizard, you can create profiles that will be used to build the project.
+CLion try to determine a base configuration, but Minetest define it's own presets for easier setup. So you need to
+delete the `Debug` profile with the `-` sign and close the dialog.
 
-By default only a profile with the `Debug` build type is created. You can create a new profile by clicking on the "+"
-button if you want to create builds with the `Release` build type for exemple.
+You should notice a notification telling you 4 presets have been loaded in the bottom right corner.
 
-Make sure to switch the Generator to `Let CMake decide` or `Unix Makefiles`.
+![Notification Popup](jetbrains_notification_profiles.png)
 
-You can change the build options passed to Make, for exemple if you want to change the number of threads used to build
-the project (`-j`).
+Clicking on the `View` link or going to `Settings > Build, Execution, Deployment > CMake` you should get a window
+similar to the Open Project Wizard, but with the readonly presets listed.
 
-The CMake profiles can be later configured in `Settings > Build, Execution, Deployment > CMake`.
+![CMake Profiles](jetbrains_cmake_profiles.png)
 
-The configuration of the CMake project created the CMake run configurations that can be accessed from the toolbar to
-build, run and debug the program. At the left there is the dropdown to change the CMake profile.
+By default, none of the presets are enabled. You can select them and enable the ones you want. Keep in mind that
+triggering the CMake project reload (VCS updates, config changes, etc) will reload all the enabled profiles, so unless
+you need the other ones you can enable just `Debug` and `Release`.
 
-![Jetbrains Run Toolbar](jetbrains_run_toolbar.png)
+If none of the availlable profiles fit your needs, you can create a `CMakeUserPresets.json` file, edit it by hand and
+CLion will load the presets in this window. But the easiest solution is to create an editable copy of one of the availlable
+presets with the `Copy` button icon.
 
-From the recent project view when you start CLion, you can rightclick the project and change it's icon to make it easier
-to navigate your projects.
+After these steps you should get an IDE like this.
+
+On the main toolbar at the top right, you have a dropdown for selecting the CMake profile to use for the build. You have another dropdown next to it to select the build target; by default the `minetest` executable will be selected, but you may also have to use `IrrlichtMt` for building just the library .
+
+![Jetbrains IDE](jetbrains_ide.png)
+
+You can rightclick the topbar to change the project icon and color, for fancier looking IDE.
 
 ## Windows
 
