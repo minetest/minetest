@@ -4204,13 +4204,12 @@ void Game::updateClouds(float dtime)
 		camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
 		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
-		this->clouds->update(camera_node_position,
-				this->sky->getCloudColor());
+		this->clouds->update(camera_node_position, this->sky->getCloudColor());
 		if (this->clouds->isCameraInsideCloud() && this->m_cache_enable_fog) {
 			// if inside clouds, and fog enabled, use that as sky
 			// color(s)
-			video::SColor clouds_dark = this->clouds->getColor()
-					.getInterpolated(video::SColor(255, 0, 0, 0), 0.9);
+			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
+					video::SColor(255, 0, 0, 0), 0.9);
 			this->sky->overrideColors(clouds_dark, this->clouds->getColor());
 			this->sky->setInClouds(true);
 			this->runData.fog_range = std::fmin(this->runData.fog_range * 0.5f, 32.0f * BS);
