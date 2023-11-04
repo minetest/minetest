@@ -38,7 +38,7 @@ You can rightclick the topbar to change the project icon and color, for fancier 
 
 ## Windows
 
-Under Windows, you the recommended compiler is the [Visual Studio](https://visualstudio.microsoft.com) compiler.
+Under Windows, the recommended compiler is the [Visual Studio](https://visualstudio.microsoft.com) compiler.
 
 From the Visual Studio installer, you need to install the `Desktop development with C++` Workload. CMake is already
 bundled in CLion.
