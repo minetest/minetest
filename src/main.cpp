@@ -567,6 +567,12 @@ namespace {
 		return "";
 	}
 
+#ifdef _WIN32
+	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
+#else
+	[[maybe_unused]] const char *debuggerNames[] = {"gdb", "lldb"};
+#endif
+
 	template <class T>
 	void getDebuggerArgs(T &out, int i) {
 		if (i == 0) {
@@ -590,10 +596,6 @@ static bool use_debugger(int argc, char *argv[])
 		warningstream << "Process is already being debugged." << std::endl;
 		return false;
 	}
-
-	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
-#else
-	const char *debuggerNames[] = {"gdb", "lldb"};
 #endif
 
 	char exec_path[1024];
