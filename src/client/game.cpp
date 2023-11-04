@@ -4198,7 +4198,7 @@ void Game::updateClouds(float dtime)
 	if (this->sky->getCloudsVisible()) {
 		this->clouds->setVisible(true);
 		this->clouds->step(dtime);
-		// camera->getPosition is not enough for 3rd person views
+		// this->camera->getPosition is not enough for 3rd person views
 		v3f camera_node_position = this->camera->getCameraNode()->getPosition();
 		v3s16 camera_offset      = this->camera->getOffset();
 		camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
