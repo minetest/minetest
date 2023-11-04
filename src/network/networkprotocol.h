@@ -218,11 +218,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 43:
 		"start_time" added to TOCLIENT_PLAY_SOUND
 		place_param2 type change u8 -> optional<u8>
-    AO_CMD_SET_BONE_POSITION extended
 		[scheduled bump for 5.8.0]
+	PROTOCOL VERSION 44:
+		AO_CMD_SET_BONE_POSITION extended
+		[scheduled bump for 5.9.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 43
+#define LATEST_PROTOCOL_VERSION 44
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -492,7 +494,7 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_DETACHED_INVENTORY = 0x43,
+	TOCLIENT_DETACHED_INVENTORY = 0x,
 	/*
 		[0] u16 command
 		u16 len
@@ -1056,7 +1058,7 @@ enum ToServerCommand
 
 	TOSERVER_BREATH = 0x42, // Obsolete
 
-	TOSERVER_CLIENT_READY = 0x43,
+	TOSERVER_CLIENT_READY = 0x,
 	/*
 		u8 major
 		u8 minor
