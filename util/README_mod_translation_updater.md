@@ -1,4 +1,4 @@
-# `mod_translation_updater.py`—Minetest Translation Updater
+# `mod_translation_updater.py`—Minetest Mod Translation Updater
 
 This Python script is intended for use with localized Minetest mods, i.e., mods that use
 `*.tr` and contain translatable strings of the form `S("This string can be translated")`.
