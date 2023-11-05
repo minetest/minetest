@@ -698,9 +698,7 @@ local function resolve_auto_install_spec()
 	local resolved = nil
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if pkg.author == auto_install_spec.author and
-				(pkg.name == auto_install_spec.name or
-					(pkg.type == "game" and pkg.name == auto_install_spec.name .. "_game")) then
+		if pkg.id == auto_install_spec then
 			resolved = pkg
 			break
 		end
@@ -777,26 +775,26 @@ function store.update_paths()
 	local mod_hash = {}
 	pkgmgr.refresh_globals()
 	for _, mod in pairs(pkgmgr.global_mods:get_list()) do
-		if mod.author and mod.release > 0 then
-			local id = mod.author:lower() .. "/" .. mod.name
-			mod_hash[store.aliases[id] or id] = mod
+		local cdb_id = pkgmgr.get_contentdb_id(mod)
+		if cdb_id then
+			mod_hash[store.aliases[cdb_id] or cdb_id] = mod
 		end
 	end
 
 	local game_hash = {}
 	pkgmgr.update_gamelist()
 	for _, game in pairs(pkgmgr.games) do
-		if game.author ~= "" and game.release > 0 then
-			local id = game.author:lower() .. "/" .. game.id
-			game_hash[store.aliases[id] or id] = game
+		local cdb_id = pkgmgr.get_contentdb_id(game)
+		if cdb_id then
+			game_hash[store.aliases[cdb_id] or cdb_id] = game
 		end
 	end
 
 	local txp_hash = {}
 	for _, txp in pairs(pkgmgr.get_texture_packs()) do
-		if txp.author and txp.release > 0 then
-			local id = txp.author:lower() .. "/" .. txp.name
-			txp_hash[store.aliases[id] or id] = txp
+		local cdb_id = pkgmgr.get_contentdb_id(txp)
+		if cdb_id then
+			txp_hash[store.aliases[cdb_id] or cdb_id] = txp
 		end
 	end
 
@@ -815,6 +813,7 @@ function store.update_paths()
 			package.installed_release = content.release or 0
 		else
 			package.path = nil
+			package.installed_release = nil
 		end
 	end
 end
@@ -1193,7 +1192,7 @@ end
 --- @param type string | nil
 --- Sets initial package filter. "game", "mod", "txp" or nil (no filter).
 --- @param install_spec table | nil
---- Package specification of the form { author = string, name = string }.
+--- ContentDB ID of package as returned by pkgmgr.get_contentdb_id().
 --- Sets package to install or update automatically.
 function create_store_dlg(type, install_spec)
 	search_string = ""

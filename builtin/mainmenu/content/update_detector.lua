@@ -59,7 +59,7 @@ local function has_packages_from_cdb()
 	pkgmgr.update_gamelist()
 
 	for _, content in pairs(pkgmgr.get_all()) do
-		if content.author and content.release > 0 then
+		if pkgmgr.get_contentdb_id(content) then
 			return true
 		end
 	end
@@ -114,18 +114,13 @@ function update_detector.get_all()
 	local ret = {}
 	local all_content = pkgmgr.get_all()
 	for _, content in ipairs(all_content) do
-		if content.author and content.release > 0 then
-			-- The backend will account for aliases in `latest_releases`
-			local id = content.author:lower() .. "/"
-			if content.type == "game" then
-				id = id .. content.id
-			else
-				id = id .. content.name
-			end
+		local cdb_id = pkgmgr.get_contentdb_id(content)
 
-			local latest_release = latest_releases[id]
+		if cdb_id then
+			-- The backend will account for aliases in `latest_releases`
+			local latest_release = latest_releases[cdb_id]
 			if not latest_release and content.type == "game" then
-				latest_release = latest_releases[id .. "_game"]
+				latest_release = latest_releases[cdb_id .. "_game"]
 			end
 
 			if latest_release and latest_release > content.release then
