@@ -70,7 +70,7 @@ public:
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
-	void setBoneOverride(const std::string &bone, BoneOverride props);
+	void setBoneOverride(const std::string &bone, const BoneOverride &props);
 	BoneOverride getBoneOverride(const std::string &bone);
 	const std::unordered_map<std::string, BoneOverride>
 			&getBoneOverrides() const { return m_bone_override; };

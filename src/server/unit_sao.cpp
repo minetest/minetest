@@ -76,7 +76,7 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBoneOverride(const std::string &bone, BoneOverride props)
+void UnitSAO::setBoneOverride(const std::string &bone, const BoneOverride &props)
 {
 	// store these so they can be updated to clients
 	m_bone_override[bone] = props;
