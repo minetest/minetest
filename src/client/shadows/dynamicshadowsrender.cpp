@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ShadowRenderer::ShadowRenderer(IrrlichtDevice *device, Client *client) :
 		m_smgr(device->getSceneManager()), m_driver(device->getVideoDriver()),
-		m_client(client), m_perspective_bias_z(0.5)
+		m_client(client), m_perspective_bias_z(0.25)
 {
 	(void) m_client;
 
