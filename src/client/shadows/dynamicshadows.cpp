@@ -191,7 +191,8 @@ void DirectionalLight::update_frustum(const Camera *cam, Client *client, bool fo
 {
 	client->getEnv().getClientMap().allocateDrawListShadowCascades(getCascadesCount());
 
-	f32 scale = 20. * BS / getFarValue();
+	// start with 10% of the shadow range
+	f32 scale = 0.1;
 	f32 scale_factor = 1./pow(scale, 1./(cascades.size() - 1.));
 
 	for (auto &cascade: cascades) {
