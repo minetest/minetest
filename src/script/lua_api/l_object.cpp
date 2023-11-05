@@ -616,11 +616,11 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	return 0;
 }
 
-static void push_bone_override(lua_State *L, BoneOverride props)
+static void push_bone_override(lua_State *L, const BoneOverride &props)
 {
 	lua_newtable(L);
 
-	auto push_prop = [L](const char *name, auto prop, v3f vec) {
+	auto push_prop = [L](const char *name, const auto &prop, v3f vec) {
 		lua_newtable(L);
 		push_v3f(L, vec);
 		lua_setfield(L, -2, "vec");

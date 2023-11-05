@@ -76,7 +76,6 @@ enum ActiveObjectCommand {
 
 struct BoneOverride
 {
-public:
 	struct PositionProperty
 	{
 		v3f previous;

@@ -7550,7 +7550,7 @@ child will follow movement and rotation of that bone.
             * Transposition in the case of `position`;
             * Composition in the case of `rotation`;
             * Multiplication in the case of `scale`
-        * `interpolation`: Time it takes (on the client, in seconds) to interpolate between the old & new value
+        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
     * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
     * Compatibility note: Clients prior to 5.8.0 only support absolute position and rotation.
