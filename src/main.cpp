@@ -550,8 +550,7 @@ static bool create_userdata_path()
 }
 
 namespace {
-	std::string findProgram(const char *name)
-	{
+	[[maybe_unused]] std::string findProgram(const char *name) {
 		char *path_c = getenv("PATH");
 		if (!path_c)
 			return "";
@@ -571,8 +570,9 @@ namespace {
 #ifdef _WIN32
 	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
 #else
-	const char *debuggerNames[] = {"gdb", "lldb"};
+	[[maybe_unused]] const char *debuggerNames[] = {"gdb", "lldb"};
 #endif
+
 	template <class T>
 	void getDebuggerArgs(T &out, int i) {
 		if (i == 0) {
