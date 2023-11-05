@@ -494,7 +494,7 @@ enum ToClientCommand
 		u8[len] formspec
 	*/
 
-	TOCLIENT_DETACHED_INVENTORY = 0x,
+	TOCLIENT_DETACHED_INVENTORY = 0x43,
 	/*
 		[0] u16 command
 		u16 len
@@ -1058,7 +1058,7 @@ enum ToServerCommand
 
 	TOSERVER_BREATH = 0x42, // Obsolete
 
-	TOSERVER_CLIENT_READY = 0x,
+	TOSERVER_CLIENT_READY = 0x43,
 	/*
 		u8 major
 		u8 minor
