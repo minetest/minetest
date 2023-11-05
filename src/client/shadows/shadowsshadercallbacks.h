@@ -32,8 +32,8 @@ public:
 			s32 userData) override;
 
 	f32 MaxFar{2048.0f}, MapRes{1024.0f};
-	f32 PerspectiveBiasXY {0.9f}, PerspectiveBiasZ {0.5f};
-	v3f CameraPos;
+	f32 PerspectiveBiasZ {0.5f};
+	s32 Cascade;
 
 private:
 	CachedVertexShaderSetting<f32, 16> m_light_mvp_setting{"LightMVP"};
@@ -41,8 +41,6 @@ private:
 	CachedVertexShaderSetting<f32> m_max_far_setting{"MaxFar"};
 	CachedPixelShaderSetting<s32>
 		m_color_map_sampler_setting{"ColorMapSampler"};
-	CachedVertexShaderSetting<f32> m_perspective_bias0{"xyPerspectiveBias0"};
-	CachedVertexShaderSetting<f32> m_perspective_bias1{"xyPerspectiveBias1"};
 	CachedVertexShaderSetting<f32> m_perspective_zbias{"zPerspectiveBias"};
-	CachedVertexShaderSetting<f32, 4> m_cam_pos_setting{"CameraPos"};
+	CachedPixelShaderSetting<s32> m_cascade_setting{"Cascade"};
 };

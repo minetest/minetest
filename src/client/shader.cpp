@@ -215,25 +215,41 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<f32, 16> m_world{"mWorld"};
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj{"m_ShadowViewProj"};
+	struct ShadowCascadeShaderSettings {
+		ShadowCascadeShaderSettings(int cascade):
+				m_shadow_view_proj(std::string("shadowCascades[") + std::to_string(cascade) + "].mViewProj"),
+				m_boundary(std::string("shadowCascades[") + std::to_string(cascade) + "].boundary"),
+				m_center(std::string("shadowCascades[") + std::to_string(cascade) + "].center"),
+				m_frame(std::string("shadowCascades[") + std::to_string(cascade) + "].frame")
+		{}
+
+		CachedVertexShaderSetting<f32, 16> m_shadow_view_proj;
+		CachedVertexShaderSetting<f32> m_boundary;
+		CachedVertexShaderSetting<f32, 3> m_center;
+		CachedPixelShaderSetting<f32> m_frame;
+
+		void onSetConstants(const ShadowCascade &cascade, video::IMaterialRendererServices *services)
+		{
+			core::matrix4 shadowViewProj = cascade.getViewProjMatrix();
+			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
+			f32 boundary = cascade.current_frustum.radius;
+			m_boundary.set(&boundary, services);
+			m_center.set(&cascade.current_frustum.center.X, services);
+			f32 frame = (cascade.current_frame == cascade.max_frames);
+			m_frame.set(&frame, services);
+		}
+	};
+
+	std::vector<ShadowCascadeShaderSettings> m_cascades;
 	CachedPixelShaderSetting<f32, 3> m_light_direction{"v_LightDirection"};
 	CachedPixelShaderSetting<f32> m_texture_res{"f_textureresolution"};
 	CachedPixelShaderSetting<f32> m_shadow_strength{"f_shadow_strength"};
 	CachedPixelShaderSetting<f32> m_time_of_day{"f_timeofday"};
 	CachedPixelShaderSetting<f32> m_shadowfar{"f_shadowfar"};
-	CachedPixelShaderSetting<f32, 4> m_camera_pos{"CameraPos"};
 	CachedPixelShaderSetting<s32> m_shadow_texture{"ShadowMapSampler"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_bias0_vertex{"xyPerspectiveBias0"};
-	CachedPixelShaderSetting<f32>
-		m_perspective_bias0_pixel{"xyPerspectiveBias0"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_bias1_vertex{"xyPerspectiveBias1"};
-	CachedPixelShaderSetting<f32>
-		m_perspective_bias1_pixel{"xyPerspectiveBias1"};
-	CachedVertexShaderSetting<f32>
-		m_perspective_zbias_vertex{"zPerspectiveBias"};
-	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel{"zPerspectiveBias"};
+	CachedPixelShaderSetting<f32> m_perspective_zbias{"zPerspectiveBias"};
+	CachedVertexShaderSetting<s32> m_cascade_count{"cascadeCount"};
+	CachedVertexShaderSetting<f32, 4> m_camera_world_position{"cameraWorldPosition"};
 
 	// Modelview matrix
 	CachedVertexShaderSetting<float, 16> m_world_view{"mWorldView"};
@@ -272,9 +288,16 @@ public:
 		if (ShadowRenderer *shadow = RenderingEngine::get_shadow_renderer()) {
 			const auto &light = shadow->getDirectionalLight();
 
-			core::matrix4 shadowViewProj = light.getProjectionMatrix();
-			shadowViewProj *= light.getViewMatrix();
-			m_shadow_view_proj.set(shadowViewProj.pointer(), services);
+			// register cascades
+			while (m_cascades.size() < light.getCascadesCount())
+				m_cascades.emplace_back(m_cascades.size());
+			
+			// set cascade uniforms
+			for (u8 i = 0; i < light.getCascadesCount(); i++)
+				m_cascades[i].onSetConstants(light.getCascade(i), services);
+
+			int count = m_cascades.size();
+			m_cascade_count.set(&count, services);
 
 			f32 v_LightDirection[3];
 			light.getDirection().getAs3Values(v_LightDirection);
@@ -292,24 +315,13 @@ public:
 			f32 shadowFar = shadow->getMaxShadowFar();
 			m_shadowfar.set(&shadowFar, services);
 
-			f32 cam_pos[4];
-			shadowViewProj.transformVect(cam_pos, light.getPlayerPos());
-			m_camera_pos.set(cam_pos, services);
-
 			// I don't like using this hardcoded value. maybe something like
 			// MAX_TEXTURE - 1 or somthing like that??
 			s32 TextureLayerID = 3;
 			m_shadow_texture.set(&TextureLayerID, services);
 
-			f32 bias0 = shadow->getPerspectiveBiasXY();
-			m_perspective_bias0_vertex.set(&bias0, services);
-			m_perspective_bias0_pixel.set(&bias0, services);
-			f32 bias1 = 1.0f - bias0 + 1e-5f;
-			m_perspective_bias1_vertex.set(&bias1, services);
-			m_perspective_bias1_pixel.set(&bias1, services);
 			f32 zbias = shadow->getPerspectiveBiasZ();
-			m_perspective_zbias_vertex.set(&zbias, services);
-			m_perspective_zbias_pixel.set(&zbias, services);
+			m_perspective_zbias.set(&zbias, services);
 		}
 	}
 };
@@ -731,7 +743,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		if (g_settings->getBool("shadow_poisson_filter"))
 			shaders_header << "#define POISSON_FILTER 1\n";
 
-		s32 shadow_filter = g_settings->getS32("shadow_filters");
+		s32 shadow_filter = rangelim(g_settings->getS32("shadow_filters"), 0, 3);
 		shaders_header << "#define SHADOW_FILTER " << shadow_filter << "\n";
 
 		float shadow_soft_radius = g_settings->getFloat("shadow_soft_radius");

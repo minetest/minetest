@@ -76,7 +76,6 @@ public:
 	void removeNodeFromShadowList(scene::ISceneNode *node);
 
 	void update(video::ITexture *outputTarget = nullptr);
-	void setForceUpdateShadowMap() { m_force_update_shadow_map = true; }
 	void drawDebug();
 
 	video::ITexture *get_texture()
@@ -93,20 +92,22 @@ public:
 	float getShadowStrength() const { return m_shadows_enabled ? m_shadow_strength : 0.0f; }
 	float getTimeOfDay() const { return m_time_day; }
 
-	f32 getPerspectiveBiasXY() { return m_perspective_bias_xy; }
 	f32 getPerspectiveBiasZ() { return m_perspective_bias_z; }
 
 private:
 	video::ITexture *getSMTexture(const std::string &shadow_map_name,
-			video::ECOLOR_FORMAT texture_format,
+			video::ECOLOR_FORMAT texture_format, u8 n_cascades,
 			bool force_creation = false);
 
-	void renderShadowMap(video::ITexture *target, DirectionalLight &light,
+	void renderShadowMap(video::ITexture *target, u8 cascade_index, const ShadowCascade &cascade,
 			scene::E_SCENE_NODE_RENDER_PASS pass =
 					scene::ESNRP_SOLID);
-	void renderShadowObjects(video::ITexture *target, DirectionalLight &light);
+	void renderShadowObjects(video::ITexture *target, const ShadowCascade &cascade);
 	void mixShadowsQuad();
-	void updateSMTextures();
+	void ensureSMTextures(u8 n_cascades);
+	void renderMapShadows();
+	void renderEntityShadows();
+	void mergeShadowMaps();
 
 	void disable();
 	void enable() { m_shadows_enabled = m_shadows_supported; }
@@ -116,7 +117,7 @@ private:
 	video::IVideoDriver *m_driver{nullptr};
 	Client *m_client{nullptr};
 	video::ITexture *shadowMapClientMap{nullptr};
-	video::ITexture *shadowMapClientMapFuture{nullptr};
+	std::vector<video::ITexture *>shadowMapClientMapFuture;
 	video::ITexture *shadowMapTextureFinal{nullptr};
 	video::ITexture *shadowMapTextureDynamicObjects{nullptr};
 	video::ITexture *shadowMapTextureColors{nullptr};
@@ -134,10 +135,6 @@ private:
 	bool m_shadows_enabled;
 	bool m_shadows_supported;
 	bool m_shadow_map_colored;
-	bool m_force_update_shadow_map;
-	u8 m_map_shadow_update_frames; /* Use this number of frames to update map shaodw */
-	u8 m_current_frame{0}; /* Current frame */
-	f32 m_perspective_bias_xy;
 	f32 m_perspective_bias_z;
 
 	video::ECOLOR_FORMAT m_texture_format{video::ECOLOR_FORMAT::ECF_R16F};

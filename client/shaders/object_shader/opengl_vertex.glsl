@@ -1,37 +1,45 @@
 uniform mat4 mWorld;
+// Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
+
+// The cameraOffset is the current center of the visible world.
+uniform vec3 cameraOffset;
 uniform float animationTimer;
 uniform vec4 emissiveColor;
-uniform vec3 cameraOffset;
-
 
 varying vec3 vNormal;
 varying vec3 vPosition;
+// World position in the visible world (i.e. relative to the cameraOffset.)
+// This can be used for many shader effects without loss of precision.
+// If the absolute position is required it can be calculated with
+// cameraOffset + worldPosition (for large coordinates the limits of float
+// precision must be considered).
 varying vec3 worldPosition;
 varying lowp vec4 varColor;
+// The centroid keyword ensures that after interpolation the texture coordinates
+// lie within the same bounds when MSAA is en- and disabled.
+// This fixes the stripes problem with nearest-neighbor textures and MSAA.
 #ifdef GL_ES
 varying mediump vec2 varTexCoord;
 #else
 centroid varying vec2 varTexCoord;
 #endif
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	// shadow uniforms
 	uniform vec3 v_LightDirection;
 	uniform float f_textureresolution;
-	uniform mat4 m_ShadowViewProj;
-	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
 	uniform float f_timeofday;
-	uniform vec4 CameraPos;
 
 	varying float cosLight;
+	varying float normalOffsetScale;
 	varying float adj_shadow_strength;
 	varying float f_normal_length;
-	varying vec3 shadow_position;
-	varying float perspective_factor;
+	varying vec3 shadow_world_position;
 #endif
+
+varying float area_enable_parallax;
 
 varying vec3 eyeVec;
 varying float nightRatio;
@@ -40,37 +48,8 @@ const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 varying float vIDiff;
 const float e = 2.718281828459;
 const float BS = 10.0;
-uniform float xyPerspectiveBias0;
-uniform float xyPerspectiveBias1;
-uniform float zPerspectiveBias;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
-
-vec4 getRelativePosition(in vec4 position)
-{
-	vec2 l = position.xy - CameraPos.xy;
-	vec2 s = l / abs(l);
-	s = (1.0 - s * CameraPos.xy);
-	l /= s;
-	return vec4(l, s);
-}
-
-float getPerspectiveFactor(in vec4 relativePosition)
-{
-	float pDistance = length(relativePosition.xy);
-	float pFactor = pDistance * xyPerspectiveBias0 + xyPerspectiveBias1;
-	return pFactor;
-}
-
-vec4 applyPerspectiveDistortion(in vec4 position)
-{
-	vec4 l = getRelativePosition(position);
-	float pFactor = getPerspectiveFactor(l);
-	l.xy /= pFactor;
-	position.xy = l.xy * l.zw + CameraPos.xy;
-	position.z *= zPerspectiveBias;
-	return position;
-}
 
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
@@ -112,6 +91,12 @@ void main(void)
 		: directional_ambient(normalize(inVertexNormal));
 #endif
 
+
+	// Calculate color.
+	// Red, green and blue components are pre-multiplied with
+	// the brightness, so now we have to multiply these
+	// colors with the color of the incoming light.
+	// The pre-baked colors are halved to prevent overflow.
 #ifdef GL_ES
 	vec4 color = inVertexColor.bgra;
 #else
@@ -134,36 +119,19 @@ void main(void)
 
 	varColor = clamp(color, 0.0, 1.0);
 
-
 #ifdef ENABLE_DYNAMIC_SHADOWS
 	if (f_shadow_strength > 0.0) {
-		vec3 nNormal = normalize(vNormal);
+
+		shadow_world_position = (mWorld * inVertexPosition).xyz;
+
 		f_normal_length = length(vNormal);
 
-		/* normalOffsetScale is in world coordinates (1/10th of a meter)
-		   z_bias is in light space coordinates */
-		float normalOffsetScale, z_bias;
-		float pFactor = getPerspectiveFactor(getRelativePosition(m_ShadowViewProj * mWorld * inVertexPosition));
-		if (f_normal_length > 0.0) {
+		vec3 nNormal;
+		if (f_normal_length > 0.0)
 			nNormal = normalize(vNormal);
-			cosLight = max(1e-5, dot(nNormal, -v_LightDirection));
-			float sinLight = pow(1.0 - pow(cosLight, 2.0), 0.5);
-			normalOffsetScale = 0.1 * pFactor * pFactor * sinLight * min(f_shadowfar, 500.0) /
-					xyPerspectiveBias1 / f_textureresolution;
-			z_bias = 1e3 * sinLight / cosLight * (0.5 + f_textureresolution / 1024.0);
-		}
-		else {
-			nNormal = vec3(0.0);
-			cosLight = clamp(dot(v_LightDirection, normalize(vec3(v_LightDirection.x, 0.0, v_LightDirection.z))), 1e-2, 1.0);
-			float sinLight = pow(1.0 - pow(cosLight, 2.0), 0.5);
-			normalOffsetScale = 0.0;
-			z_bias = 3.6e3 * sinLight / cosLight;
-		}
-		z_bias *= pFactor * pFactor / f_textureresolution / f_shadowfar;
-
-		shadow_position = applyPerspectiveDistortion(m_ShadowViewProj * mWorld * (inVertexPosition + vec4(normalOffsetScale * nNormal, 0.0))).xyz;
-		shadow_position.z -= z_bias;
-		perspective_factor = pFactor;
+		else
+			nNormal = normalize(vec3(-v_LightDirection.x, 0.0, -v_LightDirection.z));
+		cosLight = dot(nNormal, -v_LightDirection);
 
 		if (f_timeofday < 0.2) {
 			adj_shadow_strength = f_shadow_strength * 0.5 *

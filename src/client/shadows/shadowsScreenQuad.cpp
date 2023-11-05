@@ -19,12 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "shadowsScreenQuad.h"
 
-shadowScreenQuad::shadowScreenQuad()
+shadowScreenQuad::shadowScreenQuad(video::SColor color)
 {
 	Material.Wireframe = false;
 	Material.Lighting = false;
+	Material.ZBuffer = video::ECFN_DISABLED;
 
-	video::SColor color(0x0);
 	Vertices[0] = video::S3DVertex(
 			-1.0f, -1.0f, 0.0f, 0, 0, 1, color, 0.0f, 1.0f);
 	Vertices[1] = video::S3DVertex(
@@ -43,6 +43,8 @@ void shadowScreenQuad::render(video::IVideoDriver *driver)
 {
 	u16 indices[6] = {0, 1, 2, 3, 4, 5};
 	driver->setMaterial(Material);
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+	driver->setTransform(video::ETS_VIEW, core::matrix4());
 	driver->setTransform(video::ETS_WORLD, core::matrix4());
 	driver->drawIndexedTriangleList(&Vertices[0], 6, &indices[0], 2);
 }

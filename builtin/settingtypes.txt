@@ -498,14 +498,14 @@ shadow_strength_gamma (Shadow strength gamma) float 1.0 0.1 10.0
 #    Maximum distance to render shadows.
 #
 #    Requires: shaders, enable_dynamic_shadows, opengl
-shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 140.0 10.0 1000.0
+shadow_map_max_distance (Shadow map max distance in nodes to render shadows) float 200.0 10.0 1000.0
 
 #    Texture size to render the shadow map on.
 #    This must be a power of two.
 #    Bigger numbers create better shadows but it is also more expensive.
 #
 #    Requires: shaders, enable_dynamic_shadows, opengl
-shadow_map_texture_size (Shadow map texture size) int 2048 128 8192
+shadow_map_texture_size (Shadow map texture size) int 1024 128 8192
 
 #    Sets shadow texture quality to 32 bits.
 #    On false, 16 bits texture will be used.
@@ -524,8 +524,10 @@ shadow_poisson_filter (Poisson filtering) bool true
 #    This simulates the soft shadows effect by applying a PCF or Poisson disk
 #    but also uses more resources.
 #
+#    Note: Setting 1 enables simple 2x2 bilinear filter
+#
 #    Requires: shaders, enable_dynamic_shadows, opengl
-shadow_filters (Shadow filter quality) enum 1 0,1,2
+shadow_filters (Shadow filter quality) enum 1 0,1,2,3
 
 #    Enable colored shadows.
 #    On true translucent nodes cast colored shadows. This is expensive.
@@ -536,10 +538,10 @@ shadow_map_color (Colored shadows) bool false
 #    Spread a complete update of shadow map over given number of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
-#    Minimum value: 1; maximum value: 16
+#    Minimum value: 1; maximum value: 64
 #
 #    Requires: shaders, enable_dynamic_shadows, opengl
-shadow_update_frames (Map shadows update frames) int 8 1 16
+shadow_update_frames (Map shadows update frames) int 16 1 64
 
 #    Set the soft shadow radius size.
 #    Lower values mean sharper shadows, bigger values mean softer shadows.

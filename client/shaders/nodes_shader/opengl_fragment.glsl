@@ -15,18 +15,25 @@ uniform float animationTimer;
 	// shadow uniforms
 	uniform vec3 v_LightDirection;
 	uniform float f_textureresolution;
-	uniform mat4 m_ShadowViewProj;
 	uniform float f_shadowfar;
 	uniform float f_shadow_strength;
-	uniform vec4 CameraPos;
-	uniform float xyPerspectiveBias0;
-	uniform float xyPerspectiveBias1;
+	uniform float zPerspectiveBias;
 
+	struct ShadowCascade {
+		mat4 mViewProj; // view-projection matrix
+		float boundary; // boundary of the cascade in scene space
+		vec3 center; // center of the frustum in scene space
+	};
+
+	#define MAX_SHADOW_CASCADES 3
+
+	uniform ShadowCascade shadowCascades[MAX_SHADOW_CASCADES];
+	uniform int cascadeCount;
+
+	varying vec3 shadow_world_position;
 	varying float adj_shadow_strength;
 	varying float cosLight;
 	varying float f_normal_length;
-	varying vec3 shadow_position;
-	varying float perspective_factor;
 #endif
 
 
@@ -52,15 +59,31 @@ varying vec3 tsLightVec;
 
 #ifdef ENABLE_DYNAMIC_SHADOWS
 
-// assuming near is always 1.0
-float getLinearDepth()
+int getCascade()
 {
-	return 2.0 * f_shadowfar / (f_shadowfar + 1.0 - (2.0 * gl_FragCoord.z - 1.0) * (f_shadowfar - 1.0));
+	for (int i = 0; i < MAX_SHADOW_CASCADES; i++) {
+		if (i == cascadeCount)
+			break;
+		vec3 center_to_fragment = shadow_world_position - shadowCascades[i].center;
+		float projected_distance = length(center_to_fragment - v_LightDirection * dot(center_to_fragment, v_LightDirection));
+
+		if (shadowCascades[i].boundary > projected_distance)
+			return i;
+	}
+	return cascadeCount - 1;
 }
 
-vec3 getLightSpacePosition()
+int cascade = getCascade();
+
+vec3 getLightSpacePosition(int cascade)
 {
-	return shadow_position * 0.5 + 0.5;
+	float cosine = dot(vNormal, v_LightDirection); // cos(angle(light, normal))
+	float offset = pow(1. - pow(cosine, 2.), 0.5); // sin(angle...)
+	offset *= 2. * shadowCascades[cascade].boundary / f_textureresolution * (cosine > 0. ? -1. : 1.);
+	vec4 shadow_position = shadowCascades[cascade].mViewProj * vec4(shadow_world_position + vNormal * offset, 1.0);
+	shadow_position /= shadow_position.w;
+	shadow_position.z = shadow_position.z * zPerspectiveBias - 1e-3 * shadowCascades[cascade].boundary / f_textureresolution;
+	return shadow_position.xyz * 0.5 + 0.5;
 }
 // custom smoothstep implementation because it's not defined in glsl1.2
 // https://docs.gl/sl4/smoothstep
@@ -97,13 +120,41 @@ vec4 getHardShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	vec4 texDepth = texture2D(shadowsampler, smTexCoord.xy).rgba;
 
 	float visibility = step(0.0, realDistance - texDepth.r);
-	vec4 result = vec4(visibility, vec3(0.0,0.0,0.0));//unpackColor(texDepth.g));
+	vec4 result = vec4(visibility, vec3(0.0,0.0,0.0));
 	if (visibility < 0.1) {
-		visibility = step(0.0, realDistance - texDepth.b);
-		result = vec4(visibility, unpackColor(texDepth.a));
+		visibility = step(0.0, realDistance - texDepth.g);
+		result = vec4(visibility, unpackColor(texDepth.b));
 	}
 	return result;
 }
+
+#if SHADOW_FILTER == 1
+vec4 getFilteredShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
+{
+	vec2 texelSize = vec2(1. / f_textureresolution / cascadeCount, 1. / f_textureresolution);
+	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
+
+	vec2 fraction = texelCoord - floor(texelCoord);
+	float scale = 1.0;
+	vec2 sampleTexCoord = (floor(texelCoord) + 0.5 * scale) * texelSize;
+
+	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	vec4 visibility = (1. - fraction.x) * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x += texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * (1. - fraction.y) * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.y += texelSize.y * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x -= texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += (1. - fraction.x) * fraction.y * getHardShadowColor(shadowsampler, sampleTexCoord, realDistance);
+	return visibility;
+}
+#endif
 
 #else
 
@@ -114,13 +165,41 @@ float getHardShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	return visibility;
 }
 
+#if SHADOW_FILTER == 1
+float getFilteredShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
+{
+	vec2 texelSize = vec2(1. / f_textureresolution / cascadeCount, 1. / f_textureresolution);
+	vec2 texelCoord = smTexCoord * vec2(f_textureresolution * cascadeCount, f_textureresolution);
+
+	vec2 fraction = texelCoord - floor(texelCoord);
+	float scale = 1.0;
+	vec2 sampleTexCoord = (floor(texelCoord) + 0.5 * scale) * texelSize;
+
+	float texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	float visibility = (1. - fraction.x) * (1. - fraction.y) * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x += texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * (1. - fraction.y) * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.y += texelSize.y * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += fraction.x * fraction.y * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+
+	sampleTexCoord.x -= texelSize.x * scale;
+	texDepth = texture2D(shadowsampler, sampleTexCoord).r;
+	visibility += (1. - fraction.x) * fraction.y * getHardShadow(shadowsampler, sampleTexCoord, realDistance);
+	return visibility;
+}
+#endif
+
 #endif
 
 
-#if SHADOW_FILTER == 2
+#if SHADOW_FILTER == 3
 	#define PCFBOUND 2.0 // 5x5
 	#define PCFSAMPLES 25
-#elif SHADOW_FILTER == 1
+#elif SHADOW_FILTER == 2
 	#define PCFBOUND 1.0 // 3x3
 	#define PCFSAMPLES 9
 #else
@@ -156,19 +235,18 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float y, x;
 	float depth = getHardShadowDepth(shadowsampler, smTexCoord.xy, realDistance);
 	// A factor from 0 to 1 to reduce blurring of short shadows
-	float sharpness_factor = 1.0;
+	float sharpness_factor = 0.0;
 	// conversion factor from shadow depth to blur radius
-	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS / xyPerspectiveBias0;
+	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS;
 	if (depth > 0.0 && f_normal_length > 0.0)
-		// 5 is empirical factor that controls how fast shadow loses sharpness
-		sharpness_factor = clamp(5.0 * depth * depth_to_blur, 0.0, 1.0);
+		sharpness_factor = clamp(0.2 * depth * depth_to_blur, 0.0, 1.0);
 	depth = 0.0;
 
-	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor
-			* f_textureresolution / 2.0 / f_shadowfar;
+	float world_to_texture = f_textureresolution / 2. / shadowCascades[cascade].boundary;
 	float world_radius = 0.2; // shadow blur radius in world float coordinates, e.g. 0.2 = 0.02 of one node
+	float base_radius = max(BASEFILTERRADIUS, SOFTSHADOWRADIUS / 5.);
 
-	return max(BASEFILTERRADIUS * f_textureresolution / 4096.0,  sharpness_factor * world_radius * world_to_texture * SOFTSHADOWRADIUS);
+	return max(base_radius,  sharpness_factor * world_radius * world_to_texture * SOFTSHADOWRADIUS);
 }
 
 #ifdef POISSON_FILTER
@@ -240,9 +318,13 @@ const vec2[64] poissonDisk = vec2[64](
 );
 
 #ifdef COLORED_SHADOWS
-
 vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadowColor(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadowColor(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -264,12 +346,18 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	}
 
 	return visibility / samples;
+#endif
 }
 
 #else
 
 float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadow(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadow(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -291,6 +379,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	}
 
 	return visibility / samples;
+#endif
 }
 
 #endif
@@ -302,6 +391,11 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 
 vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadowColor(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadowColor(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -325,11 +419,17 @@ vec4 getShadowColor(sampler2D shadowsampler, vec2 smTexCoord, float realDistance
 	}
 
 	return visibility / max(n, 1.0);
+#endif
 }
 
 #else
 float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 {
+#if SHADOW_FILTER == 0
+	return getHardShadow(shadowsampler, smTexCoord, realDistance);
+#elif SHADOW_FILTER == 1
+	return getFilteredShadow(shadowsampler, smTexCoord, realDistance);
+#else
 	float radius = getPenumbraRadius(shadowsampler, smTexCoord, realDistance);
 	if (radius < 0.1) {
 		// we are in the middle of even brightness, no need for filtering
@@ -353,6 +453,7 @@ float getShadow(sampler2D shadowsampler, vec2 smTexCoord, float realDistance)
 	}
 
 	return visibility / max(n, 1.0);
+#endif
 }
 
 #endif
@@ -385,14 +486,22 @@ void main(void)
 	if (f_shadow_strength > 0.0) {
 		float shadow_int = 0.0;
 		vec3 shadow_color = vec3(0.0, 0.0, 0.0);
-		vec3 posLightSpace = getLightSpacePosition();
 
-		float distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
-		if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
-			distance_rate = 0.0;
+		vec3 posLightSpace = getLightSpacePosition(cascade); // 0..1 within a single cascade in the shadow map
+
+		float distance_rate = 1.0;
+		if (cascade == cascadeCount - 1) {
+			distance_rate = (1.0 - pow(clamp(2.0 * length(posLightSpace.xy - 0.5),0.0,1.0), 10.0));
+			if (max(abs(posLightSpace.x - 0.5), abs(posLightSpace.y - 0.5)) > 0.5)
+				distance_rate = 0.0;
+		}
+
 		float f_adj_shadow_strength = max(adj_shadow_strength - mtsmoothstep(0.9, 1.1, posLightSpace.z),0.0);
 
 		if (distance_rate > 1e-7) {
+
+			// shift posLightSpace to the right cascade in the shadow map
+			posLightSpace.x = (posLightSpace.x + float(cascade)) / cascadeCount;
 
 #ifdef COLORED_SHADOWS
 			vec4 visibility;
@@ -434,6 +543,7 @@ void main(void)
 				(1.0 - adjusted_night_ratio) * ( // natural light
 						col.rgb * (1.0 - shadow_int * (1.0 - shadow_color)) +  // filtered texture color
 						dayLight * shadow_color * shadow_int);                 // reflected filtered sunlight/moonlight
+
 	}
 #endif
 
