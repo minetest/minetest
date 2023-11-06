@@ -266,7 +266,7 @@ public:
 
 	void updateAnimationSpeed();
 
-	void updateBonePosition(f32 dtime);
+	void updateBones(f32 dtime);
 
 	void processMessage(const std::string &data) override;
 

@@ -829,7 +829,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	updateMarker();
 	updateNodePos();
 	updateAnimation();
-	updateBonePosition(.0f);
+	updateBones(.0f);
 	updateAttachments();
 	setNodeLight(m_last_light);
 	updateMeshCulling();
@@ -1247,7 +1247,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updatePositionRecursive(m_matrixnode);
 		m_animated_meshnode->updateAbsolutePosition();
 		m_animated_meshnode->animateJoints();
-		updateBonePosition(dtime);
+		updateBones(dtime);
 	}
 }
 
@@ -1521,7 +1521,7 @@ void GenericCAO::updateAnimationSpeed()
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
-void GenericCAO::updateBonePosition(f32 dtime)
+void GenericCAO::updateBones(f32 dtime)
 {
 	if (!m_animated_meshnode)
 		return;
@@ -1894,7 +1894,7 @@ void GenericCAO::processMessage(const std::string &data)
 		} else {
 			m_bone_override[bone] = props;
 		}
-		// updateBonePosition(); now called every step
+		// updateBones(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString16(is);
