@@ -27,3 +27,25 @@ Like most of the VSCode experience, it may be faster to use commands directly (m
 | `CMake: Clean`                   | Clean build files                |
 | `CMake: Run Without Debugging`   | Run selected run target          |
 | `CMake: Debug`                   | Debug selected run target        |
+
+## Windows
+
+Under Windows, the recommended compiler is the [Visual Studio](https://visualstudio.microsoft.com) compiler.
+
+From the Visual Studio installer, you need to install the `Desktop development with C++` Workload.
+
+[Vcpkg](https://vcpkg.io) is the recommended way of installing Minetest dependencies.
+
+Follow the official documentation to install it and install Minetest dependencies as explained in [Windows compilation process](../compiling/windows.md).
+
+You need to let CMake know about the `vcpkg` installation in VSCode.
+
+Modify your `.vscode/settings.json`:
+
+```json
+{
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    }
+}
+```
