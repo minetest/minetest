@@ -7533,7 +7533,6 @@ child will follow movement and rotation of that bone.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
 	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
-	* Supports older servers & clients (5.8.0 and earlier).
 	* **Note:** Rotation is in degrees, not radians.
 	* **Deprecated:** Use `set_bone_override` instead.
 * `get_bone_position(bone)`: returns the previously set position and rotation of the bone
