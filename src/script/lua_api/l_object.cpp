@@ -587,7 +587,8 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	lua_getfield(L, 3, "position");
 	if (!lua_isnil(L, -1)) {
 		lua_getfield(L, -1, "vec");
-		props.position.vector = lua_isnil(L, -1) ? v3f() : check_v3f(L, -1);
+		if (!lua_isnil(L, -1))
+			props.position.vector = check_v3f(L, -1);
 		lua_pop(L, 1);
 
 		read_prop_attrs(props.position);
@@ -597,9 +598,8 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	lua_getfield(L, 3, "rotation");
 	if (!lua_isnil(L, -1)) {
 		lua_getfield(L, -1, "vec");
-		props.rotation.next = lua_isnil(L, -1)
-				? core::quaternion()
-				: core::quaternion(check_v3f(L, -1));
+		if (!lua_isnil(L, -1))
+			props.rotation.next = core::quaternion(check_v3f(L, -1));
 		lua_pop(L, 1);
 
 		read_prop_attrs(props.rotation);
