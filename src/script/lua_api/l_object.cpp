@@ -565,9 +565,7 @@ int ObjectRef::l_set_bone_override(lua_State *L)
 	if (sao == NULL)
 		return 0;
 
-	std::string bone;
-	if (!lua_isnil(L, 2))
-		bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2);
 
 	BoneOverride props;
 	if (lua_isnoneornil(L, 3)) {
@@ -657,9 +655,7 @@ int ObjectRef::l_get_bone_override(lua_State *L)
 	if (sao == NULL)
 		return 0;
 
-	std::string bone;
-	if (!lua_isnil(L, 2))
-		bone = readParam<std::string>(L, 2);
+	std::string bone = readParam<std::string>(L, 2);
 
 	push_bone_override(L, sao->getBoneOverride(bone));
 	return 1;
