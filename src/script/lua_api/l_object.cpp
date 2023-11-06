@@ -513,6 +513,9 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,"Deprecated call to set_bone_position, use set_bone_override instead");
+
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
@@ -536,6 +539,9 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 int ObjectRef::l_get_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,"Deprecated call to get_bone_position, use get_bone_override instead");
+
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
