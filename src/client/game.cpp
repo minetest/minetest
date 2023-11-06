@@ -4198,7 +4198,7 @@ void Game::updateClouds(float dtime)
 	if (this->sky->getCloudsVisible()) {
 		this->clouds->setVisible(true);
 		this->clouds->step(dtime);
-		// this->camera->getPosition is not enough for 3rd person views
+		// this->camera->getPosition is not enough for third-person camera.
 		v3f camera_node_position = this->camera->getCameraNode()->getPosition();
 		v3s16 camera_offset      = this->camera->getOffset();
 		camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
@@ -4206,14 +4206,13 @@ void Game::updateClouds(float dtime)
 		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
 		this->clouds->update(camera_node_position, this->sky->getCloudColor());
 		if (this->clouds->isCameraInsideCloud() && this->m_cache_enable_fog) {
-			// if inside clouds, and fog enabled, use that as sky
-			// color(s)
+			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
 			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
 					video::SColor(255, 0, 0, 0), 0.9);
 			this->sky->overrideColors(clouds_dark, this->clouds->getColor());
 			this->sky->setInClouds(true);
 			this->runData.fog_range = std::fmin(this->runData.fog_range * 0.5f, 32.0f * BS);
-			// do not draw clouds after all
+			// Clouds are not drawn in this case.
 			this->clouds->setVisible(false);
 		}
 	} else {
