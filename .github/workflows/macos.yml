@@ -21,11 +21,6 @@ on:
       - 'cmake/Modules/**'
       - '.github/workflows/macos.yml'
 
-env:
-  MINETEST_GAME_REPO: https://github.com/minetest/minetest_game.git
-  MINETEST_GAME_BRANCH: master
-  MINETEST_GAME_NAME: minetest_game
-
 jobs:
   build:
     runs-on: macos-latest
@@ -38,7 +33,6 @@ jobs:
 
       - name: Build
         run: |
-          git clone -b $MINETEST_GAME_BRANCH $MINETEST_GAME_REPO games/$MINETEST_GAME_NAME
           git clone https://github.com/minetest/irrlicht lib/irrlichtmt --depth 1 -b $(cat misc/irrlichtmt_tag.txt)
           mkdir build
           cd build

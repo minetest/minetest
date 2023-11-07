@@ -262,9 +262,6 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
-	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
-
 set(INSTALL_DEVTEST FALSE CACHE BOOL "Install Development Test")
 
 if(INSTALL_DEVTEST)
@@ -334,16 +331,6 @@ include(CPackComponent)
 cpack_add_component(Docs
 	DISPLAY_NAME "Documentation"
 	DESCRIPTION "Documentation about Minetest and Minetest modding"
-)
-
-cpack_add_component(SUBGAME_MINETEST_GAME
-	DISPLAY_NAME "Minetest Game"
-	DESCRIPTION "The default game bundled in the Minetest engine. Mainly used as a modding base."
-	GROUP "Games"
-)
-
-cpack_add_component_group(Subgames
-	DESCRIPTION "Games for the Minetest engine."
 )
 
 if(WIN32)
