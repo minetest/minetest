@@ -120,6 +120,11 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_node_level(lua_State *L);
 
+	// get_node_boxes(pos, box_type) -> table
+	// pos = {x=num, y=num, z=num}
+	// box_type = string
+	static int l_get_node_boxes(lua_State *L);
+
 	// find_nodes_with_meta(pos1, pos2)
 	static int l_find_nodes_with_meta(lua_State *L);
 

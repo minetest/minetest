@@ -6130,6 +6130,14 @@ Environment access
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * `level` must be between -127 and 127
+* `minetest.get_node_boxes(pos, box_type)`
+    * `box_type` must be `"node_box"`, `"collision_box"` or `"selection_box"`.
+    * Resolves any facedir-rotated boxes, connected boxes and the like into
+      actual boxes.
+    * Returns a list of boxes in the form
+      `{{x1, y1, z1, x2, y2, z2}, {x1, y1, z1, x2, y2, z2}, ...}`. Coordinates
+      are relative to the center of the node.
+    * See also: [Node boxes](#node-boxes)
 * `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
     * resets the light in a cuboid-shaped part of
       the map and removes lighting bugs.
