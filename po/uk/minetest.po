@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-08-09 16:48+0000\n"
-"Last-Translator: Skrripy <rozihrash.ya6w7@simplelogin.com>\n"
+"PO-Revision-Date: 2023-11-07 15:32+0000\n"
+"Last-Translator: dandelionsmellr <prikolnanozkaz@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -265,7 +265,7 @@ msgstr "Усі пакунки"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Already installed"
-msgstr "Уже встановлено"
+msgstr "Вже встановлено"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Back to Main Menu"
@@ -360,7 +360,7 @@ msgstr "Набори текстур"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "Пакет $1/$2 не знайдено."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -380,7 +380,7 @@ msgstr "Переглянути більше інформації у веб-бр�
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Вам потрібно встановити гру перед тим, як встановлювати мод"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -623,7 +623,7 @@ msgstr "Зареєструватися"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Відмовитись"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -631,21 +631,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Довгий час, рушій Minetest встановлювався разом зі звичайною грою під назвою "
+"\"Minetest Game\". З версії 5.8.0, Minetest встановлювається без звичайної "
+"гри."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Якщо хочете продовжити грати в своїх світах Minetest Game, вам доведеться "
+"перевстановити Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game більше не встановлюється за замовчуванням"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Встановити іншу гру"
+msgstr "Перевстановити Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -664,7 +668,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
-msgstr ""
+msgstr "Доступна нова версія $1"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid ""
@@ -673,6 +677,10 @@ msgid ""
 "Visit $3 to find out how to get the newest version and stay up to date with "
 "features and bugfixes."
 msgstr ""
+"Встановлена версія: $1\n"
+"Нова версія: $2\n"
+"Відвідайте $3, щоб з'ясувати, як діставати найновішу версію й встигати за "
+"новими функціями та виправленням багів."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Later"
@@ -680,11 +688,11 @@ msgstr "Пізніше"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Ніколи"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
-msgstr ""
+msgstr "Відвідати сайт"
 
 #: builtin/mainmenu/init.lua
 msgid "Settings"
@@ -749,9 +757,8 @@ msgid "Select file"
 msgstr "Виберіть файл"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Вибрати"
+msgstr "Налаштувати"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -820,14 +827,13 @@ msgstr "полегшений"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Використувати мову системи)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Назад"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Change keys"
 msgstr "Змінити клавіші"
 
@@ -837,13 +843,12 @@ msgid "Clear"
 msgstr "Очистити"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Відновити типові"
+msgstr "Відновити типове налаштування"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Відновити типове налаштування ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -851,7 +856,7 @@ msgstr "Пошук"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Просунуті налаштування"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Show technical names"
@@ -871,11 +876,11 @@ msgstr "Вміст: Моди"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(грі також буде потрібно увімкнути тіні)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Користувацький"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -888,27 +893,27 @@ msgstr "Динамічні тіні"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "High"
-msgstr ""
+msgstr "Високий"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Low"
-msgstr ""
+msgstr "Низький"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Medium"
-msgstr ""
+msgstr "Середній"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Very High"
-msgstr ""
+msgstr "Дуже високий"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Very Low"
-msgstr ""
+msgstr "Дуже низький"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "Про"
+msgstr "Про рушій"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
@@ -924,11 +929,11 @@ msgstr "Основні розробники"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Основна команда"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Пристрій Irrlicht:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1040,7 +1045,7 @@ msgstr "Порт"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select Mods"
-msgstr "Виберіть моди"
+msgstr "Вибір модів"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Select World:"
@@ -1109,7 +1114,7 @@ msgstr "Опис сервера"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr "Зʼєднання зупинено (помилка протоколу?)"
+msgstr "Зʼєднання зупинено (помилка протоколу?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
@@ -1223,19 +1228,19 @@ msgstr "Автоматичний рух вперед увімкнено"
 
 #: src/client/game.cpp
 msgid "Block bounds hidden"
-msgstr ""
+msgstr "Межі блоків приховані"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for all blocks"
-msgstr ""
+msgstr "Межі показуються в усіх блоків"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for current block"
-msgstr ""
+msgstr "Межі показуються у поточного блоку"
 
 #: src/client/game.cpp
 msgid "Block bounds shown for nearby blocks"
-msgstr ""
+msgstr "Межі показуються у близьких блоків"
 
 #: src/client/game.cpp
 msgid "Camera update disabled"
@@ -1246,9 +1251,8 @@ msgid "Camera update enabled"
 msgstr "Оновлення камери увімкнено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
-msgstr "Наближення (бінокль) вимкнено грою або модифікацією"
+msgstr "Неможливо показати межі блоків (вимкнено грою або модом)"
 
 #: src/client/game.cpp
 msgid "Change Keys"
@@ -1287,7 +1291,7 @@ msgid "Continue"
 msgstr "Продовжити"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1309,8 +1313,8 @@ msgstr ""
 "- %s: рухатися назад\n"
 "- %s: рухатися вліво\n"
 "- %s: рухатися вправо\n"
-"- %s: стрибок/лізти вгору\n"
-"- %s: копати/удар\n"
+"- %s: стрибати/лізти вгору\n"
+"- %s: копати/вдарити/використати\n"
 "- %s: поставити/використати\n"
 "- %s: крастися/лізти вниз\n"
 "- %s: кинути предмет\n"
@@ -1320,7 +1324,6 @@ msgstr ""
 "- %s: чат\n"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1335,23 +1338,23 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Стандартне керування дотиком:\n"
+"Керування:\n"
 "Коли меню не відображається:\n"
-"- один дотик: активувати кнопку\n"
-"- дотикнутися двічі: встановити/використати\n"
 "- провести пальцем: роззирнутися\n"
+"- дотик: встановити/використати\n"
+"- довгий дотик: копати/вдарити/використати\n"
 "Коли відображається меню або інвертар:\n"
 "- дотикнутися двічі (поза межами):\n"
 " --> закрити\n"
 "- Торкнутися купи, торкнутися комірки:\n"
 " --> перемістити купу\n"
-"- Торкнутися і тягнути, дотикнутися лругим пальцем\n"
+"- Торкнутися і тягнути, дотикнутися другим пальцем\n"
 " --> помістити один предмет у комірку\n"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Couldn't resolve address: %s"
-msgstr ""
+msgstr "Не вдалось вирішити адресу: %s"
 
 #: src/client/game.cpp
 msgid "Creating client..."
@@ -1529,41 +1532,39 @@ msgstr "Звук увімкнено"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr ""
+msgstr "Сервер можливо використовує іншу версію %s."
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to connect to %s because IPv6 is disabled"
-msgstr ""
+msgstr "Неможливо під'єднатись до %s, тому що IPv6 вимкнено"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Unable to listen on %s because IPv6 is disabled"
-msgstr ""
+msgstr "Неможливо використовувати %s, тому що IPv6 вимкнено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Необмежена видимість (повільно)"
+msgstr "Необмежену видимість вимкнено"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
-msgstr "Необмежена видимість (повільно)"
+msgstr "Необмежену видимість увімкнено"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Необмежену видимість увімкнено, але заборонено грою або модом"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Видимість на мінімумі: %d"
+msgstr "Видимість змінено до %d (мінімум)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
-msgstr ""
+msgstr "Видимість змінено до %d (мінімум), але обмежено до %d грою або модом"
 
 #: src/client/game.cpp
 #, c-format
@@ -1571,20 +1572,20 @@ msgid "Viewing range changed to %d"
 msgstr "Видимість змінено до %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Видимість змінено до %d"
+msgstr "Видимість змінено до %d (максимум)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
-msgstr ""
+msgstr "Видимість змінено до %d (максимум), але обмежено до %d грою або модом"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Видимість змінено до %d"
+msgstr "Видимість змінено до %d, але обмежено до %d грою або модом"
 
 #: src/client/game.cpp
 #, c-format
@@ -1604,9 +1605,8 @@ msgid "ok"
 msgstr "добре"
 
 #: src/client/gameui.cpp
-#, fuzzy
 msgid "Chat currently disabled by game or mod"
-msgstr "Наближення (бінокль) вимкнено грою або модифікацією"
+msgstr "Чат зараз вимкнено грою або модом"
 
 #: src/client/gameui.cpp
 msgid "Chat hidden"
@@ -1914,23 +1914,26 @@ msgstr "Мінімапа в текстурному режимі"
 #: src/content/mod_configuration.cpp
 #, c-format
 msgid "%s is missing:"
-msgstr ""
+msgstr "Модові %s не вистачає:"
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Install and enable the required mods, or disable the mods causing errors."
 msgstr ""
+"Встановить та увімкніть потрібні моди, або вимкніть ті моди, що викликають "
+"помилки."
 
 #: src/content/mod_configuration.cpp
 msgid ""
 "Note: this may be caused by a dependency cycle, in which case try updating "
 "the mods."
 msgstr ""
+"Примітка: це може бути викликано циклом залежностей, у такому випадку "
+"спробуйте оновити моди."
 
 #: src/content/mod_configuration.cpp
-#, fuzzy
 msgid "Some mods have unsatisfied dependencies:"
-msgstr "Без обовʼязкових залежностей"
+msgstr "У деяких моди невирішено залежності:"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Failed to open webpage"
@@ -1966,7 +1969,7 @@ msgstr "Назад"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Block bounds"
-msgstr ""
+msgstr "Межі блоків"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Change camera"
@@ -2026,7 +2029,7 @@ msgstr "Клавіша вже використовується"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Keybindings."
-msgstr ""
+msgstr "Прив'язки до клавіш."
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
@@ -2132,15 +2135,17 @@ msgstr "uk"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Ім'я не зареєстровано. Щоб створити обліковий запис на цьому сервері, "
+"натисніть \"Зареєструватися\""
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
-msgstr "Будь-ласка оберіть інше імʼя!"
+msgstr "Ім'я зайнято. Будь ласка, оберіть інше ім'я"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Вимкнення..."
+msgstr "%s під час вимкнення: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2153,7 +2158,7 @@ msgid ""
 "situations.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
-"(X,Y,Z) зміщення фракталу від центру світа у одиницях  'масшабу'. \n"
+"(X,Y,Z) зміщення фракталу від центру світа у одиницях 'масшабу'. \n"
 "Використовується для пересування бажаної точки до (0, 0) щоб \n"
 "створити придатну точку переродження або для 'наближення' \n"
 "до бажаної точки шляхом збільшення 'масштабу'. Значення за \n"
@@ -2261,7 +2266,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D шум що визначає кількість підземель на фрагмент карти."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2277,17 +2281,15 @@ msgstr ""
 "Зараз підтримуються:\n"
 "-    none: 3d вимкнено.\n"
 "-    anaglyph: 3d з блакитно-пурпурними кольорами.\n"
-"-    interlaced: підтримка полярізаційних екранів з непарними/парним "
-"лініями.\n"
+"-    interlaced: підтримка полярізаційних екранів.\n"
 "-    topbottom: поділ екрану вертикально.\n"
 "-    sidebyside: поділ екрану горизонтально.\n"
 "-    crossview: 3d на основі автостереограми.\n"
-"-    pageflip: 3d на основі quadbuffer.\n"
-"Зверніть увагу що режим interlaced потребує ввімкнення шейдерів."
+"Зверніть увагу, що interlaced потребує ввімкнення шейдерів."
 
 #: src/settings_translation_file.cpp
 msgid "3d"
-msgstr ""
+msgstr "Об'ємний"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2312,7 +2314,7 @@ msgstr "Інтервал ABM"
 
 #: src/settings_translation_file.cpp
 msgid "ABM time budget"
-msgstr ""
+msgstr "Обмеження часу ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of queued blocks to emerge"
@@ -2367,6 +2369,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Adjust the detected display density, used for scaling UI elements."
 msgstr ""
+"Налаштування виявленої щільності дисплея, використовується для масштабування "
+"елементів інтерфейсу."
 
 #: src/settings_translation_file.cpp
 #, c-format
@@ -2400,6 +2404,10 @@ msgid ""
 "setting names.\n"
 "Controlled by a checkbox in the settings menu."
 msgstr ""
+"Впливає на моди й пакети текстур у меню \"Вміст\" і \"Вибір модів\", а "
+"також\n"
+"на назви налаштувань.\n"
+"Керується прапорцем у меню налаштувань."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2421,7 +2429,7 @@ msgstr "Завжди літати швидко"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Гамма навколишнього затінення"
 
 #: src/settings_translation_file.cpp
 msgid "Amount of messages a player may send per 10 seconds."
@@ -2429,7 +2437,7 @@ msgstr "К-сть повідомлень, які гравець може над�
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
-msgstr ""
+msgstr "Збільшує долини."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -2444,14 +2452,12 @@ msgid "Announce to this serverlist."
 msgstr "Анонсувати сервер в цей перелік серверів."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Згладжування:"
+msgstr "Масштаб згладжування"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Згладжування:"
+msgstr "Метод згладжування"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2495,10 +2501,18 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)."
 msgstr ""
+"На цій відстані сервер буде агресивно оптимізувати те, які блоки\n"
+"надсилаються клієнтам.\n"
+"Маленькі значення можуть значно покращити продуктивність, за\n"
+"рахунок проблем выдображення (деякі блоки не будуть\n"
+"відображені під водою й у печерах, а також иноді на поверхні).\n"
+"Виставлення цього до значення, що більше, ніж\n"
+"max_block_send_distance, вимикає цю оптимізацію.\n"
+"Зазначено у блоках мапи (16 блоків)."
 
 #: src/settings_translation_file.cpp
 msgid "Audio"
-msgstr ""
+msgstr "Звук"
 
 #: src/settings_translation_file.cpp
 msgid "Automatically jump up single-node obstacles."
@@ -2514,7 +2528,7 @@ msgstr "Режим автомасштабування"
 
 #: src/settings_translation_file.cpp
 msgid "Aux1 key for climbing/descending"
-msgstr "Клавіша Aux1 для піднімання/спуску"
+msgstr "Клавіша Aux1 для лазіння/вилізання"
 
 #: src/settings_translation_file.cpp
 msgid "Base ground level"
@@ -2525,9 +2539,8 @@ msgid "Base terrain height."
 msgstr "Висота основної поверхні."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Викор. набір текстур"
+msgstr "Розмір текстури"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2551,7 +2564,7 @@ msgstr "Закріплення адреси"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API noise parameters"
-msgstr ""
+msgstr "Параметри шуму для API біомів"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2559,28 +2572,27 @@ msgstr "Шум біому"
 
 #: src/settings_translation_file.cpp
 msgid "Block send optimize distance"
-msgstr ""
+msgstr "Оптимальна відстань відправки блока"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "Забарвлення"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
-msgstr ""
+msgstr "Інтенсивність розцвітки"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bloom Radius"
-msgstr "Радіус хмар"
+msgstr "Радіус забарвлення"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Strength Factor"
-msgstr ""
+msgstr "Показник сили забарвлення"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr ""
+msgstr "Підстрибування"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -2604,7 +2616,7 @@ msgstr "Будувати в межах гравця"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "Вбудовані"
 
 #: src/settings_translation_file.cpp
 msgid "Camera"
@@ -2652,11 +2664,11 @@ msgstr "Шум каверни"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr ""
+msgstr "Конусність каверн"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
-msgstr ""
+msgstr "Поріг каверн"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern upper limit"
@@ -2667,10 +2679,12 @@ msgid ""
 "Center of light curve boost range.\n"
 "Where 0.0 is minimum light level, 1.0 is maximum light level."
 msgstr ""
+"Середина діапазону збільшення кривої світла.\n"
+"Тут 0.0 — мінімальний рівень світла, 1.0 — максимальний."
 
 #: src/settings_translation_file.cpp
 msgid "Chat command time message threshold"
-msgstr ""
+msgstr "Поріг для повідомлення про час команди чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat commands"
@@ -2694,7 +2708,7 @@ msgstr "Формат повідомлень чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message kick threshold"
-msgstr ""
+msgstr "Поріг для вигнання за повідомлення чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chat message max length"
@@ -2706,7 +2720,7 @@ msgstr "Вебпосилання чату"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Розмір фрагменту"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -2717,6 +2731,7 @@ msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
 msgstr ""
+"Клікабельні посилання (СКМ або Ctrl+ЛКМ) увімкнені у виводі консолі чату."
 
 #: src/settings_translation_file.cpp
 msgid "Client"
@@ -2724,7 +2739,7 @@ msgstr "Клієнт"
 
 #: src/settings_translation_file.cpp
 msgid "Client Mesh Chunksize"
-msgstr ""
+msgstr "Розмір ділянки на сітці клієнта"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -2740,16 +2755,15 @@ msgstr "Обмеження можливостей клієнт-модифіка�
 
 #: src/settings_translation_file.cpp
 msgid "Client side node lookup range restriction"
-msgstr ""
+msgstr "Обмеження діапазону пошуку блоків на боці клієнта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side Modding"
-msgstr "Клієнт-моди"
+msgstr "Моди з боку клієнта"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Швидкість лазіння"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
@@ -2761,7 +2775,7 @@ msgstr "Хмари"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Хмари є ефектом на боці клієнта."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2785,18 +2799,31 @@ msgid ""
 "These flags are independent from Minetest versions,\n"
 "so see a full list at https://content.minetest.net/help/content_flags/"
 msgstr ""
+"Розділений комами перелік міток, які треба приховувати у репозиторії вмісту."
+"\n"
+"\"nonfree\" може використовуватися для приховання пакетів, які не\n"
+"відповідають поняттю \"вільне програмне забезпечення\", визначеному\n"
+"Фондом вільного програмного забезпечення.\n"
+"Ви також можете вказувати оцінки вмісту.\n"
+"Ці мітки незалежні від версій Minetest, тому дивіться\n"
+"повний перелік на https://content.minetest.net/help/content_flags/"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Розділений комами перелік модів, яким надано доступ до HTTP API, що\n"
+"дозвляє ним завантажувати дані з інтернету або в інтернет."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Розділений комами перелік довірених модів, яким надано доступ до\n"
+"небезпечних функцій, навіть коли увімкнено захист від модів (через\n"
+"request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2805,6 +2832,11 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"Рівень стиснення, що використовуються, коли зберігаються блоки мапи на диск."
+"\n"
+"-1 - використовувати звичайний рівень стиснення\n"
+"0 - найменьше стиснення, найшвидше\n"
+"9 - найкраще стиснення, найповільніше"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2813,6 +2845,11 @@ msgid ""
 "0 - least compression, fastest\n"
 "9 - best compression, slowest"
 msgstr ""
+"Рівень стиснення, що використовуються, коли надсилаються блоки мапи "
+"клієнтові.\n"
+"-1 - використовувати звичайний рівень стиснення\n"
+"0 - найменьше стиснення, найшвидше\n"
+"9 - найкраще стиснення, найповільніше"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -2824,11 +2861,11 @@ msgstr "Підключення до зовнішнього медіасерве�
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "З'єднує скло, якщо підтримується блоком."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr "Консоль (альфа)"
+msgstr "Прозорість консолі"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
@@ -2840,7 +2877,7 @@ msgstr "Висота консолі"
 
 #: src/settings_translation_file.cpp
 msgid "Content Repository"
-msgstr "Репозиторій додатків"
+msgstr "Репозиторій вмісту"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB Flag Blacklist"
@@ -2856,17 +2893,19 @@ msgstr "URL ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Триваюча ходьба"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Continuous forward movement, toggled by autoforward key.\n"
 "Press the autoforward key again or the backwards movement to disable."
 msgstr ""
+"Триваюча ходьба уперед, перемикається клавішою \"автохід\".\n"
+"Натисніть клавішу \"автохід\" знову або \"назад\", щоб вимкнути."
 
 #: src/settings_translation_file.cpp
 msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
+msgstr "Керується прапорцем у меню налаштувань."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -2891,7 +2930,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Керує крутизною/висотою гір."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2910,27 +2949,31 @@ msgstr "Творчість"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Непрозорість перехрестя"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
+"Непрозорість перехрестя (між 0 та 255).\n"
+"Це також застосовується до об'єктного перехрестя."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Колір перехрестя"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Crosshair color (R,G,B).\n"
 "Also controls the object crosshair color"
 msgstr ""
+"Колір перехрестя (R,G,B).\n"
+"Також впливає на колір об'єктного перехрестя"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -2938,7 +2981,7 @@ msgstr "Поранення"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
-msgstr ""
+msgstr "Розмірний поріг файлу журналу зневадження"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -2946,11 +2989,11 @@ msgstr "Рівень журналу зневадження"
 
 #: src/settings_translation_file.cpp
 msgid "Debugging"
-msgstr ""
+msgstr "Налагодження"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Крок виділеного серверу"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -3419,7 +3462,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filtering and Antialiasing"
-msgstr "Фільтрування і Згладжування:"
+msgstr "Фільтрування і згладжування"
 
 #: src/settings_translation_file.cpp
 msgid "First of 4 2D noises that together define hill/mountain range height."
@@ -3505,7 +3548,7 @@ msgstr "Тінь шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr "Альфа-тінь шрифту"
+msgstr "Прозорість тіні шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
@@ -4175,9 +4218,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Length of liquid waves."
-msgstr "Швидкість хвилі хвилястих рідин"
+msgstr "Довжина хвиль рідин."
 
 #: src/settings_translation_file.cpp
 msgid ""
