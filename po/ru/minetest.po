@@ -3197,8 +3197,28 @@ msgid "Digging particles"
 msgstr "Частицы при рытье"
 
 #: src/settings_translation_file.cpp
-msgid "Disable anticheat"
-msgstr "Отключить анти-чит"
+msgid "Prevent fast/instant digging cheats"
+msgstr "Предотвращение быстрого копания"
+
+#: src/settings_translation_file.cpp
+msgid "Enable digging cheats prevention in multiplayer."
+msgstr "Включить предотвращение использования читов на быстрое копание в мультиплеере."
+
+#: src/settings_translation_file.cpp
+msgid "Enable anticheat for player interaction"
+msgstr "Античит при взаимодействии"
+
+#: src/settings_translation_file.cpp
+msgid "Enable interaction anticheat in multiplayer."
+msgstr "Включить античит при взаимодействии в мультиплеере."
+
+#: src/settings_translation_file.cpp
+msgid "Prevent movement cheats"
+msgstr "Предотвращение читерного передвижения"
+
+#: src/settings_translation_file.cpp
+msgid "Enable movement cheats prevention in multiplayer."
+msgstr "Включить предотвращение использования читов для передвижения в мультиплеере."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -4098,10 +4118,6 @@ msgid ""
 msgstr ""
 "Если включено, действия записываются для отката.\n"
 "Этот параметр считывается только при запуске сервера."
-
-#: src/settings_translation_file.cpp
-msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr "Если включено, отключается защита от читерства в сетевой игре."
 
 #: src/settings_translation_file.cpp
 msgid ""
