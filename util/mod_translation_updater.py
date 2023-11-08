@@ -307,6 +307,8 @@ def import_tr_file(tr_file):
 				elif line.startswith("#"):
 					# source file comments: ##[ file.lua ] ##
 					if line.startswith(symbol_source_prefix) and line.endswith(symbol_source_suffix):
+						if params["print-source"]:
+							in_header = False
 						# remove those comments; they may be added back automatically
 						continue
 
