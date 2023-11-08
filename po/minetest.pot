@@ -3555,11 +3555,27 @@ msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Disable anticheat"
+msgid "Prevent fast/instant digging cheats"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "If enabled, disable cheat prevention in multiplayer."
+msgid "Enable digging cheats prevention in multiplayer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable anticheat for player interaction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable interaction anticheat in multiplayer."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Prevent movement cheats"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable movement cheats prevention in multiplayer."
 msgstr ""
 
 #: src/settings_translation_file.cpp
