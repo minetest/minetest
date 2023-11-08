@@ -283,7 +283,7 @@ install(FILES "doc/lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/client_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/menu_lua_api.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "doc/texture_packs.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
-install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}" COMPONENT "Docs")
+install(FILES "doc/world_format.md" DESTINATION "${DOCDIR}" COMPONENT "Docs")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX AND NOT APPLE)
