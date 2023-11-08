@@ -8,7 +8,6 @@
 #                    2023 Wuzzy.
 # License: LGPLv2.1 or later (see LICENSE file for details)
 
-from __future__ import print_function
 import os, fnmatch, re, shutil, errno
 from sys import argv as _argv
 from sys import stderr as _stderr
