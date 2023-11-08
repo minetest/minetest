@@ -120,9 +120,9 @@ def main():
 
 # Group 2 will be the string, groups 1 and 3 will be the delimiters (" or ')
 # See https://stackoverflow.com/questions/46967465/regex-match-text-in-either-single-or-double-quote
-pattern_lua_quoted = re.compile(r'[\.=^\t,{\(\s]N?F?S\s*\(\s*(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)[\s,\)]', re.DOTALL)
+pattern_lua_quoted = re.compile(r'(?:^|[\.=^\t,{\(\s])N?F?S\s*\(\s*(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)[\s,\)]', re.DOTALL)
 # Handles the [[ ... ]] string delimiters
-pattern_lua_bracketed = re.compile(r'[\.=^\t,{\(\s]N?F?S\s*\(\s*\[\[(.*?)\]\][\s,\)]', re.DOTALL)
+pattern_lua_bracketed = re.compile(r'(?:^|[\.=^\t,{\(\s])N?F?S\s*\(\s*\[\[(.*?)\]\][\s,\)]', re.DOTALL)
 
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
