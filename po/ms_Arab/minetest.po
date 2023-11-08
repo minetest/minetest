@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-06-02 19:49+0000\n"
+"PO-Revision-Date: 2023-11-11 11:04+0000\n"
 "Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -21,7 +21,7 @@ msgstr "ڤادم باريس ݢيلير سيمبڠ کلوار"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
-msgstr ""
+msgstr "ڤرينته کوسوڠ."
 
 #: builtin/client/chatcommands.lua
 msgid "Exit to main menu"
@@ -53,7 +53,7 @@ msgstr "ڤرينته اين دلومڤوهکن اوليه ڤلاين."
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr "لاهير سمولا"
+msgstr "جلما سمولا"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
@@ -69,7 +69,7 @@ msgstr "ڤرينته ترسديا: "
 
 #: builtin/common/chatcommands.lua
 msgid "Command not available: "
-msgstr ""
+msgstr "ڤرينته تيدق ترسديا: "
 
 #: builtin/common/chatcommands.lua
 msgid "Get help for commands"
@@ -79,7 +79,7 @@ msgstr "داڤتکن بنتوان اونتوق ڤرينته"
 msgid ""
 "Use '.help <cmd>' to get more information, or '.help all' to list everything."
 msgstr ""
-"ݢوناکن ‭'.help <ڤرينته>'‬ اونتوق داڤتکن معلومت لنجوت⹁ اتاو ‭'.help all'‬ اونتوق "
+"ݢوناکن '.help <ڤرينته>' اونتوق داڤتکن معلومت لنجوت⹁ اتاو '.help all' اونتوق "
 "سنارايکن کسمواڽ."
 
 #: builtin/common/chatcommands.lua
@@ -92,7 +92,7 @@ msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
-msgstr ""
+msgstr "<تياد يڠ ترسديا>"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
@@ -108,11 +108,11 @@ msgstr "مينو اوتام"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "سمبوڠ سمولا"
+msgstr "سامبوڠ سمولا"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "ڤلاين ڤرماٴينن ممينت اندا اونتوق مڽمبوڠ سمولا:"
+msgstr "ڤلاين ممينتا اندا اونتوق مڽامبوڠ سمولا:"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -120,15 +120,15 @@ msgstr "ۏرسي ڤروتوکول تيدق سراسي. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "ڤلاين ڤرماٴينن مڠواتکواساکن ڤروتوکول ۏرسي $1. "
+msgstr "ڤلاين مڠواتکواساکن ڤروتوکول ۏرسي $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "ڤلاين ڤرماٴينن مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2. "
+msgstr "ڤلاين مڽوکوڠ ڤروتوکول ۏرسي $1 هيڠݢ $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "کامي هاڽ مڽوکوڠ ڤروتوکول ۏرسي $1."
+msgstr "کامي هاي مڽوکوڠ ڤروتوکول ۏرسي $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -178,7 +178,7 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "characters [a-z0-9_] are allowed."
 msgstr ""
-"ݢاݢل اونتوق ممبوليهکن مودس \"$1\" کران اي مڠندوڠي اکسارا يڠ تيدق دبنرکن. هاڽ "
+"ݢاݢل اونتوق ممبوليهکن مودس ”$1‟ کران اي مڠاندوڠي اکسارا يڠ تيدق دبنرکن. هاڽ "
 "اکسارا [a-z0-9_] سهاج يڠ دبنرکن."
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -191,23 +191,23 @@ msgstr "مودس:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr "تيادا کبرݢنتوڠن (ڤيليهن)"
+msgstr "تياد کبرݢنتوڠن (ڤيليهن)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
-msgstr "تيادا ڤريهل ڤرماٴينن ترسديا."
+msgstr "تياد ڤريحل ڤرماٴينن ترسديا."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr "تيادا کبرݢنتوڠن واجب"
+msgstr "تياد کبرݢنتوڠن واجب"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
-msgstr "تيادا ڤريهل ڤيک مودس ترسديا."
+msgstr "تياد ڤريحل ڤيک مودس ترسديا."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr "تيادا کبرݢنتوڠن ڤيليهن"
+msgstr "تياد کبرݢنتوڠن ڤيليهن"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
@@ -229,7 +229,7 @@ msgstr "دبوليهکن"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" سوده وجود. اداکه اندا ايڠين توليس ݢنتيڽ؟"
+msgstr "”$1‟ سوده وجود. اداکه اندا ايڠين توليس ݢنتيڽ؟"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
@@ -237,7 +237,7 @@ msgstr "کبرݢنتوڠن $1 دان $2 اکن دڤاسڠکن."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 by $2"
-msgstr ""
+msgstr "$1 اوليه $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid ""
@@ -249,7 +249,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr "$1 مموات تورون..."
+msgstr "$1 دموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -277,7 +277,7 @@ msgstr "ڤرماٴينن اساس:"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "سيستم ContentDB تيدق ترسديا اڤابيلا Minetest دکومڤيل تنڤ cURL"
+msgstr "ContentDB تيدق ترسديا اڤابيلا ماٴينتيس‌ت دکومڤيل تنڤا cURL"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Downloading..."
@@ -285,11 +285,11 @@ msgstr "مموات تورون..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr "رالت کتيک مماسڠ \"$1\": $2"
+msgstr "رالت کتيک مماسڠ ”$1‟: $2"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
-msgstr "ݢاݢل اونتوق مموات تورون \"$1\""
+msgstr "ݢاݢل اونتوق مموات تورون ”$1‟"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to download $1"
@@ -297,7 +297,7 @@ msgstr "ݢاݢل مموات تورون $1"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "ݢاݢل اونتوق مڽاري \"$1\" (جنيس فاٴيل تيدق دسوکوڠ اتاو ارکيب روسق)"
+msgstr "ݢاݢل اونتوق مڽاري ”$1‟ (جنيس فاٴيل تيدقدسوکوڠ اتاو ارکيب روسق)"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Games"
@@ -318,7 +318,7 @@ msgstr "ڤاسڠ کبرݢنتوڠن يڠ هيلڠ"
 #: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
 #: src/client/game.cpp
 msgid "Loading..."
-msgstr "سدڠ ممواتکن..."
+msgstr "ممواتکن..."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
@@ -326,12 +326,12 @@ msgstr "مودس"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "تيادا ڤاکيج يڠ بوليه دامبيل"
+msgstr "تياد ڤاکيج يڠ بوليه دأمبيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
-msgstr "تيادا حاصيل"
+msgstr "تياد حاصيل"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "No updates"
@@ -359,7 +359,7 @@ msgstr "ڤيک تيکستور"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "The package $1/$2 was not found."
-msgstr ""
+msgstr "ڤاکيج $1 \\ $2 تيدق دجومڤاٴي."
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
@@ -379,15 +379,15 @@ msgstr "ليهت معلومت لنجوت دالم ڤلاير سساوڠ"
 
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "اندا ڤرلو ڤاسڠ ڤرماٴينن سبلوم اندا بوليه ڤاسڠ مودس"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "دنيا برنام \"$1\" تله وجود"
+msgstr "دنيا برنام ”$1‟ سوده وجود"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr "روڤ بومي تمبهن"
+msgstr "روڤا بومي تمبهن"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Altitude chill"
@@ -415,7 +415,7 @@ msgstr "ݢوا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "چيڤت"
+msgstr "چيڤتا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Decorations"
@@ -427,11 +427,11 @@ msgstr "Development Test هاڽاله اونتوق کݢوناٴن ڤمباڠون
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Dungeons"
-msgstr "کوروڠن باواه تانه"
+msgstr "کوروڠن باوه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr "روڤ بومي رات"
+msgstr "روڤا بومي رات"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
