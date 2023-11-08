@@ -316,8 +316,12 @@ fake_function() {
 	gettext("The privileges that new users automatically get.\nSee /privs in game for a full list on your server and mod configuration.");
 	gettext("Basic privileges");
 	gettext("Privileges that players with basic_privs can grant");
-	gettext("Disable anticheat");
-	gettext("If enabled, disable cheat prevention in multiplayer.");
+	gettext("Prevent fast/instant digging cheats");
+	gettext("Enable digging cheats prevention in multiplayer.");
+	gettext("Enable anticheat for player interaction");
+	gettext("Enable interaction anticheat in multiplayer.");
+	gettext("Prevent movement cheats");
+	gettext("Enable movement cheats prevention in multiplayer.");
 	gettext("Rollback recording");
 	gettext("If enabled, actions are recorded for rollback.\nThis option is only read when server starts.");
 	gettext("Client-side Modding");
