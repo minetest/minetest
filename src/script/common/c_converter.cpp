@@ -408,7 +408,7 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 void push_aabb3f_vector(lua_State *L, const std::vector<aabb3f> &boxes, f32 divisor)
 {
 	lua_createtable(L, boxes.size(), 0);
-	u8 i = 1;
+	int i = 1;
 	for (const aabb3f &box : boxes) {
 		push_aabb3f(L, box, divisor);
 		lua_rawseti(L, -2, i++);
