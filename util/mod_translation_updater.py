@@ -344,8 +344,7 @@ def import_tr_file(tr_file):
 						# if there was a comment, record that.
 						outval["comment"] = latest_comment_block
 					latest_comment_block = None
-					if header_comments != None:
-						in_header = False
+					in_header = False
 
 					dOut[match.group(1)] = outval
 	return (dOut, text, header_comments, textdomain)
