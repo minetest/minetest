@@ -376,7 +376,9 @@ void set_default_settings()
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("disallow_empty_password", "false");
-	settings->setDefault("disable_anticheat", "false");
+	settings->setDefault("anticheat_digging", "true");
+	settings->setDefault("anticheat_interacting", "true");
+	settings->setDefault("anticheat_movement", "true");
 	settings->setDefault("enable_rollback_recording", "false");
 	settings->setDefault("deprecated_lua_api_handling", "log");
 

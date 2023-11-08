@@ -822,8 +822,14 @@ default_privs (Default privileges) string interact, shout
 #    Privileges that players with basic_privs can grant
 basic_privs (Basic privileges) string interact, shout
 
-#    If enabled, disable cheat prevention in multiplayer.
-disable_anticheat (Disable anticheat) bool false
+#    Enable digging cheats prevention in multiplayer.
+anticheat_digging (Prevent fast/instant digging cheats) bool true
+
+#    Enable interaction anticheat in multiplayer.
+anticheat_interacting (Enable anticheat for player interaction) bool true
+
+#    Enable movement cheats prevention in multiplayer.
+anticheat_movement (Prevent movement cheats) bool true
 
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.

@@ -590,7 +590,7 @@ bool PlayerSAO::checkMovementCheat()
 {
 	if (m_is_singleplayer ||
 			isAttached() ||
-			g_settings->getBool("disable_anticheat")) {
+			!g_settings->getBool("anticheat_movement")) {
 		m_last_good_position = m_base_position;
 		return false;
 	}

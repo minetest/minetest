@@ -792,9 +792,17 @@
 #    type: string
 # basic_privs = interact, shout
 
-#    If enabled, disable cheat prevention in multiplayer.
+#    Enable digging cheats prevention in multiplayer.
 #    type: bool
-# disable_anticheat = false
+anticheat_digging = true
+
+#    Enable interaction anticheat in multiplayer.
+#    type: bool
+anticheat_interacting = true
+
+#    Enable movement cheats prevention in multiplayer.
+#    type: bool
+anticheat_movement = true
 
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.
