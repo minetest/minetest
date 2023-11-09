@@ -2148,11 +2148,13 @@ to games.
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
+    ```lua
     damage =
       collision speed
       * ((node_fall_damage_add_percent   + 100) / 100) -- node group
       * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
       - (14)                                           -- constant tolerance
+    ```
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
