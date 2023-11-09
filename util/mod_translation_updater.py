@@ -272,7 +272,6 @@ def read_lua_file_strings(lua_file):
 			strings.append(s)
 
 		for s in strings:
-			s = re.sub(r'"\.\.\s+"', "", s)
 			s = re.sub("@(?![1-9])", "@@", s)
 			s = s.replace('\\"', '"')
 			s = s.replace("\\'", "'")
