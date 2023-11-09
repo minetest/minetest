@@ -141,6 +141,13 @@ pattern_tr = re.compile(r'(.*?(?:[^@]|@@|))=(.*)')
 pattern_name = re.compile(r'^name[ ]*=[ ]*([^ \n]*)')
 pattern_tr_filename = re.compile(r'\.tr$')
 
+# Matches bad use of @ signs in Lua string
+pattern_bad_luastring = re.compile(
+	r'^@$|'	# single @, OR
+	r'[^@]@$|' # trailing unescaped @, OR
+	r'(?<!@)@(?=[^@1-9])' # an @ that is not escaped or part of a placeholder
+)
+
 # Attempt to read the mod's name from the mod.conf file or folder name. Returns None on failure
 def get_modname(folder):
 	try:
@@ -272,7 +279,10 @@ def read_lua_file_strings(lua_file):
 			strings.append(s)
 
 		for s in strings:
-			s = re.sub("@(?![1-9])", "@@", s)
+			found_bad = pattern_bad_luastring.search(s)
+			if found_bad:
+				print("SYNTAX ERROR: Unescaped '@' in Lua string: " + s)
+				continue
 			s = s.replace('\\"', '"')
 			s = s.replace("\\'", "'")
 			s = s.replace("\n", "@n")
