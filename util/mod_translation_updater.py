@@ -138,9 +138,15 @@ pattern_lua_bracketed = re.compile(
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
 
 # Handles a translation line in *.tr file.
-# Group 1 is the original string left of the equals sign.
+# Group 1 is the source string left of the equals sign.
 # Group 2 is the translated string, right of the equals sign.
-pattern_tr = re.compile(r'(.*?)(?:(?<!@)|@@)=(.*)')
+pattern_tr = re.compile(
+	r'(.*)' # Source string
+	# the separating equals sign, if NOT preceded by @, unless
+	# that @ is preceded by another @
+	r'(?:(?<!(?<!@)@)=)'
+	r'(.*)' # Translation string
+	)
 pattern_name = re.compile(r'^name[ ]*=[ ]*([^ \n]*)')
 pattern_tr_filename = re.compile(r'\.tr$')
 
