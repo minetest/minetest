@@ -127,7 +127,7 @@ pattern_lua_bracketed = re.compile(r'(?:^|[\.=^\t,{\(\s])N?F?S\s*\(\s*\[\[(.*?)\
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
 
-pattern_tr = re.compile(r'(.*?[^@])=(.*)')
+pattern_tr = re.compile(r'(.*?(?:[^@]|@@|))=(.*)')
 pattern_name = re.compile(r'^name[ ]*=[ ]*([^ \n]*)')
 pattern_tr_filename = re.compile(r'\.tr$')
 
@@ -263,7 +263,7 @@ def read_lua_file_strings(lua_file):
 
 		for s in strings:
 			s = re.sub(r'"\.\.\s+"', "", s)
-			s = re.sub("@(?=[^1-9])", "@@", s)
+			s = re.sub("@(?![1-9])", "@@", s)
 			s = s.replace('\\"', '"')
 			s = s.replace("\\'", "'")
 			s = s.replace("\n", "@n")
