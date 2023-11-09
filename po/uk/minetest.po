@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-11-09 22:25+0000\n"
-"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
+"PO-Revision-Date: 2023-11-10 10:05+0000\n"
+"Last-Translator: YearOfFuture <prikolnanozkaz@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -3976,6 +3976,8 @@ msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Якщо увімкнено, дії записуються для відкатів.\n"
+"Цей параметр зчитується тільки при запуску сервера."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
@@ -4152,7 +4154,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr ""
+msgstr "Чутливість джойстика"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick type"
@@ -4213,19 +4215,19 @@ msgstr "Швидкість стрибання"
 
 #: src/settings_translation_file.cpp
 msgid "Keyboard and Mouse"
-msgstr ""
+msgstr "Клавіатура й миша"
 
 #: src/settings_translation_file.cpp
 msgid "Kick players who sent more than X messages per 10 seconds."
-msgstr ""
+msgstr "Виганяти гравців, які надіслали більш ніж X повідомлень за 10 секунд."
 
 #: src/settings_translation_file.cpp
 msgid "Lake steepness"
-msgstr ""
+msgstr "Крутизна озер"
 
 #: src/settings_translation_file.cpp
 msgid "Lake threshold"
-msgstr ""
+msgstr "Поріг озер"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -4570,11 +4572,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
-msgstr ""
+msgstr "Генератор світу Долини"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу Долини"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -5087,7 +5089,7 @@ msgstr "Профайлер"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
-msgstr ""
+msgstr "Адреса прослуховування Prometheus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5096,10 +5098,14 @@ msgid ""
 "enable metrics listener for Prometheus on that address.\n"
 "Metrics can be fetched on http://127.0.0.1:30000/metrics"
 msgstr ""
+"Адреса прослуховування Prometheus.\n"
+"Якщо Minetest скомпільовано з увімкненим ENABLE_PROMETHEUS,\n"
+"увімкається прослуховування метрик Prometheus за цією адресою.\n"
+"Метрики можна отримати на http://127.0.0.1:30000/metrics"
 
 #: src/settings_translation_file.cpp
 msgid "Proportion of large caves that contain liquid."
-msgstr ""
+msgstr "Співвідношення великих печер, що містять рідину."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5114,7 +5120,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Випадковий ввід"
 
 #: src/settings_translation_file.cpp
 msgid "Recent Chat Messages"
@@ -5141,10 +5147,12 @@ msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
 msgstr ""
+"Видаляти коди кольорів із вхідних повідомлень чату\n"
+"Використовуйте для заборони гравцям застосовувати колір у повідомленнях"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Замінює звичайне головне меню на користувацьке."
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
@@ -5186,7 +5194,7 @@ msgstr "Глибина русла річки"
 
 #: src/settings_translation_file.cpp
 msgid "River channel width"
-msgstr ""
+msgstr "Ширина русла річки"
 
 #: src/settings_translation_file.cpp
 msgid "River depth"
@@ -5202,35 +5210,35 @@ msgstr "Розмір річки"
 
 #: src/settings_translation_file.cpp
 msgid "River valley width"
-msgstr ""
+msgstr "Ширина долини річки"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr ""
+msgstr "Записування для відкатів"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hill size noise"
-msgstr ""
+msgstr "Шум розміру пагорбів"
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr ""
+msgstr "Шум поширення пагорбів"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Кругла мінімапа"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
-msgstr ""
+msgstr "Безпечне копання й розміщення"
 
 #: src/settings_translation_file.cpp
 msgid "Sandy beaches occur when np_beach exceeds this value."
-msgstr ""
+msgstr "Пісчані пляжи з'являються, коли np_beach перевищує це значення."
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "Зберегати мапу, отриману клієнтом, на диск."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5243,7 +5251,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "Збереження мапи, що отримано з серверу"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5289,6 +5297,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Якість знімку. Використовується тільки для формату JPEG.\n"
+"1 означає найгіршу якість, 100 – найкращу.\n"
+"Користуйтеся 0 для звичайної якості."
 
 #: src/settings_translation_file.cpp
 msgid "Screenshots"
@@ -5296,7 +5307,7 @@ msgstr "Знімки екрана"
 
 #: src/settings_translation_file.cpp
 msgid "Seabed noise"
-msgstr ""
+msgstr "Шум морського дна"
 
 #: src/settings_translation_file.cpp
 msgid "Second of 4 2D noises that together define hill/mountain range height."
@@ -5964,6 +5975,9 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Для зменшення затримки, передача блоків затримується, коли гравець будує "
+"щось.\n"
+"Це визначає, як довго вона затримується після розміщення або видалення блоку."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -5987,7 +6001,7 @@ msgstr "Поріг дотику"
 
 #: src/settings_translation_file.cpp
 msgid "Tradeoffs for performance"
-msgstr ""
+msgstr "Домовленності для продуктивності"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
@@ -6033,6 +6047,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
+"Адреса переліку серверу, що зображується у вкладці Багатокористувацька гра."
 
 #: src/settings_translation_file.cpp
 msgid "Undersampling"
@@ -6059,7 +6074,7 @@ msgstr "Необмежена відстань передачі гравця"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr "Вивантаження невикористовуваних даних сервера"
+msgstr "Вивантаження невикористаних сервером даних"
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
@@ -6084,10 +6099,11 @@ msgstr "Використовувати анімацію хмар для фону
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
+"Використовувати анізотропну фільтрацію при погляді на текстури під кутом."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures down."
-msgstr ""
+msgstr "Використовувати білінійну фільтрацію для зменшених текстур."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6146,19 +6162,19 @@ msgstr "Вертикальна синхронізація"
 
 #: src/settings_translation_file.cpp
 msgid "Valley depth"
-msgstr ""
+msgstr "Глибина долини"
 
 #: src/settings_translation_file.cpp
 msgid "Valley fill"
-msgstr ""
+msgstr "Заповнення долини"
 
 #: src/settings_translation_file.cpp
 msgid "Valley profile"
-msgstr ""
+msgstr "Профіль долин"
 
 #: src/settings_translation_file.cpp
 msgid "Valley slope"
-msgstr ""
+msgstr "Схил долини"
 
 #: src/settings_translation_file.cpp
 msgid "Variation of biome filler depth."
