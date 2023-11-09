@@ -2148,7 +2148,7 @@ to games.
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
-    ```
+    ```lua
     damage =
       collision speed
       * ((node_fall_damage_add_percent   + 100) / 100) -- node group
