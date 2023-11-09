@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-11-09 11:04+0000\n"
-"Last-Translator: dandelionsmellr <prikolnanozkaz@gmail.com>\n"
+"PO-Revision-Date: 2023-11-09 11:06+0000\n"
+"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -6045,11 +6045,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Використовувати 3D хмари замість плоских."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Використовуйте хмарну анімацію для фону головного меню."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when looking at textures from an angle."
@@ -6106,7 +6106,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "VSync"
