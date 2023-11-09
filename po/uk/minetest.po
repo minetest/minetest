@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-11-09 11:06+0000\n"
-"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
+"PO-Revision-Date: 2023-11-09 22:25+0000\n"
+"Last-Translator: dandelionsmellr <prikolnanozkaz@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -84,7 +84,7 @@ msgstr ""
 
 #: builtin/common/chatcommands.lua
 msgid "[all | <cmd>]"
-msgstr "[all | <cmd>]"
+msgstr "[all | <команда>]"
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
@@ -440,7 +440,7 @@ msgstr "Летючі острови в небі"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "Летючі острови (експериментальні)"
+msgstr "Висячі острови (експериментальне)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
@@ -790,7 +790,7 @@ msgstr "Поширення по X"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Y spread"
-msgstr "Поширення по Y"
+msgstr "Поширення за Y"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Z spread"
@@ -2883,7 +2883,7 @@ msgstr "Максимум одночасних завантажень ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "ContentDB URL"
-msgstr "URL ContentDB"
+msgstr "Адреса ContentDB"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -3217,11 +3217,11 @@ msgstr "Записувати дані налагодження генерато�
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon maximum Y"
-msgstr "Максимальна Y підземелля"
+msgstr "Максимальний Y підземелля"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon minimum Y"
-msgstr "Мінімальна Y підземелля"
+msgstr "Мінімальний Y підземелля"
 
 #: src/settings_translation_file.cpp
 msgid "Dungeon noise"
@@ -3705,19 +3705,19 @@ msgstr "Повноекранний режим."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Масштабування інтерфейсу"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "Масштаб інтерфейсу"
+msgstr "Фільтр масштабування інтерфейсу"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "Фільтр масштабування інтерфейсу txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "GUIs"
-msgstr ""
+msgstr "Графічні інтерфейси"
 
 #: src/settings_translation_file.cpp
 msgid "Gamepads"
@@ -3968,6 +3968,8 @@ msgid ""
 "If enabled, account registration is separate from login in the UI.\n"
 "If disabled, new accounts will be registered automatically when logging in."
 msgstr ""
+"Якщо увімкнено, реєстрація акаунта розділена від входу в інтерфейсі.\n"
+"Якщо вимкнено, нові акаунти автоматично реєструватимуться при вході."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4080,6 +4082,7 @@ msgstr ""
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
+"Замірювати функцію дії модифікаторів незавантажених блоків при реєстрації."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
@@ -4385,10 +4388,13 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Завантажувати профайлер гри для збору даних профайлінга.\n"
+"Забезпечує команду /profiler для доступу до компільованого профайлу.\n"
+"Корисно для розробників модів та операторів серверів."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr ""
+msgstr "Модифікатори незавантажених блоків"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4402,11 +4408,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of dungeons."
-msgstr ""
+msgstr "Мінімальний Y підеземель."
 
 #: src/settings_translation_file.cpp
 msgid "Lower Y limit of floatlands."
-msgstr ""
+msgstr "Мінімальний Y висячих островів."
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -4416,10 +4422,12 @@ msgstr "Скрипт основного меню"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Зробити кольори туману й неба залежними від частини доби (світанок/захід) і "
+"напрямка погляду."
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
-msgstr ""
+msgstr "Робить усі рідини непрозорими"
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -4639,7 +4647,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
-msgstr ""
+msgstr "Максимальна кількість блоків, що можуть бути у черзі на завантаження."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4774,7 +4782,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
-msgstr ""
+msgstr "Профайлер модів"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Security"
@@ -4909,6 +4917,16 @@ msgid ""
 "processes, especially in singleplayer and/or when running Lua code in\n"
 "'on_generated'. For many users the optimum setting may be '1'."
 msgstr ""
+"Кількість потоків підвантаження для використання.\n"
+"Значення 0:\n"
+"-    Автоматичний вибір. Кількість потоків буде\n"
+"-    кількість процесорів мінус 2, з мінімумом 1.\n"
+"Будь-яке інше значення:\n"
+"-    Визначає кількість потоків підвантаження, з мінімумом 1.\n"
+"УВАГА: Збільшення кількості потоків збільшує швидкість\n"
+"генератору світу, але може знижувати продуктивність гри, заважаючи\n"
+"іншим процесам, особливо у одиночній грі й при виконанні коду Lua у\n"
+"\"on_generated\". Для більшості гравців оптимальним значенням може бути 1."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4986,6 +5004,8 @@ msgid ""
 "Path to the monospace font. Must be a TrueType font.\n"
 "This font is used for e.g. the console and profiler screen."
 msgstr ""
+"Шлях до моноширинного шрифту. Шрифт повинен бути TrueType.\n"
+"Цей шрифт використовується, наприклад, для консолі й екрану профайлера."
 
 #: src/settings_translation_file.cpp
 msgid "Pause on lost window focus"
@@ -5063,7 +5083,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Профайлер"
 
 #: src/settings_translation_file.cpp
 msgid "Prometheus listener address"
@@ -5233,6 +5253,11 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"Масштабувати інтерфейс за заданим значенням.\n"
+"Використовується метод найближчого сусіда для масштабування.\n"
+"Це згладжуватиме деякі гострі кути, та змішуватиме пікселі при\n"
+"зменшенні, за рахунок розмиття деяких крайніх пикселей, коли\n"
+"зображення масштабовані на нецілі розміри."
 
 #: src/settings_translation_file.cpp
 msgid "Screen"
@@ -5309,15 +5334,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "Колір меж рамки виділення (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "Колір рамки виділення"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "Товщина рамки виділення"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5526,14 +5551,14 @@ msgstr "Показати дані зневадження"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr "Показувати області виділення сутностей"
+msgstr "Показувати рамку виділення сутностей"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Show entity selection boxes\n"
 "A restart is required after changing this."
 msgstr ""
-"Показати поле виділення сутностей\n"
+"Показати рамку виділення сутностей\n"
 "Після зміни потрібно перезапустити."
 
 #: src/settings_translation_file.cpp
@@ -5793,6 +5818,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"Звичайний формат, в якому зберігаються профайли,\n"
+"коли виконується `/profiler save [формат]` без формату."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other biome filler node."
@@ -5940,7 +5967,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Затримка підказки"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen"
@@ -5952,7 +5979,7 @@ msgstr "Чутливість дотику"
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen sensitivity multiplier."
-msgstr ""
+msgstr "Множник чутливості дотику."
 
 #: src/settings_translation_file.cpp
 msgid "Touchscreen threshold"
@@ -5980,10 +6007,13 @@ msgid ""
 "False = 128\n"
 "Usable to make minimap smoother on slower machines."
 msgstr ""
+"Увімкнено = 256\n"
+"Вимкнено = 128\n"
+"Корисно, щоб робити мінімапу плавніше на повільніших машинах."
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Довірені моди"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6033,23 +6063,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Update information URL"
-msgstr ""
+msgstr "Адреса оновлення інформації"
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of dungeons."
-msgstr "Верхня межа р підземель."
+msgstr "Максимальний Y підземель."
 
 #: src/settings_translation_file.cpp
 msgid "Upper Y limit of floatlands."
-msgstr ""
+msgstr "Максимальний Y висячих островів."
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr "Використовувати 3D хмари замість плоских."
+msgstr "Використовувати об'ємні хмари замість плоских."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr "Використовуйте хмарну анімацію для фону головного меню."
+msgstr "Використовувати анімацію хмар для фону головного меню."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when looking at textures from an angle."
@@ -6061,13 +6091,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
-msgstr ""
+msgstr "Перехрестя для дотику"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Use crosshair to select object instead of whole screen.\n"
 "If enabled, a crosshair will be shown and will be used for selecting object."
 msgstr ""
+"Використовувати перехрестя для вибору об'єкта замість усього екрану.\n"
+"Якщо увімкнено, перехрестя буде показано та використано для вибору об'єкта."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6102,7 +6134,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
-msgstr ""
+msgstr "Інтерфейси"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -6167,6 +6199,10 @@ msgid ""
 "Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
 "Ex: 5.5.0 is 005005000"
 msgstr ""
+"Номер версії, що в останній раз був помічений під час перевірки оновлення.\n"
+"\n"
+"Представлення: MMMIIIPPP, де M - значна версія, I - другорядна, P - патч\n"
+"Приклад: 5.5.0 є 005005000"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6339,7 +6375,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
-msgstr ""
+msgstr "Товщина лінії рамки виділення навколо блоків."
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
@@ -6436,7 +6472,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "Обмеження одночасних з'єднань cURL"
 
 #~ msgid "- Creative Mode: "
 #~ msgstr "- Творчість: "
