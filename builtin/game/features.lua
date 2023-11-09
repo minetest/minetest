@@ -27,6 +27,7 @@ core.features = {
 	get_light_data_buffer = true,
 	mod_storage_on_disk = true,
 	compress_zstd = true,
+	sound_parameter_table_has_start_time = true,
 }
 
 function core.has_feature(arg)
