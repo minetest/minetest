@@ -542,7 +542,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			info.plane = nearest_collided;
 
 			// Set the speed component that caused the collision to zero
-			if (step_up) {
+			if (step_up && speed_f->Y <= 0.0f) {
 				// Special case: Handle stairs
 				nearest_info.is_step_up = true;
 				is_collision = false;
