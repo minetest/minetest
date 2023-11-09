@@ -303,13 +303,14 @@ def import_tr_file(tr_file):
 					if header_comments != None:
 						in_header = False
 					continue
-				# comment lines
+				# Comment lines
 				elif line.startswith("#"):
-					# source file comments: ##[ file.lua ] ##
+					# Source file comments: ##[ file.lua ]##
 					if line.startswith(symbol_source_prefix) and line.endswith(symbol_source_suffix):
+						# This line marks the end of header comments.
 						if params["print-source"]:
 							in_header = False
-						# remove those comments; they may be added back automatically
+						# Remove those comments; they may be added back automatically.
 						continue
 
 					# Store first occurance of textdomain
