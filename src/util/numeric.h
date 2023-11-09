@@ -195,16 +195,12 @@ struct MeshGrid {
  *
  *  \note This is also used in cases where degrees wrapped to the range [0, 360]
  *  is innapropriate (e.g. pitch needs negative values)
- *
- *  \internal functionally equivalent -- although precision may vary slightly --
- *  to fmodf((f), 360.0f) however empirical tests indicate that this approach is
- *  faster.
  */
 inline float modulo360f(float f)
 {
 	return fmodf(f, 360.0f);
 }
-		
+
 
 /** Returns \p f wrapped to the range [0, 360]
   */
