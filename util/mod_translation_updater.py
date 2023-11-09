@@ -120,9 +120,19 @@ def main():
 
 # Group 2 will be the string, groups 1 and 3 will be the delimiters (" or ')
 # See https://stackoverflow.com/questions/46967465/regex-match-text-in-either-single-or-double-quote
-pattern_lua_quoted = re.compile(r'(?:^|[\.=^\t,{\(\s])N?F?S\s*\(\s*(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)[\s,\)]', re.DOTALL)
+pattern_lua_quoted = re.compile(
+	r'(?:^|[\.=^\t,{\(\s])' # Look for beginning of file or anything that isn't a function identifier
+	r'N?F?S\s*' # Matches S, FS, NS or NFS function name followed by optional spaces
+	r'\(\s*(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)' # Quoted string
+	r'[\s,\)]', # End of call of argument
+	re.DOTALL)
 # Handles the [[ ... ]] string delimiters
-pattern_lua_bracketed = re.compile(r'(?:^|[\.=^\t,{\(\s])N?F?S\s*\(\s*\[\[(.*?)\]\][\s,\)]', re.DOTALL)
+pattern_lua_bracketed = re.compile(
+	r'(?:^|[\.=^\t,{\(\s])' # Same as for pattern_lua_quoted
+	r'N?F?S\s*' # Same as for pattern_lua_quoted
+	r'\(\s*\[\[(.*?)\]\]' # [[ ... ]] string delimiters
+	r'[\s,\)]', # Same as for pattern_lua_quoted
+	re.DOTALL)
 
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
