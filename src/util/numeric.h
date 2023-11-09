@@ -202,25 +202,9 @@ struct MeshGrid {
  */
 inline float modulo360f(float f)
 {
-	int sign;
-	int whole;
-	float fraction;
-
-	if (f < 0) {
-		f = -f;
-		sign = -1;
-	} else {
-		sign = 1;
-	}
-
-	whole = f;
-
-	fraction = f - whole;
-	whole %= 360;
-
-	return sign * (whole + fraction);
+	return std::fmodf(f, 360.0f);
 }
-
+		
 
 /** Returns \p f wrapped to the range [0, 360]
   */
