@@ -7,41 +7,49 @@
 
 Install dependencies with homebrew:
 
-    brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
+```shell
+brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd
+```
 
 ## Download
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-```bash
+```shell
 git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
 Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
 
-```bash
+```shell
 git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 ```
 
 Download Minetest's fork of Irrlicht:
 
-    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+```shell
+git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+```
 
 ## Build
 
-    mkdir build
-    cd build
+```shell
+mkdir build
+cd build
 
-    cmake .. \
-        -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
-        -DCMAKE_FIND_FRAMEWORK=LAST \
-        -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-        -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
+cmake .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_INSTALL_PREFIX=../build/macos/ \
+    -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
 
-    make -j$(sysctl -n hw.logicalcpu)
-    make install
+make -j$(sysctl -n hw.logicalcpu)
+make install
+```
 
 ## Run
 
-    open ./build/macos/minetest.app
+```shell
+open ./build/macos/minetest.app
+```

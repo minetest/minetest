@@ -12,6 +12,7 @@
 It is highly recommended to use vcpkg as package manager.
 
 After you successfully built vcpkg you can easily install the required libraries:
+
 ```powershell
 vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry gettext --triplet x64-windows
 ```
@@ -49,8 +50,10 @@ Use `--triplet` to specify the target triplet, e.g. `x64-windows` or `x86-window
 
 Run the following script in PowerShell:
 
-    cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
-    cmake --build . --config Release
+```powershell
+cmake . -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_GETTEXT=OFF -DENABLE_CURSES=OFF
+cmake --build . --config Release
+```
 
 Make sure that the right compiler is selected and the path to the vcpkg toolchain is correct.
 
