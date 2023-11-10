@@ -5270,8 +5270,12 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
-      -- sound parameter tables support start_time (5.8.0)
+      -- Sound parameter tables support start_time (5.8.0)
       sound_params_start_time = true,
+      -- New fields for set_physics_override: speed_climb, speed_crouch,
+      -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
+      -- acceleration_default, acceleration_default (5.8.0)
+      new_physics_overrides = true,
   }
   ```
 
