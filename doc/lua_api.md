@@ -5274,7 +5274,7 @@ Utilities
       sound_params_start_time = true,
       -- New fields for set_physics_override: speed_climb, speed_crouch,
       -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
-      -- acceleration_default, acceleration_default (5.8.0)
+      -- acceleration_default, acceleration_air (5.8.0)
       new_physics_overrides = true,
   }
   ```
