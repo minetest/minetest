@@ -2084,7 +2084,7 @@ An example recipe: Craft a raw meat soup from any meat, any water and any bowl:
         {"group:meat"},
         {"group:water"},
         {"group:bowl"},
-,    }
+    }
 }
 ```
 
