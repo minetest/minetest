@@ -116,9 +116,7 @@ local function load_settingtypes()
 					content = {},
 				}
 
-				if page.title:sub(1, 5) ~= "Hide:" then
-					page = add_page(page)
-				end
+				page = add_page(page)
 			elseif entry.level == 2 then
 				ensure_page_started()
 				page.content[#page.content + 1] = {
