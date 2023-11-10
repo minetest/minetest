@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
-"PO-Revision-Date: 2023-11-10 10:05+0000\n"
-"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
+"PO-Revision-Date: 2023-11-11 11:04+0000\n"
+"Last-Translator: YearOfFuture <prikolnanozkaz@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -1794,7 +1794,7 @@ msgstr "Очистити OEM"
 
 #: src/client/keycode.cpp
 msgid "Page down"
-msgstr "Сторінка вниз"
+msgstr "Page Down"
 
 #: src/client/keycode.cpp
 msgid "Page up"
@@ -2181,11 +2181,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of ridged mountains."
-msgstr "2D шум що контролює форму/розмір гребенів гір."
+msgstr "Шум 2D, що керує формою/розміром гірських хребтів."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr "2D шум, який керує формою/розміром прокатних пагорбів."
+msgstr "Шум 2D, який керує формою/розміром пагорбів."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
@@ -2193,7 +2193,7 @@ msgstr "2D шум що контролює форму/розмір ступінч
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of ridged mountain ranges."
-msgstr "2D шум що контролює розмір/імовірність гребенів гірських масивів."
+msgstr "Шум 2D, що розміром/поширенням складчастих гірських хребтів."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the size/occurrence of rolling hills."
@@ -2257,7 +2257,7 @@ msgstr "3D шум для виступів гір, скель та ін. Зазв
 
 #: src/settings_translation_file.cpp
 msgid "3D noise that determines number of dungeons per mapchunk."
-msgstr "3D шум що визначає кількість підземель на фрагмент карти."
+msgstr "3D шум що визначає кількість підземель на фрагмент мапи."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4445,13 +4445,15 @@ msgstr "Каталог мапи"
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen Carpathian."
-msgstr ""
+msgstr "Спеціальні атрибути генерації для генератору світу Карпати."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Flat.\n"
 "Occasional lakes and hills can be added to the flat world."
 msgstr ""
+"Спеціальні атрибути генерації для генератору світу Площина.\n"
+"Рідко озера й пагорби можуть бути додані до плоского світу."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4459,6 +4461,9 @@ msgid ""
 "'terrain' enables the generation of non-fractal terrain:\n"
 "ocean, islands and underground."
 msgstr ""
+"Спеціальні атрибути генерації для генератору світу Фрактал.\n"
+"\"terrain\" вмикає генерацію нефрактальної місцевості:\n"
+"океани, острови й підземелля."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4469,10 +4474,16 @@ msgid ""
 "to become shallower and occasionally dry.\n"
 "'altitude_dry': Reduces humidity with altitude."
 msgstr ""
+"Спеціальні атрибути генерації для генератору світу Долини.\n"
+"\"altitude_chill\": зменшує теплоту зі зростом висоти.\n"
+"\"humid_rivers\": збільшує вологість навколо річок.\n"
+"\"vary_river_depth\": якщо увімкнено, низька вологість і висока\n"
+"температура впливають на рівень води у річках.\n"
+"\"altitude_dry\": зменшує вологість зі зростом висоти."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation attributes specific to Mapgen v5."
-msgstr ""
+msgstr "Спеціальні атрибути генерації для генератору світу V5."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4500,11 +4511,11 @@ msgstr "Інтервал збереження мапи"
 
 #: src/settings_translation_file.cpp
 msgid "Map shadows update frames"
-msgstr ""
+msgstr "Кадри оновлення тіней мапи"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr ""
+msgstr "Обмеження блоків мапи"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
@@ -4524,19 +4535,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian"
-msgstr ""
+msgstr "Генератор світу Карпати"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Carpathian specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу Карпати"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat"
-msgstr "Генератор світу: рівний"
+msgstr "Генератор світу Площина"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Flat specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу Площина"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal"
@@ -4544,31 +4555,31 @@ msgstr "Генератор світу: фрактальний"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Fractal specific flags"
-msgstr "Мітки для фрактального ґенератора світу"
+msgstr "Спеціальні мітки генератору світу Фрактал"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5"
-msgstr "Генератор світу: V5"
+msgstr "Генератор світу V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V5 specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6"
-msgstr "Генератор світу: V6"
+msgstr "Генератор світу V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V6 specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7"
-msgstr "Генератор світу: V7"
+msgstr "Генератор світу V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen V7 specific flags"
-msgstr ""
+msgstr "Спеціальні мітки генератору світу V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
@@ -4592,7 +4603,7 @@ msgstr "Максимальна відстань генерації блоків"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr ""
+msgstr "Максимальна відстань надсилання блоків"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
@@ -4600,7 +4611,7 @@ msgstr "Найбільша кількість рідини на крок."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Максимум додаткових блоків clearobjects"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -4616,11 +4627,11 @@ msgstr "Найбільша кількість FPS, коли вікно поза 
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
-msgstr ""
+msgstr "Максимальна відстань для промальовування тіней."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Максимум примусово завантажених блоків мапи"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
@@ -4628,17 +4639,19 @@ msgstr "Макс. ширина панелі швидкого доступу"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of large caves per mapchunk."
-msgstr ""
+msgstr "Максимум випадкового числа великих печер на фрагмент мапи."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum limit of random number of small caves per mapchunk."
-msgstr ""
+msgstr "Максимум випадкового числа малих печер на фрагмент мапи."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum liquid resistance. Controls deceleration when entering liquid at\n"
 "high speed."
 msgstr ""
+"Максимальний опір рідини.\n"
+"Керує сповільненням при зануренні у рідину на високій швидкості."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4714,13 +4727,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum size of the out chat queue"
-msgstr ""
+msgstr "Максимальний розмір черги вихідних повідомлень у чаті"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum size of the out chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
+"Максимальний розмір черги вихідних повідомлень у чаті.\n"
+"0 для відключення черги і -1 для необмеженого розміру."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4764,15 +4779,15 @@ msgstr "Мінімапа"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
-msgstr ""
+msgstr "Висота сканування мінімапи"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of large caves per mapchunk."
-msgstr ""
+msgstr "Мінимум випадкового числа великих печер на фрагмент мапи."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum limit of random number of small caves per mapchunk."
-msgstr ""
+msgstr "Мінімум випадкового числа малих печер на фрагмент мапи."
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -4780,7 +4795,7 @@ msgstr "Mіп-текстурування"
 
 #: src/settings_translation_file.cpp
 msgid "Misc"
-msgstr ""
+msgstr "Різне"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -4792,7 +4807,7 @@ msgstr "Безпека модів"
 
 #: src/settings_translation_file.cpp
 msgid "Mod channels"
-msgstr ""
+msgstr "Канали модів"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the HUD elements."
@@ -4808,41 +4823,43 @@ msgstr "Розмір моноширного шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size divisible by"
-msgstr ""
+msgstr "Розмір моноширинного шрифта подільний на"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
-msgstr ""
+msgstr "Шум висоти гір"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr ""
+msgstr "Шум гір"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain variation noise"
-msgstr ""
+msgstr "Шум варіації гір"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain zero level"
-msgstr ""
+msgstr "Нульовий рівень гір"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чутливість миші"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Множник чутливості миші."
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr ""
+msgstr "Шум бруду"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Множник для похитування при падінні.\n"
+"Наприклад: 0 вимикає похитування, 1.0 для звичайного, 2.0 для подвійного."
 
 #: src/settings_translation_file.cpp
 msgid "Mute sound"
@@ -4855,6 +4872,10 @@ msgid ""
 "Current mapgens in a highly unstable state:\n"
 "-    The optional floatlands of v7 (disabled by default)."
 msgstr ""
+"Назва генератору світу, який буде використано при створенні нового світу.\n"
+"Створення світу в головному меню перевизначатиме це.\n"
+"Поточні генератори світу у дуже нестабільному стані:\n"
+"-    Необов'язкові висячі острови у v7 (вимкнено за замовчуванням)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4873,6 +4894,8 @@ msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
 msgstr ""
+"Мережевий порт для використання (UDP).\n"
+"Це налаштування буде перевизначено при запуску з головного меню."
 
 #: src/settings_translation_file.cpp
 msgid "Networking"
@@ -4880,7 +4903,7 @@ msgstr "Мережа"
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "Новим користувачам потрібно вводити цей пароль."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
@@ -4892,7 +4915,7 @@ msgstr "Підсвічування блоків і сутностей"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr ""
+msgstr "Підсвічувати блок"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -4904,7 +4927,7 @@ msgstr "Шуми"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "Кількість потоків підвантаження"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4954,12 +4977,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
-msgstr ""
+msgstr "Непрозорі рідини"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Opaqueness (alpha) of the shadow behind the default font, between 0 and 255."
-msgstr ""
+msgstr "Непрозорість (альфа-канал) тіні позаду звичайного шрифта, між 0 та 255."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5186,7 +5209,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ridged mountain size noise"
-msgstr ""
+msgstr "Шум розміру гірських хребтів"
 
 #: src/settings_translation_file.cpp
 msgid "River channel depth"
@@ -5698,11 +5721,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Постійна точка відрождення"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
-msgstr ""
+msgstr "Шум крутизни"
 
 #: src/settings_translation_file.cpp
 msgid "Step mountain size noise"
@@ -5856,10 +5879,14 @@ msgid ""
 "0.0 = Wave doesn't move at all.\n"
 "Default is 1.0 (1/2 node)."
 msgstr ""
+"Максимальна висота поверхні хвилястих рідин.\n"
+"4.0 = висота хвилі дорівнює два блоки\n"
+"0.0 = хвилі не рухається взагалі.\n"
+"За замовчуванням – 1.0 (1/2 блоки)."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "Мережевий інтерфейс, що використовується сервером."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5891,6 +5918,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "in-game view frustum around."
 msgstr ""
+"Чутливість осей джойстику для переміщення\n"
+"погляду в грі."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5955,6 +5984,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Time of day when a new world is started, in millihours (0-23999)."
 msgstr ""
+"Частина дня, коли на новому світі грають вперше, у мілігодинах (0-23999)."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -6005,7 +6035,7 @@ msgstr "Домовленності для продуктивності"
 
 #: src/settings_translation_file.cpp
 msgid "Transparency Sorting Distance"
-msgstr ""
+msgstr "Дальність сортування за прозорістю"
 
 #: src/settings_translation_file.cpp
 msgid "Trees noise"
@@ -6043,6 +6073,7 @@ msgstr ""
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
 msgstr ""
+"Адреса файлу JSON, що забезпечує інформацію про найновіший реліз Minetest"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
