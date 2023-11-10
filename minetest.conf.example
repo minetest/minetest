@@ -54,8 +54,9 @@
 #    type: bool
 # autojump = false
 
-#    Prevent digging and placing from repeating when holding the mouse buttons.
+#    Prevent digging and placing from repeating when holding the respective buttons.
 #    Enable this when you dig or place too often by accident.
+#    On touchscreens, this only affects digging.
 #    type: bool
 # safe_dig_and_place = false
 
@@ -69,23 +70,35 @@
 #    type: float min: 0.001 max: 10
 # mouse_sensitivity = 0.2
 
+#    Enable mouse wheel (scroll) for item selection in hotbar.
+#    type: bool
+# enable_hotbar_mouse_wheel = true
+
+#    Invert mouse wheel (scroll) direction for item selection in hotbar.
+#    type: bool
+# invert_hotbar_mouse_wheel = false
+
 ## Touchscreen
 
-#    The length in pixels it takes for touch screen interaction to start.
+#    The length in pixels it takes for touchscreen interaction to start.
 #    type: int min: 0 max: 100
 # touchscreen_threshold = 20
+
+#    Touchscreen sensitivity multiplier.
+#    type: float min: 0.001 max: 10
+# touchscreen_sensitivity = 0.2
 
 #    Use crosshair to select object instead of whole screen.
 #    If enabled, a crosshair will be shown and will be used for selecting object.
 #    type: bool
 # touch_use_crosshair = false
 
-#    (Android) Fixes the position of virtual joystick.
+#    Fixes the position of virtual joystick.
 #    If disabled, virtual joystick will center to first-touch's position.
 #    type: bool
 # fixed_virtual_joystick = false
 
-#    (Android) Use virtual joystick to trigger "Aux1" button.
+#    Use virtual joystick to trigger "Aux1" button.
 #    If enabled, virtual joystick will also tap "Aux1" button when out of main circle.
 #    type: bool
 # virtual_joystick_triggers_aux1 = false
@@ -311,51 +324,49 @@
 
 ### Filtering and Antialiasing
 
-#    Use mipmapping to scale textures. May slightly increase performance,
+#    Use mipmaps when scaling textures down. May slightly increase performance,
 #    especially when using a high resolution texture pack.
-#    Gamma correct downscaling is not supported.
+#    Gamma-correct downscaling is not supported.
 #    type: bool
 # mip_map = false
 
-#    Use anisotropic filtering when viewing at textures from an angle.
-#    type: bool
-# anisotropic_filter = false
-
-#    Use bilinear filtering when scaling textures.
+#    Use bilinear filtering when scaling textures down.
 #    type: bool
 # bilinear_filter = false
 
-#    Use trilinear filtering when scaling textures.
+#    Use trilinear filtering when scaling textures down.
+#    If both bilinear and trilinear filtering are enabled, trilinear filtering
+#    is applied.
 #    type: bool
 # trilinear_filter = false
 
-#    Filtered textures can blend RGB values with fully-transparent neighbors,
-#    which PNG optimizers usually discard, often resulting in dark or
-#    light edges to transparent textures. Apply a filter to clean that up
-#    at texture load time. This is automatically enabled if mipmapping is enabled.
+#    Use anisotropic filtering when looking at textures from an angle.
 #    type: bool
-# texture_clean_transparent = false
+# anisotropic_filter = false
 
-#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
-#    can be blurred, so automatically upscale them with nearest-neighbor
-#    interpolation to preserve crisp pixels. This sets the minimum texture size
-#    for the upscaled textures; higher values look sharper, but require more
-#    memory. Powers of 2 are recommended. This setting is ONLY applied if
-#    bilinear/trilinear/anisotropic filtering is enabled.
-#    This is also used as the base node texture size for world-aligned
-#    texture autoscaling.
-#    type: int min: 1 max: 32768
-# texture_min_size = 64
+#    Select the antialiasing method to apply.
+#
+#    * None - No antialiasing (default)
+#
+#    * FSAA - Hardware-provided full-screen antialiasing (incompatible with shaders)
+#    A.K.A multi-sample antialiasing (MSAA)
+#    Smoothens out block edges but does not affect the insides of textures.
+#    A restart is required to change this option.
+#
+#    * FXAA - Fast approximate antialiasing (requires shaders)
+#    Applies a post-processing filter to detect and smoothen high-contrast edges.
+#    Provides balance between speed and image quality.
+#
+#    * SSAA - Super-sampling antialiasing (requires shaders)
+#    Renders higher-resolution image of the scene, then scales down to reduce
+#    the aliasing effects. This is the slowest and the most accurate method.
+#    type: enum values: none, fsaa, fxaa, ssaa
+# antialiasing = none
 
-#    Use multi-sample antialiasing (MSAA) to smooth out block edges.
-#    This algorithm smooths out the 3D viewport while keeping the image sharp,
-#    but it doesn't affect the insides of textures
-#    (which is especially noticeable with transparent textures).
-#    Visible spaces appear between nodes when shaders are disabled.
-#    If set to 0, MSAA is disabled.
-#    A restart is required after changing this option.
-#    type: enum values: 0, 1, 2, 4, 8, 16
-# fsaa = 0
+#    Defines size of the sampling grid for FSAA and SSAA antializasing methods.
+#    Value of 2 means taking 2x2 = 4 samples.
+#    type: enum values: 2, 4, 8, 16
+# fsaa = 2
 
 ### Occlusion Culling
 
@@ -385,17 +396,14 @@
 ### Waving Nodes
 
 #    Set to true to enable waving leaves.
-#    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_leaves = false
 
 #    Set to true to enable waving plants.
-#    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_plants = false
 
 #    Set to true to enable waving liquids (like water).
-#    Requires shaders to be enabled.
 #    type: bool
 # enable_waving_water = false
 
@@ -403,25 +411,21 @@
 #    4.0 = Wave height is two nodes.
 #    0.0 = Wave doesn't move at all.
 #    Default is 1.0 (1/2 node).
-#    Requires waving liquids to be enabled.
 #    type: float min: 0 max: 4
 # water_wave_height = 1.0
 
 #    Length of liquid waves.
-#    Requires waving liquids to be enabled.
 #    type: float min: 0.1
 # water_wave_length = 20.0
 
 #    How fast liquid waves will move. Higher = faster.
 #    If negative, liquid waves will move backwards.
-#    Requires waving liquids to be enabled.
 #    type: float
 # water_wave_speed = 5.0
 
 ### Dynamic shadows
 
 #    Set to true to enable Shadow Mapping.
-#    Requires shaders to be enabled.
 #    type: bool
 # enable_dynamic_shadows = false
 
@@ -2597,7 +2601,7 @@
 
 #    The file path relative to your worldpath in which profiles will be saved to.
 #    type: string
-# profiler.report_path = ""
+# profiler.report_path =
 
 #    Instrument the methods of entities on registration.
 #    type: bool
@@ -2726,6 +2730,10 @@
 #    Warning: This option is EXPERIMENTAL!
 #    type: enum values: disable, enable, force
 # autoscale_mode = disable
+
+#    The base node texture size used for world-aligned texture autoscaling.
+#    type: int min: 1 max: 32768
+# texture_min_size = 64
 
 #    Side length of a cube of map blocks that the client will consider together
 #    when generating meshes.
@@ -3063,7 +3071,7 @@
 ### cURL
 
 #    Maximum time an interactive request (e.g. server list fetch) may take, stated in milliseconds.
-#    type: int min: 100 max: 2147483647
+#    type: int min: 1000 max: 2147483647
 # curl_timeout = 20000
 
 #    Limits number of parallel HTTP requests. Affects:
@@ -3075,7 +3083,7 @@
 # curl_parallel_limit = 8
 
 #    Maximum time a file download (e.g. a mod download) may take, stated in milliseconds.
-#    type: int min: 100 max: 2147483647
+#    type: int min: 5000 max: 2147483647
 # curl_file_download_timeout = 300000
 
 ### Misc
@@ -3154,7 +3162,7 @@
 #    type: float min: 0.001
 # joystick_frustum_sensitivity = 170.0
 
-## Temporary Settings
+## Hide: Temporary Settings
 
 #    Path to texture directory. All textures are first searched from here.
 #    type: path
@@ -3215,12 +3223,20 @@
 #    type: bool
 # continuous_forward = false
 
-#    Whether to show technical names.
+#    This can be bound to a key to toggle camera smoothing when looking around.
+#    Useful for recording videos
+#    type: bool
+# cinematic = false
+
 #    Affects mods and texture packs in the Content and Select Mods menus, as well as
-#    setting names in All Settings.
-#    Controlled by the checkbox in the "All settings" menu.
+#    setting names.
+#    Controlled by a checkbox in the settings menu.
 #    type: bool
 # show_technical_names = false
+
+#    Controlled by a checkbox in the settings menu.
+#    type: bool
+# show_advanced = false
 
 #    Enables the sound system.
 #    If disabled, this completely disables all sounds everywhere and the in-game
@@ -3241,10 +3257,10 @@
 #    type: int
 # update_last_known = 0
 
-#    This can be bound to a key to toggle camera smoothing when looking around.
-#    Useful for recording videos
+#    If this is set to true, the user will never (again) be shown the
+#    "reinstall Minetest Game" notification.
 #    type: bool
-# cinematic = false
+# no_mtg_notification = false
 
 #    Key for moving the player forward.
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h

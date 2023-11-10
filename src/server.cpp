@@ -2557,6 +2557,13 @@ bool Server::addMediaFile(const std::string &filename,
 		return false;
 	}
 
+	const char *deprecated_ext[] = { ".bmp", nullptr };
+	if (!removeStringEnd(filename, deprecated_ext).empty())
+	{
+		warningstream << "Media file \"" << filename << "\" is using a"
+			" deprecated format and will stop working in the future." << std::endl;
+	}
+
 	SHA1 sha1;
 	sha1.addBytes(filedata.c_str(), filedata.length());
 

@@ -13,12 +13,16 @@ Install dependencies with homebrew:
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest.git
-    cd minetest
+```bash
+git clone --depth 1 https://github.com/minetest/minetest.git
+cd minetest
+```
 
 Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
 
-    git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+```bash
+git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+```
 
 Download Minetest's fork of Irrlicht:
 

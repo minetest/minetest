@@ -256,7 +256,7 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .bmp, (deprecated) .tga
+    images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
     models: .x, .b3d, .obj
 
@@ -2139,11 +2139,13 @@ to games.
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
+    ```lua
     damage =
       collision speed
       * ((node_fall_damage_add_percent   + 100) / 100) -- node group
       * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
       - (14)                                           -- constant tolerance
+    ```
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
@@ -3943,9 +3945,9 @@ For example:
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the script `util/mtt_update.py` in the Minetest repository
-to generate and update translation files automatically from the Lua sources.
-See `util/README_mtt_update.md` for an explanation.
+Consider using the script `util/mod_translation_updater.py` in the Minetest
+repository to generate and update translation files automatically from the Lua
+sources. See `util/README_mod_translation_updater.md` for an explanation.
 
 ## Translating a String
 
@@ -4043,9 +4045,10 @@ On some specific cases, server translation could be useful. For example, filter
 a list on labels and send results to client. A method is supplied to achieve
 that:
 
-`minetest.get_translated_string(lang_code, string)`: Translates `string` using
-translations for `lang_code` language. It gives the same result as if the string
-was translated by the client.
+`minetest.get_translated_string(lang_code, string)`: resolves translations in
+the given string just like the client would, using the translation files for
+`lang_code`. For this to have any effect, the string needs to contain translation
+markup, e.g. `minetest.get_translated_string("fr", S("Hello"))`.
 
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
@@ -5313,6 +5316,9 @@ Minetest includes the following settings to control behavior of privileges:
   use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
   The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
+* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 ## Logging
 

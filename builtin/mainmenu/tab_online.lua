@@ -416,9 +416,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	return false
 end
 
-local function on_change(type, old_tab, new_tab)
-	if type == "LEAVE" then return end
-	serverlistmgr.sync()
+local function on_change(type)
+	if type == "ENTER" then
+		mm_game_theme.set_engine()
+		serverlistmgr.sync()
+	end
 end
 
 return {

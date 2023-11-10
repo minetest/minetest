@@ -164,10 +164,13 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 		return nullptr;
 	}
 
-	if (lsnd->m_decode_info.is_stereo && pos_vel_opt.has_value()) {
+	if (lsnd->m_decode_info.is_stereo && pos_vel_opt.has_value()
+			&& m_warned_positional_stereo_sounds.find(sound_name)
+					== m_warned_positional_stereo_sounds.end()) {
 		warningstream << "OpenALSoundManager::createPlayingSound: "
 				<< "Creating positional stereo sound \"" << sound_name << "\"."
 				<< std::endl;
+		m_warned_positional_stereo_sounds.insert(sound_name);
 	}
 
 	ALuint source_id;
@@ -181,8 +184,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 			volume, pitch, start_time, pos_vel_opt);
 
 	sound->play();
-	if (m_is_paused)
-		sound->pause();
+
 	warn_if_al_error("createPlayingSound");
 	return sound;
 }
@@ -514,7 +516,7 @@ void *OpenALSoundManager::run()
 		if (stop_requested)
 			break;
 
-		f32 dtime = get_time_since_last_step();
+		f32 dtime = get_time_since_last_step() * 1.0e-3f;
 		t_step_start = porting::getTimeMs();
 		step(dtime);
 	}

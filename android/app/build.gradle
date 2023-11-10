@@ -54,7 +54,6 @@ android {
 task prepareAssets() {
 	def assetsFolder = "build/assets"
 	def projRoot = rootDir.parent
-	def gameToCopy = "minetest_game"
 
 	// See issue #4638
 	def unsupportedLanguages = new File("${projRoot}/src/unsupported_language_list.txt").text.readLines()
@@ -80,9 +79,6 @@ task prepareAssets() {
 		}
 		copy {
 			from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
-		}
-		copy {
-			from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
 		}
 		copy {
 			from "${projRoot}/textures" into "${assetsFolder}/textures"

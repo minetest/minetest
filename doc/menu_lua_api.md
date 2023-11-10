@@ -105,7 +105,7 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 * `core.download_file(url, target)` (possible in async calls)
     * `url` to download, and `target` to store to
     * returns true/false
-* `minetest.get_http_api()` (possible in async calls)
+* `core.get_http_api()` (possible in async calls)
     * returns `HTTPApiTable` containing http functions.
     * The returned table contains the functions `fetch_sync`, `fetch_async` and
       `fetch_async_get` described below.
@@ -358,10 +358,13 @@ For a complete list of methods of the `Settings` object see `lua_api.md`
   * eg. `string.trim("\n \t\tfoo bar\t ")` == `"foo bar"`
 * `core.is_yes(arg)` (possible in async calls)
   * returns whether `arg` can be interpreted as yes
-* `minetest.encode_base64(string)` (possible in async calls)
+* `core.encode_base64(string)` (possible in async calls)
   * Encodes a string in base64.
-* `minetest.decode_base64(string)` (possible in async calls)
+* `core.decode_base64(string)` (possible in async calls)
   * Decodes a string encoded in base64.
+* `core.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 
 

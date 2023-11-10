@@ -20,10 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "environment.h"
-#include <ISceneManager.h>
-#include "clientobject.h"
-#include "util/numeric.h"
-#include "activeobjectmgr.h"
+#include "util/numeric.h" // IntervalLimiter
+#include "activeobjectmgr.h" // client::ActiveObjectMgr
+#include <set>
 
 class ClientSimpleObject;
 class ClientMap;
@@ -135,9 +134,9 @@ public:
 		std::vector<PointedThing> &objects
 	);
 
-	const std::list<std::string> &getPlayerNames() { return m_player_names; }
-	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
-	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
+	const std::set<std::string> &getPlayerNames() { return m_player_names; }
+	void addPlayerName(const std::string &name) { m_player_names.insert(name); }
+	void removePlayerName(const std::string &name) { m_player_names.erase(name); }
 	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
@@ -156,7 +155,7 @@ private:
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
-	std::list<std::string> m_player_names;
+	std::set<std::string> m_player_names;
 	v3s16 m_camera_offset;
 	u64 m_frame_time = 0;
 	u64 m_frame_dtime = 0;

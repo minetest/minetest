@@ -688,6 +688,9 @@ For the following functions `x` can be either a vector or a number:
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 ## Logging
 
@@ -1590,3 +1593,62 @@ Same as `image`, but does not accept a `position`; the position is instead deter
 * `alignment`: The alignment of the image.
 * `world_pos`: World position of the waypoint.
 * `offset`: offset in pixels from position.
+
+### Particle Definition (`add_particle`)
+
+```lua
+{
+    pos = {x=0, y=0, z=0},
+    velocity = {x=0, y=0, z=0},
+    acceleration = {x=0, y=0, z=0},
+    --  ^ Spawn particle at pos with velocity and acceleration
+    expirationtime = 1,
+    --  ^ Disappears after expirationtime seconds
+    size = 1,
+    collisiondetection = false,
+    --  ^ collisiondetection: if true collides with physical objects
+    collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
+    vertical = false,
+    --  ^ vertical: if true faces player using y axis only
+    texture = "image.png",
+    --  ^ Uses texture (string)
+    animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+    glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
+}
+```
+
+### `ParticleSpawner` Definition (`add_particlespawner`)
+
+```lua
+{
+    amount = 1,
+    time = 1,
+    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
+    minpos = {x=0, y=0, z=0},
+    maxpos = {x=0, y=0, z=0},
+    minvel = {x=0, y=0, z=0},
+    maxvel = {x=0, y=0, z=0},
+    minacc = {x=0, y=0, z=0},
+    maxacc = {x=0, y=0, z=0},
+    minexptime = 1,
+    maxexptime = 1,
+    minsize = 1,
+    maxsize = 1,
+    --  ^ The particle's properties are random values in between the bounds:
+    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
+    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
+    collisiondetection = false,
+    --  ^ collisiondetection: if true uses collision detection
+    collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
+    vertical = false,
+    --  ^ vertical: if true faces player using y axis only
+    texture = "image.png",
+    --  ^ Uses texture (string)
+}
+```

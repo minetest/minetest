@@ -27,7 +27,6 @@ local full_settings = settingtypes.parse_config_file(false, true)
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
 local reset_icon_path = core.formspec_escape(defaulttexturedir .. "settings_reset.png")
 
-local gettext = fgettext_ne
 local all_pages = {}
 local page_by_id = {}
 local filtered_pages = all_pages
@@ -48,13 +47,13 @@ end
 
 
 local change_keys = {
-	query_text = "Change keys",
+	query_text = "Change Keys",
 	requires = {
 		keyboard_mouse = true,
 	},
 	get_formspec = function(self, avail_w)
 		local btn_w = math.min(avail_w, 3)
-		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change keys")), 0.8
+		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change Keys")), 0.8
 	end,
 	on_submit = function(self, fields)
 		if fields.btn_change_keys then
@@ -66,23 +65,23 @@ local change_keys = {
 
 add_page({
 	id = "accessibility",
-	title = gettext("Accessibility"),
+	title = fgettext_ne("Accessibility"),
 	content = {
 		"language",
-		{ heading = gettext("General") },
+		{ heading = fgettext_ne("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
 		"hud_scaling",
 		"show_nametag_backgrounds",
-		{ heading = gettext("Chat") },
+		{ heading = fgettext_ne("Chat") },
 		"console_height",
 		"console_alpha",
 		"console_color",
-		{ heading = gettext("Controls") },
+		{ heading = fgettext_ne("Controls") },
 		"autojump",
 		"safe_dig_and_place",
-		{ heading = gettext("Movement") },
+		{ heading = fgettext_ne("Movement") },
 		"arm_inertia",
 		"view_bobbing_amount",
 		"fall_bobbing_amount",
@@ -97,7 +96,7 @@ local function load_settingtypes()
 		if not page then
 			page = add_page({
 				id = (section or "general"):lower():gsub(" ", "_"),
-				title = section or gettext("General"),
+				title = section or fgettext_ne("General"),
 				section = section,
 				content = {},
 			})
@@ -123,7 +122,7 @@ local function load_settingtypes()
 			elseif entry.level == 2 then
 				ensure_page_started()
 				page.content[#page.content + 1] = {
-					heading = gettext(entry.readable_name or entry.name),
+					heading = fgettext_ne(entry.readable_name or entry.name),
 				}
 			end
 		else
@@ -692,8 +691,19 @@ local function buttonhandler(this, fields)
 end
 
 
+local function eventhandler(event)
+	if event == "DialogShow" then
+		-- Don't show the "MINETEST" header behind the dialog.
+		mm_game_theme.set_engine(true)
+		return true
+	end
+
+	return false
+end
+
+
 function create_settings_dlg()
-	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, eventhandler)
 
 	dlg.data.page_id = update_filtered_pages("")
 

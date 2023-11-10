@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-09 15:54+0100\n"
+"POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2022-03-18 01:05+0000\n"
 "Last-Translator: Thomas Wiegand <weblate.org@wiegand.info>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -145,7 +145,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/client/keycode.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
 #: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -212,7 +212,8 @@ msgid "Optional dependencies:"
 msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua src/gui/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "บันทึก"
 
@@ -314,6 +315,11 @@ msgstr "ติดตั้ง $1"
 msgid "Install missing dependencies"
 msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้"
 
+#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
+#: src/client/game.cpp
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "Mods"
 msgstr "ม็อด"
@@ -323,6 +329,7 @@ msgid "No packages could be retrieved"
 msgstr "ไม่สามารถเรียกแพคเกจได้"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
 msgstr "ไม่มีผลลัพธ์"
 
@@ -351,6 +358,10 @@ msgid "Texture packs"
 msgstr "เทกซ์เจอร์แพ็ค"
 
 #: builtin/mainmenu/dlg_contentstore.lua
+msgid "The package $1/$2 was not found."
+msgstr ""
+
+#: builtin/mainmenu/dlg_contentstore.lua
 msgid "Uninstall"
 msgstr "ถอนการติดตั้ง"
 
@@ -365,6 +376,10 @@ msgstr "อัปเดต All [$1]"
 #: builtin/mainmenu/dlg_contentstore.lua
 msgid "View more information in a web browser"
 msgstr "ดูข้อมูลเพิ่มเติมในเว็บเบราว์เซอร์"
+
+#: builtin/mainmenu/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -444,11 +459,6 @@ msgid "Increases humidity around rivers"
 msgstr "เพิ่มความชื้นรอบแม่น้ำ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
-msgid "Install a game"
-msgstr "ติดตั้ง $1"
-
-#: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
 msgstr ""
 
@@ -505,7 +515,7 @@ msgid "Sea level rivers"
 msgstr "แม่น้ำระดับน้ำทะเล"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_settings_advanced.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
 msgstr "เมล็ดพันธุ์"
 
@@ -554,10 +564,6 @@ msgstr "ถ้ำขนาดใหญ่ที่อยู่ลึกลงไ
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
 msgstr "ชื่อโลก"
-
-#: builtin/mainmenu/dlg_create_world.lua
-msgid "You have no games installed."
-msgstr "คุณไม่มีเกมที่ติดตั้ง"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -614,6 +620,31 @@ msgstr "รหัสผ่านไม่ตรงกับ!"
 msgid "Register"
 msgstr "ลงทะเบียน และเข้าร่วม"
 
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Dismiss"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"For a long time, the Minetest engine shipped with a default game called "
+"\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
+"game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid ""
+"If you want to continue playing in your Minetest Game worlds, you need to "
+"reinstall Minetest Game."
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Minetest Game is no longer installed by default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_reinstall_mtg.lua
+msgid "Reinstall Minetest Game"
+msgstr ""
+
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "ยอมรับ"
@@ -627,153 +658,6 @@ msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr "ม็อดแพ็คมีชื่อชื่อที่ถูกตั้งในไฟล์ modpack.conf ซึ่งจะแทนที่ชื่อที่เปลี่ยนตรงนี้"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "(No description of setting given)"
-msgstr "(ไม่มีคำอธิบายของการตั้งค่าที่ให้มา)"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "2D Noise"
-msgstr "2D นอยส์"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "< Back to Settings page"
-msgstr "< กลับไปที่หน้าการตั้งค่า"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Browse"
-msgstr "เรียกดู"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Client Mods"
-msgstr "เลือก Mods"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Games"
-msgstr "เนื้อหา"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Content: Mods"
-msgstr "เนื้อหา"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "ปิดการใช้งานแล้ว"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Edit"
-msgstr "แก้ไข"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Enabled"
-msgstr "เปิดใช้งานแล้ว"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Lacunarity"
-msgstr "ความไม่ชัดเจน"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Octaves"
-msgstr "ความละเอียดของการสุ่ม"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Offset"
-msgstr "ค่าชดเชย"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Persistence"
-msgstr "วิริยะ"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid integer."
-msgstr "โปรดใส่ค่าเป็นตัวเลขในรูปแบบที่ถูกต้อง"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Please enter a valid number."
-msgstr "กรุณาใส่หมายเลขที่ถูกต้อง"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Restore Default"
-msgstr "คืนค่าเริ่มต้น"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Scale"
-msgstr "ขนาด"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
-msgid "Search"
-msgstr "ค้นหา"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select directory"
-msgstr "เลือกไดเรกทอรี"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select file"
-msgstr "เลือกไฟล์"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua src/settings_translation_file.cpp
-msgid "Show technical names"
-msgstr "แสดงชื่อทางเทคนิค"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be at least $1."
-msgstr "ต้องมีค่าอย่างน้อย $1"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must not be larger than $1."
-msgstr "ค่าต้องไม่มากกว่า $1"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X"
-msgstr "X"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "X spread"
-msgstr "X กระจาย"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y"
-msgstr "Y"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Y spread"
-msgstr "Y กระจาย"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z"
-msgstr "Z"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Z spread"
-msgstr "Z กระจาย"
-
-#. ~ "absvalue" is a noise parameter flag.
-#. It is short for "absolute value".
-#. It can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "absvalue"
-msgstr "ค่าผันแปรการสุ่มสร้างแผนที่"
-
-#. ~ "defaults" is a noise parameter flag.
-#. It describes the default processing options
-#. for noise settings in main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "defaults"
-msgstr "เริ่มต้น"
-
-#. ~ "eased" is a noise parameter flag.
-#. It is used to make the map smoother and
-#. can be enabled in noise settings in
-#. main menu -> "All Settings".
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "eased"
-msgstr "ความนุ่มนวลของพื้นผิวบนทางลาด"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -798,6 +682,10 @@ msgstr ""
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
 msgstr ""
+
+#: builtin/mainmenu/init.lua
+msgid "Settings"
+msgstr "การตั้งค่า"
 
 #: builtin/mainmenu/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -830,10 +718,6 @@ msgstr "ไม่สามารถติดตั้ง mod $1"
 msgid "Unable to install a $1 as a texture pack"
 msgstr "ไม่สามารถติดตั้งพื้นผิว Texture $1"
 
-#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
-msgid "Loading..."
-msgstr "กำลังโหลด..."
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "รายชื่อเซิร์ฟเวอร์สาธารณะถูกปิดใช้งาน"
@@ -841,6 +725,185 @@ msgstr "รายชื่อเซิร์ฟเวอร์สาธารณ
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr "ลองเปิดใช้งานเซิร์ฟเวอร์ลิสต์สาธารณะอีกครั้งและตรวจสอบการเชื่อมต่ออินเทอร์เน็ต"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Browse"
+msgstr "เรียกดู"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Edit"
+msgstr "แก้ไข"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select directory"
+msgstr "เลือกไดเรกทอรี"
+
+#: builtin/mainmenu/settings/components.lua
+msgid "Select file"
+msgstr "เลือกไฟล์"
+
+#: builtin/mainmenu/settings/components.lua
+#, fuzzy
+msgid "Set"
+msgstr "เลือก"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "(No description of setting given)"
+msgstr "(ไม่มีคำอธิบายของการตั้งค่าที่ให้มา)"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "2D Noise"
+msgstr "2D นอยส์"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Lacunarity"
+msgstr "ความไม่ชัดเจน"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#, fuzzy
+msgid "Octaves"
+msgstr "ความละเอียดของการสุ่ม"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr "ค่าชดเชย"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Persistence"
+msgstr "วิริยะ"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr "ขนาด"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "X spread"
+msgstr "X กระจาย"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Y spread"
+msgstr "Y กระจาย"
+
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "Z spread"
+msgstr "Z กระจาย"
+
+#. ~ "absvalue" is a noise parameter flag.
+#. It is short for "absolute value".
+#. It can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "absvalue"
+msgstr "ค่าผันแปรการสุ่มสร้างแผนที่"
+
+#. ~ "defaults" is a noise parameter flag.
+#. It describes the default processing options
+#. for noise settings in the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "defaults"
+msgstr "เริ่มต้น"
+
+#. ~ "eased" is a noise parameter flag.
+#. It is used to make the map smoother and
+#. can be enabled in noise settings in
+#. the settings menu.
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+msgid "eased"
+msgstr "ความนุ่มนวลของพื้นผิวบนทางลาด"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "(Use system language)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Back"
+msgstr "หลัง"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Change keys"
+msgstr "เปลี่ยนคีย์"
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+#: src/client/keycode.cpp
+msgid "Clear"
+msgstr "ล้าง"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Reset setting to default"
+msgstr "คืนค่าเริ่มต้น"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Reset setting to default ($1)"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "ค้นหา"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show advanced settings"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Show technical names"
+msgstr "แสดงชื่อทางเทคนิค"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Client Mods"
+msgstr "เลือก Mods"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Games"
+msgstr "เนื้อหา"
+
+#: builtin/mainmenu/settings/settingtypes.lua
+#, fuzzy
+msgid "Content: Mods"
+msgstr "เนื้อหา"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "(The game will need to enable shadows as well)"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Custom"
+msgstr ""
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Disabled"
+msgstr "ปิดการใช้งานแล้ว"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#: src/settings_translation_file.cpp
+msgid "Dynamic shadows"
+msgstr "เงาแบบไดนามิก"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "High"
+msgstr "สูง"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Low"
+msgstr "ต่ำ"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Medium"
+msgstr "ปานกลาง"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+#, fuzzy
+msgid "Very High"
+msgstr "สูงเป็นพิเศษ"
+
+#: builtin/mainmenu/settings/shadows_component.lua
+msgid "Very Low"
+msgstr "ต่ำมาก"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
@@ -860,6 +923,10 @@ msgstr "นักพัฒนาหลัก"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
+msgstr ""
+
+#: builtin/mainmenu/tab_about.lua
+msgid "Irrlicht device:"
 msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
@@ -898,10 +965,6 @@ msgstr "เนื้อหา"
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
 msgstr "ปิดการใช้งานพื้นผิว Texture"
-
-#: builtin/mainmenu/tab_content.lua
-msgid "Information:"
-msgstr "ข้อมูล:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -952,6 +1015,11 @@ msgid "Host Server"
 msgstr "เซิร์ฟเวอร์"
 
 #: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Install a game"
+msgstr "ติดตั้ง $1"
+
+#: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
 msgstr "ติดตั้งเกมจาก ContentDB"
 
@@ -987,13 +1055,13 @@ msgstr "เซิร์ฟเวอร์ พอร์ต"
 msgid "Start Game"
 msgstr "เริ่มเกม"
 
+#: builtin/mainmenu/tab_local.lua
+msgid "You have no games installed."
+msgstr "คุณไม่มีเกมที่ติดตั้ง"
+
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
 msgstr "ที่อยู่"
-
-#: builtin/mainmenu/tab_online.lua src/client/keycode.cpp
-msgid "Clear"
-msgstr "ล้าง"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
@@ -1040,181 +1108,6 @@ msgstr "รีโมตพอร์ต"
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
 msgstr "คำอธิบายเซิร์ฟเวอร์"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "(game support required)"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "2x"
-msgstr "2x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "3D Clouds"
-msgstr "3D เมฆ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "4x"
-msgstr "4x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "8x"
-msgstr "8x"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "All Settings"
-msgstr "การตั้งค่าทั้งหมด"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Antialiasing:"
-msgstr "ลบรอยหยัก:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Autosave Screen Size"
-msgstr "ขนาดหน้าจอบันทึกอัตโนมัติ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Bilinear Filter"
-msgstr "กรอง bilinear"
-
-#: builtin/mainmenu/tab_settings.lua src/client/game.cpp
-msgid "Change Keys"
-msgstr "เปลี่ยนคีย์"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Connected Glass"
-msgstr "เชื่อมต่อแก้ว"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Dynamic shadows"
-msgstr "เงาแบบไดนามิก"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Dynamic shadows:"
-msgstr "เงาแบบไดนามิก: "
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Fancy Leaves"
-msgstr "ใบไม้"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "High"
-msgstr "สูง"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Low"
-msgstr "ต่ำ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Medium"
-msgstr "ปานกลาง"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap"
-msgstr "แผนที่ย่อ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Mipmap + Aniso. Filter"
-msgstr "แผนที่ย่อ + Aniso.กรอง"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Filter"
-msgstr "ไม่มีตัวกรอง"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "No Mipmap"
-msgstr "ไม่ Mipmap (แผนที่ย่อ)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
-msgstr "โหนที่เน้น"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Node Outlining"
-msgstr "สรุป โหน"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "None"
-msgstr "ไม่มี"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Leaves"
-msgstr "ใบทึบ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Opaque Water"
-msgstr "น้ำขุ่น"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Particles"
-msgstr "อนุภาค"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Screen:"
-msgstr "หน้าจอ:"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Settings"
-msgstr "การตั้งค่า"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "เฉดสี"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (experimental)"
-msgstr "เฉดสี (ไม่พร้อมใช้งาน)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Shaders (unavailable)"
-msgstr "เฉดสี (ไม่พร้อมใช้งาน)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Simple Leaves"
-msgstr "ใบเรียบง่าย"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Smooth Lighting"
-msgstr "โคมไฟเรียบ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Texturing:"
-msgstr "พื้นผิว:"
-
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "การแมปโทน"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Touch threshold (px):"
-msgstr "ขีด จำกัด: (px)"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Trilinear Filter"
-msgstr "กรอง trilinear"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Very High"
-msgstr "สูงเป็นพิเศษ"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Very Low"
-msgstr "ต่ำมาก"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Leaves"
-msgstr "ใบโบก"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Liquids"
-msgstr "โบกของเหลว"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Waving Plants"
-msgstr "โบกไม้"
 
 #: src/client/client.cpp
 #, fuzzy
@@ -1281,7 +1174,7 @@ msgstr "รหัสผ่านให้ไฟล์ไม่สามารถ
 msgid "Provided world path doesn't exist: "
 msgstr "โลกมีเส้นไม่มี: "
 
-#: src/client/game.cpp
+#: src/client/game.cpp src/server.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -1357,8 +1250,12 @@ msgstr "เปิดใช้งานการอัปเดตกล้อง
 
 #: src/client/game.cpp
 #, fuzzy
-msgid "Can't show block bounds (disabled by mod or game)"
+msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "ไม่สามารถแสดงขอบเขตการบล็อก (ต้องการสิทธิ์ 'basic_debug')"
+
+#: src/client/game.cpp
+msgid "Change Keys"
+msgstr "เปลี่ยนคีย์"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1393,7 +1290,7 @@ msgid "Continue"
 msgstr "ต่อ"
 
 #: src/client/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1401,7 +1298,7 @@ msgid ""
 "- %s: move left\n"
 "- %s: move right\n"
 "- %s: jump/climb up\n"
-"- %s: dig/punch\n"
+"- %s: dig/punch/use\n"
 "- %s: place/use\n"
 "- %s: sneak/climb down\n"
 "- %s: drop item\n"
@@ -1424,6 +1321,35 @@ msgstr ""
 "- เมาส์ขวา: วาง/ใช้\n"
 "- ลูกกลิ้งเมาส์: เลือกไอเทม\n"
 "- %s: เปิดช่องแชท\n"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid ""
+"Controls:\n"
+"No menu open:\n"
+"- slide finger: look around\n"
+"- tap: place/use\n"
+"- long tap: dig/punch/use\n"
+"Menu/inventory open:\n"
+"- double tap (outside):\n"
+" --> close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"การควบคุมเริ่มต้น:\n"
+"ไม่ปรากฏเมนู:\n"
+"- แตะเพียงครั้งเดียว: เปิดใช้งานปุ่ม\n"
+"- แตะสองครั้ง: สถานที่ / การใช้งาน\n"
+"- นิ้วสไลด์: มองไปรอบ ๆ\n"
+"เมนู / คลังโฆษณาปรากฏ:\n"
+"- แตะสองครั้ง (นอก):\n"
+"-> ใกล้\n"
+"- สแต็กสัมผัส, สล็อตสัมผัส:\n"
+"-> ย้ายสแต็ก\n"
+"- แตะแล้วลากแตะนิ้วที่สอง\n"
+"-> วางรายการเดียวไปยังสล็อต\n"
 
 #: src/client/game.cpp
 #, c-format
@@ -1449,42 +1375,6 @@ msgstr "แสดงข้อมูลการดีบัก"
 #: src/client/game.cpp
 msgid "Debug info, profiler graph, and wireframe hidden"
 msgstr "ข้อมูลการแก้ปัญหากราฟ profiler และ wireframe ซ่อนอยู่"
-
-#: src/client/game.cpp
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-"การควบคุมเริ่มต้น:\n"
-"ไม่ปรากฏเมนู:\n"
-"- แตะเพียงครั้งเดียว: เปิดใช้งานปุ่ม\n"
-"- แตะสองครั้ง: สถานที่ / การใช้งาน\n"
-"- นิ้วสไลด์: มองไปรอบ ๆ\n"
-"เมนู / คลังโฆษณาปรากฏ:\n"
-"- แตะสองครั้ง (นอก):\n"
-"-> ใกล้\n"
-"- สแต็กสัมผัส, สล็อตสัมผัส:\n"
-"-> ย้ายสแต็ก\n"
-"- แตะแล้วลากแตะนิ้วที่สอง\n"
-"-> วางรายการเดียวไปยังสล็อต\n"
-
-#: src/client/game.cpp
-msgid "Disabled unlimited viewing range"
-msgstr "ปิดใช้งานช่วงการดูไม่ จำกัด"
-
-#: src/client/game.cpp
-msgid "Enabled unlimited viewing range"
-msgstr "เปิดใช้งานช่วงการดูที่ไม่ จำกัด"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1655,19 +1545,49 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "ไม่สามารถฟังบน %s เพราะ IPv6 ถูกปิดใช้งาน"
 
 #: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range disabled"
+msgstr "เปิดใช้งานช่วงการดูที่ไม่ จำกัด"
+
+#: src/client/game.cpp
+#, fuzzy
+msgid "Unlimited viewing range enabled"
+msgstr "เปิดใช้งานช่วงการดูที่ไม่ จำกัด"
+
+#: src/client/game.cpp
+msgid "Unlimited viewing range enabled, but forbidden by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing changed to %d (the minimum)"
+msgstr "ช่วงการดูเป็นอย่างน้อย: %d1"
+
+#: src/client/game.cpp
+#, c-format
+msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
 msgstr "ช่วงการดูเปลี่ยนเป็น %d1"
 
 #: src/client/game.cpp
-#, c-format
-msgid "Viewing range is at maximum: %d"
-msgstr "ระยะการดูสูงสุดที่: %d1"
+#, fuzzy, c-format
+msgid "Viewing range changed to %d (the maximum)"
+msgstr "ช่วงการดูเปลี่ยนเป็น %d1"
 
 #: src/client/game.cpp
 #, c-format
-msgid "Viewing range is at minimum: %d"
-msgstr "ช่วงการดูเป็นอย่างน้อย: %d1"
+msgid ""
+"Viewing range changed to %d (the maximum), but limited to %d by game or mod"
+msgstr ""
+
+#: src/client/game.cpp
+#, fuzzy, c-format
+msgid "Viewing range changed to %d, but limited to %d by game or mod"
+msgstr "ช่วงการดูเปลี่ยนเป็น %d1"
 
 #: src/client/game.cpp
 #, c-format
@@ -2221,22 +2141,10 @@ msgstr ""
 msgid "Name is taken. Please choose another name"
 msgstr "กรุณาเลือกชื่อ!"
 
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Fixes the position of virtual joystick.\n"
-"If disabled, virtual joystick will center to first-touch's position."
-msgstr ""
-"(Android) แก้ไขตำแหน่งของจอยสติ๊กเสมือน\n"
-"หากปิดใช้งานจอยสติกเสมือนจะอยู่ที่ตำแหน่งแรกของสัมผัส"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"(Android) Use virtual joystick to trigger \"Aux1\" button.\n"
-"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
-"circle."
-msgstr ""
-"(Android) ใช้จอยสติ๊กเสมือนเพื่อเรียกปุ่ม \"aux\"\n"
-"หากเปิดใช้งานจอยสติกเสมือนจริงก็จะแตะปุ่ม \"aux\" เมื่ออยู่นอกวงกลมหลัก"
+#: src/server.cpp
+#, fuzzy, c-format
+msgid "%s while shutting down: "
+msgstr "ปิด..."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2489,6 +2397,14 @@ msgstr "สูง"
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Affects mods and texture packs in the Content and Select Mods menus, as well "
+"as\n"
+"setting names.\n"
+"Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2529,6 +2445,16 @@ msgstr "ประกาศเซิร์ฟเวอร์"
 #: src/settings_translation_file.cpp
 msgid "Announce to this serverlist."
 msgstr "ประกาศไปยังรายการเซิร์ฟเวอร์นี้."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Anti-aliasing scale"
+msgstr "ลบรอยหยัก:"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Antialiasing method"
+msgstr "ลบรอยหยัก:"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2594,10 +2520,6 @@ msgid "Automatically report to the serverlist."
 msgstr "รายงานโดยอัตโนมัติไปยังรายการเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
-msgid "Autosave screen size"
-msgstr "บันทึกขนาดหน้าจออัตโนมัติ"
-
-#: src/settings_translation_file.cpp
 msgid "Autoscaling mode"
 msgstr "โหมดปรับอัตโนมัติ"
 
@@ -2612,6 +2534,11 @@ msgstr "ระดับพื้นฐาน"
 #: src/settings_translation_file.cpp
 msgid "Base terrain height."
 msgstr "ความสูงของภูมิประเทศฐาน."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base texture size"
+msgstr "ขนาดพื้นผิวขั้นต่ำ"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2695,18 +2622,6 @@ msgstr "ในตัว"
 #, fuzzy
 msgid "Camera"
 msgstr "เปลี่ยนกล้อง"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
-"Only works on GLES platforms. Most users will not need to change this.\n"
-"Increasing can reduce artifacting on weaker GPUs.\n"
-"0.1 = Default, 0.25 = Good value for weaker tablets."
-msgstr ""
-"กล้องอยู่ใกล้ระยะทางระนาบในโหนดระหว่าง 0 ถึง 0.5\n"
-"ผู้ใช้ส่วนใหญ่ไม่จำเป็นต้องเปลี่ยนแปลงสิ่งนี้.\n"
-"การเพิ่มขึ้นสามารถลดสิ่งประดิษฐ์ใน GPU ที่อ่อนแอกว่าได้.\n"
-"0.1 = ค่าเริ่มต้น, 0.25 = คุ้มค่าสำหรับแท็บเล็ตที่อ่อนแอกว่า."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -2811,10 +2726,6 @@ msgstr "ขนาดก้อน"
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
 msgstr "โหมดภาพยนตร์"
-
-#: src/settings_translation_file.cpp
-msgid "Clean transparent textures"
-msgstr "ทำความสะอาดพื้นผิวโปร่งใส"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2991,6 +2902,10 @@ msgstr ""
 "กดปุ่ม autoforward อีกครั้งหรือเคลื่อนไหวไปข้างหลังเพื่อปิดการใช้งาน."
 
 #: src/settings_translation_file.cpp
+msgid "Controlled by a checkbox in the settings menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Controls"
 msgstr "ควบคุม"
 
@@ -3089,18 +3004,6 @@ msgid "Default acceleration"
 msgstr "ค่าความเร่งเริ่มต้น"
 
 #: src/settings_translation_file.cpp
-msgid "Default game"
-msgstr "เกมเริ่มต้น"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Default game when creating a new world.\n"
-"This will be overridden when creating a world from the main menu."
-msgstr ""
-"เกมเริ่มต้นเมื่อสร้างโลกใหม่.\n"
-"สิ่งนี้จะถูกแทนที่เมื่อสร้างโลกจากเมนูหลัก."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Default maximum number of forceloaded mapblocks.\n"
@@ -3167,6 +3070,12 @@ msgstr "กำหนดโครงสร้างช่องน้ำขนา
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
 msgstr "กำหนดตำแหน่งและภูมิประเทศของเนินเขาและทะเลสาบที่เป็นตัวเลือก."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
@@ -3280,6 +3189,10 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "ชื่อโดเมนของเซิร์ฟเวอร์ที่จะแสดงในรายการเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
+msgid "Don't show \"reinstall Minetest Game\" notification"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "แตะสองครั้งที่กระโดดสำหรับบิน"
 
@@ -3384,6 +3297,10 @@ msgstr "เปิดใช้งานการรองรับช่องส
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
 msgstr "เปิดใช้งานการรักษาความปลอดภัยม็อด"
+
+#: src/settings_translation_file.cpp
+msgid "Enable mouse wheel (scroll) for item selection in hotbar."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -3541,10 +3458,6 @@ msgid "FPS when unfocused or paused"
 msgstr "เฟรมต่อวินาที (FPS) สูงสุดเมื่อเกมหยุดชั่วคราว"
 
 #: src/settings_translation_file.cpp
-msgid "FSAA"
-msgstr "FSAA"
-
-#: src/settings_translation_file.cpp
 msgid "Factor noise"
 msgstr "ปัจจัยเสียง"
 
@@ -3606,18 +3519,6 @@ msgid "Filmic tone mapping"
 msgstr "การทำแผนที่โทนภาพยนตร์"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
-"which PNG optimizers usually discard, often resulting in dark or\n"
-"light edges to transparent textures. Apply a filter to clean that up\n"
-"at texture load time. This is automatically enabled if mipmapping is enabled."
-msgstr ""
-"พื้นผิวที่ถูกกรองสามารถผสมผสานค่า RGB กับเพื่อนบ้านที่โปร่งใสได้อย่างสมบูรณ์.\n"
-"เครื่องมือเพิ่มประสิทธิภาพ PNG ใดที่มักจะละทิ้งซึ่งบางครั้งส่งผลให้มืดหรือ\n"
-"ขอบแสงเป็นพื้นผิวโปร่งใส ใช้ตัวกรองนี้เพื่อล้างข้อมูล\n"
-"ที่เวลาโหลดพื้นผิว."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Filtering and Antialiasing"
 msgstr "ลบรอยหยัก:"
@@ -3637,6 +3538,15 @@ msgstr "แก้ไขแผนที่เมล็ด"
 #: src/settings_translation_file.cpp
 msgid "Fixed virtual joystick"
 msgstr "แก้ไขจอยสติ๊กเสมือนจริง"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Fixes the position of virtual joystick.\n"
+"If disabled, virtual joystick will center to first-touch's position."
+msgstr ""
+"(Android) แก้ไขตำแหน่งของจอยสติ๊กเสมือน\n"
+"หากปิดใช้งานจอยสติกเสมือนจะอยู่ที่ตำแหน่งแรกของสัมผัส"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland density"
@@ -3752,28 +3662,12 @@ msgid "Format of screenshots."
 msgstr "รูปแบบของภาพหน้าจอ."
 
 #: src/settings_translation_file.cpp
-msgid "Formspec Default Background Color"
-msgstr "สีพื้นหลังเริ่มต้นของ Formspec"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec Default Background Opacity"
-msgstr "ความทึบพื้นหลังเริ่มต้นของ Formspec"
-
-#: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Color"
 msgstr "Formspec สีพื้นหลังแบบเต็มหน้าจอ"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec Full-Screen Background Opacity"
 msgstr "Formspec ความทึบพื้นหลังแบบเต็มหน้าจอ"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background color (R,G,B)."
-msgstr "สีพื้นหลังเริ่มต้นของ Formspec (R, G, B)"
-
-#: src/settings_translation_file.cpp
-msgid "Formspec default background opacity (between 0 and 255)."
-msgstr "ความทึบพื้นหลังเริ่มต้นของ Formspec (ระหว่าง 0 ถึง 255)"
 
 #: src/settings_translation_file.cpp
 msgid "Formspec full-screen background color (R,G,B)."
@@ -3956,8 +3850,8 @@ msgid "Heat noise"
 msgstr "เสียงความร้อน"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Height component of the initial window size. Ignored in fullscreen mode."
+#, fuzzy
+msgid "Height component of the initial window size."
 msgstr "องค์ประกอบความสูงของขนาดหน้าต่างเริ่มต้น"
 
 #: src/settings_translation_file.cpp
@@ -3967,6 +3861,11 @@ msgstr "เสียงสูง"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr "ความสูงเลือกเสียง"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hide: Temporary Settings"
+msgstr "การตั้งค่า"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -4021,14 +3920,22 @@ msgstr ""
 "ในโหนดต่อวินาทีต่อวินาที."
 
 #: src/settings_translation_file.cpp
+msgid "Hotbar: Enable mouse wheel for selection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar: Invert mouse wheel direction"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
 msgstr "สร้างแม่น้ำได้ลึกแค่ไหน."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "How fast liquid waves will move. Higher = faster.\n"
-"If negative, liquid waves will move backwards.\n"
-"Requires waving liquids to be enabled."
+"If negative, liquid waves will move backwards."
 msgstr ""
 "คลื่นของเหลวจะเคลื่อนที่เร็วแค่ไหน สูงขึ้น = เร็วขึ้น.\n"
 "หากเป็นลบ คลื่นของเหลวจะเคลื่อนที่ถอยหลัง.\n"
@@ -4165,9 +4072,10 @@ msgid ""
 msgstr "หากเปิดใช้งานผู้เล่นใหม่จะไม่สามารถเข้าร่วมด้วยรหัสผ่านที่ว่างเปล่าได้."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"If enabled, you can place blocks at the position (feet + eye level) where "
-"you stand.\n"
+"If enabled, you can place nodes at the position (feet + eye level) where you "
+"stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
 "ถ้าเปิดใช้งาน คุณสามารถทำบล็อกที่ตำแหน่ง (ระดับเท้าสายตา) คุณยืน . \n"
@@ -4201,6 +4109,12 @@ msgstr ""
 "เมื่อเปิดการตั้งค่านี้ ไฟล์จะถูกย้ายไปยัง debug.txt.1,\n"
 "การลบ debug.txt.1 ที่เก่ากว่า หากมี.\n"
 "debug.txt จะถูกย้ายก็ต่อเมื่อการตั้งค่านี้เป็นค่าบวก."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If this is set to true, the user will never (again) be shown the\n"
+"\"reinstall Minetest Game\" notification."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4276,6 +4190,10 @@ msgstr "ภาพเคลื่อนไหวรายการสินค้
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
 msgstr "สลับเมาส์"
+
+#: src/settings_translation_file.cpp
+msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -4471,12 +4389,9 @@ msgstr ""
 "เครือข่าย"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Length of liquid waves.\n"
-"Requires waving liquids to be enabled."
-msgstr ""
-"ตั้งค่าเป็นจริงช่วยให้ใบโบก.\n"
-"ต้องมี shaders เพื่อเปิดใช้งาน."
+#, fuzzy
+msgid "Length of liquid waves."
+msgstr "โบกความเร็วน้ำ"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5029,10 +4944,6 @@ msgid "Minimum limit of random number of small caves per mapchunk."
 msgstr "ขีดจำกัดขั้นต่ำของจำนวนถ้ำขนาดเล็กแบบสุ่มต่อ mapchunk."
 
 #: src/settings_translation_file.cpp
-msgid "Minimum texture size"
-msgstr "ขนาดพื้นผิวขั้นต่ำ"
-
-#: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mipmapping (แมงป่อง)"
 
@@ -5138,10 +5049,6 @@ msgid ""
 msgstr "ชื่อของเซิร์ฟเวอร์ที่จะแสดงเมื่อผู้เล่นเข้าร่วมและในรายการเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
-msgid "Near plane"
-msgstr "ระนาบใกล้"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
@@ -5223,6 +5130,15 @@ msgid ""
 "Value of 0 (default) will let Minetest autodetect the number of available "
 "threads."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Occlusion Culler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Occlusion Culling"
+msgstr "การคัดแยกการบดเคี้ยวทางฝั่งเซิร์ฟเวอร์"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -5342,13 +5258,16 @@ msgstr ""
 "โปรดทราบว่าฟิลด์พอร์ตในเมนูหลักจะแทนที่การตั้งค่านี้"
 
 #: src/settings_translation_file.cpp
-msgid "Post processing"
+msgid "Post Processing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Prevent digging and placing from repeating when holding the mouse buttons.\n"
-"Enable this when you dig or place too often by accident."
+"Prevent digging and placing from repeating when holding the respective "
+"buttons.\n"
+"Enable this when you dig or place too often by accident.\n"
+"On touchscreens, this only affects digging."
 msgstr ""
 "ป้องกันการขุดและวางจากการทำซ้ำเมื่อถือปุ่มเมาส์.\n"
 "เปิดใช้งานสิ่งนี้เมื่อคุณขุดหรือวางบ่อยเกินไปโดยไม่ได้ตั้งใจ."
@@ -5417,6 +5336,11 @@ msgstr "ข้อความแชทล่าสุด"
 #: src/settings_translation_file.cpp
 msgid "Regular font path"
 msgstr "ไดเรกเตอรีฟอนต์แบบปกติ"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Remember screen size"
+msgstr "บันทึกขนาดหน้าจออัตโนมัติ"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -5535,8 +5459,13 @@ msgid "Save the map received by the client on disk."
 msgstr "บันทึกแผนที่ที่ลูกค้าได้รับบนดิสก์."
 
 #: src/settings_translation_file.cpp
-msgid "Save window size automatically when modified."
-msgstr "บันทึกขนาดหน้าต่างโดยอัตโนมัติเมื่อแก้ไข"
+msgid ""
+"Save window size automatically when modified.\n"
+"If true, screen size is saved in screen_w and screen_h, and whether the "
+"window\n"
+"is maximized is stored in window_maximized.\n"
+"(Autosaving window_maximized only works if compiled with SDL.)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5611,6 +5540,28 @@ msgstr "เสียง 3D ที่สองจากสองเสียง�
 #: src/settings_translation_file.cpp
 msgid "See https://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "ดู https://www.sqlite.org/pragma.html#pragma_synchronous"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Select the antialiasing method to apply.\n"
+"\n"
+"* None - No antialiasing (default)\n"
+"\n"
+"* FSAA - Hardware-provided full-screen antialiasing (incompatible with "
+"shaders)\n"
+"A.K.A multi-sample antialiasing (MSAA)\n"
+"Smoothens out block edges but does not affect the insides of textures.\n"
+"A restart is required to change this option.\n"
+"\n"
+"* FXAA - Fast approximate antialiasing (requires shaders)\n"
+"Applies a post-processing filter to detect and smoothen high-contrast "
+"edges.\n"
+"Provides balance between speed and image quality.\n"
+"\n"
+"* SSAA - Super-sampling antialiasing (requires shaders)\n"
+"Renders higher-resolution image of the scene, then scales down to reduce\n"
+"the aliasing effects. This is the slowest and the most accurate method."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -5724,6 +5675,17 @@ msgid "Serverlist file"
 msgstr "ไฟล์เซิร์ฟเวอร์รายการ"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Set the default tilt of Sun/Moon orbit in degrees.\n"
+"Games may change orbit tilt via API.\n"
+"Value of 0 means no tilt / vertical orbit."
+msgstr ""
+"ตั้งค่าความเอียงของวงโคจรของดวงอาทิตย์/ดวงจันทร์เป็นองศา.\n"
+"ค่า 0 หมายถึงไม่มีวงโคจรเอียง/แนวตั้ง.\n"
+"ค่าต่ำสุด: 0.0; ค่าสูงสุด: 60.0"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Set the exposure compensation in EV units.\n"
 "Value of 0.0 (default) means no exposure compensation.\n"
@@ -5766,9 +5728,8 @@ msgstr ""
 "ค่าต่ำสุด: 1.0; มูลค่าสูงสุด: 10.0"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable Shadow Mapping.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable Shadow Mapping."
 msgstr ""
 "ตั้งค่าเป็นจริงช่วยให้ใบโบก.\n"
 "ต้องมี shaders เพื่อเปิดใช้งาน."
@@ -5780,25 +5741,22 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving leaves.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving leaves."
 msgstr ""
 "ตั้งค่าเป็นจริงช่วยให้ใบโบก.\n"
 "ต้องมี shaders เพื่อเปิดใช้งาน."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving liquids (like water).\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving liquids (like water)."
 msgstr ""
 "ตั้งค่าเป็นจริงช่วยให้น้ำโบก.\n"
 "ต้องมี shaders เพื่อเปิดใช้งาน."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Set to true to enable waving plants.\n"
-"Requires shaders to be enabled."
+#, fuzzy
+msgid "Set to true to enable waving plants."
 msgstr ""
 "การตั้งค่าเป็นจริงช่วยให้พืชโบก.\n"
 "ต้องมี shaders เพื่อเปิดใช้งาน."
@@ -5824,6 +5782,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Shader path"
 msgstr "เส้นทาง Shader"
+
+#: src/settings_translation_file.cpp
+msgid "Shaders"
+msgstr "เฉดสี"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5927,6 +5889,10 @@ msgstr ""
 "ด้ายจึงลดกระวนกระวายใจ"
 
 #: src/settings_translation_file.cpp
+msgid "Sky Body Orbit Tilt"
+msgstr "วงโคจรของท้องฟ้าเอียง"
+
+#: src/settings_translation_file.cpp
 msgid "Slice w"
 msgstr "ฝาน w"
 
@@ -5955,20 +5921,18 @@ msgid "Smooth lighting"
 msgstr "แสงที่ราบรื่น"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Smooths camera when looking around. Also called look or mouse smoothing.\n"
-"Useful for recording videos."
-msgstr ""
-"กล้องมากเมื่อมองไปรอบ ๆ เรียกว่ามองหรือเมาส์เรียบ.\n"
-"มีประโยชน์สำหรับการบันทึกวิดีโอ."
-
-#: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
+"Smooths rotation of camera when in cinematic mode, 0 to disable. Enter "
+"cinematic mode by using the key set in Change Keys."
 msgstr "มากการหมุนของกล้องในโหมดโรงภาพยนตร์ 0 เพื่อปิดใช้งาน."
 
 #: src/settings_translation_file.cpp
-msgid "Smooths rotation of camera. 0 to disable."
-msgstr "มากการหมุนของกล้อง 0 เพื่อปิดใช้งาน"
+#, fuzzy
+msgid ""
+"Smooths rotation of camera, also called look or mouse smoothing. 0 to "
+"disable."
+msgstr "มากการหมุนของกล้องในโหมดโรงภาพยนตร์ 0 เพื่อปิดใช้งาน."
 
 #: src/settings_translation_file.cpp
 msgid "Sneaking speed"
@@ -6100,11 +6064,6 @@ msgid "Temperature variation for biomes."
 msgstr "การเปลี่ยนแปลงอุณหภูมิสำหรับไบโอม."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Temporary Settings"
-msgstr "การตั้งค่า"
-
-#: src/settings_translation_file.cpp
 msgid "Terrain alternative noise"
 msgstr "เสียงรบกวนทางเลือกของภูมิประเทศ"
 
@@ -6183,6 +6142,10 @@ msgid "The URL for the content repository"
 msgstr "URL สำหรับที่เก็บเนื้อหา"
 
 #: src/settings_translation_file.cpp
+msgid "The base node texture size used for world-aligned texture autoscaling."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "ตัวระบุของจอยสติ๊กที่จะใช้"
 
@@ -6208,16 +6171,17 @@ msgid "The identifier of the joystick to use"
 msgstr "ตัวระบุของจอยสติ๊กที่จะใช้"
 
 #: src/settings_translation_file.cpp
-msgid "The length in pixels it takes for touch screen interaction to start."
+#, fuzzy
+msgid "The length in pixels it takes for touchscreen interaction to start."
 msgstr "ความยาวเป็นพิกเซลที่ใช้ในการเริ่มทำงานบนหน้าจอสัมผัส."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The maximum height of the surface of waving liquids.\n"
 "4.0 = Wave height is two nodes.\n"
 "0.0 = Wave doesn't move at all.\n"
-"Default is 1.0 (1/2 node).\n"
-"Requires waving liquids to be enabled."
+"Default is 1.0 (1/2 node)."
 msgstr ""
 "ความสูงสูงสุดของพื้นผิวของเหลวโบก.\n"
 "4.0 = ความสูงของคลื่นคือสองโหนด.\n"
@@ -6340,6 +6304,15 @@ msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "เสียง 2D จำนวน 3 จาก 4 เสียงที่ร่วมกันกำหนดความสูงของช่วงเนินเขา/ภูเขา."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"This can be bound to a key to toggle camera smoothing when looking around.\n"
+"Useful for recording videos"
+msgstr ""
+"กล้องมากเมื่อมองไปรอบ ๆ เรียกว่ามองหรือเมาส์เรียบ.\n"
+"มีประโยชน์สำหรับการบันทึกวิดีโอ."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -6379,12 +6352,23 @@ msgid "Tooltip delay"
 msgstr "เคล็ดลับเครื่องมือล่าช้า"
 
 #: src/settings_translation_file.cpp
-msgid "Touch screen threshold"
+#, fuzzy
+msgid "Touchscreen"
 msgstr "ขีด จำกัด หน้าจอสัมผัส"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Touchscreen"
+msgid "Touchscreen sensitivity"
+msgstr "ความไวของเมาส์"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen sensitivity multiplier."
+msgstr "คูณความไวเมาส์."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Touchscreen threshold"
 msgstr "ขีด จำกัด หน้าจอสัมผัส"
 
 #: src/settings_translation_file.cpp
@@ -6416,6 +6400,16 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
 msgstr "ม็อดที่เชื่อถือได้"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Type of occlusion_culler\n"
+"\n"
+"\"loops\" is the legacy algorithm with nested loops and O(n³) complexity\n"
+"\"bfs\" is the new algorithm based on breadth-first-search and side culling\n"
+"\n"
+"This setting should only be changed if you have performance problems."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6478,11 +6472,13 @@ msgid "Use a cloud animation for the main menu background."
 msgstr "ใช้ภาพเคลื่อนไหวคลาวด์สำหรับพื้นหลังเมนูหลัก."
 
 #: src/settings_translation_file.cpp
-msgid "Use anisotropic filtering when viewing at textures from an angle."
+#, fuzzy
+msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr "ใช้ตัวกรอง anisotropic เมื่อดูที่พื้นผิวจากมุม"
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures."
+#, fuzzy
+msgid "Use bilinear filtering when scaling textures down."
 msgstr "ใช้การกรอง bilinear เมื่อปรับขนาดพื้นผิว"
 
 #: src/settings_translation_file.cpp
@@ -6496,10 +6492,11 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mipmapping to scale textures. May slightly increase performance,\n"
+"Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high resolution texture pack.\n"
-"Gamma correct downscaling is not supported."
+"Gamma-correct downscaling is not supported."
 msgstr ""
 "ใช้การทำแผนที่ mip เพื่อปรับขนาดพื้นผิว อาจเพิ่มประสิทธิภาพเล็กน้อย,\n"
 "โดยเฉพาะอย่างยิ่งเมื่อใช้แพ็คพื้นผิวที่มีความละเอียดสูง.\n"
@@ -6507,31 +6504,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
-"This algorithm smooths out the 3D viewport while keeping the image sharp,\n"
-"but it doesn't affect the insides of textures\n"
-"(which is especially noticeable with transparent textures).\n"
-"Visible spaces appear between nodes when shaders are disabled.\n"
-"If set to 0, MSAA is disabled.\n"
-"A restart is required after changing this option."
+"Use raytraced occlusion culling in the new culler.\n"
+"This flag enables use of raytraced occlusion culling test for\n"
+"client mesh sizes smaller than 4x4x4 map blocks."
 msgstr ""
-"ใช้การลบรอยหยักหลายตัวอย่าง (MSAA) เพื่อทำให้ขอบบล็อกเรียบ.\n"
-"อัลกอริธึมนี้ทำให้วิวพอร์ต 3 มิติเรียบขึ้นในขณะที่รักษาความคมชัดของภาพ,\n"
-"แต่ไม่ส่งผลต่อเนื้อใน\n"
-"(ซึ่งเห็นได้ชัดเจนเป็นพิเศษกับพื้นผิวโปร่งใส).\n"
-"ช่องว่างที่มองเห็นได้ปรากฏขึ้นระหว่างโหนดเมื่อปิดใช้ shaders.\n"
-"หากตั้งค่าเป็น 0 MSAA จะถูกปิดใช้งาน.\n"
-"จำเป็นต้องรีสตาร์ทหลังจากเปลี่ยนตัวเลือกนี้."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use raytraced occlusion culling in the new culler.\n"
-"This flag enables use of raytraced occlusion culling test"
+"Use trilinear filtering when scaling textures down.\n"
+"If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
+"is applied."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Use trilinear filtering when scaling textures."
-msgstr "ใช้การกรอง trilinear เมื่อปรับขนาดพื้นผิว"
+#, fuzzy
+msgid ""
+"Use virtual joystick to trigger \"Aux1\" button.\n"
+"If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
+"circle."
+msgstr ""
+"(Android) ใช้จอยสติ๊กเสมือนเพื่อเรียกปุ่ม \"aux\"\n"
+"หากเปิดใช้งานจอยสติกเสมือนจริงก็จะแตะปุ่ม \"aux\" เมื่ออยู่นอกวงกลมหลัก"
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
@@ -6610,8 +6603,10 @@ msgid "Vertical climbing speed, in nodes per second."
 msgstr "ความเร็วในการปีนแนวตั้ง เป็นโหนดต่อวินาที."
 
 #: src/settings_translation_file.cpp
-msgid "Vertical screen synchronization."
-msgstr "การซิงโครไนซ์หน้าจอแนวตั้ง"
+msgid ""
+"Vertical screen synchronization. Your system may still force VSync on even "
+"if this is disabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6735,26 +6730,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
-"can be blurred, so automatically upscale them with nearest-neighbor\n"
-"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
-"for the upscaled textures; higher values look sharper, but require more\n"
-"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-"bilinear/trilinear/anisotropic filtering is enabled.\n"
-"This is also used as the base node texture size for world-aligned\n"
-"texture autoscaling."
-msgstr ""
-"เมื่อใช้ฟิลเตอร์ bilinear/trilinear/anisotropic พื้นผิวความละเอียดต่ำ\n"
-"สามารถเบลอได้ดังนั้นจึงเพิ่มขนาดโดยอัตโนมัติกับเพื่อนบ้านที่ใกล้ที่สุด\n"
-"การแก้ไขเพื่อรักษาพิกเซลที่คมชัด กำหนดขนาดพื้นผิวขั้นต่ำ\n"
-"สำหรับพื้นผิวที่ยกระดับ; ค่าที่สูงกว่าจะดูคมชัดกว่าแต่ต้องการมากกว่า\n"
-"หน่วยความจำ. แนะนำให้ใช้กำลัง 2 การตั้งค่านี้ใช้เฉพาะในกรณีที่\n"
-"เปิดใช้งานการกรอง bilinear/trilinear/anisotropic\n"
-"นอกจากนี้ยังใช้เป็นขนาดพื้นผิวของโหนดฐานสำหรับการจัดตำแหน่งโลก\n"
-"การปรับขนาดพื้นผิวอัตโนมัติ"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether name tag backgrounds should be shown by default.\n"
 "Mods may still set a background."
 msgstr ""
@@ -6772,6 +6747,10 @@ msgid ""
 msgstr ""
 "ผู้เล่นจะแสดงให้ลูกค้าเห็นหรือไม่โดยไม่ จำกัด ช่วง.\n"
 "เลิกใช้แล้วใช้การตั้งค่า player_transfer_distance แทน."
+
+#: src/settings_translation_file.cpp
+msgid "Whether the window is maximized."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -6803,25 +6782,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Whether to show technical names.\n"
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names in All Settings.\n"
-"Controlled by the checkbox in the \"All settings\" menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr "ไม่ว่าจะแสดงข้อมูลการแก้ปัญหาลูกค้า (มีผลเช่นเดียวกับการกดปุ่ม F5)."
 
 #: src/settings_translation_file.cpp
-msgid "Width component of the initial window size. Ignored in fullscreen mode."
+#, fuzzy
+msgid "Width component of the initial window size."
 msgstr "องค์ประกอบความกว้างของขนาดหน้าต่างเริ่มต้น."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selection box lines around nodes."
 msgstr "ความกว้างของเส้นกล่องเลือกรอบ ๆ โหนด."
+
+#: src/settings_translation_file.cpp
+msgid "Window maximized"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6943,6 +6918,21 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ "0 = การบดบังพารัลแลกซ์พร้อมข้อมูลความชัน (เร็วกว่า)\n"
 #~ "1 = การทำแผนที่นูน (ช้ากว่าแม่นยำกว่า)"
 
+#~ msgid "2x"
+#~ msgstr "2x"
+
+#~ msgid "3D Clouds"
+#~ msgstr "3D เมฆ"
+
+#~ msgid "4x"
+#~ msgstr "4x"
+
+#~ msgid "8x"
+#~ msgstr "8x"
+
+#~ msgid "< Back to Settings page"
+#~ msgstr "< กลับไปที่หน้าการตั้งค่า"
+
 #~ msgid "Address / Port"
 #~ msgstr "ที่อยู่ / พอร์ต"
 
@@ -6954,23 +6944,29 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ "ปรับการเข้ารหัสแกมม่าสำหรับตารางแสง ตัวเลขที่สูงกว่านั้นจะสว่างกว่า\n"
 #~ "การตั้งค่านี้มีไว้สำหรับไคลเอ็นต์เท่านั้นและเซิร์ฟเวอร์จะเพิกเฉย"
 
+#~ msgid "All Settings"
+#~ msgstr "การตั้งค่าทั้งหมด"
+
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "การตั้งค่าของคุณโลก singleplayer แน่ใจหรือไม่?"
 
 #~ msgid "Automatic forward key"
 #~ msgstr "ปุ่มส่งต่ออัตโนมัติ"
 
+#~ msgid "Autosave Screen Size"
+#~ msgstr "ขนาดหน้าจอบันทึกอัตโนมัติ"
+
 #~ msgid "Aux1 key"
 #~ msgstr "ปุ่มกระโดด"
-
-#~ msgid "Back"
-#~ msgstr "หลัง"
 
 #~ msgid "Backward key"
 #~ msgstr "ปุ่มย้อนกลับ"
 
 #~ msgid "Basic"
 #~ msgstr "ขั้นพื้นฐาน"
+
+#~ msgid "Bilinear Filter"
+#~ msgstr "กรอง bilinear"
 
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "บิตต่อพิกเซล (ความลึกของสี aka) ในโหมดเต็มหน้าจอ."
@@ -6981,6 +6977,17 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #, fuzzy
 #~ msgid "Bumpmapping"
 #~ msgstr "Bumpmapping"
+
+#~ msgid ""
+#~ "Camera 'near clipping plane' distance in nodes, between 0 and 0.25\n"
+#~ "Only works on GLES platforms. Most users will not need to change this.\n"
+#~ "Increasing can reduce artifacting on weaker GPUs.\n"
+#~ "0.1 = Default, 0.25 = Good value for weaker tablets."
+#~ msgstr ""
+#~ "กล้องอยู่ใกล้ระยะทางระนาบในโหนดระหว่าง 0 ถึง 0.5\n"
+#~ "ผู้ใช้ส่วนใหญ่ไม่จำเป็นต้องเปลี่ยนแปลงสิ่งนี้.\n"
+#~ "การเพิ่มขึ้นสามารถลดสิ่งประดิษฐ์ใน GPU ที่อ่อนแอกว่าได้.\n"
+#~ "0.1 = ค่าเริ่มต้น, 0.25 = คุ้มค่าสำหรับแท็บเล็ตที่อ่อนแอกว่า."
 
 #~ msgid "Camera update toggle key"
 #~ msgstr "ปุ่มสลับการอัพเดตกล้อง"
@@ -6997,6 +7004,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Cinematic mode key"
 #~ msgstr "ปุ่มโหมดโรงภาพยนตร์"
 
+#~ msgid "Clean transparent textures"
+#~ msgstr "ทำความสะอาดพื้นผิวโปร่งใส"
+
 #~ msgid "Command key"
 #~ msgstr "คีย์คำสั่ง"
 
@@ -7008,6 +7018,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Connect"
 #~ msgstr "เชื่อมต่อ"
+
+#~ msgid "Connected Glass"
+#~ msgstr "เชื่อมต่อแก้ว"
 
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "ควบคุมความเร็วการจมในของเหลว."
@@ -7030,6 +7043,16 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Dec. volume key"
 #~ msgstr "ลดระดับเสียงที่สำคัญ"
 
+#~ msgid "Default game"
+#~ msgstr "เกมเริ่มต้น"
+
+#~ msgid ""
+#~ "Default game when creating a new world.\n"
+#~ "This will be overridden when creating a world from the main menu."
+#~ msgstr ""
+#~ "เกมเริ่มต้นเมื่อสร้างโลกใหม่.\n"
+#~ "สิ่งนี้จะถูกแทนที่เมื่อสร้างโลกจากเมนูหลัก."
+
 #~ msgid ""
 #~ "Defines sampling step of texture.\n"
 #~ "A higher value results in smoother normal maps."
@@ -7043,6 +7066,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Dig key"
 #~ msgstr "ปุ่มขวา"
 
+#~ msgid "Disabled unlimited viewing range"
+#~ msgstr "ปิดใช้งานช่วงการดูไม่ จำกัด"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "ดาวน์โหลดเกม อย่างเช่น ไมน์เทสต์เกม ได้จาก minetest.net"
 
@@ -7055,11 +7081,18 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Drop item key"
 #~ msgstr "วางรหัสรายการ"
 
+#, fuzzy
+#~ msgid "Dynamic shadows:"
+#~ msgstr "เงาแบบไดนามิก: "
+
 #~ msgid "Enable VBO"
 #~ msgstr "ทำให้สามารถ VBO"
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "เปิดใช้งานการยืนยันการลงทะเบียน"
+
+#~ msgid "Enabled"
+#~ msgstr "เปิดใช้งานแล้ว"
 
 #~ msgid ""
 #~ "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
@@ -7101,6 +7134,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "FPS in pause menu"
 #~ msgstr "FPS ในเมนูหยุดชั่วคราว"
 
+#~ msgid "FSAA"
+#~ msgstr "FSAA"
+
 #~ msgid "Fallback font shadow"
 #~ msgstr "เงาแบบอักษรทางเลือก"
 
@@ -7110,8 +7146,23 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Fallback font size"
 #~ msgstr "ขนาดตัวอักษรทางเลือก"
 
+#~ msgid "Fancy Leaves"
+#~ msgstr "ใบไม้"
+
 #~ msgid "Fast key"
 #~ msgstr "ปุ่มลัด"
+
+#~ msgid ""
+#~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
+#~ "which PNG optimizers usually discard, often resulting in dark or\n"
+#~ "light edges to transparent textures. Apply a filter to clean that up\n"
+#~ "at texture load time. This is automatically enabled if mipmapping is "
+#~ "enabled."
+#~ msgstr ""
+#~ "พื้นผิวที่ถูกกรองสามารถผสมผสานค่า RGB กับเพื่อนบ้านที่โปร่งใสได้อย่างสมบูรณ์.\n"
+#~ "เครื่องมือเพิ่มประสิทธิภาพ PNG ใดที่มักจะละทิ้งซึ่งบางครั้งส่งผลให้มืดหรือ\n"
+#~ "ขอบแสงเป็นพื้นผิวโปร่งใส ใช้ตัวกรองนี้เพื่อล้างข้อมูล\n"
+#~ "ที่เวลาโหลดพื้นผิว."
 
 #~ msgid "Filtering"
 #~ msgstr "กรอง"
@@ -7124,6 +7175,18 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Font shadow alpha (opaqueness, between 0 and 255)."
 #~ msgstr "ตัวอักษรเงาอัลฟา (ความทึบระหว่าง 0 และ 255)."
+
+#~ msgid "Formspec Default Background Color"
+#~ msgstr "สีพื้นหลังเริ่มต้นของ Formspec"
+
+#~ msgid "Formspec Default Background Opacity"
+#~ msgstr "ความทึบพื้นหลังเริ่มต้นของ Formspec"
+
+#~ msgid "Formspec default background color (R,G,B)."
+#~ msgstr "สีพื้นหลังเริ่มต้นของ Formspec (R, G, B)"
+
+#~ msgid "Formspec default background opacity (between 0 and 255)."
+#~ msgstr "ความทึบพื้นหลังเริ่มต้นของ Formspec (ระหว่าง 0 ถึง 255)"
 
 #~ msgid "Forward key"
 #~ msgstr "ปุ่มส่งต่อ"
@@ -7259,6 +7322,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Inc. volume key"
 #~ msgstr "เพิ่มปุ่มปรับระดับเสียง"
+
+#~ msgid "Information:"
+#~ msgstr "ข้อมูล:"
 
 #~ msgid "Install Mod: Unable to find real mod name for: $1"
 #~ msgstr "ติดตั้ง Mod: ไม่สามารถค้นหาชื่อจริงของ mod: $1"
@@ -7929,6 +7995,13 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Left key"
 #~ msgstr "ปุ่มซ้าย"
 
+#~ msgid ""
+#~ "Length of liquid waves.\n"
+#~ "Requires waving liquids to be enabled."
+#~ msgstr ""
+#~ "ตั้งค่าเป็นจริงช่วยให้ใบโบก.\n"
+#~ "ต้องมี shaders เพื่อเปิดใช้งาน."
+
 #~ msgid "Lightness sharpness"
 #~ msgstr "ความคมชัดของแสง"
 
@@ -7955,6 +8028,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Minimap key"
 #~ msgstr "คีย์แผนที่ย่อ"
 
+#~ msgid "Mipmap"
+#~ msgstr "แผนที่ย่อ"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "แผนที่ย่อ + Aniso.กรอง"
+
 #~ msgid "Mute key"
 #~ msgstr "ปุ่มปิดเสียง"
 
@@ -7964,11 +8043,29 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Name/Password"
 #~ msgstr "ชื่อ/รหัสผ่าน"
 
+#~ msgid "Near plane"
+#~ msgstr "ระนาบใกล้"
+
 #~ msgid "No"
 #~ msgstr "ไม่"
 
+#~ msgid "No Filter"
+#~ msgstr "ไม่มีตัวกรอง"
+
+#~ msgid "No Mipmap"
+#~ msgstr "ไม่ Mipmap (แผนที่ย่อ)"
+
 #~ msgid "Noclip key"
 #~ msgstr "คีย์ Noclip"
+
+#~ msgid "Node Highlighting"
+#~ msgstr "โหนที่เน้น"
+
+#~ msgid "Node Outlining"
+#~ msgstr "สรุป โหน"
+
+#~ msgid "None"
+#~ msgstr "ไม่มี"
 
 #~ msgid "Normalmaps sampling"
 #~ msgstr "การสุ่มตัวอย่าง Normalmaps"
@@ -7981,6 +8078,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Ok"
 #~ msgstr "ตกลง"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "ใบทึบ"
+
+#~ msgid "Opaque Water"
+#~ msgstr "น้ำขุ่น"
 
 #~ msgid "Overall bias of parallax occlusion effect, usually scale/2."
 #~ msgstr "ความเอนเอียงโดยรวมของเอฟเฟ็กต์การบดเคี้ยวของ Parallax มักเป็นสเกล / 2"
@@ -8010,6 +8113,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Parallax occlusion strength"
 #~ msgstr "กำลังบดเคี้ยวของ Parallax"
 
+#~ msgid "Particles"
+#~ msgstr "อนุภาค"
+
 #~ msgid "Path to TrueTypeFont or bitmap."
 #~ msgstr "เส้นทางแบบอักษร."
 
@@ -8024,6 +8130,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Player name"
 #~ msgstr "ชื่อผู้เล่น"
+
+#~ msgid "Please enter a valid integer."
+#~ msgstr "โปรดใส่ค่าเป็นตัวเลขในรูปแบบที่ถูกต้อง"
+
+#~ msgid "Please enter a valid number."
+#~ msgstr "กรุณาใส่หมายเลขที่ถูกต้อง"
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "ปุ่มสลับ Profiler"
@@ -8047,20 +8159,23 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Saturation"
 #~ msgstr "การทำซ้ำ"
 
+#~ msgid "Save window size automatically when modified."
+#~ msgstr "บันทึกขนาดหน้าต่างโดยอัตโนมัติเมื่อแก้ไข"
+
+#~ msgid "Screen:"
+#~ msgstr "หน้าจอ:"
+
 #~ msgid "Select Package File:"
 #~ msgstr "เลือกแฟ้มแพคเกจ:"
 
 #~ msgid "Server / Singleplayer"
 #~ msgstr "เซิร์ฟเวอร์ / ผู้เล่นเดี่ยว"
 
-#~ msgid ""
-#~ "Set the tilt of Sun/Moon orbit in degrees.\n"
-#~ "Value of 0 means no tilt / vertical orbit.\n"
-#~ "Minimum value: 0.0; maximum value: 60.0"
-#~ msgstr ""
-#~ "ตั้งค่าความเอียงของวงโคจรของดวงอาทิตย์/ดวงจันทร์เป็นองศา.\n"
-#~ "ค่า 0 หมายถึงไม่มีวงโคจรเอียง/แนวตั้ง.\n"
-#~ "ค่าต่ำสุด: 0.0; ค่าสูงสุด: 60.0"
+#~ msgid "Shaders (experimental)"
+#~ msgstr "เฉดสี (ไม่พร้อมใช้งาน)"
+
+#~ msgid "Shaders (unavailable)"
+#~ msgstr "เฉดสี (ไม่พร้อมใช้งาน)"
 
 #, fuzzy
 #~ msgid ""
@@ -8068,8 +8183,14 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ "not be drawn."
 #~ msgstr "เงาแบบอักษรชดเชยถ้า 0 แล้วเงาจะไม่ถูกวาด."
 
-#~ msgid "Sky Body Orbit Tilt"
-#~ msgstr "วงโคจรของท้องฟ้าเอียง"
+#~ msgid "Simple Leaves"
+#~ msgstr "ใบเรียบง่าย"
+
+#~ msgid "Smooth Lighting"
+#~ msgstr "โคมไฟเรียบ"
+
+#~ msgid "Smooths rotation of camera. 0 to disable."
+#~ msgstr "มากการหมุนของกล้อง 0 เพื่อปิดใช้งาน"
 
 #~ msgid "Sneak key"
 #~ msgstr "กุญแจแอบ"
@@ -8089,6 +8210,15 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Strength of light curve mid-boost."
 #~ msgstr "ความแข็งแรงของแสงโค้งกลาง - เพิ่ม"
 
+#~ msgid "Texturing:"
+#~ msgstr "พื้นผิว:"
+
+#~ msgid "The value must be at least $1."
+#~ msgstr "ต้องมีค่าอย่างน้อย $1"
+
+#~ msgid "The value must not be larger than $1."
+#~ msgstr "ค่าต้องไม่มากกว่า $1"
+
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "แบบอักษรนี้จะใช้สำหรับบางภาษา"
 
@@ -8101,11 +8231,45 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Toggle camera mode key"
 #~ msgstr "สลับปุ่มโหมดกล้อง"
 
+#~ msgid "Tone Mapping"
+#~ msgstr "การแมปโทน"
+
+#, fuzzy
+#~ msgid "Touch threshold (px):"
+#~ msgstr "ขีด จำกัด: (px)"
+
+#~ msgid "Trilinear Filter"
+#~ msgstr "กรอง trilinear"
+
 #~ msgid "Unable to install a game as a $1"
 #~ msgstr "ไม่สามารถติดตั้งเกม $1"
 
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "ไม่สามารถติดตั้ง modpack ที่ $1"
+
+#~ msgid ""
+#~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
+#~ "This algorithm smooths out the 3D viewport while keeping the image "
+#~ "sharp,\n"
+#~ "but it doesn't affect the insides of textures\n"
+#~ "(which is especially noticeable with transparent textures).\n"
+#~ "Visible spaces appear between nodes when shaders are disabled.\n"
+#~ "If set to 0, MSAA is disabled.\n"
+#~ "A restart is required after changing this option."
+#~ msgstr ""
+#~ "ใช้การลบรอยหยักหลายตัวอย่าง (MSAA) เพื่อทำให้ขอบบล็อกเรียบ.\n"
+#~ "อัลกอริธึมนี้ทำให้วิวพอร์ต 3 มิติเรียบขึ้นในขณะที่รักษาความคมชัดของภาพ,\n"
+#~ "แต่ไม่ส่งผลต่อเนื้อใน\n"
+#~ "(ซึ่งเห็นได้ชัดเจนเป็นพิเศษกับพื้นผิวโปร่งใส).\n"
+#~ "ช่องว่างที่มองเห็นได้ปรากฏขึ้นระหว่างโหนดเมื่อปิดใช้ shaders.\n"
+#~ "หากตั้งค่าเป็น 0 MSAA จะถูกปิดใช้งาน.\n"
+#~ "จำเป็นต้องรีสตาร์ทหลังจากเปลี่ยนตัวเลือกนี้."
+
+#~ msgid "Use trilinear filtering when scaling textures."
+#~ msgstr "ใช้การกรอง trilinear เมื่อปรับขนาดพื้นผิว"
+
+#~ msgid "Vertical screen synchronization."
+#~ msgstr "การซิงโครไนซ์หน้าจอแนวตั้ง"
 
 #~ msgid "View range decrease key"
 #~ msgstr "ปุ่มลดช่วงการมอง"
@@ -8116,11 +8280,45 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "View zoom key"
 #~ msgstr "ดูปุ่มซูม"
 
+#, c-format
+#~ msgid "Viewing range is at maximum: %d"
+#~ msgstr "ระยะการดูสูงสุดที่: %d1"
+
+#~ msgid "Waving Leaves"
+#~ msgstr "ใบโบก"
+
+#~ msgid "Waving Liquids"
+#~ msgstr "โบกของเหลว"
+
+#~ msgid "Waving Plants"
+#~ msgstr "โบกไม้"
+
 #~ msgid "Waving Water"
 #~ msgstr "น้ำโบก"
 
 #~ msgid "Waving water"
 #~ msgstr "โบกน้ำ"
+
+#~ msgid ""
+#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
+#~ "textures\n"
+#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
+#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
+#~ "size\n"
+#~ "for the upscaled textures; higher values look sharper, but require more\n"
+#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
+#~ "This is also used as the base node texture size for world-aligned\n"
+#~ "texture autoscaling."
+#~ msgstr ""
+#~ "เมื่อใช้ฟิลเตอร์ bilinear/trilinear/anisotropic พื้นผิวความละเอียดต่ำ\n"
+#~ "สามารถเบลอได้ดังนั้นจึงเพิ่มขนาดโดยอัตโนมัติกับเพื่อนบ้านที่ใกล้ที่สุด\n"
+#~ "การแก้ไขเพื่อรักษาพิกเซลที่คมชัด กำหนดขนาดพื้นผิวขั้นต่ำ\n"
+#~ "สำหรับพื้นผิวที่ยกระดับ; ค่าที่สูงกว่าจะดูคมชัดกว่าแต่ต้องการมากกว่า\n"
+#~ "หน่วยความจำ. แนะนำให้ใช้กำลัง 2 การตั้งค่านี้ใช้เฉพาะในกรณีที่\n"
+#~ "เปิดใช้งานการกรอง bilinear/trilinear/anisotropic\n"
+#~ "นอกจากนี้ยังใช้เป็นขนาดพื้นผิวของโหนดฐานสำหรับการจัดตำแหน่งโลก\n"
+#~ "การปรับขนาดพื้นผิวอัตโนมัติ"
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
@@ -8129,6 +8327,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgstr ""
 #~ "ไม่ว่าจะใช้ฟอนต์ FreeType ต้องมีการสนับสนุน FreeType เพื่อรวบรวม\n"
 #~ "หากปิดใช้งาน ฟอนต์บิตแมปและเอ็กซ์เอ็มแอลเวกเตอร์จะใช้แทน"
+
+#~ msgid "X"
+#~ msgstr "X"
+
+#~ msgid "Y"
+#~ msgstr "Y"
 
 #~ msgid "Yes"
 #~ msgstr "ใช่"
@@ -8150,6 +8354,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #, fuzzy
 #~ msgid "You died."
 #~ msgstr "คุณตายแล้ว"
+
+#~ msgid "Z"
+#~ msgstr "Z"
 
 #~ msgid "needs_fallback_font"
 #~ msgstr "yes"
