@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-20 23:13+0200\n"
 "PO-Revision-Date: 2023-11-10 10:05+0000\n"
-"Last-Translator: YearOfFuture <prikolnanozkaz@gmail.com>\n"
+"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -2185,7 +2185,7 @@ msgstr "2D шум що контролює форму/розмір гребені
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of rolling hills."
-msgstr "2D шум що контролює форму/розмір невисоких пагорбів."
+msgstr "2D шум, який керує формою/розміром прокатних пагорбів."
 
 #: src/settings_translation_file.cpp
 msgid "2D noise that controls the shape/size of step mountains."
