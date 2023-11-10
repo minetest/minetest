@@ -1091,7 +1091,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
-    -- Available since feature `sound_parameter_table_start_time`.
+    -- Available since feature `sound_params_start_time`.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -5271,7 +5271,7 @@ Utilities
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
       -- sound parameter tables support start_time (5.8.0)
-      sound_parameter_table_start_time = true,
+      sound_params_start_time = true,
   }
   ```
 
