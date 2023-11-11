@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-10-22 21:02+0000\n"
-"Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
+"PO-Revision-Date: 2023-11-12 13:14+0000\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -282,9 +282,8 @@ msgid "Texture packs"
 msgstr "Texturenpakete"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "Das Paket $1/$2 wurde nicht gefunden."
+msgstr "Das Paket $1 wurde nicht gefunden."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -988,18 +987,16 @@ msgid "Browse online content"
 msgstr "Onlineinhalte durchsuchen"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Onlineinhalte durchsuchen"
+msgstr "Onlineinhalte durchsuchen [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Inhalt"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Inhalt"
+msgstr "Inhalt [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1022,9 +1019,8 @@ msgid "Rename"
 msgstr "Umbenennen"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<keine verfügbar>"
+msgstr "Update verfügbar?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1694,14 +1690,12 @@ msgid "Clear Key"
 msgstr "Leeren"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Strg"
+msgstr "Strg-Taste"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Löschen"
+msgstr "Entf-Taste"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -1778,9 +1772,8 @@ msgstr "Win. links"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menü"
+msgstr "Menü-Taste"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1855,20 +1848,17 @@ msgid "OEM Clear"
 msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "Bild ab"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Bild auf"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause"
+msgstr "Pause-Taste"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1880,9 +1870,8 @@ msgid "Print"
 msgstr "Druck"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Eingabe"
+msgstr "Eingabetaste"
 
 #: src/client/keycode.cpp
 #, fuzzy
@@ -2353,7 +2342,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3-D-Rauschen, welches die Anzahl der Verliese je Mapchunk festlegt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2629,9 +2617,8 @@ msgid "Bind address"
 msgstr "Bind-Adresse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Biome"
+msgstr "Biom-API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2839,7 +2826,6 @@ msgid "Clouds"
 msgstr "Wolken"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
 msgstr "Wolken sind ein clientseitiger Effekt."
 
@@ -3475,7 +3461,6 @@ msgstr ""
 "beeinträchtigen."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
 msgstr "Engine-Profiler"
 
@@ -5026,7 +5011,7 @@ msgstr "Mip-Mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Verschiedenes"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -6089,7 +6074,6 @@ msgstr ""
 "Standardabweichung der Lichtkurvenverstärkungs-Gaußfunktion."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
 msgstr "Statische Einstiegsposition"
 
@@ -6258,7 +6242,6 @@ msgstr ""
 "wenn „/profiler save [Format]“ ohne Format aufgerufen wird."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
