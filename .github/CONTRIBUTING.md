@@ -24,8 +24,8 @@ Contributions are welcome! Here's how you can help:
    recommended that you open an issue for any such pull requests before doing
    the work, to avoid disappointment.
 
-   You may also benefit from discussing on our IRC development channel
-   [#minetest-dev](https://www.minetest.net/irc/). Note that a proper IRC client
+   You may also benefit from discussing on one of our IRC development channels
+   [listed here](https://wiki.minetest.net/IRC). Note that a proper IRC client
    is required to speak on this channel.
 
 3. Start coding!
