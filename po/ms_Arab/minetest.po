@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-11-11 11:04+0000\n"
+"PO-Revision-Date: 2023-11-12 13:14+0000\n"
 "Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
 "Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay (Jawi) <https://hosted.weblate.org/projects/minetest/"
@@ -280,9 +280,8 @@ msgid "Texture packs"
 msgstr "ڤيک تيکستور"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "ڤاکيج $1 \\ $2 تيدق دجومڤاٴي."
+msgstr "ڤاکيج $1 تيدق دجومڤاٴي."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -319,23 +318,20 @@ msgid "Failed to install $1 to $2"
 msgstr "ݢاݢل مماسڠ $1 ڤد $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Install: Unable to find suitable folder name for $1"
-msgstr "ڤاسڠ مودس: تيدق جومڤ نام فولدر يڠ سسواي اونتوق ڤيک مودس $1"
+msgstr "ڤماسڠن: تيدق جومڤا نام فولدر يڠ سسواي اونتوق $1"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to find a valid mod, modpack, or game"
-msgstr "تيدق جومڤ مودس اتاو ڤيک مودس يڠ صح"
+msgstr "تيدق جومڤا مودس⹁ ڤيک مودس⹁ اتاو ڤرماٴينن يڠ صح"
 
 #: builtin/mainmenu/content/pkgmgr.lua
-#, fuzzy
 msgid "Unable to install a $1 as a $2"
-msgstr "ݢاݢل مماسڠ مودس سباݢاي $1"
+msgstr "تيدق ممڤو مماسڠ $1 سباݢاي $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Unable to install a $1 as a texture pack"
-msgstr "ݢاݢل مماسڠ $1 سباݢاي ڤيک تيکستور"
+msgstr "تيدق ممڤو مماسڠ $1 سباݢاي ڤيک تيکستور"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
@@ -473,11 +469,11 @@ msgstr "جيسيم بومي تراڤوڠ اتس لاڠيت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr "تانه تراڤوڠ (دالم اوجيکاجي)"
+msgstr "تانه ترأڤوڠ (دالم اوجي کاجي)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr "جان روڤ بومي بوکن-فراکتل: لاٴوتن دان باواه تانه"
+msgstr "جان روڤا بومي بوکن-فرکتل: لاٴوتن دان باوه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
@@ -529,7 +525,7 @@ msgstr "جاريڠن تروووڠ دان ݢوا"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No game selected"
-msgstr "تيادا ڤرماٴينن دڤيليه"
+msgstr "تياد ڤرماٴينن دڤيليه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
@@ -545,7 +541,7 @@ msgstr "سوڠاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Sea level rivers"
-msgstr "سوڠاي ارس لاٴوت"
+msgstr "سوڠاي اوس لاٴوت"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
@@ -554,19 +550,19 @@ msgstr "بنيه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
-msgstr "ڤراليهن لمبوت دانتارا بيوم"
+msgstr "ڤراليهن دأنتارا بيوم"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid ""
 "Structures appearing on the terrain (no effect on trees and jungle grass "
 "created by v6)"
 msgstr ""
-"ستروکتور يڠ مونچول اتس روڤ بومي (تيادا کسن ڤد ڤوکوق دان رومڤوت هوتن دچيڤت "
+"ستروکتور يڠ مونچول اتس روڤا بومي (تياد کسن ڤد ڤوکوق دان رومڤوت هوتن دچيڤتا "
 "اوليه v6)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Structures appearing on the terrain, typically trees and plants"
-msgstr "ستروکتور يڠ مونچول اتس روڤ بومي⹁ بياساڽ ڤوکوق دان تومبوهن"
+msgstr "ستروکتور يڠ مونچول اتس روڤا بومي⹁ بياساڽ ڤوکوق دان تومبوهن"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Temperate, Desert"
@@ -582,7 +578,7 @@ msgstr "اقليم سدرهان⹁ ݢورون⹁ هوتن⹁ توندرا⹁ ت�
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Terrain surface erosion"
-msgstr "هاکيسن ڤرموکاٴن روڤ بومي"
+msgstr "هاکيسن ڤرموکاٴن روڤا بومي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Trees and jungle grass"
@@ -594,7 +590,7 @@ msgstr "کدالمن سوڠاي برباݢاي"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "ݢوا ݢرݢاسي يڠ ساڠت مندالم باواه تانه"
+msgstr "ݢوا ݢرݢاسي يڠ ساڠت مندالم باوه تانه"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -602,7 +598,7 @@ msgstr "نام دنيا"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "ادکه امدا ڤستي اندا ايڠين ممادم \"$1\"؟"
+msgstr "اداکه اندا ڤستي اندا ايڠين ممادم ”$1‟؟"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
@@ -611,15 +607,15 @@ msgstr "ڤادم"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: failed to delete \"$1\""
-msgstr "pkgmgr: ݢاݢل ممادم \"$1\""
+msgstr "pkgmgr: ݢاݢل ممادم”$1‟"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 msgid "pkgmgr: invalid path \"$1\""
-msgstr "pkgmgr: لالوان تيدق صح \"$1\""
+msgstr "pkgmgr: لالوان تيدق صح ”$1‟"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "ڤادم دنيا \"$1\"؟"
+msgstr "ڤادم دنيا ”$1‟؟"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
@@ -685,15 +681,15 @@ msgstr "تريما"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "نامکن سمولا ڤيک مودس:"
+msgstr "ناماکن سمولا ڤيک مودس:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid ""
 "This modpack has an explicit name given in its modpack.conf which will "
 "override any renaming here."
 msgstr ""
-"ڤيک مودس اين ممڤوڽاٴي نام خصوص دبريکن دالم فايل modpack.conf ميليقڽ يڠ اکن "
-"مڠاتسي سبارڠ ڤناماٴن سمولا دسين."
+"ڤيک مودس اين ممڤوڽاٴي نام خصوص دبريکن دالم فاٴيل modpack.conf ميليقڽ يڠ اکن "
+"مڠاتسي سبارڠ ڤناماٴن سمولا دسيني."
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "A new $1 version is available"
@@ -730,7 +726,7 @@ msgstr "سکريڤ ڤيهق کليئن دلومڤوهکن"
 
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr "چوب اکتيفکن سمولا سناراي ڤلاين عوام فان ڤريقسا سمبوڠن اينترنيت اندا."
+msgstr "چوبا اکتيفکن سمولا سناراي ڤلاين عوام دان ڤريقسا سامبوڠن اينترنيت اندا."
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Browse"
@@ -746,7 +742,7 @@ msgstr "ڤيليه ديريکتوري"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select file"
-msgstr "ڤيليه فايل"
+msgstr "ڤيليه فاٴيل"
 
 #: builtin/mainmenu/settings/components.lua
 #, fuzzy
@@ -755,7 +751,7 @@ msgstr "Select"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
-msgstr "(تيادا ڤريهل اونتوق تتڤن يڠ دبري)"
+msgstr "(تياد ڤريحل اونتوق تتڤن يڠ دبري)"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "2D Noise"
@@ -782,7 +778,7 @@ msgstr "ڤنروسن"
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 #: src/settings_translation_file.cpp
 msgid "Scale"
-msgstr "سکال"
+msgstr "سکالا"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "X spread"
@@ -877,7 +873,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
-msgstr "تونجوقکن نام تيکنيکل"
+msgstr "تونجوق نام تيکنيکل"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 #, fuzzy
@@ -947,7 +943,7 @@ msgstr "جارق ڤڠهنترن اوبجيک اکتيف"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr "ڤمباڠون تراس"
+msgstr "ڤمباڠون ترس"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
@@ -974,7 +970,7 @@ msgstr "ڤڽومبڠ تردهولو"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr "ڤمباڠون تراس تردهولو"
+msgstr "ڤمباڠون ترس تردهولو"
 
 #: builtin/mainmenu/tab_about.lua
 #, fuzzy
@@ -983,7 +979,7 @@ msgstr "تونجوقکن معلومت ڽهڤڤيجت"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr "لايري کندوڠن دالم تالين"
+msgstr "لايري کاندوڠن دالم تالين"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -992,7 +988,7 @@ msgstr "لايري کندوڠن دالم تالين"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
-msgstr "کندوڠن"
+msgstr "کاندوڠن"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -1009,15 +1005,15 @@ msgstr "ڤاکيج دڤاسڠ:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr "تيادا کبرݢنتوڠن."
+msgstr "تياد کبرݢنتوڠن."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
-msgstr "تيادا ڤريهل ڤاکيج ترسديا"
+msgstr "تياد ڤريحل ڤاکيج ترسديا"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr "نامکن سمولا"
+msgstr "ناماکن سمولا"
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -1030,7 +1026,7 @@ msgstr "ݢونا ڤيک تيکستور"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
-msgstr "اومومکن ڤلاين"
+msgstr "عمومکن ڤلاين"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -1066,7 +1062,7 @@ msgstr "بوات بارو"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
-msgstr "تيادا دنيا دچيڤت اتاو دڤيليه!"
+msgstr "تياد دنيا دچيڤتا اتاو دڤيليه!"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Play Game"
@@ -1212,7 +1208,7 @@ msgstr "سيلا ڤيليه سواتو نام!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided password file failed to open: "
-msgstr "فايل کات لالوان يڠ دسدياکن ݢاݢل دبوک: "
+msgstr "فاٴيل کات لالوان يڠ دسدياکن ݢاݢل دبوک: "
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -1224,7 +1220,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"ڤريقسا فايل debug.txt اونتوق معلومت لنجوت."
+"ڤريقسا فاٴيل debug.txt اونتوق معلومت لنجوت."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -2006,9 +2002,8 @@ msgid "Some mods have unsatisfied dependencies:"
 msgstr "تيادا کبرݢنتوڠن واجب"
 
 #: src/gui/guiChatConsole.cpp
-#, fuzzy
 msgid "Failed to open webpage"
-msgstr "ݢاݢل مموات تورون $1"
+msgstr "ݢاݢل ممبوک لامن سساوڠ"
 
 #: src/gui/guiChatConsole.cpp
 msgid "Opening webpage"
@@ -2607,7 +2602,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr ""
+msgstr "سري \\ کمبڠ"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
