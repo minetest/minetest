@@ -196,13 +196,13 @@
 #    type: bool
 # enable_particles = true
 
-### 3d
+### 3D
 
 #    3D support.
 #    Currently supported:
 #    -    none: no 3d output.
 #    -    anaglyph: cyan/magenta color 3d.
-#    -    interlaced: odd/even line based polarisation screen support.
+#    -    interlaced: odd/even line based polarization screen support.
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
 #    -    crossview: Cross-eyed 3d
@@ -314,7 +314,7 @@
 
 ### Clouds
 
-#    Clouds are a client side effect.
+#    Clouds are a client-side effect.
 #    type: bool
 # enable_clouds = true
 
@@ -325,7 +325,7 @@
 ### Filtering and Antialiasing
 
 #    Use mipmaps when scaling textures down. May slightly increase performance,
-#    especially when using a high resolution texture pack.
+#    especially when using a high-resolution texture pack.
 #    Gamma-correct downscaling is not supported.
 #    type: bool
 # mip_map = false
@@ -363,7 +363,7 @@
 #    type: enum values: none, fsaa, fxaa, ssaa
 # antialiasing = none
 
-#    Defines size of the sampling grid for FSAA and SSAA antializasing methods.
+#    Defines the size of the sampling grid for FSAA and SSAA antialiasing methods.
 #    Value of 2 means taking 2x2 = 4 samples.
 #    type: enum values: 2, 4, 8, 16
 # fsaa = 2
@@ -467,7 +467,7 @@
 #    type: bool
 # shadow_map_color = false
 
-#    Spread a complete update of shadow map over given amount of frames.
+#    Spread a complete update of shadow map over given number of frames.
 #    Higher values might make shadows laggy, lower values
 #    will consume more resources.
 #    Minimum value: 1; maximum value: 16
@@ -560,7 +560,7 @@
 #    type: enum values: , be, bg, ca, cs, da, de, el, en, eo, es, et, eu, fi, fr, gd, gl, hu, id, it, ja, jbo, kk, ko, lt, lv, ms, nb, nl, nn, pl, pt, pt_BR, ro, ru, sk, sl, sr_Cyrl, sr_Latn, sv, sw, tr, uk, vi, zh_CN, zh_TW
 # language =
 
-### GUIs
+### GUI
 
 #    Scale GUI by a user specified value.
 #    Use a nearest-neighbor-anti-alias filter to scale the GUI.
@@ -832,7 +832,7 @@
 #    type: int min: 10 max: 65535
 # chat_message_max_size = 500
 
-#    Amount of messages a player may send per 10 seconds.
+#    Number of messages a player may send per 10 seconds.
 #    type: float min: 1
 # chat_message_limit_per_10sec = 8.0
 
@@ -954,7 +954,7 @@
 #    type: flags possible values: caves, dungeons, light, decorations, biomes, ores, nocaves, nodungeons, nolight, nodecorations, nobiomes, noores
 # mg_flags = caves,dungeons,light,decorations,biomes,ores
 
-## Biome API noise parameters
+## Biome API
 
 #    Temperature variation for biomes.
 #    type: noise_params_2d
@@ -1392,7 +1392,7 @@
 #    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
 #    upper tapering).
 #    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
-#    When enabling water placement the floatlands must be configured and tested
+#    When enabling water placement, floatlands must be configured and tested
 #    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
 #    required value depending on 'mgv7_np_floatland'), to avoid
 #    server-intensive extreme water flow and to avoid vast flooding of the
@@ -2307,7 +2307,7 @@
 # mgvalleys_spflags = altitude_chill,humid_rivers,vary_river_depth,altitude_dry
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
-#    enabled. Also the vertical distance over which humidity drops by 10 if
+#    enabled. Also, the vertical distance over which humidity drops by 10 if
 #    'altitude_dry' is enabled.
 #    type: int min: 0 max: 65535
 # mgvalleys_altitude_chill = 90
@@ -2398,7 +2398,7 @@
 #    flags       =
 # }
 
-#    The depth of dirt or other biome filler node.
+#    Variation of biome filler depth.
 #    type: noise_params_2d
 # mgvalleys_np_filler_depth = {
 #    offset      = 0,
@@ -2599,7 +2599,7 @@
 #    type: enum values: txt, csv, lua, json, json_pretty
 # profiler.default_report_format = txt
 
-#    The file path relative to your worldpath in which profiles will be saved to.
+#    The file path relative to your world path in which profiles will be saved to.
 #    type: string
 # profiler.report_path =
 
@@ -2636,7 +2636,7 @@
 #    type: bool
 # instrument.profiler = false
 
-### Engine profiler
+### Engine Profiler
 
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
@@ -2852,7 +2852,7 @@
 #    type: string
 # prometheus_listener_address = 127.0.0.1:30000
 
-#    Maximum size of the out chat queue.
+#    Maximum size of the outgoing chat queue.
 #    0 to disable queueing and -1 to make the queue size unlimited.
 #    type: int min: -1 max: 32767
 # max_out_chat_queue_size = 20
@@ -3019,17 +3019,17 @@
 #    type: int min: 2 max: 32767
 # block_send_optimize_distance = 4
 
-#    If enabled the server will perform map block occlusion culling based on
+#    If enabled, the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
-#    sent to the client 50-80%. The client will not longer receive most invisible
-#    so that the utility of noclip mode is reduced.
+#    sent to the client by 50-80%. Clients will no longer receive most
+#    invisible blocks, so that the utility of noclip mode is reduced.
 #    type: bool
 # server_side_occlusion_culling = true
 
 ### Mapgen
 
 #    Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).
-#    WARNING!: There is no benefit, and there are several dangers, in
+#    WARNING: There is no benefit, and there are several dangers, in
 #    increasing this value above 5.
 #    Reducing this value increases cave and dungeon density.
 #    Altering this value is for special usage, leaving it unchanged is
@@ -3086,7 +3086,7 @@
 #    type: int min: 5000 max: 2147483647
 # curl_file_download_timeout = 300000
 
-### Misc
+### Miscellaneous
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 #    type: int min: 1
