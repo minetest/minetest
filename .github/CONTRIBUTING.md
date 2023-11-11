@@ -123,7 +123,7 @@ translated by editing a `.tr` text file. See
 ## Donations
 
 If you'd like to monetarily support Minetest development, you can find donation
-methods on [our website](https://www.minetest.net/development/#donate).
+methods on [our website](https://www.minetest.net/get-involved/#donate).
 
 # Maintaining
 
