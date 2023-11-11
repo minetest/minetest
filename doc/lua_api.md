@@ -2362,11 +2362,13 @@ Damage calculation:
 
 ```lua
 damage = 0
-foreach group in cap.damage_groups:
-    damage += cap.damage_groups[group]
-        * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
-        * (object.armor_groups[group] / 100.0)
-        -- Where object.armor_groups[group] is 0 for inexistent values
+for group in cap.damage_groups do
+    armor = object.armor_groups[group] or 0
+    damage = damage
+      + cap.damage_groups[group]
+      * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+      * (armor / 100.0)
+end
 return damage
 ```
 
