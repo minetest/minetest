@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "log.h"
+#include "player.h"
 #include "tool.h"
 #include "remoteplayer.h"
 #include "server.h"
@@ -35,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
 #include "server/unit_sao.h"
+#include "util/string.h"
 
 /*
 	ObjectRef
@@ -831,6 +833,93 @@ int ObjectRef::l_get_properties(lua_State *L)
 		return 0;
 
 	push_object_properties(L, prop);
+	return 1;
+}
+
+// set_observers(self, observers)
+int ObjectRef::l_set_observers(lua_State *L)
+{
+	GET_ENV_PTR;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		throw LuaError("Invalid ObjectRef");
+
+	// Reset object to "unmanaged" (sent to everyone)?
+	if (lua_isnoneornil(L, 2)) {
+		ServerActiveObject *parent = sao->getParent();
+		if (parent != nullptr && parent->m_observer_names.has_value())
+			throw LuaError("Child observers need to be managed if parent observers are managed");
+		sao->m_observer_names.reset();
+		return 0;
+	}
+
+	std::unordered_set<std::string> observer_names;
+	lua_pushnil(L);
+	while (lua_next(L, 2) != 0) {
+		std::string name = readParam<std::string>(L, -2);
+		if (name.empty())
+			throw LuaError("Observer name is empty");
+		if (name.size() > PLAYERNAME_SIZE)
+			throw LuaError("Observer name is too long");
+		if (!string_allowed(name, PLAYERNAME_ALLOWED_CHARS))
+			throw LuaError("Observer name contains invalid characters");
+		observer_names.insert(std::move(name));
+		if (!lua_toboolean(L, -1)) // falsy value?
+			throw LuaError("Values in the `observers` table need to be true");
+		lua_pop(L, 1); // pop value, keep key
+	}
+
+	RemotePlayer *player = getplayer(ref);
+	if (player != nullptr) {
+		if (observer_names.find(player->getName()) == observer_names.end())
+			throw LuaError("Players need to observe themselves");
+	}
+
+	// Check attachments
+	ServerActiveObject *parent = sao->getParent();
+	if (parent != nullptr) {
+		for (auto &name : observer_names) {
+			if (!parent->isObservedBy(name))
+				throw LuaError("Child observers not a subset of parent observers");
+		}
+	}
+	auto child_ids = sao->getAttachmentChildIds();
+	for (auto child_id : child_ids) {
+		ServerActiveObject *child = env->getActiveObject(child_id);
+		assert(child);
+		if (!child->m_observer_names.has_value())
+			throw LuaError("Child observers need to be managed if parent observers are managed");
+		for (auto &name : child->m_observer_names.value()) {
+			if (!sao->isObservedBy(name))
+				throw LuaError("Child observers not a subset of parent observers");
+		}
+	}
+	sao->m_observer_names = observer_names;
+	return 0;
+}
+
+// get_observers(self)
+int ObjectRef::l_get_observers(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		throw LuaError("invalid ObjectRef");
+
+	if (!sao->m_observer_names.has_value()) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	const auto &observer_names = sao->m_observer_names.value();
+	// Push set of observers {[name] = true}
+	lua_createtable(L, 0, observer_names.size());
+	for (auto &name : observer_names) {
+		lua_pushboolean(L, true);
+		lua_setfield(L, -2, name.c_str());
+	}
 	return 1;
 }
 
@@ -2663,6 +2752,8 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_properties),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
+	luamethod(ObjectRef, set_observers),
+	luamethod(ObjectRef, get_observers),
 
 	luamethod_aliased(ObjectRef, set_velocity, setvelocity),
 	luamethod_aliased(ObjectRef, add_velocity, add_player_velocity),

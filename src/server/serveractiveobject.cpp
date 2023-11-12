@@ -95,3 +95,8 @@ InventoryLocation ServerActiveObject::getInventoryLocation() const
 {
 	return InventoryLocation();
 }
+
+bool ServerActiveObject::isObservedBy(const std::string &player_name) const
+{
+	return !m_observer_names.has_value() || m_observer_names.value().count(player_name) > 0;
+}

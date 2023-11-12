@@ -7921,6 +7921,19 @@ child will follow movement and rotation of that bone.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
+* `set_observers(observers)`: sets observers (players this object is sent to)
+    * If `observers` is `nil`, the object's observers are "unmanaged":
+      The object is sent to all players as governed by server settings. This is the default.
+    * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
+        * Since this is a set, the values need to be `true`.
+    * If players are managed, they always need to have themselves as observers.
+    * Attachments:
+        * If an object's observers are managed, the observers of all children need to be managed too.
+        * The observers of children need to be a subset of the observers of parents.
+	* Object activation and deactivation are unaffected by observability.
+* `get_observers()`:
+    * returns `nil` if the observers are unmanaged
+    * returns a table with all observer names as keys and `true` values (a "set") otherwise
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object
