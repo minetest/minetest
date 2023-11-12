@@ -19,13 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "database-files.h"
 #include "convert_json.h"
-#include "remoteplayer.h"
-#include "settings.h"
 #include "porting.h"
 #include "filesys.h"
 #include "server/player_sao.h"
 #include "util/string.h"
-#include <cassert>
 
 ModStorageDatabaseFiles::ModStorageDatabaseFiles(const std::string &savedir):
 	m_storage_dir(savedir + DIR_DELIM + "mod_storage")
