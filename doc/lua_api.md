@@ -1091,6 +1091,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
+    -- Available since feature `sound_params_start_time`.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -5271,6 +5272,12 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
+      -- Sound parameter tables support start_time (5.8.0)
+      sound_params_start_time = true,
+      -- New fields for set_physics_override: speed_climb, speed_crouch,
+      -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
+      -- acceleration_default, acceleration_air (5.8.0)
+      physics_overrides_v2 = true,
   }
   ```
 
@@ -7753,6 +7760,8 @@ child will follow movement and rotation of that bone.
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change
       from the base value on a per-player basis
+    * Note: Some of the fields don't exist in old API versions, see feature
+      `physics_overrides_v2`.
 
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
