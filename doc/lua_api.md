@@ -5272,12 +5272,10 @@ Utilities
       compress_zstd = true,
       -- Sound parameter tables support start_time (5.8.0)
       sound_params_start_time = true,
-      -- Version number for set_physics_override parameters.
-      -- * 1 or nil: (<= 5.7.0)
-      -- * 2: (5.8.0)
-      --   New fields: speed_climb, speed_crouch, liquid_fluidity,
-      --   acceleration_default, acceleration_air
-      physics_overrides_version = 2,
+      -- New fields for set_physics_override: speed_climb, speed_crouch,
+      -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
+      -- acceleration_default, acceleration_air (5.8.0)
+      physics_overrides_v2 = true,
   }
   ```
 
@@ -7761,7 +7759,7 @@ child will follow movement and rotation of that bone.
       for all players and only use `set_physics_override` when you need to change
       from the base value on a per-player basis
     * Note: Some of the fields don't exist in old API versions, see feature
-      `physics_overrides_version`.
+      `physics_overrides_v2`.
 
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID

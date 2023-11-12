@@ -28,7 +28,7 @@ core.features = {
 	mod_storage_on_disk = true,
 	compress_zstd = true,
 	sound_params_start_time = true,
-	physics_overrides_version = 2,
+	physics_overrides_v2 = true,
 }
 
 function core.has_feature(arg)
