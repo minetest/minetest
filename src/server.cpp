@@ -1153,7 +1153,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	*/
 	{
 		NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
-		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(player->getName());
+		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << player->getName();
 		m_clients.sendToAll(&notice_pkt);
 	}
 	{
@@ -3176,7 +3176,7 @@ std::string Server::getStatusString()
 			RemotePlayer *player = m_env->getPlayer(client_id);
 
 			// Get name of player
-			const char *name = player ? player->getName() : "<unknown>";
+			const std::string name = player ? player->getName() : "<unknown>";
 
 			// Add name to information string
 			if (!first)
