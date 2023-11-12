@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-11-09 07:56+0000\n"
+"PO-Revision-Date: 2023-11-12 13:14+0000\n"
 "Last-Translator: Nanashi Mumei <nanashi.mumei@users.noreply.hosted.weblate."
 "org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -282,9 +282,8 @@ msgid "Texture packs"
 msgstr "Наборы текстур"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "Дополнение $1/$2 не найдено."
+msgstr "Дополнение $1 не найдено."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -829,7 +828,7 @@ msgstr "(Системный язык)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Доступность"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -857,9 +856,8 @@ msgid "General"
 msgstr "Основной"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Быстрое перемещение"
+msgstr "Перемещение"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -983,18 +981,16 @@ msgid "Browse online content"
 msgstr "Поиск дополнений в сети"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Поиск дополнений в сети"
+msgstr "Поиск дополнений в сети [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Дополнения"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Дополнения"
+msgstr "Дополнения [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1017,9 +1013,8 @@ msgid "Rename"
 msgstr "Переименовать"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<недоступно>"
+msgstr "Обновление недоступно?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1671,32 +1666,28 @@ msgstr "Backspace"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
-msgstr "Красться"
+msgstr "Break"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Очистить"
+msgstr "Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
 msgstr "Ctrl"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Удалить"
+msgstr "Delete"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Вниз"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1743,9 +1734,8 @@ msgid "Insert"
 msgstr "Insert"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Левый Ctrl"
+msgstr "Влево"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1769,7 +1759,6 @@ msgstr "Левый Win"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
 msgstr "Menu"
 
@@ -1846,18 +1835,15 @@ msgid "OEM Clear"
 msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "Page Down"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Page Up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
 msgstr "Pause"
 
@@ -1871,14 +1857,12 @@ msgid "Print"
 msgstr "PrtSc"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
 msgstr "Enter"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Правый Ctrl"
+msgstr "Вправо"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1910,7 +1894,6 @@ msgid "Select"
 msgstr "Select"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
 msgstr "Shift"
 
@@ -1932,7 +1915,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Вверх"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1943,9 +1926,8 @@ msgid "X Button 2"
 msgstr "Доп. кнопка 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Приближение"
+msgstr "Zoom"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2280,7 +2262,7 @@ msgstr "2D-шум, определяющие расположение пойм р
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2337,7 +2319,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3D-шум, определяющий количество подземелий на мапчанк карты."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2603,9 +2584,8 @@ msgid "Bind address"
 msgstr "Адрес привязки"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Биомы"
+msgstr "Biome API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2796,9 +2776,8 @@ msgid "Client-side Modding"
 msgstr "Модификация клиента (CSM)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
-msgstr "Ограничение диапазона клиентского обзора нод"
+msgstr "Ограничение расстояния обзора нод клиента"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2813,7 +2792,6 @@ msgid "Clouds"
 msgstr "Облака"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
 msgstr "Облака это эффекты со стороны клиента."
 
@@ -3115,14 +3093,13 @@ msgstr ""
 "неограничено)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Defines the size of the sampling grid for FSAA and SSAA antialiasing "
 "methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 "Определяет размер сетки выборки для методов сглаживания FSAA и SSAA.\n"
-"Значение 2 означает взятие 2x2 = 4 проб."
+"Значение 2 означает взятие 2x2 = 4 пробы."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3431,7 +3408,6 @@ msgstr ""
 "ценой мелких визуальных дефектов, не влияющих на геймплей."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
 msgstr "Профилировщик движка"
 
@@ -3729,9 +3705,8 @@ msgid "Fullscreen mode."
 msgstr "Полноэкранный режим."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
-msgstr "Графические интерфейсы"
+msgstr "Графический интерфейс"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -4037,16 +4012,16 @@ msgstr ""
 "Если включено, то новые игроки не смогут подключаться с пустым паролем."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
 "sent to the client by 50-80%. Clients will no longer receive most\n"
 "invisible blocks, so that the utility of noclip mode is reduced."
 msgstr ""
-"Если включено, то сервер будет выполнять окклюзивное отсечение, основываясь\n"
-"на положении глаз игрока. Это может уменьшить количество пересылаемых\n"
-"мапблоков на 50-80%. Клиент не будет получать большую часть невидимого."
+"Если включено, то сервер будет выполнять окклюзивное отсечение,\n"
+"основываясь на положении глаз игрока. Это может уменьшить\n"
+"количество пересылаемых мапблоков на 50-80%.\n"
+"Клиент не будет получать большую часть невидимого."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4846,12 +4821,10 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "Максимум одновременно отправляемых мапблоков на клиент"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
 msgstr "Максимальный размер очереди исходящих сообщений в чате"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
@@ -4916,7 +4889,7 @@ msgstr "MIP-текстурирование"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Разное"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5086,7 +5059,6 @@ msgstr ""
 "памяти (как правило, 4096 = 100 МБ)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
 msgstr ""
 "Количество сообщений, которые игрок может отправить в течении 10 секунд."
@@ -5611,7 +5583,6 @@ msgid "Server port"
 msgstr "Порт сервера"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server-side occlusion culling"
 msgstr "Окклюзивное отсечение на стороне сервера"
 
@@ -5821,7 +5792,6 @@ msgstr ""
 "Системы со слабым GPU (или без GPU) получат прибавку от меньших значений."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5830,8 +5800,8 @@ msgid ""
 "Altering this value is for special usage, leaving it unchanged is\n"
 "recommended."
 msgstr ""
-"Размер мапчанков карты, выдаваемых мапгеном, указывается в мапблоках карты "
-"(16 нод).\n"
+"Размер мапчанков карты, выдаваемых мапгеном, указывается в мапблоках карты ("
+"16 нод).\n"
 "ВНИМАНИЕ!: От изменения этого значения нет никакой пользы, а значение больше "
 "5\n"
 "может быть вредным.\n"
@@ -5935,7 +5905,6 @@ msgstr ""
 "(или всех) предметов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
@@ -5959,7 +5928,6 @@ msgstr ""
 "Стандартное отклонение усиления кривой света по Гауссу."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
 msgstr "Постоянная точка возрождения"
 
@@ -5998,7 +5966,6 @@ msgid "Strip color codes"
 msgstr "Обрезать коды цветов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
@@ -6015,14 +5982,15 @@ msgstr ""
 "островов.\n"
 "Вода по умолчанию отключена и будет размещена только в том случае, если это "
 "значение\n"
-"будет установлено выше «mgv7_floatland_ymax» - «mgv7_floatland_taper»\n"
-"(начало верхнего сужения).\n"
+"будет установлено выше «mgv7_floatland_ymax» - «mgv7_floatland_taper» ("
+"начало\n"
+"верхнего сужения).\n"
 "*** ПРЕДУПРЕЖДЕНИЕ, ВЕРОЯТНАЯ ОПАСНОСТЬ ДЛЯ МИРОВ И РАБОТЫ СЕРВЕРА ***:\n"
 "При включении размещения воды парящих островов должны быть сконфигурированы "
 "и проверены\n"
 "на наличие сплошного слоя, установив «mgv7_floatland_density» на 2.0 (или "
 "другое\n"
-"требуемое значение в зависимости от «mgv7_np_floatland»), чтобы избежать\n"
+"требуемое значение, зависимое от «mgv7_np_floatland»), чтобы избежать\n"
 "чрезмерно усиленного потока воды на сервере и избежать обширного затопления\n"
 "поверхности мира внизу."
 
@@ -6129,11 +6097,10 @@ msgstr ""
 "когда вызывают «/profiler save [формат]» без формата."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
-"Путь к файлу относительно пути к вашему миру, куда будут сохранены профили."
+"Путь к файлу, куда будут сохранены профили, относительно пути к вашему миру."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -6259,7 +6226,6 @@ msgid "The type of joystick"
 msgstr "Тип контроллера"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
 "enabled. Also, the vertical distance over which humidity drops by 10 if\n"
@@ -6462,7 +6428,6 @@ msgstr ""
 "выбора предмета."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
