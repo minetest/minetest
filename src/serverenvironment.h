@@ -277,6 +277,8 @@ public:
 	*/
 	u16 addActiveObject(std::unique_ptr<ServerActiveObject> object);
 
+	void invalidateActiveObjectObserverCaches();
+
 	/*
 		Find out what new objects have been added to
 		inside a radius around a position

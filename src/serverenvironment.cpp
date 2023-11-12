@@ -1711,6 +1711,11 @@ u16 ServerEnvironment::addActiveObject(std::unique_ptr<ServerActiveObject> objec
 	return id;
 }
 
+void ServerEnvironment::invalidateActiveObjectObserverCaches()
+{
+	m_ao_manager.invalidateActiveObjectObserverCaches();
+}
+
 /*
 	Finds out what new objects have been added to
 	inside a radius around a position
@@ -1726,8 +1731,13 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 	if (player_radius_f < 0.0f)
 		player_radius_f = 0.0f;
 
-	m_ao_manager.getAddedActiveObjectsAroundPos(playersao->getBasePosition(), radius_f,
-		player_radius_f, current_objects, added_objects);
+	if (!playersao->isEffectivelyObservedBy(playersao->getPlayer()->getName()))
+		throw ModError("Player does not observe itself");
+
+	m_ao_manager.getAddedActiveObjectsAroundPos(
+		playersao->getBasePosition(), playersao->getPlayer()->getName(),
+		radius_f, player_radius_f,
+		current_objects, added_objects);
 }
 
 /*
@@ -1744,13 +1754,20 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 
 	if (player_radius_f < 0)
 		player_radius_f = 0;
+
+	const std::string &player_name = playersao->getPlayer()->getName();
+
+	if (!playersao->isEffectivelyObservedBy(player_name))
+		throw ModError("Player does not observe itself");
+
 	/*
 		Go through current_objects; object is removed if:
 		- object is not found in m_active_objects (this is actually an
 		  error condition; objects should be removed only after all clients
 		  have been informed about removal), or
 		- object is to be removed or deactivated, or
-		- object is too far away
+		- object is too far away, or
+		- object is marked as not observable by the client
 	*/
 	for (u16 id : current_objects) {
 		ServerActiveObject *object = getActiveObject(id);
@@ -1768,14 +1785,12 @@ void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius
 		}
 
 		f32 distance_f = object->getBasePosition().getDistanceFrom(playersao->getBasePosition());
-		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			if (distance_f <= player_radius_f || player_radius_f == 0)
-				continue;
-		} else if (distance_f <= radius_f)
-			continue;
+		bool in_range = object->getType() == ACTIVEOBJECT_TYPE_PLAYER
+			? distance_f <= player_radius_f || player_radius_f == 0
+			: distance_f <= radius_f;
 
-		// Object is no longer visible
-		removed_objects.emplace_back(false, id);
+		if (!in_range || !object->isEffectivelyObservedBy(player_name))
+			removed_objects.emplace_back(false, id); // out of range or not observed anymore
 	}
 }
 
