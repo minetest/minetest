@@ -153,8 +153,10 @@ void ActiveObjectMgr::getObjectsInArea(const aabb3f &box,
 	}
 }
 
-void ActiveObjectMgr::getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
-		f32 player_radius, const std::set<u16> &current_objects,
+void ActiveObjectMgr::getAddedActiveObjectsAroundPos(
+		const v3f &player_pos, const std::string &player_name,
+		f32 radius, f32 player_radius,
+		const std::set<u16> &current_objects,
 		std::vector<u16> &added_objects)
 {
 	/*
@@ -181,6 +183,9 @@ void ActiveObjectMgr::getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
 			if (distance_f > player_radius && player_radius != 0)
 				continue;
 		} else if (distance_f > radius)
+			continue;
+
+		if (!object->isObservedBy(player_name))
 			continue;
 
 		// Discard if already on current_objects

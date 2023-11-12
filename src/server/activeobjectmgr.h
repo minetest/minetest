@@ -44,9 +44,10 @@ public:
 	void getObjectsInArea(const aabb3f &box,
 			std::vector<ServerActiveObject *> &result,
 			std::function<bool(ServerActiveObject *obj)> include_obj_cb);
-
-	void getAddedActiveObjectsAroundPos(v3f player_pos, f32 radius,
-			f32 player_radius, const std::set<u16> &current_objects,
+	void getAddedActiveObjectsAroundPos(
+			const v3f &player_pos, const std::string &player_name,
+			f32 radius, f32 player_radius,
+			const std::set<u16> &current_objects,
 			std::vector<u16> &added_objects);
 };
 } // namespace server

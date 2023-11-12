@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cassert>
 #include <unordered_set>
+#include <optional>
 #include "irrlichttypes_bloated.h"
 #include "activeobject.h"
 #include "itemgroup.h"
@@ -240,6 +241,13 @@ public:
 		a copy of the static data resides.
 	*/
 	v3s16 m_static_block = v3s16(1337,1337,1337);
+
+	bool isObservedBy(const std::string &player_name) const;
+
+	/*
+		Names of players to whom the object is to be sent
+	*/
+	std::optional<std::unordered_set<std::string>> m_observer_names;
 
 protected:
 	virtual void onMarkedForDeactivation() {}
