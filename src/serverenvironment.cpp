@@ -575,10 +575,10 @@ RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 	return NULL;
 }
 
-RemotePlayer *ServerEnvironment::getPlayer(const char* name, bool match_invalid_peer)
+RemotePlayer *ServerEnvironment::getPlayer(const std::string &name, bool match_invalid_peer)
 {
 	for (RemotePlayer *player : m_players) {
-		if (strcmp(player->getName(), name) != 0)
+		if (player->getName() != name)
 			continue;
 
 		if (match_invalid_peer || player->getPeerId() != PEER_ID_INEXISTENT)
