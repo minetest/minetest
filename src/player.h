@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <mutex>
 #include <functional>
 #include <tuple>
+#include <string>
 
 #define PLAYERNAME_SIZE 20
 
@@ -158,7 +159,7 @@ class Player
 {
 public:
 
-	Player(const char *name, IItemDefManager *idef);
+	Player(const std::string &name, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
 	DISABLE_CLASS_COPY(Player);
@@ -178,7 +179,7 @@ public:
 	// in BS-space
 	v3f getSpeed() const { return m_speed; }
 
-	const char *getName() const { return m_name; }
+	const std::string& getName() const { return m_name; }
 
 	u32 getFreeHudID()
 	{
@@ -251,7 +252,7 @@ public:
 	u16 getMaxHotbarItemcount();
 
 protected:
-	char m_name[PLAYERNAME_SIZE];
+	std::string m_name;
 	v3f m_speed; // velocity; in BS-space
 	u16 m_wield_index = 0;
 	PlayerFovSpec m_fov_override_spec = { 0.0f, false, 0.0f };

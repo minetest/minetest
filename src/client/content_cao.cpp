@@ -385,7 +385,7 @@ void GenericCAO::processInitData(const std::string &data)
 	if (m_is_player) {
 		// Check if it's the current player
 		LocalPlayer *player = m_env->getLocalPlayer();
-		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
+		if (player && player->getName() == m_name) {
 			m_is_local_player = true;
 			m_is_visible = false;
 			player->setCAO(this);
