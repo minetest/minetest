@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2023-11-12 13:14+0000\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
+"Last-Translator: Lars Müller <appgurulars@gmx.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
 "Language: de\n"
@@ -833,7 +833,7 @@ msgstr "(Systemsprache verwenden)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Barrierefreiheit"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -861,9 +861,8 @@ msgid "General"
 msgstr "Allgemein"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Schnell bewegen"
+msgstr "Bewegung"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -1685,9 +1684,8 @@ msgid "Caps Lock"
 msgstr "Feststellt."
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Leeren"
+msgstr "Leeren-Taste"
 
 #: src/client/keycode.cpp
 msgid "Control Key"
@@ -1699,7 +1697,7 @@ msgstr "Entf-Taste"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Pfeil nach unten"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1746,9 +1744,8 @@ msgid "Insert"
 msgstr "Einfg"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Strg links"
+msgstr "Pfeil nach oben"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1874,9 +1871,8 @@ msgid "Return Key"
 msgstr "Eingabetaste"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Strg rechts"
+msgstr "Pfeil nach rechts"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1908,9 +1904,8 @@ msgid "Select"
 msgstr "Auswählen"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Umsch."
+msgstr "Umschalt-Taste"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -1930,7 +1925,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Pfeil nach oben"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1941,9 +1936,8 @@ msgid "X Button 2"
 msgstr "X-Knopf 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr "Zoom-Taste"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2282,7 +2276,7 @@ msgstr "2-D-Rauschen, welches den Ort der Flusstäler und -kanäle regelt."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2811,7 +2805,7 @@ msgstr "Clientseitiges Modding"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client-side node lookup range restriction"
-msgstr "Distanzlimit für clientseitige Block-Definitionsabfrage"
+msgstr "Distanzlimit für clientseitige Blockabfragen"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -4947,8 +4941,8 @@ msgid ""
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 "Maximale Größe der ausgehenden Chatwarteschlange.\n"
-"0, um Warteschlange zu deaktivieren, -1, um die Wartenschlangengröße nicht "
-"zu begrenzen."
+"0, um Warteschlange zu deaktivieren, -1, um die Warteschlangengröße nicht zu "
+"begrenzen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5185,10 +5179,10 @@ msgstr ""
 "Transaktions-Overhead und Speicherverbrauch (Faustregel: 4096=100MB)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
 msgstr ""
-"Anzahl der Nachrichten, die ein Spieler innerhalb 10 Sekunden senden darf."
+"Anzahl der Nachrichten, die ein Spieler innerhalb von 10 Sekunden senden "
+"darf."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6057,8 +6051,8 @@ msgid ""
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
-"Eine vollständige Aktualisierung der Schattenkarte über der angegebenen\n"
-"Anzahl Frames ausbreiten. Höhere Werte können dazu führen, dass\n"
+"Eine vollständige Aktualisierung der Schatten über die angegebene\n"
+"Anzahl Frames verteilen. Höhere Werte können dazu führen, dass\n"
 "Schatten langsamer reagieren,\n"
 "niedrigere Werte sind rechenintensiver.\n"
 "Minimalwert: 1; Maximalwert: 16"
@@ -6593,8 +6587,7 @@ msgid ""
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Mipmaps benutzen, wenn Texturen herunterskaliert werden. Könnte die "
-"Performanz\n"
+"Mipmaps zum verkleinern von Texturen verwenden. Könnte die Performanz\n"
 "leicht erhöhen, besonders, wenn ein hochauflösendes Texturenpaket benutzt "
 "wird.\n"
 "Eine gammakorrigierte Herunterskalierung wird nicht unterstützt."
