@@ -21,50 +21,13 @@ Currently, the authentication and ban data is stored on a per-world basis.
 It can be copied over from an old world to a newly created world.
 
     World
-    ├── auth.txt ───── Authentication data
-    ├── auth.sqlite ── Authentication data (SQLite alternative)
-    ├── env_meta.txt ─ Environment metadata
-    ├── ipban.txt ──── Banned IPs/users
-    ├── map_meta.txt ─ Map metadata
-    ├── map.sqlite ─── Map data
-    ├── players ────── Player directory
-    │   │── player1 ── Player file
-    │   └── Foo ────── Player file
-    └── world.mt ───── World metadata
-
-## `auth.txt`
-
-Contains authentication data, one player per line.
-
-    <name>:<password hash>:<privilege1,...>
-
-Legacy format (until 0.4.12) of password hash is `<name><password>` SHA1'd,
-in base64.
-
-Format (since 0.4.13) of password hash is `#1#<salt>#<verifier>`, with the
-parts inside `<>` encoded in base64.
-
-`<verifier>` is an RFC 2945 compatible SRP verifier,
-of the given salt, password, and the player's name lowercased,
-using the 2048-bit group specified in RFC 5054 and the SHA-256 hash function.
-
-Example lines:
-* Player "celeron55", no password, privileges "interact" and "shout":
-    ```
-    celeron55::interact,shout
-    ```
-* Player "Foo", password "bar", privilege "shout", with a legacy password hash:
-    ```
-    foo:iEPX+SQWIR3p67lj/0zigSWTKHg:shout
-    ```
-* Player "Foo", password "bar", privilege "shout", with a 0.4.13 password hash:
-    ```
-    foo:#1#hPpy4O3IAn1hsNK00A6wNw#Kpu6rj7McsrPCt4euTb5RA5ltF7wdcWGoYMcRngwDi11cZhPuuR9i5Bo7o6A877TgcEwoc//HNrj9EjR/CGjdyTFmNhiermZOADvd8eu32FYK1kf7RMC0rXWxCenYuOQCG4WF9mMGiyTPxC63VAjAMuc1nCZzmy6D9zt0SIKxOmteI75pAEAIee2hx4OkSXRIiU4Zrxo1Xf7QFxkMY4x77vgaPcvfmuzom0y/fU1EdSnZeopGPvzMpFx80ODFx1P34R52nmVl0W8h4GNo0k8ZiWtRCdrJxs8xIg7z5P1h3Th/BJ0lwexpdK8sQZWng8xaO5ElthNuhO8UQx1l6FgEA:shout
-    ```
-* Player "bar", no password, no privileges:
-    ```
-    bar::
-    ```
+    ├── auth.sqlite ──── Authentication data
+    ├── env_meta.txt ─── Environment metadata
+    ├── ipban.txt ────── Banned IPs/users
+    ├── map_meta.txt ─── Map metadata
+    ├── map.sqlite ───── Map data
+    ├── players.sqlite ─ Player data
+    └── world.mt ─────── World metadata
 
 ## `auth.sqlite`
 
@@ -88,9 +51,14 @@ CREATE TABLE `user_privileges` (
 );
 ```
 
-The `name` and `password` fields of the auth table are the same as the auth.txt
-fields (with modern password hash). The `last_login` field is the last login
-time as a Unix time stamp.
+Format of the `password` field is `#1#<salt>#<verifier>`, with the
+parts inside `<>` encoded in base64.
+
+`<verifier>` is an RFC 2945 compatible SRP verifier,
+of the given salt, password, and the player's name lowercased,
+using the 2048-bit group specified in RFC 5054 and the SHA-256 hash function.
+
+The `last_login` field is the last login time as a Unix time stamp.
 
 The `user_privileges` table contains one entry per privilege and player.
 A player with "interact" and "shout" privileges will have two entries, one
@@ -130,14 +98,6 @@ Map data.
 
 See [Map File Format](#map-file-format) below.
 
-## `player1`, `Foo`
-
-Player data.
-
-Filename can be anything.
-
-See [Player File Format](#player-file-format) below.
-
 ## `world.mt`
 
 World metadata.
@@ -148,7 +108,7 @@ World metadata.
     backend = sqlite3             - which DB backend to use for blocks (sqlite3, dummy, leveldb, redis, postgresql)
     player_backend = sqlite3      - which DB backend to use for player data
     readonly_backend = sqlite3    - optionally read-only seed DB (DB file _must_ be located in "readonly" subfolder)
-    auth_backend = files          - which DB backend to use for authentication data
+    auth_backend = sqlite3        - which DB backend to use for authentication data
     mod_storage_backend = sqlite3 - which DB backend to use for mod storage
     server_announce = false       - whether the server is publicly announced or not
     load_mod_<mod> = false        - whether <mod> is to be loaded in this world
@@ -179,73 +139,6 @@ For `load_mod_<mod>`, the possible values are:
     redis_hash = foo           - Database hash
     redis_port = 6379          - (optional) Connection port
     redis_password = hunter2   - (optional) Server password
-
-# Player File Format
-
-Should be pretty self-explanatory.
-> **Note**: Position is in `nodes * 10`
-
-Example content:
-
-    hp = 11
-    name = celeron55
-    pitch = 39.77
-    position = (-5231.97,15,1961.41)
-    version = 1
-    yaw = 101.37
-    PlayerArgsEnd
-    List main 32
-    Item default:torch 13
-    Item default:pick_steel 1 50112
-    Item experimental:tnt
-    Item default:cobble 99
-    Item default:pick_stone 1 13104
-    Item default:shovel_steel 1 51838
-    Item default:dirt 61
-    Item default:rail 78
-    Item default:coal_lump 3
-    Item default:cobble 99
-    Item default:leaves 22
-    Item default:gravel 52
-    Item default:axe_steel 1 2045
-    Item default:cobble 98
-    Item default:sand 61
-    Item default:water_source 94
-    Item default:glass 2
-    Item default:mossycobble
-    Item default:pick_steel 1 64428
-    Item animalmaterials:bone
-    Item default:sword_steel
-    Item default:sapling
-    Item default:sword_stone 1 10647
-    Item default:dirt 99
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    EndInventoryList
-    List craft 9
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    Empty
-    EndInventoryList
-    List craftpreview 1
-    Empty
-    EndInventoryList
-    List craftresult 1
-    Empty
-    EndInventoryList
-    EndInventory
 
 # Map File Format
 
