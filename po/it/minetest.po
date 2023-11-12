@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Italian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-10-13 10:02+0000\n"
-"Last-Translator: Filippo Alfieri <fire.alpha.t@gmail.com>\n"
+"PO-Revision-Date: 2023-11-12 15:37+0000\n"
+"Last-Translator: Giov4 <brancacciogiovanni1@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
 "minetest/it/>\n"
 "Language: it\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -282,7 +282,7 @@ msgstr "Pacchetti texture"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Il contenuto $1 non è stato trovato."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -304,7 +304,7 @@ msgstr "Visualizza ulteriori informazioni in un browser Web"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Devi installare un gioco prima di poter installare un mod"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -660,16 +660,22 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Per molto tempo, il motore Minetest veniva fornito con un gioco predefinito "
+"chiamato \"Minetest Game\". A partire dalla versione 5.8.0, Minetest viene "
+"fornito senza."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Se vuoi continuare a giocare nei tuoi mondi di Minetest Game, devi "
+"reinstallare Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
 msgstr ""
+"Il gioco Minetest Game non è più installato per impostazione predefinita"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 #, fuzzy
@@ -822,11 +828,11 @@ msgstr "\"eased\""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Usa la lingua di sistema)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Accessibilità"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -865,7 +871,7 @@ msgstr "Ripristina predefinito"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Ripristina l'impostazione predefinita ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -873,7 +879,7 @@ msgstr "Ricerca"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Mostra impostazioni avanzate"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -893,11 +899,11 @@ msgstr "Contenuti: Mod"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Anche il gioco dovrà abilitare le ombre)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Personalizzato"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -950,7 +956,7 @@ msgstr "Squadra Principale"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Dispositivo Irrlicht:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1582,7 +1588,7 @@ msgstr "Raggio visivo illimitato abilitato"
 
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Raggio visivo illimitato abilitato, ma vietato dal gioco o dal mod"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1593,6 +1599,8 @@ msgstr "Il raggio visivo è al minimo: %d"
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Raggio visivo modificato a %d (il minimo), ma limitato a %d dal gioco o dal "
+"mod"
 
 #: src/client/game.cpp
 #, c-format
@@ -1609,6 +1617,8 @@ msgstr "Raggio visivo cambiato a %d"
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Raggio visivo modificato a %d (il massimo), ma limitato a %d dal gioco o dal "
+"mod"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1696,7 +1706,7 @@ msgstr "Rimuovi"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Freccia Giù"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1932,7 +1942,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Freccia Su"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -2284,7 +2294,7 @@ msgstr "Rumore 2D che posiziona fiumi e canali."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -3146,6 +3156,9 @@ msgid ""
 "methods.\n"
 "Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
+"Definisce la dimensione della griglia di campionamento per i metodi di "
+"antiscalettatura FSAA e SSAA.\n"
+"Il valore 2 significa prelevare 2x2 = 4 campioni."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3355,6 +3368,8 @@ msgstr "Abilita la sicurezza mod"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
+"Abilita lo scorrimento della rotellina del mouse per la selezione degli "
+"oggetti nella hotbar."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3966,11 +3981,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Enable mouse wheel for selection"
-msgstr ""
+msgstr "Hotbar: attiva la rotellina del mouse per la selezione"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar: Invert mouse wheel direction"
-msgstr ""
+msgstr "Hotbar: inverti la direzione della rotellina del mouse"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers."
@@ -4239,6 +4254,8 @@ msgstr "Invertire il mouse"
 #: src/settings_translation_file.cpp
 msgid "Invert mouse wheel (scroll) direction for item selection in hotbar."
 msgstr ""
+"Inverte la direzione di scorrimento della rotellina del mouse per la "
+"selezione degli oggetti nella hotbar."
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -5014,7 +5031,7 @@ msgstr "MIP mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Varie"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5207,7 +5224,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
-msgstr ""
+msgstr "Occlusion Culler"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5522,6 +5539,12 @@ msgid ""
 "is maximized is stored in window_maximized.\n"
 "(Autosaving window_maximized only works if compiled with SDL.)"
 msgstr ""
+"Salva automaticamente le dimensioni della finestra quando viene modificata.\n"
+"Se attivo, la dimensione dello schermo viene salvata in screen_w e screen_h "
+"e se la finestra\n"
+"è massimizzata, ciò è memorizzato in window_maximized.\n"
+"(Il salvataggio automatico di window_maximized funziona solo se compilato "
+"con SDL.)"
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -5620,6 +5643,26 @@ msgid ""
 "Renders higher-resolution image of the scene, then scales down to reduce\n"
 "the aliasing effects. This is the slowest and the most accurate method."
 msgstr ""
+"Seleziona il metodo di antiscalettatura da applicare.\n"
+"\n"
+"* Nessuno: nessuna antiscalettatura (impostazione predefinita)\n"
+"\n"
+"* FSAA: antiscalettatura a schermo intero fornita dall'hardware ("
+"incompatibile con gli shader)\n"
+"Noto anche come antiscalettatura multicampione (MSAA)\n"
+"Leviga i bordi dei blocchi ma non influisce sulla parte interna delle "
+"texture.\n"
+"Per modificare questa opzione è necessario un riavvio.\n"
+"\n"
+"* FXAA - Antiscalettatura approssimativa veloce (richiede shader)\n"
+"Applica un filtro di post-elaborazione per rilevare e attenuare i bordi ad "
+"alto contrasto.\n"
+"Fornisce l'equilibrio tra velocità e qualità dell'immagine.\n"
+"\n"
+"* SSAA - Antiscalettatura a super-campionamento (richiede shader)\n"
+"Renderizza la scena ad una risoluzione più alta, e poi la rimpicciolisce per "
+"ridurre\n"
+"gli effetti di alias. Questo è il metodo più lento e accurato."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -6234,6 +6277,8 @@ msgstr "L'URL per il deposito dei contenuti"
 #: src/settings_translation_file.cpp
 msgid "The base node texture size used for world-aligned texture autoscaling."
 msgstr ""
+"La dimensione di base della texture dei nodi, usata per il ridimensionamento "
+"automatico delle texture allineate al mondo."
 
 #: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
@@ -6505,6 +6550,14 @@ msgid ""
 "\n"
 "This setting should only be changed if you have performance problems."
 msgstr ""
+"Tipo dell'occlusion_culler\n"
+"\n"
+"\"loops\" è l'algoritmo legacy con loop annidati e complessità O(n³).\n"
+"\"bfs\" è il nuovo algoritmo basato sulla ricerca in ampiezza e sul side "
+"culling\n"
+"\n"
+"Questa impostazione dovrebbe essere modificata solo in caso di problemi di "
+"prestazioni."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6619,6 +6672,10 @@ msgid ""
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
+"Utilizza il filtro trilineare quando riduci le texture.\n"
+"Se sono abilitati sia il filtro bilineare che quello trilineare, viene "
+"applicato\n"
+"il trilineare."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6705,6 +6762,8 @@ msgid ""
 "Vertical screen synchronization. Your system may still force VSync on even "
 "if this is disabled."
 msgstr ""
+"Sincronizzazione verticale dello schermo. Il tuo sistema potrebbe comunque "
+"forzare l'attivazione di VSync anche se questa impostazione è disabilitata."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -6854,7 +6913,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
-msgstr ""
+msgstr "Se la finestra è massimizzata."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6902,7 +6961,7 @@ msgstr "Larghezza delle linee dei riquadri di selezione attorno ai nodi."
 
 #: src/settings_translation_file.cpp
 msgid "Window maximized"
-msgstr ""
+msgstr "Finestra massimizzata"
 
 #: src/settings_translation_file.cpp
 msgid ""
