@@ -7986,6 +7986,29 @@ child will follow movement and rotation of that bone.
 * `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
 * `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
+* `set_observers(observers)`: sets observers (players this object is sent to)
+    * If `observers` is `nil`, the object's observers are "unmanaged":
+      The object is sent to all players as governed by server settings. This is the default.
+    * `observers` is a "set" of player names: `{[player name] = true, [other player name] = true, ...}`
+        * A set is a table where the keys are the elements of the set (in this case, player names)
+          and the values are all `true`.
+    * Attachments: The *effective observers* of an object are made up of
+      all players who can observe the object *and* are also effective observers
+      of its parent object (if there is one).
+    * Players are automatically added to their own observer sets.
+      Players **must** effectively observe themselves.
+    * Object activation and deactivation are unaffected by observability.
+    * Attached sounds do not work correctly and thus should not be used
+      on objects with managed observers yet.
+* `get_observers()`:
+    * throws an error if the object is invalid
+    * returns `nil` if the observers are unmanaged
+    * returns a table with all observer names as keys and `true` values (a "set") otherwise
+* `get_effective_observers()`:
+    * Like `get_observers()`, but returns the "effective" observers, taking into account attachments
+    * Time complexity: O(nm)
+        * n: number of observers of the involved entities
+        * m: number of ancestors along the attachment chain
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of an object

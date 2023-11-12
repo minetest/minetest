@@ -116,6 +116,8 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e.what());
 	} catch (LuaError &e) {
 		m_server->setAsyncFatalError(e);
+	} catch (ModError &e) {
+		m_server->setAsyncFatalError(e.what());
 	}
 
 	float dtime = 0.0f;
@@ -142,6 +144,8 @@ void *ServerThread::run()
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(e);
+		} catch (ModError &e) {
+			m_server->setAsyncFatalError(e.what());
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
@@ -780,6 +784,12 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	{
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
 		MutexAutoLock envlock(m_env_mutex);
+
+		// This guarantees that each object recomputes its cache only once per server step,
+		// unless get_effective_observers is called.
+		// If we were to update observer sets eagerly in set_observers instead,
+		// the total costs of calls to set_observers could theoretically be higher.
+		m_env->invalidateActiveObjectObserverCaches();
 
 		{
 			ClientInterface::AutoLock clientlock(m_clients);

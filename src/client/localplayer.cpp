@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "localplayer.h"
 #include <cmath>
-#include <string>
 #include "mtevent.h"
 #include "collision.h"
 #include "nodedef.h"
