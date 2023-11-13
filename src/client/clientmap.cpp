@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmap.h"
 #include "client.h"
-#include "client/mesh.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
@@ -845,7 +844,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			// Apply filter settings
 			material.forEachTexture([this] (auto &tex) {
-				setMaterialFilters(tex, m_cache_bilinear_filter, m_cache_trilinear_filter,
+				tex.setFiltersMinetest(m_cache_bilinear_filter, m_cache_trilinear_filter,
 						m_cache_anistropic_filter);
 			});
 			material.Wireframe = m_control.show_wireframe;

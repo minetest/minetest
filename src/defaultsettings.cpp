@@ -176,7 +176,6 @@ void set_default_settings()
 	settings->setDefault("undersampling", "1");
 	settings->setDefault("world_aligned_mode", "enable");
 	settings->setDefault("autoscale_mode", "disable");
-	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
@@ -236,6 +235,8 @@ void set_default_settings()
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 	settings->setDefault("show_entity_selectionbox", "false");
+	settings->setDefault("texture_clean_transparent", "false");
+	settings->setDefault("texture_min_size", "64");
 	settings->setDefault("ambient_occlusion_gamma", "1.8");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("enable_particles", "true");
@@ -251,9 +252,9 @@ void set_default_settings()
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
+	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
-	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("tone_mapping", "false");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
