@@ -663,3 +663,34 @@ minetest.register_node("testnodes:post_effect_color_shaded_true", {
 	is_ground_content = false,
 	groups = {dig_immediate=3},
 })
+
+-- Pointability
+
+minetest.register_node("testnodes:pointable", {
+	description = S("Pointable Node"),
+	tiles = {"testnodes_pointable.png"},
+	drawtype = "glasslike_framed",
+	paramtype = "light",
+	walkable = false,
+	groups = {dig_immediate=3, pointable_test=1,},
+})
+
+minetest.register_node("testnodes:not_pointable", {
+	description = S("Not Pointable Node"),
+	tiles = {"testnodes_not_pointable.png"},
+	drawtype = "glasslike_framed",
+	paramtype = "light",
+	walkable = false,
+	groups = {dig_immediate=3, not_pointable_test=1},
+	pointable = false
+})
+
+minetest.register_node("testnodes:blocking_pointable", {
+	description = S("Blocking Pointable Node"),
+	tiles = {"testnodes_blocking_pointable.png"},
+	drawtype = "glasslike_framed",
+	paramtype = "light",
+	walkable = false,
+	groups = {dig_immediate=3, blocking_pointable_test=1},
+	pointable = "blocking"
+})
