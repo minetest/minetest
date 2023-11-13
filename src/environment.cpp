@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"
-#include "itemdef.h"
 
 
 Environment::Environment(IGameDef *gamedef):
@@ -103,7 +102,7 @@ bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 }
 
 /*
-	Check if a node can be pointed at
+	Check how a node can be pointed at
 */
 inline static PointabilityType isPointableNode(const MapNode &n,
 	const NodeDefManager *nodedef , bool liquids_pointable,
