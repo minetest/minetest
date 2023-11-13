@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include "itemdef.h"
 
 
 class ClientEnvironment;

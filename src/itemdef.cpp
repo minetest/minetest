@@ -122,6 +122,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
+	if (def.pointabilities)
+		pointabilities = new PointingAbilities(*def.pointabilities);
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	groups = def.groups;
@@ -148,6 +150,7 @@ void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
 	tool_capabilities = NULL;
+	pointabilities = NULL;
 	reset();
 }
 
@@ -167,6 +170,8 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
+	delete pointabilities;
+	pointabilities = NULL;
 	delete tool_capabilities;
 	tool_capabilities = NULL;
 	groups.clear();
@@ -238,9 +243,22 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
 		os << *place_param2;
+<<<<<<< HEAD
 
 	writeU8(os, wallmounted_rotate_vertical);
 	touch_interaction.serialize(os);
+=======
+
+	if (pointabilities) {
+		writeU16(os, pointabilities->size());
+		for (const auto &pointability : *pointabilities) {
+			os << serializeString16(pointability.first);
+			writeU8(os, pointability.second);
+		}
+	} else {
+		writeU16(os, 0);
+	}
+>>>>>>> 631f34126 (add tool specific pointabilities for object and node groups)
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -316,6 +334,15 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		wallmounted_rotate_vertical = readU8(is); // 0 if missing
 		touch_interaction.deSerialize(is);
+
+		u32 pointabilities_size = readU16(is);
+		if (pointabilities_size > 0){
+			pointabilities = new PointingAbilities;
+			for(u32 i=0; i<pointabilities_size; i++){
+				std::string name = deSerializeString16(is);
+				(*pointabilities)[name] = (enum PointabilityType)readU8(is);
+			}
+		}
 	} catch(SerializationError &e) {};
 }
 

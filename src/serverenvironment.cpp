@@ -1830,7 +1830,8 @@ bool ServerEnvironment::getActiveObjectMessage(ActiveObjectMessage *dest)
 
 void ServerEnvironment::getSelectedActiveObjects(
 	const core::line3d<f32> &shootline_on_map,
-	std::vector<PointedThing> &objects)
+	std::vector<PointedThing> &objects,
+	const PointingAbilities *pointabilities)
 {
 	std::vector<ServerActiveObject *> objs;
 	getObjectsInsideRadius(objs, shootline_on_map.start,
@@ -1866,7 +1867,9 @@ void ServerEnvironment::getSelectedActiveObjects(
 			current_intersection += pos;
 			objects.emplace_back(
 				(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ());
+				(current_intersection - shootline_on_map.start).getLengthSQ(),
+				match_PointingAbilities(pointabilities, usao->getArmorGroups()).value_or(
+						props->pointable));
 		}
 	}
 }

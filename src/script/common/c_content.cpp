@@ -82,6 +82,12 @@ void read_item_definition(lua_State* L, int index,
 	lua_pop(L, 1);
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
+	
+	lua_getfield(L, index, "pointabilities");
+	if(lua_istable(L, -1)){
+		def.pointabilities = new PointingAbilities(
+				read_pointabilities(L, -1));
+	}
 
 	lua_getfield(L, index, "tool_capabilities");
 	if(lua_istable(L, -1)){
@@ -199,6 +205,10 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "usable");
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
+	if (i.pointabilities) {
+		push_pointabilities(L, *i.pointabilities); 
+		lua_setfield(L, -2, "pointabilities");
+	}
 	if (i.tool_capabilities) {
 		push_tool_capabilities(L, *i.tool_capabilities);
 		lua_setfield(L, -2, "tool_capabilities");
@@ -311,7 +321,12 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 
-	getboolfield(L, -1, "pointable", prop->pointable);
+	lua_getfield(L, -1, "pointable");
+	if(!lua_isnil(L, -1)){
+		prop->pointable = read_pointability(L, -1);
+	}
+	lua_pop(L, 1);
+
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
@@ -452,7 +467,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_pushboolean(L, prop->rotate_selectionbox);
 	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
-	lua_pushboolean(L, prop->pointable);
+	push_pointability(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
@@ -781,8 +796,14 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	getboolfield(L, index, "walkable", f.walkable);
-	// Player can point to these
-	getboolfield(L, index, "pointable", f.pointable);
+	
+	// Player can point to these, point through or it is blocking
+	lua_getfield(L, index, "pointable");
+	if(!lua_isnil(L, -1)){
+		f.pointable = read_pointability(L, -1);
+	}
+	lua_pop(L, 1);
+	
 	// Player can dig these
 	getboolfield(L, index, "diggable", f.diggable);
 	// Player can climb these
@@ -1005,7 +1026,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "is_ground_content");
 	lua_pushboolean(L, c.walkable);
 	lua_setfield(L, -2, "walkable");
-	lua_pushboolean(L, c.pointable);
+	push_pointability(L, c.pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushboolean(L, c.diggable);
 	lua_setfield(L, -2, "diggable");
@@ -1590,6 +1611,74 @@ ToolCapabilities read_tool_capabilities(
 	}
 	lua_pop(L, 1);
 	return toolcap;
+}
+
+/******************************************************************************/
+PointabilityType read_pointability(lua_State *L, int index)
+{
+	if (lua_isboolean(L, index)) {
+		if (lua_toboolean(L, index))
+			return POINTABLE;
+		else
+			return POINTABLE_NOT;
+	} else if (lua_isstring(L, index)) {
+		size_t len;
+		const char* s = lua_tolstring(L, index, &len);
+		if (!strcmp(s, "blocking"))
+			return POINTABLE_BLOCKING;
+	}
+	return POINTABLE;
+}
+
+/******************************************************************************/
+PointingAbilities read_pointabilities(lua_State *L, int index)
+{
+	PointingAbilities pointabilities;
+	
+	if (lua_isnil(L, index))
+		return pointabilities;
+	luaL_checktype(L, index, LUA_TTABLE);
+
+	lua_pushnil(L);
+	if (index < 0)
+		index -= 1;
+	while (lua_next(L, index) != 0) {
+		// key at index -2 and value at index -1
+		std::string name = luaL_checkstring(L, -2);
+		pointabilities[name] = read_pointability(L, -1);
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return pointabilities;
+}
+
+/******************************************************************************/
+void push_pointability(lua_State *L, const PointabilityType& pointable)
+{
+	switch(pointable)
+	{
+	  case POINTABLE:
+		lua_pushboolean(L, true);
+		break;
+	  case POINTABLE_NOT:
+		lua_pushboolean(L, false);
+		break;
+	  case POINTABLE_BLOCKING:
+		lua_pushlstring(L, "blocking", 8);
+		break;
+	  default:
+		break;
+	}
+}
+
+/******************************************************************************/
+void push_pointabilities(lua_State *L, const PointingAbilities &pointabilities)
+{
+	lua_createtable(L, 0, pointabilities.size());
+	for (const auto &ability : pointabilities) {
+		push_pointability(L, ability.second);
+		lua_setfield(L, -2, ability.first.c_str());
+	}
 }
 
 /******************************************************************************/

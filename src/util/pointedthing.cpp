@@ -23,9 +23,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
+std::optional<PointabilityType> match_PointingAbilities(
+	const PointingAbilities* pointabilities,
+	const ItemGroupList &groups)
+{
+	if (pointabilities) {
+		bool blocking = false;
+		bool not_pontable = false;
+		for (auto const &ability : *pointabilities) {
+			if (itemgroup_get(groups, ability.first) > 0) {
+				switch(ability.second) {
+					case POINTABLE:
+						return POINTABLE;
+						break;
+					case POINTABLE_NOT:
+						not_pontable = true;
+						break;
+					default:
+						blocking = true;
+						break;
+				}
+			}
+		}
+		if (not_pontable)
+			return POINTABLE_NOT;
+		if (blocking)
+			return POINTABLE_BLOCKING;
+	}
+	return {};
+}
+
 PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	const v3s16 &real_under, const v3f &point, const v3f &normal,
-	u16 box_id, f32 distSq):
+	u16 box_id, f32 distSq, PointabilityType pointab):
 	type(POINTEDTHING_NODE),
 	node_undersurface(under),
 	node_abovesurface(above),
@@ -33,17 +63,19 @@ PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	intersection_point(point),
 	intersection_normal(normal),
 	box_id(box_id),
-	distanceSq(distSq)
+	distanceSq(distSq),
+	pointability(pointab)
 {}
 
-PointedThing::PointedThing(u16 id, const v3f &point,
-  const v3f &normal, const v3f &raw_normal, f32 distSq) :
+PointedThing::PointedThing(u16 id, const v3f &point, const v3f &normal,
+	const v3f &raw_normal, f32 distSq, PointabilityType pointab) :
 	type(POINTEDTHING_OBJECT),
 	object_id(id),
 	intersection_point(point),
 	intersection_normal(normal),
 	raw_intersection_normal(raw_normal),
-	distanceSq(distSq)
+	distanceSq(distSq),
+	pointability(pointab)
 {}
 
 std::string PointedThing::dump() const
@@ -118,12 +150,13 @@ bool PointedThing::operator==(const PointedThing &pt2) const
 	{
 		if ((node_undersurface != pt2.node_undersurface)
 				|| (node_abovesurface != pt2.node_abovesurface)
-				|| (node_real_undersurface != pt2.node_real_undersurface))
+				|| (node_real_undersurface != pt2.node_real_undersurface)
+				|| (pointability != pt2.pointability))
 			return false;
 	}
 	else if (type == POINTEDTHING_OBJECT)
 	{
-		if (object_id != pt2.object_id)
+		if (object_id != pt2.object_id || pointability != pt2.pointability)
 			return false;
 	}
 	return true;

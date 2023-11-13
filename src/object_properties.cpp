@@ -188,7 +188,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	collisionbox.MaxEdge = readV3F32(is);
 	selectionbox.MinEdge = readV3F32(is);
 	selectionbox.MaxEdge = readV3F32(is);
-	pointable = readU8(is);
+	pointable = (enum PointabilityType)readU8(is);
 	visual = deSerializeString16(is);
 	visual_size = readV3F32(is);
 	textures.clear();
