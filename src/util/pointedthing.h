@@ -38,7 +38,7 @@ enum PointabilityType
 typedef std::unordered_map<std::string, PointabilityType> PointingAbilities;
 
 // Returns pointabilityType for items and objects from PointingAbilities
-std::optional<PointabilityType> match_PointingAbilities(
+std::optional<PointabilityType> matchPointingAbilities(
 	const PointingAbilities* pointabilities,
 	const ItemGroupList &groups
 );

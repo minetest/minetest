@@ -110,7 +110,7 @@ inline static PointabilityType isPointableNode(const MapNode &n,
 {
 	const ContentFeatures &features = nodedef->get(n);
 	std::optional<PointabilityType> match =
-			match_PointingAbilities(pointabilities, features.groups);
+			matchPointingAbilities(pointabilities, features.groups);
 	if (match)
 		return match.value();
 	

@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
-std::optional<PointabilityType> match_PointingAbilities(
+std::optional<PointabilityType> matchPointingAbilities(
 	const PointingAbilities* pointabilities,
 	const ItemGroupList &groups)
 {
