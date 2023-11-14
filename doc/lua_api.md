@@ -8382,9 +8382,9 @@ Player properties need to be saved manually.
 
 
     pointable = true,
-    -- Can be true if it is pointable, false if it can be pointed through,
-    -- or "blocking" if it is pointable but not selectable.
-    -- Can be overridden in the 'pointabilities' of the held item definition.
+    -- Can be 'true' if it is pointable, 'false' if it can be pointed through,
+    -- or '"blocking"' if it is pointable but not selectable.
+    -- Can be overridden by the 'pointabilities' of the held item.
 
     visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem" / "item",
     -- "cube" is a node-sized cube.
@@ -8752,13 +8752,13 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
 		["leaves"] = false,
 		["crumbly"] = "blocking"
 	}
-    -- A list of groups that overrides the pointable property while holding the item.
+    -- A list of groups overriding the 'pointable' property while holding the item.
     -- The priority order is:
-		true for any group 
-		false for any group
-		"blocking" for any group
-		liquids_pointable from the node definition
-		pointable property of the node definition
+	--	'true' for any group 
+	--	'false' for any group
+	--	'"blocking"' for any group
+	--	'liquids_pointable' if it is a liquid
+	--	'pointable' property of the node or object
 
     light_source = 0,
     -- When used for nodes: Defines amount of light emitted by node.
@@ -8986,9 +8986,9 @@ Used by `minetest.register_node`.
     walkable = true,  -- If true, objects collide with node
 
     pointable = true,
-    -- Can be true if it is pointable, false if it can be pointed through,
-    -- or "blocking" if it is pointable but not selectable.
-    -- Can be overridden in the 'pointabilities' of the held item definition.
+    -- Can be 'true' if it is pointable, 'false' if it can be pointed through,
+    -- or '"blocking"' if it is pointable but not selectable.
+    -- Can be overridden by the 'pointabilities' of the held item.
 
     diggable = true,  -- If false, can never be dug
 
