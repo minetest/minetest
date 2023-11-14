@@ -1005,7 +1005,7 @@ minetest.register_tool("testtools:blocked_pointing_staff", {
 	description = S("Blocked Pointing Staff").."\n"..
 			S("Can point the Blocking Pointable Node/Object and"..
 			"can't point through the Pointable Node/Object."),
-	inventory_image = "testitems_blocked_pointing_staff.png",
+	inventory_image = "testtools_blocked_pointing_staff.png",
 	pointabilities = {
 		["blocking_pointable_test"] = true,
 		["pointable_test"] = "blocking"
@@ -1015,7 +1015,7 @@ minetest.register_tool("testtools:blocked_pointing_staff", {
 minetest.register_tool("testtools:ultimate_pointing_staff", {
 	description = S("Ultimate Pointing Staff").."\n"..
 			S("Can point all pointable test nodes, objects and liquids."),
-	inventory_image = "testitems_ultimate_pointing_staff.png",
+	inventory_image = "testtools_ultimate_pointing_staff.png",
 	liquids_pointable = true,
 	pointabilities = {
 		["blocking_pointable_test"] = true,
