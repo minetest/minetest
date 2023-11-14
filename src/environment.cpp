@@ -138,21 +138,15 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		// Setting is done
 		state->m_initialization_needed = false;
 	}
-
-	// The index of the first pointed thing that was not returned
-	// before. The last index which needs to be tested.
-	s16 lastIndex = state->m_iterator.m_last_index;
-	if (!state->m_found.empty()) {
-		lastIndex = state->m_iterator.getIndex(
-			floatToInt(state->m_found.top().intersection_point, BS));
-	}
-
+	
 	Map &map = getMap();
 	// If a node is found, this is the center of the
 	// first nodebox the shootline meets.
 	v3f found_boxcenter(0, 0, 0);
 	// The untested nodes are in this range.
 	core::aabbox3d<s16> new_nodes;
+	// The index of the first pointed which needs to be tested.
+	s16 lastIndex = state->m_iterator.m_last_index;
 	while (state->m_iterator.m_current_index <= lastIndex) {
 		// Test the nodes around the current node in search_range.
 		new_nodes = state->m_search_range;
