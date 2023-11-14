@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-11-02 01:08+0000\n"
+"PO-Revision-Date: 2023-11-17 00:07+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Javanese <https://hosted.weblate.org/projects/minetest/"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -42,11 +42,11 @@ msgstr ""
 
 #: builtin/client/chatcommands.lua
 msgid "List online players"
-msgstr ""
+msgstr "Daftar pandolan lebet jaring"
 
 #: builtin/client/chatcommands.lua
 msgid "Online players: "
-msgstr ""
+msgstr "Pandolan lebet jaring: "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
@@ -58,11 +58,11 @@ msgstr ""
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Bangkit Malilh"
 
 #: builtin/client/death_formspec.lua src/client/game.cpp
 msgid "You died"
-msgstr ""
+msgstr "Panjenengan pejah"
 
 #: builtin/common/chatcommands.lua
 msgid "Available commands:"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: builtin/fstk/dialog.lua builtin/fstk/ui.lua src/gui/modalMenu.cpp
 msgid "OK"
-msgstr ""
+msgstr "Oke"
 
 #: builtin/fstk/ui.lua
 msgid "<none available>"
@@ -99,11 +99,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred in a Lua script:"
-msgstr ""
+msgstr "Wonten kasalahan ing sekrip Lua:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occurred:"
-msgstr ""
+msgstr "Wonten kasalahan:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -111,7 +111,7 @@ msgstr "Menu utama"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "Sambet Malih"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -119,23 +119,23 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Versi protokol boten cocog. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Ladosan ngewajibaken protokol versi $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Ladosan ngewajibaken protokol versi antawis $1 kaliyan $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Kami namung saged protokol versi $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Kami namung saged protokol versi antawis $1 kaliyan $2."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "\"$1\" already exists. Would you like to overwrite it?"
@@ -143,7 +143,7 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr ""
+msgstr "$1 kaliyan $2 dependensi badhe dipunpasang."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -154,10 +154,12 @@ msgid ""
 "$1 downloading,\n"
 "$2 queued"
 msgstr ""
+"$1 dipunundhuh,\n"
+"$2 dipunantreaken"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 downloading..."
-msgstr ""
+msgstr "$1 dipunundhuh..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -181,7 +183,7 @@ msgstr "Balik dhateng menu utama"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Base Game:"
-msgstr ""
+msgstr "Dolanan Dhasar:"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
@@ -200,23 +202,23 @@ msgstr ""
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Dependencies:"
-msgstr ""
+msgstr "Dependensi:"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Downloading..."
-msgstr ""
+msgstr "Ngundhuh..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Error installing \"$1\": $2"
-msgstr ""
+msgstr "Salah pasang \"$1\": $2"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download \"$1\""
-msgstr ""
+msgstr "Gagal ngundhuh \"$1\""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to download $1"
-msgstr ""
+msgstr "Gagal ngundhuh $1"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
@@ -241,7 +243,7 @@ msgstr ""
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "Ngewrat..."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Mods"
@@ -249,24 +251,24 @@ msgstr "Mod"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr ""
+msgstr "Boten wonten paket ingkang saget dipundhut"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "No results"
-msgstr ""
+msgstr "Tanpa asil"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No updates"
-msgstr ""
+msgstr "Tanpa pangenggalan"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Not found"
-msgstr ""
+msgstr "Boten kepanggih"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Overwrite"
-msgstr ""
+msgstr "Tindhih"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Please check that the base game is correct."
@@ -274,15 +276,15 @@ msgstr ""
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Queued"
-msgstr ""
+msgstr "Dipunantreaken"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Texture packs"
-msgstr ""
+msgstr "Paket tekstur"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Paket $1 boten kepanggih."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -292,11 +294,11 @@ msgstr "Copot"
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
 msgid "Update"
-msgstr ""
+msgstr "Enggalaken"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "Update All [$1]"
-msgstr ""
+msgstr "Enggalaken Sedaya [$1]"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "View more information in a web browser"
@@ -308,15 +310,15 @@ msgstr ""
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
-msgstr ""
+msgstr "$1 (Dipunurupaken)"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 mods"
-msgstr ""
+msgstr "$1 mod"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Gagal masang $1 dhateng $2"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "Install: Unable to find suitable folder name for $1"
@@ -336,11 +338,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
-msgstr ""
+msgstr "(Dipunurupaken, gadhah salah)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
-msgstr ""
+msgstr "(Boten cekap)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -366,7 +368,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Find More Mods"
-msgstr ""
+msgstr "Pados Mod Malih"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -374,7 +376,7 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No (optional) dependencies"
-msgstr ""
+msgstr "Tanpa dependensi (manasuka)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No game description provided."
@@ -382,7 +384,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No hard dependencies"
-msgstr ""
+msgstr "Tanpa dependensi wajib"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No modpack description provided."
@@ -390,11 +392,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "No optional dependencies"
-msgstr ""
+msgstr "Tanpa dependensi manasuka"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Dependensi manasuka:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
@@ -408,7 +410,7 @@ msgstr "Jagad:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "diurupaken"
+msgstr "dipunurupaken"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -545,7 +547,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Seed"
-msgstr ""
+msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Smooth transition between biomes"
@@ -616,7 +618,7 @@ msgstr "Busek Jagad \"$1\"?"
 
 #: builtin/mainmenu/dlg_register.lua src/gui/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Tulis Malih"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Joining $1"
@@ -634,11 +636,11 @@ msgstr "Asma"
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_local.lua
 #: builtin/mainmenu/tab_online.lua
 msgid "Password"
-msgstr "Tembung sandi"
+msgstr "Tembung Sandi"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Sandi boten cocog"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
@@ -646,7 +648,7 @@ msgstr "Daftar"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Pinggiraken"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -701,7 +703,7 @@ msgstr "Mangke"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Never"
-msgstr ""
+msgstr "Boten Nate"
 
 #: builtin/mainmenu/dlg_version_info.lua
 msgid "Visit website"
@@ -721,7 +723,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Browse"
-msgstr ""
+msgstr "Jlajah"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Edit"
@@ -729,11 +731,11 @@ msgstr "Besut"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select directory"
-msgstr ""
+msgstr "Pilih direktori"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select file"
-msgstr ""
+msgstr "Pilih berkas"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Set"
@@ -806,7 +808,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr "(Ngangge basa sistem)"
+msgstr "(Ngagem basa sistem)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
@@ -818,7 +820,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Gantos Tombol"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
@@ -851,7 +853,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
-msgstr ""
+msgstr "Pados"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
@@ -867,11 +869,11 @@ msgstr ""
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Games"
-msgstr ""
+msgstr "Konten: Dolanan"
 
 #: builtin/mainmenu/settings/settingtypes.lua
 msgid "Content: Mods"
-msgstr ""
+msgstr "Konten: Mod"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
@@ -883,7 +885,7 @@ msgstr ""
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Dipunpejah"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 #: src/settings_translation_file.cpp
@@ -892,11 +894,11 @@ msgstr ""
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "High"
-msgstr ""
+msgstr "Inggil"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Low"
-msgstr ""
+msgstr "Andhap"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Medium"
@@ -912,11 +914,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr ""
+msgstr "Bab Kami"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Panyumbang Mempeng"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
@@ -924,11 +926,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Pangembang Inti"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Team"
-msgstr ""
+msgstr "Golongan Inti"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
@@ -946,11 +948,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Panyumbang Kapengker"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Pangembang Inti Kapengker"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Share debug log"
@@ -958,24 +960,23 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr ""
+msgstr "Jlajah konten lebet jaring"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content [$1]"
-msgstr ""
+msgstr "Jlajah konten lebet jaring [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Konten"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Konten"
+msgstr "Konten [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
-msgstr ""
+msgstr "Pejah Paket Tekstur"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Installed Packages:"
@@ -983,7 +984,7 @@ msgstr "Paket ingkang Dipunpasang:"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Tanpa dependensi."
 
 #: builtin/mainmenu/tab_content.lua
 msgid "No package description available"
@@ -991,7 +992,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Rename"
-msgstr ""
+msgstr "Gantos Asma"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Update available?"
@@ -999,7 +1000,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
-msgstr ""
+msgstr "Ngagemaken Paket Tekstur"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Announce Server"
@@ -1011,31 +1012,31 @@ msgstr ""
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Cara Kreatip"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Ngagem Karisakan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Game"
-msgstr ""
+msgstr "Anaaken Dolanan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Host Server"
-msgstr ""
+msgstr "Anaaken Ladosan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install a game"
-msgstr ""
+msgstr "Pasang dolanan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Install games from ContentDB"
-msgstr ""
+msgstr "Pasang dolanan saking ContentDB"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "New"
-msgstr "Anyar"
+msgstr "Enggal"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "No world created or selected!"
@@ -1067,7 +1068,7 @@ msgstr "Wiwit Dolanan"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "You have no games installed."
-msgstr ""
+msgstr "Panjenengan boten gadhah dolanan ingkang dipunpasang."
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Address"
@@ -1075,20 +1076,20 @@ msgstr "Alamat"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Cara kreatip"
 
 #. ~ PvP = Player versus Player
 #: builtin/mainmenu/tab_online.lua
 msgid "Damage / PvP"
-msgstr ""
+msgstr "Karisakan/PvP"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Favorites"
-msgstr ""
+msgstr "Kasenengan"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Incompatible Servers"
-msgstr ""
+msgstr "Ladosan Boten Cocog"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Join Game"
@@ -1100,11 +1101,11 @@ msgstr "Mlebet Log"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Public Servers"
-msgstr ""
+msgstr "Ladosan Publik"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Refresh"
@@ -1112,7 +1113,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Remove favorite"
-msgstr ""
+msgstr "Busek kasenengan"
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Server Description"
@@ -1120,11 +1121,11 @@ msgstr "Katerangan Paladen"
 
 #: src/client/client.cpp
 msgid "Connection aborted (protocol error?)."
-msgstr ""
+msgstr "Sambetanipun pedhot (salah protokol?)."
 
 #: src/client/client.cpp src/client/game.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Sambetanipun dangu sanget."
 
 #: src/client/client.cpp
 msgid "Done!"
@@ -1168,7 +1169,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Asma pandolan panjang sanget."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
@@ -1187,6 +1188,8 @@ msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Priksa debug.txt kagem peprincen."
 
 #: src/client/game.cpp
 msgid "- Address: "
@@ -1260,7 +1263,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Gantos Tembung Sandi"
 
 #: src/client/game.cpp
 msgid "Cinematic mode disabled"
@@ -1288,7 +1291,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Nerusaken"
 
 #: src/client/game.cpp
 #, c-format
@@ -1357,11 +1360,11 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Menu Utama"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Tutup Aplikasi"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -1429,7 +1432,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Multiplayer"
-msgstr ""
+msgstr "Pandolan Kathah"
 
 #: src/client/game.cpp
 msgid "Noclip mode disabled"
@@ -1477,19 +1480,19 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Mejahi..."
 
 #: src/client/game.cpp
 msgid "Singleplayer"
-msgstr ""
+msgstr "Pandolan Tunggil"
 
 #: src/client/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volume Swanten"
 
 #: src/client/game.cpp
 msgid "Sound muted"
-msgstr ""
+msgstr "Swanten mbisu"
 
 #: src/client/game.cpp
 msgid "Sound system is disabled"
@@ -1501,7 +1504,7 @@ msgstr ""
 
 #: src/client/game.cpp
 msgid "Sound unmuted"
-msgstr ""
+msgstr "Swanten boten mbisu"
 
 #: src/client/game.cpp
 #, c-format
@@ -1564,7 +1567,7 @@ msgstr ""
 #: src/client/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Volume dipungantos dados %d%%"
 
 #: src/client/game.cpp
 msgid "Wireframe shown"
@@ -1633,9 +1636,8 @@ msgid "Control Key"
 msgstr ""
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Busek"
+msgstr "Delete"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
@@ -2086,7 +2088,7 @@ msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "pencet tombol"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Change"
@@ -2094,15 +2096,15 @@ msgstr "Gantos"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "New Password"
-msgstr "Tambung Sandi Anyar"
+msgstr "Sandi Enggal"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr "Tambung Sandi Dangu"
+msgstr "Sandi Dangu"
 
 #: src/gui/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Sandi boten cocog!"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Exit"
@@ -2110,12 +2112,12 @@ msgstr "Medal"
 
 #: src/gui/guiVolumeChange.cpp
 msgid "Muted"
-msgstr ""
+msgstr "Mbisu"
 
 #: src/gui/guiVolumeChange.cpp
 #, c-format
 msgid "Sound Volume: %d%%"
-msgstr ""
+msgstr "Volume Swanten: %d%%"
 
 #. ~ DO NOT TRANSLATE THIS LITERALLY!
 #. This is a special string which needs to contain the translation's
@@ -2128,10 +2130,12 @@ msgstr "jv"
 msgid ""
 "Name is not registered. To create an account on this server, click 'Register'"
 msgstr ""
+"Asma dereng dipundaftar. Kagem damel akun wonten ladosan punika, klik "
+"'Daftar'"
 
 #: src/network/clientpackethandler.cpp
 msgid "Name is taken. Please choose another name"
-msgstr ""
+msgstr "Asma sampun dipundaftar. Sumangga pilih asma sanesipun"
 
 #: src/server.cpp
 #, c-format
@@ -4118,7 +4122,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
-msgstr ""
+msgstr "Sekrip menu utama"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5824,7 +5828,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: src/settings_translation_file.cpp
 msgid ""
