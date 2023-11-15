@@ -1630,7 +1630,7 @@ HUD
 HUD element types
 -----------------
 
-The position field is used for all element types.
+The `position` field is used for all element types.
 To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
