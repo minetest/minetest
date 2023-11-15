@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-09-11 13:54+0000\n"
-"Last-Translator: Claybiokiller <569735195@qq.com>\n"
+"PO-Revision-Date: 2023-11-17 00:07+0000\n"
+"Last-Translator: milewood <2598175722@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -302,7 +302,7 @@ msgstr "在网络浏览器中查看更多信息"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "在安装mod前，你需要先安装一个子游戏"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -646,7 +646,7 @@ msgstr "注册"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "忽略"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
