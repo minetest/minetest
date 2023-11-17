@@ -294,19 +294,23 @@ bool read_color(lua_State *L, int index, video::SColor *color)
 
 video::SColor read_ARGB8(lua_State *L, int index)
 {
+	auto clamp_col = [](double c) -> u32 {
+		return std::fmax(0.0, std::fmin(255.0, c));
+	};
+
 	video::SColor color(0);
 	CHECK_TYPE(index, "ARGB color", LUA_TTABLE);
 	lua_getfield(L, index, "a");
-	color.setAlpha(lua_isnumber(L, -1) ? lua_tonumber(L, -1) : 0xFF);
+	color.setAlpha(lua_isnumber(L, -1) ? clamp_col(lua_tonumber(L, -1)) : 0xFF);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "r");
-	color.setRed(lua_tonumber(L, -1));
+	color.setRed(clamp_col(lua_tonumber(L, -1)));
 	lua_pop(L, 1);
 	lua_getfield(L, index, "g");
-	color.setGreen(lua_tonumber(L, -1));
+	color.setGreen(clamp_col(lua_tonumber(L, -1)));
 	lua_pop(L, 1);
 	lua_getfield(L, index, "b");
-	color.setBlue(lua_tonumber(L, -1));
+	color.setBlue(clamp_col(lua_tonumber(L, -1)));
 	lua_pop(L, 1);
 	return color;
 }
