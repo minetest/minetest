@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Catalan (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-11-09 02:08+0000\n"
+"PO-Revision-Date: 2023-11-20 05:12+0000\n"
 "Last-Translator: Spurnita <joaquim.puig@upc.edu>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
 "minetest/ca/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -321,11 +321,11 @@ msgstr "Actualització Tot [$1]"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "View more information in a web browser"
-msgstr ""
+msgstr "Veure més informació en un navegador web"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Heu d'instal·lar un joc abans d'instal·lar un mod"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 #, fuzzy
@@ -453,7 +453,7 @@ msgstr "Ja existeix un món anomenat \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Additional terrain"
-msgstr ""
+msgstr "Terreny addicional"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 #, fuzzy
@@ -467,11 +467,11 @@ msgstr "Fred d'altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biome blending"
-msgstr ""
+msgstr "Barrejar biomes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Biomes"
-msgstr ""
+msgstr "Biomes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -506,43 +506,43 @@ msgstr "Soroll de cova #1"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Flat terrain"
-msgstr ""
+msgstr "Terreny pla"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floating landmasses in the sky"
-msgstr ""
+msgstr "Flotant masses de terra al cel"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Floatlands (experimental)"
-msgstr ""
+msgstr "Floatlands (experimental)"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Generate non-fractal terrain: Oceans and underground"
-msgstr ""
+msgstr "Generar terrenys no fractals: Oceans i subterranis"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Hills"
-msgstr ""
+msgstr "muntanas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Humid rivers"
-msgstr ""
+msgstr "Rius humits"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Increases humidity around rivers"
-msgstr ""
+msgstr "aumenta la humitat al voltant dels rius"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Install another game"
-msgstr ""
+msgstr "Instal·lar un altre joc"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Lakes"
-msgstr ""
+msgstr "Llacs"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Low humidity and high heat causes shallow or dry rivers"
-msgstr ""
+msgstr "Baixa humitat i alta calor provoca rius poc profunds o secs"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -550,7 +550,7 @@ msgstr "Generador de mapes"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Banderes Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -559,15 +559,15 @@ msgstr "Generador de mapes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
-msgstr ""
+msgstr "Muntanyes"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mud flow"
-msgstr ""
+msgstr "Flux de fang"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Network of tunnels and caves"
-msgstr ""
+msgstr "Xarxa de túnels i coves"
 
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
@@ -576,7 +576,7 @@ msgstr "Seleccionar distancia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces heat with altitude"
-msgstr ""
+msgstr "Redueix la calor amb l'altitud"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Reduces humidity with altitude"
@@ -698,11 +698,11 @@ msgstr "Les contrasenyes no coincideixen!"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
-msgstr ""
+msgstr "Registre"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Descarta"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
