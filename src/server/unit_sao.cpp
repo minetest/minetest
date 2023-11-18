@@ -113,7 +113,7 @@ void UnitSAO::sendOutdatedData()
 	if (!m_bone_override_sent) {
 		m_bone_override_sent = true;
 		for (const auto &bone_pos : m_bone_override) {
-			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
+			m_messages_out.emplace(getId(), true, generateUpdateBoneOverrideCommand(
 				bone_pos.first, bone_pos.second));
 		}
 	}
@@ -277,7 +277,7 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdateBonePositionCommand(
+std::string UnitSAO::generateUpdateBoneOverrideCommand(
 		const std::string &bone, const BoneOverride &props)
 {
 	std::ostringstream os(std::ios::binary);

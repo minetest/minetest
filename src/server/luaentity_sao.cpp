@@ -257,7 +257,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
 	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
 	for (const auto &bone_override : m_bone_override) {
-		msg_os << serializeString32(generateUpdateBonePositionCommand(
+		msg_os << serializeString32(generateUpdateBoneOverrideCommand(
 			bone_override.first, bone_override.second)); // 3 + N
 	}
 	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_override.size
