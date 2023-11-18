@@ -121,9 +121,9 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeString32(getPropertyPacket()); // message 1
 	msg_os << serializeString32(generateUpdateArmorGroupsCommand()); // 2
 	msg_os << serializeString32(generateUpdateAnimationCommand()); // 3
-	for (const auto &bone_pos : m_bone_override) {
+	for (const auto &it : m_bone_override) {
 		msg_os << serializeString32(generateUpdateBoneOverrideCommand(
-			bone_pos.first, bone_pos.second)); // 3 + N
+			it.first, it.second)); // 3 + N
 	}
 	msg_os << serializeString32(generateUpdateAttachmentCommand()); // 4 + m_bone_override.size
 	msg_os << serializeString32(generateUpdatePhysicsOverrideCommand()); // 5 + m_bone_override.size
