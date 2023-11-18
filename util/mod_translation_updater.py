@@ -121,14 +121,14 @@ def main():
 # Group 2 will be the string, groups 1 and 3 will be the delimiters (" or ')
 # See https://stackoverflow.com/questions/46967465/regex-match-text-in-either-single-or-double-quote
 pattern_lua_quoted = re.compile(
-	r'(?:^|[\.=^\t,{\(\s])' # Look for beginning of file or anything that isn't a function identifier
+	r'(?:^|[\.=,{\(\s])' # Look for beginning of file or anything that isn't a function identifier
 	r'N?F?S\s*\(\s*' # Matches S, FS, NS or NFS function call
 	r'(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)' # Quoted string
 	r'[\s,\)]', # End of call or argument
 	re.DOTALL)
 # Handles the [[ ... ]] string delimiters
 pattern_lua_bracketed = re.compile(
-	r'(?:^|[\.=^\t,{\(\s])' # Same as for pattern_lua_quoted
+	r'(?:^|[\.=,{\(\s])' # Same as for pattern_lua_quoted
 	r'N?F?S\s*\(\s*' # Same as for pattern_lua_quoted
 	r'\[\[(.*?)\]\]' # [[ ... ]] string delimiters
 	r'[\s,\)]', # Same as for pattern_lua_quoted
