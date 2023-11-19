@@ -145,6 +145,10 @@ for i=1, #fractal do
 	data_ck[i] = checker[i] > 0 and "#888" or "#000"
 end
 
+fractal = nil
+frac_emb = nil
+checker = nil
+
 local textures_path = minetest.get_modpath( minetest.get_current_modname() ) .. "/textures/"
 minetest.safe_file_write(
 	textures_path .. "testnodes_generated_mb.png",
@@ -195,6 +199,10 @@ minetest.register_node("testnodes:generated_png_dst_emb", {
 
 	groups = { dig_immediate = 2 },
 })
+
+data_emb = nil
+data_mb = nil
+data_ck = nil
 
 --[[
 
