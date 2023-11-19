@@ -31,7 +31,7 @@ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl-devel open
 For openSUSE users:
 
 ```shell
-sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel
+sudo zypper install gcc cmake libjpeg8-devel libpng16-devel openal-soft-devel libcurl-devel sqlite3-devel luajit-devel libzstd-devel Mesa-libGL-devel libXi-devel libvorbis-devel freetype2-devel
 ```
 
 For Arch users:

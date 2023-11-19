@@ -70,11 +70,34 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	-- category
 	local stars, category = line:match("^%[([%*]*)([^%]]+)%]$")
 	if category then
+		local category_level = stars:len() + base_level
+
+		if settings.current_hide_level then
+			if settings.current_hide_level < category_level then
+				-- Skip this category, it's inside a hidden category.
+				return
+			else
+				-- The start of this category marks the end of a hidden category.
+				settings.current_hide_level = nil
+			end
+		end
+
+		if not read_all and category:sub(1, 5) == "Hide:" then
+			-- This category is hidden.
+			settings.current_hide_level = category_level
+			return
+		end
+
 		table.insert(settings, {
 			name = category,
-			level = stars:len() + base_level,
+			level = category_level,
 			type = "category",
 		})
+		return
+	end
+
+	if settings.current_hide_level then
+		-- Ignore this line, we're inside a hidden category.
 		return
 	end
 
@@ -349,6 +372,7 @@ end
 local function parse_single_file(file, filepath, read_all, result, base_level, allow_secure)
 	-- store this helper variable in the table so it's easier to pass to parse_setting_line()
 	result.current_comment = {}
+	result.current_hide_level = nil
 
 	local line = file:read("*line")
 	while line do
@@ -360,6 +384,7 @@ local function parse_single_file(file, filepath, read_all, result, base_level, a
 	end
 
 	result.current_comment = nil
+	result.current_hide_level = nil
 end
 
 

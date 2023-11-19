@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Portuguese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 23:13+0200\n"
+"POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2023-08-15 22:23+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
@@ -133,6 +133,206 @@ msgstr "Nós suportamos apenas o protocolo versão $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Nós suportamos as versões de protocolo entre $1 e $2."
 
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" já existe. Gostaria de sobrescrevê-lo?"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "As dependências de $1 e $2 serão instaladas."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 por $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"A descarregar $1,\n"
+"$2 na fila"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "A descarregar $1..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 dependências necessárias não foram encontradas."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 serão instalados e $2 dependências serão ignoradas."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Todos os pacotes"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "Já instalado"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Voltar ao menu principal"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "Jogo base:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_content.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB não está disponível quando Minetest é compilado sem cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+msgid "Dependencies:"
+msgstr "Dependências:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "A descarregar..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr "Erro na instalação \"$1\": $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download \"$1\""
+msgstr "Erro ao baixar $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Falhou em descarregar $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Erro na extração: \"$1\" (Tipo de arquivo não suportado ou corrompido)"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Jogos"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Instalar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "Instalar $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "Instalar dependências ausentes"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "A carregar..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Nenhum pacote pode ser recuperado"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Sem resultados"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Sem atualizações"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Not found"
+msgstr "Não encontrado"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Sobrescrever"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "Verifique se o jogo base está correto."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Enfileirado"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Pacotes de texturas"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Desinstalar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Atualizar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Atualizar tudo [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Exibir mais informações num navegador da Web"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 (Enabled)"
+msgstr "$1 (Ativado)"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 mods"
+msgstr "$1 módulos"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Failed to install $1 to $2"
+msgstr "Falha ao instalar de $1 ao $2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Install: Unable to find suitable folder name for $1"
+msgstr ""
+"Instalação: Não foi possível encontrar um nome de pasta adequado para $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr "Não foi possível encontrar um mod, modpack ou jogo válido"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to install a $1 as a $2"
+msgstr "Não foi possível instalar $ 1 como $ 2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to install a $1 as a texture pack"
+msgstr "Não foi possível instalar $1 como pacote de texturas"
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
 msgstr "(Ativado, tem erro)"
@@ -140,21 +340,6 @@ msgstr "(Ativado, tem erro)"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
 msgstr "(Insatisfeito)"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Dependencies:"
-msgstr "Dependências:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -226,160 +411,6 @@ msgstr "Mundo:"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "ativado"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" já existe. Gostaria de sobrescrevê-lo?"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "As dependências de $1 e $2 serão instaladas."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 por $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid ""
-"$1 downloading,\n"
-"$2 queued"
-msgstr ""
-"A descarregar $1,\n"
-"$2 na fila"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 downloading..."
-msgstr "A descarregar $1..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 dependências necessárias não foram encontradas."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 serão instalados e $2 dependências serão ignoradas."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "All packages"
-msgstr "Todos os pacotes"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Já instalado"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back to Main Menu"
-msgstr "Voltar ao menu principal"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Base Game:"
-msgstr "Jogo base:"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB não está disponível quando Minetest é compilado sem cURL"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "A descarregar..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "Erro na instalação \"$1\": $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "Erro ao baixar $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Falhou em descarregar $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Erro na extração: \"$1\" (Tipo de arquivo não suportado ou corrompido)"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Games"
-msgstr "Jogos"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install"
-msgstr "Instalar"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install $1"
-msgstr "Instalar $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install missing dependencies"
-msgstr "Instalar dependências ausentes"
-
-#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
-#: src/client/game.cpp
-msgid "Loading..."
-msgstr "A carregar..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Nenhum pacote pode ser recuperado"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Sem resultados"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Sem atualizações"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Not found"
-msgstr "Não encontrado"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Sobrescrever"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Please check that the base game is correct."
-msgstr "Verifique se o jogo base está correto."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Enfileirado"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Pacotes de texturas"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "The package $1/$2 was not found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Uninstall"
-msgstr "Desinstalar"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update"
-msgstr "Atualizar"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Atualizar tudo [$1]"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Exibir mais informações num navegador da Web"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -572,7 +603,6 @@ msgstr "Tem a certeza que pretende eliminar \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
-#: src/client/keycode.cpp
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -692,35 +722,6 @@ msgstr "Visite o website"
 msgid "Settings"
 msgstr "Definições"
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Ativado)"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 mods"
-msgstr "$1 módulos"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Failed to install $1 to $2"
-msgstr "Falha ao instalar de $1 ao $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Instalação: Não foi possível encontrar um nome de pasta adequado para $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Não foi possível encontrar um mod, modpack ou jogo válido"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a $2"
-msgstr "Não foi possível instalar $ 1 como $ 2"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a texture pack"
-msgstr "Não foi possível instalar $1 como pacote de texturas"
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "A lista de servidores públicos está desativada"
@@ -822,18 +823,38 @@ msgid "(Use system language)"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Accessibility"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Voltar"
 
-#: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
-msgid "Change keys"
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
 msgstr "Mudar teclas"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
+#: src/settings_translation_file.cpp
+msgid "Chat"
+msgstr "Chat"
+
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
-#: src/client/keycode.cpp
 msgid "Clear"
 msgstr "Limpar"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Controls"
+msgstr "Controles"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "General"
+msgstr "Em geral"
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Movement"
+msgstr "Modo rápido"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -848,11 +869,11 @@ msgstr ""
 msgid "Search"
 msgstr "Procurar"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
 msgstr ""
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
 msgstr "Mostrar nomes técnicos"
 
@@ -958,7 +979,17 @@ msgid "Browse online content"
 msgstr "Procurar conteúdo online"
 
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Browse online content [$1]"
+msgstr "Procurar conteúdo online"
+
+#: builtin/mainmenu/tab_content.lua
 msgid "Content"
+msgstr "Conteúdo"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Content [$1]"
 msgstr "Conteúdo"
 
 #: builtin/mainmenu/tab_content.lua
@@ -982,8 +1013,9 @@ msgid "Rename"
 msgstr "Renomear"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Uninstall Package"
-msgstr "Desinstalar o pacote"
+#, fuzzy
+msgid "Update available?"
+msgstr "<Comando não disponível>"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1248,10 +1280,6 @@ msgstr "Atualização da camera habilitada"
 #, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "Não é possível mostrar limites de bloco (desativado por mod ou jogo)"
-
-#: src/client/game.cpp
-msgid "Change Keys"
-msgstr "Mudar teclas"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1639,17 +1667,34 @@ msgstr "Aplicações"
 msgid "Backspace"
 msgstr "Backspace"
 
+#. ~ Usually paired with the Pause key
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Break Key"
+msgstr "Tecla para agachar"
+
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-msgid "Control"
+#, fuzzy
+msgid "Clear Key"
+msgstr "Limpar"
+
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Control Key"
 msgstr "Control"
 
 #: src/client/keycode.cpp
-msgid "Down"
-msgstr "Baixo"
+#, fuzzy
+msgid "Delete Key"
+msgstr "Eliminar"
+
+#: src/client/keycode.cpp
+msgid "Down Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1695,9 +1740,10 @@ msgstr "Nãoconverter"
 msgid "Insert"
 msgstr "Insert"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Left"
-msgstr "Esquerda"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Left Arrow"
+msgstr "Control Esquerdo"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1721,7 +1767,8 @@ msgstr "Tecla WINDOWS esquerda"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-msgid "Menu"
+#, fuzzy
+msgid "Menu Key"
 msgstr "Menu"
 
 #: src/client/keycode.cpp
@@ -1797,15 +1844,19 @@ msgid "OEM Clear"
 msgstr "Limpar OEM"
 
 #: src/client/keycode.cpp
-msgid "Page down"
+#, fuzzy
+msgid "Page Down"
 msgstr "Page down"
 
 #: src/client/keycode.cpp
-msgid "Page up"
+#, fuzzy
+msgid "Page Up"
 msgstr "Page up"
 
+#. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-msgid "Pause"
+#, fuzzy
+msgid "Pause Key"
 msgstr "Pausa"
 
 #: src/client/keycode.cpp
@@ -1818,12 +1869,14 @@ msgid "Print"
 msgstr "Tecla Print Screen"
 
 #: src/client/keycode.cpp
-msgid "Return"
+#, fuzzy
+msgid "Return Key"
 msgstr "Enter"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Right"
-msgstr "Direita"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Right Arrow"
+msgstr "Control Direito"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1855,7 +1908,8 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: src/client/keycode.cpp
-msgid "Shift"
+#, fuzzy
+msgid "Shift Key"
 msgstr "Shift"
 
 #: src/client/keycode.cpp
@@ -1875,8 +1929,8 @@ msgid "Tab"
 msgstr "Tabulação"
 
 #: src/client/keycode.cpp
-msgid "Up"
-msgstr "Cima"
+msgid "Up Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1886,8 +1940,9 @@ msgstr "Botão X 1"
 msgid "X Button 2"
 msgstr "Botão X 2"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Zoom"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Zoom Key"
 msgstr "Zoom"
 
 #: src/client/minimap.cpp
@@ -1973,10 +2028,6 @@ msgstr "Limites de bloco"
 msgid "Change camera"
 msgstr "Mudar camera"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-msgid "Chat"
-msgstr "Chat"
-
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "Comando"
@@ -2030,6 +2081,10 @@ msgid "Keybindings."
 msgstr "Combinações de teclas."
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Left"
+msgstr "Esquerda"
+
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
 msgstr "Comandos do Chat"
 
@@ -2048,6 +2103,10 @@ msgstr "Item anterior"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
 msgstr "Seleccionar Distância"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Right"
+msgstr "Direita"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2088,6 +2147,10 @@ msgstr "Ativar/Desativar noclip"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
 msgstr "Alternar pitchmove"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Zoom"
+msgstr "Zoom"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2212,6 +2275,10 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr "Ruído 2D que localiza os vales e canais dos rios."
 
 #: src/settings_translation_file.cpp
+msgid "3D"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "Nuvens 3D"
 
@@ -2274,7 +2341,7 @@ msgid ""
 "Currently supported:\n"
 "-    none: no 3d output.\n"
 "-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    interlaced: odd/even line based polarization screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
@@ -2290,10 +2357,6 @@ msgstr ""
 " -   crossview: 3D de olhos cruzados.\n"
 " -   pageflip: quadbuffer baseado em 3D.\n"
 "Note que o modo interlaçado requer que sombreamentos estejam ativados."
-
-#: src/settings_translation_file.cpp
-msgid "3d"
-msgstr "3d"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2352,16 +2415,6 @@ msgid "Active object send range"
 msgstr "Distância de envio de objetos ativos"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
-msgstr ""
-"Endereço para ligação.\n"
-"Deixe em branco para iniciar um servidor local.\n"
-"Note que o campo de endereço no menu principal sobrescreve esta configuração."
-
-#: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr "Adiciona partículas quando escava um node."
 
@@ -2403,19 +2456,6 @@ msgid "Advanced"
 msgstr "Avançado"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names.\n"
-"Controlled by a checkbox in the settings menu."
-msgstr ""
-"Se deve mostrar nomes técnicos.\n"
-"Afeta mods e pacotes de textura nos menus Content e Select Mods, bem como\n"
-"definir nomes em Todas as configurações.\n"
-"Controlado pela caixa de seleção no menu \"Todas as configurações\"."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
@@ -2436,10 +2476,6 @@ msgstr "Sempre voe rápido"
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr "Gama de oclusão de ambiente"
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr "Quantidade de mensagens que um jogador pode enviar por 10 segundos."
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -2575,8 +2611,9 @@ msgid "Bind address"
 msgstr "Endereço de bind"
 
 #: src/settings_translation_file.cpp
-msgid "Biome API noise parameters"
-msgstr "Parâmetros de ruído da API do bioma"
+#, fuzzy
+msgid "Biome API"
+msgstr "Biomas"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2736,10 +2773,6 @@ msgid "Chunk size"
 msgstr "Dimensão das parcelas"
 
 #: src/settings_translation_file.cpp
-msgid "Cinematic mode"
-msgstr "Modo cinematográfico"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
@@ -2768,12 +2801,13 @@ msgid "Client side modding restrictions"
 msgstr "Restrição de modificação no lado do cliente"
 
 #: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
-msgstr "Restrição do alcançe da visão superior de nós no lado do cliente"
-
-#: src/settings_translation_file.cpp
 msgid "Client-side Modding"
 msgstr "Modding do lado do cliente"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Client-side node lookup range restriction"
+msgstr "Restrição do alcançe da visão superior de nós no lado do cliente"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2788,7 +2822,8 @@ msgid "Clouds"
 msgstr "Nuvens"
 
 #: src/settings_translation_file.cpp
-msgid "Clouds are a client side effect."
+#, fuzzy
+msgid "Clouds are a client-side effect."
 msgstr "As nuvens são um efeito do lado do cliente."
 
 #: src/settings_translation_file.cpp
@@ -2908,27 +2943,6 @@ msgid "ContentDB URL"
 msgstr "Url do ContentDB"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
-msgstr "Avançar continuamente"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
-msgstr ""
-"Movimento para frente contínuo, ativado pela tecla de avanço automático.\n"
-"Pressione a tecla de avanço frontal novamente ou a tecla de movimento para "
-"trás para desativar."
-
-#: src/settings_translation_file.cpp
-msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controls"
-msgstr "Controles"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
@@ -2970,10 +2984,6 @@ msgid "Crash message"
 msgstr "Mensagem de erro"
 
 #: src/settings_translation_file.cpp
-msgid "Creative"
-msgstr "Criar"
-
-#: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
 msgstr "Opacidade do cursor"
 
@@ -3000,10 +3010,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "DPI"
 msgstr "DPI"
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr "Ativar dano"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3101,12 +3107,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "Define localizações e terrenos de morros e lagos opcionais."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
-"Value of 2 means taking 2x2 = 4 samples."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr "Define o nível base do solo."
 
@@ -3127,6 +3127,13 @@ msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Define distância máxima de transferência de jogadores em blocos (0 = "
 "ilimitado)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the size of the sampling grid for FSAA and SSAA antialiasing "
+"methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3229,10 +3236,6 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Nome de domínio do servidor, para ser mostrado na lista de servidores."
 
 #: src/settings_translation_file.cpp
-msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "Carregue duas vezes em saltar para voar"
 
@@ -3320,10 +3323,6 @@ msgid "Enable console window"
 msgstr "Ativar janela de console"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr "Ativar modo criativo para todos os jogadores"
-
-#: src/settings_translation_file.cpp
 msgid "Enable joysticks"
 msgstr "Ativar Joysticks"
 
@@ -3342,10 +3341,6 @@ msgstr "Ativar segurança de extras"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr "Ativar dano e morte dos jogadores."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3438,22 +3433,6 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "Ativar armazenamento em cache para os meshes das faces."
 
 #: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr "Ativa mini-mapa."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-"Possibilita o sistema de som.\n"
-"Se desativado, desativa completamente todos os sons em todo o lado e \n"
-"os controles de som no jogo não funcionarão.\n"
-"A alteração desta configuração requer um reinício."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
@@ -3463,7 +3442,8 @@ msgstr ""
 "à custa de pequenas falhas visuais que não afetam a jogabilidade do jogo."
 
 #: src/settings_translation_file.cpp
-msgid "Engine profiler"
+#, fuzzy
+msgid "Engine Profiler"
 msgstr "Perfil do motor"
 
 #: src/settings_translation_file.cpp
@@ -3527,18 +3507,6 @@ msgstr "Aceleração no modo rápido"
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
 msgstr "Velocidade no modo rápido"
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr "Modo rápido"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
-msgstr ""
-"Movimento rápido (através da tecla \"Aux1\").\n"
-"Isso requer o privilegio \"fast\" no servidor."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3628,10 +3596,6 @@ msgstr "Distância de afilamento da ilha flutuante"
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
 msgstr "Nível da água em terreno flutuante"
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr "Voar"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -3788,6 +3752,11 @@ msgid "Fullscreen mode."
 msgstr "Modo de ecrã inteiro."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "GUI"
+msgstr "GUIs"
+
+#: src/settings_translation_file.cpp
 msgid "GUI scaling"
 msgstr "Escala do interface gráfico"
 
@@ -3800,16 +3769,8 @@ msgid "GUI scaling filter txr2img"
 msgstr "Filtro txr2img de redimensionamento do interface gráfico"
 
 #: src/settings_translation_file.cpp
-msgid "GUIs"
-msgstr "GUIs"
-
-#: src/settings_translation_file.cpp
 msgid "Gamepads"
 msgstr "Gamepads"
-
-#: src/settings_translation_file.cpp
-msgid "General"
-msgstr "Em geral"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3928,11 +3889,6 @@ msgstr "Ruído de altura"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr "Parâmetros de ruido de seleção de altura do gerador de mundo v6"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Hide: Temporary Settings"
-msgstr "Configurações Temporárias"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -4069,32 +4025,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-"Se ativado, o servidor executará a seleção de oclusão de bloco de mapa com "
-"base \n"
-"na posição do olho do jogador. Isso pode reduzir o número de blocos enviados "
-"ao \n"
-"cliente de 50 a 80%. O cliente ja não será invisível, de modo que a "
-"utilidade do \n"
-"modo \"noclip\" (modo intangível) será reduzida."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
-msgstr ""
-"Se ativado com o modo de vôo, o jogador é capaz de voar através de cubos "
-"sólidos.\n"
-"Isto requer o privilégio \"noclip\" no servidor."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -4134,19 +4064,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
-msgstr ""
-"Se ativado, faz com que os movimentos sejam relativos ao pitch do jogador "
-"quando a voar ou a nadar."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr ""
 "Se ativado, novos jogadores não podem entrar sem uma senha, ou uma senha "
 "vazia."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"If enabled, the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client by 50-80%. Clients will no longer receive most\n"
+"invisible blocks, so that the utility of noclip mode is reduced."
+msgstr ""
+"Se ativado, o servidor executará a seleção de oclusão de bloco de mapa com "
+"base \n"
+"na posição do olho do jogador. Isso pode reduzir o número de blocos enviados "
+"ao \n"
+"cliente de 50 a 80%. O cliente ja não será invisível, de modo que a "
+"utilidade do \n"
+"modo \"noclip\" (modo intangível) será reduzida."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4190,12 +4128,6 @@ msgstr ""
 "nesta configuração quando é aberta, o ficheiro é movido para debug.txt.1,\n"
 "apagando um debug.txt.1 mais antigo, se existir.\n"
 "debug.txt só é movido se esta configuração for positiva."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If this is set to true, the user will never (again) be shown the\n"
-"\"reinstall Minetest Game\" notification."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4444,14 +4376,6 @@ msgstr "Quantidade mínima de cavernas grandes"
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
 msgstr "Proporção inundada de cavernas grandes"
-
-#: src/settings_translation_file.cpp
-msgid "Last known version update"
-msgstr "Última atualização de versão conhecida"
-
-#: src/settings_translation_file.cpp
-msgid "Last update check"
-msgstr "Última verificação por atualizações"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4985,12 +4909,14 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "Máximo de blocos enviados simultaneamente por cliente"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
+#, fuzzy
+msgid "Maximum size of the outgoing chat queue"
 msgstr "Tamanho máximo da fila do chat"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Maximum size of the out chat queue.\n"
+"Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 "Tamanho máximo da fila do chat.\n"
@@ -5037,10 +4963,6 @@ msgid "Minimal level of logging to be written to chat."
 msgstr "Nível mínimo de registo a ser impresso no chat."
 
 #: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr "Mini-mapa"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Altura de varredura do mini-mapa"
 
@@ -5059,8 +4981,8 @@ msgid "Mipmapping"
 msgstr "Mapeamento MIP"
 
 #: src/settings_translation_file.cpp
-msgid "Misc"
-msgstr "Diversos"
+msgid "Miscellaneous"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5177,10 +5099,6 @@ msgid "New users need to input this password."
 msgstr "Novos jogadores precisam de introduzir esta palavra-passe."
 
 #: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr "Atravessar blocos"
-
-#: src/settings_translation_file.cpp
 msgid "Node and Entity Highlighting"
 msgstr "Nó e Entidade em Destaque"
 
@@ -5238,6 +5156,11 @@ msgstr ""
 "mesmo tempo.\n"
 "Esta é uma troca entre sobrecarga de transação do sqlite e\n"
 "consumo de memória (4096 = 100 MB, como uma regra de ouro)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Number of messages a player may send per 10 seconds."
+msgstr "Quantidade de mensagens que um jogador pode enviar por 10 segundos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5305,12 +5228,6 @@ msgstr ""
 "local padrão será usado."
 
 #: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
-"Caminho para o diretório de texturas. Todas as texturas são pesquisadas "
-"primeiro daqui."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
@@ -5344,40 +5261,16 @@ msgid "Physics"
 msgstr "Física"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr "Modo movimento pitch"
-
-#: src/settings_translation_file.cpp
 msgid "Place repetition interval"
 msgstr "Intervalo de repetição da ação pôr"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
-msgstr ""
-"O jogador é capaz de voar sem ser afetado pela gravidade.\n"
-"Isso requer o privilégio \"fly\" no servidor."
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
 msgstr "Distância de transferência do jogador"
 
 #: src/settings_translation_file.cpp
-msgid "Player versus player"
-msgstr "Jogador contra jogador"
-
-#: src/settings_translation_file.cpp
 msgid "Poisson filtering"
 msgstr "Filtragem de Poisson"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
-msgstr ""
-"Porta para conectar (UDP).\n"
-"Note que o campo Porta no menu principal substitui essa configuração."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5472,10 +5365,6 @@ msgid "Remote media"
 msgstr "Mídia remota"
 
 #: src/settings_translation_file.cpp
-msgid "Remote port"
-msgstr "Porta remota"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
@@ -5567,10 +5456,6 @@ msgstr "Tamanho do ruído de colinas rolantes"
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
 msgstr "Extensão do ruído de colinas rolantes"
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
-msgstr "Mini-map redondo"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
@@ -5775,7 +5660,8 @@ msgid "Server port"
 msgstr "Porta do servidor"
 
 #: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
+#, fuzzy
+msgid "Server-side occlusion culling"
 msgstr "Separação de oclusão no lado do servidor"
 
 #: src/settings_translation_file.cpp
@@ -5964,10 +5850,6 @@ msgid "Shadow strength gamma"
 msgstr "Força da sombra gamma"
 
 #: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "Formato do mini-mapa. Ativado = redondo, desativado = quadrado."
-
-#: src/settings_translation_file.cpp
 msgid "Show debug info"
 msgstr "Mostrar informação de depuração"
 
@@ -6001,9 +5883,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
-"WARNING!: There is no benefit, and there are several dangers, in\n"
+"WARNING: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
 "Reducing this value increases cave and dungeon density.\n"
 "Altering this value is for special usage, leaving it unchanged is\n"
@@ -6089,10 +5972,6 @@ msgid "Soft shadow radius"
 msgstr "Raio das sombras suaves"
 
 #: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr "Som"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
@@ -6116,8 +5995,9 @@ msgstr ""
 "(ou todos) os itens."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Spread a complete update of shadow map over given amount of frames.\n"
+"Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
@@ -6139,7 +6019,8 @@ msgstr ""
 "O desvio padrão da gaussiana do aumento da curva de luz."
 
 #: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
+#, fuzzy
+msgid "Static spawn point"
 msgstr "Ponto de spawn estático"
 
 #: src/settings_translation_file.cpp
@@ -6177,13 +6058,14 @@ msgid "Strip color codes"
 msgstr "Códigos de faixa de cor"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
 "to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
 "upper tapering).\n"
 "***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
-"When enabling water placement the floatlands must be configured and tested\n"
+"When enabling water placement, floatlands must be configured and tested\n"
 "to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
 "required value depending on 'mgv7_np_floatland'), to avoid\n"
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
@@ -6257,10 +6139,6 @@ msgid "Terrain persistence noise"
 msgstr "Ruído de persistência do terreno"
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr "Caminho para a pasta de texturas"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
@@ -6308,12 +6186,9 @@ msgstr ""
 "Quando chamado `/profiler save [formato]` sem formato."
 
 #: src/settings_translation_file.cpp
-msgid "The depth of dirt or other biome filler node."
-msgstr "A profundidade do preenchimento de terra ou outro enchimento de bioma."
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
+"The file path relative to your world path in which profiles will be saved to."
 msgstr ""
 "O caminho de ficheiro relativo ao sua pasta do mundo no qual as analises "
 "serão salvas."
@@ -6449,9 +6324,10 @@ msgid "The type of joystick"
 msgstr "O tipo do joystick"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
-"enabled. Also the vertical distance over which humidity drops by 10 if\n"
+"enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
 "A distância vertical onde o calor cai por 20 caso 'altitude_chill' esteja \n"
@@ -6462,16 +6338,6 @@ msgstr ""
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
 "Terceiro de 4 ruídos 2D que juntos definem a altura de colinas/montanhas."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"This can be bound to a key to toggle camera smoothing when looking around.\n"
-"Useful for recording videos"
-msgstr ""
-"Suaviza o movimento da câmara quando olhando ao redor. Também chamado de "
-"olhar ou suavização do rato.\n"
-"Útil para gravar vídeos."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6604,16 +6470,6 @@ msgstr ""
 "Valores mais altos resultam numa imagem menos detalhada."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Unix timestamp (integer) of when the client last checked for an update\n"
-"Set this value to \"disabled\" to never check for updates."
-msgstr ""
-"Carimbo de data/hora Unix (inteiro) de quando o cliente verificou pela "
-"última vez uma atualização\n"
-"Defina esse valor como \"desativado\" para nunca verificar se há "
-"atualizações."
-
-#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Distância de transferência do jogador ilimitada"
 
@@ -6667,7 +6523,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
-"especially when using a high resolution texture pack.\n"
+"especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
 "Usar mip mapping para escalar texturas. Pode aumentar a performance "
@@ -6764,19 +6620,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
 msgstr "Controla a inclinação/altura das colinas."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Version number which was last seen during an update check.\n"
-"\n"
-"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
-"Ex: 5.5.0 is 005005000"
-msgstr ""
-"Número da versão que foi visto pela última vez durante uma verificação de "
-"atualização.\n"
-"\n"
-"Representação: MMMIIIPPP, onde M=Maior, I=Menor, P=Patch\n"
-"Ex: 5.5.0 é 005005000"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6935,10 +6778,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr "Se deseja permitir aos jogadores causar dano e matar uns aos outros."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7123,6 +6962,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "3D Clouds"
 #~ msgstr "Nuvens 3D"
 
+#~ msgid "3d"
+#~ msgstr "3d"
+
 #~ msgid "4x"
 #~ msgstr "4x"
 
@@ -7134,6 +6976,16 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Address / Port"
 #~ msgstr "Endereço / Porta"
+
+#~ msgid ""
+#~ "Address to connect to.\n"
+#~ "Leave this blank to start a local server.\n"
+#~ "Note that the address field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Endereço para ligação.\n"
+#~ "Deixe em branco para iniciar um servidor local.\n"
+#~ "Note que o campo de endereço no menu principal sobrescreve esta "
+#~ "configuração."
 
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -7160,6 +7012,19 @@ msgstr "limite paralelo de cURL"
 #~ "1,0 = saturação inalterada\n"
 #~ "0,0 = preto e branco\n"
 #~ "(O mapeamento de tom precisa ser ativado.)"
+
+#, fuzzy
+#~ msgid ""
+#~ "Affects mods and texture packs in the Content and Select Mods menus, as "
+#~ "well as\n"
+#~ "setting names.\n"
+#~ "Controlled by a checkbox in the settings menu."
+#~ msgstr ""
+#~ "Se deve mostrar nomes técnicos.\n"
+#~ "Afeta mods e pacotes de textura nos menus Content e Select Mods, bem "
+#~ "como\n"
+#~ "definir nomes em Todas as configurações.\n"
+#~ "Controlado pela caixa de seleção no menu \"Todas as configurações\"."
 
 #~ msgid "All Settings"
 #~ msgstr "Todas as configurações"
@@ -7190,6 +7055,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Bilinear Filter"
 #~ msgstr "Filtro bilinear"
 
+#~ msgid "Biome API noise parameters"
+#~ msgstr "Parâmetros de ruído da API do bioma"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Bits por pixel (profundidade de cor) no modo de ecrã inteiro."
 
@@ -7216,6 +7084,10 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Centro do aumento da curva de luz."
 
+#, fuzzy
+#~ msgid "Change keys"
+#~ msgstr "Mudar teclas"
+
 #~ msgid ""
 #~ "Changes the main menu UI:\n"
 #~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
@@ -7236,6 +7108,9 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Chat toggle key"
 #~ msgstr "Tecla mostra/esconde conversação"
+
+#~ msgid "Cinematic mode"
+#~ msgstr "Modo cinematográfico"
 
 #~ msgid "Cinematic mode key"
 #~ msgstr "Tecla para modo cinematográfico"
@@ -7258,6 +7133,17 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Connected Glass"
 #~ msgstr "Vidro conectado"
 
+#~ msgid "Continuous forward"
+#~ msgstr "Avançar continuamente"
+
+#~ msgid ""
+#~ "Continuous forward movement, toggled by autoforward key.\n"
+#~ "Press the autoforward key again or the backwards movement to disable."
+#~ msgstr ""
+#~ "Movimento para frente contínuo, ativado pela tecla de avanço automático.\n"
+#~ "Pressione a tecla de avanço frontal novamente ou a tecla de movimento "
+#~ "para trás para desativar."
+
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "Controla a velocidade de afundamento em líquido."
 
@@ -7271,11 +7157,17 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr "Controla a largura dos túneis, um valor menor cria túneis maiores."
 
+#~ msgid "Creative"
+#~ msgstr "Criar"
+
 #~ msgid "Credits"
 #~ msgstr "Méritos"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Cor do cursor (R,G,B)."
+
+#~ msgid "Damage"
+#~ msgstr "Ativar dano"
 
 #~ msgid "Damage enabled"
 #~ msgstr "Dano ativado"
@@ -7338,6 +7230,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Disabled unlimited viewing range"
 #~ msgstr "Alcance de visualização ilimitado desativado"
 
+#~ msgid "Down"
+#~ msgstr "Baixo"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "Baixe um jogo, como Minetest Game, do site minetest.net"
 
@@ -7355,6 +7250,12 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Enable VBO"
 #~ msgstr "Ativar VBO"
+
+#~ msgid "Enable creative mode for all players"
+#~ msgstr "Ativar modo criativo para todos os jogadores"
+
+#~ msgid "Enable players getting damage and dying."
+#~ msgstr "Ativar dano e morte dos jogadores."
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Ativar registo de confirmação"
@@ -7376,6 +7277,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "Ativa mapeamento de tons fílmico"
 
+#~ msgid "Enables minimap."
+#~ msgstr "Ativa mini-mapa."
+
 #~ msgid ""
 #~ "Enables on the fly normalmap generation (Emboss effect).\n"
 #~ "Requires bumpmapping to be enabled."
@@ -7389,6 +7293,18 @@ msgstr "limite paralelo de cURL"
 #~ msgstr ""
 #~ "Ativa mapeamento de oclusão de paralaxe.\n"
 #~ "Requer sombreadores ativados."
+
+#~ msgid ""
+#~ "Enables the sound system.\n"
+#~ "If disabled, this completely disables all sounds everywhere and the in-"
+#~ "game\n"
+#~ "sound controls will be non-functional.\n"
+#~ "Changing this setting requires a restart."
+#~ msgstr ""
+#~ "Possibilita o sistema de som.\n"
+#~ "Se desativado, desativa completamente todos os sons em todo o lado e \n"
+#~ "os controles de som no jogo não funcionarão.\n"
+#~ "A alteração desta configuração requer um reinício."
 
 #~ msgid "Enter "
 #~ msgstr "Enter "
@@ -7422,6 +7338,13 @@ msgstr "limite paralelo de cURL"
 #~ msgstr "Tecla de correr"
 
 #~ msgid ""
+#~ "Fast movement (via the \"Aux1\" key).\n"
+#~ "This requires the \"fast\" privilege on the server."
+#~ msgstr ""
+#~ "Movimento rápido (através da tecla \"Aux1\").\n"
+#~ "Isso requer o privilegio \"fast\" no servidor."
+
+#~ msgid ""
 #~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 #~ "which PNG optimizers usually discard, often resulting in dark or\n"
 #~ "light edges to transparent textures. Apply a filter to clean that up\n"
@@ -7448,6 +7371,9 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Fly key"
 #~ msgstr "Tecla de voar"
+
+#~ msgid "Flying"
+#~ msgstr "Voar"
 
 #~ msgid "Fog toggle key"
 #~ msgstr "Tecla de ativar/desativar nevoeiro"
@@ -7496,6 +7422,10 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "HUD toggle key"
 #~ msgstr "Tecla de comutação HUD"
+
+#, fuzzy
+#~ msgid "Hide: Temporary Settings"
+#~ msgstr "Configurações Temporárias"
 
 #~ msgid "High-precision FPU"
 #~ msgstr "FPU de alta precisão"
@@ -7604,6 +7534,22 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "IPv6 support."
 #~ msgstr "Suporte IPv6."
+
+#~ msgid ""
+#~ "If enabled together with fly mode, player is able to fly through solid "
+#~ "nodes.\n"
+#~ "This requires the \"noclip\" privilege on the server."
+#~ msgstr ""
+#~ "Se ativado com o modo de vôo, o jogador é capaz de voar através de cubos "
+#~ "sólidos.\n"
+#~ "Isto requer o privilégio \"noclip\" no servidor."
+
+#~ msgid ""
+#~ "If enabled, makes move directions relative to the player's pitch when "
+#~ "flying or swimming."
+#~ msgstr ""
+#~ "Se ativado, faz com que os movimentos sejam relativos ao pitch do jogador "
+#~ "quando a voar ou a nadar."
 
 #~ msgid "In-Game"
 #~ msgstr "No jogo"
@@ -8284,6 +8230,12 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Large chat console key"
 #~ msgstr "Tecla da consola"
 
+#~ msgid "Last known version update"
+#~ msgstr "Última atualização de versão conhecida"
+
+#~ msgid "Last update check"
+#~ msgstr "Última verificação por atualizações"
+
 #~ msgid "Lava depth"
 #~ msgstr "Profundidade da lava"
 
@@ -8315,6 +8267,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Menus"
 #~ msgstr "Opções para menus"
 
+#~ msgid "Minimap"
+#~ msgstr "Mini-mapa"
+
 #~ msgid "Minimap in radar mode, Zoom x2"
 #~ msgstr "Minimapa em modo radar, zoom 2x"
 
@@ -8336,6 +8291,9 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Mipmap + Aniso. Filter"
 #~ msgstr "Mipmap + Filtro Anisotrópico"
 
+#~ msgid "Misc"
+#~ msgstr "Diversos"
+
 #~ msgid "Mute key"
 #~ msgstr "Tecla de usar"
 
@@ -8356,6 +8314,9 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "No Mipmap"
 #~ msgstr "Sem Mipmap"
+
+#~ msgid "Noclip"
+#~ msgstr "Atravessar blocos"
 
 #~ msgid "Noclip key"
 #~ msgstr "Tecla Noclip"
@@ -8430,20 +8391,46 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Caminho para onde salvar screenshots."
 
+#~ msgid ""
+#~ "Path to texture directory. All textures are first searched from here."
+#~ msgstr ""
+#~ "Caminho para o diretório de texturas. Todas as texturas são pesquisadas "
+#~ "primeiro daqui."
+
 #~ msgid "Pitch move key"
 #~ msgstr "Tecla de movimento pitch"
+
+#~ msgid "Pitch move mode"
+#~ msgstr "Modo movimento pitch"
 
 #~ msgid "Place key"
 #~ msgstr "Tecla de pôr"
 
+#~ msgid ""
+#~ "Player is able to fly without being affected by gravity.\n"
+#~ "This requires the \"fly\" privilege on the server."
+#~ msgstr ""
+#~ "O jogador é capaz de voar sem ser afetado pela gravidade.\n"
+#~ "Isso requer o privilégio \"fly\" no servidor."
+
 #~ msgid "Player name"
 #~ msgstr "Nome do Jogador"
+
+#~ msgid "Player versus player"
+#~ msgstr "Jogador contra jogador"
 
 #~ msgid "Please enter a valid integer."
 #~ msgstr "Por favor, insira um número inteiro válido."
 
 #~ msgid "Please enter a valid number."
 #~ msgstr "Por favor, insira um número válido."
+
+#~ msgid ""
+#~ "Port to connect to (UDP).\n"
+#~ "Note that the port field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Porta para conectar (UDP).\n"
+#~ "Note que o campo Porta no menu principal substitui essa configuração."
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "Tecla de alternância do Analizador"
@@ -8460,11 +8447,17 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Range select key"
 #~ msgstr "Tecla para modo de visão ilimitado"
 
+#~ msgid "Remote port"
+#~ msgstr "Porta remota"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Reiniciar mundo singleplayer"
 
 #~ msgid "Right key"
 #~ msgstr "Tecla para a direita"
+
+#~ msgid "Round minimap"
+#~ msgstr "Mini-map redondo"
 
 #~ msgid "Saturation"
 #~ msgstr "Saturação"
@@ -8497,6 +8490,9 @@ msgstr "limite paralelo de cURL"
 #~ "Distância (em pixels) da sombra da fonte de backup. Se 0, então nenhuma "
 #~ "sombra será desenhada."
 
+#~ msgid "Shape of the minimap. Enabled = round, disabled = square."
+#~ msgstr "Formato do mini-mapa. Ativado = redondo, desativado = quadrado."
+
 #~ msgid "Simple Leaves"
 #~ msgstr "Folhas simples"
 
@@ -8506,8 +8502,8 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Suaviza a rotação da câmara. 0 para desativar."
 
-#~ msgid "Sneak key"
-#~ msgstr "Tecla para agachar"
+#~ msgid "Sound"
+#~ msgstr "Som"
 
 #~ msgid "Special"
 #~ msgstr "Especial"
@@ -8524,14 +8520,31 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Strength of light curve mid-boost."
 #~ msgstr "Força do aumento médio da curva de luz."
 
+#~ msgid "Texture path"
+#~ msgstr "Caminho para a pasta de texturas"
+
 #~ msgid "Texturing:"
 #~ msgstr "Texturização:"
+
+#~ msgid "The depth of dirt or other biome filler node."
+#~ msgstr ""
+#~ "A profundidade do preenchimento de terra ou outro enchimento de bioma."
 
 #~ msgid "The value must be at least $1."
 #~ msgstr "O valor deve ser pelo menos $1."
 
 #~ msgid "The value must not be larger than $1."
 #~ msgstr "O valor deve ser menor do que $1."
+
+#, fuzzy
+#~ msgid ""
+#~ "This can be bound to a key to toggle camera smoothing when looking "
+#~ "around.\n"
+#~ "Useful for recording videos"
+#~ msgstr ""
+#~ "Suaviza o movimento da câmara quando olhando ao redor. Também chamado de "
+#~ "olhar ou suavização do rato.\n"
+#~ "Útil para gravar vídeos."
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "Esta fonte será usada para determinados idiomas."
@@ -8566,6 +8579,21 @@ msgstr "limite paralelo de cURL"
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "Não foi possível instalar um modpack como um $1"
 
+#~ msgid "Uninstall Package"
+#~ msgstr "Desinstalar o pacote"
+
+#~ msgid ""
+#~ "Unix timestamp (integer) of when the client last checked for an update\n"
+#~ "Set this value to \"disabled\" to never check for updates."
+#~ msgstr ""
+#~ "Carimbo de data/hora Unix (inteiro) de quando o cliente verificou pela "
+#~ "última vez uma atualização\n"
+#~ "Defina esse valor como \"desativado\" para nunca verificar se há "
+#~ "atualizações."
+
+#~ msgid "Up"
+#~ msgstr "Cima"
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8594,6 +8622,18 @@ msgstr "limite paralelo de cURL"
 #~ msgstr ""
 #~ "Variação da altura da colina e profundidade do lago no terreno liso da "
 #~ "Terra Flutuante."
+
+#~ msgid ""
+#~ "Version number which was last seen during an update check.\n"
+#~ "\n"
+#~ "Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
+#~ "Ex: 5.5.0 is 005005000"
+#~ msgstr ""
+#~ "Número da versão que foi visto pela última vez durante uma verificação de "
+#~ "atualização.\n"
+#~ "\n"
+#~ "Representação: MMMIIIPPP, onde M=Maior, I=Menor, P=Patch\n"
+#~ "Ex: 5.5.0 é 005005000"
 
 #~ msgid "Vertical screen synchronization."
 #~ msgstr "Sincronização vertical do ecrã."
@@ -8668,6 +8708,10 @@ msgstr "limite paralelo de cURL"
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Se dungeons ocasionalmente se projetam do terreno."
+
+#~ msgid "Whether to allow players to damage and kill each other."
+#~ msgstr ""
+#~ "Se deseja permitir aos jogadores causar dano e matar uns aos outros."
 
 #~ msgid "X"
 #~ msgstr "X"

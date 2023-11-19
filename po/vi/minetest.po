@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Vietnamese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 23:13+0200\n"
+"POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2022-08-26 10:18+0000\n"
 "Last-Translator: Văn Chí <chiv8331@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/minetest/"
@@ -133,6 +133,211 @@ msgstr "Chúng tôi chỉ hỗ trợ phiên bản giao thức $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Chúng tôi hỗ trợ các phiên bản giao thức giữa phiên bản $1 đến $2."
 
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" đã tồn tại. Bạn có muốn ghi đè nó không?"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "Phần phụ thuộc $1 và $2 sẽ được cài đặt."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"$1 đang tải xuống,\n"
+"$2 đã thêm vào hàng chờ"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "Đang tải xuống $1..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "Không tìm thấy phần phụ thuộc cần cho $1."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 sẽ được cài đặt, phần phụ thuộc $2 sẽ bị bỏ qua."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Tất cả các gói"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "Đã được cài đặt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Trở về màn hình chính"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "Trò chơi cơ bản:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_content.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+msgid "Cancel"
+msgstr "Hủy"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB không có sẵn khi Minetest được biên dịch mà không có cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+msgid "Dependencies:"
+msgstr "Phụ thuộc:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "Đang tải xuống..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "Đã xảy ra lỗi khi tải xuống $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Trò chơi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Cài đặt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "Cài đặt $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "Cài đặt phần phụ thuộc bị thiếu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Đang tải..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Mods"
+msgstr "Sửa đổi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Không nhận được gói nào"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Không có kết quả"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Không có cập nhật mới"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Not found"
+msgstr "Không tìm thấy"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Ghi đè"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "Vui lòng kiểm tra xem trò chơi này có đúng không."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Đã thêm vào hàng chờ"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Gói kết cấu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Gỡ cài đặt"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Cập nhật"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Cập nhật tất cả [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Xem thêm thông tin trên trình duyệt web của bạn"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 (Enabled)"
+msgstr "$1 (đã kích hoạt)"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 mods"
+msgstr "$1 mod"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Failed to install $1 to $2"
+msgstr "Đã xảy ra lỗi khi cài đặt $1 đến $2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
+msgstr "Cài đặt mod: Không thể tìm thấy tên thư mục phù hợp cho modpack $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr "Không thể tìm thấy một mod hoặc modpack hợp lệ"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Không thể cài đặt mod dưới dạng $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to install a $1 as a texture pack"
+msgstr "Không thể cài đặt $1 dưới dạng gói kết cấu"
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
 msgstr "(Đã kích hoạt, có lỗi)"
@@ -140,21 +345,6 @@ msgstr "(Đã kích hoạt, có lỗi)"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
 msgstr ""
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
-msgid "Cancel"
-msgstr "Hủy"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Dependencies:"
-msgstr "Phụ thuộc:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -225,163 +415,6 @@ msgstr "Thế giới:"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "đã kích hoạt"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" đã tồn tại. Bạn có muốn ghi đè nó không?"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "Phần phụ thuộc $1 và $2 sẽ được cài đặt."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid ""
-"$1 downloading,\n"
-"$2 queued"
-msgstr ""
-"$1 đang tải xuống,\n"
-"$2 đã thêm vào hàng chờ"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 downloading..."
-msgstr "Đang tải xuống $1..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "Không tìm thấy phần phụ thuộc cần cho $1."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 sẽ được cài đặt, phần phụ thuộc $2 sẽ bị bỏ qua."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "All packages"
-msgstr "Tất cả các gói"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Đã được cài đặt"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back to Main Menu"
-msgstr "Trở về màn hình chính"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Base Game:"
-msgstr "Trò chơi cơ bản:"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB không có sẵn khi Minetest được biên dịch mà không có cURL"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "Đang tải xuống..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Đã xảy ra lỗi khi tải xuống $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "Đã xảy ra lỗi khi tải xuống $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "Cài đặt: Loại tệp không được hỗ trợ hoặc tệp lưu trữ bị hỏng"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Games"
-msgstr "Trò chơi"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install"
-msgstr "Cài đặt"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install $1"
-msgstr "Cài đặt $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install missing dependencies"
-msgstr "Cài đặt phần phụ thuộc bị thiếu"
-
-#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
-#: src/client/game.cpp
-msgid "Loading..."
-msgstr "Đang tải..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Mods"
-msgstr "Sửa đổi"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Không nhận được gói nào"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Không có kết quả"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Không có cập nhật mới"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Not found"
-msgstr "Không tìm thấy"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Ghi đè"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Please check that the base game is correct."
-msgstr "Vui lòng kiểm tra xem trò chơi này có đúng không."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Đã thêm vào hàng chờ"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Gói kết cấu"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "The package $1/$2 was not found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Uninstall"
-msgstr "Gỡ cài đặt"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update"
-msgstr "Cập nhật"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Cập nhật tất cả [$1]"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Xem thêm thông tin trên trình duyệt web của bạn"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -577,7 +610,6 @@ msgstr "Bạn có chắc chắn muốn xóa \"$1\" không?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
-#: src/client/keycode.cpp
 msgid "Delete"
 msgstr "Xóa"
 
@@ -697,37 +729,6 @@ msgstr "Truy cập website"
 msgid "Settings"
 msgstr "Cài đặt"
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (đã kích hoạt)"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 mods"
-msgstr "$1 mod"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Failed to install $1 to $2"
-msgstr "Đã xảy ra lỗi khi cài đặt $1 đến $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Cài đặt mod: Không thể tìm thấy tên thư mục phù hợp cho modpack $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Không thể tìm thấy một mod hoặc modpack hợp lệ"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a $1 as a $2"
-msgstr "Không thể cài đặt mod dưới dạng $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a texture pack"
-msgstr "Không thể cài đặt $1 dưới dạng gói kết cấu"
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "Danh sách máy chủ công cộng đã bị vô hiệu"
@@ -829,19 +830,39 @@ msgid "(Use system language)"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Accessibility"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
 msgid "Back"
 msgstr "Lùi xuống"
 
-#: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
-msgid "Change keys"
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
 msgstr "Thay đổi khóa"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
+#: src/settings_translation_file.cpp
+msgid "Chat"
+msgstr "Trò chuyện"
+
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
-#: src/client/keycode.cpp
 msgid "Clear"
 msgstr "Xóa"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Controls"
+msgstr "Điều khiển"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Movement"
+msgstr "Đi nhanh"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -856,11 +877,11 @@ msgstr ""
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
 msgstr ""
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
 msgstr "Hiển thị tên kỹ thuật"
 
@@ -967,7 +988,17 @@ msgid "Browse online content"
 msgstr "Duyệt nội dung trực tuyến"
 
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Browse online content [$1]"
+msgstr "Duyệt nội dung trực tuyến"
+
+#: builtin/mainmenu/tab_content.lua
 msgid "Content"
+msgstr "Nội dung"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Content [$1]"
 msgstr "Nội dung"
 
 #: builtin/mainmenu/tab_content.lua
@@ -991,8 +1022,9 @@ msgid "Rename"
 msgstr "Đổi tên"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Uninstall Package"
-msgstr "Gỡ cài đặt gói"
+#, fuzzy
+msgid "Update available?"
+msgstr "<không có sẵn>"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1262,10 +1294,6 @@ msgstr "Cập nhật máy ảnh đã bật"
 #, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "Không thể hiển thị ranh giới khối (bị tắt bởi mod hoặc trò chơi)"
-
-#: src/client/game.cpp
-msgid "Change Keys"
-msgstr "Thay đổi khóa"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1655,17 +1683,33 @@ msgstr "Ứng dụng"
 msgid "Backspace"
 msgstr "Backspace"
 
+#. ~ Usually paired with the Pause key
+#: src/client/keycode.cpp
+msgid "Break Key"
+msgstr ""
+
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-msgid "Control"
+#, fuzzy
+msgid "Clear Key"
+msgstr "Xóa"
+
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Control Key"
 msgstr "Control"
 
 #: src/client/keycode.cpp
-msgid "Down"
-msgstr "Xuống"
+#, fuzzy
+msgid "Delete Key"
+msgstr "Xóa"
+
+#: src/client/keycode.cpp
+msgid "Down Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1711,9 +1755,10 @@ msgstr ""
 msgid "Insert"
 msgstr "Chèn"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Left"
-msgstr "Sang trái"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Left Arrow"
+msgstr "Control trái"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1737,7 +1782,8 @@ msgstr "Windows trái"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-msgid "Menu"
+#, fuzzy
+msgid "Menu Key"
 msgstr "Menu"
 
 #: src/client/keycode.cpp
@@ -1813,15 +1859,19 @@ msgid "OEM Clear"
 msgstr ""
 
 #: src/client/keycode.cpp
-msgid "Page down"
+#, fuzzy
+msgid "Page Down"
 msgstr "Page down"
 
 #: src/client/keycode.cpp
-msgid "Page up"
+#, fuzzy
+msgid "Page Up"
 msgstr "Page up"
 
+#. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-msgid "Pause"
+#, fuzzy
+msgid "Pause Key"
 msgstr "Pause"
 
 #: src/client/keycode.cpp
@@ -1834,12 +1884,14 @@ msgid "Print"
 msgstr "Print Screen"
 
 #: src/client/keycode.cpp
-msgid "Return"
+#, fuzzy
+msgid "Return Key"
 msgstr "Return"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Right"
-msgstr "Sang phải"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Right Arrow"
+msgstr "Control phải"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1871,7 +1923,8 @@ msgid "Select"
 msgstr ""
 
 #: src/client/keycode.cpp
-msgid "Shift"
+#, fuzzy
+msgid "Shift Key"
 msgstr "Shift"
 
 #: src/client/keycode.cpp
@@ -1891,8 +1944,8 @@ msgid "Tab"
 msgstr "Tab"
 
 #: src/client/keycode.cpp
-msgid "Up"
-msgstr "Lên"
+msgid "Up Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1902,8 +1955,9 @@ msgstr "Nút X 1"
 msgid "X Button 2"
 msgstr "Nút X 2"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Zoom"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Zoom Key"
 msgstr "Thu phóng"
 
 #: src/client/minimap.cpp
@@ -1986,10 +2040,6 @@ msgstr "Ranh giới khối"
 msgid "Change camera"
 msgstr "Thay đổi camera"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-msgid "Chat"
-msgstr "Trò chuyện"
-
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "Lệnh"
@@ -2043,6 +2093,10 @@ msgid "Keybindings."
 msgstr "Liên kết phím."
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Left"
+msgstr "Sang trái"
+
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
 msgstr "Lệnh cục bộ"
 
@@ -2061,6 +2115,10 @@ msgstr "Vật phẩm trước"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
 msgstr "Lựa chọn phạm vi"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Right"
+msgstr "Sang phải"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2101,6 +2159,10 @@ msgstr ""
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
 msgstr ""
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Zoom"
+msgstr "Thu phóng"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2212,6 +2274,10 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr "Nhiễu 2D tạo vị trí cho các sông, thung lũng và kênh mương."
 
 #: src/settings_translation_file.cpp
+msgid "3D"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "Mây dạng 3D"
 
@@ -2265,16 +2331,12 @@ msgid ""
 "Currently supported:\n"
 "-    none: no 3d output.\n"
 "-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    interlaced: odd/even line based polarization screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
 "Note that the interlaced mode requires shaders to be enabled."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "3d"
-msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2329,13 +2391,6 @@ msgid "Active object send range"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr ""
 
@@ -2372,14 +2427,6 @@ msgstr "Nâng cao"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names.\n"
-"Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2394,10 +2441,6 @@ msgstr "Luôn bay nhanh"
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr "Số lượng tin nhắn của một người chơi có thể gửi trong 10 giây."
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -2522,8 +2565,9 @@ msgid "Bind address"
 msgstr "Liên kết địa chỉ"
 
 #: src/settings_translation_file.cpp
-msgid "Biome API noise parameters"
-msgstr ""
+#, fuzzy
+msgid "Biome API"
+msgstr "Quần xã"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2681,10 +2725,6 @@ msgid "Chunk size"
 msgstr "Kích thước đoạn khúc"
 
 #: src/settings_translation_file.cpp
-msgid "Cinematic mode"
-msgstr "Chế độ điện ảnh"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
@@ -2711,11 +2751,11 @@ msgid "Client side modding restrictions"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
+msgid "Client-side Modding"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Client-side Modding"
+msgid "Client-side node lookup range restriction"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2731,7 +2771,8 @@ msgid "Clouds"
 msgstr "Mây"
 
 #: src/settings_translation_file.cpp
-msgid "Clouds are a client side effect."
+#, fuzzy
+msgid "Clouds are a client-side effect."
 msgstr "Mây là một hiệu ứng ở máy khách."
 
 #: src/settings_translation_file.cpp
@@ -2826,24 +2867,6 @@ msgid "ContentDB URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controls"
-msgstr "Điều khiển"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
@@ -2883,10 +2906,6 @@ msgid "Crash message"
 msgstr "Tin nhắn sự cố"
 
 #: src/settings_translation_file.cpp
-msgid "Creative"
-msgstr "Sáng tạo"
-
-#: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
 msgstr "Độ trong suốt của tâm"
 
@@ -2909,10 +2928,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "DPI"
 msgstr "DPI"
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr "Sát thương"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -2999,12 +3014,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
-"Value of 2 means taking 2x2 = 4 samples."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -3020,6 +3029,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the size of the sampling grid for FSAA and SSAA antialiasing "
+"methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3113,10 +3129,6 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Tên miền của máy chủ, để hiển thị trong danh sách máy chủ."
 
 #: src/settings_translation_file.cpp
-msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "Nhấn đúp nút nhảy để bay"
 
@@ -3199,10 +3211,6 @@ msgid "Enable console window"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr "Kích hoạt chế độ sáng tạo cho tất cả người chơi"
-
-#: src/settings_translation_file.cpp
 msgid "Enable joysticks"
 msgstr "Kích hoạt joystick"
 
@@ -3221,10 +3229,6 @@ msgstr "Kích hoạt bảo mật mod"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr "Cho phép người chơi nhận sát thương và chết."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3299,29 +3303,13 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr "Kích hoạt minimap."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-"Kích hoạt hệ thống âm thanh.\n"
-"Nếu vô hiệu hóa, điều này sẽ tắt hoàn toàn tất cả âm thanh trong trò chơi\n"
-"điều khiển âm thanh sẽ không có tác dụng.\n"
-"Thay đổi cài đặt này sẽ cần khởi động lại."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Engine profiler"
+msgid "Engine Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3372,16 +3360,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr "Đi nhanh"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3467,10 +3445,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr "Bay"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -3601,6 +3575,10 @@ msgid "Fullscreen mode."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "GUI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "GUI scaling"
 msgstr ""
 
@@ -3613,17 +3591,9 @@ msgid "GUI scaling filter txr2img"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "GUIs"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Gamepads"
 msgstr "Trò chơi"
-
-#: src/settings_translation_file.cpp
-msgid "General"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3720,11 +3690,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Hide: Temporary Settings"
-msgstr "Cài đặt"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -3841,22 +3806,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -3886,14 +3835,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
+"If enabled, players cannot join without a password or change theirs to an "
+"empty password."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled, players cannot join without a password or change theirs to an "
-"empty password."
+"If enabled, the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client by 50-80%. Clients will no longer receive most\n"
+"invisible blocks, so that the utility of noclip mode is reduced."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3922,12 +3873,6 @@ msgid ""
 "this setting when it is opened, the file is moved to debug.txt.1,\n"
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If this is set to true, the user will never (again) be shown the\n"
-"\"reinstall Minetest Game\" notification."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4139,14 +4084,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Last known version update"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Last update check"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4598,12 +4535,13 @@ msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
-msgstr ""
+#, fuzzy
+msgid "Maximum size of the outgoing chat queue"
+msgstr "Xóa hàng đợi trò chuyện"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum size of the out chat queue.\n"
+"Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 
@@ -4644,10 +4582,6 @@ msgid "Minimal level of logging to be written to chat."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr ""
 
@@ -4664,7 +4598,7 @@ msgid "Mipmapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Misc"
+msgid "Miscellaneous"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4768,10 +4702,6 @@ msgid "New users need to input this password."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Node and Entity Highlighting"
 msgstr "Đánh dấu node"
@@ -4812,6 +4742,11 @@ msgid ""
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Number of messages a player may send per 10 seconds."
+msgstr "Số lượng tin nhắn của một người chơi có thể gửi trong 10 giây."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4868,10 +4803,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
@@ -4900,17 +4831,7 @@ msgid "Physics"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Place repetition interval"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4918,17 +4839,7 @@ msgid "Player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Player versus player"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Poisson filtering"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5010,10 +4921,6 @@ msgid "Remote media"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Remote port"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
@@ -5091,10 +4998,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5276,7 +5179,7 @@ msgid "Server port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
+msgid "Server-side occlusion culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5415,10 +5318,6 @@ msgid "Shadow strength gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Show debug info"
 msgstr ""
 
@@ -5452,7 +5351,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
-"WARNING!: There is no benefit, and there are several dangers, in\n"
+"WARNING: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
 "Reducing this value increases cave and dungeon density.\n"
 "Altering this value is for special usage, leaving it unchanged is\n"
@@ -5523,10 +5422,6 @@ msgid "Soft shadow radius"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
@@ -5547,7 +5442,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Spread a complete update of shadow map over given amount of frames.\n"
+"Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
@@ -5561,7 +5456,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
+msgid "Static spawn point"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5602,7 +5497,7 @@ msgid ""
 "to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
 "upper tapering).\n"
 "***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
-"When enabling water placement the floatlands must be configured and tested\n"
+"When enabling water placement, floatlands must be configured and tested\n"
 "to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
 "required value depending on 'mgv7_np_floatland'), to avoid\n"
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
@@ -5656,10 +5551,6 @@ msgid "Terrain persistence noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
@@ -5695,12 +5586,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The depth of dirt or other biome filler node."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
+"The file path relative to your world path in which profiles will be saved to."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5794,18 +5681,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
-"enabled. Also the vertical distance over which humidity drops by 10 if\n"
+"enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"This can be bound to a key to toggle camera smoothing when looking around.\n"
-"Useful for recording videos"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5921,12 +5802,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Unix timestamp (integer) of when the client last checked for an update\n"
-"Set this value to \"disabled\" to never check for updates."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr ""
 
@@ -5975,7 +5850,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
-"especially when using a high resolution texture pack.\n"
+"especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
 
@@ -6062,14 +5937,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Version number which was last seen during an update check.\n"
-"\n"
-"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
-"Ex: 5.5.0 is 005005000"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -6207,10 +6074,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr "Có cho phép người chơi sát thương và giết lẫn nhau hay không."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6352,6 +6215,9 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "3D Clouds"
 #~ msgstr "Mây dạng 3D"
 
+#~ msgid "3d"
+#~ msgstr "3D"
+
 #~ msgid "4x"
 #~ msgstr "4x"
 
@@ -6382,11 +6248,18 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Camera update toggle key"
 #~ msgstr "Nút chuyển đổi cập nhật máy ảnh"
 
+#, fuzzy
+#~ msgid "Change keys"
+#~ msgstr "Thay đổi khóa"
+
 #~ msgid "Chat key"
 #~ msgstr "Phím trò chuyện"
 
 #~ msgid "Chat toggle key"
 #~ msgstr "Phím chuyển đổi trò chuyện"
+
+#~ msgid "Cinematic mode"
+#~ msgstr "Chế độ điện ảnh"
 
 #~ msgid "Cinematic mode key"
 #~ msgstr "Phím chế độ điện ảnh"
@@ -6402,6 +6275,12 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 
 #~ msgid "Connected Glass"
 #~ msgstr "Kính kết nối với nhau"
+
+#~ msgid "Creative"
+#~ msgstr "Sáng tạo"
+
+#~ msgid "Damage"
+#~ msgstr "Sát thương"
 
 #~ msgid "Debug info toggle key"
 #~ msgstr "Phím chuyển đổi thông tin gỡ lỗi"
@@ -6425,6 +6304,9 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Disabled unlimited viewing range"
 #~ msgstr "Đã tắt phạm vi nhìn không giới hạn"
 
+#~ msgid "Down"
+#~ msgstr "Xuống"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr ""
 #~ "Tải xuống một trò chơi, chẳng hạn như trò chơi Minetest, từ minetest.net"
@@ -6438,8 +6320,30 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Dynamic shadows:"
 #~ msgstr "Bóng kiểu động lực học:"
 
+#~ msgid "Enable creative mode for all players"
+#~ msgstr "Kích hoạt chế độ sáng tạo cho tất cả người chơi"
+
+#~ msgid "Enable players getting damage and dying."
+#~ msgstr "Cho phép người chơi nhận sát thương và chết."
+
 #~ msgid "Enabled"
 #~ msgstr "Đã kích hoạt"
+
+#~ msgid "Enables minimap."
+#~ msgstr "Kích hoạt minimap."
+
+#~ msgid ""
+#~ "Enables the sound system.\n"
+#~ "If disabled, this completely disables all sounds everywhere and the in-"
+#~ "game\n"
+#~ "sound controls will be non-functional.\n"
+#~ "Changing this setting requires a restart."
+#~ msgstr ""
+#~ "Kích hoạt hệ thống âm thanh.\n"
+#~ "Nếu vô hiệu hóa, điều này sẽ tắt hoàn toàn tất cả âm thanh trong trò "
+#~ "chơi\n"
+#~ "điều khiển âm thanh sẽ không có tác dụng.\n"
+#~ "Thay đổi cài đặt này sẽ cần khởi động lại."
 
 #~ msgid "FSAA"
 #~ msgstr "FSAA"
@@ -6447,8 +6351,15 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Fancy Leaves"
 #~ msgstr "Lá đẹp"
 
+#~ msgid "Flying"
+#~ msgstr "Bay"
+
 #~ msgid "Game"
 #~ msgstr "Trò chơi"
+
+#, fuzzy
+#~ msgid "Hide: Temporary Settings"
+#~ msgstr "Cài đặt"
 
 #~ msgid "Inc. volume key"
 #~ msgstr "Phím tăng âm lượng"
@@ -6536,6 +6447,12 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "Không thể cài đặt modpack dưới dạng $1"
 
+#~ msgid "Uninstall Package"
+#~ msgstr "Gỡ cài đặt gói"
+
+#~ msgid "Up"
+#~ msgstr "Lên"
+
 #, c-format
 #~ msgid "Viewing range is at maximum: %d"
 #~ msgstr "Phạm vi nhìn đang ở mức tối đa: %d"
@@ -6548,6 +6465,9 @@ msgstr "Gặp giới hạn số lượng tệp tải xuống trong cURL"
 
 #~ msgid "Waving Plants"
 #~ msgstr "Thực vật đung đưa"
+
+#~ msgid "Whether to allow players to damage and kill each other."
+#~ msgstr "Có cho phép người chơi sát thương và giết lẫn nhau hay không."
 
 #~ msgid "X"
 #~ msgstr "X"
