@@ -129,7 +129,7 @@ for i=1, #fractal do
 		b = floor(abs(1 - fractal[i]) * 255),
 		a = 255,
 	}
-	data_ck[i] = checker[i] > 0 and "#F80" or "#000"
+	data_ck[i] = checker[i] > 0 and "#888" or "#000"
 end
 
 local textures_path = minetest.get_modpath( minetest.get_current_modname() ) .. "/textures/"
