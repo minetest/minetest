@@ -506,7 +506,8 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	return dst_mesh;
 }
 
-void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic) {
+void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinear, bool anisotropic)
+{
 	if (trilinear)
 		tex.MinFilter = video::ETMINF_LINEAR_MIPMAP_LINEAR;
 	else if (bilinear)
@@ -514,9 +515,7 @@ void setMaterialFilters(video::SMaterialLayer &tex, bool bilinear, bool trilinea
 	else
 		tex.MinFilter = video::ETMINF_NEAREST_MIPMAP_NEAREST;
 
-	// "We don't want blurriness after all." ~ Desour, #13108
-	// (because of pixel art)
-	tex.MagFilter = video::ETMAGF_NEAREST;
+	tex.MagFilter = (trilinear || bilinear) ? video::ETMAGF_LINEAR : video::ETMAGF_NEAREST;
 
 	tex.AnisotropicFilter = anisotropic ? 0xFF : 0;
 }
