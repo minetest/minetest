@@ -433,8 +433,10 @@ private:
 	// Maps image file names to loaded palettes.
 	std::unordered_map<std::string, Palette> m_palettes;
 
-	// Cached settings needed for making textures for meshes
-	bool m_mesh_texture_prefilter;
+	// Cached settings needed for making textures from meshes
+	bool m_setting_mipmap;
+	bool m_setting_trilinear_filter;
+	bool m_setting_bilinear_filter;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -453,9 +455,9 @@ TextureSource::TextureSource()
 	// Cache some settings
 	// Note: Since this is only done once, the game must be restarted
 	// for these settings to take effect
-	m_mesh_texture_prefilter =
-			g_settings->getBool("mip_map") || g_settings->getBool("bilinear_filter") ||
-			g_settings->getBool("trilinear_filter") || g_settings->getBool("anisotropic_filter");
+	m_setting_mipmap = g_settings->getBool("mip_map");
+	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
+	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
 }
 
 TextureSource::~TextureSource()
@@ -700,7 +702,11 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	// Avoid duplicating texture if it won't actually change
-	if (m_mesh_texture_prefilter)
+	static thread_local bool filter_needed =
+		m_setting_mipmap ||
+		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
+		g_settings->getS32("texture_min_size") > 1);
+	if (filter_needed)
 		return getTexture(name + "^[applyfiltersformesh", id);
 	return getTexture(name, id);
 }
@@ -1735,8 +1741,46 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 
 			// Apply the "clean transparent" filter, if needed
-			if (m_mesh_texture_prefilter)
+			if (m_setting_mipmap)
 				imageCleanTransparent(baseimg, 127);
+
+			/* Upscale textures to user's requested minimum size.  This is a trick to make
+			 * filters look as good on low-res textures as on high-res ones, by making
+			 * low-res textures BECOME high-res ones.  This is helpful for worlds that
+			 * mix high- and low-res textures, or for mods with least-common-denominator
+			 * textures that don't have the resources to offer high-res alternatives.
+			 */
+			const bool filter = m_setting_trilinear_filter || m_setting_bilinear_filter;
+			const s32 scaleto = filter ? g_settings->getU16("texture_min_size") : 1;
+			if (scaleto > 1) {
+				const core::dimension2d<u32> dim = baseimg->getDimension();
+
+				/* Calculate scaling needed to make the shortest texture dimension
+				 * equal to the target minimum.  If e.g. this is a vertical frames
+				 * animation, the short dimension will be the real size.
+				 */
+				if (dim.Width == 0 || dim.Height == 0) {
+					errorstream << "generateImagePart(): Illegal 0 dimension "
+						<< "for part_of_name=\""<< part_of_name
+						<< "\", cancelling." << std::endl;
+					return false;
+				}
+				u32 xscale = scaleto / dim.Width;
+				u32 yscale = scaleto / dim.Height;
+				const s32 scale = std::max(xscale, yscale);
+
+				// Never downscale; only scale up by 2x or more.
+				if (scale > 1) {
+					u32 w = scale * dim.Width;
+					u32 h = scale * dim.Height;
+					const core::dimension2d<u32> newdim(w, h);
+					video::IImage *newimg = driver->createImage(
+							baseimg->getColorFormat(), newdim);
+					baseimg->copyToScaling(newimg);
+					baseimg->drop();
+					baseimg = newimg;
+				}
+			}
 		}
 		/*
 			[resize:WxH
