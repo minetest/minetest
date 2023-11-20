@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <map>
 #include <vector>
-#include "util/pointedthing.h"
+#include "util/pointingabilities.h"
 
 struct ObjectProperties
 {

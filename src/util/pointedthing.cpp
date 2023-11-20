@@ -23,36 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
-std::optional<PointabilityType> matchPointingAbilities(
-	const PointingAbilities* pointabilities,
-	const ItemGroupList &groups)
-{
-	if (pointabilities) {
-		bool blocking = false;
-		bool not_pontable = false;
-		for (auto const &ability : *pointabilities) {
-			if (itemgroup_get(groups, ability.first) > 0) {
-				switch(ability.second) {
-					case POINTABLE:
-						return POINTABLE;
-						break;
-					case POINTABLE_NOT:
-						not_pontable = true;
-						break;
-					default:
-						blocking = true;
-						break;
-				}
-			}
-		}
-		if (not_pontable)
-			return POINTABLE_NOT;
-		if (blocking)
-			return POINTABLE_BLOCKING;
-	}
-	return {};
-}
-
 PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
 	const v3s16 &real_under, const v3f &point, const v3f &normal,
 	u16 box_id, f32 distSq, PointabilityType pointab):

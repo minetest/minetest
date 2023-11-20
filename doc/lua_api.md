@@ -8749,15 +8749,24 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- even those for which `pointable = false`
     
     pointabilities = {
-		["leaves"] = false,
-		["crumbly"] = "blocking"
-	}
-    -- A list of groups overriding the 'pointable' property while holding the item.
-    -- The priority order is:
+		nodes = {
+			["default:stone"] = "blocking", 
+			["group:leaves"] = false,
+		},
+		objects = {
+			["modname:entityname"] = true,
+			["group:ghosty"] = true, -- (an armor group)
+		}
+    },
+    -- Contains lists to override the 'pointable' property of pointed nodes and objects.
+    -- The index can be a node/entity name or a group with the prefix "group:".
+    -- (For objects 'armor_groups' are used.)
+    -- If multiple fields fit, the following priority order is applied:
+    --  value of matching node/entity name
 	--	'true' for any group 
 	--	'false' for any group
 	--	'"blocking"' for any group
-	--	'liquids_pointable' if it is a liquid
+	--	'liquids_pointable' if it is a liquid node
 	--	'pointable' property of the node or object
 
     light_source = 0,

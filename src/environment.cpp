@@ -105,14 +105,16 @@ bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 	Check how a node can be pointed at
 */
 inline static PointabilityType isPointableNode(const MapNode &n,
-	const NodeDefManager *nodedef , bool liquids_pointable,
+	const NodeDefManager *nodedef, bool liquids_pointable,
 	const PointingAbilities *pointabilities)
 {
 	const ContentFeatures &features = nodedef->get(n);
-	std::optional<PointabilityType> match =
-			matchPointingAbilities(pointabilities, features.groups);
-	if (match)
-		return match.value();
+	if (pointabilities) {
+		std::optional<PointabilityType> match =
+				pointabilities->matchNode(features.name, features.groups);
+		if (match)
+			return match.value();
+	}
 	
 	if (features.isLiquid() && liquids_pointable)
 		return POINTABLE;

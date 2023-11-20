@@ -23,25 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include <iostream>
 #include <string>
-#include <unordered_map>
-#include "itemgroup.h"
-#include <optional>
-
-enum PointabilityType
-{
-	POINTABLE,
-	POINTABLE_NOT, // Can be pointed through.
-	POINTABLE_BLOCKING,
-};
-
-// A list of group names
-typedef std::unordered_map<std::string, PointabilityType> PointingAbilities;
-
-// Returns pointabilityType for items and objects from PointingAbilities
-std::optional<PointabilityType> matchPointingAbilities(
-	const PointingAbilities* pointabilities,
-	const ItemGroupList &groups
-);
+#include "pointingabilities.h"
 
 enum PointedThingType :u8
 {

@@ -840,7 +840,8 @@ protected:
 	 * @param[in]  shootline         the shootline, starting from
 	 * the camera position. This also gives the maximal distance
 	 * of the search.
-	 * @param[in]  liquids_pointable if false, liquids are ignored 
+	 * @param[in]  liquids_pointable if false, liquids are ignored
+	 * @param[in]  pointabilities    item specific pointable overriding
 	 * @param[in]  look_for_object   if false, objects are ignored
 	 * @param[in]  camera_offset     offset of the camera
 	 * @param[out] selected_object   the selected object or

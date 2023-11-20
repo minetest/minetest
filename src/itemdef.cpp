@@ -243,22 +243,17 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
 		os << *place_param2;
-<<<<<<< HEAD
 
 	writeU8(os, wallmounted_rotate_vertical);
 	touch_interaction.serialize(os);
-=======
 
+	std::string pointabilities_s;
 	if (pointabilities) {
-		writeU16(os, pointabilities->size());
-		for (const auto &pointability : *pointabilities) {
-			os << serializeString16(pointability.first);
-			writeU8(os, pointability.second);
-		}
-	} else {
-		writeU16(os, 0);
+		std::ostringstream tmp_os(std::ios::binary);
+		pointabilities->serialize(tmp_os);
+		pointabilities_s = tmp_os.str();
 	}
->>>>>>> 631f34126 (add tool specific pointabilities for object and node groups)
+	os << serializeString16(pointabilities_s);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -331,6 +326,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		if (readU8(is)) // protocol_version >= 43
 			place_param2 = readU8(is);
+<<<<<<< HEAD
 
 		wallmounted_rotate_vertical = readU8(is); // 0 if missing
 		touch_interaction.deSerialize(is);
@@ -342,6 +338,12 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 				std::string name = deSerializeString16(is);
 				(*pointabilities)[name] = (enum PointabilityType)readU8(is);
 			}
+
+		std::string pointabilities_s = deSerializeString16(is);
+		if (!pointabilities_s.empty()) {
+			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
+			pointabilities = new PointingAbilities();
+			pointabilities->deSerialize(tmp_is);
 		}
 	} catch(SerializationError &e) {};
 }

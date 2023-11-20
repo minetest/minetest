@@ -517,11 +517,16 @@ void ClientEnvironment::getSelectedActiveObjects(
 			current_raw_normal = current_normal;
 		}
 		if (collision) {
+			PointabilityType pointable;
+			if (pointabilities) {
+				pointable = pointabilities->matchObject(gcao->getName(),
+							gcao->getGroups()).value_or(gcao->getProperties().pointable);
+			} else {
+				pointable = gcao->getProperties().pointable;
+			}
 			current_intersection += obj->getPosition();
 			objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ(),
-				matchPointingAbilities(pointabilities, gcao->getGroups()).value_or(
-						gcao->getProperties().pointable));
+				(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
 		}
 	}
 }

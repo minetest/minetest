@@ -1635,20 +1635,48 @@ PointingAbilities read_pointabilities(lua_State *L, int index)
 {
 	PointingAbilities pointabilities;
 	
-	if (lua_isnil(L, index))
-		return pointabilities;
-	luaL_checktype(L, index, LUA_TTABLE);
-
-	lua_pushnil(L);
-	if (index < 0)
-		index -= 1;
-	while (lua_next(L, index) != 0) {
-		// key at index -2 and value at index -1
-		std::string name = luaL_checkstring(L, -2);
-		pointabilities[name] = read_pointability(L, -1);
-		// removes value, keeps key for next iteration
-		lua_pop(L, 1);
+	lua_getfield(L, index, "nodes");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+			
+			// handle groups
+			if(name.find("group:") != std::string::npos) {
+				pointabilities.node_groups[name.substr(6)] = read_pointability(L, -1);
+			} else {
+				pointabilities.nodes[name] = read_pointability(L, -1);
+			}
+			
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
 	}
+	lua_pop(L, 1);
+	
+	lua_getfield(L, index, "objects");
+	if(lua_istable(L, -1)){
+		int ti = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, ti) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = luaL_checkstring(L, -2);
+			
+			// handle groups
+			if(name.find("group:") != std::string::npos) {
+				pointabilities.object_groups[name.substr(6)] = read_pointability(L, -1);
+			} else {
+				pointabilities.objects[name] = read_pointability(L, -1);
+			}
+			
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+	
 	return pointabilities;
 }
 
@@ -1674,10 +1702,35 @@ void push_pointability(lua_State *L, const PointabilityType& pointable)
 /******************************************************************************/
 void push_pointabilities(lua_State *L, const PointingAbilities &pointabilities)
 {
-	lua_createtable(L, 0, pointabilities.size());
-	for (const auto &ability : pointabilities) {
-		push_pointability(L, ability.second);
-		lua_setfield(L, -2, ability.first.c_str());
+	// pointabilities table
+	lua_newtable(L);
+	
+	if (!pointabilities.nodes.empty() || !pointabilities.node_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.nodes) {
+			push_pointability(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.node_groups) {
+			push_pointability(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "nodes");
+	}
+	
+	if (!pointabilities.objects.empty() || !pointabilities.object_groups.empty()) {
+		// Create and fill table
+		lua_newtable(L);
+		for (const auto &entry : pointabilities.objects) {
+			push_pointability(L, entry.second);
+			lua_setfield(L, -2, entry.first.c_str());
+		}
+		for (const auto &entry : pointabilities.object_groups) {
+			push_pointability(L, entry.second);
+			lua_setfield(L, -2, ("group:" + entry.first).c_str());
+		}
+		lua_setfield(L, -2, "objects");
 	}
 }
 

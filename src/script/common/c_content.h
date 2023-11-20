@@ -39,6 +39,7 @@ extern "C" {
 #include "util/string.h"
 #include "itemgroup.h"
 #include "itemdef.h"
+#include "util/pointingabilities.h"
 #include "c_types.h"
 // We do an explicit path include because by default c_content.h include src/client/hud.h
 // prior to the src/hud.h, which is not good on server only build

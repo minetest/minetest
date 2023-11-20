@@ -173,6 +173,8 @@ public:
 	bool isImmortal() const;
 
 	inline const ObjectProperties &getProperties() const { return m_prop; }
+	
+	inline const std::string &getName() const { return m_name; }
 
 	scene::ISceneNode *getSceneNode() const override;
 

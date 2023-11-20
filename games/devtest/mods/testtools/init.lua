@@ -1003,12 +1003,18 @@ end)
 
 minetest.register_tool("testtools:blocked_pointing_staff", {
 	description = S("Blocked Pointing Staff").."\n"..
-			S("Can point the Blocking Pointable Node/Object and"..
-			"can't point through the Pointable Node/Object."),
+			S("Can point the Blocking Pointable Node/Object and "..
+			"the Pointable Node/Object is point blocking."),
 	inventory_image = "testtools_blocked_pointing_staff.png",
 	pointabilities = {
-		["blocking_pointable_test"] = true,
-		["pointable_test"] = "blocking"
+		nodes = {
+			["testnodes:blocking_pointable"] = true,
+			["group:pointable_test"] = "blocking"
+		},
+		objects = {
+			["group:blocking_pointable_test"] = true,
+			["group:pointable_test"] = "blocking"
+		}
 	}
 })
 
@@ -1018,8 +1024,13 @@ minetest.register_tool("testtools:ultimate_pointing_staff", {
 	inventory_image = "testtools_ultimate_pointing_staff.png",
 	liquids_pointable = true,
 	pointabilities = {
-		["blocking_pointable_test"] = true,
-		["pointable_test"] = true,
-		["not_pointable_test"] = true
+		nodes = {
+			["group:blocking_pointable_test"] = true,
+			["group:pointable_test"] = true,
+			["testnodes:not_pointable"] = true
+		},
+		objects = {
+			["testentities:pointable"] = true
+		}
 	}
 })

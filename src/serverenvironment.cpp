@@ -1864,12 +1864,19 @@ void ServerEnvironment::getSelectedActiveObjects(
 			current_raw_normal = current_normal;
 		}
 		if (collision) {
+			PointabilityType pointable;
+			LuaEntitySAO* lsao = dynamic_cast<LuaEntitySAO*>(obj);
+			if (lsao && pointabilities) {
+				pointable = pointabilities->matchObject(lsao->getName(),
+						usao->getArmorGroups()).value_or(props->pointable);
+			} else {
+				pointable = props->pointable;
+			}
+			
 			current_intersection += pos;
 			objects.emplace_back(
 				(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ(),
-				matchPointingAbilities(pointabilities, usao->getArmorGroups()).value_or(
-						props->pointable));
+				(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
 		}
 	}
 }
