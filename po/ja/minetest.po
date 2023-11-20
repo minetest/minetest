@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-10-30 09:01+0000\n"
+"PO-Revision-Date: 2023-11-22 00:17+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -280,9 +280,8 @@ msgid "Texture packs"
 msgstr "テクスチャパック"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "パッケージ $1/$2 が見つかりませんでした。"
+msgstr "パッケージ $1 が見つかりませんでした。"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -823,7 +822,7 @@ msgstr "(システム言語を使用)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "アクセシビリティ"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -851,9 +850,8 @@ msgid "General"
 msgstr "一般"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "高速移動モード"
+msgstr "動き"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -974,21 +972,19 @@ msgstr "デバッグログを共有"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Browse online content"
-msgstr "オンラインコンテンツ参照"
+msgstr "オンラインコンテンツを見る"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "オンラインコンテンツ参照"
+msgstr "オンラインコンテンツを見る [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "コンテンツ"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "コンテンツ"
+msgstr "コンテンツ [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1011,9 +1007,8 @@ msgid "Rename"
 msgstr "名前を変更"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<利用できません>"
+msgstr "更新可能？"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1663,32 +1658,28 @@ msgstr "Back Space"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
-msgstr "スニークキー"
+msgstr "Breakキー"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Clear"
+msgstr "Clearキー"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Ctrl"
+msgstr "Controlキー"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "削除"
+msgstr "Deleteキー"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "下矢印"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1735,9 +1726,8 @@ msgid "Insert"
 msgstr "Insert"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "左Ctrl"
+msgstr "左矢印"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1761,9 +1751,8 @@ msgstr "左Windows"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Alt"
+msgstr "Menuキー"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1838,20 +1827,17 @@ msgid "OEM Clear"
 msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "Page Down"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Page Up"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause"
+msgstr "Pauseキー"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1863,14 +1849,12 @@ msgid "Print"
 msgstr "Print"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Enter"
+msgstr "Returnキー"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "右Ctrl"
+msgstr "右矢印"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1902,9 +1886,8 @@ msgid "Select"
 msgstr "Select"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Shift"
+msgstr "Shiftキー"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -1924,7 +1907,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "上矢印"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1935,9 +1918,8 @@ msgid "X Button 2"
 msgstr "Xボタン2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "ズーム"
+msgstr "ズームキー"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2269,7 +2251,7 @@ msgstr "川の谷と水路を特定する2Dノイズ。"
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2324,7 +2306,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "マップチャンクごとのダンジョンの数を決定する3Dノイズ。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2343,7 +2324,7 @@ msgstr ""
 "-    interlaced: 奇数/偶数のラインをベースで偏光式スクリーンに対応。\n"
 "-    topbottom: 画面を上下で分割します。\n"
 "-    sidebyside: 画面を左右で分割します。\n"
-"-    crossview: 交差法による3Dです。\n"
+"-    crossview: クロスアイ 3D\n"
 "interlacedはシェーダーが有効である必要があることに注意してください。"
 
 #: src/settings_translation_file.cpp
@@ -2587,9 +2568,8 @@ msgid "Bind address"
 msgstr "バインドアドレス"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "バイオーム"
+msgstr "バイオームAPI"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2780,9 +2760,8 @@ msgid "Client-side Modding"
 msgstr "クライアント側の改造"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
-msgstr "クライアント側のノード参照範囲の制限"
+msgstr "クライアント側ノード参照範囲の制限"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2797,9 +2776,8 @@ msgid "Clouds"
 msgstr "雲"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
-msgstr "雲はクライアント側で描画されます。"
+msgstr "雲はクライアント側の効果です。"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -3094,7 +3072,6 @@ msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "最大プレイヤー転送距離をブロック数で定義します(0 = 無制限)。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Defines the size of the sampling grid for FSAA and SSAA antialiasing "
 "methods.\n"
@@ -3102,7 +3079,7 @@ msgid ""
 msgstr ""
 "FSAAおよびSSAAのアンチエイリアシング方式のためのサンプリンググリッドのサイズ"
 "を定義します。\n"
-"値 2 は、2x2 = 4 個のサンプルを取得することを意味します。"
+"値 2 は 2x2 = 4 個のサンプルを取得することを意味します。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3404,7 +3381,6 @@ msgstr ""
 "にします。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
 msgstr "エンジンの観測記録"
 
@@ -3700,7 +3676,6 @@ msgid "Fullscreen mode."
 msgstr "全画面表示モードです。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
 msgstr "GUI"
 
@@ -4010,7 +3985,6 @@ msgstr ""
 "ることはできません。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -4019,8 +3993,8 @@ msgid ""
 msgstr ""
 "有効にすると、サーバーはプレーヤーの目の位置に基づいてマップブロック\n"
 "オクルージョンカリングを実行します。これによりクライアントに送信される\n"
-"ブロック数を50〜80％減らすことができます。すり抜けモードの有用性が\n"
-"減るように、クライアントはもはや目に見えないものを受け取りません。"
+"ブロック数を50〜80％減らすことができます。クライアントはほとんどの\n"
+"非表示ブロックを受信しなくなるため、すり抜けモードの有用性は低下します。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4815,18 +4789,16 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "クライアントあたりの最大同時ブロック送信数"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
 msgstr "アウトチャットキューの最大サイズ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
-"アウトチャットキューの最大サイズ。\n"
-"キューを無効にするには 0、サイズを無制限にするには -1 を指定します。"
+"アウトチャットキューの最大サイズです。\n"
+"キューを無効にするには 0、サイズを無制限にするには -1 です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4886,7 +4858,7 @@ msgstr "ミップマッピング"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "その他"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5055,9 +5027,8 @@ msgstr ""
 "トレードオフです (大体 4096 = 100MB)。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
-msgstr "プレイヤーが10秒間に送信できるメッセージの量。"
+msgstr "プレイヤーが10秒間に送信できるメッセージの数です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5576,7 +5547,6 @@ msgid "Server port"
 msgstr "サーバーポート"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server-side occlusion culling"
 msgstr "サーバー側のオクルージョンカリング"
 
@@ -5781,7 +5751,6 @@ msgstr ""
 "(または GPU を搭載していない) システムでは値を小さくすると効果的です。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5792,10 +5761,11 @@ msgid ""
 msgstr ""
 "マップジェネレータによって生成されたマップチャンクのサイズで、\n"
 "マップブロック (16ノード) で表されます。\n"
-"警告！: この値を5より大きくすることには利点がなく、いくつかの危険が\n"
-"あります。この値を減らすと洞窟とダンジョンの密度が上がります。\n"
-"この値を変更するのは特別な用途のためです。変更しないでおくことを\n"
-"お勧めします。"
+"警告: この値を5より大きくすることには利点がなく、いくつかの\n"
+"危険があります。\n"
+"この値を減らすと洞窟とダンジョンの密度が上がります。\n"
+"この値を変更するのは特別な用途のためです。変更しないで\n"
+"おくことをお勧めします。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5890,7 +5860,6 @@ msgstr ""
 "明示的に設定する場合があることに注意してください。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
@@ -5898,8 +5867,8 @@ msgid ""
 "Minimum value: 1; maximum value: 16"
 msgstr ""
 "影の描画の完全な更新を指定されたフレーム数に広げます。\n"
-"値を大きくすると影が遅延することがあり、値を小さくすると\n"
-"より多くのリソースを消費します。\n"
+"値を大きくすると影の描画が遅延することがあり、\n"
+"値を小さくするとより多くのリソースを消費します。\n"
 "最小値: 1、最大値: 16"
 
 #: src/settings_translation_file.cpp
@@ -5913,7 +5882,6 @@ msgstr ""
 "光度曲線ブーストガウス分布の標準偏差。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
 msgstr "静的なスポーンポイント"
 
@@ -5952,7 +5920,6 @@ msgid "Strip color codes"
 msgstr "色コードを取り除く"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
@@ -5965,14 +5932,14 @@ msgid ""
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
 "world surface below."
 msgstr ""
-"密な浮遊大陸層に配置されるオプションの水の表面レベル。\n"
+"浮遊大陸層に配置される任意の水の表面レベルです。\n"
 "水は規定で無効になっており、この値が 'mgv7_floatland_ymax' - "
 "'mgv7_floatland_taper'\n"
 "（上部の先細り開始点）より上に設定されている場合にのみ配置されます。\n"
-"***警告、サーバーのパフォーマンスへの潜在的な危険性***：\n"
-"水の配置を有効にする場合、浮遊大陸を密な層にするために\n"
-"'mgv7_floatland_density' を2.0 (または 'mgv7_np_floatland' に応じて他の必要な"
-"値) に\n"
+"***警告、ワールドとサーバーのパフォーマンスへの潜在的な危険性***：\n"
+"水の配置を有効にしている場合、浮遊大陸を個体層にするために\n"
+"'mgv7_floatland_density' を2.0 (または 'mgv7_np_floatland' "
+"に応じて他の必要な値) に\n"
 "設定して、サーバーに集中する極端な水の流れを避け、下の世界表面への大規模な\n"
 "洪水を避けるようにテストする必要があります。"
 
@@ -6076,7 +6043,6 @@ msgstr ""
 "`/profiler save [format]`がファイル形式なしで呼び出されたときに使われます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr "観測記録が保存されるワールドパスに対する相対的なファイルパスです。"
@@ -6195,14 +6161,14 @@ msgid "The type of joystick"
 msgstr "ジョイスティックの種類"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
 "enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
-"'altitude_chill' が有効な場合、温度が20低下する垂直距離。同様に\n"
-"'altitude_dry' が有効な場合、湿度が20低下する垂直距離。"
+"'altitude_chill' が有効な場合に温度が20低下する垂直距離です。\n"
+"同様に\n"
+"'altitude_dry' が有効な場合に湿度が10低下する垂直距離です。"
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
@@ -6386,7 +6352,6 @@ msgstr ""
 "有効にすると、十字カーソルが表示されオブジェクトの選択に使用されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
