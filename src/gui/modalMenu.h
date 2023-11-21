@@ -77,6 +77,7 @@ protected:
 	std::string m_jni_field_name;
 #endif
 #ifdef HAVE_TOUCHSCREENGUI
+	// This is set to true if the menu is currently processing a second-touch event.
 	bool m_second_touch = false;
 	bool m_touchscreen_visible = true;
 #endif

@@ -4593,8 +4593,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_OTHER: {
 			// Some other mouse event has occured
 			// Currently only left-double-click should trigger this
-			if (!s.isValid() || (event.EventType == EET_MOUSE_INPUT_EVENT &&
-					event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK))
+			if (!s.isValid() || event.EventType != EET_MOUSE_INPUT_EVENT ||
+					event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
 				break;
 
 			// Only do the pickup all thing when putting down an item.
@@ -4663,7 +4663,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 #ifdef HAVE_TOUCHSCREENGUI
-		if (touch == BET_RIGHT && m_selected_item) {
+		if (touch == BET_RIGHT && m_selected_item && !m_left_dragging) {
 			if (!s.isValid()) {
 				// Not a valid slot
 				if (!getAbsoluteClippingRect().isPointInside(m_pointer))
@@ -4672,6 +4672,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			} else {
 				// Over a valid slot
 				move_amount = 1;
+				if (identical) {
+					// Change the selected amount instead of moving
+					if (move_amount >= m_selected_amount)
+						m_selected_amount = 0;
+					else
+						m_selected_amount -= move_amount;
+					move_amount = 0;
+				}
 			}
 		}
 #endif

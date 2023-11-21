@@ -301,6 +301,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			auto focused = Environment->getFocus();
 			if (!focused)
 				return true;
+			// The second-touch event is propagated as is (not converted).
 			m_second_touch = true;
 			focused->OnEvent(event);
 			m_second_touch = false;
