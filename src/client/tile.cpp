@@ -437,6 +437,7 @@ private:
 	bool m_setting_mipmap;
 	bool m_setting_trilinear_filter;
 	bool m_setting_bilinear_filter;
+	bool m_setting_anisotropic_filter;
 };
 
 IWritableTextureSource *createTextureSource()
@@ -458,6 +459,7 @@ TextureSource::TextureSource()
 	m_setting_mipmap = g_settings->getBool("mip_map");
 	m_setting_trilinear_filter = g_settings->getBool("trilinear_filter");
 	m_setting_bilinear_filter = g_settings->getBool("bilinear_filter");
+	m_setting_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 }
 
 TextureSource::~TextureSource()
@@ -702,10 +704,9 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	// Avoid duplicating texture if it won't actually change
-	static thread_local bool filter_needed =
-		m_setting_mipmap ||
-		((m_setting_trilinear_filter || m_setting_bilinear_filter) &&
-		g_settings->getS32("texture_min_size") > 1);
+	const bool filter_needed =
+		m_setting_mipmap || m_setting_trilinear_filter ||
+		m_setting_bilinear_filter || m_setting_anisotropic_filter;
 	if (filter_needed)
 		return getTexture(name + "^[applyfiltersformesh", id);
 	return getTexture(name, id);
@@ -1741,7 +1742,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 
 			// Apply the "clean transparent" filter, if needed
-			if (m_setting_mipmap)
+			if (m_setting_mipmap || m_setting_bilinear_filter ||
+				m_setting_trilinear_filter || m_setting_anisotropic_filter)
 				imageCleanTransparent(baseimg, 127);
 
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
