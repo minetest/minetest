@@ -154,8 +154,7 @@ void GUIInventoryList::draw()
 		bool show_tooltip = !item.empty() && hovering && !selected_item;
 #ifdef HAVE_TOUCHSCREENGUI
 		// Make it possible to see item tooltips on touchscreens
-		// Note that the selected item can't be empty during drawing.
-		show_tooltip |= hovering && selected;
+		show_tooltip |= hovering && selected && m_fs_menu->getSelectedAmount() != 0;
 #endif
 		if (show_tooltip) {
 			std::string tooltip = orig_item.getDescription(client->idef());
