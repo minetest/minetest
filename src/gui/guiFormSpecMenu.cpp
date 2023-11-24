@@ -4124,13 +4124,6 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		return handled;
 	}
 
-#ifdef HAVE_TOUCHSCREENGUI
-	if (m_second_touch) {
-		OnEvent(event);
-		return true;
-	}
-#endif
-
 	return GUIModalMenu::preprocessEvent(event);
 }
 
