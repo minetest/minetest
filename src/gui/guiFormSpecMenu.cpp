@@ -3643,7 +3643,7 @@ void GUIFormSpecMenu::drawMenu()
 			NULL, m_client, IT_ROT_HOVERED);
 	}
 
-/* TODO find way to show tooltips on touchscreen */
+	// On touchscreens, m_pointer is set by GUIModalMenu::preprocessEvent instead.
 #ifndef HAVE_TOUCHSCREENGUI
 	m_pointer = RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
 #endif
