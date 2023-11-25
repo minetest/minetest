@@ -283,10 +283,15 @@ void GUIEngine::run()
 		else
 			drawBackground(driver);
 
-		drawHeader(driver);
 		drawFooter(driver);
 
 		m_rendering_engine->get_gui_env()->drawAll();
+
+		// The header *must* be drawn after the menu because it uses
+		// GUIFormspecMenu::getAbsoluteRect().
+		// The header *can* be drawn after the menu because it never intersects
+		// the menu.
+		drawHeader(driver);
 
 		driver->endScene();
 
@@ -478,29 +483,56 @@ void GUIEngine::drawHeader(video::IVideoDriver *driver)
 
 	video::ITexture* texture = m_textures[TEX_LAYER_HEADER].texture;
 
-	/* If no texture, draw nothing */
-	if(!texture)
+	// If no texture, draw nothing
+	if (!texture)
 		return;
 
+	/*
+	 * Calculate the maximum rectangle
+	 */
+	core::rect<s32> formspec_rect = m_menu->getAbsoluteRect();
+	// 4 px of padding on each side
+	core::rect<s32> max_rect(4, 4, screensize.Width - 8, formspec_rect.UpperLeftCorner.Y - 8);
+
+	// If no space (less than 16x16 px), draw nothing
+	if (max_rect.getWidth() < 16 || max_rect.getHeight() < 16)
+		return;
+
+	/*
+	 * Calculate the preferred rectangle
+	 */
 	f32 mult = (((f32)screensize.Width / 2.0)) /
 			((f32)texture->getOriginalSize().Width);
 
 	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
 			((f32)texture->getOriginalSize().Height) * mult);
 
-	// Don't draw the header if there isn't enough room
 	s32 free_space = (((s32)screensize.Height)-320)/2;
 
-	if (free_space > splashsize.Y) {
-		core::rect<s32> splashrect(0, 0, splashsize.X, splashsize.Y);
-		splashrect += v2s32((screensize.Width/2)-(splashsize.X/2),
-				((free_space/2)-splashsize.Y/2)+10);
+	core::rect<s32> desired_rect(0, 0, splashsize.X, splashsize.Y);
+	desired_rect += v2s32((screensize.Width/2)-(splashsize.X/2),
+			((free_space/2)-splashsize.Y/2)+10);
 
-	draw2DImageFilterScaled(driver, texture, splashrect,
+	/*
+	 * Make the preferred rectangle fit into the maximum rectangle
+	 */
+	// 1. Scale
+	f32 scale = std::min((f32)max_rect.getWidth() / (f32)desired_rect.getWidth(),
+			(f32)max_rect.getHeight() / (f32)desired_rect.getHeight());
+	if (scale < 1.0f) {
+		v2s32 old_center = desired_rect.getCenter();
+		desired_rect.LowerRightCorner.X = desired_rect.UpperLeftCorner.X + desired_rect.getWidth() * scale;
+		desired_rect.LowerRightCorner.Y = desired_rect.UpperLeftCorner.Y + desired_rect.getHeight() * scale;
+		desired_rect += old_center - desired_rect.getCenter();
+	}
+
+	// 2. Move
+	desired_rect.constrainTo(max_rect);
+
+	draw2DImageFilterScaled(driver, texture, desired_rect,
 		core::rect<s32>(core::position2d<s32>(0,0),
 		core::dimension2di(texture->getOriginalSize())),
 		NULL, NULL, true);
-	}
 }
 
 /******************************************************************************/

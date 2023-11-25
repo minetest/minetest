@@ -247,6 +247,14 @@ std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &
 	return NULL;
 }
 
+// This will only return a meaningful value if called after drawMenu().
+core::rect<s32> GUIFormSpecMenu::getAbsoluteRect()
+{
+	core::rect<s32> rect = AbsoluteRect;
+	rect.UpperLeftCorner.Y += m_tabheader_upper_edge;
+	return rect;
+}
+
 v2s32 GUIFormSpecMenu::getElementBasePos(const std::vector<std::string> *v_pos)
 {
 	v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
@@ -2104,6 +2112,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		e->setActiveTab(tab_index);
 
 	m_fields.push_back(spec);
+	m_tabheader_upper_edge = MYMIN(m_tabheader_upper_edge, rect.UpperLeftCorner.Y);
 }
 
 void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
@@ -3105,6 +3114,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	m_formspec_version = 1;
 	m_bgcolor = video::SColor(140, 0, 0, 0);
+	m_tabheader_upper_edge = 0;
 
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
