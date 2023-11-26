@@ -2177,6 +2177,9 @@ inline s32 Server::nextSoundId()
 			free_id = 0; // signed overflow is undefined
 		else
 			free_id++;
+
+		if (free_id == m_playing_sounds_id_last_used)
+			return 0;
 	}
 	m_playing_sounds_id_last_used = free_id;
 	return free_id;
@@ -2235,6 +2238,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	// old clients will still use this, so pick a reserved ID (-1)
 	const s32 id = ephemeral ? -1 : nextSoundId();
+	if (id == 0)
+		return 0;
 
 	float gain = params.gain * params.spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
