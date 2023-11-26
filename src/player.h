@@ -225,6 +225,7 @@ public:
 	}
 
 	HudElement* getHud(u32 id);
+	u32         getHudIdMax();
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
 	void        clearHud();

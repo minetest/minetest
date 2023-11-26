@@ -7772,6 +7772,8 @@ child will follow movement and rotation of that bone.
     * `stat` supports the same keys as in the hud definition table except for
       `"hud_elem_type"`.
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
+* `hud_get_elements()`: returns a table indexed by all present HUD IDs and
+  containing corresponding HUD element definition structures.
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
         * `hotbar`

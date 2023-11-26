@@ -93,6 +93,8 @@ private:
 	static int l_hud_change(lua_State *L);
 	// hud_get(self, id)
 	static int l_hud_get(lua_State *L);
+	// hud_get_elements(self)
+	static int l_hud_get_elements(lua_State *L);
 
 	static int l_get_move_resistance(lua_State *L);
 

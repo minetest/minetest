@@ -139,6 +139,12 @@ HudElement* Player::getHud(u32 id)
 	return NULL;
 }
 
+u32 Player::getHudIdMax()
+{
+	MutexAutoLock lock(m_mutex);
+	return hud.size();
+}
+
 HudElement* Player::removeHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);
