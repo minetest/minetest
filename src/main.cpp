@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
@@ -41,6 +42,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "network/socket.h"
 #include "mapblock.h"
+#include "MineConfig.h"
+#include "util/Logging.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -82,6 +85,7 @@ extern "C" {
 #define ENV_NO_COLOR "NO_COLOR"
 #define ENV_CLICOLOR "CLICOLOR"
 #define ENV_CLICOLOR_FORCE "CLICOLOR_FORCE"
+#define OBELISK_MINETEST_VERSION "v0.1"
 
 typedef std::map<std::string, ValueSpec> OptionList;
 
@@ -134,9 +138,34 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 FileLogOutput file_log_output;
 
 static OptionList allowed_options;
+using namespace rwr;
 
 int main(int argc, char *argv[])
 {
+	Logging::init();
+	Logging::setLoggingToFile("minetest.log");
+
+	const char *configPath = "minetest.toml";
+
+	if (argc > 1) {
+		configPath = argv[1];
+	}
+
+	try {
+		// yes you really have to do this twice
+		Logging::setLogLevel(el::Level::Info, nullptr);
+		gMineConfig.load(configPath);
+		Logging::setLogLevel(
+				Logging::getLLfromString(gMineConfig.LOG_LEVEL), nullptr);
+	} catch (std::exception &e) {
+		LOG(FATAL) << "Got an exception: " << e.what();
+		return EXIT_FAILURE;
+	}
+
+	LOG(INFO) << "Starting Obelisk Minetest " << OBELISK_MINETEST_VERSION;
+	LOG(INFO) << "Config from " << configPath;
+
+
 	int retval;
 	debug_set_exception_handler();
 
