@@ -512,6 +512,7 @@ private:
 	// Particles
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
+	u32 m_particle_spawners_id_last_used = 0;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 
 	// Environment metrics
