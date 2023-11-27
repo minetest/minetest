@@ -113,6 +113,7 @@ cmake-build-debug/
 cmake-build-minsizerel/
 cmake-build-release/
 cmake-build-relwithdebinfo/
+cmake-build-default/
 cmake_config.h
 cmake_config_githash.h
 CMakeDoxy*
