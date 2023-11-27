@@ -435,7 +435,7 @@ int LuaLocalPlayer::l_hud_get_elements(lua_State *L)
 		HudElement *elem = player->getHud(id);
 		if (elem != nullptr) {
 			push_hud_element(L, elem);
-			lua_rawseti(L, -2, id+1);
+			lua_rawseti(L, -2, id);
 		}
 	}
 	return 1;
