@@ -26,10 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "noise.h"
 
-class TestFilePath : public TestBase {
+class TestFileSys : public TestBase
+{
 public:
-	TestFilePath() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestFilePath"; }
+	TestFileSys() { TestManager::registerTestModule(this); }
+	const char *getName() { return "TestFileSys"; }
 
 	void runTests(IGameDef *gamedef);
 
@@ -38,17 +39,19 @@ public:
 	void testRemoveLastPathComponent();
 	void testRemoveLastPathComponentWithTrailingDelimiter();
 	void testRemoveRelativePathComponent();
+	void testSafeWriteToFile();
 };
 
-static TestFilePath g_test_instance;
+static TestFileSys g_test_instance;
 
-void TestFilePath::runTests(IGameDef *gamedef)
+void TestFileSys::runTests(IGameDef *gamedef)
 {
 	TEST(testIsDirDelimiter);
 	TEST(testPathStartsWith);
 	TEST(testRemoveLastPathComponent);
 	TEST(testRemoveLastPathComponentWithTrailingDelimiter);
 	TEST(testRemoveRelativePathComponent);
+	TEST(testSafeWriteToFile);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,16 +68,15 @@ std::string p(std::string path)
 		}
 	}
 
-	#ifdef _WIN32
+#ifdef _WIN32
 	if (path[0] == '\\')
 		path = "C:" + path;
-	#endif
+#endif
 
 	return path;
 }
 
-
-void TestFilePath::testIsDirDelimiter()
+void TestFileSys::testIsDirDelimiter()
 {
 	UASSERT(fs::IsDirDelimiter('/') == true);
 	UASSERT(fs::IsDirDelimiter('A') == false);
@@ -86,23 +88,22 @@ void TestFilePath::testIsDirDelimiter()
 #endif
 }
 
-
-void TestFilePath::testPathStartsWith()
+void TestFileSys::testPathStartsWith()
 {
 	const int numpaths = 12;
 	std::string paths[numpaths] = {
-		"",
-		p("/"),
-		p("/home/user/minetest"),
-		p("/home/user/minetest/bin"),
-		p("/home/user/.minetest"),
-		p("/tmp/dir/file"),
-		p("/tmp/file/"),
-		p("/tmP/file"),
-		p("/tmp"),
-		p("/tmp/dir"),
-		p("/home/user2/minetest/worlds"),
-		p("/home/user2/minetest/world"),
+			"",
+			p("/"),
+			p("/home/user/minetest"),
+			p("/home/user/minetest/bin"),
+			p("/home/user/.minetest"),
+			p("/tmp/dir/file"),
+			p("/tmp/file/"),
+			p("/tmP/file"),
+			p("/tmp"),
+			p("/tmp/dir"),
+			p("/home/user2/minetest/worlds"),
+			p("/home/user2/minetest/world"),
 	};
 	/*
 		expected fs::PathStartsWith results
@@ -114,56 +115,52 @@ void TestFilePath::testPathStartsWith()
 			FILESYS_CASE_INSENSITIVE is true
 	*/
 	int expected_results[numpaths][numpaths] = {
-		{1,2,0,0,0,0,0,0,0,0,0,0},
-		{1,1,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,0,0,0,0,0,0,0,0},
-		{1,1,0,0,1,0,0,0,0,0,0,0},
-		{1,1,0,0,0,1,0,0,1,1,0,0},
-		{1,1,0,0,0,0,1,4,1,0,0,0},
-		{1,1,0,0,0,0,4,1,4,0,0,0},
-		{1,1,0,0,0,0,0,0,1,0,0,0},
-		{1,1,0,0,0,0,0,0,1,1,0,0},
-		{1,1,0,0,0,0,0,0,0,0,1,0},
-		{1,1,0,0,0,0,0,0,0,0,0,1},
+			{1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0},
+			{1, 1, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0},
+			{1, 1, 0, 0, 0, 0, 4, 1, 4, 0, 0, 0},
+			{1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+			{1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
+			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 	};
 
 	for (int i = 0; i < numpaths; i++)
-	for (int j = 0; j < numpaths; j++){
-		/*verbosestream<<"testing fs::PathStartsWith(\""
-			<<paths[i]<<"\", \""
-			<<paths[j]<<"\")"<<std::endl;*/
-		bool starts = fs::PathStartsWith(paths[i], paths[j]);
-		int expected = expected_results[i][j];
-		if(expected == 0){
-			UASSERT(starts == false);
+		for (int j = 0; j < numpaths; j++) {
+			/*verbosestream<<"testing fs::PathStartsWith(\""
+				<<paths[i]<<"\", \""
+				<<paths[j]<<"\")"<<std::endl;*/
+			bool starts = fs::PathStartsWith(paths[i], paths[j]);
+			int expected = expected_results[i][j];
+			if (expected == 0) {
+				UASSERT(starts == false);
+			} else if (expected == 1) {
+				UASSERT(starts == true);
+			}
+#ifdef _WIN32
+			else if (expected == 2) {
+				UASSERT(starts == false);
+			} else if (expected == 3) {
+				UASSERT(starts == true);
+			}
+#else
+			else if (expected == 2) {
+				UASSERT(starts == true);
+			} else if (expected == 3) {
+				UASSERT(starts == false);
+			}
+#endif
+			else if (expected == 4) {
+				UASSERT(starts == (bool)FILESYS_CASE_INSENSITIVE);
+			}
 		}
-		else if(expected == 1){
-			UASSERT(starts == true);
-		}
-		#ifdef _WIN32
-		else if(expected == 2){
-			UASSERT(starts == false);
-		}
-		else if(expected == 3){
-			UASSERT(starts == true);
-		}
-		#else
-		else if(expected == 2){
-			UASSERT(starts == true);
-		}
-		else if(expected == 3){
-			UASSERT(starts == false);
-		}
-		#endif
-		else if(expected == 4){
-			UASSERT(starts == (bool)FILESYS_CASE_INSENSITIVE);
-		}
-	}
 }
 
-
-void TestFilePath::testRemoveLastPathComponent()
+void TestFileSys::testRemoveLastPathComponent()
 {
 	std::string path, result, removed;
 
@@ -199,8 +196,7 @@ void TestFilePath::testRemoveLastPathComponent()
 	UASSERT(removed == p("home/user/minetest/bin/../worlds/world1"));
 }
 
-
-void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
+void TestFileSys::testRemoveLastPathComponentWithTrailingDelimiter()
 {
 	std::string path, result, removed;
 
@@ -235,8 +231,7 @@ void TestFilePath::testRemoveLastPathComponentWithTrailingDelimiter()
 	UASSERT(removed == p("home/user/minetest/bin/../worlds/world1"));
 }
 
-
-void TestFilePath::testRemoveRelativePathComponent()
+void TestFileSys::testRemoveRelativePathComponent()
 {
 	std::string path, result;
 
@@ -261,4 +256,14 @@ void TestFilePath::testRemoveRelativePathComponent()
 	path = p("/a/b/c/.././../d/../e/f/g/../h/i/j/../../../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/a/e"));
+}
+
+void TestFileSys::testSafeWriteToFile()
+{
+	const std::string dest_path = fs::TempPath() + DIR_DELIM + "testSafeWriteToFile.txt";
+	fs::safeWriteToFile(dest_path, "test");
+	UASSERT(fs::PathExists(dest_path));
+	std::string contents_actual;
+	UASSERT(fs::ReadFile(dest_path, contents_actual));
+	UASSERT(contents_actual == "test");
 }
