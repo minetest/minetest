@@ -36,7 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PATH_DELIM ":"
 #endif
 
-namespace irr::io {
+namespace irr::io
+{
 class IFileSystem;
 }
 
@@ -78,12 +79,12 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path);
 // Returns path to temp directory, can return "" on error
 std::string TempPath();
 
-// Returns path to securely-created temporary file (will already exist when this function returns)
-// can return "" on error
+// Returns path to securely-created temporary file (will already exist when this function
+// returns) can return "" on error
 std::string CreateTempFile();
 
 /* Returns a list of subdirectories, including the path itself, but excluding
-       hidden directories (whose names start with . or _)
+	   hidden directories (whose names start with . or _)
 */
 void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir);
 std::vector<std::string> GetRecursiveDirs(const std::string &dir);
@@ -95,10 +96,8 @@ std::vector<std::string> GetRecursiveDirs(const std::string &dir);
    list files - include files in the list of subpaths.
    ignore - paths that start with these charcters will not be listed.
 */
-void GetRecursiveSubPaths(const std::string &path,
-		  std::vector<std::string> &dst,
-		  bool list_files,
-		  const std::set<char> &ignore = {});
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst,
+		bool list_files, const std::set<char> &ignore = {});
 
 // Only pass full paths to this one. True on success.
 bool RecursiveDeleteContent(const std::string &path);
@@ -126,8 +125,8 @@ bool PathStartsWith(const std::string &path, const std::string &prefix);
 // returns "" if there is only one path component.
 // removed: If non-NULL, receives the removed component(s).
 // count: Number of components to remove
-std::string RemoveLastPathComponent(const std::string &path,
-		std::string *removed = NULL, int count = 1);
+std::string RemoveLastPathComponent(
+		const std::string &path, std::string *removed = NULL, int count = 1);
 
 // Remove "." and ".." path components and for every ".." removed, remove
 // the last normal path component before it. Unlike AbsolutePath,
@@ -145,7 +144,8 @@ const char *GetFilenameFromPath(const char *path);
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
 #ifndef SERVER
-bool extractZipFile(irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
+bool extractZipFile(
+		irr::io::IFileSystem *fs, const char *filename, const std::string &destination);
 #endif
 
 bool ReadFile(const std::string &path, std::string &out);
