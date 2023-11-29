@@ -4191,3 +4191,20 @@ bool Server::migrateModStorageDatabase(const GameParams &game_params, const Sett
 
 	return succeeded;
 }
+
+u16 Server::getProtocolVersionMin()
+{
+	u16 min_proto = g_settings->getU16("protocol_version_min");
+	if (g_settings->getBool("strict_protocol_version_checking"))
+		min_proto = LATEST_PROTOCOL_VERSION;
+	return rangelim(min_proto,
+		SERVER_PROTOCOL_VERSION_MIN,
+		SERVER_PROTOCOL_VERSION_MAX);
+}
+
+u16 Server::getProtocolVersionMax()
+{
+	return g_settings->getBool("strict_protocol_version_checking")
+		? LATEST_PROTOCOL_VERSION
+		: SERVER_PROTOCOL_VERSION_MAX;
+}
