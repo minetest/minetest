@@ -2171,12 +2171,18 @@ void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 
 inline s32 Server::nextSoundId()
 {
-	s32 ret = m_next_sound_id;
-	if (m_next_sound_id == INT32_MAX)
-		m_next_sound_id = 0; // signed overflow is undefined
-	else
-		m_next_sound_id++;
-	return ret;
+	s32 free_id = m_playing_sounds_id_last_used;
+	while (free_id == 0 || m_playing_sounds.find(free_id) != m_playing_sounds.end()) {
+		if (free_id == INT32_MAX)
+			free_id = 0; // signed overflow is undefined
+		else
+			free_id++;
+
+		if (free_id == m_playing_sounds_id_last_used)
+			return 0;
+	}
+	m_playing_sounds_id_last_used = free_id;
+	return free_id;
 }
 
 s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
@@ -2232,6 +2238,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	// old clients will still use this, so pick a reserved ID (-1)
 	const s32 id = ephemeral ? -1 : nextSoundId();
+	if (id == 0)
+		return 0;
 
 	float gain = params.gain * params.spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);

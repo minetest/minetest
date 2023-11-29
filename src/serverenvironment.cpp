@@ -1637,16 +1637,16 @@ u32 ServerEnvironment::addParticleSpawner(float exptime)
 	// Timers with lifetime 0 do not expire
 	float time = exptime > 0.f ? exptime : PARTICLE_SPAWNER_NO_EXPIRY;
 
-	u32 id = 0;
-	for (;;) { // look for unused particlespawner id
-		id++;
-		std::unordered_map<u32, float>::iterator f = m_particle_spawners.find(id);
-		if (f == m_particle_spawners.end()) {
-			m_particle_spawners[id] = time;
-			break;
-		}
+	u32 free_id = m_particle_spawners_id_last_used;
+	while (free_id == 0 || m_particle_spawners.find(free_id) != m_particle_spawners.end()) {
+		if (free_id == m_particle_spawners_id_last_used)
+			return 0; // full
+		free_id++;
 	}
-	return id;
+
+	m_particle_spawners_id_last_used = free_id;
+	m_particle_spawners[free_id] = time;
+	return free_id;
 }
 
 u32 ServerEnvironment::addParticleSpawner(float exptime, u16 attached_id)

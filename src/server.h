@@ -695,7 +695,7 @@ private:
 		Sounds
 	*/
 	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id = 0; // positive values only
+	s32 m_playing_sounds_id_last_used = 0; // positive values only
 	s32 nextSoundId();
 
 	ModStorageDatabase *m_mod_storage_database = nullptr;
