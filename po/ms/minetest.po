@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-11-12 13:14+0000\n"
-"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
-"Yasuyoshi\" <translation@mnh48.moe>\n"
+"PO-Revision-Date: 2023-12-02 05:17+0000\n"
+"Last-Translator: Nisa Syazwani <nisasyazwani@users.noreply.hosted.weblate."
+"org>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
 "Language: ms\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -742,7 +742,7 @@ msgstr "Layar"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Edit"
-msgstr "Edit"
+msgstr "Sunting"
 
 #: builtin/mainmenu/settings/components.lua
 msgid "Select directory"
