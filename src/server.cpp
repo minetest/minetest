@@ -2172,7 +2172,7 @@ void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 inline s32 Server::nextSoundId()
 {
 	s32 free_id = m_playing_sounds_id_last_used;
-	while (free_id == 0 || m_playing_sounds.find(free_id) != m_playing_sounds.end()) {
+	do {
 		if (free_id == INT32_MAX)
 			free_id = 0; // signed overflow is undefined
 		else
@@ -2180,7 +2180,8 @@ inline s32 Server::nextSoundId()
 
 		if (free_id == m_playing_sounds_id_last_used)
 			return 0;
-	}
+	} while (free_id == 0 || m_playing_sounds.find(free_id) != m_playing_sounds.end());
+
 	m_playing_sounds_id_last_used = free_id;
 	return free_id;
 }

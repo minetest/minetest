@@ -1638,11 +1638,11 @@ u32 ServerEnvironment::addParticleSpawner(float exptime)
 	float time = exptime > 0.f ? exptime : PARTICLE_SPAWNER_NO_EXPIRY;
 
 	u32 free_id = m_particle_spawners_id_last_used;
-	while (free_id == 0 || m_particle_spawners.find(free_id) != m_particle_spawners.end()) {
+	do {
+		free_id++;
 		if (free_id == m_particle_spawners_id_last_used)
 			return 0; // full
-		free_id++;
-	}
+	} while (free_id == 0 || m_particle_spawners.find(free_id) != m_particle_spawners.end());
 
 	m_particle_spawners_id_last_used = free_id;
 	m_particle_spawners[free_id] = time;
