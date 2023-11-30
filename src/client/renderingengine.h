@@ -138,6 +138,16 @@ public:
 			const irr::core::dimension2d<u32> initial_screen_size,
 			const bool initial_window_maximized);
 
+	static bool shouldRender()
+	{
+#ifdef __ANDROID__
+		// On Android, pause rendering while the app is paused.
+		return get_raw_device()->isWindowActive();
+#else
+		return true;
+#endif
+	};
+
 private:
 	v2u32 _getWindowSize() const;
 

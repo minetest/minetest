@@ -1252,7 +1252,8 @@ void Game::run()
 		updateCamera(dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, m_game_ui->m_flags.show_hud);
-		updateFrame(&graph, &stats, dtime, cam_view);
+		if (RenderingEngine::shouldRender())
+			updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
