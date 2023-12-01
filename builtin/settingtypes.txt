@@ -381,15 +381,15 @@ enable_3d_clouds (3D clouds) bool true
 
 [**Filtering and Antialiasing]
 
-#    Use mipmaps when scaling textures down. May slightly increase performance,
+#    Use mipmaps when scaling textures. May slightly increase performance,
 #    especially when using a high-resolution texture pack.
 #    Gamma-correct downscaling is not supported.
 mip_map (Mipmapping) bool false
 
-#    Use bilinear filtering when scaling textures down.
+#    Use bilinear filtering when scaling textures.
 bilinear_filter (Bilinear filtering) bool false
 
-#    Use trilinear filtering when scaling textures down.
+#    Use trilinear filtering when scaling textures.
 #    If both bilinear and trilinear filtering are enabled, trilinear filtering
 #    is applied.
 trilinear_filter (Trilinear filtering) bool false
@@ -1827,7 +1827,14 @@ world_aligned_mode (World-aligned textures mode) enum enable disable,enable,forc
 #    Warning: This option is EXPERIMENTAL!
 autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
-#    The base node texture size used for world-aligned texture autoscaling.
+#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
+#    can be blurred, so automatically upscale them with nearest-neighbor
+#    interpolation to preserve crisp pixels. This sets the minimum texture size
+#    for the upscaled textures; higher values look sharper, but require more
+#    memory. Powers of 2 are recommended. This setting is ONLY applied if
+#    bilinear/trilinear/anisotropic filtering is enabled.
+#    This is also used as the base node texture size for world-aligned
+#    texture autoscaling.
 texture_min_size (Base texture size) int 64 1 32768
 
 #    Side length of a cube of map blocks that the client will consider together
