@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2023-12-02 05:17+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: chocomint <silentxe1@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
 "minetest/es/>\n"
 "Language: es\n"
@@ -1016,9 +1016,8 @@ msgid "Rename"
 msgstr "Renombrar"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<ninguno disponible>"
+msgstr "¿Actualización disponible?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
