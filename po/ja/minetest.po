@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-11-22 00:17+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
@@ -5938,8 +5938,8 @@ msgstr ""
 "（上部の先細り開始点）より上に設定されている場合にのみ配置されます。\n"
 "***警告、ワールドとサーバーのパフォーマンスへの潜在的な危険性***：\n"
 "水の配置を有効にしている場合、浮遊大陸を個体層にするために\n"
-"'mgv7_floatland_density' を2.0 (または 'mgv7_np_floatland' "
-"に応じて他の必要な値) に\n"
+"'mgv7_floatland_density' を2.0 (または 'mgv7_np_floatland' に応じて他の必要な"
+"値) に\n"
 "設定して、サーバーに集中する極端な水の流れを避け、下の世界表面への大規模な\n"
 "洪水を避けるようにテストする必要があります。"
 
@@ -6025,10 +6025,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
 msgstr "コンテンツリポジトリのURL"
-
-#: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr "整列テクスチャの自動拡大縮小に使用される基本のノードテクスチャサイズ。"
 
 #: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
@@ -6336,8 +6332,9 @@ msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr "ある角度からテクスチャを見るときに異方性フィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "テクスチャを縮小するときはバイリニアフィルタリングを使用します。"
+#, fuzzy
+msgid "Use bilinear filtering when scaling textures."
+msgstr "テクスチャを拡大縮小する場合はトライリニアフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6352,8 +6349,9 @@ msgstr ""
 "有効にすると、十字カーソルが表示されオブジェクトの選択に使用されます。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6372,8 +6370,9 @@ msgstr ""
 "対するレイトレースオクルージョンカリング テストの使用を有効にします。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6587,6 +6586,29 @@ msgstr ""
 "イメージをハードウェアからソフトウェアにコピーします。 無効な場合、\n"
 "ハードウェアからのテクスチャのダウンロードを適切にサポートしていない\n"
 "ビデオドライバのときは、古い拡大縮小方式に戻ります。"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"バイリニア/トライリニア/異方性フィルタを使用すると、低解像度の\n"
+"テクスチャがぼやける可能性があるため、鮮明なピクセルを保持するために\n"
+"最近傍補間を使用して自動的にそれらを拡大します。これは拡大されたテクスチャ"
+"の\n"
+"ための最小テクスチャサイズを設定します。より高い値はよりシャープに見えます"
+"が、\n"
+"より多くのメモリを必要とします。2の累乗が推奨されます。この設定は、\n"
+"バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されま"
+"す。\n"
+"これは整列テクスチャの自動スケーリング用の基準ノードテクスチャサイズと\n"
+"しても使用されます。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8363,6 +8385,11 @@ msgstr "cURL並行処理制限"
 #~ msgid "Texturing:"
 #~ msgstr "テクスチャリング:"
 
+#~ msgid ""
+#~ "The base node texture size used for world-aligned texture autoscaling."
+#~ msgstr ""
+#~ "整列テクスチャの自動拡大縮小に使用される基本のノードテクスチャサイズ。"
+
 #~ msgid "The depth of dirt or other biome filler node."
 #~ msgstr "土や他のバイオーム充填ノードの深さ。"
 
@@ -8426,6 +8453,9 @@ msgstr "cURL並行処理制限"
 #~ msgid "Up"
 #~ msgstr "上"
 
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "テクスチャを縮小するときはバイリニアフィルタリングを使用します。"
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8445,10 +8475,6 @@ msgstr "cURL並行処理制限"
 #~ "シェーダーを無効にすると、ノード間に可視スペースが表示されます。\n"
 #~ "0 に設定すると、MSAAは無効になります。\n"
 #~ "このオプションを変更した場合、再起動が必要です。"
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr ""
-#~ "テクスチャを拡大縮小する場合はトライリニアフィルタリングを使用します。"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr "浮遊大陸の滑らかな地形における丘の高さと湖の深さの変動。"
@@ -8497,30 +8523,6 @@ msgstr "cURL並行処理制限"
 
 #~ msgid "Waving water"
 #~ msgstr "揺れる水"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "バイリニア/トライリニア/異方性フィルタを使用すると、低解像度の\n"
-#~ "テクスチャがぼやける可能性があるため、鮮明なピクセルを保持するために\n"
-#~ "最近傍補間を使用して自動的にそれらを拡大します。これは拡大されたテクスチャ"
-#~ "の\n"
-#~ "ための最小テクスチャサイズを設定します。より高い値はよりシャープに見えます"
-#~ "が、\n"
-#~ "より多くのメモリを必要とします。2の累乗が推奨されます。この設定は、\n"
-#~ "バイリニア/トライリニア/異方性フィルタリングが有効の場合にのみ適用されま"
-#~ "す。\n"
-#~ "これは整列テクスチャの自動スケーリング用の基準ノードテクスチャサイズと\n"
-#~ "しても使用されます。"
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "

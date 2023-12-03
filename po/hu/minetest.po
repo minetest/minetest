@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Hungarian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-11-29 21:30+0000\n"
 "Last-Translator: nyommer <jishnu.ifeoluwa@fullangle.org>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -6148,10 +6148,6 @@ msgid "The URL for the content repository"
 msgstr "Az URL a tartalomtárhoz"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "A joystick holttere"
 
@@ -6485,8 +6481,8 @@ msgstr "Anizotróp szűrés használata, ha egy szögből nézzük a textúráka
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Bilineáris szűrés a textúrák méretezésekor."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Trilineáris szűrés a textúrák méretezéséhez."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6501,7 +6497,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6518,7 +6514,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6727,6 +6723,31 @@ msgstr ""
 "a hardverről a szoftverbe másolja méretezésre.  Ha ki van kapcsolva,\n"
 "a régi méretezési módszert használja, azoknál a videó drivereknél,\n"
 "amelyek nem megfelelően támogatják a textúra hardverről való letöltését."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"A bilineáris/trilineáris/anizotróp szűrők használatakor, a kis felbontású "
+"textúrák\n"
+"homályosak lehetnek, ezért automatikusan felskálázza őket legközelebbi\n"
+"szomszéd módszerrel, hogy megőrizze az éles pixeleket. Ez a beállítás "
+"meghatározza\n"
+"a minimális textúraméretet a felnagyított textúrákhoz; magasabb értéknél "
+"élesebb,\n"
+"de több memóriát igényel. 2 hatványait ajánlott használni. CSAK akkor "
+"érvényes ez a\n"
+"beállítás, ha a bilineáris/trilineáris/anizotróp szűrés engedélyezett.\n"
+"Ez egyben azon kockák alap textúraméreteként is használatos, amelyeknél a "
+"világhoz\n"
+"igazítva kell méretezni a textúrát."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8466,6 +8487,10 @@ msgstr "cURL párhuzamossági korlát"
 #~ msgid "Up"
 #~ msgstr "Fel"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Bilineáris szűrés a textúrák méretezésekor."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8483,9 +8508,6 @@ msgstr "cURL párhuzamossági korlát"
 #~ "A kockák között látható rések jelennek meg, ha az árnyalók nincsenek\n"
 #~ "engedélyezve. Ha 0-ra van állítva, az MSAA tiltva van.\n"
 #~ "E beállítás megváltoztatása után újraindítás szükséges."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Trilineáris szűrés a textúrák méretezéséhez."
 
 #~ msgid "Vertical screen synchronization."
 #~ msgstr "Függőleges képernyő szinkronizálás."
@@ -8520,32 +8542,6 @@ msgstr "cURL párhuzamossági korlát"
 
 #~ msgid "Waving water"
 #~ msgstr "Hullámzó víz"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "A bilineáris/trilineáris/anizotróp szűrők használatakor, a kis felbontású "
-#~ "textúrák\n"
-#~ "homályosak lehetnek, ezért automatikusan felskálázza őket legközelebbi\n"
-#~ "szomszéd módszerrel, hogy megőrizze az éles pixeleket. Ez a beállítás "
-#~ "meghatározza\n"
-#~ "a minimális textúraméretet a felnagyított textúrákhoz; magasabb értéknél "
-#~ "élesebb,\n"
-#~ "de több memóriát igényel. 2 hatványait ajánlott használni. CSAK akkor "
-#~ "érvényes ez a\n"
-#~ "beállítás, ha a bilineáris/trilineáris/anizotróp szűrés engedélyezett.\n"
-#~ "Ez egyben azon kockák alap textúraméreteként is használatos, amelyeknél a "
-#~ "világhoz\n"
-#~ "igazítva kell méretezni a textúrát."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "

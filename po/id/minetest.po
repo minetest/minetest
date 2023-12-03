@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-11-29 21:30+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -2840,8 +2840,8 @@ msgid ""
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
-"untuk mengakses fungsi yang tidak aman bahkan saat mod security aktif ("
-"melalui request_insecure_environment())."
+"untuk mengakses fungsi yang tidak aman bahkan saat mod security aktif "
+"(melalui request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6067,12 +6067,6 @@ msgid "The URL for the content repository"
 msgstr "URL dari gudang konten"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-"Ukuran tekstur nodus dasar yang digunakan untuk penyekalaan otomatis tekstur "
-"yang sejajar dengan dunia."
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Zona mati joystick yang digunakan"
 
@@ -6392,8 +6386,9 @@ msgstr ""
 "Gunakan pemfilteran anisotropik saat melihat tekstur pada sudut tertentu."
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Gunakan pemfilteran bilinear saat memperkecil tekstur."
+#, fuzzy
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Gunakan pemfilteran trilinear saat mengubah ukuran tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6409,8 +6404,9 @@ msgstr ""
 "objek."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6429,8 +6425,9 @@ msgstr ""
 "untuk ukuran mesh klien yang lebih kecil daripada 4x4x4 blok peta."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6645,6 +6642,27 @@ msgstr ""
 "dari perangkat keras ke perangkat lunak untuk perbesar/perkecil. Saat tidak\n"
 "dibolehkan, kembali ke cara lama, untuk pengandar video yang tidak\n"
 "mendukung pengunduhan tekstur dari perangkat keras."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Saat menggunakan filter bilinear/trilinear/anisotropik, tekstur resolusi\n"
+"rendah dapat dikaburkan sehingga diperbesar otomatis dengan interpolasi\n"
+"nearest-neighbor untuk menjaga ketajaman piksel. Ini mengatur ukuran\n"
+"tekstur minimum untuk tekstur yang diperbesar; semakin tinggi semakin\n"
+"tajam, tetapi butuh memori lebih. Perpangkatan dua disarankan. Pengaturan\n"
+"ini HANYA diterapkan jika menggunakan filter bilinear/trilinear/"
+"anisotropik.\n"
+"Ini juga digunakan sebagai ukuran dasar tekstur nodus untuk penyekalaan\n"
+"otomatis tekstur yang sejajar dengan dunia."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8401,6 +8419,12 @@ msgstr "cURL: batas jumlah paralel"
 #~ msgid "Texturing:"
 #~ msgstr "Peneksturan:"
 
+#~ msgid ""
+#~ "The base node texture size used for world-aligned texture autoscaling."
+#~ msgstr ""
+#~ "Ukuran tekstur nodus dasar yang digunakan untuk penyekalaan otomatis "
+#~ "tekstur yang sejajar dengan dunia."
+
 #~ msgid "The depth of dirt or other biome filler node."
 #~ msgstr "Kedalaman tanah atau nodus pengisi bioma lainnya."
 
@@ -8465,6 +8489,9 @@ msgstr "cURL: batas jumlah paralel"
 #~ msgid "Up"
 #~ msgstr "Atas"
 
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Gunakan pemfilteran bilinear saat memperkecil tekstur."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8482,9 +8509,6 @@ msgstr "cURL: batas jumlah paralel"
 #~ "Muncul spasi tampak di antara nodus ketika shader dimatikan.\n"
 #~ "Jika diatur 0, MSAA dimatikan.\n"
 #~ "Dibutuhkan mulai ulang setelah penggantian pengaturan ini."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Gunakan pemfilteran trilinear saat mengubah ukuran tekstur."
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8535,29 +8559,6 @@ msgstr "cURL: batas jumlah paralel"
 
 #~ msgid "Waving water"
 #~ msgstr "Air berombak"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Saat menggunakan filter bilinear/trilinear/anisotropik, tekstur resolusi\n"
-#~ "rendah dapat dikaburkan sehingga diperbesar otomatis dengan interpolasi\n"
-#~ "nearest-neighbor untuk menjaga ketajaman piksel. Ini mengatur ukuran\n"
-#~ "tekstur minimum untuk tekstur yang diperbesar; semakin tinggi semakin\n"
-#~ "tajam, tetapi butuh memori lebih. Perpangkatan dua disarankan. "
-#~ "Pengaturan\n"
-#~ "ini HANYA diterapkan jika menggunakan filter bilinear/trilinear/"
-#~ "anisotropik.\n"
-#~ "Ini juga digunakan sebagai ukuran dasar tekstur nodus untuk penyekalaan\n"
-#~ "otomatis tekstur yang sejajar dengan dunia."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
