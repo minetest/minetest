@@ -3,13 +3,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-12-03 17:17+0000\n"
+"Last-Translator: Krock <mk939@ymail.com>\n"
+"Language-Team: Yue (Traditional) <https://hosted.weblate.org/projects/"
+"minetest/minetest/yue_Hant/>\n"
 "Language: yue\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2111,7 +2114,7 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "yue_Hant"
 
 #: src/network/clientpackethandler.cpp
 msgid ""

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-10-01 14:02+0000\n"
-"Last-Translator: Farooq Karimi Zadeh <fkz@riseup.net>\n"
+"PO-Revision-Date: 2023-12-03 17:17+0000\n"
+"Last-Translator: Krock <mk939@ymail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/minetest/"
 "minetest/fa/>\n"
 "Language: fa\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2119,7 +2119,7 @@ msgstr ""
 #. language code (e.g. "de" for German).
 #: src/network/clientpackethandler.cpp src/script/lua_api/l_client.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "fa"
 
 #: src/network/clientpackethandler.cpp
 msgid ""
