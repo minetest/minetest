@@ -684,10 +684,9 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						s8 maxLiquidLevelFromNeighbor = getMaxLiquidLevel(nb, -1);
 						u8 range = m_nodedef->get(cfnb.liquid_alternative_flowing_id).liquid_range;
 
-						if (liquid_kind == CONTENT_AIR
-							&& maxLiquidLevelFromNeighbor >= (LIQUID_LEVEL_MAX + 1 - range)) {
+						if (liquid_kind == CONTENT_AIR &&
+								maxLiquidLevelFromNeighbor >= (LIQUID_LEVEL_MAX + 1 - range))
 							liquid_kind = cfnb.liquid_alternative_flowing_id;
-						}
 					}
 					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
