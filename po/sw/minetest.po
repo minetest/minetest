@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 23:13+0200\n"
+"POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -140,6 +140,225 @@ msgstr "Sisi tu mkono itifaki toleo la $1."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Tunaunga mkono matoleo ya itifaki kati ya toleo la $1 na $2."
 
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "$1 downloading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Already installed"
+msgstr "Muhimu tayari katika matumizi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Back to Main Menu"
+msgstr "Menyu kuu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Base Game:"
+msgstr "Ficha mchezo"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_content.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+msgid "Cancel"
+msgstr "Katisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+msgid "Dependencies:"
+msgstr "Mategemezi:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Downloading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download $1"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr ""
+"\n"
+"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Michezo"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Install $1"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Install missing dependencies"
+msgstr "Inaanzilisha fundo"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Inapakia..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Mods"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Not found"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Texture packs"
+msgstr "Texturepacks"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Uninstall"
+msgstr "Sakinisha"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "$1 (Enabled)"
+msgstr "Kuwezeshwa"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "$1 mods"
+msgstr "Hali ya 3D"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Failed to install $1 to $2"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
+msgstr ""
+"Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr ""
+"Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a texture pack"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
 msgstr ""
@@ -147,21 +366,6 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
 msgstr ""
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
-msgid "Cancel"
-msgstr "Katisha"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Dependencies:"
-msgstr "Mategemezi:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -237,172 +441,6 @@ msgstr "Ulimwengu:"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "kuwezeshwa"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid ""
-"$1 downloading,\n"
-"$2 queued"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "$1 downloading..."
-msgstr "Inapakia..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "All packages"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Already installed"
-msgstr "Muhimu tayari katika matumizi"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Back to Main Menu"
-msgstr "Menyu kuu"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Base Game:"
-msgstr "Ficha mchezo"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Downloading..."
-msgstr "Inapakia..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download $1"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr ""
-"\n"
-"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Games"
-msgstr "Michezo"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Install $1"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Install missing dependencies"
-msgstr "Inaanzilisha fundo"
-
-#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
-#: src/client/game.cpp
-msgid "Loading..."
-msgstr "Inapakia..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Mods"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No updates"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Not found"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Please check that the base game is correct."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Queued"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Texture packs"
-msgstr "Texturepacks"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "The package $1/$2 was not found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Uninstall"
-msgstr "Sakinisha"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -610,7 +648,6 @@ msgstr "Una uhakika unataka kufuta \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
-#: src/client/keycode.cpp
 msgid "Delete"
 msgstr "Futa"
 
@@ -728,42 +765,6 @@ msgstr ""
 msgid "Settings"
 msgstr "Vipimo vya"
 
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "$1 (Enabled)"
-msgstr "Kuwezeshwa"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "$1 mods"
-msgstr "Hali ya 3D"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Failed to install $1 to $2"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Install: Unable to find suitable folder name for $1"
-msgstr ""
-"Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to find a valid mod, modpack, or game"
-msgstr ""
-"Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a $1 as a $2"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a $1 as a texture pack"
-msgstr "Imeshindwa kusakinisha $1 hadi $2"
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr ""
@@ -869,18 +870,38 @@ msgid "(Use system language)"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Accessibility"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Nyuma"
 
-#: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
-msgid "Change keys"
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
 msgstr "Badilisha funguo"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
+#: src/settings_translation_file.cpp
+msgid "Chat"
+msgstr "Kuzungumza"
+
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
-#: src/client/keycode.cpp
 msgid "Clear"
 msgstr "Wazi"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Controls"
+msgstr "Vidhibiti"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Movement"
+msgstr "Kutembea haraka"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -895,11 +916,11 @@ msgstr ""
 msgid "Search"
 msgstr "Utafutaji"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
 msgstr ""
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
 msgstr "Onyesha majina ya kiufundi"
 
@@ -1010,8 +1031,17 @@ msgid "Browse online content"
 msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
+msgid "Browse online content [$1]"
+msgstr ""
+
+#: builtin/mainmenu/tab_content.lua
 #, fuzzy
 msgid "Content"
+msgstr "Kuendelea"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Content [$1]"
 msgstr "Kuendelea"
 
 #: builtin/mainmenu/tab_content.lua
@@ -1038,9 +1068,8 @@ msgid "Rename"
 msgstr "Ita jina jipya"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
-msgid "Uninstall Package"
-msgstr "Sakinusha Moduli teuliwa"
+msgid "Update available?"
+msgstr ""
 
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
@@ -1332,10 +1361,6 @@ msgstr "Kibonye guro Usasishaji wa kamera"
 #: src/client/game.cpp
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr ""
-
-#: src/client/game.cpp
-msgid "Change Keys"
-msgstr "Badilisha funguo"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1737,17 +1762,34 @@ msgstr "Programu"
 msgid "Backspace"
 msgstr "Nyuma"
 
+#. ~ Usually paired with the Pause key
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Break Key"
+msgstr "Zawadi muhimu"
+
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr ""
 
 #: src/client/keycode.cpp
-msgid "Control"
+#, fuzzy
+msgid "Clear Key"
+msgstr "Wazi"
+
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Control Key"
 msgstr "Udhibiti"
 
 #: src/client/keycode.cpp
-msgid "Down"
-msgstr "Chini"
+#, fuzzy
+msgid "Delete Key"
+msgstr "Futa"
+
+#: src/client/keycode.cpp
+msgid "Down Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1799,9 +1841,10 @@ msgstr "Nonconvert"
 msgid "Insert"
 msgstr "Chomeka"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Left"
-msgstr "Kushoto"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Left Arrow"
+msgstr "Udhibiti wa kushoto"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1825,7 +1868,8 @@ msgstr "Windows kushoto"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-msgid "Menu"
+#, fuzzy
+msgid "Menu Key"
 msgstr "Menyu"
 
 #: src/client/keycode.cpp
@@ -1902,15 +1946,18 @@ msgid "OEM Clear"
 msgstr "Wazi ya OEM"
 
 #: src/client/keycode.cpp
-msgid "Page down"
-msgstr ""
+#, fuzzy
+msgid "Page Down"
+msgstr "Chini"
 
 #: src/client/keycode.cpp
-msgid "Page up"
+msgid "Page Up"
 msgstr ""
 
+#. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-msgid "Pause"
+#, fuzzy
+msgid "Pause Key"
 msgstr "Sitisha"
 
 #: src/client/keycode.cpp
@@ -1923,12 +1970,14 @@ msgid "Print"
 msgstr "Chapa"
 
 #: src/client/keycode.cpp
-msgid "Return"
+#, fuzzy
+msgid "Return Key"
 msgstr "Kurudi"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Right"
-msgstr "Kulia"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Right Arrow"
+msgstr "Udhibiti sahihi"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1960,7 +2009,8 @@ msgid "Select"
 msgstr "Teua"
 
 #: src/client/keycode.cpp
-msgid "Shift"
+#, fuzzy
+msgid "Shift Key"
 msgstr "Shift"
 
 #: src/client/keycode.cpp
@@ -1980,8 +2030,8 @@ msgid "Tab"
 msgstr "Kichupo"
 
 #: src/client/keycode.cpp
-msgid "Up"
-msgstr "Juu"
+msgid "Up Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1991,8 +2041,9 @@ msgstr "X kitufe 1"
 msgid "X Button 2"
 msgstr "X kitufe 2"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Zoom"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Zoom Key"
 msgstr "Kuza"
 
 #: src/client/minimap.cpp
@@ -2081,10 +2132,6 @@ msgstr ""
 msgid "Change camera"
 msgstr "Badilisha funguo"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-msgid "Chat"
-msgstr "Kuzungumza"
-
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "Amri"
@@ -2141,6 +2188,10 @@ msgid "Keybindings."
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Left"
+msgstr "Kushoto"
+
+#: src/gui/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Local command"
 msgstr "Amri majadiliano"
@@ -2161,6 +2212,10 @@ msgstr ""
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
 msgstr "Teua masafa"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Right"
+msgstr "Kulia"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2206,6 +2261,10 @@ msgstr "Togoa noclip"
 #, fuzzy
 msgid "Toggle pitchmove"
 msgstr "Togoa haraka"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Zoom"
+msgstr "Kuza"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2322,6 +2381,10 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "3D"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "Mawingu ya 3D"
 
@@ -2375,7 +2438,7 @@ msgid ""
 "Currently supported:\n"
 "-    none: no 3d output.\n"
 "-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    interlaced: odd/even line based polarization screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
@@ -2388,10 +2451,6 @@ msgstr ""
 "-topbottom: Baidisha skrini juu/chini.\n"
 "-sidebyside: Baidisha skrini upande kwa upande.\n"
 "-pageflip: quadbuffer msingi 3d."
-
-#: src/settings_translation_file.cpp
-msgid "3d"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2450,16 +2509,6 @@ msgid "Active object send range"
 msgstr "Kiolwa amilifu Tuma masafa"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
-msgstr ""
-"Anwani ya kuunganishwa.\n"
-"Acha hii wazi kuanzisha seva ya ndani.\n"
-"Kumbuka kwamba uga wa anwani katika Menyu kuu Puuza kipimo hiki."
-
-#: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr ""
 
@@ -2496,14 +2545,6 @@ msgstr "Pevu"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names.\n"
-"Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2519,10 +2560,6 @@ msgstr "Daima kuruka na kufunga"
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr "Occlusion iliyoko gamma"
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2653,8 +2690,8 @@ msgstr "Kumfunga anwani"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Biome API noise parameters"
-msgstr "Mwandishi ramani v6 unyevu kelele vigezo"
+msgid "Biome API"
+msgstr "Kelele za mto"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2832,10 +2869,6 @@ msgid "Chunk size"
 msgstr "Ukubwa wa fungu"
 
 #: src/settings_translation_file.cpp
-msgid "Cinematic mode"
-msgstr "Hali ya cinematic"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
@@ -2864,12 +2897,13 @@ msgid "Client side modding restrictions"
 msgstr "Mteja"
 
 #: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
-msgstr ""
+#, fuzzy
+msgid "Client-side Modding"
+msgstr "Mteja"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Client-side Modding"
+msgid "Client-side node lookup range restriction"
 msgstr "Mteja"
 
 #: src/settings_translation_file.cpp
@@ -2885,7 +2919,8 @@ msgid "Clouds"
 msgstr "Mawingu"
 
 #: src/settings_translation_file.cpp
-msgid "Clouds are a client side effect."
+#, fuzzy
+msgid "Clouds are a client-side effect."
 msgstr "Mawingu ni mteja upande athari."
 
 #: src/settings_translation_file.cpp
@@ -2988,24 +3023,6 @@ msgid "ContentDB URL"
 msgstr "Kuendelea"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
-msgstr "Kuendelea mbele"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controls"
-msgstr "Vidhibiti"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Controls length of day/night cycle.\n"
@@ -3042,11 +3059,6 @@ msgid "Crash message"
 msgstr "Ajali ujumbe"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Creative"
-msgstr "Kuunda"
-
-#: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
 msgstr "Crosshair Alfa"
 
@@ -3070,10 +3082,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "DPI"
 msgstr "DPI"
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr "Uharibifu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3163,12 +3171,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
-"Value of 2 means taking 2x2 = 4 samples."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr ""
 
@@ -3186,6 +3188,13 @@ msgstr ""
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Inafasili umbali wa uhamisho wa mchezaji maximal katika vitalu (0 = ukomo)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the size of the sampling grid for FSAA and SSAA antialiasing "
+"methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3281,10 +3290,6 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Kikoa jina la seva, kuonyeshwa katika serverlist ya."
 
 #: src/settings_translation_file.cpp
-msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "Mara mbili ya bomba kuruka kwa kuruka"
 
@@ -3365,10 +3370,6 @@ msgid "Enable console window"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable joysticks"
 msgstr "Wezesha vifimbocheza"
@@ -3389,10 +3390,6 @@ msgstr "Kuwezesha usalama Moduli"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr "Wezesha wachezaji kupata uharibifu na kufa."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3477,18 +3474,6 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "Huwezesha uwekaji kache kwa facedir Iliyozungushwa meshes."
 
 #: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr "Inawezesha minimap."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
@@ -3496,7 +3481,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Engine profiler"
+msgid "Engine Profiler"
 msgstr "Maelezo mafupi ya Bonde"
 
 #: src/settings_translation_file.cpp
@@ -3551,19 +3536,6 @@ msgstr "Kuongeza kasi hali ya haraka"
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
 msgstr "Kasi ya hali ya haraka"
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr "Kutembea haraka"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
-msgstr ""
-"Harakati haraka (kupitia matumizi muhimu).\n"
-"Hii inahitaji upendeleo \"haraka\" kwenye seva."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3656,10 +3628,6 @@ msgstr "Umbali wa uhamisho wa mchezaji"
 #, fuzzy
 msgid "Floatland water level"
 msgstr "Kiwango cha maji"
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr "Kuruka"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -3799,6 +3767,10 @@ msgid "Fullscreen mode."
 msgstr "Hali-tumizi ya skrini nzima."
 
 #: src/settings_translation_file.cpp
+msgid "GUI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "GUI scaling"
 msgstr "GUI kurekebisha"
 
@@ -3811,17 +3783,9 @@ msgid "GUI scaling filter txr2img"
 msgstr "GUI kipimo Kichujio txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "GUIs"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Gamepads"
 msgstr "Michezo"
-
-#: src/settings_translation_file.cpp
-msgid "General"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3948,11 +3912,6 @@ msgstr "Windows kulia"
 #, fuzzy
 msgid "Height select noise"
 msgstr "Mwandishi ramani v6 urefu Teua vigezo kelele"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Hide: Temporary Settings"
-msgstr "Vipimo vya"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4084,25 +4043,6 @@ msgstr ""
 "hali-tumizi ya kuruka na ya haraka ni kuwezeshwa."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
-msgstr ""
-"Kama kuwezeshwa pamoja na hali ya kuruka, mchezaji ni uwezo wa kuruka kwa "
-"fundo imara.\n"
-"Hii inahitaji upendeleo wa \"noclip\" kwenye seva."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
@@ -4139,17 +4079,19 @@ msgstr ""
 "Tu kuwezesha hii kama unajua nini unafanya."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr "Ikiwa imewezeshwa, wachezaji wapya haiwezi kujiunga na nywila wazi."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled, the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client by 50-80%. Clients will no longer receive most\n"
+"invisible blocks, so that the utility of noclip mode is reduced."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4181,12 +4123,6 @@ msgid ""
 "this setting when it is opened, the file is moved to debug.txt.1,\n"
 "deleting an older debug.txt.1 if it exists.\n"
 "debug.txt is only moved if this setting is positive."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If this is set to true, the user will never (again) be shown the\n"
-"\"reinstall Minetest Game\" notification."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4429,15 +4365,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Last known version update"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Last update check"
-msgstr "Pata sasishi kioevu"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4970,12 +4897,12 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "Fungu juu ya samtidiga hutuma kwa mteja"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
+msgid "Maximum size of the outgoing chat queue"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Maximum size of the out chat queue.\n"
+"Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 
@@ -5019,10 +4946,6 @@ msgid "Minimal level of logging to be written to chat."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr "Ramani"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Ramani tambazo urefu"
 
@@ -5039,7 +4962,7 @@ msgid "Mipmapping"
 msgstr "Mipmapping"
 
 #: src/settings_translation_file.cpp
-msgid "Misc"
+msgid "Miscellaneous"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5159,10 +5082,6 @@ msgid "New users need to input this password."
 msgstr "Watumiaji wapya haja Ingiza nywila hii."
 
 #: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr "Noclip"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Node and Entity Highlighting"
 msgstr "Fundo udhulisho"
@@ -5207,6 +5126,10 @@ msgstr ""
 "Idadi ya vitalu ziada ambayo inaweza kupakiwa na /clearobjects mara moja.\n"
 "Hii ni mikinzano kati sqlite shughuli uendeshaji na matumizi ya kumbukumbu "
 "(4096 = 100 MB, kama kanuni ya thumb)."
+
+#: src/settings_translation_file.cpp
+msgid "Number of messages a player may send per 10 seconds."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5263,10 +5186,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr "Njia ya orodha ya unamu. Unamu wote vinatafutizwa kwanza kutoka hapa."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
@@ -5296,21 +5215,9 @@ msgid "Physics"
 msgstr "Fizikia"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Place repetition interval"
 msgstr "Bofya kulia marudio nafasi"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
-msgstr ""
-"Mchezaji ni uwezo wa kuruka bila kuwa walioathirika na mvuto.\n"
-"Hii inahitaji upendeleo \"kuruka\" kwenye seva."
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -5318,21 +5225,8 @@ msgstr "Umbali wa uhamisho wa mchezaji"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Player versus player"
-msgstr "Mchezaji dhidi ya mchezaji"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Poisson filtering"
 msgstr "Uchujaji wa bilinear"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
-msgstr ""
-"Bandari ya kuunganishwa (UDP).\n"
-"Kumbuka kwamba uwanja wa bandari katika Menyu kuu Puuza kipimo hiki."
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
@@ -5418,10 +5312,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Remote media"
 msgstr "Midia ya mbali"
-
-#: src/settings_translation_file.cpp
-msgid "Remote port"
-msgstr "Bandari ya mbali"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5511,10 +5401,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
-msgstr "Ramani pande zote"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
@@ -5727,7 +5613,7 @@ msgid "Server port"
 msgstr "Kituo tarishi cha seva"
 
 #: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
+msgid "Server-side occlusion culling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5889,10 +5775,6 @@ msgid "Shadow strength gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "Sura ya minimap ya. Kuwezeshwa = pande zote, walemavu = mraba."
-
-#: src/settings_translation_file.cpp
 msgid "Show debug info"
 msgstr "Onyesha maelezo kuhusu marekebisho"
 
@@ -5929,7 +5811,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
-"WARNING!: There is no benefit, and there are several dangers, in\n"
+"WARNING: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
 "Reducing this value increases cave and dungeon density.\n"
 "Altering this value is for special usage, leaving it unchanged is\n"
@@ -6005,10 +5887,6 @@ msgid "Soft shadow radius"
 msgstr "Fonti kivuli Alfa"
 
 #: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr "Sauti"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
@@ -6030,7 +5908,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Spread a complete update of shadow map over given amount of frames.\n"
+"Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
@@ -6044,7 +5922,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
+#, fuzzy
+msgid "Static spawn point"
 msgstr "Spawnpoint tuli"
 
 #: src/settings_translation_file.cpp
@@ -6088,7 +5967,7 @@ msgid ""
 "to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
 "upper tapering).\n"
 "***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
-"When enabling water placement the floatlands must be configured and tested\n"
+"When enabling water placement, floatlands must be configured and tested\n"
 "to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
 "required value depending on 'mgv7_np_floatland'), to avoid\n"
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
@@ -6153,10 +6032,6 @@ msgid "Terrain persistence noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr "Njia ya unamu"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
@@ -6195,13 +6070,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "The depth of dirt or other biome filler node."
-msgstr "Kina cha uchafu au filler nyingine"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
+"The file path relative to your world path in which profiles will be saved to."
 msgstr ""
 "Kijia cha faili jamaa yako worldpath ambayo maumbo utaakibishwa kwenye.\n"
 
@@ -6312,23 +6182,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
-"enabled. Also the vertical distance over which humidity drops by 10 if\n"
+"enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"This can be bound to a key to toggle camera smoothing when looking around.\n"
-"Useful for recording videos"
-msgstr ""
-"Smooths kamera wakati wa kutafuta karibu. Pia huitwa kuangalia au kipanya "
-"unyooshaji.\n"
-"Muhimu kwa ajili ya kurekodi video."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6456,12 +6316,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Unix timestamp (integer) of when the client last checked for an update\n"
-"Set this value to \"disabled\" to never check for updates."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Umbali wa uhamisho wa mchezaji ukomo"
 
@@ -6513,7 +6367,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
-"especially when using a high resolution texture pack.\n"
+"especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
 
@@ -6603,14 +6457,6 @@ msgstr ""
 #, fuzzy
 msgid "Varies steepness of cliffs."
 msgstr "Udhibiti mwinuko/urefu wa milima."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Version number which was last seen during an update check.\n"
-"\n"
-"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
-"Ex: 5.5.0 is 005005000"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6773,10 +6619,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr "Kama kuruhusu wachezaji kuharibu na kuua kila mmoja."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6946,6 +6788,15 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Address / Port"
 #~ msgstr "Kushughulikia / bandari"
 
+#~ msgid ""
+#~ "Address to connect to.\n"
+#~ "Leave this blank to start a local server.\n"
+#~ "Note that the address field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Anwani ya kuunganishwa.\n"
+#~ "Acha hii wazi kuanzisha seva ya ndani.\n"
+#~ "Kumbuka kwamba uga wa anwani katika Menyu kuu Puuza kipimo hiki."
+
 #, fuzzy
 #~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
@@ -6979,6 +6830,10 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Bilinear Filter"
 #~ msgstr "Kichujio bilinear"
 
+#, fuzzy
+#~ msgid "Biome API noise parameters"
+#~ msgstr "Mwandishi ramani v6 unyevu kelele vigezo"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr ""
 #~ "Biti kwa pikseli (a.k.a rangi kina) katika hali-tumizi ya skrini nzima."
@@ -6992,11 +6847,18 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Camera update toggle key"
 #~ msgstr "Kibonye guro Usasishaji wa kamera"
 
+#, fuzzy
+#~ msgid "Change keys"
+#~ msgstr "Badilisha funguo"
+
 #~ msgid "Chat key"
 #~ msgstr "Ufunguo wa mazungumzo"
 
 #~ msgid "Chat toggle key"
 #~ msgstr "Kibonye guro wa mazungumzo"
+
+#~ msgid "Cinematic mode"
+#~ msgstr "Hali ya cinematic"
 
 #~ msgid "Cinematic mode key"
 #~ msgstr "Hali ya cinematic ufunguo"
@@ -7019,15 +6881,25 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Connected Glass"
 #~ msgstr "Kioo kushikamana"
 
+#~ msgid "Continuous forward"
+#~ msgstr "Kuendelea mbele"
+
 #~ msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 #~ msgstr ""
 #~ "Vidhibiti vya upana wa vichuguu, thamani ndogo huunda vichuguu pana."
+
+#, fuzzy
+#~ msgid "Creative"
+#~ msgstr "Kuunda"
 
 #~ msgid "Credits"
 #~ msgstr "Mikopo"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Rangi ya crosshair (R, G, B)."
+
+#~ msgid "Damage"
+#~ msgstr "Uharibifu"
 
 #~ msgid "Damage enabled"
 #~ msgstr "Uharibifu kuwezeshwa"
@@ -7096,6 +6968,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Enable VBO"
 #~ msgstr "Wezesha VBO"
 
+#~ msgid "Enable players getting damage and dying."
+#~ msgstr "Wezesha wachezaji kupata uharibifu na kufa."
+
 #~ msgid "Enabled"
 #~ msgstr "Kuwezeshwa"
 
@@ -7111,6 +6986,9 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "Huwezesha toni filmic ramani"
+
+#~ msgid "Enables minimap."
+#~ msgstr "Inawezesha minimap."
 
 #~ msgid ""
 #~ "Enables on the fly normalmap generation (Emboss effect).\n"
@@ -7159,6 +7037,14 @@ msgstr "cURL kikomo sambamba"
 
 #, fuzzy
 #~ msgid ""
+#~ "Fast movement (via the \"Aux1\" key).\n"
+#~ "This requires the \"fast\" privilege on the server."
+#~ msgstr ""
+#~ "Harakati haraka (kupitia matumizi muhimu).\n"
+#~ "Hii inahitaji upendeleo \"haraka\" kwenye seva."
+
+#, fuzzy
+#~ msgid ""
 #~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 #~ "which PNG optimizers usually discard, often resulting in dark or\n"
 #~ "light edges to transparent textures. Apply a filter to clean that up\n"
@@ -7175,6 +7061,9 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Fly key"
 #~ msgstr "Kuruka ufunguo"
+
+#~ msgid "Flying"
+#~ msgstr "Kuruka"
 
 #~ msgid "Fog toggle key"
 #~ msgstr "Kibonye guro wa ukungu"
@@ -7218,11 +7107,24 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "HUD toggle key"
 #~ msgstr "HUD kibonye"
 
+#, fuzzy
+#~ msgid "Hide: Temporary Settings"
+#~ msgstr "Vipimo vya"
+
 #~ msgid "High-precision FPU"
 #~ msgstr "FPU kuu-usahihi"
 
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 msaada."
+
+#~ msgid ""
+#~ "If enabled together with fly mode, player is able to fly through solid "
+#~ "nodes.\n"
+#~ "This requires the \"noclip\" privilege on the server."
+#~ msgstr ""
+#~ "Kama kuwezeshwa pamoja na hali ya kuruka, mchezaji ni uwezo wa kuruka kwa "
+#~ "fundo imara.\n"
+#~ "Hii inahitaji upendeleo wa \"noclip\" kwenye seva."
 
 #~ msgid "In-Game"
 #~ msgstr "Katika mchezo"
@@ -7954,6 +7856,10 @@ msgstr "cURL kikomo sambamba"
 #~ msgstr "Muhimu ya Kiweko"
 
 #, fuzzy
+#~ msgid "Last update check"
+#~ msgstr "Pata sasishi kioevu"
+
+#, fuzzy
 #~ msgid "Lava depth"
 #~ msgstr "Kina ya pango kubwa"
 
@@ -7984,6 +7890,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Menus"
 #~ msgstr "Menyu"
 
+#~ msgid "Minimap"
+#~ msgstr "Ramani"
+
 #~ msgid "Minimap key"
 #~ msgstr "Ufunguo wa minimap"
 
@@ -8011,6 +7920,9 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "No Mipmap"
 #~ msgstr "Hakuna Mipmap"
+
+#~ msgid "Noclip"
+#~ msgstr "Noclip"
 
 #~ msgid "Noclip key"
 #~ msgstr "Ufunguo wa Noclip"
@@ -8079,6 +7991,11 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Njia ya kuokoa viwambo katika."
 
+#~ msgid ""
+#~ "Path to texture directory. All textures are first searched from here."
+#~ msgstr ""
+#~ "Njia ya orodha ya unamu. Unamu wote vinatafutizwa kwanza kutoka hapa."
+
 #, fuzzy
 #~ msgid "Pitch move key"
 #~ msgstr "Kuruka ufunguo"
@@ -8087,14 +8004,32 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Place key"
 #~ msgstr "Kuruka ufunguo"
 
+#~ msgid ""
+#~ "Player is able to fly without being affected by gravity.\n"
+#~ "This requires the \"fly\" privilege on the server."
+#~ msgstr ""
+#~ "Mchezaji ni uwezo wa kuruka bila kuwa walioathirika na mvuto.\n"
+#~ "Hii inahitaji upendeleo \"kuruka\" kwenye seva."
+
 #~ msgid "Player name"
 #~ msgstr "Jina la mchezaji"
+
+#, fuzzy
+#~ msgid "Player versus player"
+#~ msgstr "Mchezaji dhidi ya mchezaji"
 
 #~ msgid "Please enter a valid integer."
 #~ msgstr "Tafadhali ingiza namba kamili halali."
 
 #~ msgid "Please enter a valid number."
 #~ msgstr "Tafadhali ingiza namba halali."
+
+#~ msgid ""
+#~ "Port to connect to (UDP).\n"
+#~ "Note that the port field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Bandari ya kuunganishwa (UDP).\n"
+#~ "Kumbuka kwamba uwanja wa bandari katika Menyu kuu Puuza kipimo hiki."
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "Profiler kibonye"
@@ -8108,11 +8043,17 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Range select key"
 #~ msgstr "Kibonye Teua masafa"
 
+#~ msgid "Remote port"
+#~ msgstr "Bandari ya mbali"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Weka upya singleplayer ulimwengu"
 
 #~ msgid "Right key"
 #~ msgstr "Ufunguo sahihi"
+
+#~ msgid "Round minimap"
+#~ msgstr "Ramani pande zote"
 
 #, fuzzy
 #~ msgid "Saturation"
@@ -8143,6 +8084,9 @@ msgstr "cURL kikomo sambamba"
 #~ "not be drawn."
 #~ msgstr "Fonti kivuli Sawazisha, kama 0 basi kivuli itakuwa kuchukuliwa."
 
+#~ msgid "Shape of the minimap. Enabled = round, disabled = square."
+#~ msgstr "Sura ya minimap ya. Kuwezeshwa = pande zote, walemavu = mraba."
+
 #~ msgid "Simple Leaves"
 #~ msgstr "Rahisi majani"
 
@@ -8152,8 +8096,8 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Smooths mzunguko wa kamera. 0 kulemaza."
 
-#~ msgid "Sneak key"
-#~ msgstr "Zawadi muhimu"
+#~ msgid "Sound"
+#~ msgstr "Sauti"
 
 #, fuzzy
 #~ msgid "Special key"
@@ -8165,8 +8109,15 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Strength of generated normalmaps."
 #~ msgstr "Nguvu ya normalmaps inayozalishwa."
 
+#~ msgid "Texture path"
+#~ msgstr "Njia ya unamu"
+
 #~ msgid "Texturing:"
 #~ msgstr "Texturing:"
+
+#, fuzzy
+#~ msgid "The depth of dirt or other biome filler node."
+#~ msgstr "Kina cha uchafu au filler nyingine"
 
 #, fuzzy
 #~ msgid "The value must be at least $1."
@@ -8175,6 +8126,16 @@ msgstr "cURL kikomo sambamba"
 #, fuzzy
 #~ msgid "The value must not be larger than $1."
 #~ msgstr "Thamani lazima iwe chini kuliko $1."
+
+#, fuzzy
+#~ msgid ""
+#~ "This can be bound to a key to toggle camera smoothing when looking "
+#~ "around.\n"
+#~ "Useful for recording videos"
+#~ msgstr ""
+#~ "Smooths kamera wakati wa kutafuta karibu. Pia huitwa kuangalia au kipanya "
+#~ "unyooshaji.\n"
+#~ "Muhimu kwa ajili ya kurekodi video."
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "Fonti hii itatumika kwa lugha fulani."
@@ -8205,6 +8166,13 @@ msgstr "cURL kikomo sambamba"
 #, fuzzy
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "Imeshindwa kusakinisha $1 hadi $2"
+
+#, fuzzy
+#~ msgid "Uninstall Package"
+#~ msgstr "Sakinusha Moduli teuliwa"
+
+#~ msgid "Up"
+#~ msgstr "Juu"
 
 #~ msgid "Use trilinear filtering when scaling textures."
 #~ msgstr "Tumia uchujaji trilinear wakati upimaji unamu."
@@ -8263,6 +8231,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgstr ""
 #~ "Kama freetype fonti hutumiwa, inahitaji msaada wa freetype kuwa "
 #~ "alikusanya katika."
+
+#~ msgid "Whether to allow players to damage and kill each other."
+#~ msgstr "Kama kuruhusu wachezaji kuharibu na kuua kila mmoja."
 
 #, fuzzy
 #~ msgid "Y of upper limit of lava in large caves."

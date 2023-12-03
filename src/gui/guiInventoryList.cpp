@@ -99,6 +99,7 @@ void GUIInventoryList::draw()
 				(i / m_geom.X) * m_slot_spacing.Y);
 		core::rect<s32> rect = imgrect + base_pos + p;
 		ItemStack item = ilist->getItem(item_i);
+		ItemStack orig_item = item;
 
 		bool selected = selected_item
 			&& m_invmgr->getInventory(selected_item->inventoryloc) == inv
@@ -147,13 +148,19 @@ void GUIInventoryList::draw()
 			// Draw item stack
 			drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
 					client, rotation_kind);
-			// Add hovering tooltip
-			if (hovering && !selected_item) {
-				std::string tooltip = item.getDescription(client->idef());
-				if (m_fs_menu->doTooltipAppendItemname())
-					tooltip += "\n[" + item.name + "]";
-				m_fs_menu->addHoveredItemTooltip(tooltip);
-			}
+		}
+
+		// Add hovering tooltip
+		bool show_tooltip = !item.empty() && hovering && !selected_item;
+#ifdef HAVE_TOUCHSCREENGUI
+		// Make it possible to see item tooltips on touchscreens
+		show_tooltip |= hovering && selected && m_fs_menu->getSelectedAmount() != 0;
+#endif
+		if (show_tooltip) {
+			std::string tooltip = orig_item.getDescription(client->idef());
+			if (m_fs_menu->doTooltipAppendItemname())
+				tooltip += "\n[" + orig_item.name + "]";
+			m_fs_menu->addHoveredItemTooltip(tooltip);
 		}
 	}
 

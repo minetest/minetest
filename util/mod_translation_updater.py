@@ -8,7 +8,6 @@
 #                    2023 Wuzzy.
 # License: LGPLv2.1 or later (see LICENSE file for details)
 
-from __future__ import print_function
 import os, fnmatch, re, shutil, errno
 from sys import argv as _argv
 from sys import stderr as _stderr
@@ -121,16 +120,42 @@ def main():
 
 # Group 2 will be the string, groups 1 and 3 will be the delimiters (" or ')
 # See https://stackoverflow.com/questions/46967465/regex-match-text-in-either-single-or-double-quote
-pattern_lua_quoted = re.compile(r'[\.=^\t,{\(\s]N?F?S\s*\(\s*(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)[\s,\)]', re.DOTALL)
+pattern_lua_quoted = re.compile(
+	r'(?:^|[\.=,{\(\s])' # Look for beginning of file or anything that isn't a function identifier
+	r'N?F?S\s*\(\s*' # Matches S, FS, NS or NFS function call
+	r'(["\'])((?:\\\1|(?:(?!\1)).)*)(\1)' # Quoted string
+	r'[\s,\)]', # End of call or argument
+	re.DOTALL)
 # Handles the [[ ... ]] string delimiters
-pattern_lua_bracketed = re.compile(r'[\.=^\t,{\(\s]N?F?S\s*\(\s*\[\[(.*?)\]\][\s,\)]', re.DOTALL)
+pattern_lua_bracketed = re.compile(
+	r'(?:^|[\.=,{\(\s])' # Same as for pattern_lua_quoted
+	r'N?F?S\s*\(\s*' # Same as for pattern_lua_quoted
+	r'\[\[(.*?)\]\]' # [[ ... ]] string delimiters
+	r'[\s,\)]', # Same as for pattern_lua_quoted
+	re.DOTALL)
 
 # Handles "concatenation" .. " of strings"
 pattern_concat = re.compile(r'["\'][\s]*\.\.[\s]*["\']', re.DOTALL)
 
-pattern_tr = re.compile(r'(.*?[^@])=(.*)')
+# Handles a translation line in *.tr file.
+# Group 1 is the source string left of the equals sign.
+# Group 2 is the translated string, right of the equals sign.
+pattern_tr = re.compile(
+	r'(.*)' # Source string
+	# the separating equals sign, if NOT preceded by @, unless
+	# that @ is preceded by another @
+	r'(?:(?<!(?<!@)@)=)'
+	r'(.*)' # Translation string
+	)
 pattern_name = re.compile(r'^name[ ]*=[ ]*([^ \n]*)')
 pattern_tr_filename = re.compile(r'\.tr$')
+
+# Matches bad use of @ signs in Lua string
+pattern_bad_luastring = re.compile(
+	r'^@$|'	# single @, OR
+	r'[^@]@$|' # trailing unescaped @, OR
+	r'(?<!@)@(?=[^@1-9])' # an @ that is not escaped or part of a placeholder
+)
 
 # Attempt to read the mod's name from the mod.conf file or folder name. Returns None on failure
 def get_modname(folder):
@@ -263,8 +288,10 @@ def read_lua_file_strings(lua_file):
 			strings.append(s)
 
 		for s in strings:
-			s = re.sub(r'"\.\.\s+"', "", s)
-			s = re.sub("@[^@=0-9]", "@@", s)
+			found_bad = pattern_bad_luastring.search(s)
+			if found_bad:
+				print("SYNTAX ERROR: Unescaped '@' in Lua string: " + s)
+				continue
 			s = s.replace('\\"', '"')
 			s = s.replace("\\'", "'")
 			s = s.replace("\n", "@n")
@@ -304,11 +331,14 @@ def import_tr_file(tr_file):
 					if header_comments != None:
 						in_header = False
 					continue
-				# comment lines
+				# Comment lines
 				elif line.startswith("#"):
-					# source file comments: ##[ file.lua ] ##
+					# Source file comments: ##[ file.lua ]##
 					if line.startswith(symbol_source_prefix) and line.endswith(symbol_source_suffix):
-						# remove those comments; they may be added back automatically
+						# This line marks the end of header comments.
+						if params["print-source"]:
+							in_header = False
+						# Remove those comments; they may be added back automatically.
 						continue
 
 					# Store first occurance of textdomain
@@ -343,8 +373,7 @@ def import_tr_file(tr_file):
 						# if there was a comment, record that.
 						outval["comment"] = latest_comment_block
 					latest_comment_block = None
-					if header_comments != None:
-						in_header = False
+					in_header = False
 
 					dOut[match.group(1)] = outval
 	return (dOut, text, header_comments, textdomain)

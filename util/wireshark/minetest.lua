@@ -1299,6 +1299,7 @@ do
 		t:set_text("Minetest, Peer: " .. buffer(4,2):uint() .. ", Channel: " .. buffer(6,1):uint())
 
 		local reliability_info
+		local pos
 		if buffer(7,1):uint() == 3 then
 			-- Reliable message
 			reliability_info = "Seq=" .. buffer(8,2):uint()

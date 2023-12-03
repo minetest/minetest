@@ -247,6 +247,14 @@ std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &
 	return NULL;
 }
 
+// This will only return a meaningful value if called after drawMenu().
+core::rect<s32> GUIFormSpecMenu::getAbsoluteRect()
+{
+	core::rect<s32> rect = AbsoluteRect;
+	rect.UpperLeftCorner.Y += m_tabheader_upper_edge;
+	return rect;
+}
+
 v2s32 GUIFormSpecMenu::getElementBasePos(const std::vector<std::string> *v_pos)
 {
 	v2f32 pos_f = v2f32(padding.X, padding.Y) + pos_offset * spacing;
@@ -2104,6 +2112,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data, const std::string &elemen
 		e->setActiveTab(tab_index);
 
 	m_fields.push_back(spec);
+	m_tabheader_upper_edge = MYMIN(m_tabheader_upper_edge, rect.UpperLeftCorner.Y);
 }
 
 void GUIFormSpecMenu::parseItemImageButton(parserData* data, const std::string &element)
@@ -3105,6 +3114,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	m_formspec_version = 1;
 	m_bgcolor = video::SColor(140, 0, 0, 0);
+	m_tabheader_upper_edge = 0;
 
 	{
 		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
@@ -3633,7 +3643,7 @@ void GUIFormSpecMenu::drawMenu()
 			NULL, m_client, IT_ROT_HOVERED);
 	}
 
-/* TODO find way to show tooltips on touchscreen */
+	// On touchscreens, m_pointer is set by GUIModalMenu::preprocessEvent instead.
 #ifndef HAVE_TOUCHSCREENGUI
 	m_pointer = RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
 #endif
@@ -4190,14 +4200,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	}
 
 	/* Mouse event other than movement, or crossing the border of inventory
-	  field while holding left, right, or middle mouse button
+	   field while holding left, right, or middle mouse button
+	   or touch event (for touch screen devices)
 	 */
-	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-		(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
-			((event.MouseInput.isLeftPressed() ||
-				event.MouseInput.isRightPressed() ||
-				event.MouseInput.isMiddlePressed()) &&
-			getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
+	if ((event.EventType == EET_MOUSE_INPUT_EVENT &&
+			(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
+				((event.MouseInput.isLeftPressed() ||
+					event.MouseInput.isRightPressed() ||
+					event.MouseInput.isMiddlePressed()) &&
+				getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) ||
+			event.EventType == EET_TOUCH_INPUT_EVENT) {
 
 		// Get selected item and hovered/clicked item (s)
 
@@ -4266,36 +4278,49 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		ButtonEventType button = BET_OTHER;
 		ButtonEventType updown = BET_OTHER;
-		switch (event.MouseInput.Event) {
-		case EMIE_LMOUSE_PRESSED_DOWN:
-			button = BET_LEFT; updown = BET_DOWN;
-			break;
-		case EMIE_RMOUSE_PRESSED_DOWN:
-			button = BET_RIGHT; updown = BET_DOWN;
-			break;
-		case EMIE_MMOUSE_PRESSED_DOWN:
-			button = BET_MIDDLE; updown = BET_DOWN;
-			break;
-		case EMIE_MOUSE_WHEEL:
-			button = (event.MouseInput.Wheel > 0) ?
-				BET_WHEEL_UP : BET_WHEEL_DOWN;
-			updown = BET_DOWN;
-			break;
-		case EMIE_LMOUSE_LEFT_UP:
-			button = BET_LEFT; updown = BET_UP;
-			break;
-		case EMIE_RMOUSE_LEFT_UP:
-			button = BET_RIGHT; updown = BET_UP;
-			break;
-		case EMIE_MMOUSE_LEFT_UP:
-			button = BET_MIDDLE; updown = BET_UP;
-			break;
-		case EMIE_MOUSE_MOVED:
-			updown = BET_MOVE;
-			break;
-		default:
-			break;
+		bool mouse_shift = false;
+		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+			mouse_shift = event.MouseInput.Shift;
+			switch (event.MouseInput.Event) {
+			case EMIE_LMOUSE_PRESSED_DOWN:
+				button = BET_LEFT; updown = BET_DOWN;
+				break;
+			case EMIE_RMOUSE_PRESSED_DOWN:
+				button = BET_RIGHT; updown = BET_DOWN;
+				break;
+			case EMIE_MMOUSE_PRESSED_DOWN:
+				button = BET_MIDDLE; updown = BET_DOWN;
+				break;
+			case EMIE_MOUSE_WHEEL:
+				button = (event.MouseInput.Wheel > 0) ?
+					BET_WHEEL_UP : BET_WHEEL_DOWN;
+				updown = BET_DOWN;
+				break;
+			case EMIE_LMOUSE_LEFT_UP:
+				button = BET_LEFT; updown = BET_UP;
+				break;
+			case EMIE_RMOUSE_LEFT_UP:
+				button = BET_RIGHT; updown = BET_UP;
+				break;
+			case EMIE_MMOUSE_LEFT_UP:
+				button = BET_MIDDLE; updown = BET_UP;
+				break;
+			case EMIE_MOUSE_MOVED:
+				updown = BET_MOVE;
+				break;
+			default:
+				break;
+			}
 		}
+
+#ifdef HAVE_TOUCHSCREENGUI
+		// The second touch (see GUIModalMenu::preprocessEvent() function)
+		ButtonEventType touch = BET_OTHER;
+		if (event.EventType == EET_TOUCH_INPUT_EVENT) {
+			if (event.TouchInput.Event == ETIE_LEFT_UP)
+				touch = BET_RIGHT;
+		}
+#endif
 
 		// Set this number to a positive value to generate a move action
 		// from m_selected_item to s.
@@ -4322,6 +4347,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			if (m_held_mouse_button != BET_OTHER)
 				break;
+
 			if (button == BET_LEFT || button == BET_RIGHT || button == BET_MIDDLE)
 				m_held_mouse_button = button;
 
@@ -4341,13 +4367,13 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				// Craft preview has been clicked: craft
 				if (button == BET_MIDDLE)
 					craft_amount = 10;
-				else if (event.MouseInput.Shift && button == BET_LEFT)
+				else if (mouse_shift && button == BET_LEFT)
 					craft_amount = list_s->getItem(s.i).getStackMax(m_client->idef());
 				else
 					craft_amount = 1;
 
 				// Holding shift moves the crafted item to the inventory
-				m_shift_move_after_craft = event.MouseInput.Shift;
+				m_shift_move_after_craft = mouse_shift;
 
 			} else if (!m_selected_item && button != BET_WHEEL_UP && !empty) {
 				// Non-empty stack has been clicked: select or shift-move it
@@ -4361,7 +4387,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				else if (button == BET_LEFT)
 					count = s_count;
 
-				if (event.MouseInput.Shift) {
+				if (mouse_shift) {
 					// Shift pressed: move item, right click moves 1
 					shift_move_amount = button == BET_RIGHT ? 1 : count;
 				} else {
@@ -4382,7 +4408,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				else if (button == BET_LEFT)
 					move_amount = m_selected_amount;
 
-				if (event.MouseInput.Shift && !identical && matching) {
+				if (mouse_shift && !identical && matching) {
 					// Shift-move all items the same as the selected item to the next list
 					move_amount = 0;
 
@@ -4520,7 +4546,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (!s.isValid() || s.listname == "craftpreview")
 				break;
 
-			if (!m_selected_item && event.MouseInput.Shift) {
+			if (!m_selected_item && mouse_shift) {
 				// Shift-move items while dragging
 				if (m_held_mouse_button == BET_RIGHT)
 					shift_move_amount = 1;
@@ -4570,7 +4596,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_OTHER: {
 			// Some other mouse event has occured
 			// Currently only left-double-click should trigger this
-			if (!s.isValid() || event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
+			if (!s.isValid() || event.EventType != EET_MOUSE_INPUT_EVENT ||
+					event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
 				break;
 
 			// Only do the pickup all thing when putting down an item.
@@ -4637,6 +4664,28 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		default:
 			break;
 		}
+
+#ifdef HAVE_TOUCHSCREENGUI
+		if (touch == BET_RIGHT && m_selected_item && !m_left_dragging) {
+			if (!s.isValid()) {
+				// Not a valid slot
+				if (!getAbsoluteClippingRect().isPointInside(m_pointer))
+					// Is outside the menu
+					drop_amount = 1;
+			} else {
+				// Over a valid slot
+				move_amount = 1;
+				if (identical) {
+					// Change the selected amount instead of moving
+					if (move_amount >= m_selected_amount)
+						m_selected_amount = 0;
+					else
+						m_selected_amount -= move_amount;
+					move_amount = 0;
+				}
+			}
+		}
+#endif
 
 		// Update left-dragged slots
 		if (m_left_dragging && m_left_drag_stacks.size() > 1) {
@@ -5003,6 +5052,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 		}
 	}
+
+#ifdef HAVE_TOUCHSCREENGUI
+	if (m_second_touch)
+		return true; // Stop propagating the event
+#endif
 
 	return Parent ? Parent->OnEvent(event) : false;
 }

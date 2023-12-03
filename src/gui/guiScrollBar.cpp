@@ -266,8 +266,8 @@ void GUIScrollBar::setPos(const s32 &pos)
 	}
 
 	if (is_auto_scaling)
-		thumb_size = s32(thumb_area /
-				 (f32(page_size) / f32(thumb_area + border_size * 2)));
+		thumb_size = (s32)std::fmin(S32_MAX,
+				thumb_area / (f32(page_size) / f32(thumb_area + border_size * 2)));
 
 	thumb_size = core::s32_clamp(thumb_size, thumb_min, thumb_area);
 	scroll_pos = core::s32_clamp(pos, min_pos, max_pos);

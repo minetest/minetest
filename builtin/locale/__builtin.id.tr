@@ -2,8 +2,8 @@
 Empty command.=Perintah kosong.
 Invalid command: @1=Perintah tidak sah: @1
 Invalid command usage.=Penggunaan perintah tidak sah.
- (@1 s)= (@1 detik)
-Command execution took @1 s=Pelaksanaan perintah memerlukan @1 detik
+ (@1 s)= (@1 detik)
+Command execution took @1 s=Pelaksanaan perintah memerlukan @1 detik
 You don't have permission to run this command (missing privileges: @1).=Anda tidak memiliki izin untuk menjalankan perintah ini (hak tidak ada: @1).
 Unable to get position of player @1.=Tidak dapat mengambil letak pemain @1.
 Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)=Format daerah tidak sah. Diharapkan: (x1,y1,z1) (x2,y2,z2)

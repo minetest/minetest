@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 23:13+0200\n"
+"POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2023-05-22 21:48+0000\n"
 "Last-Translator: Furkan Baytekin <furkanbaytekin@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -133,6 +133,208 @@ msgstr "Yalnızca $1 protokol sürümü desteklenmektedir."
 msgid "We support protocol versions between version $1 and $2."
 msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "\"$1\" zaten var.Değiştirilsin mi?"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "$ 1 ve $ 2 destek dosyaları yüklenecek."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 'e $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"$1 indiriliyor,\n"
+"$2 sırada"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "$1 indiriliyor..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 için destek dosyaları bulanamadı."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 indirilecek, ve $2 destek dosyaları atlanacak."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "Tüm paketler"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "Zaten kuruldu"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "Ana Menüye Dön"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "Yerel oyun:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_content.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+msgid "Cancel"
+msgstr "İptal"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "Minetest cURL olmadan derlendiğinde ContentDB kullanılamaz"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+msgid "Dependencies:"
+msgstr "Gereklilikler:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "İndiriliyor..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr "\"$1\" yüklenirken hata oluştu: $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download \"$1\""
+msgstr "\"$1\" indirilemedi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "$1 indirilemedi"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "\"$1\" ayıklanamadı (desteklenmeyen dosya türü veya bozuk arşiv)"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "Oyunlar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "Kur"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "$1 kur"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "Eksik bağımlılıkları kur"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "Modlar"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "Paket alınamadı"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "Sonuç yok"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "Güncelleme yok"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Not found"
+msgstr "Bulunamadı"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "Üzerine yaz"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "Lütfen asıl oyunun doğru olup olmadığını gözden geçirin."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "Sıraya alındı"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "Doku paketleri"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "Kaldır"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "Güncelleme"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "Hepsini güncelle [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "Tarayıcı'da daha fazla bilgi edinin"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 (Enabled)"
+msgstr "$1 (Etkin)"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 mods"
+msgstr "$1 mod"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Failed to install $1 to $2"
+msgstr "$1'den $2'ye kurma başarısız"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
+msgstr "Mod Kur:$1 mod paketi için uygun bir klasör adı bulunamadı"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr "Geçerli bir mod veya mod paketi bulunamadı"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "Bir mod bir $1 olarak kurulamadı"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to install a $1 as a texture pack"
+msgstr "$1 bir doku paketi olarak kurulamadı"
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
 msgstr "(Etkinleştirildi, hata var)"
@@ -140,21 +342,6 @@ msgstr "(Etkinleştirildi, hata var)"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
 msgstr ""
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
-msgid "Cancel"
-msgstr "İptal"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Dependencies:"
-msgstr "Gereklilikler:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -225,160 +412,6 @@ msgstr "Dünya:"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "etkin"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "\"$1\" zaten var.Değiştirilsin mi?"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "$ 1 ve $ 2 destek dosyaları yüklenecek."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 'e $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid ""
-"$1 downloading,\n"
-"$2 queued"
-msgstr ""
-"$1 indiriliyor,\n"
-"$2 sırada"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 downloading..."
-msgstr "$1 indiriliyor..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 için destek dosyaları bulanamadı."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 indirilecek, ve $2 destek dosyaları atlanacak."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "All packages"
-msgstr "Tüm paketler"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "Zaten kuruldu"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back to Main Menu"
-msgstr "Ana Menüye Dön"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Base Game:"
-msgstr "Yerel oyun:"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "Minetest cURL olmadan derlendiğinde ContentDB kullanılamaz"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "İndiriliyor..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr "\"$1\" yüklenirken hata oluştu: $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download \"$1\""
-msgstr "\"$1\" indirilemedi"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "$1 indirilemedi"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "\"$1\" ayıklanamadı (desteklenmeyen dosya türü veya bozuk arşiv)"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Games"
-msgstr "Oyunlar"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install"
-msgstr "Kur"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install $1"
-msgstr "$1 kur"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install missing dependencies"
-msgstr "Eksik bağımlılıkları kur"
-
-#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
-#: src/client/game.cpp
-msgid "Loading..."
-msgstr "Yükleniyor..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Mods"
-msgstr "Modlar"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "Paket alınamadı"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "Sonuç yok"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No updates"
-msgstr "Güncelleme yok"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Not found"
-msgstr "Bulunamadı"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "Üzerine yaz"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Please check that the base game is correct."
-msgstr "Lütfen asıl oyunun doğru olup olmadığını gözden geçirin."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Queued"
-msgstr "Sıraya alındı"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "Doku paketleri"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "The package $1/$2 was not found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Uninstall"
-msgstr "Kaldır"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update"
-msgstr "Güncelleme"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "Hepsini güncelle [$1]"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "Tarayıcı'da daha fazla bilgi edinin"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -571,7 +604,6 @@ msgstr "\"$1\" 'i silmek istediğinizden emin misiniz?"
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
-#: src/client/keycode.cpp
 msgid "Delete"
 msgstr "Sil"
 
@@ -693,37 +725,6 @@ msgstr "siteyi ziyaret et"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (Etkin)"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 mods"
-msgstr "$1 mod"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Failed to install $1 to $2"
-msgstr "$1'den $2'ye kurma başarısız"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Install: Unable to find suitable folder name for $1"
-msgstr "Mod Kur:$1 mod paketi için uygun bir klasör adı bulunamadı"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to find a valid mod, modpack, or game"
-msgstr "Geçerli bir mod veya mod paketi bulunamadı"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a $1 as a $2"
-msgstr "Bir mod bir $1 olarak kurulamadı"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a texture pack"
-msgstr "$1 bir doku paketi olarak kurulamadı"
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "Herkese açık sunucu listesi devre dışı"
@@ -825,18 +826,38 @@ msgid "(Use system language)"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Accessibility"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "Geri"
 
-#: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
-msgid "Change keys"
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
 msgstr "Tuşları değiştir"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
+#: src/settings_translation_file.cpp
+msgid "Chat"
+msgstr "Sohbet"
+
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
-#: src/client/keycode.cpp
 msgid "Clear"
 msgstr "Temizle"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Controls"
+msgstr "Kontroller"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Movement"
+msgstr "Hızlı hareket"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -851,11 +872,11 @@ msgstr ""
 msgid "Search"
 msgstr "Ara"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
 msgstr ""
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
 msgstr "Teknik adları göster"
 
@@ -966,7 +987,17 @@ msgid "Browse online content"
 msgstr "Çevrim içi içeriğe göz at"
 
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Browse online content [$1]"
+msgstr "Çevrim içi içeriğe göz at"
+
+#: builtin/mainmenu/tab_content.lua
 msgid "Content"
+msgstr "İçerik"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Content [$1]"
 msgstr "İçerik"
 
 #: builtin/mainmenu/tab_content.lua
@@ -990,8 +1021,9 @@ msgid "Rename"
 msgstr "Yeniden adlandır"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Uninstall Package"
-msgstr "Paketi Kaldır"
+#, fuzzy
+msgid "Update available?"
+msgstr "<mevcut değil>"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1258,10 +1290,6 @@ msgstr "Kamera güncelleme etkin"
 #, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "Blok sınırları gösterilemiyor ('basic_debug' ayrıcalığına ihtiyaç var)"
-
-#: src/client/game.cpp
-msgid "Change Keys"
-msgstr "Tuşları değiştir"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1650,17 +1678,34 @@ msgstr "Uygulamalar"
 msgid "Backspace"
 msgstr "Backspace"
 
+#. ~ Usually paired with the Pause key
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Break Key"
+msgstr "Sızma tuşu"
+
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Caps Lock"
 
 #: src/client/keycode.cpp
-msgid "Control"
+#, fuzzy
+msgid "Clear Key"
+msgstr "Temizle"
+
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Control Key"
 msgstr "CTRL"
 
 #: src/client/keycode.cpp
-msgid "Down"
-msgstr "Aşağı"
+#, fuzzy
+msgid "Delete Key"
+msgstr "Sil"
+
+#: src/client/keycode.cpp
+msgid "Down Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1706,9 +1751,10 @@ msgstr "IME Dönüştürme"
 msgid "Insert"
 msgstr "Ekle"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Left"
-msgstr "Sol"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Left Arrow"
+msgstr "Sol CTRL"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1732,7 +1778,8 @@ msgstr "Sol Windows"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-msgid "Menu"
+#, fuzzy
+msgid "Menu Key"
 msgstr "Menü"
 
 #: src/client/keycode.cpp
@@ -1808,15 +1855,19 @@ msgid "OEM Clear"
 msgstr "OEM Temizle"
 
 #: src/client/keycode.cpp
-msgid "Page down"
+#, fuzzy
+msgid "Page Down"
 msgstr "Sayfa aşağı"
 
 #: src/client/keycode.cpp
-msgid "Page up"
+#, fuzzy
+msgid "Page Up"
 msgstr "Sayfa yukarı"
 
+#. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-msgid "Pause"
+#, fuzzy
+msgid "Pause Key"
 msgstr "Duraklat"
 
 #: src/client/keycode.cpp
@@ -1829,12 +1880,14 @@ msgid "Print"
 msgstr "Yazdır"
 
 #: src/client/keycode.cpp
-msgid "Return"
+#, fuzzy
+msgid "Return Key"
 msgstr "Return"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Right"
-msgstr "Sağ"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Right Arrow"
+msgstr "Sağ CTRL"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1866,7 +1919,8 @@ msgid "Select"
 msgstr "Seç"
 
 #: src/client/keycode.cpp
-msgid "Shift"
+#, fuzzy
+msgid "Shift Key"
 msgstr "Shift"
 
 #: src/client/keycode.cpp
@@ -1886,8 +1940,8 @@ msgid "Tab"
 msgstr "Tab"
 
 #: src/client/keycode.cpp
-msgid "Up"
-msgstr "Yukarı"
+msgid "Up Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1897,8 +1951,9 @@ msgstr "X Düğme 1"
 msgid "X Button 2"
 msgstr "X Düğme 2"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Zoom"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Zoom Key"
 msgstr "Yakınlaştır"
 
 #: src/client/minimap.cpp
@@ -1981,10 +2036,6 @@ msgstr "Blok sınırları"
 msgid "Change camera"
 msgstr "Kamera değiştir"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-msgid "Chat"
-msgstr "Sohbet"
-
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "Komut"
@@ -2038,6 +2089,10 @@ msgid "Keybindings."
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Left"
+msgstr "Sol"
+
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
 msgstr "Yerel komut"
 
@@ -2056,6 +2111,10 @@ msgstr "Önceki öge"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
 msgstr "Uzaklık seçimi"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Right"
+msgstr "Sağ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2096,6 +2155,10 @@ msgstr "Hayalet aç/kapa"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
 msgstr "Eğim hareketi aç/kapa"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Zoom"
+msgstr "Yakınlaştır"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2219,6 +2282,10 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr "Nehir vadilerini ve kanallarını belirleyen 2B gürültü."
 
 #: src/settings_translation_file.cpp
+msgid "3D"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "3D bulutlar"
 
@@ -2279,7 +2346,7 @@ msgid ""
 "Currently supported:\n"
 "-    none: no 3d output.\n"
 "-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    interlaced: odd/even line based polarization screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
@@ -2295,10 +2362,6 @@ msgstr ""
 "-    crossview: Şaşı 3d\n"
 "-    pageflip: quadbuffer tabanlı 3d.\n"
 "Unutmayın ki interlaced kipi, gölgelendirmelerin etkin olmasını gerektirir."
-
-#: src/settings_translation_file.cpp
-msgid "3d"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2353,16 +2416,6 @@ msgid "Active object send range"
 msgstr "Etkin nesne gönderme uzaklığı"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
-msgstr ""
-"Bağlanılacak adres.\n"
-"Yerel bir sunucu başlatmak için bunu boş bırakın.\n"
-"Ana menüdeki adres alanının bu ayarı geçersiz kılacağını unutmayın."
-
-#: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr "Nodları kazarken parçacıklar ekler."
 
@@ -2406,14 +2459,6 @@ msgstr "Gelişmiş"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names.\n"
-"Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2434,10 +2479,6 @@ msgstr "Daima uçma ve hızlı"
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr "Ortam oklüzyon gama"
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr "Bir oyuncunun her 10 saniyede bir gönderebileceği ileti sayısı."
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -2573,8 +2614,8 @@ msgstr "Bağlı adres"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Biome API noise parameters"
-msgstr "Biyom API sıcaklık ve nem gürültü parametreleri"
+msgid "Biome API"
+msgstr "Biyomlar"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2735,10 +2776,6 @@ msgid "Chunk size"
 msgstr "Yığın boyutu"
 
 #: src/settings_translation_file.cpp
-msgid "Cinematic mode"
-msgstr "Sinematik kip"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
@@ -2767,13 +2804,14 @@ msgid "Client side modding restrictions"
 msgstr "İstemci tarafı modlama kısıtlamaları"
 
 #: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
-msgstr "İstemci tarafı nod arama aralığı kısıtlaması"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client-side Modding"
 msgstr "İstemci modlama"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Client-side node lookup range restriction"
+msgstr "İstemci tarafı nod arama aralığı kısıtlaması"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2788,7 +2826,8 @@ msgid "Clouds"
 msgstr "Bulutlar"
 
 #: src/settings_translation_file.cpp
-msgid "Clouds are a client side effect."
+#, fuzzy
+msgid "Clouds are a client-side effect."
 msgstr "Bulutlar istemci tarafı bir efekttir."
 
 #: src/settings_translation_file.cpp
@@ -2905,26 +2944,6 @@ msgid "ContentDB URL"
 msgstr "ContentDB URL"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
-msgstr "Sürekli ileri"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
-msgstr ""
-"Sürekli ileri hareket, kendiliğinden ileri tuşuyla açılır/kapanır.\n"
-"Kapamak için kendiliğinden ileriye tekrar veya geri harekete basın."
-
-#: src/settings_translation_file.cpp
-msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controls"
-msgstr "Kontroller"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
@@ -2965,10 +2984,6 @@ msgid "Crash message"
 msgstr "Çökme iletisi"
 
 #: src/settings_translation_file.cpp
-msgid "Creative"
-msgstr "Yaratıcı"
-
-#: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
 msgstr "Artı saydamlığı"
 
@@ -2995,10 +3010,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "DPI"
 msgstr "DPI"
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr "Hasar"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3092,12 +3103,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "İsteğe bağlı tepelerin ve göllerin konumunu ve arazisini belirler."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
-"Value of 2 means taking 2x2 = 4 samples."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr "Taban yer seviyesini belirler."
 
@@ -3116,6 +3121,13 @@ msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Maksimal oyuncu transfer uzaklığını bloklar cinsinden tanımlar (0 = "
 "sınırsız)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the size of the sampling grid for FSAA and SSAA antialiasing "
+"methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3215,10 +3227,6 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "Sunucu listesinde görüntülenecek sunucu alan adı."
 
 #: src/settings_translation_file.cpp
-msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "Uçma için zıplamaya çift dokun"
 
@@ -3307,10 +3315,6 @@ msgid "Enable console window"
 msgstr "Konsol penceresini etkinleştir"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr "Tüm oyuncular için yaratıcı kipi etkinleştir"
-
-#: src/settings_translation_file.cpp
 msgid "Enable joysticks"
 msgstr "Joystick'leri etkinleştir"
 
@@ -3329,10 +3333,6 @@ msgstr "Mod güvenliğini etkinleştir"
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr "Oyuncuların hasar almasını ve ölmesini etkinleştir."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3421,22 +3421,6 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "Yüz yönü döndürülmüş kafeslerin önbelleklenmesini etkinleştirir."
 
 #: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr "Mini haritayı etkinleştirir."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-"Ses sistemini etkinleştirir.\n"
-"Devre dışı bırakılırsa, bu tüm sesleri devre dışı kılar ve oyun içindeki\n"
-"ses denetimlerinin işlevi olmaz.\n"
-"Bu ayarı değiştirmek, yeniden başlatma gerektirir."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
@@ -3444,7 +3428,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Engine profiler"
+msgid "Engine Profiler"
 msgstr "Vadi profili"
 
 #: src/settings_translation_file.cpp
@@ -3504,18 +3488,6 @@ msgstr "Hızlı kip hızlanması"
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
 msgstr "Hızlı kip hızı"
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr "Hızlı hareket"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
-msgstr ""
-"Hızlı hareket (\"Aux1\" tuşu ile).\n"
-"Bu, sunucu üzerinde \"hızlı\" yetkisi gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3603,10 +3575,6 @@ msgstr "Yüzenkara koniklik uzaklığı"
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
 msgstr "Yüzenkara su seviyesi"
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr "Uçma"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -3756,6 +3724,10 @@ msgid "Fullscreen mode."
 msgstr "Tam ekran kipi."
 
 #: src/settings_translation_file.cpp
+msgid "GUI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "GUI scaling"
 msgstr "Arayüz boyutlandırma"
 
@@ -3768,17 +3740,9 @@ msgid "GUI scaling filter txr2img"
 msgstr "Arayüz boyutlandırma filtresi txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "GUIs"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Gamepads"
 msgstr "Oyunlar"
-
-#: src/settings_translation_file.cpp
-msgid "General"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3899,11 +3863,6 @@ msgstr "Yükseklik gürültüsü"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr "Yükseklik seçme gürültüsü"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Hide: Temporary Settings"
-msgstr "Ayarlar"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -4040,29 +3999,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-"Etkinleştirilirse sunucu oyuncunun göz konumuna göre harita bloğu\n"
-"oklüzyon ayırma yapacaktır. Bu istemciye gönderilen block sayısını\n"
-"%50-80 azaltabilir. İstemci artık en görünmeyenleri almayacağından\n"
-"hayalet kipinin kullanışı azalacaktır."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
-msgstr ""
-"Uçma kipi ile birlikte etkinleştirilirse, oyuncu katı nodlardan uçarak "
-"geçebilir.\n"
-"Bu, sunucuda \"hayalet\" yetkisi gerektirir."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -4101,19 +4037,24 @@ msgstr ""
 "Yalnızca ne yaptığınızı biliyorsanız bunu etkinleştirin."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
-msgstr ""
-"Etkinleştirilirse, uçarken veya yüzerken hareket yönünü oyuncunun eğimine "
-"göre değiştirir."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr "Etkinleştirilirse, yeni oyuncular boş bir parola ile katılamaz."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"If enabled, the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client by 50-80%. Clients will no longer receive most\n"
+"invisible blocks, so that the utility of noclip mode is reduced."
+msgstr ""
+"Etkinleştirilirse sunucu oyuncunun göz konumuna göre harita bloğu\n"
+"oklüzyon ayırma yapacaktır. Bu istemciye gönderilen block sayısını\n"
+"%50-80 azaltabilir. İstemci artık en görünmeyenleri almayacağından\n"
+"hayalet kipinin kullanışı azalacaktır."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4155,12 +4096,6 @@ msgstr ""
 "sayısını aşıyorsa, dosya varsa eski bir debug.txt.1 dosyasını\n"
 "silerek debug.txt.1 dosyasına taşınır.\n"
 "debug.txt yalnızca bu ayar pozitifse taşınır."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If this is set to true, the user will never (again) be shown the\n"
-"\"reinstall Minetest Game\" notification."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4403,15 +4338,6 @@ msgstr "Büyük mağara minimum sayısı"
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
 msgstr "Büyük mağara su alma oranı"
-
-#: src/settings_translation_file.cpp
-msgid "Last known version update"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Last update check"
-msgstr "Sıvı güncelleme tıkı"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4934,12 +4860,14 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "İstemci başına maksimum eşzamanlı blok gönderimi"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
+#, fuzzy
+msgid "Maximum size of the outgoing chat queue"
 msgstr "Dış sohbet kuyruğunun maksimum boyutu"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Maximum size of the out chat queue.\n"
+"Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 "Dış sohbet kuyruğunun maksimum boyutu\n"
@@ -4986,10 +4914,6 @@ msgid "Minimal level of logging to be written to chat."
 msgstr "Sohbete yazılacak en az günlük düzeyi."
 
 #: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr "Mini harita"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "Mini harita tarama yüksekliği"
 
@@ -5006,7 +4930,7 @@ msgid "Mipmapping"
 msgstr "Mip eşleme"
 
 #: src/settings_translation_file.cpp
-msgid "Misc"
+msgid "Miscellaneous"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5126,10 +5050,6 @@ msgid "New users need to input this password."
 msgstr "Yeni kullanıcıların bu parolayı girmesi gerekir."
 
 #: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr "Hayalet"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Node and Entity Highlighting"
 msgstr "Nod Vurgulama"
@@ -5185,6 +5105,11 @@ msgstr ""
 "/clearobjects tarafında tek seferde yüklenebilecek ek blokların sayısı.\n"
 "Bu sqlite işlem yükü ve bellek tüketimi (4096=100MB)\n"
 "arasında bir dengedir."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Number of messages a player may send per 10 seconds."
+msgstr "Bir oyuncunun her 10 saniyede bir gönderebileceği ileti sayısı."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5256,10 +5181,6 @@ msgstr ""
 "kullanılacak."
 
 #: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr "Doku dizini konumu. Tüm dokular ilk burada aranır."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
@@ -5298,40 +5219,16 @@ msgid "Physics"
 msgstr "Fizik"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr "Eğim hareket kipi"
-
-#: src/settings_translation_file.cpp
 msgid "Place repetition interval"
 msgstr "Yerleştirme tekrarlama aralığı"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
-msgstr ""
-"Oyuncu yerçekimi tarafından etkilenmeden uçabilir.\n"
-"Bu, sunucuda \"uçma\" yetkisi gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
 msgstr "Oyuncu transfer uzaklığı"
 
 #: src/settings_translation_file.cpp
-msgid "Player versus player"
-msgstr "Oyuncu oyuncuya karşı"
-
-#: src/settings_translation_file.cpp
 msgid "Poisson filtering"
 msgstr "Poisson filtreleme"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
-msgstr ""
-"Bağlanılacak port (UDP).\n"
-"Ana menüdeki port alanının bunu geçersiz kılacağını unutmayın."
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
@@ -5427,10 +5324,6 @@ msgid "Remote media"
 msgstr "Uzak medya"
 
 #: src/settings_translation_file.cpp
-msgid "Remote port"
-msgstr "Uzak port"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Remove color codes from incoming chat messages\n"
 "Use this to stop players from being able to use color in their messages"
@@ -5521,10 +5414,6 @@ msgstr "Yuvarlanan tepe boyut gürültüsü"
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
 msgstr "Yuvarlanan tepeler yayılma gürültüsü"
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
-msgstr "Yuvarlak mini harita"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
@@ -5734,7 +5623,8 @@ msgid "Server port"
 msgstr "Sunucu portu"
 
 #: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
+#, fuzzy
+msgid "Server-side occlusion culling"
 msgstr "Sunucu tarafı oklüzyon ayırma"
 
 #: src/settings_translation_file.cpp
@@ -5913,10 +5803,6 @@ msgid "Shadow strength gamma"
 msgstr "Gölge gücü"
 
 #: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "Mini harita şekli. Etkin = Yuvarlak, devre dışı = kare."
-
-#: src/settings_translation_file.cpp
 msgid "Show debug info"
 msgstr "Hata ayıklama bilgisini göster"
 
@@ -5951,9 +5837,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
-"WARNING!: There is no benefit, and there are several dangers, in\n"
+"WARNING: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
 "Reducing this value increases cave and dungeon density.\n"
 "Altering this value is for special usage, leaving it unchanged is\n"
@@ -6035,10 +5922,6 @@ msgid "Soft shadow radius"
 msgstr "Yumuşak gölge yarıçapı"
 
 #: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr "Ses"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
@@ -6061,12 +5944,17 @@ msgstr ""
 "ayarlayabileceğini unutmayın."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Spread a complete update of shadow map over given amount of frames.\n"
+"Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
+"Yumuşak gölge yarıçapı boyutunu ayarla.\n"
+"Daha düşük değerler daha keskin, daha büyük değerler daha yumuşak gölgeler "
+"anlamına gelir.\n"
+"En düşük değer 1.0 ve en yüksek değer 10.0"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6079,7 +5967,8 @@ msgstr ""
 "Işık eğrisi artırma Gaussian'ın standart sapması."
 
 #: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
+#, fuzzy
+msgid "Static spawn point"
 msgstr "Sabit canlanma noktası"
 
 #: src/settings_translation_file.cpp
@@ -6117,13 +6006,14 @@ msgid "Strip color codes"
 msgstr "Renk kodlarını kaldır"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
 "to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
 "upper tapering).\n"
 "***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
-"When enabling water placement the floatlands must be configured and tested\n"
+"When enabling water placement, floatlands must be configured and tested\n"
 "to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
 "required value depending on 'mgv7_np_floatland'), to avoid\n"
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
@@ -6195,10 +6085,6 @@ msgid "Terrain persistence noise"
 msgstr "Arazi süreklilik gürültüsü"
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr "Doku konumu"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Texture size to render the shadow map on.\n"
@@ -6247,12 +6133,9 @@ msgstr ""
 "profillerin kayıt edileceği öntanımlı biçim."
 
 #: src/settings_translation_file.cpp
-msgid "The depth of dirt or other biome filler node."
-msgstr "Toprak veya başka biyom doldurucu nodun derinliği."
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
+"The file path relative to your world path in which profiles will be saved to."
 msgstr "Profillerin içine kaydedileceği, dünya konumuna bağlı dosya konumu."
 
 #: src/settings_translation_file.cpp
@@ -6389,9 +6272,10 @@ msgid "The type of joystick"
 msgstr "Joystick'in türü"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
-"enabled. Also the vertical distance over which humidity drops by 10 if\n"
+"enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
 "'altitude_chill' etkinse, ısının 20 azalacağı dikey uzaklık.\n"
@@ -6402,16 +6286,6 @@ msgstr ""
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr ""
 "Birlikte tepe/dağ aralık yüksekliğini belirleyen 4 2D gürültüden üçüncüsü."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"This can be bound to a key to toggle camera smoothing when looking around.\n"
-"Useful for recording videos"
-msgstr ""
-"Etrafa bakarken kamerayı yumuşatır. Bakış veya fare yumuşatma olarak da "
-"bilinir.\n"
-"Videoların kaydı için yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6545,12 +6419,6 @@ msgstr ""
 "Daha yüksek değerler daha az ayrıntılı bir görüntü sağlar."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Unix timestamp (integer) of when the client last checked for an update\n"
-"Set this value to \"disabled\" to never check for updates."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "Sınırsız oyuncu transfer uzaklığı"
 
@@ -6602,7 +6470,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
-"especially when using a high resolution texture pack.\n"
+"especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
 "Dokuları boyutlandırmak için mip haritalama kullan. Özellikle yüksek\n"
@@ -6697,14 +6565,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
 msgstr "Uçurumların dikliğini değiştirir."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Version number which was last seen during an update check.\n"
-"\n"
-"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
-"Ex: 5.5.0 is 005005000"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6864,12 +6724,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr ""
-"Oyuncuların birbirini öldürmesine veya zarar vermesine izin verilip "
-"verilmeyeceği."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7060,6 +6914,15 @@ msgstr "cURL paralel sınırı"
 #~ msgstr "Adres / Port"
 
 #~ msgid ""
+#~ "Address to connect to.\n"
+#~ "Leave this blank to start a local server.\n"
+#~ "Note that the address field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Bağlanılacak adres.\n"
+#~ "Yerel bir sunucu başlatmak için bunu boş bırakın.\n"
+#~ "Ana menüdeki adres alanının bu ayarı geçersiz kılacağını unutmayın."
+
+#~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
 #~ "This setting is for the client only and is ignored by the server."
@@ -7097,6 +6960,10 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Bilinear Filter"
 #~ msgstr "Bilineer Filtre"
 
+#, fuzzy
+#~ msgid "Biome API noise parameters"
+#~ msgstr "Biyom API sıcaklık ve nem gürültü parametreleri"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "Tam ekran kipinde piksel başına bit (renk derinliği)."
 
@@ -7125,6 +6992,10 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "Işık eğrisi orta-artırmanın merkezi."
 
+#, fuzzy
+#~ msgid "Change keys"
+#~ msgstr "Tuşları değiştir"
+
 #~ msgid ""
 #~ "Changes the main menu UI:\n"
 #~ "-   Full:  Multiple singleplayer worlds, game choice, texture pack "
@@ -7144,6 +7015,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Chat toggle key"
 #~ msgstr "Sohbet açma/kapama tuşu"
+
+#~ msgid "Cinematic mode"
+#~ msgstr "Sinematik kip"
 
 #~ msgid "Cinematic mode key"
 #~ msgstr "Sinematik kip tuşu"
@@ -7166,6 +7040,16 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Connected Glass"
 #~ msgstr "Bitişik Cam"
 
+#~ msgid "Continuous forward"
+#~ msgstr "Sürekli ileri"
+
+#~ msgid ""
+#~ "Continuous forward movement, toggled by autoforward key.\n"
+#~ "Press the autoforward key again or the backwards movement to disable."
+#~ msgstr ""
+#~ "Sürekli ileri hareket, kendiliğinden ileri tuşuyla açılır/kapanır.\n"
+#~ "Kapamak için kendiliğinden ileriye tekrar veya geri harekete basın."
+
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "Sıvıdaki batma hızını denetler."
 
@@ -7181,11 +7065,17 @@ msgstr "cURL paralel sınırı"
 #~ "Tünellerin genişliğini denetler, daha küçük bir değer daha geniş tüneller "
 #~ "yaratır."
 
+#~ msgid "Creative"
+#~ msgstr "Yaratıcı"
+
 #~ msgid "Credits"
 #~ msgstr "Hakkında"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "Artı rengi (R,G,B)."
+
+#~ msgid "Damage"
+#~ msgstr "Hasar"
 
 #~ msgid "Damage enabled"
 #~ msgstr "Hasar etkin"
@@ -7248,6 +7138,9 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Disabled unlimited viewing range"
 #~ msgstr "Sınırsız görüntüleme uzaklığı devre dışı"
 
+#~ msgid "Down"
+#~ msgstr "Aşağı"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "minetest.net'den , Minetest Game gibi, bir oyun indirin"
 
@@ -7266,6 +7159,12 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Enable VBO"
 #~ msgstr "VBO'yu etkinleştir"
+
+#~ msgid "Enable creative mode for all players"
+#~ msgstr "Tüm oyuncular için yaratıcı kipi etkinleştir"
+
+#~ msgid "Enable players getting damage and dying."
+#~ msgstr "Oyuncuların hasar almasını ve ölmesini etkinleştir."
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "Kayıt onayını etkinleştir"
@@ -7287,6 +7186,9 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "Filmsel ton eşlemeyi etkinleştirir"
 
+#~ msgid "Enables minimap."
+#~ msgstr "Mini haritayı etkinleştirir."
+
 #~ msgid ""
 #~ "Enables on the fly normalmap generation (Emboss effect).\n"
 #~ "Requires bumpmapping to be enabled."
@@ -7300,6 +7202,18 @@ msgstr "cURL paralel sınırı"
 #~ msgstr ""
 #~ "Paralaks oklüzyon eşlemeyi etkinleştirir.\n"
 #~ "Gölgelemelerin etkin olmasını gerektirir."
+
+#~ msgid ""
+#~ "Enables the sound system.\n"
+#~ "If disabled, this completely disables all sounds everywhere and the in-"
+#~ "game\n"
+#~ "sound controls will be non-functional.\n"
+#~ "Changing this setting requires a restart."
+#~ msgstr ""
+#~ "Ses sistemini etkinleştirir.\n"
+#~ "Devre dışı bırakılırsa, bu tüm sesleri devre dışı kılar ve oyun içindeki\n"
+#~ "ses denetimlerinin işlevi olmaz.\n"
+#~ "Bu ayarı değiştirmek, yeniden başlatma gerektirir."
 
 #~ msgid "Enter "
 #~ msgstr "Gir "
@@ -7333,6 +7247,13 @@ msgstr "cURL paralel sınırı"
 #~ msgstr "Hızlı tuşu"
 
 #~ msgid ""
+#~ "Fast movement (via the \"Aux1\" key).\n"
+#~ "This requires the \"fast\" privilege on the server."
+#~ msgstr ""
+#~ "Hızlı hareket (\"Aux1\" tuşu ile).\n"
+#~ "Bu, sunucu üzerinde \"hızlı\" yetkisi gerektirir."
+
+#~ msgid ""
 #~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 #~ "which PNG optimizers usually discard, often resulting in dark or\n"
 #~ "light edges to transparent textures. Apply a filter to clean that up\n"
@@ -7359,6 +7280,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Fly key"
 #~ msgstr "Uçma tuşu"
+
+#~ msgid "Flying"
+#~ msgstr "Uçma"
 
 #~ msgid "Fog toggle key"
 #~ msgstr "Sis açma/kapama tuşu"
@@ -7407,6 +7331,10 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "HUD toggle key"
 #~ msgstr "HUD açma/kapama tuşu"
+
+#, fuzzy
+#~ msgid "Hide: Temporary Settings"
+#~ msgstr "Ayarlar"
 
 #~ msgid "High-precision FPU"
 #~ msgstr "Yüksek hassasiyetli FPU"
@@ -7515,6 +7443,22 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "IPv6 support."
 #~ msgstr "IPv6 desteği."
+
+#~ msgid ""
+#~ "If enabled together with fly mode, player is able to fly through solid "
+#~ "nodes.\n"
+#~ "This requires the \"noclip\" privilege on the server."
+#~ msgstr ""
+#~ "Uçma kipi ile birlikte etkinleştirilirse, oyuncu katı nodlardan uçarak "
+#~ "geçebilir.\n"
+#~ "Bu, sunucuda \"hayalet\" yetkisi gerektirir."
+
+#~ msgid ""
+#~ "If enabled, makes move directions relative to the player's pitch when "
+#~ "flying or swimming."
+#~ msgstr ""
+#~ "Etkinleştirilirse, uçarken veya yüzerken hareket yönünü oyuncunun eğimine "
+#~ "göre değiştirir."
 
 #~ msgid "In-Game"
 #~ msgstr "Oyun içi"
@@ -8193,6 +8137,10 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Large chat console key"
 #~ msgstr "Büyük sohbet konsolu tuşu"
 
+#, fuzzy
+#~ msgid "Last update check"
+#~ msgstr "Sıvı güncelleme tıkı"
+
 #~ msgid "Lava depth"
 #~ msgstr "Lav derinliği"
 
@@ -8225,6 +8173,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Menus"
 #~ msgstr "Menüler"
+
+#~ msgid "Minimap"
+#~ msgstr "Mini harita"
 
 #~ msgid "Minimap in radar mode, Zoom x2"
 #~ msgstr "Radar kipinde mini harita, Yakınlaştırma x2"
@@ -8267,6 +8218,9 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "No Mipmap"
 #~ msgstr "Mip eşleme yok"
+
+#~ msgid "Noclip"
+#~ msgstr "Hayalet"
 
 #~ msgid "Noclip key"
 #~ msgstr "Hayalet tuşu"
@@ -8341,20 +8295,44 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "Ekran yakalamaların kaydedileceği konum."
 
+#~ msgid ""
+#~ "Path to texture directory. All textures are first searched from here."
+#~ msgstr "Doku dizini konumu. Tüm dokular ilk burada aranır."
+
 #~ msgid "Pitch move key"
 #~ msgstr "Eğim hareket tuşu"
+
+#~ msgid "Pitch move mode"
+#~ msgstr "Eğim hareket kipi"
 
 #~ msgid "Place key"
 #~ msgstr "Yerleştirme tuşu"
 
+#~ msgid ""
+#~ "Player is able to fly without being affected by gravity.\n"
+#~ "This requires the \"fly\" privilege on the server."
+#~ msgstr ""
+#~ "Oyuncu yerçekimi tarafından etkilenmeden uçabilir.\n"
+#~ "Bu, sunucuda \"uçma\" yetkisi gerektirir."
+
 #~ msgid "Player name"
 #~ msgstr "Oyuncu adı"
+
+#~ msgid "Player versus player"
+#~ msgstr "Oyuncu oyuncuya karşı"
 
 #~ msgid "Please enter a valid integer."
 #~ msgstr "Lütfen geçerli bir tamsayı girin."
 
 #~ msgid "Please enter a valid number."
 #~ msgstr "Lütfen geçerli bir sayı girin."
+
+#~ msgid ""
+#~ "Port to connect to (UDP).\n"
+#~ "Note that the port field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "Bağlanılacak port (UDP).\n"
+#~ "Ana menüdeki port alanının bunu geçersiz kılacağını unutmayın."
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "Profilciyi açma/kapama tuşu"
@@ -8371,11 +8349,17 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Range select key"
 #~ msgstr "Uzaklık seçim tuşu"
 
+#~ msgid "Remote port"
+#~ msgstr "Uzak port"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "Tek oyunculu dünyayı sıfırla"
 
 #~ msgid "Right key"
 #~ msgstr "Sağ tuş"
+
+#~ msgid "Round minimap"
+#~ msgstr "Yuvarlak mini harita"
 
 #, fuzzy
 #~ msgid "Saturation"
@@ -8419,6 +8403,9 @@ msgstr "cURL paralel sınırı"
 #~ msgstr ""
 #~ "Yedek yazı tipinin gölge uzaklığı (piksel olarak). 0 ise, gölge çizilmez."
 
+#~ msgid "Shape of the minimap. Enabled = round, disabled = square."
+#~ msgstr "Mini harita şekli. Etkin = Yuvarlak, devre dışı = kare."
+
 #~ msgid "Simple Leaves"
 #~ msgstr "Basit Yapraklar"
 
@@ -8428,8 +8415,8 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "Kamera dönüşünü yumuşatır. 0 devre dışı bırakır."
 
-#~ msgid "Sneak key"
-#~ msgstr "Sızma tuşu"
+#~ msgid "Sound"
+#~ msgstr "Ses"
 
 #~ msgid "Special"
 #~ msgstr "Özel"
@@ -8446,14 +8433,30 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Strength of light curve mid-boost."
 #~ msgstr "Işık eğrisi orta-artırmanın kuvveti."
 
+#~ msgid "Texture path"
+#~ msgstr "Doku konumu"
+
 #~ msgid "Texturing:"
 #~ msgstr "Doku:"
+
+#~ msgid "The depth of dirt or other biome filler node."
+#~ msgstr "Toprak veya başka biyom doldurucu nodun derinliği."
 
 #~ msgid "The value must be at least $1."
 #~ msgstr "Değer en az $1 olmalı."
 
 #~ msgid "The value must not be larger than $1."
 #~ msgstr "Değer $1'den büyük olmamalı."
+
+#, fuzzy
+#~ msgid ""
+#~ "This can be bound to a key to toggle camera smoothing when looking "
+#~ "around.\n"
+#~ "Useful for recording videos"
+#~ msgstr ""
+#~ "Etrafa bakarken kamerayı yumuşatır. Bakış veya fare yumuşatma olarak da "
+#~ "bilinir.\n"
+#~ "Videoların kaydı için yararlıdır."
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "Belirli diller için bu yazı tipi kullanılacak."
@@ -8488,6 +8491,12 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "Bir mod paketi bir $1 olarak kurulamadı"
+
+#~ msgid "Uninstall Package"
+#~ msgstr "Paketi Kaldır"
+
+#~ msgid "Up"
+#~ msgstr "Yukarı"
 
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
@@ -8586,6 +8595,11 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Whether dungeons occasionally project from the terrain."
 #~ msgstr "Zindanların bazen araziden yansıyıp yansımayacağı."
+
+#~ msgid "Whether to allow players to damage and kill each other."
+#~ msgstr ""
+#~ "Oyuncuların birbirini öldürmesine veya zarar vermesine izin verilip "
+#~ "verilmeyeceği."
 
 #~ msgid "X"
 #~ msgstr "X"

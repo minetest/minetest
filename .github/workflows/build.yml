@@ -200,8 +200,8 @@ jobs:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
     env:
-      VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
-      # 2022.02
+      VCPKG_VERSION: 8eb57355a4ffb410a2e94c07b4dca2dffbee8e50
+      # 2023.10.19
       vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false

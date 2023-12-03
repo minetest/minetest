@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Thai (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-20 23:13+0200\n"
+"POT-Creation-Date: 2023-11-11 12:10+0100\n"
 "PO-Revision-Date: 2022-03-18 01:05+0000\n"
 "Last-Translator: Thomas Wiegand <weblate.org@wiegand.info>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -132,6 +132,210 @@ msgstr "เราสนับสนุนโพรโทคอลเวอร์
 msgid "We support protocol versions between version $1 and $2."
 msgstr "เราสนับสนุนโพรโทคอลระหว่างเวอร์ชัน $1 และ $2"
 
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "\"$1\" already exists. Would you like to overwrite it?"
+msgstr "มี \"$1\" อยู่แล้ว คุณต้องการเขียนทับหรือไม่ ?"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 and $2 dependencies will be installed."
+msgstr "การอ้างอิง $1 และ $2 จะถูกติดตั้ง."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 by $2"
+msgstr "$1 โดย $2"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid ""
+"$1 downloading,\n"
+"$2 queued"
+msgstr ""
+"$1 กำลังดาวน์โหลด,\n"
+"$2 เข้าคิว"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 downloading..."
+msgstr "$1 โหลด ..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 required dependencies could not be found."
+msgstr "$1 ไม่พบการพึ่งพาที่จำเป็น."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "$1 will be installed, and $2 dependencies will be skipped."
+msgstr "$1 จะถูกติดตั้ง และการขึ้นต่อกัน $2 จะถูกข้ามไป."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "All packages"
+msgstr "แพคเกจทั้งหมด"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Already installed"
+msgstr "ติดตั้งแล้ว"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Back to Main Menu"
+msgstr "กลับไปยังเมนูหลัก"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Base Game:"
+msgstr "เกมพื้นฐาน:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_content.lua
+#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
+#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "ContentDB is not available when Minetest was compiled without cURL"
+msgstr "ContentDB ไม่พร้อมใช้งานเมื่อรวบรวม Minetest โดยไม่มี cURL"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_content.lua
+msgid "Dependencies:"
+msgstr "ไฟล์อ้างอิง:"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Downloading..."
+msgstr "โหลด ..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Error installing \"$1\": $2"
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to download \"$1\""
+msgstr "ไม่สามารถดาวน์โหลด $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Failed to download $1"
+msgstr "ไม่สามารถดาวน์โหลด $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#, fuzzy
+msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
+msgstr "ติดตั้ง: ประเภทไฟล์ที่ไม่รองรับหรือไฟล์เก็บถาวรที่ใช้งานไม่ได้"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Games"
+msgstr "เกม"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install"
+msgstr "ติดตั้ง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install $1"
+msgstr "ติดตั้ง $1"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Install missing dependencies"
+msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/serverlistmgr.lua src/client/game.cpp
+msgid "Loading..."
+msgstr "กำลังโหลด..."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Mods"
+msgstr "ม็อด"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No packages could be retrieved"
+msgstr "ไม่สามารถเรียกแพคเกจได้"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/settings/dlg_settings.lua
+msgid "No results"
+msgstr "ไม่มีผลลัพธ์"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "No updates"
+msgstr "ไม่มีการปรับปรุง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Not found"
+msgstr "ไม่พบ"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Overwrite"
+msgstr "เขียนทับ"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Please check that the base game is correct."
+msgstr "โปรดตรวจสอบว่าเกมหลักถูกต้อง."
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Queued"
+msgstr "เข้าคิว"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Texture packs"
+msgstr "เทกซ์เจอร์แพ็ค"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "The package $1 was not found."
+msgstr ""
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Uninstall"
+msgstr "ถอนการติดตั้ง"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+#: builtin/mainmenu/tab_content.lua
+msgid "Update"
+msgstr "อัปเดต"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "Update All [$1]"
+msgstr "อัปเดต All [$1]"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "View more information in a web browser"
+msgstr "ดูข้อมูลเพิ่มเติมในเว็บเบราว์เซอร์"
+
+#: builtin/mainmenu/content/dlg_contentstore.lua
+msgid "You need to install a game before you can install a mod"
+msgstr ""
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 (Enabled)"
+msgstr "$1 (เปิดใช้งาน)"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "$1 mods"
+msgstr "$1 Mods"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Failed to install $1 to $2"
+msgstr "ไม่สามารถติดตั้ง $1 ถึง $2"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Install: Unable to find suitable folder name for $1"
+msgstr "ติดตั้ง Mod: ไม่สามารถค้นหาชื่อของโฟลเดอร์ที่เหมาะสมสำหรับ modpack $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to find a valid mod, modpack, or game"
+msgstr "ค้าหาไม่พบ mod หรือ modpack"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+#, fuzzy
+msgid "Unable to install a $1 as a $2"
+msgstr "ไม่สามารถติดตั้ง mod $1"
+
+#: builtin/mainmenu/content/pkgmgr.lua
+msgid "Unable to install a $1 as a texture pack"
+msgstr "ไม่สามารถติดตั้งพื้นผิว Texture $1"
+
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Enabled, has error)"
 msgstr ""
@@ -139,21 +343,6 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "(Unsatisfied)"
 msgstr ""
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_delete_content.lua
-#: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/dlg_register.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua
-#: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua src/client/keycode.cpp
-#: src/gui/guiKeyChangeMenu.cpp src/gui/guiPasswordChange.cpp
-msgid "Cancel"
-msgstr "ยกเลิก"
-
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/tab_content.lua
-msgid "Dependencies:"
-msgstr "ไฟล์อ้างอิง:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable all"
@@ -224,162 +413,6 @@ msgstr "โลก:"
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "เปิดใช้งานแล้ว"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "\"$1\" already exists. Would you like to overwrite it?"
-msgstr "มี \"$1\" อยู่แล้ว คุณต้องการเขียนทับหรือไม่ ?"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 and $2 dependencies will be installed."
-msgstr "การอ้างอิง $1 และ $2 จะถูกติดตั้ง."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 by $2"
-msgstr "$1 โดย $2"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid ""
-"$1 downloading,\n"
-"$2 queued"
-msgstr ""
-"$1 กำลังดาวน์โหลด,\n"
-"$2 เข้าคิว"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 downloading..."
-msgstr "$1 โหลด ..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 required dependencies could not be found."
-msgstr "$1 ไม่พบการพึ่งพาที่จำเป็น."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "$1 will be installed, and $2 dependencies will be skipped."
-msgstr "$1 จะถูกติดตั้ง และการขึ้นต่อกัน $2 จะถูกข้ามไป."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "All packages"
-msgstr "แพคเกจทั้งหมด"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Already installed"
-msgstr "ติดตั้งแล้ว"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Back to Main Menu"
-msgstr "กลับไปยังเมนูหลัก"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Base Game:"
-msgstr "เกมพื้นฐาน:"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "ContentDB is not available when Minetest was compiled without cURL"
-msgstr "ContentDB ไม่พร้อมใช้งานเมื่อรวบรวม Minetest โดยไม่มี cURL"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Downloading..."
-msgstr "โหลด ..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Error installing \"$1\": $2"
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to download \"$1\""
-msgstr "ไม่สามารถดาวน์โหลด $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Failed to download $1"
-msgstr "ไม่สามารถดาวน์โหลด $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#, fuzzy
-msgid "Failed to extract \"$1\" (unsupported file type or broken archive)"
-msgstr "ติดตั้ง: ประเภทไฟล์ที่ไม่รองรับหรือไฟล์เก็บถาวรที่ใช้งานไม่ได้"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Games"
-msgstr "เกม"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install"
-msgstr "ติดตั้ง"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install $1"
-msgstr "ติดตั้ง $1"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Install missing dependencies"
-msgstr "ไฟล์อ้างอิงที่เลือกใช้ได้"
-
-#: builtin/mainmenu/dlg_contentstore.lua builtin/mainmenu/serverlistmgr.lua
-#: src/client/game.cpp
-msgid "Loading..."
-msgstr "กำลังโหลด..."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Mods"
-msgstr "ม็อด"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No packages could be retrieved"
-msgstr "ไม่สามารถเรียกแพคเกจได้"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-#: builtin/mainmenu/settings/dlg_settings.lua
-msgid "No results"
-msgstr "ไม่มีผลลัพธ์"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "No updates"
-msgstr "ไม่มีการปรับปรุง"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Not found"
-msgstr "ไม่พบ"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Overwrite"
-msgstr "เขียนทับ"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Please check that the base game is correct."
-msgstr "โปรดตรวจสอบว่าเกมหลักถูกต้อง."
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Queued"
-msgstr "เข้าคิว"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Texture packs"
-msgstr "เทกซ์เจอร์แพ็ค"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "The package $1/$2 was not found."
-msgstr ""
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Uninstall"
-msgstr "ถอนการติดตั้ง"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update"
-msgstr "อัปเดต"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "Update All [$1]"
-msgstr "อัปเดต All [$1]"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "View more information in a web browser"
-msgstr "ดูข้อมูลเพิ่มเติมในเว็บเบราว์เซอร์"
-
-#: builtin/mainmenu/dlg_contentstore.lua
-msgid "You need to install a game before you can install a mod"
-msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -571,7 +604,6 @@ msgstr "คุณแน่ใจหรือไม่ที่จะต้อง
 
 #: builtin/mainmenu/dlg_delete_content.lua
 #: builtin/mainmenu/dlg_delete_world.lua builtin/mainmenu/tab_local.lua
-#: src/client/keycode.cpp
 msgid "Delete"
 msgstr "ลบ"
 
@@ -687,37 +719,6 @@ msgstr ""
 msgid "Settings"
 msgstr "การตั้งค่า"
 
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 (Enabled)"
-msgstr "$1 (เปิดใช้งาน)"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "$1 mods"
-msgstr "$1 Mods"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Failed to install $1 to $2"
-msgstr "ไม่สามารถติดตั้ง $1 ถึง $2"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Install: Unable to find suitable folder name for $1"
-msgstr "ติดตั้ง Mod: ไม่สามารถค้นหาชื่อของโฟลเดอร์ที่เหมาะสมสำหรับ modpack $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to find a valid mod, modpack, or game"
-msgstr "ค้าหาไม่พบ mod หรือ modpack"
-
-#: builtin/mainmenu/pkgmgr.lua
-#, fuzzy
-msgid "Unable to install a $1 as a $2"
-msgstr "ไม่สามารถติดตั้ง mod $1"
-
-#: builtin/mainmenu/pkgmgr.lua
-msgid "Unable to install a $1 as a texture pack"
-msgstr "ไม่สามารถติดตั้งพื้นผิว Texture $1"
-
 #: builtin/mainmenu/serverlistmgr.lua
 msgid "Public server list is disabled"
 msgstr "รายชื่อเซิร์ฟเวอร์สาธารณะถูกปิดใช้งาน"
@@ -818,18 +819,38 @@ msgid "(Use system language)"
 msgstr ""
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+msgid "Accessibility"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
 msgstr "หลัง"
 
-#: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
-msgid "Change keys"
+#: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
+msgid "Change Keys"
 msgstr "เปลี่ยนคีย์"
 
+#: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
+#: src/settings_translation_file.cpp
+msgid "Chat"
+msgstr "แช"
+
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
-#: src/client/keycode.cpp
 msgid "Clear"
 msgstr "ล้าง"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "Controls"
+msgstr "ควบคุม"
+
+#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
+msgid "Movement"
+msgstr "การเคลื่อนไหวเร็ว"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -844,11 +865,11 @@ msgstr ""
 msgid "Search"
 msgstr "ค้นหา"
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
 msgstr ""
 
-#: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
 msgstr "แสดงชื่อทางเทคนิค"
 
@@ -959,7 +980,17 @@ msgid "Browse online content"
 msgstr "เรียกดูเนื้อหาออนไลน์"
 
 #: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Browse online content [$1]"
+msgstr "เรียกดูเนื้อหาออนไลน์"
+
+#: builtin/mainmenu/tab_content.lua
 msgid "Content"
+msgstr "เนื้อหา"
+
+#: builtin/mainmenu/tab_content.lua
+#, fuzzy
+msgid "Content [$1]"
 msgstr "เนื้อหา"
 
 #: builtin/mainmenu/tab_content.lua
@@ -983,8 +1014,9 @@ msgid "Rename"
 msgstr "เปลี่ยนชื่อ"
 
 #: builtin/mainmenu/tab_content.lua
-msgid "Uninstall Package"
-msgstr "ถอนการติดตั้งแพคเกจ"
+#, fuzzy
+msgid "Update available?"
+msgstr "<ไม่มี>"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1252,10 +1284,6 @@ msgstr "เปิดใช้งานการอัปเดตกล้อง
 #, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "ไม่สามารถแสดงขอบเขตการบล็อก (ต้องการสิทธิ์ 'basic_debug')"
-
-#: src/client/game.cpp
-msgid "Change Keys"
-msgstr "เปลี่ยนคีย์"
 
 #: src/client/game.cpp
 msgid "Change Password"
@@ -1644,17 +1672,34 @@ msgstr "แอ"
 msgid "Backspace"
 msgstr "แบ็คสเปซ"
 
+#. ~ Usually paired with the Pause key
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Break Key"
+msgstr "กุญแจแอบ"
+
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "แคปล็อค"
 
 #: src/client/keycode.cpp
-msgid "Control"
+#, fuzzy
+msgid "Clear Key"
+msgstr "ล้าง"
+
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Control Key"
 msgstr "ควบคุม"
 
 #: src/client/keycode.cpp
-msgid "Down"
-msgstr "ลง"
+#, fuzzy
+msgid "Delete Key"
+msgstr "ลบ"
+
+#: src/client/keycode.cpp
+msgid "Down Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1700,9 +1745,10 @@ msgstr "IME ไม่แปลง"
 msgid "Insert"
 msgstr "ใส่"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Left"
-msgstr "ด้านซ้าย"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Left Arrow"
+msgstr "ด้านซ้าย Control"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1726,7 +1772,8 @@ msgstr "หน้าต่างซ้าย"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-msgid "Menu"
+#, fuzzy
+msgid "Menu Key"
 msgstr "เมนู"
 
 #: src/client/keycode.cpp
@@ -1802,15 +1849,19 @@ msgid "OEM Clear"
 msgstr "OEM ล้าง"
 
 #: src/client/keycode.cpp
-msgid "Page down"
+#, fuzzy
+msgid "Page Down"
 msgstr "เพลง"
 
 #: src/client/keycode.cpp
-msgid "Page up"
+#, fuzzy
+msgid "Page Up"
 msgstr "หน้าขึ้น"
 
+#. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-msgid "Pause"
+#, fuzzy
+msgid "Pause Key"
 msgstr "หยุด"
 
 #: src/client/keycode.cpp
@@ -1823,12 +1874,14 @@ msgid "Print"
 msgstr "พิมพ์"
 
 #: src/client/keycode.cpp
-msgid "Return"
+#, fuzzy
+msgid "Return Key"
 msgstr "กลับ"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Right"
-msgstr "สิทธิ"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Right Arrow"
+msgstr "สิทธิ Control"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1860,7 +1913,8 @@ msgid "Select"
 msgstr "เลือก"
 
 #: src/client/keycode.cpp
-msgid "Shift"
+#, fuzzy
+msgid "Shift Key"
 msgstr "กะ"
 
 #: src/client/keycode.cpp
@@ -1880,8 +1934,8 @@ msgid "Tab"
 msgstr "แท็บ"
 
 #: src/client/keycode.cpp
-msgid "Up"
-msgstr "ค่า"
+msgid "Up Arrow"
+msgstr ""
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1891,8 +1945,9 @@ msgstr "X ปุ่ม 1"
 msgid "X Button 2"
 msgstr "X ปุ่ม 2"
 
-#: src/client/keycode.cpp src/gui/guiKeyChangeMenu.cpp
-msgid "Zoom"
+#: src/client/keycode.cpp
+#, fuzzy
+msgid "Zoom Key"
 msgstr "ซูม"
 
 #: src/client/minimap.cpp
@@ -1975,10 +2030,6 @@ msgstr "บล็อกขอบเขต"
 msgid "Change camera"
 msgstr "เปลี่ยนกล้อง"
 
-#: src/gui/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
-msgid "Chat"
-msgstr "แช"
-
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "คำสั่ง"
@@ -2032,6 +2083,10 @@ msgid "Keybindings."
 msgstr ""
 
 #: src/gui/guiKeyChangeMenu.cpp
+msgid "Left"
+msgstr "ด้านซ้าย"
+
+#: src/gui/guiKeyChangeMenu.cpp
 msgid "Local command"
 msgstr "ท้องถิ่นคำสั่ง"
 
@@ -2050,6 +2105,10 @@ msgstr "รายการก่อนหน้า"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Range select"
 msgstr "ช่วงเลือก"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Right"
+msgstr "สิทธิ"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Screenshot"
@@ -2090,6 +2149,10 @@ msgstr "สลับ noclip"
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "Toggle pitchmove"
 msgstr "สลับ pitchmove"
+
+#: src/gui/guiKeyChangeMenu.cpp
+msgid "Zoom"
+msgstr "ซูม"
 
 #: src/gui/guiKeyChangeMenu.cpp
 msgid "press key"
@@ -2213,6 +2276,10 @@ msgid "2D noise that locates the river valleys and channels."
 msgstr "เสียง 2D ที่ระบุตำแหน่งหุบเขาและช่องแคบของแม่น้ำ."
 
 #: src/settings_translation_file.cpp
+msgid "3D"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "3D clouds"
 msgstr "เมฆ 3 มิติ"
 
@@ -2272,7 +2339,7 @@ msgid ""
 "Currently supported:\n"
 "-    none: no 3d output.\n"
 "-    anaglyph: cyan/magenta color 3d.\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    interlaced: odd/even line based polarization screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side.\n"
 "-    crossview: Cross-eyed 3d\n"
@@ -2288,10 +2355,6 @@ msgstr ""
 "- crossview: 3d สามมิติ\n"
 "- pageflip: 3d จาก quadbuffer\n"
 "โปรดทราบว่าโหมด interlaced จะต้องเปิดใช้ shaders"
-
-#: src/settings_translation_file.cpp
-msgid "3d"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2346,16 +2409,6 @@ msgid "Active object send range"
 msgstr "ช่วงการส่งวัตถุที่ใช้งานอยู่"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Address to connect to.\n"
-"Leave this blank to start a local server.\n"
-"Note that the address field in the main menu overrides this setting."
-msgstr ""
-"ที่อยู่เพื่อเชื่อมต่อ\n"
-"เว้นว่างไว้เพื่อเริ่มเซิร์ฟเวอร์ภายใน\n"
-"โปรดทราบว่าฟิลด์ที่อยู่ในเมนูหลักจะแทนที่การตั้งค่านี้"
-
-#: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
 msgstr "เพิ่มอนุภาคเมื่อขุดโหนด."
 
@@ -2397,14 +2450,6 @@ msgstr "สูง"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Affects mods and texture packs in the Content and Select Mods menus, as well "
-"as\n"
-"setting names.\n"
-"Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Alters the light curve by applying 'gamma correction' to it.\n"
 "Higher values make middle and lower light levels brighter.\n"
 "Value '1.0' leaves the light curve unaltered.\n"
@@ -2425,10 +2470,6 @@ msgstr "บินเสมอ และรวดเร็ว"
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr "แกมมาบดเคี้ยวโดยรอบ"
-
-#: src/settings_translation_file.cpp
-msgid "Amount of messages a player may send per 10 seconds."
-msgstr "จำนวนข้อความที่ผู้เล่นสามารถส่งได้ต่อ 10 วินาที"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys."
@@ -2562,8 +2603,8 @@ msgstr "ผูกที่อยู่"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Biome API noise parameters"
-msgstr "พารามิเตอร์เสียงอุณหภูมิและความชื้นของ Biome API"
+msgid "Biome API"
+msgstr "ไบโอมส์"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2724,10 +2765,6 @@ msgid "Chunk size"
 msgstr "ขนาดก้อน"
 
 #: src/settings_translation_file.cpp
-msgid "Cinematic mode"
-msgstr "โหมดภาพยนตร์"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Clickable weblinks (middle-click or Ctrl+left-click) enabled in chat console "
 "output."
@@ -2754,13 +2791,14 @@ msgid "Client side modding restrictions"
 msgstr "ข้อจำกัดในการปรับแต่งฝั่งไคลเอ็นต์"
 
 #: src/settings_translation_file.cpp
-msgid "Client side node lookup range restriction"
-msgstr "ข้อจำกัดช่วงการค้นหาโหนดฝั่งไคลเอ็นต์"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client-side Modding"
 msgstr "ลูกค้า modding"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Client-side node lookup range restriction"
+msgstr "ข้อจำกัดช่วงการค้นหาโหนดฝั่งไคลเอ็นต์"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2775,7 +2813,8 @@ msgid "Clouds"
 msgstr "เมฆ"
 
 #: src/settings_translation_file.cpp
-msgid "Clouds are a client side effect."
+#, fuzzy
+msgid "Clouds are a client-side effect."
 msgstr "เมฆเป็นผลข้างเคียงของลูกค้า"
 
 #: src/settings_translation_file.cpp
@@ -2890,26 +2929,6 @@ msgid "ContentDB URL"
 msgstr "url ฐานข้อมูลเนื้อหา"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward"
-msgstr "ไปข้างหน้าอย่างต่อเนื่อง"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Continuous forward movement, toggled by autoforward key.\n"
-"Press the autoforward key again or the backwards movement to disable."
-msgstr ""
-"การเคลื่อนที่ไปข้างหน้าอย่างต่อเนื่องสลับโดยคีย์ autoforward.\n"
-"กดปุ่ม autoforward อีกครั้งหรือเคลื่อนไหวไปข้างหลังเพื่อปิดการใช้งาน."
-
-#: src/settings_translation_file.cpp
-msgid "Controlled by a checkbox in the settings menu."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Controls"
-msgstr "ควบคุม"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Controls length of day/night cycle.\n"
 "Examples:\n"
@@ -2948,10 +2967,6 @@ msgid "Crash message"
 msgstr "ข้อความขัดข้อง"
 
 #: src/settings_translation_file.cpp
-msgid "Creative"
-msgstr "ความคิดสร้างสรรค์"
-
-#: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
 msgstr "Crosshair อัลฟา"
 
@@ -2978,10 +2993,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "DPI"
 msgstr "DPI"
-
-#: src/settings_translation_file.cpp
-msgid "Damage"
-msgstr "ความเสียหาย"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log file size threshold"
@@ -3072,12 +3083,6 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr "กำหนดตำแหน่งและภูมิประเทศของเนินเขาและทะเลสาบที่เป็นตัวเลือก."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Defines size of the sampling grid for FSAA and SSAA antializasing methods.\n"
-"Value of 2 means taking 2x2 = 4 samples."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Defines the base ground level."
 msgstr "กำหนดระดับพื้นดินฐาน."
 
@@ -3094,6 +3099,13 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "กำหนดระยะถ่ายโอนผู้เล่นสูงสุดในบล็อก (0 = ไม่ จำกัด )."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines the size of the sampling grid for FSAA and SSAA antialiasing "
+"methods.\n"
+"Value of 2 means taking 2x2 = 4 samples."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the width of the river channel."
@@ -3189,10 +3201,6 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr "ชื่อโดเมนของเซิร์ฟเวอร์ที่จะแสดงในรายการเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
-msgid "Don't show \"reinstall Minetest Game\" notification"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
 msgstr "แตะสองครั้งที่กระโดดสำหรับบิน"
 
@@ -3279,10 +3287,6 @@ msgid "Enable console window"
 msgstr "เปิดใช้งานหน้าต่างคอนโซล"
 
 #: src/settings_translation_file.cpp
-msgid "Enable creative mode for all players"
-msgstr "เปิดใช้งานโหมดสร้างสรรค์สำหรับผู้เล่นทั้งหมด"
-
-#: src/settings_translation_file.cpp
 msgid "Enable joysticks"
 msgstr "เปิดใช้งานจอยสติ๊ก"
 
@@ -3301,10 +3305,6 @@ msgstr "เปิดใช้งานการรักษาความปล
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable players getting damage and dying."
-msgstr "ช่วยให้ผู้เล่นได้รับความเสียหายและกำลังจะตาย."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -3392,22 +3392,6 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr "เปิดใช้งานการแคชของตาข่ายที่หมุนได้."
 
 #: src/settings_translation_file.cpp
-msgid "Enables minimap."
-msgstr "เปิดใช้งานย่อแผนที่."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Enables the sound system.\n"
-"If disabled, this completely disables all sounds everywhere and the in-game\n"
-"sound controls will be non-functional.\n"
-"Changing this setting requires a restart."
-msgstr ""
-"เปิดใช้งานระบบเสียง.\n"
-"หากปิดใช้งาน จะเป็นการปิดเสียงทั้งหมดในทุกที่และในเกม\n"
-"การควบคุมเสียงจะไม่ทำงาน.\n"
-"การเปลี่ยนการตั้งค่านี้ต้องรีสตาร์ท."
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enables tradeoffs that reduce CPU load or increase rendering performance\n"
 "at the expense of minor visual glitches that do not impact game playability."
@@ -3417,7 +3401,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Engine profiler"
+msgid "Engine Profiler"
 msgstr "โปรไฟล์หุบเขา"
 
 #: src/settings_translation_file.cpp
@@ -3476,18 +3460,6 @@ msgstr "การเร่งความเร็วในโหมดเร็
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
 msgstr "ความเร็วโหมดเร็ว"
-
-#: src/settings_translation_file.cpp
-msgid "Fast movement"
-msgstr "การเคลื่อนไหวเร็ว"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Fast movement (via the \"Aux1\" key).\n"
-"This requires the \"fast\" privilege on the server."
-msgstr ""
-"การเคลื่อนไหวที่รวดเร็ว (ผ่านคีย์ 'พิเศษ').\n"
-"ต้องมีสิทธิ์ 'รวดเร็ว' บนเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -3575,10 +3547,6 @@ msgstr "ระยะถ่ายโอนผู้เล่น"
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
 msgstr "ระดับน้ำลอยน้ำ"
-
-#: src/settings_translation_file.cpp
-msgid "Flying"
-msgstr "บิน"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -3723,6 +3691,10 @@ msgid "Fullscreen mode."
 msgstr "โหมดเต็มหน้าจอ"
 
 #: src/settings_translation_file.cpp
+msgid "GUI"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "GUI scaling"
 msgstr "การปรับขนาด GUI"
 
@@ -3735,17 +3707,9 @@ msgid "GUI scaling filter txr2img"
 msgstr "ตัวกรองการปรับขนาด GUI txr2img"
 
 #: src/settings_translation_file.cpp
-msgid "GUIs"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Gamepads"
 msgstr "เกม"
-
-#: src/settings_translation_file.cpp
-msgid "General"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
@@ -3861,11 +3825,6 @@ msgstr "เสียงสูง"
 #: src/settings_translation_file.cpp
 msgid "Height select noise"
 msgstr "ความสูงเลือกเสียง"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Hide: Temporary Settings"
-msgstr "การตั้งค่า"
 
 #: src/settings_translation_file.cpp
 msgid "Hill steepness"
@@ -4000,28 +3959,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"If enabled the server will perform map block occlusion culling based on\n"
-"on the eye position of the player. This can reduce the number of blocks\n"
-"sent to the client 50-80%. The client will not longer receive most "
-"invisible\n"
-"so that the utility of noclip mode is reduced."
-msgstr ""
-"หากเปิดใช้งานเซิร์ฟเวอร์จะดำเนินการคัดแยกการบล็อกแผนที่ตาม\n"
-"ในตำแหน่งสายตาของผู้เล่น ซึ่งสามารถลดจำนวนบล็อคได้\n"
-"ส่งให้ลูกค้า 50-80% ลูกค้าจะไม่ได้รับการล่องหนอีกต่อไป\n"
-"เพื่อให้อรรถประโยชน์ของโหมด noclip ลดลง."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If enabled together with fly mode, player is able to fly through solid "
-"nodes.\n"
-"This requires the \"noclip\" privilege on the server."
-msgstr ""
-"ถ้าเปิดใช้งานร่วมกับโหมดการบิน ผู้เล่นสามารถบินผ่านโหนไม้ได้.\n"
-"ต้องมีสิทธิ์ 'noclip' บนเซิร์ฟเวอร์."
-
-#: src/settings_translation_file.cpp
-msgid ""
 "If enabled, \"Aux1\" key instead of \"Sneak\" key is used for climbing down "
 "and\n"
 "descending."
@@ -4059,17 +3996,24 @@ msgstr ""
 "เปิดใช้งานสิ่งนี้ก็ต่อเมื่อคุณรู้ว่าคุณกำลังทำอะไรอยู่."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"If enabled, makes move directions relative to the player's pitch when flying "
-"or swimming."
-msgstr "ถ้าเปิดใช้งาน ทำให้ย้ายทิศทางสัมพันธ์กับระยะห่างของผู้เล่นเมื่อบิน หรือว่ายน้ำ."
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "If enabled, players cannot join without a password or change theirs to an "
 "empty password."
 msgstr "หากเปิดใช้งานผู้เล่นใหม่จะไม่สามารถเข้าร่วมด้วยรหัสผ่านที่ว่างเปล่าได้."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"If enabled, the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client by 50-80%. Clients will no longer receive most\n"
+"invisible blocks, so that the utility of noclip mode is reduced."
+msgstr ""
+"หากเปิดใช้งานเซิร์ฟเวอร์จะดำเนินการคัดแยกการบล็อกแผนที่ตาม\n"
+"ในตำแหน่งสายตาของผู้เล่น ซึ่งสามารถลดจำนวนบล็อคได้\n"
+"ส่งให้ลูกค้า 50-80% ลูกค้าจะไม่ได้รับการล่องหนอีกต่อไป\n"
+"เพื่อให้อรรถประโยชน์ของโหมด noclip ลดลง."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4109,12 +4053,6 @@ msgstr ""
 "เมื่อเปิดการตั้งค่านี้ ไฟล์จะถูกย้ายไปยัง debug.txt.1,\n"
 "การลบ debug.txt.1 ที่เก่ากว่า หากมี.\n"
 "debug.txt จะถูกย้ายก็ต่อเมื่อการตั้งค่านี้เป็นค่าบวก."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"If this is set to true, the user will never (again) be shown the\n"
-"\"reinstall Minetest Game\" notification."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -4352,15 +4290,6 @@ msgstr "จำนวนขั้นต่ำของถ้ำขนาดให
 #: src/settings_translation_file.cpp
 msgid "Large cave proportion flooded"
 msgstr "น้ำท่วมสัดส่วนถ้ำใหญ่"
-
-#: src/settings_translation_file.cpp
-msgid "Last known version update"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Last update check"
-msgstr "ติ๊กอัพเดทของเหลว"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -4878,12 +4807,14 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "จำนวนบล็อกสูงสุดพร้อมกันส่งต่อไคลเอ็นต์"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum size of the out chat queue"
+#, fuzzy
+msgid "Maximum size of the outgoing chat queue"
 msgstr "ขนาดสูงสุดของคิวการแชทนอก"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Maximum size of the out chat queue.\n"
+"Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 "ขนาดสูงสุดของคิวการแชทนอก.\n"
@@ -4928,10 +4859,6 @@ msgid "Minimal level of logging to be written to chat."
 msgstr "ระดับการบันทึกขั้นต่ำที่จะเขียนในการแชท."
 
 #: src/settings_translation_file.cpp
-msgid "Minimap"
-msgstr "แผนที่ขนาดเล็ก"
-
-#: src/settings_translation_file.cpp
 msgid "Minimap scan height"
 msgstr "ความสูงการสแกนแผนที่ขั้นต่ำ"
 
@@ -4948,7 +4875,7 @@ msgid "Mipmapping"
 msgstr "Mipmapping (แมงป่อง)"
 
 #: src/settings_translation_file.cpp
-msgid "Misc"
+msgid "Miscellaneous"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5066,10 +4993,6 @@ msgid "New users need to input this password."
 msgstr "ผู้ใช้ใหม่ต้องป้อนรหัสผ่านนี้."
 
 #: src/settings_translation_file.cpp
-msgid "Noclip"
-msgstr "โนคลิป (ทะลุผ่านบล็อก)"
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Node and Entity Highlighting"
 msgstr "โหนที่เน้น"
@@ -5123,6 +5046,11 @@ msgstr ""
 "จำนวนบล็อกพิเศษที่สามารถโหลดได้โดย /clear ออบเจ็กต์ในครั้งเดียว.\n"
 "นี่คือการแลกเปลี่ยนระหว่างโอเวอร์เฮดของธุรกรรม SQLite และ\n"
 "การใช้หน่วยความจำ (4096=100MB ตามหลักการทั่วไป)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Number of messages a player may send per 10 seconds."
+msgstr "จำนวนข้อความที่ผู้เล่นสามารถส่งได้ต่อ 10 วินาที"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5186,10 +5114,6 @@ msgid ""
 msgstr "พา ธ ไปยังไดเร็กทอรี shader หากไม่มีการกำหนดเส้นทางจะใช้ตำแหน่งเริ่มต้น"
 
 #: src/settings_translation_file.cpp
-msgid "Path to texture directory. All textures are first searched from here."
-msgstr "เส้นทางไปยังไดเรกทอรีพื้นผิว พื้นผิวทั้งหมดจะถูกค้นหาครั้งแรกจากที่นี่"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Path to the default font. Must be a TrueType font.\n"
 "The fallback font will be used if the font cannot be loaded."
@@ -5222,40 +5146,16 @@ msgid "Physics"
 msgstr "ฟิสิกส์"
 
 #: src/settings_translation_file.cpp
-msgid "Pitch move mode"
-msgstr "โหมดย้ายสนาม"
-
-#: src/settings_translation_file.cpp
 msgid "Place repetition interval"
 msgstr "กระแทกซ้ำช่วง"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Player is able to fly without being affected by gravity.\n"
-"This requires the \"fly\" privilege on the server."
-msgstr ""
-"ผู้เล่นสามารถบินโดยไม่ได้รับผลกระทบโดยแรงโน้มถ่วงได้.\n"
-"ต้องมีสิทธิ์ 'บิน' บนเซิร์ฟเวอร์."
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
 msgstr "ระยะถ่ายโอนผู้เล่น"
 
 #: src/settings_translation_file.cpp
-msgid "Player versus player"
-msgstr "ผู้เล่นกับผู้เล่น"
-
-#: src/settings_translation_file.cpp
 msgid "Poisson filtering"
 msgstr "การกรองปัวซอง"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Port to connect to (UDP).\n"
-"Note that the port field in the main menu overrides this setting."
-msgstr ""
-"พอร์ตที่จะเชื่อมต่อกับ (UDP)\n"
-"โปรดทราบว่าฟิลด์พอร์ตในเมนูหลักจะแทนที่การตั้งค่านี้"
 
 #: src/settings_translation_file.cpp
 msgid "Post Processing"
@@ -5345,10 +5245,6 @@ msgstr "บันทึกขนาดหน้าจออัตโนมัต
 #: src/settings_translation_file.cpp
 msgid "Remote media"
 msgstr "รีโมตสื่อบันทึก"
-
-#: src/settings_translation_file.cpp
-msgid "Remote port"
-msgstr "รีโมตพอร์ต"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5441,10 +5337,6 @@ msgstr "เสียงขนาดเนินกลิ้ง"
 #: src/settings_translation_file.cpp
 msgid "Rolling hills spread noise"
 msgstr "ภูเขากลิ้งกระจายเสียง"
-
-#: src/settings_translation_file.cpp
-msgid "Round minimap"
-msgstr "แผนที่ย่อ"
 
 #: src/settings_translation_file.cpp
 msgid "Safe digging and placing"
@@ -5653,7 +5545,8 @@ msgid "Server port"
 msgstr "พอร์ตเซิร์ฟเวอร์"
 
 #: src/settings_translation_file.cpp
-msgid "Server side occlusion culling"
+#, fuzzy
+msgid "Server-side occlusion culling"
 msgstr "การคัดแยกการบดเคี้ยวทางฝั่งเซิร์ฟเวอร์"
 
 #: src/settings_translation_file.cpp
@@ -5826,10 +5719,6 @@ msgid "Shadow strength gamma"
 msgstr "ความแข็งแกร่งของเงา"
 
 #: src/settings_translation_file.cpp
-msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "รูปร่างของแผนที่ย่อ Enabled = round, disabled = square"
-
-#: src/settings_translation_file.cpp
 msgid "Show debug info"
 msgstr "แสดงข้อมูลการดีบัก"
 
@@ -5863,9 +5752,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
-"WARNING!: There is no benefit, and there are several dangers, in\n"
+"WARNING: There is no benefit, and there are several dangers, in\n"
 "increasing this value above 5.\n"
 "Reducing this value increases cave and dungeon density.\n"
 "Altering this value is for special usage, leaving it unchanged is\n"
@@ -5947,10 +5837,6 @@ msgid "Soft shadow radius"
 msgstr "ตัวอักษรเงาอัลฟา"
 
 #: src/settings_translation_file.cpp
-msgid "Sound"
-msgstr "เสียง"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Specifies URL from which client fetches media instead of using UDP.\n"
 "$filename should be accessible from $remote_media$filename via cURL\n"
@@ -5972,8 +5858,9 @@ msgstr ""
 "โปรดทราบว่าม็อดหรือเกมอาจตั้งค่าสแต็กสำหรับบางรายการ (หรือทั้งหมด) อย่างชัดเจน."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Spread a complete update of shadow map over given amount of frames.\n"
+"Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
@@ -5994,7 +5881,8 @@ msgstr ""
 "ส่วนเบี่ยงเบนมาตรฐานของเส้นโค้งแสงเพิ่มค่าเกาส์เซียน"
 
 #: src/settings_translation_file.cpp
-msgid "Static spawnpoint"
+#, fuzzy
+msgid "Static spawn point"
 msgstr "จุดกำเนิดแบบคงที่"
 
 #: src/settings_translation_file.cpp
@@ -6032,13 +5920,14 @@ msgid "Strip color codes"
 msgstr "แถบรหัสสี"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
 "to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the\n"
 "upper tapering).\n"
 "***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:\n"
-"When enabling water placement the floatlands must be configured and tested\n"
+"When enabling water placement, floatlands must be configured and tested\n"
 "to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other\n"
 "required value depending on 'mgv7_np_floatland'), to avoid\n"
 "server-intensive extreme water flow and to avoid vast flooding of the\n"
@@ -6108,10 +5997,6 @@ msgid "Terrain persistence noise"
 msgstr "เสียงคงอยู่ของภูมิประเทศ"
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
-msgstr "เส้นทางพื้นผิว"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Texture size to render the shadow map on.\n"
 "This must be a power of two.\n"
@@ -6158,12 +6043,9 @@ msgstr ""
 "เมื่อเรียก `/profiler save [รูปแบบ]` โดยไม่มีรูปแบบ."
 
 #: src/settings_translation_file.cpp
-msgid "The depth of dirt or other biome filler node."
-msgstr "ความลึกของสิ่งสกปรกหรือโหนดเติมไบโอมอื่นๆ."
-
-#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved to."
+"The file path relative to your world path in which profiles will be saved to."
 msgstr "เส้นทางของไฟล์ที่สัมพันธ์กับ worldpath ของคุณซึ่งโปรไฟล์จะถูกบันทึกไว้."
 
 #: src/settings_translation_file.cpp
@@ -6290,9 +6172,10 @@ msgid "The type of joystick"
 msgstr "ประเภทของจอยสติ๊ก"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
-"enabled. Also the vertical distance over which humidity drops by 10 if\n"
+"enabled. Also, the vertical distance over which humidity drops by 10 if\n"
 "'altitude_dry' is enabled."
 msgstr ""
 "ระยะทางแนวตั้งที่ความร้อนลดลง 20 หาก 'altitude_chill' คือ\n"
@@ -6302,15 +6185,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Third of 4 2D noises that together define hill/mountain range height."
 msgstr "เสียง 2D จำนวน 3 จาก 4 เสียงที่ร่วมกันกำหนดความสูงของช่วงเนินเขา/ภูเขา."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"This can be bound to a key to toggle camera smoothing when looking around.\n"
-"Useful for recording videos"
-msgstr ""
-"กล้องมากเมื่อมองไปรอบ ๆ เรียกว่ามองหรือเมาส์เรียบ.\n"
-"มีประโยชน์สำหรับการบันทึกวิดีโอ."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6438,12 +6312,6 @@ msgstr ""
 "ค่าที่สูงขึ้นส่งผลให้ภาพมีรายละเอียดน้อยลง"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Unix timestamp (integer) of when the client last checked for an update\n"
-"Set this value to \"disabled\" to never check for updates."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
 msgstr "ระยะถ่ายโอนผู้เล่นไม่ จำกัด"
 
@@ -6495,7 +6363,7 @@ msgstr ""
 #, fuzzy
 msgid ""
 "Use mipmaps when scaling textures down. May slightly increase performance,\n"
-"especially when using a high resolution texture pack.\n"
+"especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
 "ใช้การทำแผนที่ mip เพื่อปรับขนาดพื้นผิว อาจเพิ่มประสิทธิภาพเล็กน้อย,\n"
@@ -6589,14 +6457,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
 msgstr "ความชันของหน้าผาแตกต่างกันไป."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Version number which was last seen during an update check.\n"
-"\n"
-"Representation: MMMIIIPPP, where M=Major, I=Minor, P=Patch\n"
-"Ex: 5.5.0 is 005005000"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical climbing speed, in nodes per second."
@@ -6751,10 +6611,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Whether the window is maximized."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Whether to allow players to damage and kill each other."
-msgstr "ไม่ว่าจะอนุญาตให้ผู้เล่นสร้างความเสียหายและสังหารกัน."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6937,6 +6793,15 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgstr "ที่อยู่ / พอร์ต"
 
 #~ msgid ""
+#~ "Address to connect to.\n"
+#~ "Leave this blank to start a local server.\n"
+#~ "Note that the address field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "ที่อยู่เพื่อเชื่อมต่อ\n"
+#~ "เว้นว่างไว้เพื่อเริ่มเซิร์ฟเวอร์ภายใน\n"
+#~ "โปรดทราบว่าฟิลด์ที่อยู่ในเมนูหลักจะแทนที่การตั้งค่านี้"
+
+#~ msgid ""
 #~ "Adjust the gamma encoding for the light tables. Higher numbers are "
 #~ "brighter.\n"
 #~ "This setting is for the client only and is ignored by the server."
@@ -6968,6 +6833,10 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Bilinear Filter"
 #~ msgstr "กรอง bilinear"
 
+#, fuzzy
+#~ msgid "Biome API noise parameters"
+#~ msgstr "พารามิเตอร์เสียงอุณหภูมิและความชื้นของ Biome API"
+
 #~ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 #~ msgstr "บิตต่อพิกเซล (ความลึกของสี aka) ในโหมดเต็มหน้าจอ."
 
@@ -6995,11 +6864,18 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Center of light curve mid-boost."
 #~ msgstr "กึ่งกลางของเส้นโค้งแสง - กลางเพิ่ม"
 
+#, fuzzy
+#~ msgid "Change keys"
+#~ msgstr "เปลี่ยนคีย์"
+
 #~ msgid "Chat key"
 #~ msgstr "รหัสแชท"
 
 #~ msgid "Chat toggle key"
 #~ msgstr "ปุ่มสลับการแชท"
+
+#~ msgid "Cinematic mode"
+#~ msgstr "โหมดภาพยนตร์"
 
 #~ msgid "Cinematic mode key"
 #~ msgstr "ปุ่มโหมดโรงภาพยนตร์"
@@ -7022,14 +6898,30 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Connected Glass"
 #~ msgstr "เชื่อมต่อแก้ว"
 
+#~ msgid "Continuous forward"
+#~ msgstr "ไปข้างหน้าอย่างต่อเนื่อง"
+
+#~ msgid ""
+#~ "Continuous forward movement, toggled by autoforward key.\n"
+#~ "Press the autoforward key again or the backwards movement to disable."
+#~ msgstr ""
+#~ "การเคลื่อนที่ไปข้างหน้าอย่างต่อเนื่องสลับโดยคีย์ autoforward.\n"
+#~ "กดปุ่ม autoforward อีกครั้งหรือเคลื่อนไหวไปข้างหลังเพื่อปิดการใช้งาน."
+
 #~ msgid "Controls sinking speed in liquid."
 #~ msgstr "ควบคุมความเร็วการจมในของเหลว."
+
+#~ msgid "Creative"
+#~ msgstr "ความคิดสร้างสรรค์"
 
 #~ msgid "Credits"
 #~ msgstr "เครดิต"
 
 #~ msgid "Crosshair color (R,G,B)."
 #~ msgstr "สีของครอสแฮร์ (R,G,B)."
+
+#~ msgid "Damage"
+#~ msgstr "ความเสียหาย"
 
 #~ msgid "Damage enabled"
 #~ msgstr "ความเสียหาย ที่เปิดใช้งาน"
@@ -7069,6 +6961,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Disabled unlimited viewing range"
 #~ msgstr "ปิดใช้งานช่วงการดูไม่ จำกัด"
 
+#~ msgid "Down"
+#~ msgstr "ลง"
+
 #~ msgid "Download a game, such as Minetest Game, from minetest.net"
 #~ msgstr "ดาวน์โหลดเกม อย่างเช่น ไมน์เทสต์เกม ได้จาก minetest.net"
 
@@ -7087,6 +6982,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Enable VBO"
 #~ msgstr "ทำให้สามารถ VBO"
+
+#~ msgid "Enable creative mode for all players"
+#~ msgstr "เปิดใช้งานโหมดสร้างสรรค์สำหรับผู้เล่นทั้งหมด"
+
+#~ msgid "Enable players getting damage and dying."
+#~ msgstr "ช่วยให้ผู้เล่นได้รับความเสียหายและกำลังจะตาย."
 
 #~ msgid "Enable register confirmation"
 #~ msgstr "เปิดใช้งานการยืนยันการลงทะเบียน"
@@ -7107,6 +7008,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Enables filmic tone mapping"
 #~ msgstr "เปิดใช้งานการจับคู่โทนภาพยนตร์"
 
+#~ msgid "Enables minimap."
+#~ msgstr "เปิดใช้งานย่อแผนที่."
+
 #~ msgid ""
 #~ "Enables on the fly normalmap generation (Emboss effect).\n"
 #~ "Requires bumpmapping to be enabled."
@@ -7120,6 +7024,18 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgstr ""
 #~ "เปิดใช้งานการแมปการบดเคี้ยวของรัลแลกซ์\n"
 #~ "ต้องมี shaders เพื่อเปิดใช้งาน"
+
+#~ msgid ""
+#~ "Enables the sound system.\n"
+#~ "If disabled, this completely disables all sounds everywhere and the in-"
+#~ "game\n"
+#~ "sound controls will be non-functional.\n"
+#~ "Changing this setting requires a restart."
+#~ msgstr ""
+#~ "เปิดใช้งานระบบเสียง.\n"
+#~ "หากปิดใช้งาน จะเป็นการปิดเสียงทั้งหมดในทุกที่และในเกม\n"
+#~ "การควบคุมเสียงจะไม่ทำงาน.\n"
+#~ "การเปลี่ยนการตั้งค่านี้ต้องรีสตาร์ท."
 
 #~ msgid "Enter "
 #~ msgstr "ป้อน "
@@ -7153,6 +7069,13 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgstr "ปุ่มลัด"
 
 #~ msgid ""
+#~ "Fast movement (via the \"Aux1\" key).\n"
+#~ "This requires the \"fast\" privilege on the server."
+#~ msgstr ""
+#~ "การเคลื่อนไหวที่รวดเร็ว (ผ่านคีย์ 'พิเศษ').\n"
+#~ "ต้องมีสิทธิ์ 'รวดเร็ว' บนเซิร์ฟเวอร์."
+
+#~ msgid ""
 #~ "Filtered textures can blend RGB values with fully-transparent neighbors,\n"
 #~ "which PNG optimizers usually discard, often resulting in dark or\n"
 #~ "light edges to transparent textures. Apply a filter to clean that up\n"
@@ -7169,6 +7092,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Fly key"
 #~ msgstr "ปุ่มบิน"
+
+#~ msgid "Flying"
+#~ msgstr "บิน"
 
 #~ msgid "Fog toggle key"
 #~ msgstr "ปุ่มสลับ Fog"
@@ -7214,6 +7140,10 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "HUD toggle key"
 #~ msgstr "ปุ่มสลับ HUD"
+
+#, fuzzy
+#~ msgid "Hide: Temporary Settings"
+#~ msgstr "การตั้งค่า"
 
 #~ msgid "Hotbar next key"
 #~ msgstr "ปุ่มลัดต่อไป Hotbar"
@@ -7316,6 +7246,19 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Hotbar slot 9 key"
 #~ msgstr "Hotbar สล็อต 9 สำคัญ"
+
+#~ msgid ""
+#~ "If enabled together with fly mode, player is able to fly through solid "
+#~ "nodes.\n"
+#~ "This requires the \"noclip\" privilege on the server."
+#~ msgstr ""
+#~ "ถ้าเปิดใช้งานร่วมกับโหมดการบิน ผู้เล่นสามารถบินผ่านโหนไม้ได้.\n"
+#~ "ต้องมีสิทธิ์ 'noclip' บนเซิร์ฟเวอร์."
+
+#~ msgid ""
+#~ "If enabled, makes move directions relative to the player's pitch when "
+#~ "flying or swimming."
+#~ msgstr "ถ้าเปิดใช้งาน ทำให้ย้ายทิศทางสัมพันธ์กับระยะห่างของผู้เล่นเมื่อบิน หรือว่ายน้ำ."
 
 #~ msgid "In-Game"
 #~ msgstr "ในเกมส์"
@@ -7992,6 +7935,10 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Large chat console key"
 #~ msgstr "คีย์คอนโซลแชทขนาดใหญ่"
 
+#, fuzzy
+#~ msgid "Last update check"
+#~ msgstr "ติ๊กอัพเดทของเหลว"
+
 #~ msgid "Left key"
 #~ msgstr "ปุ่มซ้าย"
 
@@ -8010,6 +7957,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Menus"
 #~ msgstr "เมนู"
+
+#~ msgid "Minimap"
+#~ msgstr "แผนที่ขนาดเล็ก"
 
 #~ msgid "Minimap in radar mode, Zoom x2"
 #~ msgstr "แผนที่ย่อในโหมดเรดาร์, ซูม x2"
@@ -8054,6 +8004,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "No Mipmap"
 #~ msgstr "ไม่ Mipmap (แผนที่ย่อ)"
+
+#~ msgid "Noclip"
+#~ msgstr "โนคลิป (ทะลุผ่านบล็อก)"
 
 #~ msgid "Noclip key"
 #~ msgstr "คีย์ Noclip"
@@ -8122,20 +8075,44 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Path to save screenshots at."
 #~ msgstr "พา ธ เพื่อบันทึกภาพหน้าจอที่ ..."
 
+#~ msgid ""
+#~ "Path to texture directory. All textures are first searched from here."
+#~ msgstr "เส้นทางไปยังไดเรกทอรีพื้นผิว พื้นผิวทั้งหมดจะถูกค้นหาครั้งแรกจากที่นี่"
+
 #~ msgid "Pitch move key"
 #~ msgstr "ปุ่มเลื่อนระดับเสียง"
+
+#~ msgid "Pitch move mode"
+#~ msgstr "โหมดย้ายสนาม"
 
 #~ msgid "Place key"
 #~ msgstr "ปุ่มวาง"
 
+#~ msgid ""
+#~ "Player is able to fly without being affected by gravity.\n"
+#~ "This requires the \"fly\" privilege on the server."
+#~ msgstr ""
+#~ "ผู้เล่นสามารถบินโดยไม่ได้รับผลกระทบโดยแรงโน้มถ่วงได้.\n"
+#~ "ต้องมีสิทธิ์ 'บิน' บนเซิร์ฟเวอร์."
+
 #~ msgid "Player name"
 #~ msgstr "ชื่อผู้เล่น"
+
+#~ msgid "Player versus player"
+#~ msgstr "ผู้เล่นกับผู้เล่น"
 
 #~ msgid "Please enter a valid integer."
 #~ msgstr "โปรดใส่ค่าเป็นตัวเลขในรูปแบบที่ถูกต้อง"
 
 #~ msgid "Please enter a valid number."
 #~ msgstr "กรุณาใส่หมายเลขที่ถูกต้อง"
+
+#~ msgid ""
+#~ "Port to connect to (UDP).\n"
+#~ "Note that the port field in the main menu overrides this setting."
+#~ msgstr ""
+#~ "พอร์ตที่จะเชื่อมต่อกับ (UDP)\n"
+#~ "โปรดทราบว่าฟิลด์พอร์ตในเมนูหลักจะแทนที่การตั้งค่านี้"
 
 #~ msgid "Profiler toggle key"
 #~ msgstr "ปุ่มสลับ Profiler"
@@ -8149,11 +8126,17 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Range select key"
 #~ msgstr "ปุ่มเลือกช่วง"
 
+#~ msgid "Remote port"
+#~ msgstr "รีโมตพอร์ต"
+
 #~ msgid "Reset singleplayer world"
 #~ msgstr "รีเซ็ต singleplayer โลก"
 
 #~ msgid "Right key"
 #~ msgstr "ปุ่มขวา"
+
+#~ msgid "Round minimap"
+#~ msgstr "แผนที่ย่อ"
 
 #, fuzzy
 #~ msgid "Saturation"
@@ -8183,6 +8166,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ "not be drawn."
 #~ msgstr "เงาแบบอักษรชดเชยถ้า 0 แล้วเงาจะไม่ถูกวาด."
 
+#~ msgid "Shape of the minimap. Enabled = round, disabled = square."
+#~ msgstr "รูปร่างของแผนที่ย่อ Enabled = round, disabled = square"
+
 #~ msgid "Simple Leaves"
 #~ msgstr "ใบเรียบง่าย"
 
@@ -8192,8 +8178,8 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Smooths rotation of camera. 0 to disable."
 #~ msgstr "มากการหมุนของกล้อง 0 เพื่อปิดใช้งาน"
 
-#~ msgid "Sneak key"
-#~ msgstr "กุญแจแอบ"
+#~ msgid "Sound"
+#~ msgstr "เสียง"
 
 #~ msgid "Special"
 #~ msgstr "พิเศษ"
@@ -8210,14 +8196,29 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgid "Strength of light curve mid-boost."
 #~ msgstr "ความแข็งแรงของแสงโค้งกลาง - เพิ่ม"
 
+#~ msgid "Texture path"
+#~ msgstr "เส้นทางพื้นผิว"
+
 #~ msgid "Texturing:"
 #~ msgstr "พื้นผิว:"
+
+#~ msgid "The depth of dirt or other biome filler node."
+#~ msgstr "ความลึกของสิ่งสกปรกหรือโหนดเติมไบโอมอื่นๆ."
 
 #~ msgid "The value must be at least $1."
 #~ msgstr "ต้องมีค่าอย่างน้อย $1"
 
 #~ msgid "The value must not be larger than $1."
 #~ msgstr "ค่าต้องไม่มากกว่า $1"
+
+#, fuzzy
+#~ msgid ""
+#~ "This can be bound to a key to toggle camera smoothing when looking "
+#~ "around.\n"
+#~ "Useful for recording videos"
+#~ msgstr ""
+#~ "กล้องมากเมื่อมองไปรอบ ๆ เรียกว่ามองหรือเมาส์เรียบ.\n"
+#~ "มีประโยชน์สำหรับการบันทึกวิดีโอ."
 
 #~ msgid "This font will be used for certain languages."
 #~ msgstr "แบบอักษรนี้จะใช้สำหรับบางภาษา"
@@ -8246,6 +8247,12 @@ msgstr "cURL ขีด จำกัด ขนาน"
 
 #~ msgid "Unable to install a modpack as a $1"
 #~ msgstr "ไม่สามารถติดตั้ง modpack ที่ $1"
+
+#~ msgid "Uninstall Package"
+#~ msgstr "ถอนการติดตั้งแพคเกจ"
+
+#~ msgid "Up"
+#~ msgstr "ค่า"
 
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
@@ -8327,6 +8334,9 @@ msgstr "cURL ขีด จำกัด ขนาน"
 #~ msgstr ""
 #~ "ไม่ว่าจะใช้ฟอนต์ FreeType ต้องมีการสนับสนุน FreeType เพื่อรวบรวม\n"
 #~ "หากปิดใช้งาน ฟอนต์บิตแมปและเอ็กซ์เอ็มแอลเวกเตอร์จะใช้แทน"
+
+#~ msgid "Whether to allow players to damage and kill each other."
+#~ msgstr "ไม่ว่าจะอนุญาตให้ผู้เล่นสร้างความเสียหายและสังหารกัน."
 
 #~ msgid "X"
 #~ msgstr "X"

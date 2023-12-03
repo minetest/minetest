@@ -1,5 +1,3 @@
-local settings = ...
-
 local concat = table.concat
 local insert = table.insert
 local sprintf = string.format
@@ -36,7 +34,7 @@ local group_format_template = [[
 
 ]]
 
-local function create_minetest_conf_example()
+local function create_minetest_conf_example(settings)
 	local result = { minetest_example_header }
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
@@ -108,14 +106,11 @@ local translation_file_header = [[
 
 fake_function() {]]
 
-local function create_translation_file()
+local function create_translation_file(settings)
 	local result = { translation_file_header }
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
 			insert(result, sprintf("\tgettext(%q);", entry.name))
-		elseif entry.type == "key" then --luacheck: ignore
-			-- Neither names nor descriptions of keys are used since we have a
-			-- dedicated menu for them.
 		else
 			if entry.readable_name then
 				insert(result, sprintf("\tgettext(%q);", entry.readable_name))
@@ -132,12 +127,13 @@ local function create_translation_file()
 end
 
 local file = assert(io.open("minetest.conf.example", "w"))
-file:write(create_minetest_conf_example())
+file:write(create_minetest_conf_example(settingtypes.parse_config_file(true, false)))
 file:close()
 
 file = assert(io.open("src/settings_translation_file.cpp", "w"))
 -- If 'minetest.conf.example' appears in the 'bin' folder, the line below may have to be
 -- used instead. The file will also appear in the 'bin' folder.
 --file = assert(io.open("settings_translation_file.cpp", "w"))
-file:write(create_translation_file())
+-- We don't want hidden settings to be translated, so we set read_all to false.
+file:write(create_translation_file(settingtypes.parse_config_file(false, false)))
 file:close()
