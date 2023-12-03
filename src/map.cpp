@@ -512,7 +512,7 @@ struct NodeNeighbor {
 	{ }
 };
 
-s8 getMaxLiquidLevel(NodeNeighbor nb, s8 current_max_node_level)
+static s8 getMaxLiquidLevel(NodeNeighbor nb, s8 current_max_node_level)
 {
 	s8 max_node_level = current_max_node_level;
 	u8 nb_liquid_level = (nb.n.param2 & LIQUID_LEVEL_MASK);
