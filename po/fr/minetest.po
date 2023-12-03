@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-11-12 15:37+0000\n"
+"PO-Revision-Date: 2023-12-05 18:57+0000\n"
 "Last-Translator: waxtatect <piero@live.ie>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -2394,7 +2394,7 @@ msgstr "Modificateurs de Blocs Actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block management interval"
-msgstr "intervalle de gestion des blocs actifs"
+msgstr "Intervalle de gestion des blocs actifs"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -2413,7 +2413,7 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Ajuste la configuration des PPP à votre écran (non X11 / Android seulement), "
+"Ajuste la configuration des PPP à votre écran (non X11/Android seulement), "
 "par exemple pour les écrans 4k."
 
 #: src/settings_translation_file.cpp
@@ -3139,7 +3139,7 @@ msgid ""
 msgstr ""
 "Délai entre les mises à jour du maillage sur le client en ms.\n"
 "Augmenter ceci ralentit le taux de mise à jour et réduit donc les "
-"tremblements sur les client lents."
+"tremblements sur les clients lents."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
@@ -3470,11 +3470,11 @@ msgstr "Compensation de l'exposition"
 
 #: src/settings_translation_file.cpp
 msgid "FPS"
-msgstr "FPS"
+msgstr "IPS"
 
 #: src/settings_translation_file.cpp
 msgid "FPS when unfocused or paused"
-msgstr "FPS lorsqu’il n’est pas sélectionné ou mis en pause"
+msgstr "IPS fenêtre non sélectionnée ou jeu mis en pause"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
@@ -3578,7 +3578,7 @@ msgstr "Exposant de l'effilement des terrains flottants"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland tapering distance"
-msgstr "Hauteur de la base des terrains flottants"
+msgstr "Distance d'effilage des terrains flottantes"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland water level"
@@ -3995,8 +3995,8 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Si les FPS (nombre d'images par seconde) sont supérieurs à cette valeur.\n"
-"Limite les FPS en les mettant en sommeil pour ne pas gaspiller la puissance "
+"Si le nombre d'images par seconde est supérieur à cette valeur.\n"
+"Limite les IPS en les mettant en sommeil pour ne pas gaspiller la puissance "
 "du CPU sans aucun bénéfice."
 
 #: src/settings_translation_file.cpp
@@ -4492,7 +4492,7 @@ msgstr "Régularité de la fluidité des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr "Itérations maximales pendant la transformation des liquides"
+msgstr "Itérations maximales de transformation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
@@ -4559,7 +4559,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Makes all liquids opaque"
-msgstr "Rend toutes les liquides opaques."
+msgstr "Rend tous les liquides opaques."
 
 #: src/settings_translation_file.cpp
 msgid "Map Compression Level for Disk Storage"
@@ -4638,7 +4638,7 @@ msgstr ""
 "Attributs spécifiques au générateur de terrain v7.\n"
 "« montagnes » : montagnes.\n"
 "« crêtes » : rivières.\n"
-"« terrains flottants » : vaste terrain flottant dans l'atmosphère.\n"
+"« terrains flottants » : masses de terrains flottants dans l'atmosphère.\n"
 "« cavernes » : cavernes immenses souterraines profondes."
 
 #: src/settings_translation_file.cpp
@@ -4759,13 +4759,13 @@ msgstr "Paquets maximaux par itération"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr "FPS maximum"
+msgstr "IPS maximum"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when the window is not focused, or when the game is paused."
 msgstr ""
-"FPS maximum lorsque la fenêtre n'est pas sélectionnée, ou lorsque le jeu est "
-"en pause."
+"Nombre d'images par seconde maximum lorsque la fenêtre n'est pas "
+"sélectionnée, ou lorsque le jeu est en pause."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum distance to render shadows."
@@ -4855,9 +4855,10 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"Nombre maximal de paquets envoyés par étape d'envoi. Si vous avez une "
-"connexion lente, essayer de réduire cette valeur, mais ne pas réduire cette "
-"valeur en-dessous du double du nombre de clients maximum sur le serveur."
+"Nombre maximal de paquets envoyés par étape d'envoi.\n"
+"Si vous avez une connexion lente, essayer de réduire cette valeur.\n"
+"Ne pas réduire cette valeur en-dessous du double du nombre de clients "
+"maximum sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can be connected simultaneously."
@@ -5131,7 +5132,7 @@ msgid ""
 "This is a trade-off between SQLite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Nombre de blocs supplémentaires qui peuvent être chargés par « /"
+"Nombre de blocs de carte supplémentaires qui peuvent être chargés par « /"
 "clearobjects » à la fois.\n"
 "C'est un compromis entre la surcharge de transaction SQLite et la "
 "consommation mémoire\n"
@@ -5383,11 +5384,11 @@ msgstr ""
 "Combiner les « byteflags » ci dessous pour restreindre les fonctionnalités "
 "client, ou mettre 0 pour laisser sans restriction :\n"
 "LOAD_CLIENT_MODS : 1 (désactive le chargement des mods client)\n"
-"CHAT_MESSAGES : 2 (désactive l'appel « send_chat_message côté » client)\n"
-"READ_ITEMDEFS : 4 (désactive l'appel « get_item_def côté » client)\n"
+"CHAT_MESSAGES : 2 (désactive l'appel « send_chat_message » côté client)\n"
+"READ_ITEMDEFS : 4 (désactive l'appel « get_item_def » côté client)\n"
 "READ_NODEDEFS : 8 (désactive l'appel « get_node_def » côté client)\n"
-"LOOKUP_NODES_LIMIT : 16 (limite l'appel « get_node » côté client à "
-"« csm_restriction_noderange »)\n"
+"LOOKUP_NODES_LIMIT : 16 (limite l'appel « get_node » côté client à « "
+"csm_restriction_noderange »)\n"
 "READ_PLAYERINFO : 32 (désactive l'appel « get_player_names » côté client)"
 
 #: src/settings_translation_file.cpp
@@ -5906,9 +5907,9 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
-"Taille du cache de blocs de carte du générateur de maillage. Augmenter ceci "
-"augmente le % d'interception du cache et réduit la copie de données dans le "
-"fil principal, réduisant les tremblements."
+"Taille du cache de blocs de carte du générateur de maillage.\n"
+"Augmenter ceci augmente le % d'interception du cache et réduit la copie de "
+"données dans le fil principal, réduisant les tremblements."
 
 #: src/settings_translation_file.cpp
 msgid "Sky Body Orbit Tilt"
@@ -5916,7 +5917,7 @@ msgstr "Inclinaison de l'orbite du corps du ciel"
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
-msgstr "Largeur de part"
+msgstr "Tranche w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights."
@@ -5983,8 +5984,8 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
-"Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
-"d'utiliser le port UDP.\n"
+"URL à laquelle les clients obtiennent les fichiers média au lieu d'utiliser "
+"le port UDP.\n"
 "« $filename » doit être accessible depuis « $remote_media$filename » via "
 "cURL (évidemment, « remote_media » doit se terminer par une barre oblique).\n"
 "Les fichiers qui ne sont pas présents sont récupérés de la manière "
@@ -6172,7 +6173,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The URL for the content repository"
-msgstr "L'URL du dépôt de contenu."
+msgstr "URL du dépôt de contenu."
 
 #: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
@@ -6503,19 +6504,18 @@ msgstr "Activer les nuages 3D au lieu des nuages 2D (plats)."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
-"Utiliser une animation de nuages pour l'arrière-plan du menu principal."
+msgstr "Utiliser l'animation des nuages pour l'arrière-plan du menu principal."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr ""
-"Utilise le filtrage anisotrope lorsque l'on regarde les textures sous un "
+"Utiliser le filtrage anisotrope lorsque l'on regarde les textures sous un "
 "certain angle."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Utilisation du filtrage trilinéaire."
+msgstr ""
+"Utiliser le filtrage bilinéaire lors de la mise à l'échelle des textures."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6530,13 +6530,12 @@ msgstr ""
 "Si activé, un réticule est affiché et utilisé pour la sélection d'objets."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Utilise le mip-mapping lors de la réduction d'échelle des textures.\n"
+"Utiliser le mip-mapping lors de la mise à l'échelle des textures.\n"
 "Peut améliorer légèrement les performances, surtout lors de l'utilisation "
 "d'un pack de textures haute résolution.\n"
 "La réduction d'échelle avec correction gamma n'est pas prise en charge."
@@ -6554,16 +6553,14 @@ msgstr ""
 "pour les maillages clients de taille inférieure à 4×4×4 blocs de carte."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Utilisation du filtrage trilinéaire lors de la réduction d'échelle des "
-"textures.\n"
-"Si le filtrage bilinéaire et le filtrage trilinéaire sont activés, le "
-"filtrage trilinéaire est appliqué."
+"Utiliser le filtrage trilinéaire lors de la mise à l'échelle des textures.\n"
+"Si le filtrage bilinéaire et le filtrage trilinéaire sont tous deux activés, "
+"le filtrage trilinéaire est appliqué."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6571,7 +6568,7 @@ msgid ""
 "If enabled, virtual joystick will also tap \"Aux1\" button when out of main "
 "circle."
 msgstr ""
-"Utilise la manette virtuelle pour déclencher le bouton « Aux1 ».\n"
+"Utiliser la manette virtuelle pour déclencher le bouton « Aux1 ».\n"
 "Si activé, la manette virtuelle appuie également sur le bouton « Aux1 » "
 "lorsqu'en dehors du cercle principal."
 
@@ -6692,8 +6689,8 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Coordonnée W de la couche 3D de la forme 4D.\n"
-"Détermine la tranche 3D de la forme 4D qui est générée.\n"
+"Coordonnée W de la tranche 3D générée d'une fractale 4D.\n"
+"Détermine la tranche 3D de la forme 4D générée.\n"
 "Transforme la forme de la fractale.\n"
 "N'a aucun effet sur les fractales 3D.\n"
 "La plage est d'environ -2 à 2."
@@ -6787,11 +6784,11 @@ msgid ""
 msgstr ""
 "En utilisant le filtrage bilinéaire/trilinéaire/anisotrope, les textures de "
 "basse résolution peuvent être floues.\n"
-"Elles seront donc automatiquement agrandies avec l'interpolation du plus "
-"proche voisin pour préserver des pixels nets.\n"
-"Ceci détermine la taille de la texture minimale pour les textures "
-"agrandies ; les valeurs plus hautes rendent plus détaillées, mais "
-"nécessitent plus de mémoire. Les puissances de 2 sont recommandées.\n"
+"Elles sont donc agrandies avec l'interpolation du plus proche voisin pour "
+"préserver des pixels nets.\n"
+"Ceci détermine la taille minimale pour les textures agrandies ;\n"
+"les valeurs plus élevées ont un rendu plus net, mais nécessitent plus de "
+"mémoire. Les puissances de 2 sont recommandées.\n"
 "Ce paramètre est appliqué uniquement si le filtrage bilinéaire/trilinéaire/"
 "anisotrope est activé.\n"
 "Ceci est également utilisé comme taille de texture de nœud de base pour "
@@ -6829,8 +6826,7 @@ msgid ""
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
 "S’il faut demander aux clients de se reconnecter après un crash (Lua).\n"
-"Définir sur « Activé » si le serveur est paramétré pour redémarrer "
-"automatiquement."
+"Activer si le serveur est paramétré pour redémarrer automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
@@ -6874,8 +6870,9 @@ msgid ""
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
 "Systèmes Windows seulement : démarrer Minetest avec la fenêtre de ligne de "
-"commande en arrière-plan. Contient les mêmes informations que le fichier "
-"« debug.txt » (nom par défaut)."
+"commande en arrière-plan.\n"
+"Contient les mêmes informations que le fichier « debug.txt » (nom par "
+"défaut)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6929,8 +6926,7 @@ msgstr "Limite haute Y des grandes grottes."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
-msgstr ""
-"Distance Y jusqu'à laquelle les cavernes s'étendent à leur taille maximale."
+msgstr "Distance Y sur laquelle les cavernes s'étendent à leur taille maximale."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6939,8 +6935,9 @@ msgid ""
 "For a solid floatland layer, this controls the height of hills/mountains.\n"
 "Must be less than or equal to half the distance between the Y limits."
 msgstr ""
-"Hauteur-Y à laquelle les terrains flottants commencent à rétrécir.\n"
-"L'effilage commence à cette distance de la limite en Y.\n"
+"Distance Y sur laquelle les terrains flottants passent d'une densité "
+"maximale à une densité nulle.\n"
+"L'effilage commence à cette distance, depuis la limite en Y.\n"
 "Pour une couche solide de terrain flottant, ceci contrôle la hauteur des "
 "collines et des montagnes.\n"
 "Doit être inférieure ou égale à la moitié de la distance entre les limites Y."
