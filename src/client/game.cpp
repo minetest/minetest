@@ -74,6 +74,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "hud.h"
 #include "clientdynamicinfo.h"
+#include "collision.h"
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -3731,14 +3732,37 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 
 		// Don't place node when player would be inside new node
 		// NOTE: This is to be eventually implemented by a mod as client-side Lua
-		if (!predicted_f.walkable ||
+		const bool skip_check =  !predicted_f.walkable ||
 				g_settings->getBool("enable_build_where_you_stand") ||
-				(client->checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
-				(predicted_f.walkable &&
-					neighborpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
-					neighborpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
+				(client->checkPrivilege("noclip") && g_settings->getBool("noclip"));
+
+		// We are simply colliding the player's current collisionbox in the world to a
+		// "normal node" collision box. This can be improved to take nodeboxes.
+		bool narrow_phase_collision = false;
+		if (!skip_check) {
+
+			// Create a "normal node" collision box.
+			aabb3f normal_node_cbox(
+				(f32)p.X - 0.5f, (f32)p.Y - 0.5f, (f32)p.Z - 0.5f,
+				(f32)p.X + 0.5f, (f32)p.Y + 0.5f, (f32)p.Z + 0.5f
+			);
+
+			// Create the player's collision box.
+			aabb3f cbox = player->getCollisionbox();
+			v3f pos = player->getPosition() / v3f{10.0f, 10.0f, 10.0f};			
+			const auto min = (cbox.MinEdge / v3f{10.0f, 10.0f, 10.0f}) + pos;
+			const auto max = (cbox.MaxEdge / v3f{10.0f, 10.0f, 10.0f}) + pos;
+			aabb3f player_cbox(min,max);
+
+			// Now collide it. Narrow phase is done.
+			narrow_phase_collision = player_cbox.intersectsWithBox(normal_node_cbox);
+		}
+
+		if (skip_check || !narrow_phase_collision) {
+			
 			// This triggers the required mesh update too
 			client->addNode(p, predicted_node);
+
 			// Report to server
 			client->interact(INTERACT_PLACE, pointed);
 			// A node is predicted, also play a sound
