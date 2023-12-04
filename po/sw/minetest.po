@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Swahili (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -6053,10 +6053,6 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr ""
 
@@ -6351,8 +6347,8 @@ msgstr "Tumia uchujaji anisotropic wakati unatazama katika unamu kutoka pembe."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Tumia uchujaji bilinear wakati upimaji unamu."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Tumia uchujaji trilinear wakati upimaji unamu."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6366,7 +6362,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6380,7 +6376,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6597,6 +6593,26 @@ msgstr ""
 "maunzi na programu kwa ajili ya kurekebisha.  Wakati uongo, kuanguka nyuma "
 "kwa mbinu ya zamani ya kipimo, kwa madereva video vizuri siungi mkono unamu "
 "Inapakua nyuma kutoka maunzi."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Wakati wa kutumia Vichujio bilinear/trilinear/anisotropic, unamu low-"
+"resolution unaweza kizunguzungu, hivyo otomatiki upscale yao na karibu "
+"jirani interpolation kuhifadhi pikseli hubainisha.  Hii Seti Ukubwa wa unamu "
+"chini kwa ajili ya unamu upscaled; thamani ya juu kuangalia kali, lakini "
+"zinahitaji kumbukumbu zaidi.  Nguvu ya 2 ni ilipendekeza.  Kuweka hii zaidi "
+"1 usiwe na athari inayoonekana isipokuwa uchujaji wa bilinear/trilinear/"
+"anisotropic ni kuwezeshwa."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8174,8 +8190,9 @@ msgstr "cURL kikomo sambamba"
 #~ msgid "Up"
 #~ msgstr "Juu"
 
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Tumia uchujaji trilinear wakati upimaji unamu."
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Tumia uchujaji bilinear wakati upimaji unamu."
 
 #~ msgid "Vertical screen synchronization."
 #~ msgstr "Ulandanishi wa kiwamba wima."
@@ -8201,27 +8218,6 @@ msgstr "cURL kikomo sambamba"
 
 #~ msgid "Waving water"
 #~ msgstr "Waving maji"
-
-#, fuzzy
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Wakati wa kutumia Vichujio bilinear/trilinear/anisotropic, unamu low-"
-#~ "resolution unaweza kizunguzungu, hivyo otomatiki upscale yao na karibu "
-#~ "jirani interpolation kuhifadhi pikseli hubainisha.  Hii Seti Ukubwa wa "
-#~ "unamu chini kwa ajili ya unamu upscaled; thamani ya juu kuangalia kali, "
-#~ "lakini zinahitaji kumbukumbu zaidi.  Nguvu ya 2 ni ilipendekeza.  Kuweka "
-#~ "hii zaidi 1 usiwe na athari inayoonekana isipokuwa uchujaji wa bilinear/"
-#~ "trilinear/anisotropic ni kuwezeshwa."
 
 #, fuzzy
 #~ msgid ""

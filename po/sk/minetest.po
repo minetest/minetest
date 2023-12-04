@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-10-20 20:44+0000\n"
 "Last-Translator: BRN Systems <brnsystems123@gmail.com>\n"
 "Language-Team: Slovak <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -6099,10 +6099,6 @@ msgid "The URL for the content repository"
 msgstr "Webová adresa (URL) k úložisku doplnkov"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Mŕtva zóna joysticku"
 
@@ -6423,8 +6419,8 @@ msgstr "Použi anisotropné filtrovanie pri pohľade na textúry zo strany."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Použi bilineárne filtrovanie pri zmene mierky textúr."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Použi trilineárne filtrovanie pri zmene mierky textúr."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6442,7 +6438,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6462,7 +6458,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6672,6 +6668,28 @@ msgstr ""
 "z hardvéru do softvéru pre zmenu mierky. Ak za vypnutý, vráť sa\n"
 "k starej metóde zmeny mierky, pre grafické ovládače, ktoré dostatočne\n"
 "nepodporujú sťahovanie textúr z hardvéru."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Pri použití bilineárneho/trilineárneho/anisotropného filtra, textúry s "
+"nízkym\n"
+"rozlíšením môžu byť rozmazané, tak sa automaticky upravia interpoláciou\n"
+"s najbližším susedom aby bola zachovaná ostrosť pixelov.\n"
+"Toto nastaví minimálnu veľkosť pre upravenú textúru;\n"
+"vyššia hodnota znamená ostrejší vzhľad, ale potrebuje viac pamäti.\n"
+"Odporúčané sú mocniny 2. Nastavenie sa aplikuje len ak je použité bilineárne/"
+"trilineárne/anisotropné filtrovanie.\n"
+"Toto sa tiež používa ako základná veľkosť textúry kociek pre\n"
+"\"world-aligned autoscaling\" textúr."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8398,6 +8416,10 @@ msgstr "Paralelný limit cURL"
 #~ msgid "Up"
 #~ msgstr "Hore"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Použi bilineárne filtrovanie pri zmene mierky textúr."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8415,9 +8437,6 @@ msgstr "Paralelný limit cURL"
 #~ "Ak sú shadery zakázané, objavia sa viditeľné medzery medzi kockami.\n"
 #~ "Ak sú nastavené na 0, MSAA je zakázané.\n"
 #~ "Po zmene tohto nastavenia je požadovaný reštart."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Použi trilineárne filtrovanie pri zmene mierky textúr."
 
 #~ msgid ""
 #~ "Version number which was last seen during an update check.\n"
@@ -8457,29 +8476,6 @@ msgstr "Paralelný limit cURL"
 
 #~ msgid "Waving Plants"
 #~ msgstr "Vlniace sa rastliny"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Pri použití bilineárneho/trilineárneho/anisotropného filtra, textúry s "
-#~ "nízkym\n"
-#~ "rozlíšením môžu byť rozmazané, tak sa automaticky upravia interpoláciou\n"
-#~ "s najbližším susedom aby bola zachovaná ostrosť pixelov.\n"
-#~ "Toto nastaví minimálnu veľkosť pre upravenú textúru;\n"
-#~ "vyššia hodnota znamená ostrejší vzhľad, ale potrebuje viac pamäti.\n"
-#~ "Odporúčané sú mocniny 2. Nastavenie sa aplikuje len ak je použité "
-#~ "bilineárne/trilineárne/anisotropné filtrovanie.\n"
-#~ "Toto sa tiež používa ako základná veľkosť textúry kociek pre\n"
-#~ "\"world-aligned autoscaling\" textúr."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "

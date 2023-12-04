@@ -324,17 +324,17 @@
 
 ### Filtering and Antialiasing
 
-#    Use mipmaps when scaling textures down. May slightly increase performance,
+#    Use mipmaps when scaling textures. May slightly increase performance,
 #    especially when using a high-resolution texture pack.
 #    Gamma-correct downscaling is not supported.
 #    type: bool
 # mip_map = false
 
-#    Use bilinear filtering when scaling textures down.
+#    Use bilinear filtering when scaling textures.
 #    type: bool
 # bilinear_filter = false
 
-#    Use trilinear filtering when scaling textures down.
+#    Use trilinear filtering when scaling textures.
 #    If both bilinear and trilinear filtering are enabled, trilinear filtering
 #    is applied.
 #    type: bool
@@ -2731,7 +2731,14 @@
 #    type: enum values: disable, enable, force
 # autoscale_mode = disable
 
-#    The base node texture size used for world-aligned texture autoscaling.
+#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
+#    can be blurred, so automatically upscale them with nearest-neighbor
+#    interpolation to preserve crisp pixels. This sets the minimum texture size
+#    for the upscaled textures; higher values look sharper, but require more
+#    memory. Powers of 2 are recommended. This setting is ONLY applied if
+#    bilinear/trilinear/anisotropic filtering is enabled.
+#    This is also used as the base node texture size for world-aligned
+#    texture autoscaling.
 #    type: int min: 1 max: 32768
 # texture_min_size = 64
 

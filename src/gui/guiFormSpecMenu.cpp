@@ -4692,6 +4692,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			// The split amount will always at least one, because the number
 			// of slots will never be greater than the selected amount
 			u16 split_amount = m_left_drag_amount / m_left_drag_stacks.size();
+			u16 split_remaining = m_left_drag_amount % m_left_drag_stacks.size();
 
 			ItemStack stack_from = m_left_drag_stack;
 			m_selected_amount = m_left_drag_amount;
@@ -4702,7 +4703,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (ds.first == *m_selected_item) {
 					// Adding to the source stack, just change the selected amount
-					m_selected_amount -= split_amount;
+					m_selected_amount -= split_amount + split_remaining;
 
 				} else {
 					// Reset the stack to its original state

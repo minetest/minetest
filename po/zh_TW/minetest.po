@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Chinese (Traditional) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-08-17 10:48+0000\n"
 "Last-Translator: Yic95 <0Luke.Luke0@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -5894,10 +5894,6 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "要使用的搖桿的識別碼"
@@ -6192,8 +6188,8 @@ msgstr "當從某個角度觀看時啟用各向異性過濾。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "當縮放材質時使用雙線性過濾。"
+msgid "Use bilinear filtering when scaling textures."
+msgstr "當縮放材質時使用三線性過濾。"
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6207,7 +6203,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6221,7 +6217,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6440,6 +6436,26 @@ msgstr ""
 "從硬體到軟體以供縮放。當為假時，退回\n"
 "至舊的縮放方法，供從硬體下載材質回\n"
 "來軟體支援不佳的顯示卡驅動程式使用。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"當使用雙線性／三線性／各向異性過濾器時，低解析度材質\n"
+"會被模糊，所以會自動將大小縮放至最近的內插值\n"
+"以讓像素保持清晰。這會設定最小材質大小\n"
+"供放大材質使用；較高的值看起來較銳利，但需要更多的\n"
+"記憶體。建議為 2 的次方。將這個值設定高於 1 不會\n"
+"有任何視覺效果，除非雙線性／三線性／各向異性過濾\n"
+"已啟用。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8116,8 +8132,9 @@ msgstr "cURL 並行限制"
 #~ msgid "Up"
 #~ msgstr "上"
 
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "當縮放材質時使用三線性過濾。"
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "當縮放材質時使用雙線性過濾。"
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr "在平整浮地地形的山丘高度與湖泊深度變化。"
@@ -8155,27 +8172,6 @@ msgstr "cURL 並行限制"
 
 #~ msgid "Waving water"
 #~ msgstr "波動的水"
-
-#, fuzzy
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "當使用雙線性／三線性／各向異性過濾器時，低解析度材質\n"
-#~ "會被模糊，所以會自動將大小縮放至最近的內插值\n"
-#~ "以讓像素保持清晰。這會設定最小材質大小\n"
-#~ "供放大材質使用；較高的值看起來較銳利，但需要更多的\n"
-#~ "記憶體。建議為 2 的次方。將這個值設定高於 1 不會\n"
-#~ "有任何視覺效果，除非雙線性／三線性／各向異性過濾\n"
-#~ "已啟用。"
 
 #, fuzzy
 #~ msgid ""

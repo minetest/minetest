@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Turkish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-05-22 21:48+0000\n"
 "Last-Translator: Furkan Baytekin <furkanbaytekin@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -6117,10 +6117,6 @@ msgid "The URL for the content repository"
 msgstr "İçerik deposu için URL"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Joystick'in ölü bölgesi"
 
@@ -6453,8 +6449,8 @@ msgstr "Dokulara bir açıdan bakarken anisotropik filtreleme kullan."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Dokuları boyutlandırırken bilineer filtreleme kullan."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Dokuları boyutlandırırken trilineer filtreleme kullan."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6469,7 +6465,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6486,7 +6482,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6696,6 +6692,30 @@ msgstr ""
 "boyutlandırmak için donanımdan yazılıma kopyala. False (yanlış) ise,\n"
 "dokuları donanımdan geri indirmeyi düzgün desteklemeyen video\n"
 "sürücüleri için, eski boyutlandırma yöntemini kullan."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Bilineer/trilineer/anisotropik filtreler kullanılırken, düşük çözünürlüklü "
+"dokular\n"
+"bulanık olabilir, bu yüzden en yakın komşu aradeğerleme ile keskin "
+"pikselleri\n"
+"korumak için kendiliğinden büyütme yapılır. Bu minimum doku boyutunu\n"
+"büyütülmüş dokular için ayarlar; daha yüksek değerler daha net görünür,\n"
+"ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. Bu ayar "
+"YALNIZCA\n"
+"bilineer/trilineer/anisotropik filtreler etkinse uygulanır.\n"
+"Bu, dünya hizalı doku kendiliğinden boyutlandırmada taban nod doku boyutu\n"
+"olarak da kullanılır."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -8498,6 +8518,10 @@ msgstr "cURL paralel sınırı"
 #~ msgid "Up"
 #~ msgstr "Yukarı"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Dokuları boyutlandırırken bilineer filtreleme kullan."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8516,9 +8540,6 @@ msgstr "cURL paralel sınırı"
 #~ "Gölgelendirme kapalı ise düğüm arası(nod) boşluk görülür.\n"
 #~ "0'da ise düzgünleştirme kapalıdır.\n"
 #~ "Ayarları değiştirdikten sonra yenileme gereklidir."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Dokuları boyutlandırırken trilineer filtreleme kullan."
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8557,32 +8578,6 @@ msgstr "cURL paralel sınırı"
 
 #~ msgid "Waving water"
 #~ msgstr "Dalgalanan su"
-
-#, fuzzy
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Bilineer/trilineer/anisotropik filtreler kullanılırken, düşük "
-#~ "çözünürlüklü dokular\n"
-#~ "bulanık olabilir, bu yüzden en yakın komşu aradeğerleme ile keskin "
-#~ "pikselleri\n"
-#~ "korumak için kendiliğinden büyütme yapılır. Bu minimum doku boyutunu\n"
-#~ "büyütülmüş dokular için ayarlar; daha yüksek değerler daha net görünür,\n"
-#~ "ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. Bu "
-#~ "ayar YALNIZCA\n"
-#~ "bilineer/trilineer/anisotropik filtreler etkinse uygulanır.\n"
-#~ "Bu, dünya hizalı doku kendiliğinden boyutlandırmada taban nod doku "
-#~ "boyutu\n"
-#~ "olarak da kullanılır."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "

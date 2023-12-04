@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
-"PO-Revision-Date: 2023-10-22 21:02+0000\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
+"PO-Revision-Date: 2023-11-17 00:07+0000\n"
 "Last-Translator: Wuzzy <Wuzzy@disroot.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
 "de/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.2\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -282,9 +282,8 @@ msgid "Texture packs"
 msgstr "Texturenpakete"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "The package $1 was not found."
-msgstr "Das Paket $1/$2 wurde nicht gefunden."
+msgstr "Das Paket $1 wurde nicht gefunden."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -834,7 +833,7 @@ msgstr "(Systemsprache verwenden)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Barrierefreiheit"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -862,9 +861,8 @@ msgid "General"
 msgstr "Allgemein"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Schnell bewegen"
+msgstr "Bewegung"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -988,18 +986,16 @@ msgid "Browse online content"
 msgstr "Onlineinhalte durchsuchen"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Onlineinhalte durchsuchen"
+msgstr "Onlineinhalte durchsuchen [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Inhalt"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Inhalt"
+msgstr "Inhalt [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1022,9 +1018,8 @@ msgid "Rename"
 msgstr "Umbenennen"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<keine verfügbar>"
+msgstr "Update verfügbar?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1680,32 +1675,28 @@ msgstr "Rücktaste"
 
 #. ~ Usually paired with the Pause key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Break Key"
-msgstr "Schleichtaste"
+msgstr "Untbr-Taste"
 
 #: src/client/keycode.cpp
 msgid "Caps Lock"
 msgstr "Feststellt."
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
-msgstr "Leeren"
+msgstr "Clear-Taste"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Strg"
+msgstr "Strg-Taste"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Löschen"
+msgstr "Entf-Taste"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Pfeil runter"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1752,9 +1743,8 @@ msgid "Insert"
 msgstr "Einfg"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Strg links"
+msgstr "Pfeil links"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1778,9 +1768,8 @@ msgstr "Win. links"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
-msgstr "Menü"
+msgstr "Menü-Taste"
 
 #: src/client/keycode.cpp
 msgid "Middle Button"
@@ -1855,20 +1844,17 @@ msgid "OEM Clear"
 msgstr "OEM Clear"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
 msgstr "Bild ab"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Bild auf"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Pause"
+msgstr "Pause-Taste"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1880,14 +1866,12 @@ msgid "Print"
 msgstr "Druck"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Eingabe"
+msgstr "Eingabetaste"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Strg rechts"
+msgstr "Pfeil rechts"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1919,9 +1903,8 @@ msgid "Select"
 msgstr "Auswählen"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
-msgstr "Umsch."
+msgstr "Umschalt-Taste"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
@@ -1941,7 +1924,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Pfeil hoch"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1952,9 +1935,8 @@ msgid "X Button 2"
 msgstr "X-Knopf 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
-msgstr "Zoom"
+msgstr "Zoom-Taste"
 
 #: src/client/minimap.cpp
 msgid "Minimap hidden"
@@ -2293,7 +2275,7 @@ msgstr "2-D-Rauschen, welches den Ort der Flusstäler und -kanäle regelt."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2353,7 +2335,6 @@ msgid "3D noise that determines number of dungeons per mapchunk."
 msgstr "3-D-Rauschen, welches die Anzahl der Verliese je Mapchunk festlegt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -2629,9 +2610,8 @@ msgid "Bind address"
 msgstr "Bind-Adresse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Biome"
+msgstr "Biom-API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2822,9 +2802,8 @@ msgid "Client-side Modding"
 msgstr "Clientseitiges Modding"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client-side node lookup range restriction"
-msgstr "Distanzlimit für clientseitige Block-Definitionsabfrage"
+msgstr "Clientseitige Node-Abfragen-Reichweitenbegrenzung"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2839,7 +2818,6 @@ msgid "Clouds"
 msgstr "Wolken"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
 msgstr "Wolken sind ein clientseitiger Effekt."
 
@@ -3148,7 +3126,6 @@ msgstr ""
 "in Kartenblöcken (0 = unbegrenzt)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Defines the size of the sampling grid for FSAA and SSAA antialiasing "
 "methods.\n"
@@ -3475,7 +3452,6 @@ msgstr ""
 "beeinträchtigen."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine Profiler"
 msgstr "Engine-Profiler"
 
@@ -3788,9 +3764,8 @@ msgid "Fullscreen mode."
 msgstr "Vollbildmodus."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI"
-msgstr "GUIs"
+msgstr "GUI"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -4107,7 +4082,6 @@ msgstr ""
 "ihr Passwort zu ein leeres Passwort ändern."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, the server will perform map block occlusion culling based on\n"
 "on the eye position of the player. This can reduce the number of blocks\n"
@@ -4118,7 +4092,7 @@ msgstr ""
 "basierend\n"
 "auf der Augenposition des Spielers anwenden. Dadurch kann die Anzahl\n"
 "der Kartenblöcke, die zum Client gesendet werden, um 50-80% reduziert\n"
-"werden. Der Client wird nicht mehr die meisten unsichtbaren Kartenblöcke\n"
+"werden. Clients werden nicht mehr die meisten unsichtbaren Kartenblöcke\n"
 "empfangen, was den Nutzen vom Geistmodus reduziert."
 
 #: src/settings_translation_file.cpp
@@ -4951,19 +4925,17 @@ msgid "Maximum simultaneous block sends per client"
 msgstr "Max. gleichzeitig versendete Blöcke pro Client"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum size of the outgoing chat queue"
 msgstr "Maximale Größe der ausgehenden Chatwarteschlange"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum size of the outgoing chat queue.\n"
 "0 to disable queueing and -1 to make the queue size unlimited."
 msgstr ""
 "Maximale Größe der ausgehenden Chatwarteschlange.\n"
-"0, um Warteschlange zu deaktivieren, -1, um die Wartenschlangengröße nicht "
-"zu begrenzen."
+"0, um Warteschlange zu deaktivieren, -1, um die Warteschlangengröße nicht zu "
+"begrenzen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5026,7 +4998,7 @@ msgstr "Mip-Mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Verschiedenes"
 
 #: src/settings_translation_file.cpp
 msgid "Mod Profiler"
@@ -5200,10 +5172,10 @@ msgstr ""
 "Transaktions-Overhead und Speicherverbrauch (Faustregel: 4096=100MB)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Number of messages a player may send per 10 seconds."
 msgstr ""
-"Anzahl der Nachrichten, die ein Spieler innerhalb 10 Sekunden senden darf."
+"Anzahl der Nachrichten, die ein Spieler innerhalb von 10 Sekunden senden "
+"darf."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5736,7 +5708,6 @@ msgid "Server port"
 msgstr "Serverport"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server-side occlusion culling"
 msgstr "Serverseitiges Occlusion Culling"
 
@@ -5948,7 +5919,6 @@ msgstr ""
 "von Vorteil."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of mapchunks generated by mapgen, stated in mapblocks (16 nodes).\n"
 "WARNING: There is no benefit, and there are several dangers, in\n"
@@ -5959,7 +5929,7 @@ msgid ""
 msgstr ""
 "Größe der Mapchunks, die vom Kartengenerator generiert werden, in Karten-\n"
 "blöcken (16 Blöcke) angegeben.\n"
-"ACHTUNG! Es bringt nichts und es birgt viele Gefahren, diesen Wert über\n"
+"ACHTUNG: Es bringt nichts und es birgt viele Gefahren, diesen Wert über\n"
 "5 zu erhöhen.\n"
 "Die Höhlen- und Verliesdichte wird erhöht, wenn dieser Wert verringert "
 "wird.\n"
@@ -6065,17 +6035,15 @@ msgstr ""
 "(oder alle) Gegenstände setzen kann."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Spread a complete update of shadow map over given number of frames.\n"
 "Higher values might make shadows laggy, lower values\n"
 "will consume more resources.\n"
 "Minimum value: 1; maximum value: 16"
 msgstr ""
-"Eine vollständige Aktualisierung der Schattenkarte über der angegebenen\n"
-"Anzahl Frames ausbreiten. Höhere Werte können dazu führen, dass\n"
-"Schatten langsamer reagieren,\n"
-"niedrigere Werte sind rechenintensiver.\n"
+"Eine vollständige Aktualisierung der Schattenkarte über die angegebene\n"
+"Anzahl Frames verteilen. Höhere Werte können dazu führen, dass\n"
+"Schatten langsamer reagieren, niedrigere Werte sind rechenintensiver.\n"
 "Minimalwert: 1; Maximalwert: 16"
 
 #: src/settings_translation_file.cpp
@@ -6089,7 +6057,6 @@ msgstr ""
 "Standardabweichung der Lichtkurvenverstärkungs-Gaußfunktion."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawn point"
 msgstr "Statische Einstiegsposition"
 
@@ -6128,7 +6095,6 @@ msgid "Strip color codes"
 msgstr "Farbcodes entfernen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Surface level of optional water placed on a solid floatland layer.\n"
 "Water is disabled by default and will only be placed if this value is set\n"
@@ -6240,12 +6206,6 @@ msgid "The URL for the content repository"
 msgstr "Die URL für den Inhaltespeicher"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-"Die Größe der Basis-Node-Textur, die für welt-ausgerichtete "
-"Texturenautoskalierung benutzt wird."
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Der Totbereich des Joysticks"
 
@@ -6258,7 +6218,6 @@ msgstr ""
 "wenn „/profiler save [Format]“ ohne Format aufgerufen wird."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your world path in which profiles will be saved to."
 msgstr ""
@@ -6392,7 +6351,6 @@ msgid "The type of joystick"
 msgstr "Der Typ des Joysticks"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The vertical distance over which heat drops by 20 if 'altitude_chill' is\n"
 "enabled. Also, the vertical distance over which humidity drops by 10 if\n"
@@ -6586,8 +6544,9 @@ msgstr ""
 "heraus geschaut wird."
 
 #: src/settings_translation_file.cpp
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Bilineare Filterung bei der Herunterskalierung von Texturen benutzen."
+#, fuzzy
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Trilineare Filterung bei der Skalierung von Texturen benutzen."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6606,12 +6565,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Mipmaps benutzen, wenn Texturen herunterskaliert werden. Könnte die "
-"Performanz\n"
+"Mipmaps zum Verkleinern von Texturen verwenden. Könnte die Performanz\n"
 "leicht erhöhen, besonders, wenn ein hochauflösendes Texturenpaket benutzt "
 "wird.\n"
 "Eine gammakorrigierte Herunterskalierung wird nicht unterstützt."
@@ -6628,8 +6586,9 @@ msgstr ""
 "für Client-Meshgroßen, die kleiner als 4×4×4 Kartenblöcke große sind."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6849,6 +6808,28 @@ msgstr ""
 "methode angewandt, für Grafiktreiber, welche das\n"
 "Herunterladen von Texturen zurück von der Hardware nicht\n"
 "korrekt unterstützen."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Wenn bilineare, trilineare oder anisotrope Filter benutzt werden, können\n"
+"niedrigauflösende Texturen verschwommen sein, also werden sie automatisch\n"
+"mit Pixelwiederholung vergrößert, um scharfe Pixel zu behalten. Dies setzt "
+"die\n"
+"minimale Texturengröße für die vergrößerten Texturen; höhere Werte führen\n"
+"zu einem schärferen Aussehen, aber erfordern mehr Speicher. Zweierpotenzen\n"
+"werden empfohlen. Diese Einstellung trifft NUR dann in Kraft, falls\n"
+"der bilineare/trilineare/anisotrope Filter aktiviert ist.\n"
+"Dies wird außerdem verwendet als die Basisblocktexturengröße für\n"
+"welt-ausgerichtete automatische Texturenskalierung."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8659,6 +8640,12 @@ msgstr "cURL-Parallel-Begrenzung"
 #~ msgid "Texturing:"
 #~ msgstr "Texturierung:"
 
+#~ msgid ""
+#~ "The base node texture size used for world-aligned texture autoscaling."
+#~ msgstr ""
+#~ "Die Größe der Basis-Node-Textur, die für welt-ausgerichtete "
+#~ "Texturenautoskalierung benutzt wird."
+
 #~ msgid "The depth of dirt or other biome filler node."
 #~ msgstr "Die Tiefe der Erde oder eines anderen Biomfüllerblocks."
 
@@ -8725,6 +8712,10 @@ msgstr "cURL-Parallel-Begrenzung"
 #~ msgid "Up"
 #~ msgstr "Hoch"
 
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr ""
+#~ "Bilineare Filterung bei der Herunterskalierung von Texturen benutzen."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8744,9 +8735,6 @@ msgstr "cURL-Parallel-Begrenzung"
 #~ "sind.\n"
 #~ "Wenn der Wert auf 0 steht, ist MSAA deaktiviert.\n"
 #~ "Ein Neustart ist erforderlich, nachdem diese Option geändert worden ist."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Trilineare Filterung bei der Skalierung von Texturen benutzen."
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8798,32 +8786,6 @@ msgstr "cURL-Parallel-Begrenzung"
 
 #~ msgid "Waving water"
 #~ msgstr "Wasserwellen"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Wenn bilineare, trilineare oder anisotrope Filter benutzt werden, können\n"
-#~ "niedrigauflösende Texturen verschwommen sein, also werden sie "
-#~ "automatisch\n"
-#~ "mit Pixelwiederholung vergrößert, um scharfe Pixel zu behalten. Dies "
-#~ "setzt die\n"
-#~ "minimale Texturengröße für die vergrößerten Texturen; höhere Werte "
-#~ "führen\n"
-#~ "zu einem schärferen Aussehen, aber erfordern mehr Speicher. "
-#~ "Zweierpotenzen\n"
-#~ "werden empfohlen. Diese Einstellung trifft NUR dann in Kraft, falls\n"
-#~ "der bilineare/trilineare/anisotrope Filter aktiviert ist.\n"
-#~ "Dies wird außerdem verwendet als die Basisblocktexturengröße für\n"
-#~ "welt-ausgerichtete automatische Texturenskalierung."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "
