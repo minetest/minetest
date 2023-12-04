@@ -3769,6 +3769,11 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			}
 			// Release the memory.
 			free(cboxes);
+
+			// We can keep trying if this fails.
+			// This fixes an issue where it's extremely difficult to place a node.
+			if (narrow_phase_collision)
+				runData.repeat_place_timer = 100.0f;
 		}
 
 		if (skip_check || !narrow_phase_collision) {
