@@ -7791,7 +7791,7 @@ child will follow movement and rotation of that bone.
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
-      `"hud_elem_type"`.
+      `"type"` (and deprecated `"hud_elem_type"`).
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -10051,9 +10051,12 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
 ```lua
 {
-    hud_elem_type = "image",
+    type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
+    
+    hud_elem_type = "image",
+    -- Deprecated, same as "type"
 
     position = {x=0.5, y=0.5},
     -- Top left corner position of element
