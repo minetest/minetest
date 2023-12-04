@@ -3,9 +3,9 @@ msgstr ""
 "Project-Id-Version: Malay (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-02 05:17+0000\n"
-"Last-Translator: Nisa Syazwani <nisasyazwani@users.noreply.hosted.weblate."
-"org>\n"
+"PO-Revision-Date: 2023-12-04 21:13+0000\n"
+"Last-Translator: \"Yaya - Nurul Azeera Hidayah @ Muhammad Nur Hidayat "
+"Yasuyoshi\" <translation@mnh48.moe>\n"
 "Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
 "ms/>\n"
 "Language: ms\n"
@@ -6467,9 +6467,8 @@ msgstr ""
 "Gunakan penapisan anisotropik apabila melihat tekstur dari suatu sudut."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Gunakan penapisan trilinear apabila menyesuaikan tekstur."
+msgstr "Gunakan penapisan bilinear apabila menyesuaikan tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6485,15 +6484,14 @@ msgstr ""
 "memilih objek."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Gunakan pemetaan mip untuk menyesuaiturunkan tekstur. Boleh meningkatkan\n"
-"sedikit prestasi, terutamanya apabila menggunakan pek tekstur leraian "
-"tinggi.\n"
+"Gunakan pemetaan mip apabila menyesuaikan tekstur. Boleh meningkatkan\n"
+"sedikit prestasi, terutamanya apabila menggunakan pek tekstur leraian tinggi."
+"\n"
 "Penyesuaiturunan secara tepat-gama tidak disokong."
 
 #: src/settings_translation_file.cpp
@@ -6507,13 +6505,12 @@ msgstr ""
 "untuk jejaring klien dengan saiz lebih kecil daripada blok peta 4x4x4."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Gunakan penapisan trilinear apabila menyesuaiturunkan tekstur.\n"
+"Gunakan penapisan trilinear apabila menyesuaikan tekstur.\n"
 "Sekiranya kedua-dua penapisan bilinear dan trilinear dibolehkan,\n"
 "maka penapisan trilinear yang akan diterapkan."
 
