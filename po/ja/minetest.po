@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-11-22 00:17+0000\n"
+"PO-Revision-Date: 2023-12-04 21:13+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -6332,9 +6332,8 @@ msgid "Use anisotropic filtering when looking at textures from an angle."
 msgstr "ある角度からテクスチャを見るときに異方性フィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "テクスチャを拡大縮小する場合はトライリニアフィルタリングを使用します。"
+msgstr "テクスチャを拡大縮小するときはバイリニアフィルタリングを使用します。"
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6349,15 +6348,14 @@ msgstr ""
 "有効にすると、十字カーソルが表示されオブジェクトの選択に使用されます。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"テクスチャを縮小するときにミップマッピングを使用します。特に高解像度の\n"
-"テクスチャパックを使用するときにパフォーマンスがわずかに向上する\n"
-"可能性があります。ガンマ補正の縮小はサポートされていません。"
+"テクスチャを拡大縮小するときにミップマッピングを使用します。\n"
+"特に高解像度のテクスチャパックを使用するときにパフォーマンスがわずかに\n"
+"向上する可能性があります。ガンマ補正の縮小はサポートされていません。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6370,13 +6368,12 @@ msgstr ""
 "対するレイトレースオクルージョンカリング テストの使用を有効にします。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"テクスチャを縮小するときはトリリニアフィルタリングを使用します。\n"
+"テクスチャを拡大縮小するときはトリリニアフィルタリングを使用します。\n"
 "バイリニアフィルタリングとトリリニアフィルタリングの両方が有効な場合、\n"
 "トリリニアフィルタリングが適用されます。"
 
