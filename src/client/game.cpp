@@ -3731,7 +3731,6 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 		// Don't place node when player would be inside new node
-		// NOTE: This is to be eventually implemented by a mod as client-side Lua
 		const bool skip_check =  !predicted_f.walkable ||
 				g_settings->getBool("enable_build_where_you_stand") ||
 				(client->checkPrivilege("noclip") && g_settings->getBool("noclip"));
