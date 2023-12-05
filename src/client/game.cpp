@@ -3740,8 +3740,8 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		bool narrow_phase_collision = false;
 		if (!skip_check) {
 			// Collect all node collision boxes.
-			auto cboxes = new std::vector<aabb3f>();
-			predicted_node.getCollisionBoxes(nodedef_manager, cboxes, predicted_node.getNeighbors(p, &map));
+			std::vector<aabb3f> cboxes;
+			predicted_node.getCollisionBoxes(nodedef_manager, &cboxes, predicted_node.getNeighbors(p, &map));
 
 			// Convert the node placement prediction position into BS space.
 			const v3f BS_space_p = v3f(
@@ -3754,9 +3754,9 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			aabb3f cbox = player->getCollisionbox();
 			v3f pos = player->getPosition();
 			aabb3f player_cbox(cbox.MinEdge + pos,cbox.MaxEdge + pos);
-			for (uint i = 0; i < cboxes->size(); i++) {
+			for (uint i = 0; i < cboxes.size(); i++) {
 				// Now convert the collision box into BS real world space. 
-				const aabb3f rawCbox = cboxes->at(i);
+				const aabb3f rawCbox = cboxes.at(i);
 				//! FIXME: Make this a constant!
 				aabb3f normal_node_cbox(
 					rawCbox.MinEdge + BS_space_p,
