@@ -152,7 +152,6 @@ public:
 	void removeMarker(MinimapMarker **marker);
 
 	void updateActiveMarkers();
-	void drawMinimap();
 	void drawMinimap(core::rect<s32> rect);
 
 	video::IVideoDriver *driver;
