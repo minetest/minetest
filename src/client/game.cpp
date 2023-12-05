@@ -3750,7 +3750,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			aabb3f cbox = player->getCollisionbox();
 			v3f pos = player->getPosition();
 			aabb3f player_cbox(cbox.MinEdge + pos,cbox.MaxEdge + pos);
-			for (uint i = 0; i < cboxes.size(); i++) {
+			for (auto i = 0; i < cboxes.size(); i++) {
 				// Now convert the collision box into BS real world space. 
 				const aabb3f rawCbox = cboxes.at(i);
 				//! FIXME: Make this a constant!
