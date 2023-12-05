@@ -3770,8 +3770,6 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 				if (narrow_phase_collision)
 					break;
 			}
-			// Release the memory.
-			free(cboxes);
 
 			// We can keep trying if this fails.
 			// This fixes an issue where it's extremely difficult to place a node.
