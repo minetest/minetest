@@ -3744,11 +3744,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			predicted_node.getCollisionBoxes(nodedef_manager, &cboxes, predicted_node.getNeighbors(p, &map));
 
 			// Convert the node placement prediction position into BS space.
-			const v3f BS_space_p = v3f(
-				(f32)p.X * BS,
-				(f32)p.Y * BS,
-				(f32)p.Z * BS
-			);
+			const v3f BS_space_p = intToFloat(p, BS);
 
 			// Create the player's collision box in BS real world space.
 			aabb3f cbox = player->getCollisionbox();
