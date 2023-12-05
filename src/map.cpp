@@ -1142,7 +1142,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_check)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
@@ -1179,6 +1179,10 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
+
+	if (simple_check)
+		return isOccluded(cam_pos_nodes, pos_blockcenter, step, stepfac,
+				start_offset, end_offset, needed_count);
 
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
