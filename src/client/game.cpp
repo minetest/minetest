@@ -3757,10 +3757,13 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 			for (uint i = 0; i < cboxes->size(); i++) {
 				// Now convert the collision box into BS real world space. 
 				const aabb3f rawCbox = cboxes->at(i);
-				const aabb3f normal_node_cbox(
+				//! FIXME: Make this a constant!
+				aabb3f normal_node_cbox(
 					rawCbox.MinEdge + BS_space_p,
 					rawCbox.MaxEdge + BS_space_p
 				);
+				//! REMOVEME: This is a duct tape solution! Remove this if the collision system is ever fixed!
+				normal_node_cbox.MaxEdge.Y -= 0.01f;
 
 				// Now collide it. Narrow phase is done.
 				narrow_phase_collision = player_cbox.intersectsWithBox(normal_node_cbox);
