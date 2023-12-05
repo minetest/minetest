@@ -3741,7 +3741,7 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		if (!skip_check) {
 			// Collect all node collision boxes.
 			auto cboxes = new std::vector<aabb3f>();
-			predicted_node.getCollisionBoxes(nodedef_manager, cboxes, 0);
+			predicted_node.getCollisionBoxes(nodedef_manager, cboxes, predicted_node.getNeighbors(p, &map));
 
 			// Convert the node placement prediction position into BS space.
 			const v3f BS_space_p = v3f(
