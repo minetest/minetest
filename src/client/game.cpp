@@ -664,12 +664,6 @@ public:
 	}
 };
 
-#ifdef HAVE_TOUCHSCREENGUI
-#define SIZE_TAG "size[11,5.5]"
-#else
-#define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
-#endif
-
 /****************************************************************************
  ****************************************************************************/
 
@@ -1021,13 +1015,11 @@ private:
 	// this happens in pause menu in singleplayer
 	bool m_is_paused = false;
 
-#ifdef HAVE_TOUCHSCREENGUI
 	bool m_cache_hold_aux1;
 	bool m_touch_use_crosshair;
 	inline bool isNoCrosshairAllowed() {
 		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
 	}
-#endif
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif
@@ -1076,9 +1068,7 @@ Game::Game() :
 
 	readSettings();
 
-#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = false;	// This is initialised properly later
-#endif
 
 }
 
@@ -1182,9 +1172,7 @@ bool Game::startup(bool *kill,
 
 	m_first_loop_after_window_activation = true;
 
-#ifdef HAVE_TOUCHSCREENGUI
 	m_touch_use_crosshair = g_settings->getBool("touch_use_crosshair");
-#endif
 
 	g_client_translations->clear();
 
@@ -1219,10 +1207,8 @@ void Game::run()
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
-#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
-#endif
 
 	const irr::core::dimension2du initial_screen_size(
 			g_settings->getU16("screen_w"),
@@ -1308,9 +1294,8 @@ void Game::shutdown()
 	// Clear text when exiting.
 	m_game_ui->clearText();
 
-#ifdef HAVE_TOUCHSCREENGUI
-	g_touchscreengui->hide();
-#endif
+	if (g_touchscreengui)
+		g_touchscreengui->hide();
 
 	showOverlayMessage(N_("Shutting down..."), 0, 0, false);
 
@@ -1520,11 +1505,10 @@ bool Game::createClient(const GameStartData &start_data)
 	if (client->modsLoaded())
 		client->getScript()->on_camera_ready(camera);
 	client->setCamera(camera);
-#ifdef HAVE_TOUCHSCREENGUI
+
 	if (g_touchscreengui) {
 		g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
 	}
-#endif
 
 	/* Clouds
 	 */
@@ -1592,10 +1576,8 @@ bool Game::initGui()
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
 
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui)
 		g_touchscreengui->init(texture_src);
-#endif
 
 	return true;
 }
@@ -2024,18 +2006,17 @@ void Game::processUserInput(f32 dtime)
 		} else {
 			input->clear();
 		}
-#ifdef HAVE_TOUCHSCREENGUI
-		g_touchscreengui->hide();
-#endif
+
+		if (g_touchscreengui)
+			g_touchscreengui->hide();
+
 	} else {
-#ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui) {
 			/* on touchscreengui step may generate own input events which ain't
 			 * what we want in case we just did clear them */
 			g_touchscreengui->show();
 			g_touchscreengui->step(dtime);
 		}
-#endif
 
 		m_game_focused = true;
 	}
@@ -2227,13 +2208,11 @@ void Game::processItemSelection(u16 *new_playeritem)
 		}
 	}
 
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
 		std::optional<u16> selection = g_touchscreengui->getHotbarSelection();
 		if (selection)
 			*new_playeritem = *selection;
 	}
-#endif
 
 	// Clamp selection again in case it wasn't changed but max_item was
 	*new_playeritem = MYMIN(*new_playeritem, max_item);
@@ -2384,9 +2363,7 @@ void Game::toggleFast()
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
-#ifdef HAVE_TOUCHSCREENGUI
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
-#endif
 }
 
 
@@ -2677,12 +2654,10 @@ f32 Game::getSensitivityScaleFactor() const
 
 void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
 		cam->camera_yaw   += g_touchscreengui->getYawChange();
 		cam->camera_pitch += g_touchscreengui->getPitchChange();
 	} else {
-#endif
 		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
 		v2s32 dist = input->getMousePos() - center;
 
@@ -2696,9 +2671,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 
 		if (dist.X != 0 || dist.Y != 0)
 			input->setMousePos(center.X, center.Y);
-#ifdef HAVE_TOUCHSCREENGUI
 	}
-#endif
 
 	if (m_cache_enable_joysticks) {
 		f32 sens_scale = getSensitivityScaleFactor();
@@ -2743,16 +2716,14 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		control.movement_direction = atan2(dx, 1.0f);
 	}
 
-#ifdef HAVE_TOUCHSCREENGUI
 	/* For touch, simulate holding down AUX1 (fast move) if the user has
 	 * the fast_move setting toggled on. If there is an aux1 key defined for
 	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
-	if (m_cache_hold_aux1) {
+	if (g_touchscreengui && m_cache_hold_aux1) {
 		control.aux1 = control.aux1 ^ true;
 	}
-#endif
 
 	client->setPlayerControl(control);
 
@@ -3233,10 +3204,8 @@ void Game::updateCamera(f32 dtime)
 
 		camera->toggleCameraMode();
 
-#ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
 			g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
-#endif
 
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
@@ -3337,7 +3306,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
 
-#ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui && isNoCrosshairAllowed()) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
@@ -3346,7 +3314,6 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 		shootline.start += intToFloat(camera_offset, BS);
 		shootline.end += intToFloat(camera_offset, BS);
 	}
-#endif
 
 	PointedThing pointed = updatePointedThing(shootline,
 			selected_def.liquids_pointable,
@@ -4343,10 +4310,10 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 	bool draw_crosshair = (
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	if (this->isNoCrosshairAllowed())
+
+	if (g_touchscreengui && isNoCrosshairAllowed())
 		draw_crosshair = false;
-#endif
+
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
 			draw_wield_tool, draw_crosshair);
 
@@ -4470,9 +4437,15 @@ void Game::readSettings()
 
 void Game::showDeathFormspec()
 {
+	std::string size_tag;
+	if (g_touchscreengui)
+		size_tag = "size[11,5.5]";
+	else
+		size_tag = "size[11,5.5,true]"; // Fixed size on desktop
+
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +
-		SIZE_TAG
+		size_tag +
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
@@ -4494,26 +4467,29 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-#ifdef HAVE_TOUCHSCREENGUI
-	static const std::string control_text = strgettext("Controls:\n"
-		"No menu open:\n"
-		"- slide finger: look around\n"
-		"- tap: place/punch/use (default)\n"
-		"- long tap: dig/use (default)\n"
-		"Menu/inventory open:\n"
-		"- double tap (outside):\n"
-		" --> close\n"
-		"- touch stack, touch slot:\n"
-		" --> move stack\n"
-		"- touch&drag, tap 2nd finger\n"
-		" --> place single item to slot\n"
-		);
-#endif
+	std::string control_text, size_tag;
+
+	if (g_touchscreengui) {
+		size_tag = "size[11,5.5]";
+		control_text = strgettext("Controls:\n"
+			"No menu open:\n"
+			"- slide finger: look around\n"
+			"- tap: place/punch/use (default)\n"
+			"- long tap: dig/use (default)\n"
+			"Menu/inventory open:\n"
+			"- double tap (outside):\n"
+			" --> close\n"
+			"- touch stack, touch slot:\n"
+			" --> move stack\n"
+			"- touch&drag, tap 2nd finger\n"
+			" --> place single item to slot\n"
+			);
+	}
 
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
-	os << "formspec_version[1]" << SIZE_TAG
+	os << "formspec_version[1]" << size_tag
 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 		<< strgettext("Continue") << "]";
 
@@ -4538,9 +4514,9 @@ void Game::showPauseMenu()
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
 		<< strgettext("Exit to OS")   << "]";
-#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
 	os		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]";
-#endif
+	}
 	os		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";

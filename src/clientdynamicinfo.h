@@ -68,7 +68,7 @@ private:
 #ifndef SERVER
 	static v2f32 calculateMaxFSSize(v2u32 render_target_size, f32 gui_scaling) {
 		f32 factor =
-#ifdef HAVE_TOUCHSCREENGUI
+#ifdef __ANDROID__
 				10 / gui_scaling;
 #else
 				15 / gui_scaling;

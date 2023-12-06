@@ -148,6 +148,11 @@ invert_hotbar_mouse_wheel (Hotbar: Invert mouse wheel direction) bool false
 
 [*Touchscreen]
 
+#    Enables the touch screen.
+#    If disabled, touchscreen wouldn't be usable in-game
+#    Changing this setting requires a restart.
+enable_touch (Enable Touchscreen) bool true
+
 #    The length in pixels it takes for touchscreen interaction to start.
 #
 #    Requires: touchscreen_gui

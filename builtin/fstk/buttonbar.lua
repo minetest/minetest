@@ -18,7 +18,7 @@
 
 
 local BASE_SPACING = 0.1
-local SCROLL_BTN_WIDTH = TOUCHSCREEN_GUI and 0.8 or 0.5
+local SCROLL_BTN_WIDTH = core.settings:get_bool("enable_touch") and 0.8 or 0.5
 
 local function buttonbar_formspec(self)
 	if self.hidden then
