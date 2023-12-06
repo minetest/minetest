@@ -50,7 +50,6 @@ void ActiveObjectMgr::step(
 	}
 }
 
-// clang-format off
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ClientActiveObject> obj)
 {
 	assert(obj); // Pre-condition
@@ -93,7 +92,6 @@ void ActiveObjectMgr::removeObject(u16 id)
 	obj->removeFromScene(true);
 }
 
-// clang-format on
 void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {

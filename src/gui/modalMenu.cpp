@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-// clang-format off
 GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	s32 id, IMenuManager *menumgr, bool remap_dbl_click) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
@@ -57,7 +56,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	m_doubleclickdetect[0].pos = v2s32(0, 0);
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 }
-// clang-format on
 
 GUIModalMenu::~GUIModalMenu()
 {
@@ -110,7 +108,6 @@ void GUIModalMenu::quitMenu()
 #endif
 }
 
-// clang-format off
 bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 {
 	/* The following code is for capturing double-clicks of the mouse button
@@ -160,7 +157,6 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 
 	return false;
 }
-// clang-format on
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 {
@@ -236,7 +232,6 @@ void GUIModalMenu::leave()
 bool GUIModalMenu::preprocessEvent(const SEvent &event)
 {
 #ifdef __ANDROID__
-	// clang-format off
 	// display software keyboard when clicking edit boxes
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
