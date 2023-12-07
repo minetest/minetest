@@ -512,7 +512,7 @@ struct NodeNeighbor {
 	{ }
 };
 
-static s8 getMaxLiquidLevel(NodeNeighbor nb, s8 current_max_node_level)
+static s8 get_max_liquid_level(NodeNeighbor nb, s8 current_max_node_level)
 {
 	s8 max_node_level = current_max_node_level;
 	u8 nb_liquid_level = (nb.n.param2 & LIQUID_LEVEL_MASK);
@@ -681,7 +681,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						// but exclude falling liquids on the same level, they cannot flow here anyway
 
 						// used to determine if the neighbor can even flow into this node
-						s8 maxLiquidLevelFromNeighbor = getMaxLiquidLevel(nb, -1);
+						s8 maxLiquidLevelFromNeighbor = get_max_liquid_level(nb, -1);
 						u8 range = m_nodedef->get(cfnb.liquid_alternative_flowing_id).liquid_range;
 
 						if (liquid_kind == CONTENT_AIR &&
@@ -730,7 +730,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
-				max_node_level = getMaxLiquidLevel(flows[i], max_node_level);
+				max_node_level = get_max_liquid_level(flows[i], max_node_level);
 			}
 
 			u8 viscosity = m_nodedef->get(liquid_kind).liquid_viscosity;
