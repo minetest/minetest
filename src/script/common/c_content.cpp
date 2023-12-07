@@ -1962,7 +1962,8 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	// Handle deprecated hud_elem_type
 	std::string type_string;
 	if (getstringfield(L, 2, "hud_elem_type", type_string)) {
-		log_deprecated(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.");
+		script_log_unique(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.",
+				warningstream);
 		int type_enum;
 		if (string_to_enum(es_HudElementType, type_enum, type_string))
 			elem->type = (HudElementType)type_enum;
