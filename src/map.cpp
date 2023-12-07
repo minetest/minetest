@@ -681,11 +681,11 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						// but exclude falling liquids on the same level, they cannot flow here anyway
 
 						// used to determine if the neighbor can even flow into this node
-						s8 maxLiquidLevelFromNeighbor = get_max_liquid_level(nb, -1);
+						s8 max_level_from_neighbor = get_max_liquid_level(nb, -1);
 						u8 range = m_nodedef->get(cfnb.liquid_alternative_flowing_id).liquid_range;
 
 						if (liquid_kind == CONTENT_AIR &&
-								maxLiquidLevelFromNeighbor >= (LIQUID_LEVEL_MAX + 1 - range))
+								max_level_from_neighbor >= (LIQUID_LEVEL_MAX + 1 - range))
 							liquid_kind = cfnb.liquid_alternative_flowing_id;
 					}
 					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
