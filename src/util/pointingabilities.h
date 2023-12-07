@@ -52,7 +52,7 @@ struct PointingAbilities
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 	
-	private:
+private:
 	static std::optional<PointabilityType> matchGroups(const ItemGroupList &groups,
 		const std::unordered_map<std::string, PointabilityType> &pointable_groups);
 	static void serializeTypeMap(std::ostream &os,
