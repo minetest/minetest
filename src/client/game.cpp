@@ -3216,11 +3216,17 @@ void Game::updateSound(f32 dtime)
 		// Check if volume is in the proper range, else fix it.
 		float old_volume = g_settings->getFloat("sound_volume");
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-		sound_manager->setListenerGain(new_volume);
 
 		if (old_volume != new_volume) {
 			g_settings->setFloat("sound_volume", new_volume);
 		}
+
+		if (!m_game_focused) {
+			new_volume = g_settings->getFloat("sound_volume_unfocused");
+			new_volume = rangelim(new_volume, 0.0f, 1.0f);
+		}
+
+		sound_manager->setListenerGain(new_volume);
 	}
 
 	// Tell the sound maker whether to make footstep sounds
