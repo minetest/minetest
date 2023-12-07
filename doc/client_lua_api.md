@@ -1334,8 +1334,9 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 {
     type = "image", -- see HUD element types, default "text"
 --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+--	If undefined "text" will be used.
     hud_elem_type = "image",
---  ^ Deprecated, same as "type"
+--  ^ Deprecated, same as `type`. In case both are specified `type` will be used.
     position = {x=0.5, y=0.5},
 --  ^ Left corner position of element, default `{x=0,y=0}`.
     name = "<name>",    -- default ""

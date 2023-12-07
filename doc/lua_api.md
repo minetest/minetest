@@ -10054,9 +10054,11 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
     type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- If undefined "text" will be used.
     
     hud_elem_type = "image",
-    -- Deprecated, same as "type"
+    -- Deprecated, same as `type`.
+    -- In case both are specified `type` will be used.
 
     position = {x=0.5, y=0.5},
     -- Top left corner position of element
