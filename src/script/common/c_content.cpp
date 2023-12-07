@@ -1960,10 +1960,7 @@ void push_objectRef(lua_State *L, const u16 id)
 void read_hud_element(lua_State *L, HudElement *elem)
 {
 	std::string type_string;
-	bool has_type = false;
-	if (getstringfield(L, 2, "type", type_string)) {
-		has_type = true;
-	}
+	bool has_type = getstringfield(L, 2, "type", type_string);
 	
 	// Handle deprecated hud_elem_type
 	std::string deprecated_type_string;
