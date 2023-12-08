@@ -1872,11 +1872,14 @@ void ServerEnvironment::getSelectedActiveObjects(
 			} else {
 				pointable = props->pointable;
 			}
-			
-			current_intersection += pos;
-			objects.emplace_back(
-				(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
+			if (pointable != POINTABLE_NOT) {
+				current_intersection += pos;
+				objects.emplace_back(
+					(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
+					(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
+			}
+			if (pointable == POINTABLE_BLOCKING)
+				break;
 		}
 	}
 }

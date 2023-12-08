@@ -524,9 +524,13 @@ void ClientEnvironment::getSelectedActiveObjects(
 			} else {
 				pointable = gcao->getProperties().pointable;
 			}
-			current_intersection += obj->getPosition();
-			objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
+			if (pointable != POINTABLE_NOT) {
+				current_intersection += obj->getPosition();
+				objects.emplace_back(obj->getId(), current_intersection, current_normal, current_raw_normal,
+					(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
+			}
+			if (pointable == POINTABLE_BLOCKING)
+				break;
 		}
 	}
 }

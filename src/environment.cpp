@@ -284,18 +284,15 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		state->m_iterator.next();
 	}
 	
-	// Skip through not pointable, stop at blocking and return empty PointedThing.
-	while(!state->m_found.empty()) {
+	// Return empty PointedThing if nothing left on the ray or it is blocking pointable
+	if (state->m_found.empty()) {
+		result_p->type = POINTEDTHING_NOTHING;
+	} else {
 		*result_p = state->m_found.top();
-		state->m_found.pop();
-		if (result_p->pointability == POINTABLE) {
-			return;
-		} else if (result_p->pointability == POINTABLE_BLOCKING) {
+		if (result_p->pointability == POINTABLE_BLOCKING) {
 			result_p->type = POINTEDTHING_NOTHING;
-			return;
 		}
 	}
-	result_p->type = POINTEDTHING_NOTHING; // If nothing found.
 }
 
 void Environment::stepTimeOfDay(float dtime)
