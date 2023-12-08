@@ -1644,7 +1644,7 @@ PointingAbilities read_pointabilities(lua_State *L, int index)
 			std::string name = luaL_checkstring(L, -2);
 			
 			// handle groups
-			if(name.find("group:") != std::string::npos) {
+			if(std::string_view(name).substr(0,6)=="group:") {
 				pointabilities.node_groups[name.substr(6)] = read_pointability(L, -1);
 			} else {
 				pointabilities.nodes[name] = read_pointability(L, -1);
@@ -1665,7 +1665,7 @@ PointingAbilities read_pointabilities(lua_State *L, int index)
 			std::string name = luaL_checkstring(L, -2);
 			
 			// handle groups
-			if(name.find("group:") != std::string::npos) {
+			if(std::string_view(name).substr(0,6)=="group:") {
 				pointabilities.object_groups[name.substr(6)] = read_pointability(L, -1);
 			} else {
 				pointabilities.objects[name] = read_pointability(L, -1);
