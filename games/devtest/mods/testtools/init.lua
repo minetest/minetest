@@ -1012,7 +1012,7 @@ minetest.register_tool("testtools:blocked_pointing_staff", {
 			["group:pointable_test"] = "blocking"
 		},
 		objects = {
-			["group:blocking_pointable_test"] = true,
+			["testentities:blocking_pointable"] = true,
 			["group:pointable_test"] = "blocking"
 		}
 	}
@@ -1030,7 +1030,9 @@ minetest.register_tool("testtools:ultimate_pointing_staff", {
 			["testnodes:not_pointable"] = true
 		},
 		objects = {
-			["testentities:pointable"] = true
+			["group:blocking_pointable_test"] = true,
+			["group:pointable_test"] = true,
+			["testentities:not_pointable"] = true
 		}
 	}
 })
