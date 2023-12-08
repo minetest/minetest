@@ -147,7 +147,6 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 	v3f found_boxcenter(0, 0, 0);
 	// The untested nodes are in this range.
 	core::aabbox3d<s16> new_nodes;
-	// The index of the first pointed which needs to be tested.
 	s16 lastIndex = state->m_iterator.m_last_index;
 	while (state->m_iterator.m_current_index <= lastIndex) {
 		// Test the nodes around the current node in search_range.
@@ -193,7 +192,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 			PointabilityType pointable = isPointableNode(n, nodedef,
 					state->m_liquids_pointable,
 					state->m_pointabilities);
-			// If it can be pointed through legacy behavior 
+			// If it can be pointed through skip
 			if (pointable == POINTABLE_NOT)
 				continue;
 
