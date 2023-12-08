@@ -1681,7 +1681,7 @@ PointingAbilities read_pointabilities(lua_State *L, int index)
 }
 
 /******************************************************************************/
-void push_pointability(lua_State *L, const PointabilityType& pointable)
+void push_pointability(lua_State *L, PointabilityType pointable)
 {
 	switch(pointable)
 	{
