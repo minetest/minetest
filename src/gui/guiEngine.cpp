@@ -296,6 +296,7 @@ void GUIEngine::run()
 		driver->endScene();
 
 		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
+
 		u32 frametime_min = 1000 / (device->isWindowFocused()
 			? g_settings->getFloat("fps_max")
 			: g_settings->getFloat("fps_max_unfocused"));
@@ -309,6 +310,26 @@ void GUIEngine::run()
 		t_last_frame = t_now;
 
 		m_script->step();
+
+		bool mute_sound = g_settings->getBool("mute_sound");
+		if (mute_sound) {
+			m_sound_manager->setListenerGain(0.0f);
+		} else {
+			// Check if volume is in the proper range, else fix it.
+			float old_volume = g_settings->getFloat("sound_volume");
+			float new_volume = rangelim(old_volume, 0.0f, 1.0f);
+
+			if (old_volume != new_volume) {
+				g_settings->setFloat("sound_volume", new_volume);
+			}
+
+			if (!device->isWindowActive()) {
+				new_volume *= g_settings->getFloat("sound_volume_unfocused");
+				new_volume = rangelim(new_volume, 0.0f, 1.0f);
+			}
+
+			m_sound_manager->setListenerGain(new_volume);
+		}
 
 		m_sound_manager->step(dtime);
 
