@@ -99,3 +99,27 @@ void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version, int le
 void compress(const std::string &data, std::ostream &os, u8 version, int level = -1);
 void compress(u8 *data, u32 size, std::ostream &os, u8 version, int level = -1);
 void decompress(std::istream &is, std::ostream &os, u8 version);
+
+/*
+ * Zero Copy istream. Can be used in place of istringstream.
+ *
+ * MUST ensure that passed string instances or memory pointed to by passed char* are
+ * valid for the lifetime of the zcistream instance.
+ */
+class zcistream : public std::istream
+{
+	struct zcbuf : public std::streambuf
+	{
+		zcbuf(const std::string &s) : zcbuf(s.c_str(), s.length()) {}
+		zcbuf(const char *c, std::size_t l) : zcbuf(const_cast<char*>(c), l) {}
+		zcbuf(char *c, std::size_t l) { setg(c, c, c + l); }
+	};
+
+public:
+	zcistream(const std::string &s) : buf(s) { this->init(&buf); }
+	zcistream(const char *c, std::size_t l) : buf(c, l) { this->init(&buf); }
+	zcistream(char *c, std::size_t l) : buf(c, l) { this->init(&buf); }
+
+private:
+	zcbuf buf;
+};

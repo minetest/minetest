@@ -1786,7 +1786,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db, int compression_leve
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
 	try {
-		std::istringstream is(*blob, std::ios_base::binary);
+		zcistream is(*blob);
 
 		u8 version = SER_FMT_VER_INVALID;
 		is.read((char*)&version, 1);

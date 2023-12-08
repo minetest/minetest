@@ -272,7 +272,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	std::istringstream is(pkt->readLongString(), std::ios::binary);
+	zcistream is(pkt->readLongString());
 	std::stringstream sstr(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(is, sstr);
 
@@ -302,8 +302,7 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 	v3s16 p;
 	*pkt >> p;
 
-	std::string datastring(pkt->getString(6), pkt->getSize() - 6);
-	std::istringstream istr(datastring, std::ios_base::binary);
+	zcistream istr(pkt->getString(6), pkt->getSize() - 6);
 
 	MapSector *sector;
 	MapBlock *block;
@@ -345,8 +344,7 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	zcistream is(pkt->getString(0), pkt->getSize());
 
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
@@ -499,8 +497,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 			string message
 		}
 	*/
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	zcistream is(pkt->getString(0), pkt->getSize());
 
 	try {
 		while (is.good()) {
@@ -775,7 +772,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress node definitions
-	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
+	zcistream tmp_is(pkt->readLongString());
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
@@ -794,7 +791,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress item definitions
-	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
+	zcistream tmp_is(pkt->readLongString());
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
@@ -966,8 +963,7 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 	u16 ignore;
 	*pkt >> ignore; // this used to be the length of the following string, ignore it
 
-	std::string contents(pkt->getRemainingString(), pkt->getRemainingBytes());
-	std::istringstream is(contents, std::ios::binary);
+	zcistream is(pkt->getRemainingString(), pkt->getRemainingBytes());
 	inv->deSerialize(is);
 }
 
@@ -989,8 +985,7 @@ void Client::handleCommand_ShowFormSpec(NetworkPacket* pkt)
 
 void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	zcistream is(pkt->getString(0), pkt->getSize());
 
 	ParticleParameters p;
 	p.deSerialize(is, m_proto_ver);
@@ -1004,8 +999,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 
 void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	zcistream is(pkt->getString(0), pkt->getSize());
 
 	ParticleSpawnerParameters p;
 	u32 server_id;
@@ -1320,8 +1314,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	if (m_proto_ver < 39) {
 		// Handle Protocol 38 and below servers with old set_sky,
 		// ensuring the classic look is kept.
-		std::string datastring(pkt->getString(0), pkt->getSize());
-		std::istringstream is(datastring, std::ios_base::binary);
+		zcistream is(pkt->getString(0), pkt->getSize());
 
 		SkyboxParams skybox;
 		skybox.bgcolor = video::SColor(readARGB8(is));
