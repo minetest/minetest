@@ -19,12 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irr_v3d.h"
+#include "irrlichttypes_extrabloated.h"
 #include <limits>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "settings.h"
+#include "util/numeric.h"
 
 struct SoundSpec;
 
@@ -184,3 +186,25 @@ public:
 	void fadeSound(sound_handle_t sound, f32 step, f32 target_gain) override {}
 	void updateSoundPosVel(sound_handle_t sound, const v3f &pos, const v3f &vel) override {}
 };
+
+static void sound_control_by_window(Settings *settings, ISoundManager *sound_mgr, irr::IrrlichtDevice *device) {
+	bool mute_sound = settings->getBool("mute_sound");
+	if (mute_sound) {
+		sound_mgr->setListenerGain(0.0f);
+	} else {
+		// Check if volume is in the proper range, else fix it.
+		float old_volume = settings->getFloat("sound_volume");
+		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
+
+		if (old_volume != new_volume) {
+			settings->setFloat("sound_volume", new_volume);
+		}
+
+		if (!device->isWindowActive()) {
+			new_volume *= settings->getFloat("sound_volume_unfocused");
+			new_volume = rangelim(new_volume, 0.0f, 1.0f);
+		}
+
+		sound_mgr->setListenerGain(new_volume);
+	}
+}

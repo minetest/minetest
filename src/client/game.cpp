@@ -3209,25 +3209,7 @@ void Game::updateSound(f32 dtime)
 			camera->getDirection(),
 			camera->getCameraNode()->getUpVector());
 
-	bool mute_sound = g_settings->getBool("mute_sound");
-	if (mute_sound) {
-		sound_manager->setListenerGain(0.0f);
-	} else {
-		// Check if volume is in the proper range, else fix it.
-		float old_volume = g_settings->getFloat("sound_volume");
-		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-
-		if (old_volume != new_volume) {
-			g_settings->setFloat("sound_volume", new_volume);
-		}
-
-		if (!device->isWindowActive()) {
-			new_volume *= g_settings->getFloat("sound_volume_unfocused");
-			new_volume = rangelim(new_volume, 0.0f, 1.0f);
-		}
-
-		sound_manager->setListenerGain(new_volume);
-	}
+	sound_control_by_window(g_settings, sound_manager.get(), device);
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
