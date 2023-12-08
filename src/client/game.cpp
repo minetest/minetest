@@ -3222,7 +3222,7 @@ void Game::updateSound(f32 dtime)
 		}
 
 		if (!m_game_focused) {
-			new_volume = g_settings->getFloat("sound_volume_unfocused");
+			new_volume *= g_settings->getFloat("sound_volume_unfocused");
 			new_volume = rangelim(new_volume, 0.0f, 1.0f);
 		}
 
