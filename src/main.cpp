@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <ctime>
 #include "irrlichttypes.h" // must be included before anything irrlicht, see comment in the file
 #include "irrlicht.h" // createDevice
 #include "irrlichttypes_extrabloated.h"
@@ -120,7 +121,6 @@ static bool get_world_from_config(GameParams *game_params, const Settings &cmd_a
 static bool auto_select_world(GameParams *game_params);
 static std::string get_clean_world_path(const std::string &path);
 
-static bool game_configure_subgame(GameParams *game_params, const Settings &cmd_args);
 static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_args);
 static bool determine_subgame(GameParams *game_params);
 
@@ -807,12 +807,17 @@ static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 {
 	game_configure_port(game_params, cmd_args);
 
+	// TODO: add get_game_from_config.
+	const bool got_game = get_game_from_cmdline(game_params, cmd_args);
+
 	if (!game_configure_world(game_params, cmd_args)) {
 		errorstream << "No world path specified or found." << std::endl;
 		return false;
 	}
 
-	game_configure_subgame(game_params, cmd_args);
+	if (!got_game) {
+		determine_subgame(game_params);
+	}
 
 	return true;
 }
@@ -910,8 +915,23 @@ static bool auto_select_world(GameParams *game_params)
 	std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 	std::string world_path;
 
+	if (!game_params->game_spec.id.empty()) {
+		std::time_t t = std::time(nullptr);
+		char date_chars[100];
+		std::strftime(date_chars, sizeof(date_chars), "%F-%H-%M-%S", std::localtime(&t));
+		std::string world_name = game_params->game_spec.id + "-" + date_chars;
+		world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + world_name;
+		infostream << "Game specified but world was not. Creating new world" << std::endl;
+		try {
+			world_path = loadGameConfAndInitWorld(
+				world_path,	world_name,
+				game_params->game_spec, true);
+		} catch (const BaseException &e) {
+			errorstream << gettext("Failed to initialize world: ") << e.what() << std::endl;
+			return false;
+		}
 	// If there is only a single world, use it
-	if (worldspecs.size() == 1) {
+	} else if (worldspecs.size() == 1) {
 		world_path = worldspecs[0].path;
 		dstream <<_("Automatically selecting world at") << " ["
 		        << world_path << "]" << std::endl;
@@ -923,6 +943,8 @@ static bool auto_select_world(GameParams *game_params)
 		print_worldspecs(worldspecs, std::cerr);
 		return false;
 	// If there are no worlds, automatically create a new one
+	// TODO: it seems that nothing actually will create this if needed.
+	// Should we just delete this and fail here?
 	} else {
 		// This is the ultimate default world path
 		world_path = porting::path_user + DIR_DELIM + "worlds" +
@@ -949,18 +971,6 @@ static std::string get_clean_world_path(const std::string &path)
 		clean_path = path;
 	}
 	return path;
-}
-
-
-static bool game_configure_subgame(GameParams *game_params, const Settings &cmd_args)
-{
-	bool success;
-
-	success = get_game_from_cmdline(game_params, cmd_args);
-	if (!success)
-		success = determine_subgame(game_params);
-
-	return success;
 }
 
 static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_args)

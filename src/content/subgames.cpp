@@ -344,7 +344,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
+std::string loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		const SubgameSpec &gamespec, bool create_world)
 {
 	std::string final_path = path;
@@ -422,6 +422,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// The Settings object is no longer needed for created worlds
 	if (new_game_settings)
 		delete game_settings;
+	return final_path;
 }
 
 std::vector<std::string> getEnvModPaths()
