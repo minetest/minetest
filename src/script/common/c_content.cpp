@@ -323,7 +323,7 @@ void read_object_properties(lua_State *L, int index,
 
 	lua_getfield(L, -1, "pointable");
 	if(!lua_isnil(L, -1)){
-		prop->pointable = read_pointability(L, -1);
+		prop->pointable = read_pointability_type(L, -1);
 	}
 	lua_pop(L, 1);
 
@@ -800,7 +800,7 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// Player can point to these, point through or it is blocking
 	lua_getfield(L, index, "pointable");
 	if(!lua_isnil(L, -1)){
-		f.pointable = read_pointability(L, -1);
+		f.pointable = read_pointability_type(L, -1);
 	}
 	lua_pop(L, 1);
 	
@@ -1614,7 +1614,7 @@ ToolCapabilities read_tool_capabilities(
 }
 
 /******************************************************************************/
-PointabilityType read_pointability(lua_State *L, int index)
+PointabilityType read_pointability_type(lua_State *L, int index)
 {
 	if (lua_isboolean(L, index)) {
 		if (lua_toboolean(L, index))
@@ -1645,9 +1645,9 @@ Pointabilities read_pointabilities(lua_State *L, int index)
 			
 			// handle groups
 			if(std::string_view(name).substr(0,6)=="group:") {
-				pointabilities.node_groups[name.substr(6)] = read_pointability(L, -1);
+				pointabilities.node_groups[name.substr(6)] = read_pointability_type(L, -1);
 			} else {
-				pointabilities.nodes[name] = read_pointability(L, -1);
+				pointabilities.nodes[name] = read_pointability_type(L, -1);
 			}
 			
 			// removes value, keeps key for next iteration
@@ -1666,9 +1666,9 @@ Pointabilities read_pointabilities(lua_State *L, int index)
 			
 			// handle groups
 			if(std::string_view(name).substr(0,6)=="group:") {
-				pointabilities.object_groups[name.substr(6)] = read_pointability(L, -1);
+				pointabilities.object_groups[name.substr(6)] = read_pointability_type(L, -1);
 			} else {
-				pointabilities.objects[name] = read_pointability(L, -1);
+				pointabilities.objects[name] = read_pointability_type(L, -1);
 			}
 			
 			// removes value, keeps key for next iteration
