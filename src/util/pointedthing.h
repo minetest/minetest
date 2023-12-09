@@ -94,7 +94,7 @@ struct PointedThing
 	/*!
 	 * How the object or node has been pointed at.
 	 */
-	PointabilityType pointability = POINTABLE_NOT;
+	PointabilityType pointability = PointabilityType::POINTABLE_NOT;
 
 	//! Constructor for POINTEDTHING_NOTHING
 	PointedThing() = default;

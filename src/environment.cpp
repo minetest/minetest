@@ -117,7 +117,7 @@ inline static PointabilityType isPointableNode(const MapNode &n,
 	}
 	
 	if (features.isLiquid() && liquids_pointable)
-		return POINTABLE;
+		return PointabilityType::POINTABLE;
 	return features.pointable;
 }
 
@@ -193,7 +193,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 					state->m_liquids_pointable,
 					state->m_pointabilities);
 			// If it can be pointed through skip
-			if (pointable == POINTABLE_NOT)
+			if (pointable == PointabilityType::POINTABLE_NOT)
 				continue;
 
 			PointedThing result;
@@ -289,7 +289,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		result_p->type = POINTEDTHING_NOTHING;
 	} else {
 		*result_p = state->m_found.top();
-		if (result_p->pointability == POINTABLE_BLOCKING) {
+		if (result_p->pointability == PointabilityType::POINTABLE_BLOCKING) {
 			result_p->type = POINTEDTHING_NOTHING;
 		}
 	}

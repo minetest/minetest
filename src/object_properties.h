@@ -37,7 +37,7 @@ struct ObjectProperties
 	aabb3f collisionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
 	aabb3f selectionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
 	bool rotate_selectionbox = false;
-	PointabilityType pointable = POINTABLE;
+	PointabilityType pointable = PointabilityType::POINTABLE;
 	std::string visual = "sprite";
 	std::string mesh = "";
 	v3f visual_size = v3f(1, 1, 1);

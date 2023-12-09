@@ -1618,16 +1618,16 @@ PointabilityType read_pointability(lua_State *L, int index)
 {
 	if (lua_isboolean(L, index)) {
 		if (lua_toboolean(L, index))
-			return POINTABLE;
+			return PointabilityType::POINTABLE;
 		else
-			return POINTABLE_NOT;
+			return PointabilityType::POINTABLE_NOT;
 	} else if (lua_isstring(L, index)) {
 		size_t len;
 		const char* s = lua_tolstring(L, index, &len);
 		if (!strcmp(s, "blocking"))
-			return POINTABLE_BLOCKING;
+			return PointabilityType::POINTABLE_BLOCKING;
 	}
-	return POINTABLE;
+	throw LuaError("Invalid pointable type.");
 }
 
 /******************************************************************************/
@@ -1685,13 +1685,13 @@ void push_pointability(lua_State *L, PointabilityType pointable)
 {
 	switch(pointable)
 	{
-	  case POINTABLE:
+	  case PointabilityType::POINTABLE:
 		lua_pushboolean(L, true);
 		break;
-	  case POINTABLE_NOT:
+	  case PointabilityType::POINTABLE_NOT:
 		lua_pushboolean(L, false);
 		break;
-	  case POINTABLE_BLOCKING:
+	  case PointabilityType::POINTABLE_BLOCKING:
 		lua_pushlstring(L, "blocking", 8);
 		break;
 	  default:

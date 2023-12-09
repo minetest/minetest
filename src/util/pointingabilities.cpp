@@ -23,6 +23,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include <sstream>
 
+PointabilityType PointingAbilities::deSerializePointabilityType(std::istream &is)
+{
+	PointabilityType pointable_type = static_cast<PointabilityType>(readU8(is));
+	switch(pointable_type) {
+		case PointabilityType::POINTABLE:
+		case PointabilityType::POINTABLE_NOT:
+		case PointabilityType::POINTABLE_BLOCKING:
+			break;
+		default:
+			throw SerializationError("unsupported PointabilityType");
+    }
+    return pointable_type;
+}
+
+void PointingAbilities::serializePointabilityType(std::ostream &os, PointabilityType pointable_type)
+{
+	writeU8(os, static_cast<u8>(pointable_type));
+}
+
+std::string PointingAbilities::toStringPointabilityType(PointabilityType pointable_type)
+{
+	switch(pointable_type) {
+		case PointabilityType::POINTABLE:
+			return "true";
+		case PointabilityType::POINTABLE_NOT:
+			return "false";
+		case PointabilityType::POINTABLE_BLOCKING:
+			return "\"blocking\"";
+		default:
+			return "";
+    }
+}
+
 std::optional<PointabilityType> PointingAbilities::matchNode(const std::string &name,
 	const ItemGroupList &groups) const
 {
@@ -46,10 +79,10 @@ std::optional<PointabilityType> PointingAbilities::matchGroups(const ItemGroupLi
 	for (auto const &ability : pointable_groups) {
 		if (itemgroup_get(groups, ability.first) > 0) {
 			switch(ability.second) {
-				case POINTABLE:
-					return POINTABLE;
+				case PointabilityType::POINTABLE:
+					return PointabilityType::POINTABLE;
 					break;
-				case POINTABLE_NOT:
+				case PointabilityType::POINTABLE_NOT:
 					not_pontable = true;
 					break;
 				default:
@@ -59,9 +92,9 @@ std::optional<PointabilityType> PointingAbilities::matchGroups(const ItemGroupLi
 		}
 	}
 	if (not_pontable)
-		return POINTABLE_NOT;
+		return PointabilityType::POINTABLE_NOT;
 	if (blocking)
-		return POINTABLE_BLOCKING;
+		return PointabilityType::POINTABLE_BLOCKING;
 	return {};
 }
 
@@ -82,7 +115,7 @@ void PointingAbilities::deSerializeTypeMap(std::istream &is,
 	u32 size = readU32(is);
 	for (u32 i = 0; i < size; i++) {
 		std::string name = deSerializeString16(is);
-		PointabilityType type = (PointabilityType)readU8(is);
+		PointabilityType type = PointingAbilities::deSerializePointabilityType(is);
 		map[name] = type;
 	}
 }

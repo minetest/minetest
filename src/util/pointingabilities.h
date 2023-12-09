@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include <optional>
 
-enum PointabilityType
+enum class PointabilityType
 {
 	POINTABLE,
 	POINTABLE_NOT, // Can be pointed through.
@@ -51,6 +51,11 @@ struct PointingAbilities
 	
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+	
+	// For a save enum conversion.
+	static PointabilityType deSerializePointabilityType(std::istream &is);
+	static void serializePointabilityType(std::ostream &os, PointabilityType pointable_type);
+	static std::string toStringPointabilityType(PointabilityType pointable_type);
 	
 private:
 	static std::optional<PointabilityType> matchGroups(const ItemGroupList &groups,
