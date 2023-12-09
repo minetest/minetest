@@ -209,6 +209,11 @@ public:
 	{
 		return m_is_local_player;
 	}
+	
+	inline bool isPlayer() const
+	{
+		return m_is_player;
+	}
 
 	inline bool isVisible() const
 	{
