@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Russian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-11-12 13:14+0000\n"
+"PO-Revision-Date: 2024-01-09 05:06+0000\n"
 "Last-Translator: Nanashi Mumei <nanashi.mumei@users.noreply.hosted.weblate."
 "org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -836,7 +836,7 @@ msgstr "Назад"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/client/game.cpp
 msgid "Change Keys"
-msgstr "Изменить управление"
+msgstr "Сменить клавиши"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/gui/guiKeyChangeMenu.cpp
 #: src/settings_translation_file.cpp
@@ -938,7 +938,7 @@ msgstr "Активные участники"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active renderer:"
-msgstr "Используемый отрисовщик:"
+msgstr "Активный рендер:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Core Developers"
@@ -1408,7 +1408,7 @@ msgstr "Выйти в меню"
 
 #: src/client/game.cpp
 msgid "Exit to OS"
-msgstr "Выйти в ОС"
+msgstr "Выйти из игры"
 
 #: src/client/game.cpp
 msgid "Fast mode disabled"
@@ -3168,7 +3168,7 @@ msgstr "Рассинхронизация анимации нод"
 
 #: src/settings_translation_file.cpp
 msgid "Developer Options"
-msgstr "Настройки для разработчиков"
+msgstr "Для разработчиков"
 
 #: src/settings_translation_file.cpp
 msgid "Digging particles"
@@ -6405,9 +6405,8 @@ msgstr ""
 "Использовать анизотропную фильтрацию при взгляде на текстуры под углом."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Использовать трилинейную фильтрацию для масштабирования текстур."
+msgstr "Использовать билинейную фильтрацию для масштабирования текстур."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6423,15 +6422,15 @@ msgstr ""
 "выбора предмета."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
-"Использовать MIP-текстурирование для текстур в уменьшенном масштабе.\n"
-"Может немного увеличить производительность, особенно при использовании "
-"набора текстур высокого разрешения.\n"
+"Использовать MIP-текстурирование для масштабирования текстур. Может немного "
+"увеличить\n"
+"производительность, особенно при использовании пакета текстур высокого "
+"разрешения.\n"
 "Гамма-коррекция при уменьшении масштаба не поддерживается."
 
 #: src/settings_translation_file.cpp
@@ -6445,13 +6444,12 @@ msgstr ""
 "для клиентских мешей меньше чем 4x4x4 мапблоков."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Используйте трехлинейную фильтрацию при уменьшении масштаба текстур.\n"
+"Использовать трилинейную фильтрацию при масштабировании текстур.\n"
 "Если включены как билинейная, так и трилинейная фильтрация,\n"
 "применяется трилинейная фильтрация."
 
@@ -6467,7 +6465,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "User Interfaces"
-msgstr "Пользовательские интерфейсы"
+msgstr "Интерфейсы"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
