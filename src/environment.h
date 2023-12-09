@@ -37,12 +37,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "util/basic_macros.h"
 #include "line3d.h"
-#include "util/pointedthing.h"
 
 class IGameDef;
 class Map;
 struct PointedThing;
 class RaycastState;
+struct Pointabilities;
 
 class Environment
 {
