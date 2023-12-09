@@ -63,6 +63,7 @@ public:
 	NetworkPacket &operator<<(const std::wstring &src);
 
 	std::string readLongString();
+	const char *readLongString(u32 strLen);
 
 	NetworkPacket &operator>>(char &dst);
 	NetworkPacket &operator<<(char src);

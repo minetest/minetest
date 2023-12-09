@@ -245,6 +245,20 @@ std::string NetworkPacket::readLongString()
 	return dst;
 }
 
+const char *NetworkPacket::readLongString(u32 strLen)
+{
+	if (strLen > LONG_STRING_MAX_LEN) {
+		throw PacketError("String too long");
+	}
+
+	checkReadOffset(m_read_offset, strLen);
+
+	char *res = (char*)&m_data[m_read_offset];
+
+	m_read_offset += strLen;
+	return res;
+}
+
 NetworkPacket& NetworkPacket::operator>>(char& dst)
 {
 	checkReadOffset(m_read_offset, 1);

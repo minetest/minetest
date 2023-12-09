@@ -116,9 +116,9 @@ class zcistream : public std::istream
 	};
 
 public:
-	zcistream(const std::string &s) : buf(s) { this->init(&buf); }
-	zcistream(const char *c, std::size_t l) : buf(c, l) { this->init(&buf); }
-	zcistream(char *c, std::size_t l) : buf(c, l) { this->init(&buf); }
+	zcistream(const std::string &s) : std::istream(&buf), buf(s) {}
+	zcistream(const char *c, std::size_t l) : std::istream(&buf), buf(c, l) {}
+	zcistream(char *c, std::size_t l) : std::istream(&buf), buf(c, l) {}
 
 private:
 	zcbuf buf;

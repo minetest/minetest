@@ -272,7 +272,9 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	zcistream is(pkt->readLongString());
+	u32 strlen;
+	*pkt >> strlen;
+	zcistream is(pkt->readLongString(strlen), strlen);
 	std::stringstream sstr(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(is, sstr);
 
@@ -772,7 +774,9 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress node definitions
-	zcistream tmp_is(pkt->readLongString());
+	u32 strlen;
+	*pkt >> strlen;
+	zcistream tmp_is(pkt->readLongString(strlen), strlen);
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
@@ -791,7 +795,9 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_manager->isRunning());
 
 	// Decompress item definitions
-	zcistream tmp_is(pkt->readLongString());
+	u32 strlen;
+	*pkt >> strlen;
+	zcistream tmp_is(pkt->readLongString(strlen), strlen);
 	std::stringstream tmp_os(std::ios::binary | std::ios::in | std::ios::out);
 	decompressZlib(tmp_is, tmp_os);
 
