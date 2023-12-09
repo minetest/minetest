@@ -3209,7 +3209,7 @@ void Game::updateSound(f32 dtime)
 			camera->getDirection(),
 			camera->getCameraNode()->getUpVector());
 
-	sound_control_by_window(g_settings, sound_manager.get(), device);
+	sound_control_by_window(sound_manager.get(), device);
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
