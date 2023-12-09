@@ -97,7 +97,8 @@ void ISoundManager::freeId(sound_handle_t id, u32 num_owners)
 		it->second -= num_owners;
 }
 
-void sound_control_by_window(ISoundManager *sound_mgr, irr::IrrlichtDevice *device) {
+void sound_volume_control(ISoundManager *sound_mgr, bool is_window_active)
+{
 	bool mute_sound = g_settings->getBool("mute_sound");
 	if (mute_sound) {
 		sound_mgr->setListenerGain(0.0f);
@@ -110,7 +111,7 @@ void sound_control_by_window(ISoundManager *sound_mgr, irr::IrrlichtDevice *devi
 			g_settings->setFloat("sound_volume", new_volume);
 		}
 
-		if (!device->isWindowActive()) {
+		if (!is_window_active) {
 			new_volume *= g_settings->getFloat("sound_volume_unfocused");
 			new_volume = rangelim(new_volume, 0.0f, 1.0f);
 		}

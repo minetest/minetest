@@ -310,7 +310,7 @@ void GUIEngine::run()
 
 		m_script->step();
 
-		sound_control_by_window(m_sound_manager.get(), device);
+		sound_volume_control(m_sound_manager.get(), device->isWindowActive());
 
 		m_sound_manager->step(dtime);
 

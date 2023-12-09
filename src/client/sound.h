@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "irrlichttypes_extrabloated.h"
+#include "irr_v3d.h"
 #include <limits>
 #include <string>
 #include <unordered_map>
@@ -185,4 +185,8 @@ public:
 	void updateSoundPosVel(sound_handle_t sound, const v3f &pos, const v3f &vel) override {}
 };
 
-void sound_control_by_window(ISoundManager *sound_mgr, irr::IrrlichtDevice *device);
+/**
+ * A helper function to control sound volume based on some values: sound volume
+ * settings, mute sound setting, and window activity.
+ */
+void sound_volume_control(ISoundManager *sound_mgr, bool is_window_active);
