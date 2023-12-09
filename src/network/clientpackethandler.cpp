@@ -1228,9 +1228,14 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	u8 stat;
 
 	*pkt >> server_id >> stat;
+	
+	if (stat > 13) {
+		warningstream << "Received unsupported HudElementStat for HudChange";
+		return;
+	}
 
 	// Keep in sync with:server.cpp -> SendHUDChange
-	switch ((HudElementStat)stat) {
+	switch (static_cast<HudElementStat>(stat)) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
 		case HUD_STAT_ALIGN:

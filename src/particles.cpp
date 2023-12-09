@@ -109,7 +109,10 @@ void TweenedParameter<T>::serialize(std::ostream &os) const
 template<typename T>
 void TweenedParameter<T>::deSerialize(std::istream &is)
 {
-	style = static_cast<TweenStyle>(readU8(is));
+	u8 tmp = readU8(is);
+	if (tmp > 3)
+		throw SerializationError("unsupported TweenStyle");
+	style = static_cast<TweenStyle>(tmp);
 	reps = readU16(is);
 	beginning = readF32(is);
 	start.deSerialize(is);

@@ -70,7 +70,7 @@ enum HudElementType {
 	HUD_ELEM_MINIMAP   = 7
 };
 
-enum HudElementStat {
+enum HudElementStat : u8 {
 	HUD_STAT_POS = 0,
 	HUD_STAT_NAME,
 	HUD_STAT_SCALE,
