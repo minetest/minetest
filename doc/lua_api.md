@@ -8998,6 +8998,7 @@ Used by `minetest.register_node`.
     -- Can be `true` if it is pointable, `false` if it can be pointed through,
     -- or `"blocking"` if it is pointable but not selectable.
     -- Can be overridden by the `pointabilities` of the held item.
+    -- A client may be able to point non-pointable nodes, since it isn't checked server-side.
 
     diggable = true,  -- If false, can never be dug
 
