@@ -32,7 +32,7 @@ class IGameDef;
 class Client;
 struct ToolCapabilities;
 struct PointedThing;
-struct PointingAbilities;
+struct Pointabilities;
 #ifndef SERVER
 #include "client/tile.h"
 struct ItemMesh;
@@ -100,7 +100,7 @@ struct ItemDefinition
 	bool liquids_pointable;
 
 	// They may be NULL. If non-NULL, deleted by destructor
-	PointingAbilities *pointabilities;
+	Pointabilities *pointabilities;
 	ToolCapabilities *tool_capabilities;
 
 	ItemGroupList groups;

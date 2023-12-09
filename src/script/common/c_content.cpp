@@ -85,7 +85,7 @@ void read_item_definition(lua_State* L, int index,
 	
 	lua_getfield(L, index, "pointabilities");
 	if(lua_istable(L, -1)){
-		def.pointabilities = new PointingAbilities(
+		def.pointabilities = new Pointabilities(
 				read_pointabilities(L, -1));
 	}
 
@@ -1631,9 +1631,9 @@ PointabilityType read_pointability(lua_State *L, int index)
 }
 
 /******************************************************************************/
-PointingAbilities read_pointabilities(lua_State *L, int index)
+Pointabilities read_pointabilities(lua_State *L, int index)
 {
-	PointingAbilities pointabilities;
+	Pointabilities pointabilities;
 	
 	lua_getfield(L, index, "nodes");
 	if(lua_istable(L, -1)){
@@ -1700,7 +1700,7 @@ void push_pointability(lua_State *L, PointabilityType pointable)
 }
 
 /******************************************************************************/
-void push_pointabilities(lua_State *L, const PointingAbilities &pointabilities)
+void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 {
 	// pointabilities table
 	lua_newtable(L);

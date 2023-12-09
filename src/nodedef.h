@@ -35,7 +35,7 @@ class Client;
 #include "constants.h" // BS
 #include "texture_override.h" // TextureOverride
 #include "tileanimation.h"
-#include "util/pointingabilities.h"
+#include "util/pointabilities.h"
 
 class IItemDefManager;
 class ITextureSource;

@@ -123,7 +123,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
 	if (def.pointabilities)
-		pointabilities = new PointingAbilities(*def.pointabilities);
+		pointabilities = new Pointabilities(*def.pointabilities);
 	if (def.tool_capabilities)
 		tool_capabilities = new ToolCapabilities(*def.tool_capabilities);
 	groups = def.groups;
@@ -342,7 +342,7 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 		std::string pointabilities_s = deSerializeString16(is);
 		if (!pointabilities_s.empty()) {
 			std::istringstream tmp_is(pointabilities_s, std::ios::binary);
-			pointabilities = new PointingAbilities();
+			pointabilities = new Pointabilities();
 			pointabilities->deSerialize(tmp_is);
 		}
 	} catch(SerializationError &e) {};

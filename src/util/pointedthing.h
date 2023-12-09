@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include <iostream>
 #include <string>
-#include "pointingabilities.h"
+#include "pointabilities.h"
 
 enum PointedThingType :u8
 {

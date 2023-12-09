@@ -106,7 +106,7 @@ bool Environment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 */
 inline static PointabilityType isPointableNode(const MapNode &n,
 	const NodeDefManager *nodedef, bool liquids_pointable,
-	const PointingAbilities *pointabilities)
+	const Pointabilities *pointabilities)
 {
 	const ContentFeatures &features = nodedef->get(n);
 	if (pointabilities) {

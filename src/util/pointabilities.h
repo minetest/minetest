@@ -31,7 +31,7 @@ enum class PointabilityType
 };
 
 // An object to store overridden pointable properties
-struct PointingAbilities
+struct Pointabilities
 {
 	// Nodes
 	std::unordered_map<std::string, PointabilityType> nodes;
