@@ -236,8 +236,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 						v3s16 pos(x, y, z);
 						if (generate(mg->vm, &ps, pos, false))
-							mg->gennotify.addEvent(
-									GENNOTIFY_DECORATION, pos, index);
+							mg->gennotify.addDecorationEvent(pos, index);
 					}
 				}
 
@@ -249,8 +248,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 						v3s16 pos(x, y, z);
 						if (generate(mg->vm, &ps, pos, true))
-							mg->gennotify.addEvent(
-									GENNOTIFY_DECORATION, pos, index);
+							mg->gennotify.addDecorationEvent(pos, index);
 					}
 				}
 			} else { // Heightmap decorations
@@ -273,7 +271,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 				v3s16 pos(x, y, z);
 				if (generate(mg->vm, &ps, pos, false))
-					mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
+					mg->gennotify.addDecorationEvent(pos, index);
 			}
 		}
 	}

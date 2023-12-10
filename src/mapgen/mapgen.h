@@ -76,29 +76,39 @@ enum GenNotifyType {
 	GENNOTIFY_LARGECAVE_BEGIN,
 	GENNOTIFY_LARGECAVE_END,
 	GENNOTIFY_DECORATION,
+	GENNOTIFY_UD, // user-defined
 	NUM_GENNOTIFY_TYPES
-};
-
-struct GenNotifyEvent {
-	GenNotifyType type;
-	v3s16 pos;
-	u32 id;
 };
 
 class GenerateNotifier {
 public:
+	struct GenNotifyEvent {
+		GenNotifyType type;
+		v3s16 pos;
+		u32 id; // for GENNOTIFY_DECORATION
+	};
+
 	// Use only for temporary Mapgen objects with no map generation!
 	GenerateNotifier() = default;
-	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids);
+	// normal constructor
+	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids,
+		const std::set<std::string> *notify_on_ud);
 
-	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
-	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map);
+	bool addEvent(GenNotifyType type, v3s16 pos);
+	bool addDecorationEvent(v3s16 pos, u32 deco_id);
+	bool setUD(const std::string &key, const std::string &value); 
+	void getEvents(std::map<std::string, std::vector<v3s16>> &map) const;
+	void getUD(std::map<std::string, std::string> &map) const;
 	void clearEvents();
 
 private:
 	u32 m_notify_on = 0;
 	const std::set<u32> *m_notify_on_deco_ids = nullptr;
+	const std::set<std::string> *m_notify_on_ud = nullptr;
 	std::list<GenNotifyEvent> m_notify_events;
+	std::map<std::string, std::string> m_notify_ud;
+
+	inline bool notifyOn(GenNotifyType type) { return m_notify_on & (1 << type); }
 };
 
 // Order must match the order of 'static MapgenDesc g_reg_mapgens[]' in mapgen.cpp

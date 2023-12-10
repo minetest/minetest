@@ -4913,6 +4913,9 @@ Possible fields of the returned table are:
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
+* `ud`: user-defined data
+  * not an array of positions. instead a table:
+  * key = user-defined ID, value = arbitrary Lua value
 * `decoration#id` (see below)
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the
@@ -5957,20 +5960,20 @@ Environment access
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
-* `minetest.set_gen_notify(flags, {deco_ids})`
+* `minetest.set_gen_notify(flags, deco_ids, ud_ids)`
     * Set the types of on-generate notifications that should be collected.
     * `flags` is a flag field with the available flags:
-        * dungeon
-        * temple
-        * cave_begin
-        * cave_end
-        * large_cave_begin
-        * large_cave_end
-        * decoration
-    * The second parameter is a list of IDs of decorations which notification
+        * dungeon, template, cave_begin, cave_end, large_cave_begin
+        * large_cave_end, decoration, ud
+    * The following parameters are optional:
+    * `deco_ids` is a list of IDs of decorations which notification
       is requested for.
+    * `ud_ids` is a list of user-defined IDs (strings) which are
+      requested. By convention these should be the mod name with an optional
+      colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
 * `minetest.get_gen_notify()`
-    * Returns a flagstring and a table with the `deco_id`s.
+    * Returns a flagstring, a table with the `deco_id`s and a table with
+      user-defined IDs.
 * `minetest.get_decoration_id(decoration_name)`
     * Returns the decoration ID number for the provided decoration name string,
       or `nil` on failure.
@@ -6535,6 +6538,12 @@ Refer to the above section for the usual disclaimer on what environment isolatio
       The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
       than the emerged area of the VoxelManip.
     * `blockseed`: 64-bit seed number used for this chunk
+* `minetest.save_gen_notify(ud_id, data)`
+    * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).
+    * `ud_id`: user-defined ID (a string)
+      By convention these should be the mod name with an optional
+      colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
+    * `data`: any Lua object (will be serialized, no userdata allowed)
 
 ### List of APIs available in the mapgen env
 
@@ -6572,6 +6581,7 @@ Variables:
 
 Note that node metadata does not exist in the mapgen env, we suggest deferring
 setting any metadata you need to the on_generated callback in the regular env.
+You can use the gennotify mechanism to transfer this information.
 
 Server
 ------
