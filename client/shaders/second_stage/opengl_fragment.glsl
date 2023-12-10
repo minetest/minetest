@@ -1,6 +1,13 @@
 #define rendered texture0
 #define bloom texture1
 
+#ifdef GL_ES
+// Dithering requires sufficient floating-point precision
+#if GL_FRAGMENT_PRECISION_HIGH != 1
+#undef ENABLE_DITHERING
+#endif
+#endif
+
 struct ExposureParams {
 	float compensationFactor;
 };
@@ -83,9 +90,9 @@ vec3 applySaturation(vec3 color, float factor)
 // From http://alex.vlachos.com/graphics/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
 // and https://www.shadertoy.com/view/MslGR8 (5th one starting from the bottom)
 // NOTE: `frag_coord` is in pixels (i.e. not normalized UV).
-vec3 screen_space_dither(vec2 frag_coord) {
+vec3 screen_space_dither(highp vec2 frag_coord) {
 	// Iestyn's RGB dither (7 asm instructions) from Portal 2 X360, slightly modified for VR.
-	vec3 dither = vec3(dot(vec2(171.0, 231.0), frag_coord));
+	highp vec3 dither = vec3(dot(vec2(171.0, 231.0), frag_coord));
 	dither.rgb = fract(dither.rgb / vec3(103.0, 71.0, 97.0));
 
 	// Subtract 0.5 to avoid slightly brightening the whole viewport.
