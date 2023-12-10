@@ -4124,6 +4124,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			break;
 
 		if (formspec->getReferenceCount() == 1) {
+			// See GUIFormSpecMenu::create what refcnt = 1 means
 			m_game_ui->deleteFormspec();
 			break;
 		}
