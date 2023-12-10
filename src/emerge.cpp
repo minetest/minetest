@@ -669,6 +669,7 @@ void *EmergeThread::run()
 
 		action = getBlockOrStartGen(pos, allow_gen, &block, &bmdata);
 		if (action == EMERGE_GENERATED) {
+			bool error = false;
 			m_trans_liquid = &bmdata.transforming_liquid;
 
 			{
@@ -686,11 +687,13 @@ void *EmergeThread::run()
 					m_script->on_generated(&bmdata);
 				} catch (const LuaError &e) {
 					m_server->setAsyncFatalError(e);
+					error = true;
 				}
 			}
 
-			block = finishGen(pos, &bmdata, &modified_blocks);
-			if (!block)
+			if (!error)
+				block = finishGen(pos, &bmdata, &modified_blocks);
+			if (!block || error)
 				action = EMERGE_ERRORED;
 
 			m_trans_liquid = nullptr;
