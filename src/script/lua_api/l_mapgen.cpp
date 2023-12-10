@@ -680,8 +680,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		return 1;
 	}
 	case MGOBJ_GENNOTIFY: {
-		std::map<std::string, std::vector<v3s16> >event_map;
-
+		std::map<std::string, std::vector<v3s16>> event_map;
 		mg->gennotify.getEvents(event_map);
 
 		lua_createtable(L, 0, event_map.size());
@@ -695,6 +694,25 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 			lua_setfield(L, -2, it->first.c_str());
 		}
+
+		// push user-defined data
+		std::map<std::string, std::string> ud_map;
+		mg->gennotify.getUD(ud_map);
+
+		lua_createtable(L, 0, ud_map.size());
+		lua_getglobal(L, "core");
+		lua_getfield(L, -1, "deserialize");
+		lua_remove(L, -2); // remove 'core'
+		for (auto it : ud_map) {
+			lua_pushvalue(L, -1); // deserialize func
+			lua_pushlstring(L, it.second.c_str(), it.second.size());
+			lua_pushboolean(L, true);
+			lua_call(L, 2, 1);
+
+			lua_setfield(L, -3, it.first.c_str()); // put into table
+		}
+		lua_pop(L, 1); // remove func
+		lua_setfield(L, -2, "ud"); // put into top-level table
 
 		return 1;
 	}
@@ -1052,6 +1070,28 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 	}
 
 	return 3;
+}
+
+
+// save_gen_notify(ud_id, data) [in emerge thread]
+int ModApiMapgen::l_save_gen_notify(lua_State *L)
+{
+	auto *emerge = getEmergeThread(L);
+
+	std::string key = readParam<std::string>(L, 1);
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "serialize");
+	lua_remove(L, -2); // remove 'core'
+	lua_pushvalue(L, 2);
+	lua_call(L, 1, 1);
+	std::string val = readParam<std::string>(L, -1);
+	lua_pop(L, 1);
+
+	bool set = emerge->getMapgen()->gennotify.setUD(key, val);
+
+	lua_pushboolean(L, set);
+	return 1;
 }
 
 
@@ -2002,6 +2042,7 @@ void ModApiMapgen::InitializeEmerge(lua_State *L, int top)
 	API_FCT(get_mapgen_setting_noiseparams);
 	API_FCT(get_noiseparams);
 	API_FCT(get_decoration_id);
+	API_FCT(save_gen_notify);
 
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);

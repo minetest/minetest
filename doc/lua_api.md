@@ -6540,6 +6540,8 @@ Refer to the above section for the usual disclaimer on what environment isolatio
     * `blockseed`: 64-bit seed number used for this chunk
 * `minetest.save_gen_notify(ud_id, data)`
     * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).
+    * Data is bound to the chunk that is currently being processed, so this function
+      only makes sense inside the above-mentioned generation callback.
     * `ud_id`: user-defined ID (a string)
       By convention these should be the mod name with an optional
       colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`

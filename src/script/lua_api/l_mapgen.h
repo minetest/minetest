@@ -98,6 +98,9 @@ private:
 	// get_gen_notify()
 	static int l_get_gen_notify(lua_State *L);
 
+	// save_gen_notify(ud_id, data)
+	static int l_save_gen_notify(lua_State *L);
+
 	// get_decoration_id(decoration_name)
 	// returns the decoration ID as used in gennotify
 	static int l_get_decoration_id(lua_State *L);

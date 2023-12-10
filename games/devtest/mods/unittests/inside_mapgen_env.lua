@@ -14,6 +14,7 @@ local function do_tests()
 	assert(type(meta) == "userdata")
 	assert(type(meta.set_tool_capabilities) == "function")
 	assert(core.registered_items[""])
+	assert(core.save_gen_notify)
 	-- alias handling
 	assert(core.registered_items["unittests:steel_ingot_alias"].name ==
 		"unittests:steel_ingot")
