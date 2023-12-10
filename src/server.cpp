@@ -577,8 +577,8 @@ void Server::stop()
 void Server::step(float dtime)
 {
 	// Limit a bit
-	if (dtime > 2.0)
-		dtime = 2.0;
+	if (dtime > DTIME_LIMIT)
+		dtime = DTIME_LIMIT;
 	{
 		MutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
