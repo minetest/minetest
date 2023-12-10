@@ -623,6 +623,9 @@ bloom_radius (Bloom Radius) float 1 0.1 8
 #    Requires the sound system to be enabled.
 sound_volume (Volume) float 0.8 0.0 1.0
 
+#    Volume multiplier when the window is unfocused.
+sound_volume_unfocused (Volume when unfocused) float 0.3 0.0 1.0
+
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
 #    In-game, you can toggle the mute state with the mute key or by using the

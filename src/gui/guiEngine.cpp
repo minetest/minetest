@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include "client/renderingengine.h"
 #include "scripting_mainmenu.h"
-#include "util/numeric.h"
 #include "config.h"
 #include "version.h"
 #include "porting.h"
@@ -296,6 +295,7 @@ void GUIEngine::run()
 		driver->endScene();
 
 		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
+
 		u32 frametime_min = 1000 / (device->isWindowFocused()
 			? g_settings->getFloat("fps_max")
 			: g_settings->getFloat("fps_max_unfocused"));
@@ -309,6 +309,8 @@ void GUIEngine::run()
 		t_last_frame = t_now;
 
 		m_script->step();
+
+		sound_volume_control(m_sound_manager.get(), device->isWindowActive());
 
 		m_sound_manager->step(dtime);
 
