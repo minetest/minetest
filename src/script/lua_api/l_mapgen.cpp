@@ -987,7 +987,7 @@ int ModApiMapgen::l_get_noiseparams(lua_State *L)
 }
 
 
-// set_gen_notify(flags, {deco_id_table})
+// set_gen_notify(flags, {deco_ids}, {ud_ids})
 int ModApiMapgen::l_set_gen_notify(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1009,11 +1009,26 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 		}
 	}
 
+	if (lua_istable(L, 3)) {
+		lua_pushnil(L);
+		while (lua_next(L, 3)) {
+			emerge->gen_notify_on_ud.insert(readParam<std::string>(L, -1));
+			lua_pop(L, 1);
+		}
+	}
+
+	// Clear sets if relevant flag disabled
+	if ((emerge->gen_notify_on & (1 << GENNOTIFY_DECORATION)) == 0)
+		emerge->gen_notify_on_deco_ids.clear();
+	if ((emerge->gen_notify_on & (1 << GENNOTIFY_UD)) == 0)
+		emerge->gen_notify_on_ud.clear();
+
 	return 0;
 }
 
 
 // get_gen_notify()
+// returns flagstring, {deco_ids}, {ud_ids})
 int ModApiMapgen::l_get_gen_notify(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1024,11 +1039,19 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 
 	lua_newtable(L);
 	int i = 1;
-	for (u32 gen_notify_on_deco_id : emerge->gen_notify_on_deco_ids) {
-		lua_pushnumber(L, gen_notify_on_deco_id);
+	for (u32 id : emerge->gen_notify_on_deco_ids) {
+		lua_pushnumber(L, id);
 		lua_rawseti(L, -2, i++);
 	}
-	return 2;
+
+	lua_newtable(L);
+	int j = 1;
+	for (const auto &id : emerge->gen_notify_on_ud) {
+		lua_pushstring(L, id.c_str());
+		lua_rawseti(L, -2, j++);
+	}
+
+	return 3;
 }
 
 

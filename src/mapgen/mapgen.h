@@ -96,7 +96,7 @@ public:
 
 	bool addEvent(GenNotifyType type, v3s16 pos);
 	bool addDecorationEvent(v3s16 pos, u32 deco_id);
-	bool setUD(const std::string &key, const std::string &value); 
+	bool setUD(const std::string &key, const std::string &value);
 	void getEvents(std::map<std::string, std::vector<v3s16>> &map) const;
 	void getUD(std::map<std::string, std::string> &map) const;
 	void clearEvents();
@@ -108,7 +108,9 @@ private:
 	std::list<GenNotifyEvent> m_notify_events;
 	std::map<std::string, std::string> m_notify_ud;
 
-	inline bool notifyOn(GenNotifyType type) { return m_notify_on & (1 << type); }
+	inline bool notifyOn(GenNotifyType type) const {
+		return m_notify_on & (1 << type);
+	}
 };
 
 // Order must match the order of 'static MapgenDesc g_reg_mapgens[]' in mapgen.cpp

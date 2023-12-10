@@ -181,3 +181,30 @@ local function test_on_mapblocks_changed(cb, player, pos)
 	end
 end
 unittests.register("test_on_mapblocks_changed", test_on_mapblocks_changed, {map=true, async=true})
+
+local function test_gennotify_api()
+	local DECO_ID = 123
+	local UD_ID = "unittests:dummy"
+
+	-- the engine doesn't check if the id is actually valid, maybe it should
+	core.set_gen_notify({decoration=true}, {DECO_ID})
+
+	core.set_gen_notify({ud=true}, nil, {UD_ID})
+
+	local flags, deco, ud = core.get_gen_notify()
+	local function ff(flag)
+		return (" " .. flags .. " "):match("[ ,]" .. flag .. "[ ,]") ~= nil
+	end
+	assert(ff("decoration"), "'decoration' flag missing")
+	assert(ff("decoration"), "'ud' flag missing")
+	assert(table.indexof(deco, DECO_ID) > 0)
+	assert(table.indexof(ud, UD_ID) > 0)
+
+	core.set_gen_notify({decoration=false, ud=false})
+
+	flags, deco, ud = core.get_gen_notify()
+	assert(not ff("decoration") and not ff("ud"))
+	assert(#deco == 0, "deco ids not empty")
+	assert(#ud == 0, "ud ids not empty")
+end
+unittests.register("test_gennotify_api", test_gennotify_api)

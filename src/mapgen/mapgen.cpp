@@ -109,7 +109,7 @@ static_assert(
 ////
 
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeParams *emerge) :
-	gennotify(emerge->gen_notify_on, emerge->gen_notify_on_deco_ids, nullptr) // TODO!!!
+	gennotify(emerge->createNotifier())
 {
 	id           = mapgenid;
 	water_level  = params->water_level;

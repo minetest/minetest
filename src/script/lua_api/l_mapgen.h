@@ -92,7 +92,7 @@ private:
 	// get_noiseparam_defaults(name)
 	static int l_get_noiseparams(lua_State *L);
 
-	// set_gen_notify(flags, {deco_id_table})
+	// set_gen_notify(flags, {deco_ids}, {ud_ids})
 	static int l_set_gen_notify(lua_State *L);
 
 	// get_gen_notify()
