@@ -33,11 +33,13 @@ public:
 	f32 real_gui_scaling;
 	f32 real_hud_scaling;
 	v2f32 max_fs_size;
+	bool touch_controls;
 
 	bool equal(const ClientDynamicInfo &other) const {
 		return render_target_size == other.render_target_size &&
 				abs(real_gui_scaling - other.real_gui_scaling) < 0.001f &&
-				abs(real_hud_scaling - other.real_hud_scaling) < 0.001f;
+				abs(real_hud_scaling - other.real_hud_scaling) < 0.001f &&
+				touch_controls == other.touch_controls;
 	}
 
 #ifndef SERVER
@@ -48,10 +50,16 @@ public:
 		f32 hud_scaling = g_settings->getFloat("hud_scaling", 0.5f, 20.0f);
 		f32 real_gui_scaling = gui_scaling * density;
 		f32 real_hud_scaling = hud_scaling * density;
+#ifdef HAVE_TOUCHSCREENGUI
+		bool touch_controls = true;
+#else
+		bool touch_controls = false;
+#endif
 
 		return {
 			screen_size, real_gui_scaling, real_hud_scaling,
-			ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling)
+			ClientDynamicInfo::calculateMaxFSSize(screen_size, gui_scaling),
+			touch_controls
 		};
 	}
 #endif
