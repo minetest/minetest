@@ -1819,4 +1819,12 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 		*pkt >> lighting.volumetric_light_strength;
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> lighting.shadow_tint;
+	if (pkt->getRemainingBytes() >= 24) {
+		*pkt >> lighting.sky_light.color_offset.X
+				>> lighting.sky_light.color_offset.Y
+				>> lighting.sky_light.color_offset.Z
+				>> lighting.sky_light.color_ratio_coef.X
+				>> lighting.sky_light.color_ratio_coef.Y
+				>> lighting.sky_light.color_ratio_coef.Z;
+	}
 }
