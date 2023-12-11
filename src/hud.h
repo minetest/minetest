@@ -85,6 +85,7 @@ enum HudElementStat : u8 {
 	HUD_STAT_Z_INDEX,
 	HUD_STAT_TEXT2,
 	HUD_STAT_STYLE,
+	HudElementStat_END // Dummy for validity check
 };
 
 enum HudCompassDir {

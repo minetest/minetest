@@ -56,7 +56,7 @@ void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_ver)
 			sheet_2d.frame_length = readF32(is);
 			break;
 		default:
-			throw SerializationError("unsupported TileAnimationType");
+			warningstream << "Received unsupported TileAnimationType" << std::endl;
 			break;
 	}
 }

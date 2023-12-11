@@ -180,7 +180,7 @@ void NodeBox::deSerialize(std::istream &is)
 			break;
 		}
 		default:
-			throw SerializationError("unsupported NodeBoxType");
+			warningstream << "Received unsupported NodeBoxType" << std::endl;
 			break;
 	}
 }
@@ -272,10 +272,9 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 	}
 	scale = has_scale ? readU8(is) : 0;
 	if (has_align_style) {
-		u8 tmp = readU8(is);
-		if (tmp > 2)
-			throw SerializationError("unsupported AlignStyle");
-		align_style = static_cast<AlignStyle>(tmp);
+		align_style = static_cast<AlignStyle>(readU8(is));
+		if (align_style >= AlignStyle_END)
+			warningstream << "Received unsupported AlignStyle" << std::endl;
 	} else
 		align_style = ALIGN_STYLE_NODE;
 }
@@ -567,24 +566,22 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		int value = readS16(is);
 		groups[name] = value;
 	}
-	
-	u8 tmp = readU8(is);
-	if (tmp > 1)
-		throw SerializationError("unsupported ContentParamType");
-	param_type = static_cast<ContentParamType>(tmp);
-	
-	tmp = readU8(is);
-	if (tmp > 14)
-		throw SerializationError("unsupported ContentParamType2");
-	param_type_2 = static_cast<ContentParamType2>(tmp);
+
+	param_type = static_cast<ContentParamType>(readU8(is));
+	if (param_type >= ContentParamType_END)
+		warningstream << "Received unsupported ContentParamType for a node named "
+			<< name << std::endl;
+
+	param_type_2 = static_cast<ContentParamType2>(readU8(is));
+	if (param_type_2 >= ContentParamType2_END)
+		warningstream << "Received unsupported ContentParamType2 for a node named "
+			<< name << std::endl;
 
 	// visual
-	
-	tmp = readU8(is);
-	if (tmp > 17)
-		throw SerializationError("unsupported NodeDrawType");
-	drawtype = static_cast<NodeDrawType>(tmp);
-	
+	drawtype = static_cast<NodeDrawType>(readU8(is));
+	if (drawtype >= NodeDrawType_END)
+		warningstream << "Received unsupported NodeDrawType for a node named "
+			<< name << std::endl;
 	mesh = deSerializeString16(is);
 	visual_scale = readF32(is);
 	if (readU8(is) != 6)
@@ -630,10 +627,10 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 	damage_per_second = readU32(is);
 
 	// liquid
-	tmp = readU8(is);
-	if (tmp > 2)
-		throw SerializationError("unsupported LiquidType");
-	liquid_type = static_cast<LiquidType>(tmp);
+	liquid_type = static_cast<LiquidType>(readU8(is));
+	if (liquid_type >= LiquidType_END)
+		warningstream << "Received unsupported LiquidType for a node named "
+			<< name << std::endl;
 	liquid_move_physics = liquid_type != LIQUID_NONE;
 	liquid_alternative_flowing = deSerializeString16(is);
 	liquid_alternative_source = deSerializeString16(is);
@@ -669,9 +666,9 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		tmp = readU8(is);
 		if (is.eof())
 			throw SerializationError("");
-		if (tmp > 3)
-			throw SerializationError("unsupported AlphaMode");
 		alpha = static_cast<enum AlphaMode>(tmp);
+		if (alpha >= AlphaMode_END)
+			throw SerializationError("unsupported AlphaMode");
 		if (alpha == ALPHAMODE_LEGACY_COMPAT)
 			alpha = ALPHAMODE_OPAQUE;
 

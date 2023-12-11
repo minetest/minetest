@@ -1229,8 +1229,8 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	*pkt >> server_id >> stat;
 	
-	if (stat > 13) {
-		warningstream << "Received unsupported HudElementStat for HudChange";
+	if (stat >= HudElementStat_END) {
+		warningstream << "Received unsupported HudElementStat for HudChange." << std::endl;
 		return;
 	}
 

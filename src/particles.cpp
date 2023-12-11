@@ -84,6 +84,8 @@ T TweenedParameter<T>::blend(float fac) const
 					fac *= myrand_range(0.7f, 1.0f);
 				}
 			}
+			case TweenStyle::TweenStyle_END:
+				break;
 		}
 		if (fac>1.f)
 			fac = 1.f;
@@ -109,10 +111,9 @@ void TweenedParameter<T>::serialize(std::ostream &os) const
 template<typename T>
 void TweenedParameter<T>::deSerialize(std::istream &is)
 {
-	u8 tmp = readU8(is);
-	if (tmp > 3)
-		throw SerializationError("unsupported TweenStyle");
-	style = static_cast<TweenStyle>(tmp);
+	style = static_cast<TweenStyle>(readU8(is));
+	if (style >= TweenStyle::TweenStyle_END)
+		warningstream << "Received unsupported TweenStyle." << std::endl;
 	reps = readU16(is);
 	beginning = readF32(is);
 	start.deSerialize(is);

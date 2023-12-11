@@ -604,6 +604,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				floodable_node = n0.getContent();
 				liquid_kind = CONTENT_AIR;
 				break;
+			case LiquidType_END:
+				break;
 		}
 
 		/*
@@ -695,6 +697,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						if (nb.t == NEIGHBOR_LOWER)
 							flowing_down = true;
 					}
+					break;
+				case LiquidType_END:
 					break;
 			}
 		}
@@ -847,6 +851,8 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 				// this flow has turned to air; neighboring flows might need to do the same
 				for (u16 i = 0; i < num_flows; i++)
 					m_transforming_liquid.push_back(flows[i].p);
+				break;
+			case LiquidType_END:
 				break;
 		}
 	}
