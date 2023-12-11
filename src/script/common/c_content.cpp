@@ -1692,7 +1692,7 @@ void push_pointability(lua_State *L, PointabilityType pointable)
 		lua_pushboolean(L, false);
 		break;
 	  case PointabilityType::POINTABLE_BLOCKING:
-		lua_pushlstring(L, "blocking", 8);
+		lua_pushstring(L, "blocking");
 		break;
 	  default:
 		break;
