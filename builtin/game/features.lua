@@ -39,6 +39,7 @@ core.features = {
 	dynamic_add_media_filepath = true,
 	lsystem_decoration_type = true,
 	item_meta_range = true,
+	light_intensity = true,
 }
 
 function core.has_feature(arg)
