@@ -32,7 +32,8 @@ PointabilityType Pointabilities::deSerializePointabilityType(std::istream &is)
 		case PointabilityType::POINTABLE_BLOCKING:
 			break;
 		default:
-			throw SerializationError("unsupported PointabilityType");
+			warningstream << "Received unsupported PointabilityType" << std::endl;
+			break;
     }
     return pointable_type;
 }
