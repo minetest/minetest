@@ -43,6 +43,7 @@ core.features = {
 	hotbar_hud_element = true,
 	bulk_lbms = true,
 	abm_without_neighbors = true,
+	sky_light = true,
 }
 
 function core.has_feature(arg)

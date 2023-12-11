@@ -12,3 +12,8 @@ AutoExposure::AutoExposure()
 	speed_bright_dark(1000.f),
 	center_weight_power(1.f)
 {}
+
+SkyLight::SkyLight()
+	: color_offset{-0.04, -0.04, 0.078},
+	color_ratio_coef{1e-3, 1e-3, 0.98e-3}
+{}
