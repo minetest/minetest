@@ -175,9 +175,13 @@ jobs:
 
       - name: Build
         run: |
-           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
-        env:
-          NO_PACKAGE: 1
+           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh B
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mingw32
+          path: B/build/*.zip
+          if-no-files-found: error
 
   win64:
     name: "MinGW cross-compiler (64-bit)"
@@ -192,9 +196,13 @@ jobs:
 
       - name: Build
         run: |
-          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
-        env:
-          NO_PACKAGE: 1
+          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh B
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mingw64
+          path: B/build/*.zip
+          if-no-files-found: error
 
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
