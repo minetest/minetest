@@ -23,6 +23,7 @@ download () {
 
 	[ -d "./$foldername" ] && return 0
 	wget "$url" -c -O "./$filename"
+	sha256sum -w -c <(grep -F "$filename" "$topdir/sha256sums.txt")
 	if [ "$extract" = "unzip" ]; then
 		unzip -o "$filename" -d "$foldername"
 	elif [ "$extract" = "unzip_nofolder" ]; then
