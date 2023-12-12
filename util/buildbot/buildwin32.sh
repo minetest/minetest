@@ -53,8 +53,6 @@ download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win32.zip"
 # Set source dir, downloading Minetest as needed
 get_sources
 
-git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
-
 # Build the thing
 cd $builddir
 [ -d build ] && rm -rf build
@@ -62,7 +60,6 @@ cd $builddir
 cmake_args=(
 	-DCMAKE_TOOLCHAIN_FILE=$toolchain_file
 	-DCMAKE_INSTALL_PREFIX=/tmp
-	-DVERSION_EXTRA=$git_hash
 	-DBUILD_CLIENT=1 -DBUILD_SERVER=0
 	-DEXTRA_DLL="$runtime_dlls"
 
