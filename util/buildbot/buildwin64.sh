@@ -53,7 +53,7 @@ get_sources
 git_hash=$(cd $sourcedir && git rev-parse --short HEAD)
 
 # Build the thing
-cd $sourcedir
+cd $builddir
 [ -d build ] && rm -rf build
 
 cmake_args=(
