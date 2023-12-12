@@ -1272,7 +1272,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		iss.clear();
 
 		{
-			MapBlock mb(nullptr, v3s16(0,0,0), &server);
+			MapBlock mb(v3s16(0,0,0), &server);
 			u8 ver = readU8(iss);
 			mb.deSerialize(iss, ver, true);
 

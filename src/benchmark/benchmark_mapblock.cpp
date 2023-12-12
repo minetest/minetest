@@ -26,9 +26,8 @@ typedef std::vector<MapBlock*> MBContainer;
 static void allocateSome(MBContainer &vec, u32 n)
 {
 	vec.reserve(vec.size() + n);
-	Map *map = reinterpret_cast<Map*>(0x1234);
 	for (u32 i = 0; i < n; i++) {
-		auto *mb = new MapBlock(map, {i & 0xff, 0, i >> 8}, nullptr);
+		auto *mb = new MapBlock({i & 0xff, 0, i >> 8}, nullptr);
 		vec.push_back(mb);
 	}
 }

@@ -72,30 +72,20 @@ class VoxelManipulator;
 class MapBlock
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef);
+	MapBlock(v3s16 pos, IGameDef *gamedef);
 	~MapBlock();
-
-	/*virtual u16 nodeContainerId() const
-	{
-		return NODECONTAINER_ID_MAPBLOCK;
-	}*/
-
-	Map *getParent()
-	{
-		return m_parent;
-	}
 
 	// Any server-modding code can "delete" arbitrary blocks (i.e. with
 	// core.delete_area), which makes them orphan. Avoid using orphan blocks for
 	// anything.
 	bool isOrphan() const
 	{
-		return !m_parent;
+		return m_orphan;
 	}
 
 	void makeOrphan()
 	{
-		m_parent = nullptr;
+		m_orphan = true;
 	}
 
 	void reallocate()
@@ -310,11 +300,6 @@ public:
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
 
-	// These functions consult the parent container if the position
-	// is not valid on this MapBlock.
-	bool isValidPositionParent(v3s16 p);
-	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
-
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
 
@@ -491,8 +476,6 @@ private:
 		Private member variables
 	*/
 
-	// NOTE: Lots of things rely on this being the Map
-	Map *m_parent;
 	// Position in blocks on parent
 	v3s16 m_pos;
 
@@ -545,6 +528,9 @@ private:
 	bool m_day_night_differs = false;
 	bool m_day_night_differs_expired = true;
 
+	// see isOrphan()
+	bool m_orphan = false;
+	// Whether mapgen has generated the content of this block (persisted)
 	bool m_generated = false;
 
 	/*
