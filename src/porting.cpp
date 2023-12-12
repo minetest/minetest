@@ -52,6 +52,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "porting_android.h"
 #endif
 #if defined(__APPLE__)
+	#include <mach-o/dyld.h>
+	#include <CoreFoundation/CoreFoundation.h>
 	// For _NSGetEnviron()
 	// Related: https://gitlab.haskell.org/ghc/ghc/issues/2458
 	#include <crt_externs.h>
