@@ -379,15 +379,17 @@ public:
 
 	inline void refGrab()
 	{
+		assert(m_refcount < SHRT_MAX);
 		m_refcount++;
 	}
 
 	inline void refDrop()
 	{
+		assert(m_refcount > 0);
 		m_refcount--;
 	}
 
-	inline int refGet()
+	inline short refGet()
 	{
 		return m_refcount;
 	}
@@ -500,7 +502,7 @@ private:
 		  block has been modified from the one on disk.
 		- On the client, this is used for nothing.
 	*/
-	u32 m_modified = MOD_STATE_WRITE_NEEDED;
+	u16 m_modified = MOD_STATE_WRITE_NEEDED;
 	u32 m_modified_reason = MOD_REASON_INITIAL;
 
 	/*
@@ -550,7 +552,7 @@ private:
 		Reference count; currently used for determining if this block is in
 		the list of blocks to be drawn.
 	*/
-	int m_refcount = 0;
+	short m_refcount = 0;
 
 	NodeTimerList m_node_timers;
 };
