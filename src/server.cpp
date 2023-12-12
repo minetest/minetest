@@ -1052,22 +1052,13 @@ void Server::Receive()
 {
 	NetworkPacket pkt;
 	session_t peer_id;
-	bool first = true;
 	for (;;) {
 		pkt.clear();
 		peer_id = 0;
 		try {
-			/*
-				In the first iteration *wait* for a packet, afterwards process
-				all packets that are immediately available (no waiting).
-			*/
-			if (first) {
-				m_con->Receive(&pkt);
-				first = false;
-			} else {
-				if (!m_con->TryReceive(&pkt))
-					return;
-			}
+
+			if (!m_con->TryReceive(&pkt))
+				return;
 
 			peer_id = pkt.getPeerId();
 			m_packet_recv_counter->increment();
