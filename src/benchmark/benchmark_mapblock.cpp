@@ -118,11 +118,13 @@ static u32 workOnBoth(const MBContainer &vec)
 			content_t c = n.getContent();
 
 			if (!block->contents_cached && !block->do_not_cache_contents) {
-				block->contents.insert(c);
+				if (!CONTAINS(block->contents, c))
+					block->contents.push_back(c);
 				if (block->contents.size() > 10) {
 					// Too many different nodes... don't try to cache
 					block->do_not_cache_contents = true;
 					block->contents.clear();
+					block->contents.shrink_to_fit();
 				}
 			}
 		}
