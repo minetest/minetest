@@ -106,7 +106,8 @@ static u32 workOnBoth(const MBContainer &vec)
 	int foo = 0;
 	for (MapBlock *block : vec) {
 		block->contents.clear();
-		block->contents_cached = false;
+
+		bool want_contents_cached = block->contents.empty() && !block->do_not_cache_contents;
 
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -116,18 +117,18 @@ static u32 workOnBoth(const MBContainer &vec)
 			MapNode n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
 
-			if (!block->contents_cached && !block->do_not_cache_contents) {
-				if (!CONTAINS(block->contents, c))
-					block->contents.push_back(c);
-				if (block->contents.size() > 10) {
-					// Too many different nodes... don't try to cache
+			if (want_contents_cached && !CONTAINS(block->contents, c)) {
+				if (block->contents.size() >= 10) {
+					want_contents_cached = false;
 					block->do_not_cache_contents = true;
 					block->contents.clear();
 					block->contents.shrink_to_fit();
+				} else {
+					block->contents.push_back(c);
 				}
 			}
 		}
-		block->contents_cached = !block->do_not_cache_contents;
+
 		foo += block->contents.size();
 	}
 	return foo;
