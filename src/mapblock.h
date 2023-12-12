@@ -114,7 +114,7 @@ public:
 			m_modified_reason |= reason;
 		}
 		if (mod == MOD_STATE_WRITE_NEEDED)
-			contents_cached = false;
+			contents.clear();
 	}
 
 	inline u32 getModified()
@@ -463,9 +463,8 @@ public:
 	// Cache of content types
 	// This is actually a set but for the small sizes we have a vector should be
 	// more efficient.
+	// Can be empty, in which case nothing was cached yet.
 	std::vector<content_t> contents;
-	// True if content types are cached
-	bool contents_cached = false;
 	// True if we never want to cache content types for this block
 	bool do_not_cache_contents = false;
 	// marks the sides which are opaque: 00+Z-Z+Y-Y+X-X
