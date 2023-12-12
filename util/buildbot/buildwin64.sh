@@ -34,18 +34,19 @@ irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
 mkdir -p $libdir
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version.zip
-download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/curl-$curl_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/gettext-$gettext_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/freetype-$freetype_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/luajit-$luajit_version-win64.zip"
-download "http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip" leveldb-$leveldb_version.zip
-download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win64.zip"
+libhost="http://minetest.kitsunemimi.pw"
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win64.zip" irrlicht-$irrlicht_version-win64.zip
+download "$libhost/zlib-$zlib_version-win64.zip"
+download "$libhost/zstd-$zstd_version-win64.zip"
+download "$libhost/libogg-$ogg_version-win64.zip"
+download "$libhost/libvorbis-$vorbis_version-win64.zip"
+download "$libhost/curl-$curl_version-win64.zip"
+download "$libhost/gettext-$gettext_version-win64.zip"
+download "$libhost/freetype-$freetype_version-win64.zip"
+download "$libhost/sqlite3-$sqlite3_version-win64.zip"
+download "$libhost/luajit-$luajit_version-win64.zip"
+download "$libhost/libleveldb-$leveldb_version-win64.zip" leveldb-$leveldb_version-win64.zip
+download "$libhost/openal-soft-$openal_version-win64.zip"
 
 # Set source dir, downloading Minetest as needed
 get_sources

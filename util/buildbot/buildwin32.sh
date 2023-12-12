@@ -37,18 +37,19 @@ mkdir -p $libdir
 # this distinction should be gotten rid of next time
 
 cd $libdir
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version.zip
-download "http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/zstd-$zstd_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/dw2/libvorbis-$vorbis_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/curl-$curl_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/gettext-$gettext_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/freetype-$freetype_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/luajit-$luajit_version-win32.zip"
-download "http://minetest.kitsunemimi.pw/dw2/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version.zip
-download "http://minetest.kitsunemimi.pw/openal-soft-$openal_version-win32.zip"
+libhost="http://minetest.kitsunemimi.pw"
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version-win32.zip
+download "$libhost/zlib-$zlib_version-win32.zip"
+download "$libhost/zstd-$zstd_version-win32.zip"
+download "$libhost/libogg-$ogg_version-win32.zip"
+download "$libhost/dw2/libvorbis-$vorbis_version-win32.zip"
+download "$libhost/curl-$curl_version-win32.zip"
+download "$libhost/gettext-$gettext_version-win32.zip"
+download "$libhost/freetype-$freetype_version-win32.zip"
+download "$libhost/sqlite3-$sqlite3_version-win32.zip"
+download "$libhost/luajit-$luajit_version-win32.zip"
+download "$libhost/dw2/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version-win32.zip
+download "$libhost/openal-soft-$openal_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
 get_sources
