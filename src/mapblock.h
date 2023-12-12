@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <set>
+#include <vector>
 #include "irr_v3d.h"
 #include "mapnode.h"
 #include "exceptions.h"
@@ -476,7 +476,9 @@ public:
 
 	//// ABM optimizations ////
 	// Cache of content types
-	std::unordered_set<content_t> contents;
+	// This is actually a set but for the small sizes we have a vector should be
+	// more efficient.
+	std::vector<content_t> contents;
 	// True if content types are cached
 	bool contents_cached = false;
 	// True if we never want to cache content types for this block

@@ -782,6 +782,8 @@ struct ActiveABM
 	s16 max_y;
 };
 
+#define CONTENT_TYPE_CACHE_MAX 64
+
 class ABMHandler
 {
 private:
@@ -922,13 +924,16 @@ public:
 		{
 			MapNode n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
+
 			// Cache content types as we go
 			if (!block->contents_cached && !block->do_not_cache_contents) {
-				block->contents.insert(c);
-				if (block->contents.size() > 64) {
+				if (!CONTAINS(block->contents, c))
+					block->contents.push_back(c);
+				if (block->contents.size() > CONTENT_TYPE_CACHE_MAX) {
 					// Too many different nodes... don't try to cache
 					block->do_not_cache_contents = true;
 					block->contents.clear();
+					block->contents.shrink_to_fit();
 				}
 			}
 
