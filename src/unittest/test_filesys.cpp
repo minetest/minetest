@@ -270,9 +270,10 @@ void TestFileSys::testRemoveRelativePathComponent()
 void TestFileSys::testSafeWriteToFile()
 {
 	const std::string dest_path = fs::TempPath() + DIR_DELIM + "testSafeWriteToFile.txt";
-	fs::safeWriteToFile(dest_path, "test");
+	constexpr std::string test_data("hello\0world", 11);
+	fs::safeWriteToFile(dest_path, test_data);
 	UASSERT(fs::PathExists(dest_path));
 	std::string contents_actual;
 	UASSERT(fs::ReadFile(dest_path, contents_actual));
-	UASSERT(contents_actual == "test");
+	UASSERT(contents_actual == test_data);
 }
