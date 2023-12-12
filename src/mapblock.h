@@ -502,6 +502,13 @@ private:
 	*/
 	v3s16 m_pos_relative;
 
+	/*
+	 * Note that this is not an inline array because that has implications on
+	 * heap fragmentation (the array is exactly 16K), CPU caches and/or
+	 * optimizability of algorithms working on this array.
+	 */
+	MapNode *const data; // of `nodecount` elements
+
 	IGameDef *m_gamedef;
 
 	/*
@@ -558,7 +565,6 @@ private:
 	*/
 	int m_refcount = 0;
 
-	MapNode data[nodecount];
 	NodeTimerList m_node_timers;
 };
 

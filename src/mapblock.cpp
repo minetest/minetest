@@ -70,6 +70,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
+		data(new MapNode[nodecount]),
 		m_gamedef(gamedef)
 {
 	reallocate();
@@ -83,6 +84,8 @@ MapBlock::~MapBlock()
 		mesh = nullptr;
 	}
 #endif
+
+	delete[] data;
 }
 
 bool MapBlock::onObjectsActivation()
