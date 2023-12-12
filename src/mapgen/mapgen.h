@@ -98,7 +98,7 @@ public:
 	bool addDecorationEvent(v3s16 pos, u32 deco_id);
 	bool setUD(const std::string &key, const std::string &value);
 	void getEvents(std::map<std::string, std::vector<v3s16>> &map) const;
-	void getUD(std::map<std::string, std::string> &map) const;
+	const std::map<std::string, std::string> &getUD() const;
 	void clearEvents();
 
 private:

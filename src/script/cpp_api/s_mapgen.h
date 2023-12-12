@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct BlockMakeData;
 
-/* 
- * Note that this is the class defining the functions called inside the mapgen
+/*
+ * Note that this is the class defining the functions called inside the emerge
  * Lua state, not the server one.
  */
 

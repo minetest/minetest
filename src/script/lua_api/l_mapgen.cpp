@@ -696,8 +696,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		}
 
 		// push user-defined data
-		std::map<std::string, std::string> ud_map;
-		mg->gennotify.getUD(ud_map);
+		auto &ud_map = mg->gennotify.getUD();
 
 		lua_createtable(L, 0, ud_map.size());
 		lua_getglobal(L, "core");

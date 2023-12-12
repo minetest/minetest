@@ -1047,10 +1047,9 @@ void GenerateNotifier::getEvents(
 	}
 }
 
-void GenerateNotifier::getUD(
-	std::map<std::string, std::string> &map) const
+const std::map<std::string, std::string> &GenerateNotifier::getUD() const
 {
-	map = m_notify_ud;
+	return m_notify_ud;
 }
 
 
