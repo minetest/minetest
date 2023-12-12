@@ -330,7 +330,7 @@ std::string TestBase::getTestTempDirectory()
 
 	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
 	if (!fs::CreateDir(m_test_dir))
-		throw TestFailedException();
+		UASSERT(false);
 
 	return m_test_dir;
 }
