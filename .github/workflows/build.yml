@@ -164,7 +164,7 @@ jobs:
 
   win32:
     name: "MinGW cross-compiler (32-bit)"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install compiler
@@ -184,7 +184,7 @@ jobs:
 
   win64:
     name: "MinGW cross-compiler (64-bit)"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install compiler
