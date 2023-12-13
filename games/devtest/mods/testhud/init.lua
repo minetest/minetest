@@ -217,7 +217,7 @@ minetest.register_chatcommand("hudprint", {
 		if not player then
 			return false, "No player."
 		end
-		
+
 		local s = "HUD elements:"
 		for k, elem in pairs(player:hud_get_elements()) do
 			local ename = dump(elem.name)
@@ -225,7 +225,7 @@ minetest.register_chatcommand("hudprint", {
 			local epos = "{x="..elem.position.x..", y="..elem.position.y.."}"
 			s = s.."\n["..k.."]  type = "..etype.." | name = "..ename.." | pos = ".. epos
 		end
-		
+
 		return true, s
 	end
 })
