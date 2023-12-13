@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <functional>
 #include <exception>
 #include <sstream>
 #include <vector>
@@ -99,26 +100,7 @@ public:
 	u32 num_tests_failed;
 	u32 num_tests_run;
 
-	template <typename Test>
-	void runTest(const char *name, Test &&test) {
-		u64 t1 = porting::getTimeMs();
-		try {
-			test();
-			rawstream << "[PASS] ";
-		} catch (TestFailedException &e) {
-			rawstream << "Test assertion failed: " << e.message << std::endl;
-			rawstream << "    at " << e.file << ":" << e.line << std::endl;
-			rawstream << "[FAIL] ";
-			num_tests_failed++;
-		} catch (std::exception &e) {
-			rawstream << "Caught unhandled exception: " << e.what() << std::endl;
-			rawstream << "[FAIL] ";
-			num_tests_failed++;
-		}
-		num_tests_run++;
-		u64 tdiff = porting::getTimeMs() - t1;
-		rawstream << name << " - " << tdiff << "ms" << std::endl;
-	}
+	void runTest(const char *name, std::function<void()> &&test);
 
 private:
 	std::string m_test_dir;
