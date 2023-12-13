@@ -8837,8 +8837,8 @@ Used by `minetest.register_node`.
     --           depending on the alpha channel being below/above 50% in value
     -- * "blend": The alpha channel specifies how transparent a given pixel
     --            of the rendered node is
-    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
-    -- "clip" otherwise.
+    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
+    -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend
     -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
