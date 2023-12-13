@@ -5278,6 +5278,8 @@ Utilities
       -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
       -- acceleration_default, acceleration_air (5.8.0)
       physics_overrides_v2 = true,
+      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated
+      hud_def_type_field = true,
   }
   ```
 
