@@ -1606,14 +1606,15 @@ int ObjectRef::l_hud_get_elements(lua_State *L)
 		return 0;
 
 	lua_newtable(L);
-	u32 max = player->getHudIdMax();
-	for (u32 id = 0; id < max; id++) {
-		HudElement *elem = player->getHud(id);
-		if (elem != nullptr) {
-			push_hud_element(L, elem);
-			lua_rawseti(L, -2, id);
+	player->hudApply([&](const std::vector<HudElement*>& hud) {
+		for (std::size_t id = 0; id < hud.size(); ++id) {
+			HudElement *elem = hud[id];
+			if (elem != nullptr) {
+				push_hud_element(L, elem);
+				lua_rawseti(L, -2, id);
+			}
 		}
-	}
+	});
 	return 1;
 }
 

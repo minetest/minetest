@@ -139,10 +139,10 @@ HudElement* Player::getHud(u32 id)
 	return NULL;
 }
 
-u32 Player::getHudIdMax()
+void Player::hudApply(std::function<void(const std::vector<HudElement*>&)> f)
 {
 	MutexAutoLock lock(m_mutex);
-	return hud.size();
+	f(hud);
 }
 
 HudElement* Player::removeHud(u32 id)
