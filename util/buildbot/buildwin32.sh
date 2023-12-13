@@ -33,22 +33,21 @@ irrlicht_version=$(cat $topdir/../../misc/irrlichtmt_tag.txt)
 
 mkdir -p $libdir
 
-# 'dw2' just points to rebuilt versions after a toolchain change
-# this distinction should be gotten rid of next time
+# 'ucrt' just points to rebuilt versions after a toolchain change
 
 cd $libdir
 libhost="http://minetest.kitsunemimi.pw"
-download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32.zip" irrlicht-$irrlicht_version-win32.zip
+download "https://github.com/minetest/irrlicht/releases/download/$irrlicht_version/win32-ucrt.zip" irrlicht-$irrlicht_version-win32.zip
 download "$libhost/zlib-$zlib_version-win32.zip"
-download "$libhost/zstd-$zstd_version-win32.zip"
-download "$libhost/libogg-$ogg_version-win32.zip"
-download "$libhost/dw2/libvorbis-$vorbis_version-win32.zip"
+download "$libhost/ucrt/zstd-$zstd_version-win32.zip"
+download "$libhost/ucrt/libogg-$ogg_version-win32.zip"
+download "$libhost/ucrt/libvorbis-$vorbis_version-win32.zip"
 download "$libhost/curl-$curl_version-win32.zip"
-download "$libhost/gettext-$gettext_version-win32.zip"
+download "$libhost/ucrt/gettext-$gettext_version-win32.zip"
 download "$libhost/freetype-$freetype_version-win32.zip"
 download "$libhost/sqlite3-$sqlite3_version-win32.zip"
 download "$libhost/luajit-$luajit_version-win32.zip"
-download "$libhost/dw2/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version-win32.zip
+download "$libhost/ucrt/libleveldb-$leveldb_version-win32.zip" leveldb-$leveldb_version-win32.zip
 download "$libhost/openal-soft-$openal_version-win32.zip"
 
 # Set source dir, downloading Minetest as needed
