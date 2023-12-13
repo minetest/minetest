@@ -5298,6 +5298,10 @@ Utilities
       -- wallmounted nodes mounted at floor or ceiling may additionally
       -- be rotated by 90° with special param2 values (5.9.0)
       wallmounted_rotate = true,
+      -- Availability of the `pointabilities` property in the item definition
+      item_specific_pointabilities = true,
+      -- Nodes `pointable` property can be `"blocking"`
+      blocking_pointability_type = true,
   }
   ```
 
@@ -8747,10 +8751,10 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     liquids_pointable = false,
     -- If true, item can point to all liquid nodes (`liquidtype ~= "none"`),
     -- even those for which `pointable = false`
-    
+
     pointabilities = {
 		nodes = {
-			["default:stone"] = "blocking", 
+			["default:stone"] = "blocking",
 			["group:leaves"] = false,
 		},
 		objects = {
@@ -8763,7 +8767,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
     -- (For objects `armor_groups` are used.)
     -- If multiple fields fit, the following priority order is applied:
     --  value of matching node/entity name
-	--	`true` for any group 
+	--	`true` for any group
 	--	`false` for any group
 	--	`"blocking"` for any group
 	--	`liquids_pointable` if it is a liquid node
