@@ -67,11 +67,6 @@ Contributions are welcome! Here's how you can help:
    might need more work in the future.
 5. It uses protocols and formats which include the required compatibility.
 
-### Important note about automated GitHub checks
-
-When you submit a pull request, GitHub automatically runs checks on the Minetest
-Engine combined with your changes.
-
 ## Issues
 
 If you experience an issue, we would like to know the details - especially when
