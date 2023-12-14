@@ -383,7 +383,8 @@ struct ContentFeatures
 	// Maximum value for leveled nodes
 	u8 leveled_max;
 	// inner node for sunken and covered draw types
-	content_t inner_node;
+	std::string inner_node;
+	content_t inner_node_id;
 
 	// --- LIGHTING-RELATED ---
 

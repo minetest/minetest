@@ -1704,8 +1704,8 @@ void MapblockMeshGenerator::drawSunkenNode()
 	const ContentFeatures *store_f;
 	store_n = cur_node.n;
 	store_f = cur_node.f;
-	cur_node.n.param0 = cur_node.f->inner_node;
-	cur_node.f = &nodedef->get(cur_node.f->inner_node);
+	cur_node.n.param0 = cur_node.f->inner_node_id;
+	cur_node.f = &nodedef->get(cur_node.f->inner_node_id);
 	drawNode();
 
 	cur_node.n = store_n;
@@ -1718,9 +1718,9 @@ void MapblockMeshGenerator::drawCoveredNode()
 	const ContentFeatures *store_f;
 	store_n = cur_node.n;
 	store_f = cur_node.f;
-	cur_node.n.param0 = cur_node.f->inner_node;
+	cur_node.n.param0 = cur_node.f->inner_node_id;
 	cur_node.n.param2 &= 0x0F;
-	cur_node.f = &nodedef->get(cur_node.f->inner_node);
+	cur_node.f = &nodedef->get(cur_node.f->inner_node_id);
 	drawNode();
 	cur_node.n = store_n;
 	cur_node.f = store_f;
