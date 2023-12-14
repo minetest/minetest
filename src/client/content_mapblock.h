@@ -186,6 +186,8 @@ private:
 	void drawRaillikeNode();
 	void drawNodeboxNode();
 	void drawMeshNode();
+	void drawSunkenNode();
+	void drawCoveredNode();
 
 // common
 	void errorUnknownDrawtype();

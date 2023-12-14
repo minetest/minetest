@@ -424,6 +424,7 @@ void ContentFeatures::reset()
 	move_resistance = 0;
 	liquid_move_physics = false;
 	post_effect_color_shaded = false;
+	inner_node = CONTENT_IGNORE;
 }
 
 void ContentFeatures::setAlphaFromLegacy(u8 legacy_alpha)
@@ -551,6 +552,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, move_resistance);
 	writeU8(os, liquid_move_physics);
 	writeU8(os, post_effect_color_shaded);
+	writeU16(os, inner_node);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
@@ -681,6 +683,10 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		post_effect_color_shaded = tmp;
+		u16 tmp16 = readU16(is);
+		if (is.eof())
+			throw SerializationError("");
+		inner_node = tmp16;
 	} catch(SerializationError &e) {};
 }
 
@@ -909,6 +915,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	case NDT_PLANTLIKE_ROOTED:
 		solidness = 2;
+		break;
+	case NDT_SUNKEN:
+	case NDT_COVERED:
+		solidness = 0;
 		break;
 	}
 
