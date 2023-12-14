@@ -496,7 +496,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		if (!fs::PathExists(worldspec.path)) {
 			error_message = gettext("Provided world path doesn't exist: ")
-					+ worldspec.path;
+				+ worldspec.path;
 			errorstream << error_message << std::endl;
 			return false;
 		}
