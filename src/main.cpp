@@ -234,7 +234,10 @@ int main(int argc, char *argv[])
 	// Run benchmarks
 	if (cmd_args.getFlag("run-benchmarks")) {
 #if BUILD_BENCHMARKS
-		return run_benchmarks();
+		if (cmd_args.exists("test-module"))
+			return run_benchmarks(cmd_args.get("test-module").c_str()) ? 0 : 1;
+		else
+			return run_benchmarks() ? 0 : 1;
 #else
 		errorstream << "Benchmark support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_BENCHMARKS=1 flag."
@@ -340,7 +343,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
 			_("Run the benchmarks and exit"))));
 	allowed_options->insert(std::make_pair("test-module", ValueSpec(VALUETYPE_STRING,
-			_("Only run the specified test module"))));
+			_("Only run the specified test module or benchmark"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
