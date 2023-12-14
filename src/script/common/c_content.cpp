@@ -627,7 +627,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 }
 
 /******************************************************************************/
-void read_content_features(lua_State *L, ContentFeatures &f, int index)
+void read_content_features(lua_State *L, ContentFeatures &f, int index, NodeDefManager *ndef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -951,6 +951,9 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 		errorstream << "Field \"liquid_move_physics\": Invalid type!" << std::endl;
 	}
 	lua_pop(L, 1);
+
+	// inner_node for sunken and covered drawtype
+	getstringfield(L, index, "inner_node", f.inner_node);
 }
 
 void push_content_features(lua_State *L, const ContentFeatures &c)

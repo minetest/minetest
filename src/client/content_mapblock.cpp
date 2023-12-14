@@ -1713,6 +1713,117 @@ void MapblockMeshGenerator::drawMeshNode()
 	if (private_mesh)
 		mesh->drop();
 }
+void MapblockMeshGenerator::drawSunkenNode()
+{
+	MapNode store_n;
+	const ContentFeatures *store_f;
+	store_n = cur_node.n;
+	store_f = cur_node.f;
+	cur_node.n.param0 = cur_node.f->inner_node_id;
+	cur_node.f = &nodedef->get(cur_node.f->inner_node_id);
+	drawNode();
+
+	cur_node.n = store_n;
+	cur_node.f = store_f;
+	drawSolidNode();
+}
+void MapblockMeshGenerator::drawCoveredNode()
+{
+	MapNode store_n;
+	const ContentFeatures *store_f;
+	store_n = cur_node.n;
+	store_f = cur_node.f;
+	cur_node.n.param0 = cur_node.f->inner_node_id;
+	cur_node.n.param2 &= 0x0F;
+	cur_node.f = &nodedef->get(cur_node.f->inner_node_id);
+	drawNode();
+	cur_node.n = store_n;
+	cur_node.f = store_f;
+
+	u8 faces = 0; // k-th bit will be set if k-th face is to be drawn.
+	static const v3s16 tile_dirs[6] = {
+		v3s16(0, 1, 0),
+		v3s16(0, -1, 0),
+		v3s16(1, 0, 0),
+		v3s16(-1, 0, 0),
+		v3s16(0, 0, 1),
+		v3s16(0, 0, -1)
+	};
+	TileSpec tiles[6];
+	u16 lights[6];
+	content_t n1 = cur_node.n.getContent();
+	for (int face = 0; face < 6; face++) {
+		v3s16 p2 = blockpos_nodes + cur_node.p + tile_dirs[face];
+		MapNode neighbor = data->m_vmanip.getNodeNoEx(p2);
+		content_t n2 = neighbor.getContent();
+		bool backface_culling = cur_node.f->drawtype == NDT_NORMAL;
+		if (n2 == n1)
+			continue;
+		if (n2 == CONTENT_IGNORE)
+			continue;
+		if (n2 != CONTENT_AIR) {
+			const ContentFeatures &f2 = nodedef->get(n2);
+			if (f2.solidness == 2)
+				continue;
+		}
+		faces |= 1 << face;
+		getTile(tile_dirs[face], &tiles[face]);
+		for (auto &layer : tiles[face].layers) {
+			if (backface_culling)
+				layer.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+			layer.material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+		}
+		if (!data->m_smooth_lighting) {
+			lights[face] = getFaceLight(cur_node.n, neighbor, nodedef);
+		}
+	}
+	if (!faces)
+		return;
+	u8 mask = faces ^ 0b0011'1111; // k-th bit is set if k-th face is to be *omitted*, as expected by cuboid drawing functions.
+	cur_node.origin = intToFloat(cur_node.p, BS);
+	auto box = aabb3f(v3f(-0.5 * BS), v3f(0.5 * BS));
+	f32 corr_y = ((cur_node.n.param2&0xF0)>>4)/16.0;
+	box.MaxEdge.Y -= corr_y * BS;
+	f32 texture_coord_buf[24];
+	box.MinEdge += cur_node.origin;
+	box.MaxEdge += cur_node.origin;
+	generateCuboidTextureCoords(box, texture_coord_buf);
+	if (data->m_smooth_lighting) {
+		LightPair lights[6][4];
+		for (int face = 0; face < 6; ++face) {
+			for (int k = 0; k < 4; k++) {
+				v3s16 corner = light_dirs[light_indices[face][k]];
+				lights[face][k] = LightPair(getSmoothLightSolid(
+						blockpos_nodes + cur_node.p, tile_dirs[face], corner, data));
+			}
+		}
+
+		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			auto final_lights = lights[face];
+			for (int j = 0; j < 4; j++) {
+				video::S3DVertex &vertex = vertices[j];
+				vertex.Color = encode_light(final_lights[j], cur_node.f->light_source);
+				if (!cur_node.f->light_source)
+					applyFacesShading(vertex.Color, vertex.Normal);
+			}
+			if (lightDiff(final_lights[1], final_lights[3]) < lightDiff(final_lights[0], final_lights[2]))
+				return QuadDiagonal::Diag13;
+			return QuadDiagonal::Diag02;
+		});
+	} else {
+		drawCuboid(box, tiles, 6, texture_coord_buf, mask, [&] (int face, video::S3DVertex vertices[4]) {
+			video::SColor color = encode_light(lights[face], cur_node.f->light_source);
+			if (!cur_node.f->light_source)
+				applyFacesShading(color, vertices[0].Normal);
+			for (int j = 0; j < 4; j++) {
+				video::S3DVertex &vertex = vertices[j];
+				vertex.Color = color;
+			}
+			return QuadDiagonal::Diag02;
+		});
+	}
+}
 
 // also called when the drawtype is known but should have been pre-converted
 void MapblockMeshGenerator::errorUnknownDrawtype()
@@ -1752,6 +1863,8 @@ void MapblockMeshGenerator::drawNode()
 		case NDT_RAILLIKE:          drawRaillikeNode(); break;
 		case NDT_NODEBOX:           drawNodeboxNode(); break;
 		case NDT_MESH:              drawMeshNode(); break;
+		case NDT_SUNKEN:            drawSunkenNode(); break;
+		case NDT_COVERED:           drawCoveredNode(); break;
 		default:                    errorUnknownDrawtype(); break;
 	}
 }

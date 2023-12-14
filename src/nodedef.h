@@ -223,6 +223,10 @@ enum NodeDrawType : u8
 	NDT_MESH,
 	// Combined plantlike-on-solid
 	NDT_PLANTLIKE_ROOTED,
+	// sunken node
+	NDT_SUNKEN,
+	// covered node
+	NDT_COVERED,
 	// Dummy for validity check
 	NodeDrawType_END
 };
@@ -363,6 +367,9 @@ struct ContentFeatures
 	u8 leveled;
 	// Maximum value for leveled nodes
 	u8 leveled_max;
+	// inner node for sunken and covered draw types
+	std::string inner_node;
+	content_t inner_node_id;
 
 	// --- LIGHTING-RELATED ---
 
