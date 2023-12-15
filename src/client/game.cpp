@@ -4225,7 +4225,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime)
 	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
 	this->driver->beginScene(true, true, skycolor);
 
-	const LocalPlayer *player = client->getEnv().getLocalPlayer();
+	const LocalPlayer *player = this->client->getEnv().getLocalPlayer();
 	bool draw_wield_tool = (this->m_game_ui->m_flags.show_hud &&
 			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
 			(this->camera->getCameraMode() == CAMERA_MODE_FIRST));
