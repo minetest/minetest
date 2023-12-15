@@ -821,7 +821,7 @@ protected:
 			const CameraOrientation &cam);
 	void updateClouds(float dtime);
 	void updateShadows();
-	void drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime);
+	void drawScene(ProfilerGraph *graph, RunStats *stats);
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
@@ -4145,11 +4145,16 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== Drawing begins ====================
 	*/
-	drawScene(graph, stats, dtime);
-
+	drawScene(graph, stats);
 	/*
 		==================== End scene ====================
 	*/
+
+	// Damage flash is drawn in drawScene, but the timing update is done here to
+	// keep dtime out of the drawing code.
+	if (runData.damage_flash > 0.0f) {
+		runData.damage_flash -= 384.0f * dtime;
+	}
 
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
@@ -4218,7 +4223,7 @@ void Game::updateShadows()
 	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
 }
 
-void Game::drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime)
+void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 {
 	const video::SColor skycolor = this->sky->getSkyColor();
 
@@ -4255,8 +4260,6 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime)
 		this->driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
-
-		runData.damage_flash -= 384.0f * dtime;
 	}
 
 	this->driver->endScene();
