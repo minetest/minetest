@@ -89,6 +89,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef _WIN32 // POSIX
 	#include <sys/time.h>
 	#include <ctime>
+    #if defined(__MACH__) && defined(__APPLE__)
+        #include <TargetConditionals.h>
+    #endif
 #endif
 
 namespace porting
