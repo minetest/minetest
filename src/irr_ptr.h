@@ -144,9 +144,6 @@ public:
 	}
 };
 
-// clang-format off
-// ^ dislikes long lines
-
 /** Constructs a shared pointer as a *secondary* reference to an object
  *
  * This function is intended to make a temporary reference to an object which
@@ -205,5 +202,3 @@ irr_ptr<T> make_irr(Args&&... args)
 {
 	return irr_ptr<T>(new T(std::forward<Args>(args)...));
 }
-
-// clang-format on

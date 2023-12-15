@@ -108,10 +108,8 @@ bool parseModContents(ModSpec &spec)
 	if (info.exists("depends")) {
 		mod_conf_has_depends = true;
 		std::string dep = info.get("depends");
-		// clang-format off
 		dep.erase(std::remove_if(dep.begin(), dep.end(),
 				static_cast<int (*)(int)>(&std::isspace)), dep.end());
-		// clang-format on
 		for (const auto &dependency : str_split(dep, ',')) {
 			spec.depends.insert(dependency);
 		}
@@ -120,10 +118,8 @@ bool parseModContents(ModSpec &spec)
 	if (info.exists("optional_depends")) {
 		mod_conf_has_depends = true;
 		std::string dep = info.get("optional_depends");
-		// clang-format off
 		dep.erase(std::remove_if(dep.begin(), dep.end(),
 				static_cast<int (*)(int)>(&std::isspace)), dep.end());
-		// clang-format on
 		for (const auto &dependency : str_split(dep, ',')) {
 			spec.optdepends.insert(dependency);
 		}

@@ -92,7 +92,6 @@ void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotat
 	}
 }
 
-// clang-format off
 void UnitSAO::sendOutdatedData()
 {
 	if (!m_armor_groups_sent) {
@@ -123,7 +122,6 @@ void UnitSAO::sendOutdatedData()
 		m_messages_out.emplace(getId(), true, generateUpdateAttachmentCommand());
 	}
 }
-// clang-format on
 
 void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position,
 		v3f rotation, bool force_visible)
