@@ -4250,7 +4250,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime)
 	/*
 		Damage flash
 	*/
-	if (runData.damage_flash > 0.0f) {
+	if (this->runData.damage_flash > 0.0f) {
 		video::SColor color(runData.damage_flash, 180, 0, 0);
 		this->driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
