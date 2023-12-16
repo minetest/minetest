@@ -421,7 +421,7 @@ void MapblockMeshGenerator::drawSolidNode()
 			const ContentFeatures &f2 = nodedef->get(n2);
 			if (f2.solidness == 2)
 				continue;
-			if (cur_node.f->drawtype == NDT_LIQUID) {
+			if (cur_node.f->drawtype == NDT_LIQUID || cur_node.f->drawtype == NDT_SUNKEN) {
 				if (cur_node.f->sameLiquidRender(f2))
 					continue;
 				backface_culling = f2.solidness || f2.visual_solidness;
@@ -529,16 +529,21 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	getSpecialTile(1, &cur_liquid.tile);
 
 	MapNode ntop    = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p + v3s16(0,  1, 0));
+	const ContentFeatures &ftop = nodedef->get(ntop);
 	MapNode nbottom = data->m_vmanip.getNodeNoEx(blockpos_nodes + cur_node.p + v3s16(0, -1, 0));
+	const ContentFeatures &fbottom = nodedef->get(nbottom);
 	cur_liquid.c_flowing = cur_node.f->liquid_alternative_flowing_id;
 	cur_liquid.c_source = cur_node.f->liquid_alternative_source_id;
 	cur_liquid.top_is_same_liquid = (ntop.getContent() == cur_liquid.c_flowing)
-			|| (ntop.getContent() == cur_liquid.c_source);
+			|| (ntop.getContent() == cur_liquid.c_source)
+			|| (ftop.liquid_alternative_flowing_id == cur_liquid.c_flowing)
+			|| (ftop.liquid_alternative_source_id == cur_liquid.c_source);
 	cur_liquid.draw_bottom = (nbottom.getContent() != cur_liquid.c_flowing)
-			&& (nbottom.getContent() != cur_liquid.c_source);
+			&& (nbottom.getContent() != cur_liquid.c_source)
+			&& (fbottom.liquid_alternative_flowing_id != cur_liquid.c_flowing)
+			&& (fbottom.liquid_alternative_source_id != cur_liquid.c_source);
 	if (cur_liquid.draw_bottom) {
-		const ContentFeatures &f2 = nodedef->get(nbottom.getContent());
-		if (f2.solidness > 1)
+		if (fbottom.solidness > 1)
 			cur_liquid.draw_bottom = false;
 	}
 
@@ -569,7 +574,11 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		LiquidData::NeighborData &neighbor = cur_liquid.neighbors[w + 1][u + 1];
 		v3s16 p2 = cur_node.p + v3s16(u, 0, w);
 		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
+		const ContentFeatures &f2 = nodedef->get(n2);
 		neighbor.content = n2.getContent();
+		neighbor.is_source = f2.liquid_type == LIQUID_SOURCE;
+		neighbor.c_source = f2.liquid_alternative_source_id;
+		neighbor.c_flowing = f2.liquid_alternative_flowing_id;
 		neighbor.level = -0.5f;
 		neighbor.is_same_liquid = false;
 		neighbor.top_is_same_liquid = false;
@@ -577,10 +586,10 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		if (neighbor.content == CONTENT_IGNORE)
 			continue;
 
-		if (neighbor.content == cur_liquid.c_source) {
+		if (neighbor.content == cur_liquid.c_source || (neighbor.is_source && (neighbor.c_source == cur_liquid.c_source))) {
 			neighbor.is_same_liquid = true;
 			neighbor.level = 0.5f;
-		} else if (neighbor.content == cur_liquid.c_flowing) {
+		} else if (neighbor.content == cur_liquid.c_flowing || neighbor.c_flowing == cur_liquid.c_flowing) {
 			neighbor.is_same_liquid = true;
 			u8 liquid_level = (n2.param2 & LIQUID_LEVEL_MASK);
 			if (liquid_level <= LIQUID_LEVEL_MAX + 1 - range)
@@ -595,7 +604,10 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		//       doesn't exist
 		p2.Y++;
 		n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-		if (n2.getContent() == cur_liquid.c_source || n2.getContent() == cur_liquid.c_flowing)
+		const ContentFeatures &fabove = nodedef->get(n2);
+		if (   n2.getContent() == cur_liquid.c_source || n2.getContent() == cur_liquid.c_flowing
+				|| fabove.liquid_alternative_source_id == cur_liquid.c_source
+				|| fabove.liquid_alternative_flowing_id == cur_liquid.c_flowing )
 			neighbor.top_is_same_liquid = true;
 	}
 }
@@ -622,11 +634,11 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k) const
 			return 0.5f;
 
 		// Source always has the full height
-		if (content == cur_liquid.c_source)
+		if (content == cur_liquid.c_source || (neighbor_data.is_source && (neighbor_data.c_source == cur_liquid.c_source)))
 			return 0.5f;
 
 		// Flowing liquid has level information
-		if (content == cur_liquid.c_flowing) {
+		if (content == cur_liquid.c_flowing || neighbor_data.c_flowing == cur_liquid.c_flowing) {
 			sum += neighbor_data.level;
 			count++;
 		} else if (content == CONTENT_AIR) {

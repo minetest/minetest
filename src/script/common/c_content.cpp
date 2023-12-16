@@ -573,6 +573,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype, bool special)
 			[[fallthrough]];
 		case NDT_MESH:
 		case NDT_LIQUID:
+		case NDT_SUNKEN:
 			default_culling = false;
 			break;
 		case NDT_PLANTLIKE_ROOTED:

@@ -898,6 +898,11 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		solidness = 2;
 		break;
 	case NDT_SUNKEN:
+		if (tsettings.opaque_water)
+			alpha = ALPHAMODE_OPAQUE;
+		solidness = 1;
+		is_liquid = true;
+		break;
 	case NDT_COVERED:
 		solidness = 0;
 		break;
