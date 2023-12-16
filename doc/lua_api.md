@@ -8028,9 +8028,8 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-          values > 1 increase the saturation
-          values in [0,1) decrease the saturation
-            * This value has no effect on clients who have the "Tone Mapping" shader disabled.
+        * values > 1 increase the saturation
+        * values in [0,1] decrease the saturation
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
