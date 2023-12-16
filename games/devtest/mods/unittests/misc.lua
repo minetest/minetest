@@ -189,22 +189,22 @@ local function test_gennotify_api()
 	-- the engine doesn't check if the id is actually valid, maybe it should
 	core.set_gen_notify({decoration=true}, {DECO_ID})
 
-	core.set_gen_notify({ud=true}, nil, {UD_ID})
+	core.set_gen_notify({custom=true}, nil, {UD_ID})
 
-	local flags, deco, ud = core.get_gen_notify()
+	local flags, deco, custom = core.get_gen_notify()
 	local function ff(flag)
 		return (" " .. flags .. " "):match("[ ,]" .. flag .. "[ ,]") ~= nil
 	end
 	assert(ff("decoration"), "'decoration' flag missing")
-	assert(ff("decoration"), "'ud' flag missing")
+	assert(ff("custom"), "'custom' flag missing")
 	assert(table.indexof(deco, DECO_ID) > 0)
-	assert(table.indexof(ud, UD_ID) > 0)
+	assert(table.indexof(custom, UD_ID) > 0)
 
 	core.set_gen_notify({decoration=false, ud=false})
 
-	flags, deco, ud = core.get_gen_notify()
-	assert(not ff("decoration") and not ff("ud"))
+	flags, deco, custom = core.get_gen_notify()
+	assert(not ff("decoration") and not ff("custom"))
 	assert(#deco == 0, "deco ids not empty")
-	assert(#ud == 0, "ud ids not empty")
+	assert(#custom == 0, "custom ids not empty")
 end
 unittests.register("test_gennotify_api", test_gennotify_api)

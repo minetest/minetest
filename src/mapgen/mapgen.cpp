@@ -992,7 +992,7 @@ GenerateNotifier::GenerateNotifier(u32 notify_on,
 
 bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos)
 {
-	assert(type != GENNOTIFY_DECORATION && type != GENNOTIFY_UD);
+	assert(type != GENNOTIFY_DECORATION && type != GENNOTIFY_CUSTOM);
 	if (!notifyOn(type))
 		return false;
 
@@ -1038,7 +1038,7 @@ void GenerateNotifier::getEvents(
 	std::map<std::string, std::vector<v3s16>> &event_map) const
 {
 	for (auto &gn : m_notify_events) {
-		assert(gn.type != GENNOTIFY_UD); // never stored in this list
+		assert(gn.type != GENNOTIFY_CUSTOM); // never stored in this list
 
 		std::string name = (gn.type == GENNOTIFY_DECORATION) ?
 			"decoration#"+ itos(gn.id) :

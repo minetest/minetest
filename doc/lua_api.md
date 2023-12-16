@@ -5960,7 +5960,7 @@ Environment access
 * `minetest.get_voxel_manip([pos1, pos2])`
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
-* `minetest.set_gen_notify(flags, deco_ids, ud_ids)`
+* `minetest.set_gen_notify(flags, deco_ids, custom_ids)`
     * Set the types of on-generate notifications that should be collected.
     * `flags` is a flag field with the available flags:
         * dungeon, template, cave_begin, cave_end, large_cave_begin
@@ -6538,11 +6538,11 @@ Refer to the above section for the usual disclaimer on what environment isolatio
       The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
       than the emerged area of the VoxelManip.
     * `blockseed`: 64-bit seed number used for this chunk
-* `minetest.save_gen_notify(ud_id, data)`
+* `minetest.save_gen_notify(id, data)`
     * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).
     * Data is bound to the chunk that is currently being processed, so this function
       only makes sense inside the above-mentioned generation callback.
-    * `ud_id`: user-defined ID (a string)
+    * `id`: user-defined ID (a string)
       By convention these should be the mod name with an optional
       colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
     * `data`: any Lua object (will be serialized, no userdata allowed)
