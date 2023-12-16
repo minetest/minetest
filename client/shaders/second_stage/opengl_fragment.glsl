@@ -3,7 +3,7 @@
 
 #ifdef GL_ES
 // Dithering requires sufficient floating-point precision
-#if GL_FRAGMENT_PRECISION_HIGH != 1
+#ifndef GL_FRAGMENT_PRECISION_HIGH
 #undef ENABLE_DITHERING
 #endif
 #endif
