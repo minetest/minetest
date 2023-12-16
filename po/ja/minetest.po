@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Japanese (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-04 21:13+0000\n"
-"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
+"PO-Revision-Date: 2023-12-16 10:05+0000\n"
+"Last-Translator: Jun Nogata <nogajun@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
 "Language: ja\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.3\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -640,7 +640,7 @@ msgstr "パスワード"
 
 #: builtin/mainmenu/dlg_register.lua
 msgid "Passwords do not match"
-msgstr "パスワードが一致しない"
+msgstr "パスワードが一致しません"
 
 #: builtin/mainmenu/dlg_register.lua builtin/mainmenu/tab_online.lua
 msgid "Register"
@@ -924,7 +924,7 @@ msgstr "とても弱く"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "About"
-msgstr "情報"
+msgstr "ContentDBについて"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Active Contributors"
