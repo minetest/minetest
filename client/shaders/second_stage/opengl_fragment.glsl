@@ -68,13 +68,15 @@ vec3 uncharted2Tonemap(vec3 x)
 
 vec4 applyToneMapping(vec4 color)
 {
-	const float exposureBias = 2.0;
+	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
+	const float gamma = 1.6;
+	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
 	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
-	return color;
+	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
 }
 
 vec3 applySaturation(vec3 color, float factor)
@@ -130,6 +132,12 @@ void main(void)
 	color = applyBloom(color, uv);
 #endif
 
+
+	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
+
+	// return to sRGB colorspace (approximate)
+	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
+
 #ifdef ENABLE_BLOOM_DEBUG
 	if (uv.x > 0.5 || uv.y > 0.5)
 #endif
@@ -139,11 +147,6 @@ void main(void)
 		color.rgb = applySaturation(color.rgb, saturation);
 #endif
 	}
-
-	color.rgb = clamp(color.rgb, vec3(0.), vec3(1.));
-
-	// return to sRGB colorspace (approximate)
-	color.rgb = pow(color.rgb, vec3(1.0 / 2.2));
 
 #ifdef ENABLE_DITHERING
 	// Apply dithering just before quantisation
