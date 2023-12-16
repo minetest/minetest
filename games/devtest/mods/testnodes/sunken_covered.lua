@@ -19,7 +19,7 @@ minetest.register_node("testnodes:sunken_torchlike", {
 	liquid_alternative_source = "testnodes:rliquid_5",
 	--liquid_alternative_flowing = "testnodes:sunken_torchlike",
 	--liquid_alternative_source = "testnodes:sunken_torchlike",
-	liquid_range = 0,
+	liquid_range = 5,
 
 	inner_node = "testnodes:torchlike",
 })
@@ -42,7 +42,7 @@ minetest.register_node("testnodes:sunken_nodebox", {
 	liquid_alternative_source = "testnodes:rliquid_5",
 	--liquid_alternative_flowing = "testnodes:sunken_nodebox",
 	--liquid_alternative_source = "testnodes:sunken_nodebox",
-	liquid_range = 0,
+	liquid_range = 5,
 
 	inner_node = "testnodes:nodebox_fixed",
 })
@@ -65,7 +65,7 @@ minetest.register_node("testnodes:sunken_mesh", {
 	liquid_alternative_source = "testnodes:rliquid_5",
 	--liquid_alternative_flowing = "testnodes:sunken_nodebox",
 	--liquid_alternative_source = "testnodes:sunken_nodebox",
-	liquid_range = 0,
+	liquid_range = 5,
 
 	inner_node = "testnodes:mesh",
 })

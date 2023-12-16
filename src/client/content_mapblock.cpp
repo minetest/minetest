@@ -586,6 +586,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		const ContentFeatures &f2 = nodedef->get(n2);
 		neighbor.content = n2.getContent();
+		neighbor.is_source = f2.liquid_type == LIQUID_SOURCE;
 		neighbor.c_source = f2.liquid_alternative_source_id;
 		neighbor.c_flowing = f2.liquid_alternative_flowing_id;
 		neighbor.level = -0.5f;
@@ -595,7 +596,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood()
 		if (neighbor.content == CONTENT_IGNORE)
 			continue;
 
-		if (neighbor.content == cur_liquid.c_source || neighbor.c_source == cur_liquid.c_source) {
+		if (neighbor.content == cur_liquid.c_source || (neighbor.is_source && (neighbor.c_source == cur_liquid.c_source))) {
 			neighbor.is_same_liquid = true;
 			neighbor.level = 0.5f;
 		} else if (neighbor.content == cur_liquid.c_flowing || neighbor.c_flowing == cur_liquid.c_flowing) {
@@ -643,7 +644,7 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 			return 0.5f;
 
 		// Source always has the full height
-		if (content == cur_liquid.c_source || neighbor_data.c_source == cur_liquid.c_source)
+		if (content == cur_liquid.c_source || (neighbor_data.is_source && (neighbor_data.c_source == cur_liquid.c_source)))
 			return 0.5f;
 
 		// Flowing liquid has level information

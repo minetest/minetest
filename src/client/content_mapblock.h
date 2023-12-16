@@ -121,6 +121,7 @@ private:
 			content_t content;
 			content_t c_flowing;
 			content_t c_source;
+			bool is_source;
 			bool is_same_liquid;
 			bool top_is_same_liquid;
 		};
