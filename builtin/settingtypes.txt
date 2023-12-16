@@ -585,11 +585,13 @@ exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 #    screenshots and it works incorrectly if the display or operating system
 #    performs additional dithering or if the color channels are not quantized
 #    to 8 bits.
+#    If set to glsl_only, dithering is disabled only for OpenGL ES.
 #    With OpenGL ES, dithering only works if the shader supports high
-#    floating-point precision.
+#    floating-point precision and it may have a higher performance impact.
 #
 #    Requires: shaders
-debanding (Enable Debanding) bool true
+debanding (Debanding) enum glsl_only disable,enable,glsl_only
+
 
 [**Bloom]
 

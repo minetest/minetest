@@ -508,15 +508,6 @@
 #    type: float min: -1 max: 1
 # exposure_compensation = 0.0
 
-#    Apply dithering to reduce colour banding artifacts.
-#    Dithering significantly increases the size of losslessly-compressed
-#    screenshots and it works incorrectly if the display or operating system
-#    performs additional dithering or if the colour channels are not quantized
-#    to 8 bits.
-#    type: bool
-# debanding = true
-
-
 ### Bloom
 
 #    Set to true to enable bloom effect.
