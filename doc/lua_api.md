@@ -6133,9 +6133,8 @@ Environment access
 * `minetest.get_node_boxes(box_type, pos, [node])`
     * `box_type` must be `"node_box"`, `"collision_box"` or `"selection_box"`.
     * `pos` must be a node position.
-    * `node` can be a table in the form
-      `{name=string, param1=number, param2=number}`. If `node` is `nil`, the
-      actual node at `pos` is used instead.
+    * `node` can be a table in the form `{name=string, param1=number, param2=number}`.
+      If `node` is `nil`, the actual node at `pos` is used instead.
     * Resolves any facedir-rotated boxes, connected boxes and the like into
       actual boxes.
     * Returns a list of boxes in the form
