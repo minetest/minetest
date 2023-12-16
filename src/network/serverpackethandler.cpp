@@ -1866,7 +1866,7 @@ void Server::handleCommand_HaveMedia(NetworkPacket *pkt)
 
 void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 {
-	ClientDynamicInfo info{};
+	ClientDynamicInfo info;
 	*pkt >> info.render_target_size.X;
 	*pkt >> info.render_target_size.Y;
 	*pkt >> info.real_gui_scaling;
@@ -1876,7 +1876,9 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	try {
 		// added in 5.9.0
 		*pkt >> info.touch_controls;
-	} catch (PacketError &e) {}
+	} catch (PacketError &e) {
+		info.touch_controls = false;
+	}
 
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
