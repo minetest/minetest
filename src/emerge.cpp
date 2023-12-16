@@ -63,7 +63,7 @@ EmergeParams::EmergeParams(EmergeManager *parent, const BiomeGen *biomegen,
 	enable_mapgen_debug_info(parent->enable_mapgen_debug_info),
 	gen_notify_on(parent->gen_notify_on),
 	gen_notify_on_deco_ids(&parent->gen_notify_on_deco_ids),
-	gen_notify_on_ud(&parent->gen_notify_on_ud),
+	gen_notify_on_custom(&parent->gen_notify_on_custom),
 	biomemgr(biomemgr->clone()), oremgr(oremgr->clone()),
 	decomgr(decomgr->clone()), schemmgr(schemmgr->clone())
 {

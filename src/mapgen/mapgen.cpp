@@ -70,7 +70,7 @@ FlagDesc flagdesc_gennotify[] = {
 	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
 	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
 	{"decoration",       1 << GENNOTIFY_DECORATION},
-	{"ud",               1 << GENNOTIFY_UD},
+	{"custom",           1 << GENNOTIFY_CUSTOM},
 	{NULL,               0}
 };
 
@@ -981,11 +981,12 @@ void MapgenBasic::generateDungeons(s16 max_stone_y)
 ////
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
-	const std::set<u32> *notify_on_deco_ids, const std::set<std::string> *notify_on_ud)
+	const std::set<u32> *notify_on_deco_ids,
+	const std::set<std::string> *notify_on_custom)
 {
 	m_notify_on = notify_on;
 	m_notify_on_deco_ids = notify_on_deco_ids;
-	m_notify_on_ud = notify_on_ud;
+	m_notify_on_custom = notify_on_custom;
 }
 
 
@@ -1020,15 +1021,15 @@ bool GenerateNotifier::addDecorationEvent(v3s16 pos, u32 id)
 }
 
 
-bool GenerateNotifier::setUD(const std::string &key, const std::string &value)
+bool GenerateNotifier::setCustom(const std::string &key, const std::string &value)
 {
-	if (!notifyOn(GENNOTIFY_UD))
+	if (!notifyOn(GENNOTIFY_CUSTOM))
 		return false;
-	assert(m_notify_on_ud);
-	if (m_notify_on_ud->find(key) == m_notify_on_ud->cend())
+	assert(m_notify_on_custom);
+	if (m_notify_on_custom->count(key) == 0)
 		return false;
 
-	m_notify_ud[key] = value;
+	m_notify_custom[key] = value;
 	return true;
 }
 
@@ -1047,16 +1048,11 @@ void GenerateNotifier::getEvents(
 	}
 }
 
-const std::map<std::string, std::string> &GenerateNotifier::getUD() const
-{
-	return m_notify_ud;
-}
-
 
 void GenerateNotifier::clearEvents()
 {
 	m_notify_events.clear();
-	m_notify_ud.clear();
+	m_notify_custom.clear();
 }
 
 

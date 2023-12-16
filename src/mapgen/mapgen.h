@@ -76,7 +76,7 @@ enum GenNotifyType {
 	GENNOTIFY_LARGECAVE_BEGIN,
 	GENNOTIFY_LARGECAVE_END,
 	GENNOTIFY_DECORATION,
-	GENNOTIFY_UD, // user-defined
+	GENNOTIFY_CUSTOM, // user-defined data
 	NUM_GENNOTIFY_TYPES
 };
 
@@ -92,21 +92,21 @@ public:
 	GenerateNotifier() = default;
 	// normal constructor
 	GenerateNotifier(u32 notify_on, const std::set<u32> *notify_on_deco_ids,
-		const std::set<std::string> *notify_on_ud);
+		const std::set<std::string> *notify_on_custom);
 
 	bool addEvent(GenNotifyType type, v3s16 pos);
 	bool addDecorationEvent(v3s16 pos, u32 deco_id);
-	bool setUD(const std::string &key, const std::string &value);
+	bool setCustom(const std::string &key, const std::string &value);
 	void getEvents(std::map<std::string, std::vector<v3s16>> &map) const;
-	const std::map<std::string, std::string> &getUD() const;
+	const StringMap &getCustom() const { return m_notify_custom; }
 	void clearEvents();
 
 private:
 	u32 m_notify_on = 0;
 	const std::set<u32> *m_notify_on_deco_ids = nullptr;
-	const std::set<std::string> *m_notify_on_ud = nullptr;
+	const std::set<std::string> *m_notify_on_custom = nullptr;
 	std::list<GenNotifyEvent> m_notify_events;
-	std::map<std::string, std::string> m_notify_ud;
+	StringMap m_notify_custom;
 
 	inline bool notifyOn(GenNotifyType type) const {
 		return m_notify_on & (1 << type);

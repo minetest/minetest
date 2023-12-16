@@ -696,13 +696,13 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		}
 
 		// push user-defined data
-		auto &ud_map = mg->gennotify.getUD();
+		auto &custom_map = mg->gennotify.getCustom();
 
-		lua_createtable(L, 0, ud_map.size());
+		lua_createtable(L, 0, custom_map.size());
 		lua_getglobal(L, "core");
 		lua_getfield(L, -1, "deserialize");
 		lua_remove(L, -2); // remove 'core'
-		for (auto it : ud_map) {
+		for (auto it : custom_map) {
 			lua_pushvalue(L, -1); // deserialize func
 			lua_pushlstring(L, it.second.c_str(), it.second.size());
 			lua_pushboolean(L, true);
@@ -711,7 +711,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			lua_setfield(L, -3, it.first.c_str()); // put into table
 		}
 		lua_pop(L, 1); // remove func
-		lua_setfield(L, -2, "ud"); // put into top-level table
+		lua_setfield(L, -2, "custom"); // put into top-level table
 
 		return 1;
 	}
@@ -1004,7 +1004,7 @@ int ModApiMapgen::l_get_noiseparams(lua_State *L)
 }
 
 
-// set_gen_notify(flags, {deco_ids}, {ud_ids})
+// set_gen_notify(flags, {deco_ids}, {custom_ids})
 int ModApiMapgen::l_set_gen_notify(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1029,7 +1029,7 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3)) {
-			emerge->gen_notify_on_ud.insert(readParam<std::string>(L, -1));
+			emerge->gen_notify_on_custom.insert(readParam<std::string>(L, -1));
 			lua_pop(L, 1);
 		}
 	}
@@ -1037,15 +1037,15 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 	// Clear sets if relevant flag disabled
 	if ((emerge->gen_notify_on & (1 << GENNOTIFY_DECORATION)) == 0)
 		emerge->gen_notify_on_deco_ids.clear();
-	if ((emerge->gen_notify_on & (1 << GENNOTIFY_UD)) == 0)
-		emerge->gen_notify_on_ud.clear();
+	if ((emerge->gen_notify_on & (1 << GENNOTIFY_CUSTOM)) == 0)
+		emerge->gen_notify_on_custom.clear();
 
 	return 0;
 }
 
 
 // get_gen_notify()
-// returns flagstring, {deco_ids}, {ud_ids})
+// returns flagstring, {deco_ids}, {custom_ids})
 int ModApiMapgen::l_get_gen_notify(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1063,7 +1063,7 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 
 	lua_newtable(L);
 	int j = 1;
-	for (const auto &id : emerge->gen_notify_on_ud) {
+	for (const auto &id : emerge->gen_notify_on_custom) {
 		lua_pushstring(L, id.c_str());
 		lua_rawseti(L, -2, j++);
 	}
@@ -1072,7 +1072,7 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 }
 
 
-// save_gen_notify(ud_id, data) [in emerge thread]
+// save_gen_notify(custom_id, data) [in emerge thread]
 int ModApiMapgen::l_save_gen_notify(lua_State *L)
 {
 	auto *emerge = getEmergeThread(L);
@@ -1087,7 +1087,7 @@ int ModApiMapgen::l_save_gen_notify(lua_State *L)
 	std::string val = readParam<std::string>(L, -1);
 	lua_pop(L, 1);
 
-	bool set = emerge->getMapgen()->gennotify.setUD(key, val);
+	bool set = emerge->getMapgen()->gennotify.setCustom(key, val);
 
 	lua_pushboolean(L, set);
 	return 1;

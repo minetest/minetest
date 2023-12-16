@@ -4913,7 +4913,7 @@ Possible fields of the returned table are:
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
-* `ud`: user-defined data
+* `custom`: user-defined data
   * not an array of positions. instead a table:
   * key = user-defined ID, value = arbitrary Lua value
 * `decoration#id` (see below)
@@ -5964,11 +5964,11 @@ Environment access
     * Set the types of on-generate notifications that should be collected.
     * `flags` is a flag field with the available flags:
         * dungeon, template, cave_begin, cave_end, large_cave_begin
-        * large_cave_end, decoration, ud
+        * large_cave_end, decoration, custom
     * The following parameters are optional:
     * `deco_ids` is a list of IDs of decorations which notification
       is requested for.
-    * `ud_ids` is a list of user-defined IDs (strings) which are
+    * `custom_ids` is a list of user-defined IDs (strings) which are
       requested. By convention these should be the mod name with an optional
       colon and specifier added, e.g. `"default"` or `"default:dungeon_loot"`
 * `minetest.get_gen_notify()`
