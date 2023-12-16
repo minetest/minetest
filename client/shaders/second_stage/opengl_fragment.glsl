@@ -78,6 +78,7 @@ vec4 applyToneMapping(vec4 color)
 	color.rgb *= whiteScale;
 	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
 }
+#endif
 
 vec3 applySaturation(vec3 color, float factor)
 {
@@ -86,7 +87,6 @@ vec3 applySaturation(vec3 color, float factor)
 	float brightness = dot(color, vec3(0.2125, 0.7154, 0.0721));
 	return mix(vec3(brightness), color, factor);
 }
-#endif
 
 #ifdef ENABLE_DITHERING
 // From http://alex.vlachos.com/graphics/Alex_Vlachos_Advanced_VR_Rendering_GDC2015.pdf
@@ -144,8 +144,9 @@ void main(void)
 	{
 #if ENABLE_TONE_MAPPING
 		color = applyToneMapping(color);
-		color.rgb = applySaturation(color.rgb, saturation);
 #endif
+
+		color.rgb = applySaturation(color.rgb, saturation);
 	}
 
 #ifdef ENABLE_DITHERING
