@@ -795,6 +795,8 @@ struct ActiveABM
 	int chance;
 	std::vector<content_t> required_neighbors;
 	bool check_required_neighbors; // false if required_neighbors is known to be empty
+	std::vector<content_t> without_neighbors;
+	bool check_without_neighbors; // false if without_neighbors is known to be empty
 	s16 min_y;
 	s16 max_y;
 };
@@ -848,12 +850,15 @@ public:
 			aabm.max_y = abm->getMaxY();
 
 			// Trigger neighbors
-			const std::vector<std::string> &required_neighbors_s =
-				abm->getRequiredNeighbors();
-			for (const std::string &required_neighbor_s : required_neighbors_s) {
-				ndef->getIds(required_neighbor_s, aabm.required_neighbors);
+			for (const auto &name : abm->getRequiredNeighbors()) {
+				ndef->getIds(name, aabm.required_neighbors);
 			}
-			aabm.check_required_neighbors = !required_neighbors_s.empty();
+			aabm.check_required_neighbors = !aabm.required_neighbors.empty();
+
+			for (const auto &name : abm->getWithoutNeighbors()) {
+				ndef->getIds(name, aabm.without_neighbors);
+			}
+			aabm.check_without_neighbors = !aabm.without_neighbors.empty();
 
 			// Trigger contents
 			const std::vector<std::string> &contents_s = abm->getTriggerContents();
@@ -967,8 +972,9 @@ public:
 					continue;
 
 				// Check neighbors
-				if (aabm.check_required_neighbors) {
+				if (aabm.check_required_neighbors || aabm.check_without_neighbors) {
 					v3s16 p1;
+					bool have_required = false;
 					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
 					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
 					for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
@@ -986,12 +992,25 @@ public:
 							MapNode n = map->getNode(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
-						if (CONTAINS(aabm.required_neighbors, c))
-							goto neighbor_found;
+						if (aabm.check_required_neighbors && !have_required) {
+							if (CONTAINS(aabm.required_neighbors, c)) {
+								if (!aabm.check_without_neighbors)
+									goto neighbor_found;
+								have_required = true;
+							}
+						}
+						if (aabm.check_without_neighbors) {
+							if (CONTAINS(aabm.without_neighbors, c))
+								goto neighbor_invalid;
+						}
 					}
+					if (have_required || !aabm.check_required_neighbors)
+						goto neighbor_found;
 					// No required neighbor found
+					neighbor_invalid:
 					continue;
 				}
+
 				neighbor_found:
 
 				abms_run++;

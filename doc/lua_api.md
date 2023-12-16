@@ -5522,6 +5522,8 @@ Utilities
       override_item_remove_fields = true,
       -- The predefined hotbar is a Lua HUD element of type `hotbar` (5.10.0)
       hotbar_hud_element = true,
+      -- ABM supports field without_neighbors
+      abm_without_neighbors = true,
   }
   ```
 
@@ -9069,6 +9071,11 @@ Used by `minetest.register_abm`.
     -- Only apply `action` to nodes that have one of, or any
     -- combination of, these neighbors.
     -- If left out or empty, any neighbor will do.
+    -- `group:groupname` can also be used here.
+
+    without_neighbors = {"default:lava_source", "default:lava_flowing"},
+    -- Only apply `action` to nodes that have no one of these neighbors.
+    -- If left out or empty, any no neighbor will prevent ABM call.
     -- `group:groupname` can also be used here.
 
     interval = 10.0,
