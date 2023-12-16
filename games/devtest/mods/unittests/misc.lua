@@ -200,7 +200,7 @@ local function test_gennotify_api()
 	assert(table.indexof(deco, DECO_ID) > 0)
 	assert(table.indexof(custom, UD_ID) > 0)
 
-	core.set_gen_notify({decoration=false, ud=false})
+	core.set_gen_notify({decoration=false, custom=false})
 
 	flags, deco, custom = core.get_gen_notify()
 	assert(not ff("decoration") and not ff("custom"))
