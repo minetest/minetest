@@ -569,10 +569,14 @@ int ModApiEnv::l_get_node_boxes(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3s16 pos = read_v3s16(L, 1);
-	std::string box_type = luaL_checkstring(L, 2);
+	std::string box_type = luaL_checkstring(L, 1);
+	v3s16 pos = read_v3s16(L, 2);
+	MapNode n;
+	if (lua_istable(L, 3))
+		n = readnode(L, 3);
+	else
+		n = env->getMap().getNode(pos);
 
-	MapNode n = env->getMap().getNode(pos);
 	u8 neighbors = n.getNeighbors(pos, &env->getMap());
 	const NodeDefManager *ndef = env->getGameDef()->ndef();
 

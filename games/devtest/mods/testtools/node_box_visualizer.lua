@@ -35,7 +35,7 @@ local function visualizer_on_use(itemstack, user, pointed_thing)
 	local meta = itemstack:get_meta()
 	local box_type = meta:get("box_type") or DEFAULT_BOX_TYPE
 
-	local result = minetest.get_node_boxes(pointed_thing.under, box_type)
+	local result = minetest.get_node_boxes(box_type, pointed_thing.under)
 	local t = "testtools_visual_" .. box_type .. ".png"
 
 	for _, box in ipairs(result) do
