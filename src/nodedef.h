@@ -513,7 +513,7 @@ struct ContentFeatures
 	}
 
 	bool isLiquidRender() const {
-		return (drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID);
+		return (drawtype == NDT_LIQUID || drawtype == NDT_FLOWINGLIQUID || drawtype == NDT_SUNKEN);
 	}
 
 	bool sameLiquidRender(const ContentFeatures &f) const {
