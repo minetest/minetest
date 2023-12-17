@@ -1315,9 +1315,6 @@ void Game::run()
 		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
-		// Update if minimap has been disabled by the server
-		m_game_ui->m_flags.show_minimap &= client->shouldShowMinimap();
-
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
 		}
@@ -2476,18 +2473,12 @@ void Game::toggleMinimap(bool shift_pressed)
 	// -->
 	u32 hud_flags = client->getEnv().getLocalPlayer()->hud_flags;
 
-	if (!(hud_flags & HUD_FLAG_MINIMAP_VISIBLE)) {
-		m_game_ui->m_flags.show_minimap = false;
-	} else {
-
+	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
 	// If radar is disabled, try to find a non radar mode or fall back to 0
 		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE))
 			while (mapper->getModeIndex() &&
 					mapper->getModeDef().type == MINIMAP_TYPE_RADAR)
 				mapper->nextMode();
-
-		m_game_ui->m_flags.show_minimap = mapper->getModeDef().type !=
-				MINIMAP_TYPE_OFF;
 	}
 	// <--
 	// End of 'not so satifying code'
