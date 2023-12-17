@@ -81,6 +81,40 @@ local REASON_DEPENDENCY = "dependency"
 local texdir = core.formspec_escape(defaulttexturedir)
 
 
+-- Following two functions for word wrap taken from Rosetta Code:
+-- https://web.archive.org/web/20230218032351/https://rosettacode.org/wiki/Word_wrap#Lua
+local function splittokens(s)
+    local res = {}
+    for w in s:gmatch("%S+") do
+        res[#res+1] = w
+    end
+    return res
+end
+local function textwrap(text, linewidth)
+    if not linewidth then
+        linewidth = 75
+    end
+
+    local spaceleft = linewidth
+    local res = {}
+    local line = {}
+
+    for _, word in ipairs(splittokens(text)) do
+        if #word + 1 > spaceleft then
+            table.insert(res, table.concat(line, ' '))
+            line = {word}
+            spaceleft = linewidth - #word
+        else
+            table.insert(line, word)
+            spaceleft = spaceleft - (#word + 1)
+        end
+    end
+
+    table.insert(res, table.concat(line, ' '))
+    return table.concat(res, '\n')
+end
+
+
 local function get_download_url(package, reason)
 	local base_url = core.settings:get("contentdb_url")
 	local ret = base_url .. ("/packages/%s/releases/%d/download/"):format(
@@ -1189,6 +1223,7 @@ function store.get_formspec(dlgdata)
 
 			"image_button[0,0;5,3.25;", get_screenshot(package), ";showpkg_", i, ";]",
 			"image[0,0;5,3.25;", texdir, "cdb_trans.png]",
+			"tooltip[showpkg_", i, ";", core.formspec_escape(textwrap(package.short_description, 50)), "]",
 
 			"style[*;font_size=+4;font=bold]",
 			"label[0.15,2.3;", core.formspec_escape(title), "]",
