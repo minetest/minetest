@@ -708,22 +708,22 @@ function package_dialog.get_formspec(dialogdata)
 		"padding[-0.01,-0.01]",
 
 		"style_type[label;font_size=+24;font=bold]",
-		"label[0.5,0.9;", package.title, "]",
+		"label[0.5,0.9;", core.formspec_escape(package.title), "]",
 		"style_type[label;font_size=+0;font=regular]",
-		"textarea[0.5,1.6;14,1;;;", package.short_description, "]",
+		"textarea[0.5,1.6;14,1;;;", core.formspec_escape(package.short_description), "]",
 		"label[0.5,3;", stuff, custom_label, "]",
 
 		"image[0.5,3.5;5,3.25;", get_screenshot(package), "]",
-		"image[5.6,3.5;5,3.25;", get_screenshot(package), "]",
-		"image[10.7,3.5;5,3.25;", get_screenshot(package), "]",
+		--"image[5.6,3.5;5,3.25;", get_screenshot(package), "]",
+		--"image[10.7,3.5;5,3.25;", get_screenshot(package), "]",
 
 		"button[0.5,8.75;4.5,1;back;", fgettext("Back to package list"), "]",
-		"button[5.85,7.25;4.5,1;view;", fgettext("View in web browser"), "]"
+		"button[5.85,3.5;4.5,1;view;", fgettext("View in web browser"), "]"
 	}
 
 	local function write(...) table.insert_all(fs, {...}) end
 
-	local left_base = "button[10.7,7.25;5,1;"
+	local left_base = "button[10.7,3.5;5,1;"
 
 	if package.downloading then
 		write("animated_image[-1.7,-0.15;1,1;downloading;", texdir, "cdb_downloading.png", ";3;400;]")
