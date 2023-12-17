@@ -821,6 +821,7 @@ protected:
 			const CameraOrientation &cam);
 	void updateClouds(float dtime);
 	void updateShadows();
+	void drawScene(ProfilerGraph *graph, RunStats *stats);
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
@@ -4133,52 +4134,17 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== Drawing begins ====================
 	*/
-	const video::SColor skycolor = sky->getSkyColor();
-
-	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
-	driver->beginScene(true, true, skycolor);
-
-	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
-			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			(camera->getCameraMode() == CAMERA_MODE_FIRST));
-	bool draw_crosshair = (
-			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	if (isNoCrosshairAllowed())
-		draw_crosshair = false;
-#endif
-	m_rendering_engine->draw_scene(skycolor, m_game_ui->m_flags.show_hud,
-			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
-
-	/*
-		Profiler graph
-	*/
-	v2u32 screensize = driver->getScreenSize();
-
-	if (m_game_ui->m_flags.show_profiler_graph)
-		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
-
-	/*
-		Damage flash
-	*/
-	if (runData.damage_flash > 0.0f) {
-		video::SColor color(runData.damage_flash, 180, 0, 0);
-		driver->draw2DRectangle(color,
-					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
-
-		runData.damage_flash -= 384.0f * dtime;
-	}
-
+	drawScene(graph, stats);
 	/*
 		==================== End scene ====================
 	*/
 
-	driver->endScene();
+	// Damage flash is drawn in drawScene, but the timing update is done here to
+	// keep dtime out of the drawing code.
+	if (runData.damage_flash > 0.0f) {
+		runData.damage_flash -= 384.0f * dtime;
+	}
 
-	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 
@@ -4244,6 +4210,52 @@ void Game::updateShadows()
 	shadow->setTimeOfDay(in_timeofday);
 
 	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
+}
+
+void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
+{
+	const video::SColor skycolor = this->sky->getSkyColor();
+
+	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
+	this->driver->beginScene(true, true, skycolor);
+
+	const LocalPlayer *player = this->client->getEnv().getLocalPlayer();
+	bool draw_wield_tool = (this->m_game_ui->m_flags.show_hud &&
+			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
+			(this->camera->getCameraMode() == CAMERA_MODE_FIRST));
+	bool draw_crosshair = (
+			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
+			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
+#ifdef HAVE_TOUCHSCREENGUI
+	if (this->isNoCrosshairAllowed())
+		draw_crosshair = false;
+#endif
+	this->m_rendering_engine->draw_scene(skycolor, this->m_game_ui->m_flags.show_hud,
+			this->m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+
+	/*
+		Profiler graph
+	*/
+	v2u32 screensize = this->driver->getScreenSize();
+
+	if (this->m_game_ui->m_flags.show_profiler_graph)
+		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
+
+	/*
+		Damage flash
+	*/
+	if (this->runData.damage_flash > 0.0f) {
+		video::SColor color(this->runData.damage_flash, 180, 0, 0);
+		this->driver->draw2DRectangle(color,
+					core::rect<s32>(0, 0, screensize.X, screensize.Y),
+					NULL);
+	}
+
+	this->driver->endScene();
+
+	stats->drawtime = tt_draw.stop(true);
+	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
+
 }
 
 /****************************************************************************
