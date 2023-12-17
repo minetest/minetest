@@ -1439,6 +1439,7 @@ void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 	pkt << info.real_gui_scaling;
 	pkt << info.real_hud_scaling;
 	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
+	pkt << info.touch_controls;
 
 	Send(&pkt);
 }

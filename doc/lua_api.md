@@ -5350,6 +5350,12 @@ Utilities
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      -- Requires at least Minetest 5.9.0 on the client. For older clients, it
+      -- is always set to `false`.
+      touch_controls = false,
   }
   ```
 
