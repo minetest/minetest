@@ -1,19 +1,19 @@
 local hud_ids = {}
-local miniamp_size = 256
+local minimap_size = 256
 local function update_builtin_minimap(player)
 	local name = player:get_player_name()
 	local id = hud_ids[name]
 	-- mimic wired flag behavior of deprecated non HUD element minimap
 	if player:hud_get_flags().minimap then
 		if id then
-			player:hud_change(id, "size", {x = miniamp_size , y = miniamp_size})
+			player:hud_change(id, "size", {x = minimap_size , y = minimap_size})
 		else
 			hud_ids[name] = player:hud_add({
 				hud_elem_type = "minimap",
 				position = {x=1, y=0},
 				alignment = {x=-1, y=1},
 				offset = {x=-10, y=10},
-				size = {x = miniamp_size , y = miniamp_size}
+				size = {x = minimap_size , y = minimap_size}
 			})
 		end
 	else
