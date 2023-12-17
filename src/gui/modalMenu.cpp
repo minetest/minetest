@@ -273,7 +273,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 		irr_ptr<GUIModalMenu> holder;
 		holder.grab(this); // keep this alive until return (it might be dropped downstream [?])
 
-		if (event.TouchInput.ID == 0) {
+		if (event.TouchInput.touchedCount == 1) {
 			if (event.TouchInput.Event == ETIE_PRESSED_DOWN || event.TouchInput.Event == ETIE_MOVED)
 				m_pointer = v2s32(event.TouchInput.X, event.TouchInput.Y);
 			gui::IGUIElement *hovered = Environment->getRootGUIElement()->getElementFromPoint(core::position2d<s32>(m_pointer));
@@ -290,7 +290,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				leave();
 			return ret;
-		} else if (event.TouchInput.ID == 1) {
+		} else if (event.TouchInput.touchedCount == 2) {
 			if (event.TouchInput.Event != ETIE_LEFT_UP)
 				return true; // ignore
 			auto focused = Environment->getFocus();
