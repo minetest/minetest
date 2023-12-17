@@ -88,7 +88,6 @@ local function get_download_url(package, reason)
 	if reason then
 		ret = ret .. "?reason=" .. reason
 	end
-	print(dump(package))
 	return ret
 end
 
@@ -802,8 +801,6 @@ function package_dialog.create(package, id)
 	retval.data.id = id
 	retval.data.package_meta = core.parse_json(response.data)
 
-	print(dump(package))
-
 	return retval
 end
 
@@ -1082,14 +1079,6 @@ local function getCell(i)
 		math.floor((i) / grid_width)	-- y
 end
 
-local button_tabs = {
-	{"all", "All"},
-	{"mod", "Mods"},
-	{"game", "Games"},
-	{"txp", "Texture Packs"},
-	{"installed", "Installed"},
-}
-
 local W = 21.25 --winfo.max_formspec_size.x
 local H = 13.25 --winfo.max_formspec_size.y
 
@@ -1143,13 +1132,14 @@ function store.get_formspec(dlgdata)
 		"container_end[]",
 
 		"container[13,0.25]",
-		"field[0,0.05;6,0.9;search_string;;", core.formspec_escape(search_string), "]",
+		"field[0,0;6,0.9;search_string;;", core.formspec_escape(search_string), "]",
 		"field_close_on_enter[search_string;false]",
 		"image_button[5.75,0;1,1;", texdir, "search.png", ";search;]",
 		"image_button[6.75,0;1,1;", texdir, "clear.png", ";clear;]",
 		"container_end[]",
 
-		"style[status;border=false]"
+		"style[status;border=false]",
+		"style_type[image_button;border=false]",
 	}
 
 	local function write(...) table.insert_all(fs, {...}) end
@@ -1173,12 +1163,12 @@ function store.get_formspec(dlgdata)
 	write("container[0.5,0.25]")
 	for i = 1, #filter_types_type, 1 do
 		write(
-			"button[", ((i-1)*2.5), ",0;2.5,0.9;",
+			"button[", ((i - 1) * 2.5), ",0;2.5,0.9;",
 			"btn_filter_", filter_types_type[i], ";", filter_types_titles[i], "]"
 		)
 
 		if filter_type == i then
-			write("box[", ((i-1)*2.5), ",0.9;2.5,0.1;#aaa]")
+			write("box[", ((i - 1) * 2.5), ",0.9;2.5,0.1;#aaa]")
 		end
 	end
 	write("container_end[]")
@@ -1195,13 +1185,14 @@ function store.get_formspec(dlgdata)
 		end
 
 		write(
-			"container[", (0.25+x*5.25), ",", (1.5+y*3.5), "]",
-			"style[btn_test;border=false]",
+			"container[", (0.25 + x * 5.25), ",", (1.5 + y * 3.5), "]",
+
 			"image_button[0,0;5,3.25;", get_screenshot(package), ";showpkg_", i, ";]",
-			-- could have been "box[0,2;5,1.25;#000]" but box[] isn't throughclickable
 			"image[0,0;5,3.25;", texdir, "cdb_trans.png]",
+
 			"style[*;font_size=+4;font=bold]",
 			"label[0.15,2.3;", core.formspec_escape(title), "]",
+
 			"style[*;font_size=+0;font=regular]",
 			"label[0.15,2.9;", core.formspec_escape(package.author), "]"
 		)
@@ -1277,14 +1268,10 @@ function store.handle_submit(this, fields)
 		end
 	end
 
-	for i = 1, #button_tabs, 1 do
-		local tab = button_tabs[i]
-		if fields["btn_filter_"..tab[1]] then
-			print(tab[1])
+	for i = 1, #filter_types_type, 1 do
+		if fields["btn_filter_"..filter_types_type[i]] then
+			filter_type = table.indexof(filter_types_type, filter_types_type[i])
 
-			filter_type = table.indexof(filter_types_type, tab[1])
-
-			print(filter_type)
 			cur_page = 1
 			store.filter_packages(search_string)
 			return true
