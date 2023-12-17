@@ -1,28 +1,19 @@
-local function get_size(player)
-	local window = core.get_player_window_information(player:get_player_name())
-	if window then -- will be nil if executed too early
-		return window.size.y * 0.25
-	else
-		return 250 -- most common windows are about 1000 high
-	end
-end
-
 local hud_ids = {}
+local miniamp_size = 256
 local function update_builtin_minimap(player)
 	local name = player:get_player_name()
 	local id = hud_ids[name]
 	-- mimic wired flag behavior of deprecated non HUD element minimap
 	if player:hud_get_flags().minimap then
-		local size = get_size(player)
 		if id then
-			player:hud_change(id, "size", {x = size , y = size})
+			player:hud_change(id, "size", {x = miniamp_size , y = miniamp_size})
 		else
 			hud_ids[name] = player:hud_add({
 				hud_elem_type = "minimap",
 				position = {x=1, y=0},
 				alignment = {x=-1, y=1},
 				offset = {x=-10, y=10},
-				size = {x = size , y = size}
+				size = {x = miniamp_size , y = miniamp_size}
 			})
 		end
 	else
@@ -45,7 +36,7 @@ local function player_event_handler(player, eventname)
 	if name == "" then
 		return
 	end
-	
+
 	if eventname == "hud_changed" then
 		update_builtin_minimap(player)
 		return true
