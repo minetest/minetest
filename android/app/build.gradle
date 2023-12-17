@@ -54,7 +54,9 @@ android {
 task prepareAssets() {
 	def assetsFolder = "build/assets"
 	def projRoot = rootDir.parent
-	def gameToCopy = "minetest_game"
+
+	// See issue #4638
+	def unsupportedLanguages = new File("${projRoot}/src/unsupported_language_list.txt").text.readLines()
 
 	doFirst {
 		logger.lifecycle('Preparing assets at {}', assetsFolder)
@@ -79,14 +81,13 @@ task prepareAssets() {
 			from "${projRoot}/fonts" include "*.ttf" into "${assetsFolder}/fonts"
 		}
 		copy {
-			from "${projRoot}/games/${gameToCopy}" into "${assetsFolder}/games/${gameToCopy}"
-		}
-		copy {
-			from "${projRoot}/textures" into "${assetsFolder}/textures"
+			from "${projRoot}/textures/base/pack" into "${assetsFolder}/textures/base/pack"
 		}
 
 		// compile translations
-		fileTree("${projRoot}/po").include("**/*.po").forEach { poFile ->
+		fileTree("${projRoot}/po").include("**/*.po").grep {
+			it.parentFile.name !in unsupportedLanguages
+		}.forEach { poFile ->
 			def moPath = "${assetsFolder}/locale/${poFile.parentFile.name}/LC_MESSAGES/"
 			file(moPath).mkdirs()
 			exec {

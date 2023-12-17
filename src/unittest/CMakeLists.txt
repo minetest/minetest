@@ -9,7 +9,7 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_compression.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_connection.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_craft.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/test_filepath.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/test_filesys.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_irrptr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_lua.cpp

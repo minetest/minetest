@@ -177,8 +177,11 @@ struct LocalFormspecHandler : public TextDest
 		}
 
 		if (m_formname == "MT_DEATH_SCREEN") {
-			assert(m_client != 0);
-			m_client->sendRespawn();
+			assert(m_client != nullptr);
+
+			if (fields.find("quit") != fields.end())
+				m_client->sendRespawn();
+
 			return;
 		}
 
@@ -785,6 +788,7 @@ protected:
 	void updateCameraDirection(CameraOrientation *cam, float dtime);
 	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
+	void updatePauseState();
 	void step(f32 dtime);
 	void processClientEvents(CameraOrientation *cam);
 	void updateCamera(f32 dtime);
@@ -815,7 +819,9 @@ protected:
 			const ItemStack &selected_item, const ItemStack &hand_item, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
+	void updateClouds(float dtime);
 	void updateShadows();
+	void drawScene(ProfilerGraph *graph, RunStats *stats);
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
@@ -1235,23 +1241,12 @@ void Game::run()
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 
-		{
-			bool was_paused = m_is_paused;
-			m_is_paused = simple_singleplayer_mode && g_menumgr.pausesGame();
-			if (m_is_paused)
-				dtime = 0.0f;
-
-			if (!was_paused && m_is_paused) {
-				pauseAnimation();
-				sound_manager->pauseAll();
-			} else if (was_paused && !m_is_paused) {
-				resumeAnimation();
-				sound_manager->resumeAll();
-			}
-		}
-
-		if (!m_is_paused)
+		updatePauseState();
+		if (m_is_paused)
+			dtime = 0.0f;
+		else
 			step(dtime);
+
 		processClientEvents(&cam_view_target);
 		updateDebugState();
 		updateCamera(dtime);
@@ -1391,21 +1386,26 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 {
 	showOverlayMessage(N_("Creating server..."), 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
+	std::string bind_str;
+	if (simple_singleplayer_mode) {
+		// Make the simple singleplayer server only accept connections from localhost,
+		// which also makes Windows Defender not show a warning.
+		bind_str = "127.0.0.1";
+	} else {
+		bind_str = g_settings->get("bind_address");
+	}
+	
 	Address bind_addr(0, 0, 0, 0, port);
 
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
-	}
-
+	if (g_settings->getBool("ipv6_server"))
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
 	try {
 		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-			   << "\" failed: " << e.what()
-			   << " -- Listening on all addresses." << std::endl;
+	} catch (const ResolveError &e) {
+		warningstream << "Resolving bind address \"" << bind_str
+			<< "\" failed: " << e.what()
+			<< " -- Listening on all addresses." << std::endl;
 	}
-
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
 		*error_message = fmtgettext("Unable to listen on %s because IPv6 is disabled",
 			bind_addr.serializeString().c_str());
@@ -2076,29 +2076,29 @@ void Game::processKeyInput()
 #endif
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
-	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
+	} else if (wasKeyPressed(KeyType::SCREENSHOT)) {
 		client->makeScreenshot();
-	} else if (wasKeyDown(KeyType::TOGGLE_BLOCK_BOUNDS)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_BLOCK_BOUNDS)) {
 		toggleBlockBounds();
-	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_HUD)) {
 		m_game_ui->toggleHud();
-	} else if (wasKeyDown(KeyType::MINIMAP)) {
+	} else if (wasKeyPressed(KeyType::MINIMAP)) {
 		toggleMinimap(isKeyDown(KeyType::SNEAK));
-	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat(client);
-	} else if (wasKeyDown(KeyType::TOGGLE_FOG)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera();
-	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug();
-	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
+	} else if (wasKeyPressed(KeyType::TOGGLE_PROFILER)) {
 		m_game_ui->toggleProfiler();
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
 		increaseViewRange();
 	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
 		decreaseViewRange();
-	} else if (wasKeyDown(KeyType::RANGESELECT)) {
+	} else if (wasKeyPressed(KeyType::RANGESELECT)) {
 		toggleFullViewRange();
 	} else if (wasKeyDown(KeyType::ZOOM)) {
 		checkZoomEnabled();
@@ -2696,6 +2696,20 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	//tt.stop();
 }
 
+void Game::updatePauseState()
+{
+	bool was_paused = this->m_is_paused;
+	this->m_is_paused = this->simple_singleplayer_mode && g_menumgr.pausesGame();
+
+	if (!was_paused && this->m_is_paused) {
+		this->pauseAnimation();
+		this->sound_manager->pauseAll();
+	} else if (was_paused && !this->m_is_paused) {
+		this->resumeAnimation();
+		this->sound_manager->resumeAll();
+	}
+}
+
 
 inline void Game::step(f32 dtime)
 {
@@ -3134,7 +3148,7 @@ void Game::updateCamera(f32 dtime)
 
 	v3s16 old_camera_offset = camera->getOffset();
 
-	if (wasKeyDown(KeyType::CAMERA_MODE)) {
+	if (wasKeyPressed(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
 
 		// If playercao not loaded, don't change camera
@@ -3196,19 +3210,7 @@ void Game::updateSound(f32 dtime)
 			camera->getDirection(),
 			camera->getCameraNode()->getUpVector());
 
-	bool mute_sound = g_settings->getBool("mute_sound");
-	if (mute_sound) {
-		sound_manager->setListenerGain(0.0f);
-	} else {
-		// Check if volume is in the proper range, else fix it.
-		float old_volume = g_settings->getFloat("sound_volume");
-		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-		sound_manager->setListenerGain(new_volume);
-
-		if (old_volume != new_volume) {
-			g_settings->setFloat("sound_volume", new_volume);
-		}
-	}
+	sound_volume_control(sound_manager.get(), device->isWindowActive());
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
@@ -4000,33 +4002,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update clouds
 	*/
-	if (clouds) {
-		if (sky->getCloudsVisible()) {
-			clouds->setVisible(true);
-			clouds->step(dtime);
-			// camera->getPosition is not enough for 3rd person views
-			v3f camera_node_position = camera->getCameraNode()->getPosition();
-			v3s16 camera_offset      = camera->getOffset();
-			camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
-			camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
-			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
-			clouds->update(camera_node_position,
-					sky->getCloudColor());
-			if (clouds->isCameraInsideCloud() && m_cache_enable_fog) {
-				// if inside clouds, and fog enabled, use that as sky
-				// color(s)
-				video::SColor clouds_dark = clouds->getColor()
-						.getInterpolated(video::SColor(255, 0, 0, 0), 0.9);
-				sky->overrideColors(clouds_dark, clouds->getColor());
-				sky->setInClouds(true);
-				runData.fog_range = std::fmin(runData.fog_range * 0.5f, 32.0f * BS);
-				// do not draw clouds after all
-				clouds->setVisible(false);
-			}
-		} else {
-			clouds->setVisible(false);
-		}
-	}
+	if (clouds)
+		updateClouds(dtime);
 
 	/*
 		Update particles
@@ -4136,6 +4113,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			break;
 
 		if (formspec->getReferenceCount() == 1) {
+			// See GUIFormSpecMenu::create what refcnt = 1 means
 			m_game_ui->deleteFormspec();
 			break;
 		}
@@ -4156,53 +4134,45 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== Drawing begins ====================
 	*/
-	const video::SColor skycolor = sky->getSkyColor();
-
-	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
-	driver->beginScene(true, true, skycolor);
-
-	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
-			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			(camera->getCameraMode() == CAMERA_MODE_FIRST));
-	bool draw_crosshair = (
-			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	if (isNoCrosshairAllowed())
-		draw_crosshair = false;
-#endif
-	m_rendering_engine->draw_scene(skycolor, m_game_ui->m_flags.show_hud,
-			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
-
-	/*
-		Profiler graph
-	*/
-	v2u32 screensize = driver->getScreenSize();
-
-	if (m_game_ui->m_flags.show_profiler_graph)
-		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
-
-	/*
-		Damage flash
-	*/
-	if (runData.damage_flash > 0.0f) {
-		video::SColor color(runData.damage_flash, 180, 0, 0);
-		driver->draw2DRectangle(color,
-					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
-
-		runData.damage_flash -= 384.0f * dtime;
-	}
-
+	drawScene(graph, stats);
 	/*
 		==================== End scene ====================
 	*/
 
-	driver->endScene();
+	// Damage flash is drawn in drawScene, but the timing update is done here to
+	// keep dtime out of the drawing code.
+	if (runData.damage_flash > 0.0f) {
+		runData.damage_flash -= 384.0f * dtime;
+	}
 
-	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
+}
+
+void Game::updateClouds(float dtime)
+{
+	if (this->sky->getCloudsVisible()) {
+		this->clouds->setVisible(true);
+		this->clouds->step(dtime);
+		// this->camera->getPosition is not enough for third-person camera.
+		v3f camera_node_position = this->camera->getCameraNode()->getPosition();
+		v3s16 camera_offset      = this->camera->getOffset();
+		camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
+		camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
+		camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
+		this->clouds->update(camera_node_position, this->sky->getCloudColor());
+		if (this->clouds->isCameraInsideCloud() && this->m_cache_enable_fog) {
+			// If camera is inside cloud and fog is enabled, use cloud's colors as sky colors.
+			video::SColor clouds_dark = this->clouds->getColor().getInterpolated(
+					video::SColor(255, 0, 0, 0), 0.9);
+			this->sky->overrideColors(clouds_dark, this->clouds->getColor());
+			this->sky->setInClouds(true);
+			this->runData.fog_range = std::fmin(this->runData.fog_range * 0.5f, 32.0f * BS);
+			// Clouds are not drawn in this case.
+			this->clouds->setVisible(false);
+		}
+	} else {
+		this->clouds->setVisible(false);
+	}
 }
 
 /* Log times and stuff for visualization */
@@ -4240,6 +4210,52 @@ void Game::updateShadows()
 	shadow->setTimeOfDay(in_timeofday);
 
 	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
+}
+
+void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
+{
+	const video::SColor skycolor = this->sky->getSkyColor();
+
+	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
+	this->driver->beginScene(true, true, skycolor);
+
+	const LocalPlayer *player = this->client->getEnv().getLocalPlayer();
+	bool draw_wield_tool = (this->m_game_ui->m_flags.show_hud &&
+			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
+			(this->camera->getCameraMode() == CAMERA_MODE_FIRST));
+	bool draw_crosshair = (
+			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
+			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
+#ifdef HAVE_TOUCHSCREENGUI
+	if (this->isNoCrosshairAllowed())
+		draw_crosshair = false;
+#endif
+	this->m_rendering_engine->draw_scene(skycolor, this->m_game_ui->m_flags.show_hud,
+			this->m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+
+	/*
+		Profiler graph
+	*/
+	v2u32 screensize = this->driver->getScreenSize();
+
+	if (this->m_game_ui->m_flags.show_profiler_graph)
+		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
+
+	/*
+		Damage flash
+	*/
+	if (this->runData.damage_flash > 0.0f) {
+		video::SColor color(this->runData.damage_flash, 180, 0, 0);
+		this->driver->draw2DRectangle(color,
+					core::rect<s32>(0, 0, screensize.X, screensize.Y),
+					NULL);
+	}
+
+	this->driver->endScene();
+
+	stats->drawtime = tt_draw.stop(true);
+	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
+
 }
 
 /****************************************************************************

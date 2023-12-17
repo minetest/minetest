@@ -114,7 +114,6 @@ void GUIChatConsole::openConsole(f32 scale)
 	reformatConsole();
 	m_animate_time_old = porting::getTimeMs();
 	IGUIElement::setVisible(true);
-	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 }
 
@@ -645,7 +644,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Tab or Shift-Tab pressed
 			// Nick completion
-			std::list<std::string> names = m_client->getConnectedPlayerNames();
+			auto names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;

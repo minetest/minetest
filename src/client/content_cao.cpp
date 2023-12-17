@@ -199,7 +199,7 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
+	static std::unique_ptr<ClientActiveObject> create(Client *client, ClientEnvironment *env);
 
 	void addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr);
 	void removeFromScene(bool permanent);
@@ -227,9 +227,9 @@ TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	ClientActiveObject::registerType(getType(), create);
 }
 
-ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
+std::unique_ptr<ClientActiveObject> TestCAO::create(Client *client, ClientEnvironment *env)
 {
-	return new TestCAO(client, env);
+	return std::make_unique<TestCAO>(client, env);
 }
 
 void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
@@ -326,7 +326,7 @@ void TestCAO::processMessage(const std::string &data)
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		ClientActiveObject(0, client, env)
 {
-	if (client == NULL) {
+	if (!client) {
 		ClientActiveObject::registerType(getType(), create);
 	} else {
 		m_client = client;
@@ -1380,6 +1380,13 @@ void GenericCAO::updateTextures(std::string mod)
 				material.TextureLayers[0].Texture = texture;
 				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
+
+				// don't filter low-res textures, makes them look blurry
+				// player models have a res of 64
+				const core::dimension2d<u32> &size = texture->getOriginalSize();
+				const u32 res = std::min(size.Height, size.Width);
+				use_trilinear_filter &= res > 64;
+				use_bilinear_filter &= res > 64;
 
 				material.forEachTexture([=] (auto &tex) {
 					setMaterialFilters(tex, use_bilinear_filter, use_trilinear_filter,

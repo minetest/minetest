@@ -277,7 +277,7 @@ public:
 		Returns the id of the object.
 		Returns 0 if not added and thus deleted.
 	*/
-	u16 addActiveObject(ServerActiveObject *object);
+	u16 addActiveObject(std::unique_ptr<ServerActiveObject> object);
 
 	/*
 		Add an active object as a static object to the corresponding
@@ -422,7 +422,8 @@ private:
 		Returns the id of the object.
 		Returns 0 if not added and thus deleted.
 	*/
-	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
+	u16 addActiveObjectRaw(std::unique_ptr<ServerActiveObject> object,
+			bool set_changed, u32 dtime_s);
 
 	/*
 		Remove all objects that satisfy (isGone() && m_known_by_count==0)
@@ -511,6 +512,7 @@ private:
 	// Particles
 	IntervalLimiter m_particle_management_interval;
 	std::unordered_map<u32, float> m_particle_spawners;
+	u32 m_particle_spawners_id_last_used = 0;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 
 	// Environment metrics
@@ -518,5 +520,6 @@ private:
 	MetricGaugePtr m_active_block_gauge;
 	MetricGaugePtr m_active_object_gauge;
 
-	ServerActiveObject* createSAO(ActiveObjectType type, v3f pos, const std::string &data);
+	std::unique_ptr<ServerActiveObject> createSAO(ActiveObjectType type, v3f pos,
+			const std::string &data);
 };

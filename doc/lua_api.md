@@ -265,7 +265,7 @@ the clients (see [Translations]). Accepted characters for names are:
 
 Accepted formats are:
 
-    images: .png, .jpg, .bmp, (deprecated) .tga
+    images: .png, .jpg, .tga, (deprecated:) .bmp
     sounds: .ogg vorbis
     models: .x, .b3d, .obj
 
@@ -1091,6 +1091,7 @@ Table used to specify how a sound is played:
     -- its end in `-start_time` seconds.
     -- It is unspecified what happens if `loop` is false and `start_time` is
     -- smaller than minus the sound's length.
+    -- Available since feature `sound_params_start_time`.
 
     loop = false,
     -- If true, sound is played in a loop.
@@ -1629,7 +1630,7 @@ HUD
 HUD element types
 -----------------
 
-The position field is used for all element types.
+The `position` field is used for all element types.
 To account for differing resolutions, the position coordinates are the
 percentage of the screen, ranging in value from `0` to `1`.
 
@@ -2148,11 +2149,13 @@ to games.
 * `fall_damage_add_percent`: modifies the fall damage suffered when hitting
   the top of this node. There's also an armor group with the same name.
   The final player damage is determined by the following formula:
+    ```lua
     damage =
       collision speed
       * ((node_fall_damage_add_percent   + 100) / 100) -- node group
       * ((player_fall_damage_add_percent + 100) / 100) -- player armor group
       - (14)                                           -- constant tolerance
+    ```
   Negative damage values are discarded as no damage.
 * `falling_node`: if there is no walkable block under the node it will fall
 * `float`: the node will not fall through liquids (`liquidtype ~= "none"`)
@@ -2643,6 +2646,9 @@ Version History
   * Added padding[] element
 * Formspec version 6 (5.6.0):
   * Add nine-slice images, animated_image, and fgimg_middle
+* Formspec version 7 (5.8.0):
+  * style[]: Add focused state for buttons
+  * Add field_enter_after_edit[] (experimental)
 
 Elements
 --------
@@ -2890,7 +2896,7 @@ Elements
 ### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 
 * Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the
+* When enter is pressed in field, `fields.key_enter_field` will be sent with the
   name of this field.
 * With the old coordinate system, fields are a set height, but will be vertically
   centered on `H`. With the new coordinate system, `H` will modify the height.
@@ -2923,12 +2929,21 @@ Elements
 * A "Proceed" button will be added automatically
 * See `field_close_on_enter` to stop enter closing the formspec
 
+### `field_enter_after_edit[<name>;<enter_after_edit>]`
+
+* Experimental, may be subject to change or removal at any time.
+* Only affects Android clients.
+* `<name>` is the name of the field.
+* If `<enter_after_edit>` is true, pressing the "Done" button in the Android
+  text input dialog will simulate an <kbd>Enter</kbd> keypress.
+* Defaults to false when not specified (i.e. no tag for a field).
+
 ### `field_close_on_enter[<name>;<close_on_enter>]`
 
-* <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the
-  form but not close it.
-* defaults to true when not specified (ie: no tag for a field)
+* `<name>` is the name of the field.
+* If `<close_on_enter>` is false, pressing <kbd>Enter</kbd> in the field will
+  submit the form but not close it.
+* Defaults to true when not specified (i.e. no tag for a field).
 
 ### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 
@@ -3994,8 +4009,9 @@ Translations
 Texts can be translated client-side with the help of `minetest.translate` and
 translation files.
 
-Consider using the tool [update_translations](https://github.com/minetest-tools/update_translations)
-to generate and update translation files automatically from the Lua source.
+Consider using the script `util/mod_translation_updater.py` in the Minetest
+repository to generate and update translation files automatically from the Lua
+sources. See `util/README_mod_translation_updater.md` for an explanation.
 
 Translating a string
 --------------------
@@ -4098,9 +4114,10 @@ On some specific cases, server translation could be useful. For example, filter
 a list on labels and send results to client. A method is supplied to achieve
 that:
 
-`minetest.get_translated_string(lang_code, string)`: Translates `string` using
-translations for `lang_code` language. It gives the same result as if the string
-was translated by the client.
+`minetest.get_translated_string(lang_code, string)`: resolves translations in
+the given string just like the client would, using the translation files for
+`lang_code`. For this to have any effect, the string needs to contain translation
+markup, e.g. `minetest.get_translated_string("fr", S("Hello"))`.
 
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
@@ -5255,6 +5272,12 @@ Utilities
       mod_storage_on_disk = true,
       -- "zstd" method for compress/decompress (5.7.0)
       compress_zstd = true,
+      -- Sound parameter tables support start_time (5.8.0)
+      sound_params_start_time = true,
+      -- New fields for set_physics_override: speed_climb, speed_crouch,
+      -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
+      -- acceleration_default, acceleration_air (5.8.0)
+      physics_overrides_v2 = true,
   }
   ```
 
@@ -5327,6 +5350,12 @@ Utilities
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      -- Requires at least Minetest 5.9.0 on the client. For older clients, it
+      -- is always set to `false`.
+      touch_controls = false,
   }
   ```
 
@@ -5393,6 +5422,9 @@ Utilities
   use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
   The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
+* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 Logging
 -------
@@ -5894,7 +5926,7 @@ Environment access
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was
-  created.
+  created. The time is not available (`nil`) before the first server step.
 * `minetest.get_day_count()`: returns number days elapsed since world was
   created.
     * accounts for time changes.
@@ -7265,8 +7297,12 @@ of the `${k}` syntax in formspecs is not deprecated.
 * `set_string(key, value)`: Value of `""` will delete the key.
 * `get_string(key)`: Returns `""` if key not present.
 * `set_int(key, value)`
+    * The range for the value is system-dependent (usually 32 bits).
+      The value will be converted into a string when stored.
 * `get_int(key)`: Returns `0` if key not present.
 * `set_float(key, value)`
+    * The range for the value is system-dependent (usually 32 bits).
+      The value will be converted into a string when stored.
 * `get_float(key)`: Returns `0` if key not present.
 * `get_keys()`: returns a list of all keys in the metadata.
 * `to_table()`:
@@ -7730,6 +7766,8 @@ child will follow movement and rotation of that bone.
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change
       from the base value on a per-player basis
+    * Note: Some of the fields don't exist in old API versions, see feature
+      `physics_overrides_v2`.
 
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
@@ -7950,11 +7988,16 @@ child will follow movement and rotation of that bone.
     * `frame_speed` sets the animations frame speed. Default is 30.
 * `get_local_animation()`: returns idle, walk, dig, walk_while_dig tables and
   `frame_speed`.
-* `set_eye_offset([firstperson, thirdperson])`: defines offset vectors for
-  camera per player. An argument defaults to `{x=0, y=0, z=0}` if unspecified.
-    * in first person view
-    * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns first and third person offsets.
+* `set_eye_offset([firstperson, thirdperson_back, thirdperson_front])`: Sets camera offset vectors.
+    * `firstperson`: Offset in first person view.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_back`: Offset in third person back view.
+      Clamped between `vector.new(-10, -10, -5)` and `vector.new(10, 15, 5)`.
+      Defaults to `vector.zero()` if unspecified.
+    * `thirdperson_front`: Offset in third person front view.
+      Same limits as for `thirdperson_back` apply.
+      Defaults to `thirdperson_back` if unspecified.
+* `get_eye_offset()`: Returns camera offset vectors as set via `set_eye_offset`.
 * `send_mapblock(blockpos)`:
     * Sends an already loaded mapblock to the player.
     * Returns `false` if nothing was sent (note that this can also mean that
@@ -8800,8 +8843,8 @@ Used by `minetest.register_node`.
     --           depending on the alpha channel being below/above 50% in value
     -- * "blend": The alpha channel specifies how transparent a given pixel
     --            of the rendered node is
-    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
-    -- "clip" otherwise.
+    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
+    -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend
     -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
@@ -8909,6 +8952,10 @@ Used by `minetest.register_node`.
     --   settings apply.
     -- * nil: Will be treated as true if `liquidtype ~= "none"`
     --   and as false otherwise.
+
+    air_equivalent = nil,
+    -- unclear meaning, the engine sets this to true for 'air' and 'ignore'
+    -- deprecated.
 
     leveled = 0,
     -- Only valid for "nodebox" drawtype with 'type = "leveled"'.

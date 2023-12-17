@@ -37,19 +37,19 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
-dofile(menupath .. DIR_DELIM .. "pkgmgr.lua")
 dofile(menupath .. DIR_DELIM .. "serverlistmgr.lua")
 dofile(menupath .. DIR_DELIM .. "game_theme.lua")
+dofile(menupath .. DIR_DELIM .. "content" .. DIR_DELIM .. "init.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "settings" .. DIR_DELIM .. "init.lua")
-dofile(menupath .. DIR_DELIM .. "dlg_contentstore.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_content.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
 
 local tabs = {
 	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
@@ -88,7 +88,7 @@ local function init_globals()
 	menudata.worldlist:set_sortmode("alphabetic")
 
 	mm_game_theme.init()
-	mm_game_theme.reset()
+	mm_game_theme.set_engine() -- This is just a fallback.
 
 	-- Create main tabview
 	local tv_main = tabview_create("maintab", {x = 15.5, y = 7.1}, {x = 0, y = 0})
@@ -121,9 +121,11 @@ local function init_globals()
 	})
 
 	ui.set_default("maintab")
-	check_new_version()
 	tv_main:show()
 	ui.update()
+
+	check_reinstall_mtg()
+	check_new_version()
 end
 
 init_globals()

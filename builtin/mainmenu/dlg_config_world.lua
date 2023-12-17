@@ -245,7 +245,7 @@ local function get_formspec(data)
 
 	return retval ..
 		"tablecolumns[color;tree;image,align=inline,width=1.5,0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") ..
-			",1=" .. core.formspec_escape(defaulttexturedir .. "checkbox_16_white.png") ..
+			",1=" .. core.formspec_escape(defaulttexturedir .. "checkbox_16.png") ..
 			",2=" .. core.formspec_escape(defaulttexturedir .. "error_icon_orange.png") ..
 			",3=" .. core.formspec_escape(defaulttexturedir .. "error_icon_red.png") .. ";text]" ..
 		"table[5.5,0.75;5.75,6;world_config_modlist;" ..

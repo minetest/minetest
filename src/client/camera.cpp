@@ -382,9 +382,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 			eye_offset += player->eye_offset_third;
 			break;
 		case CAMERA_MODE_THIRD_FRONT:
-			eye_offset.X += player->eye_offset_third.X;
-			eye_offset.Y += player->eye_offset_third.Y;
-			eye_offset.Z -= player->eye_offset_third.Z;
+			eye_offset.X += player->eye_offset_third_front.X;
+			eye_offset.Y += player->eye_offset_third_front.Y;
+			eye_offset.Z -= player->eye_offset_third_front.Z;
 			break;
 		}
 

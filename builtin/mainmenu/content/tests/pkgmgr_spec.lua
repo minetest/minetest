@@ -57,7 +57,7 @@ local function reset()
 	end
 
 	setfenv(loadfile("builtin/common/misc_helpers.lua"), env)()
-	setfenv(loadfile("builtin/mainmenu/pkgmgr.lua"), env)()
+	setfenv(loadfile("builtin/mainmenu/content/pkgmgr.lua"), env)()
 
 	function env.pkgmgr.update_gamelist()
 		table.insert(calls, { "update_gamelist" })

@@ -27,7 +27,6 @@ local full_settings = settingtypes.parse_config_file(false, true)
 local info_icon_path = core.formspec_escape(defaulttexturedir .. "settings_info.png")
 local reset_icon_path = core.formspec_escape(defaulttexturedir .. "settings_reset.png")
 
-local gettext = fgettext_ne
 local all_pages = {}
 local page_by_id = {}
 local filtered_pages = all_pages
@@ -66,23 +65,23 @@ local change_keys = {
 
 add_page({
 	id = "accessibility",
-	title = gettext("Accessibility"),
+	title = fgettext_ne("Accessibility"),
 	content = {
 		"language",
-		{ heading = gettext("General") },
+		{ heading = fgettext_ne("General") },
 		"font_size",
 		"chat_font_size",
 		"gui_scaling",
 		"hud_scaling",
 		"show_nametag_backgrounds",
-		{ heading = gettext("Chat") },
+		{ heading = fgettext_ne("Chat") },
 		"console_height",
 		"console_alpha",
 		"console_color",
-		{ heading = gettext("Controls") },
+		{ heading = fgettext_ne("Controls") },
 		"autojump",
 		"safe_dig_and_place",
-		{ heading = gettext("Movement") },
+		{ heading = fgettext_ne("Movement") },
 		"arm_inertia",
 		"view_bobbing_amount",
 		"fall_bobbing_amount",
@@ -97,7 +96,7 @@ local function load_settingtypes()
 		if not page then
 			page = add_page({
 				id = (section or "general"):lower():gsub(" ", "_"),
-				title = section or gettext("General"),
+				title = section or fgettext_ne("General"),
 				section = section,
 				content = {},
 			})
@@ -117,13 +116,11 @@ local function load_settingtypes()
 					content = {},
 				}
 
-				if page.title:sub(1, 5) ~= "Hide:" then
-					page = add_page(page)
-				end
+				page = add_page(page)
 			elseif entry.level == 2 then
 				ensure_page_started()
 				page.content[#page.content + 1] = {
-					heading = gettext(entry.readable_name or entry.name),
+					heading = fgettext_ne(entry.readable_name or entry.name),
 				}
 			end
 		else
@@ -155,6 +152,7 @@ end
 
 -- These must not be translated, as they need to show in the local
 -- language no matter the user's current language.
+-- This list must be kept in sync with src/unsupported_language_list.txt.
 get_setting_info("language").option_labels = {
 	[""] = fgettext_ne("(Use system language)"),
 	--ar = " [ar]", blacklisted
@@ -290,7 +288,7 @@ local function update_filtered_pages(query)
 
 	for _, page in ipairs(all_pages) do
 		local content, page_weight = filter_page_content(page, query_keywords)
-		if page_has_contents(content) then
+		if page_has_contents(page, content) then
 			local new_page = table.copy(page)
 			new_page.content = content
 
@@ -346,8 +344,17 @@ local function check_requirements(name, requires)
 end
 
 
-function page_has_contents(content)
-	for _, item in ipairs(content) do
+function page_has_contents(page, actual_content)
+	local is_advanced =
+			page.id:sub(1, #"client_and_server") == "client_and_server" or
+			page.id:sub(1, #"mapgen") == "mapgen" or
+			page.id:sub(1, #"advanced") == "advanced"
+	local show_advanced = core.settings:get_bool("show_advanced")
+	if is_advanced and not show_advanced then
+		return false
+	end
+
+	for _, item in ipairs(actual_content) do
 		if item == false or item.heading then --luacheck: ignore
 			-- skip
 		elseif type(item) == "string" then
@@ -437,7 +444,7 @@ local formspec_show_hack = false
 
 
 local function get_formspec(dialogdata)
-	local page_id = dialogdata.page_id or "most_used"
+	local page_id = dialogdata.page_id or "accessibility"
 	local page = filtered_page_by_id[page_id]
 
 	local extra_h = 1 -- not included in tabsize.height
@@ -451,8 +458,10 @@ local function get_formspec(dialogdata)
 	local left_pane_width = TOUCHSCREEN_GUI and 4.5 or 4.25
 	local search_width = left_pane_width + scrollbar_w - (0.75 * 2)
 
-	local technical_names_w = TOUCHSCREEN_GUI and 6 or 5
+	local back_w = 3
+	local checkbox_w = (tabsize.width - back_w - 2*0.2) / 2
 	local show_technical_names = core.settings:get_bool("show_technical_names")
+	local show_advanced = core.settings:get_bool("show_advanced")
 
 	formspec_show_hack = not formspec_show_hack
 
@@ -467,16 +476,24 @@ local function get_formspec(dialogdata)
 
 		"box[0,0;", tostring(tabsize.width), ",", tostring(tabsize.height), ";#0000008C]",
 
-		"button[0,", tostring(tabsize.height + 0.2), ";3,0.8;back;", fgettext("Back"), "]",
+		("button[0,%f;%f,0.8;back;%s]"):format(
+				tabsize.height + 0.2, back_w, fgettext("Back")),
 
 		("box[%f,%f;%f,0.8;#0000008C]"):format(
-			tabsize.width - technical_names_w, tabsize.height + 0.2, technical_names_w),
+			back_w + 0.2, tabsize.height + 0.2, checkbox_w),
 		("checkbox[%f,%f;show_technical_names;%s;%s]"):format(
-			tabsize.width - technical_names_w + 0.25, tabsize.height + 0.6,
+			back_w + 2*0.2, tabsize.height + 0.6,
 			fgettext("Show technical names"), tostring(show_technical_names)),
+
+		("box[%f,%f;%f,0.8;#0000008C]"):format(
+			back_w + 2*0.2 + checkbox_w, tabsize.height + 0.2, checkbox_w),
+		("checkbox[%f,%f;show_advanced;%s;%s]"):format(
+			back_w + 3*0.2 + checkbox_w, tabsize.height + 0.6,
+			fgettext("Show advanced settings"), tostring(show_advanced)),
 
 		"field[0.25,0.25;", tostring(search_width), ",0.75;search_query;;",
 			core.formspec_escape(dialogdata.query or ""), "]",
+		"field_enter_after_edit[search_query;true]",
 		"container[", tostring(search_width + 0.25), ", 0.25]",
 			"image_button[0,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "search.png"), ";search;]",
 			"image_button[0.75,0;0.75,0.75;", core.formspec_escape(defaulttexturedir .. "clear.png"), ";search_clear;]",
@@ -608,6 +625,23 @@ local function buttonhandler(this, fields)
 		return true
 	end
 
+	if fields.show_advanced ~= nil then
+		local value = core.is_yes(fields.show_advanced)
+		core.settings:set_bool("show_advanced", value)
+
+		local suggested_page_id = update_filtered_pages(dialogdata.query)
+
+		if not filtered_page_by_id[dialogdata.page_id] then
+			dialogdata.components = nil
+			dialogdata.leftscroll = 0
+			dialogdata.rightscroll = 0
+
+			dialogdata.page_id = suggested_page_id
+		end
+
+		return true
+	end
+
 	if fields.search or fields.key_enter_field == "search_query" then
 		dialogdata.components = nil
 		dialogdata.leftscroll = 0
@@ -655,8 +689,19 @@ local function buttonhandler(this, fields)
 end
 
 
+local function eventhandler(event)
+	if event == "DialogShow" then
+		-- Don't show the "MINETEST" header behind the dialog.
+		mm_game_theme.set_engine(true)
+		return true
+	end
+
+	return false
+end
+
+
 function create_settings_dlg()
-	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, nil)
+	local dlg = dialog_create("dlg_settings", get_formspec, buttonhandler, eventhandler)
 
 	dlg.data.page_id = update_filtered_pages("")
 

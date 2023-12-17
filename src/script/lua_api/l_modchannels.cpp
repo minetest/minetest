@@ -115,7 +115,6 @@ ModChannel *ModChannelRef::getobject(lua_State *L, ModChannelRef *ref)
 	return getGameDef(L)->getModChannel(ref->m_modchannel_name);
 }
 
-// clang-format off
 const char ModChannelRef::className[] = "ModChannelRef";
 const luaL_Reg ModChannelRef::methods[] = {
 	luamethod(ModChannelRef, leave),
@@ -123,4 +122,3 @@ const luaL_Reg ModChannelRef::methods[] = {
 	luamethod(ModChannelRef, send_all),
 	{0, 0},
 };
-// clang-format on

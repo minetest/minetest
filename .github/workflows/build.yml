@@ -164,46 +164,50 @@ jobs:
 
   win32:
     name: "MinGW cross-compiler (32-bit)"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install compiler
         run: |
           sudo apt-get update && sudo apt-get install -y gettext
-          wget http://minetest.kitsunemimi.pw/mingw-w64-i686_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
-          sudo tar -xaf mingw.tar.xz -C /usr
+          sudo ./util/buildbot/download_toolchain.sh i686 /usr
 
       - name: Build
         run: |
-           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh winbuild
-        env:
-          NO_MINETEST_GAME: 1
-          NO_PACKAGE: 1
+           EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin32.sh B
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mingw32
+          path: B/build/*.zip
+          if-no-files-found: error
 
   win64:
     name: "MinGW cross-compiler (64-bit)"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Install compiler
         run: |
           sudo apt-get update && sudo apt-get install -y gettext
-          wget http://minetest.kitsunemimi.pw/mingw-w64-x86_64_11.2.0_ubuntu20.04.tar.xz -O mingw.tar.xz
-          sudo tar -xaf mingw.tar.xz -C /usr
+          sudo ./util/buildbot/download_toolchain.sh x86_64 /usr
 
       - name: Build
         run: |
-          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh winbuild
-        env:
-          NO_MINETEST_GAME: 1
-          NO_PACKAGE: 1
+          EXISTING_MINETEST_DIR=$PWD ./util/buildbot/buildwin64.sh B
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mingw64
+          path: B/build/*.zip
+          if-no-files-found: error
 
   msvc:
     name: VS 2019 ${{ matrix.config.arch }}-${{ matrix.type }}
     runs-on: windows-2019
     env:
-      VCPKG_VERSION: 5cf60186a241e84e8232641ee973395d4fde90e1
-      # 2022.02
+      VCPKG_VERSION: 8eb57355a4ffb410a2e94c07b4dca2dffbee8e50
+      # 2023.10.19
       vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
     strategy:
       fail-fast: false

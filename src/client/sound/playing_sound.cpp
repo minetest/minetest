@@ -179,6 +179,9 @@ bool PlayingSound::doFade(f32 dtime) noexcept
 	if (!m_fade_state || isDead())
 		return false;
 
+	if (getState() == AL_PAUSED)
+		return true;
+
 	FadeState &fade = *m_fade_state;
 	assert(fade.step != 0.0f);
 

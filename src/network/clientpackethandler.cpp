@@ -1518,6 +1518,11 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
+	try {
+		*pkt >> player->eye_offset_third_front;
+	} catch (PacketError &e) {
+		player->eye_offset_third_front = player->eye_offset_third;
+	};
 }
 
 void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)

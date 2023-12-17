@@ -241,7 +241,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                             // base64-encoded SHA-1 (27+\0).
 
 // See also formspec [Version History] in doc/lua_api.md
-#define FORMSPEC_API_VERSION 6
+#define FORMSPEC_API_VERSION 7
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
@@ -751,6 +751,7 @@ enum ToClientCommand
 	/*
 		v3f1000 first
 		v3f1000 third
+		v3f1000 third_front
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,

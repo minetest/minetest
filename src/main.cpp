@@ -78,6 +78,7 @@ extern "C" {
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
 
+#define ENV_MT_LOGCOLOR "MT_LOGCOLOR"
 #define ENV_NO_COLOR "NO_COLOR"
 #define ENV_CLICOLOR "CLICOLOR"
 #define ENV_CLICOLOR_FORCE "CLICOLOR_FORCE"
@@ -125,7 +126,7 @@ static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr);
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
 
@@ -233,7 +234,10 @@ int main(int argc, char *argv[])
 	// Run benchmarks
 	if (cmd_args.getFlag("run-benchmarks")) {
 #if BUILD_BENCHMARKS
-		return run_benchmarks();
+		if (cmd_args.exists("test-module"))
+			return run_benchmarks(cmd_args.get("test-module").c_str()) ? 0 : 1;
+		else
+			return run_benchmarks() ? 0 : 1;
 #else
 		errorstream << "Benchmark support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_BENCHMARKS=1 flag."
@@ -287,6 +291,13 @@ int main(int argc, char *argv[])
 
 static void get_env_opts(Settings &args)
 {
+#if !defined(_WIN32)
+	const char *mt_logcolor = std::getenv(ENV_MT_LOGCOLOR);
+	if (mt_logcolor) {
+		args.set("color", mt_logcolor);
+	}
+#endif
+
 	// CLICOLOR is a de-facto standard option for colors <https://bixense.com/clicolors/>
 	// CLICOLOR != 0: ANSI colors are supported (auto-detection, this is the default)
 	// CLICOLOR == 0: ANSI colors are NOT supported
@@ -332,7 +343,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
 			_("Run the benchmarks and exit"))));
 	allowed_options->insert(std::make_pair("test-module", ValueSpec(VALUETYPE_STRING,
-			_("Only run the specified test module"))));
+			_("Only run the specified test module or benchmark"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
@@ -493,12 +504,6 @@ static bool setup_log_params(const Settings &cmd_args)
 	std::string color_mode;
 	if (cmd_args.exists("color")) {
 		color_mode = cmd_args.get("color");
-#if !defined(_WIN32)
-	} else {
-		char *color_mode_env = getenv("MT_LOGCOLOR");
-		if (color_mode_env)
-			color_mode = color_mode_env;
-#endif
 	}
 	if (!color_mode.empty()) {
 		if (color_mode == "auto") {
@@ -550,8 +555,7 @@ static bool create_userdata_path()
 }
 
 namespace {
-	std::string findProgram(const char *name)
-	{
+	[[maybe_unused]] std::string findProgram(const char *name) {
 		char *path_c = getenv("PATH");
 		if (!path_c)
 			return "";
@@ -571,8 +575,9 @@ namespace {
 #ifdef _WIN32
 	const char *debuggerNames[] = {"gdb.exe", "lldb.exe"};
 #else
-	const char *debuggerNames[] = {"gdb", "lldb"};
+	[[maybe_unused]] const char *debuggerNames[] = {"gdb", "lldb"};
 #endif
+
 	template <class T>
 	void getDebuggerArgs(T &out, int i) {
 		if (i == 0) {
@@ -1043,27 +1048,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
-	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
-	}
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-		           << "\" failed: " << e.what()
-		           << " -- Listening on all addresses." << std::endl;
-	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		errorstream << "Unable to listen on "
-		            << bind_addr.serializeString()
-		            << L" because IPv6 is disabled" << std::endl;
-		return false;
-	}
-
 	// Database migration/compression
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
@@ -1078,7 +1062,27 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return Server::migrateModStorageDatabase(game_params, cmd_args);
 
 	if (cmd_args.getFlag("recompress"))
-		return recompress_map_database(game_params, cmd_args, bind_addr);
+		return recompress_map_database(game_params, cmd_args);
+
+	// Bind address
+	std::string bind_str = g_settings->get("bind_address");
+	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
+
+	if (g_settings->getBool("ipv6_server"))
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
+	try {
+		bind_addr.Resolve(bind_str.c_str());
+	} catch (const ResolveError &e) {
+		warningstream << "Resolving bind address \"" << bind_str
+			<< "\" failed: " << e.what()
+			<< " -- Listening on all addresses." << std::endl;
+	}
+	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+		errorstream << "Unable to listen on "
+		            << bind_addr.serializeString()
+		            << " because IPv6 is disabled" << std::endl;
+		return false;
+	}
 
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
@@ -1230,7 +1234,7 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 	return true;
 }
 
-static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args, const Address &addr)
+static bool recompress_map_database(const GameParams &game_params, const Settings &cmd_args)
 {
 	Settings world_mt;
 	const std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
@@ -1240,7 +1244,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		return false;
 	}
 	const std::string &backend = world_mt.get("backend");
-	Server server(game_params.world_path, game_params.game_spec, false, addr, false);
+	Server server(game_params.world_path, game_params.game_spec, false, Address(), false);
 	MapDatabase *db = ServerMap::createDatabase(backend, game_params.world_path, world_mt);
 
 	u32 count = 0;
@@ -1268,7 +1272,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		iss.clear();
 
 		{
-			MapBlock mb(nullptr, v3s16(0,0,0), &server);
+			MapBlock mb(v3s16(0,0,0), &server);
 			u8 ver = readU8(iss);
 			mb.deSerialize(iss, ver, true);
 

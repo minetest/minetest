@@ -282,6 +282,9 @@ public:
 	GUITable* getTable(const std::string &tablename);
 	std::vector<std::string>* getDropDownValues(const std::string &name);
 
+	// This will only return a meaningful value if called after drawMenu().
+	core::rect<s32> getAbsoluteRect();
+
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
 #endif
@@ -331,6 +334,7 @@ protected:
 
 	std::vector<GUIInventoryList *> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
+	std::unordered_map<std::string, bool> field_enter_after_edit;
 	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::unordered_map<std::string, bool> m_dropdown_index_event;
 	std::vector<FieldSpec> m_fields;
@@ -448,6 +452,7 @@ private:
 	void parseTable(parserData* data, const std::string &element);
 	void parseTextList(parserData* data, const std::string &element);
 	void parseDropDown(parserData* data, const std::string &element);
+	void parseFieldEnterAfterEdit(parserData *data, const std::string &element);
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data, const std::string &element);
 	void parseField(parserData* data, const std::string &element, const std::string &type);
@@ -497,6 +502,9 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
+
+	// used by getAbsoluteRect
+	s32 m_tabheader_upper_edge = 0;
 };
 
 class FormspecFormSource: public IFormSource

@@ -540,13 +540,22 @@ void Server::start()
 	m_thread->start();
 
 	// ASCII art for the win!
-	std::cerr
-		<< "         __.               __.                 __.  " << std::endl
-		<< "  _____ |__| ____   _____ /  |_  _____  _____ /  |_ " << std::endl
-		<< " /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\" << std::endl
-		<< "|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  " << std::endl
-		<< "|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  " << std::endl
-		<< "      \\/ \\/     \\/         \\/                  \\/   " << std::endl;
+	const char *art[] = {
+		"         __.               __.                 __.  ",
+		"  _____ |__| ____   _____ /  |_  _____  _____ /  |_ ",
+		" /     \\|  |/    \\ /  __ \\    _\\/  __ \\/   __>    _\\",
+		"|  Y Y  \\  |   |  \\   ___/|  | |   ___/\\___  \\|  |  ",
+		"|__|_|  /  |___|  /\\______>  |  \\______>_____/|  |  ",
+		"      \\/ \\/     \\/         \\/                  \\/   "
+	};
+
+	if (!m_admin_chat) {
+		// we're not printing to rawstream to avoid it showing up in the logs.
+		// however it would then mess up the ncurses terminal (m_admin_chat),
+		// so we skip it in that case.
+		for (auto line : art)
+			std::cerr << line << std::endl;
+	}
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
 			<< "\" listening on ";
@@ -568,8 +577,8 @@ void Server::stop()
 void Server::step(float dtime)
 {
 	// Limit a bit
-	if (dtime > 2.0)
-		dtime = 2.0;
+	if (dtime > DTIME_LIMIT)
+		dtime = DTIME_LIMIT;
 	{
 		MutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
@@ -1981,10 +1990,10 @@ void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames
 	Send(&pkt);
 }
 
-void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third)
+void Server::SendEyeOffset(session_t peer_id, v3f first, v3f third, v3f third_front)
 {
 	NetworkPacket pkt(TOCLIENT_EYE_OFFSET, 0, peer_id);
-	pkt << first << third;
+	pkt << first << third << third_front;
 	Send(&pkt);
 }
 
@@ -2162,12 +2171,19 @@ void Server::SendPlayerSpeed(session_t peer_id, const v3f &added_vel)
 
 inline s32 Server::nextSoundId()
 {
-	s32 ret = m_next_sound_id;
-	if (m_next_sound_id == INT32_MAX)
-		m_next_sound_id = 0; // signed overflow is undefined
-	else
-		m_next_sound_id++;
-	return ret;
+	s32 free_id = m_playing_sounds_id_last_used;
+	do {
+		if (free_id == INT32_MAX)
+			free_id = 0; // signed overflow is undefined
+		else
+			free_id++;
+
+		if (free_id == m_playing_sounds_id_last_used)
+			return 0;
+	} while (free_id == 0 || m_playing_sounds.find(free_id) != m_playing_sounds.end());
+
+	m_playing_sounds_id_last_used = free_id;
+	return free_id;
 }
 
 s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
@@ -2223,6 +2239,8 @@ s32 Server::playSound(ServerPlayingSound &params, bool ephemeral)
 
 	// old clients will still use this, so pick a reserved ID (-1)
 	const s32 id = ephemeral ? -1 : nextSoundId();
+	if (id == 0)
+		return 0;
 
 	float gain = params.gain * params.spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
@@ -2546,6 +2564,13 @@ bool Server::addMediaFile(const std::string &filename,
 		errorstream << "Server::addMediaFile(): Empty file \""
 				<< filepath << "\"" << std::endl;
 		return false;
+	}
+
+	const char *deprecated_ext[] = { ".bmp", nullptr };
+	if (!removeStringEnd(filename, deprecated_ext).empty())
+	{
+		warningstream << "Media file \"" << filename << "\" is using a"
+			" deprecated format and will stop working in the future." << std::endl;
 	}
 
 	SHA1 sha1;
@@ -3405,12 +3430,13 @@ void Server::setLocalPlayerAnimations(RemotePlayer *player,
 	SendLocalPlayerAnimations(player->getPeerId(), animation_frames, frame_speed);
 }
 
-void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third)
+void Server::setPlayerEyeOffset(RemotePlayer *player, const v3f &first, const v3f &third, const v3f &third_front)
 {
 	sanity_check(player);
 	player->eye_offset_first = first;
 	player->eye_offset_third = third;
-	SendEyeOffset(player->getPeerId(), first, third);
+	player->eye_offset_third_front = third_front;
+	SendEyeOffset(player->getPeerId(), first, third, third_front);
 }
 
 void Server::setSky(RemotePlayer *player, const SkyboxParams &params)

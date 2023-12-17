@@ -611,10 +611,12 @@ int ModApiEnv::l_add_entity(lua_State *L)
 	const char *name = luaL_checkstring(L, 2);
 	std::string staticdata = readParam<std::string>(L, 3, "");
 
-	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
-	int objectid = env->addActiveObject(obj);
+	std::unique_ptr<ServerActiveObject> obj_u =
+			std::make_unique<LuaEntitySAO>(env, pos, name, staticdata);
+	auto obj = obj_u.get();
+	int objectid = env->addActiveObject(std::move(obj_u));
 	// If failed to add, return nothing (reads as nil)
-	if(objectid == 0)
+	if (objectid == 0)
 		return 0;
 
 	// If already deleted (can happen in on_activate), return nil

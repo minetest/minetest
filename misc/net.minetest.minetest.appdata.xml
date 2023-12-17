@@ -82,6 +82,6 @@
 	<translation type="gettext">minetest</translation>
 	<update_contact>sfan5@live.de</update_contact>
 	<releases>
-		<release date="2023-04-08" version="5.7.0"/>
+		<release date="2023-12-04" version="5.8.0"/>
 	</releases>
 </component>

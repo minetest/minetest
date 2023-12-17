@@ -288,7 +288,7 @@ public:
 	// Send the item number 'item' as player item to the server
 	void setPlayerItem(u16 item);
 
-	const std::list<std::string> &getConnectedPlayerNames()
+	const std::set<std::string> &getConnectedPlayerNames()
 	{
 		return m_env.getPlayerNames();
 	}

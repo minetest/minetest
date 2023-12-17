@@ -1,4 +1,8 @@
 minetest.register_allow_player_inventory_action(function(player, action, inventory, info)
+	if action == "move" then
+		return info.count
+	end
+
 	if info.stack:get_name() == "default:water" then
 		return 0
 	end

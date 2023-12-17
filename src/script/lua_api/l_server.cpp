@@ -317,6 +317,11 @@ int ModApiServer::l_get_player_window_information(lua_State *L)
 	lua_pushstring(L, "real_hud_scaling");
 	lua_pushnumber(L, dynamic->real_hud_scaling);
 	lua_settable(L, dyn_table);
+
+	lua_pushstring(L, "touch_controls");
+	lua_pushboolean(L, dynamic->touch_controls);
+	lua_settable(L, dyn_table);
+
 	return 1;
 }
 

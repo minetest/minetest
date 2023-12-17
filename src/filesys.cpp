@@ -758,14 +758,32 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	std::string tmp_file = path + ".~mt";
 
 	// Write to a tmp file
-	std::ofstream os(tmp_file.c_str(), std::ios::binary);
-	if (!os.good())
+	bool tmp_success = false;
+
+#ifdef _WIN32
+	// We've observed behavior suggesting that the MSVC implementation of std::ofstream::flush doesn't
+	// actually flush, so we use win32 APIs.
+	HANDLE tmp_handle = CreateFile(
+		tmp_file.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (tmp_handle == INVALID_HANDLE_VALUE) {
 		return false;
+	}
+	DWORD bytes_written;
+	tmp_success = (WriteFile(tmp_handle, content.c_str(), content.size(), &bytes_written, nullptr) &&
+					FlushFileBuffers(tmp_handle));
+	CloseHandle(tmp_handle);
+#else
+	std::ofstream os(tmp_file.c_str(), std::ios::binary);
+	if (!os.good()) {
+		return false;
+	}
 	os << content;
 	os.flush();
 	os.close();
-	if (os.fail()) {
-		// Remove the temporary file because writing it failed and it's useless.
+	tmp_success = !os.fail();
+#endif
+
+	if (!tmp_success) {
 		remove(tmp_file.c_str());
 		return false;
 	}
@@ -777,14 +795,12 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	// When creating the file, it can cause Windows Search indexer, virus scanners and other apps
 	// to query the file. This can make the move file call below fail.
 	// We retry up to 5 times, with a 1ms sleep between, before we consider the whole operation failed
-	int number_attempts = 0;
-	while (number_attempts < 5) {
+	for (int attempt = 0; attempt < 5; attempt++) {
 		rename_success = MoveFileEx(tmp_file.c_str(), path.c_str(),
 				MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
 		if (rename_success)
 			break;
 		sleep_ms(1);
-		++number_attempts;
 	}
 #else
 	// On POSIX compliant systems rename() is specified to be able to swap the

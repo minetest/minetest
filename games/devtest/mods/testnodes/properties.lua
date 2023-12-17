@@ -428,17 +428,17 @@ local MAX_BOUNCE_NONJUMPY = 140
 for i=-MAX_BOUNCE_NONJUMPY, MAX_BOUNCE_JUMPY, 20 do
 	if i ~= 0 then
 		local desc
-		local val = math.floor(((i-20)/200)*255)
-		local val2 = math.max(0, 200 - val)
+		local val = math.floor((math.abs(i) - 20) / 200 * 255)
+		local val2 = math.max(0, 255 - val)
 		local num = string.format("%03d", math.abs(i))
 		if i > 0 then
 			desc = S("Bouncy Node (@1%), jumpy", i).."\n"..
 				S("Sneaking/jumping affects bounce")
-			color = { r=255-val, g=255-val, b=255, a=255 }
+			color = { r=val2, g=val2, b=255, a=255 }
 		else
 			desc = S("Bouncy Node (@1%), non-jumpy", math.abs(i)).."\n"..
 				S("Sneaking/jumping does not affect bounce")
-			color = { r=val, g=255, b=val, a=255 }
+			color = { r=val2, g=255, b=val2, a=255 }
 			num = "NEG"..num
 		end
 		minetest.register_node("testnodes:bouncy"..num, {
