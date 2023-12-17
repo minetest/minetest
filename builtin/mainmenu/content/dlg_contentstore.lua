@@ -1035,27 +1035,14 @@ function store.sort_packages()
 
 	-- Add installed content
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if pkg.path and pkg ~= auto_install_pkg then
+		if pkg.path and pkg.installed_release < pkg.release then
 			ret[#ret + 1] = pkg
 		end
 	end
 
-	-- Sort installed content first by "is there an update available?", then by title
-	table.sort(ret, function(a, b)
-		local a_updatable = a.installed_release < a.release
-		local b_updatable = b.installed_release < b.release
-		if a_updatable and not b_updatable then
-			return true
-		elseif b_updatable and not a_updatable then
-			return false
-		end
-
-		return a.title < b.title
-	end)
-
 	-- Add uninstalled content
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if not pkg.path and pkg ~= auto_install_pkg then
+		if not pkg.path or pkg.installed_release >= pkg.release then
 			ret[#ret + 1] = pkg
 		end
 	end
