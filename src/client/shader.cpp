@@ -767,8 +767,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define SSAA_SCALE " << ssaa_scale << ".\n";
 	}
 
-	std::string debanding{g_settings->get("debanding")};
-	if ((debanding == "glsl_only" && !use_gles) || debanding == "enabled")
+	if (g_settings->getBool("debanding"))
 		shaders_header << "#define ENABLE_DITHERING 1\n";
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics
