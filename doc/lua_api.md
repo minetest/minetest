@@ -5284,6 +5284,10 @@ Utilities
       physics_overrides_v2 = true,
       -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
       hud_def_type_field = true,
+      -- PseudoRandom and PcgRandom state is restorable
+      -- PseudoRandom has get_state method
+      -- PcgRandom has get_state and set_state methods (5.9.0)
+      random_state_restore = true,
   }
   ```
 
@@ -8056,7 +8060,7 @@ child will follow movement and rotation of that bone.
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
 * `respawn()`: Respawns the player using the same mechanism as the death screen,
-  including calling on_respawnplayer callbacks.
+  including calling `on_respawnplayer` callbacks.
 
 `PcgRandom`
 -----------
@@ -8079,6 +8083,8 @@ offering very strong randomness.
     * `mean = (max - min) / 2`, and
     * `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
     * Increasing `num_trials` improves accuracy of the approximation
+* `get_state()`: return generator state encoded in string
+* `set_state(state_string)`: restore generator state from encoded string
 
 `PerlinNoise`
 -------------
@@ -8171,6 +8177,8 @@ Uses a well-known LCG algorithm introduced by K&R.
 * `next(min, max)`: return next integer random number [`min`...`max`]
     * Either `max - min == 32767` or `max - min <= 6553` must be true
       due to the simple implementation making a bad distribution otherwise.
+* `get_state()`: return state of pseudorandom generator as number
+    * use returned number as seed in PseudoRandom constructor to restore
 
 `Raycast`
 ---------

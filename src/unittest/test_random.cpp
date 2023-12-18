@@ -62,18 +62,26 @@ void TestRandom::testPseudoRandom()
 {
 	PseudoRandom pr(814538);
 
-	for (u32 i = 0; i != 256; i++)
-		UASSERTEQ(s32, pr.next(), expected_pseudorandom_results[i]);
+	for (u32 i = 0; i != 128; i++)
+		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
 
-	PseudoRandom pr2(0);
-	UASSERTEQ(int, pr2.next(), 0);
-	UASSERTEQ(int, pr2.next(), 21469);
-	UASSERTEQ(int, pr2.next(), 9989);
+	int	state = pr.getState();
+	PseudoRandom pr2(state);
 
-	PseudoRandom pr3(-101);
-	UASSERTEQ(int, pr3.next(), 3267);
-	UASSERTEQ(int, pr3.next(), 2485);
-	UASSERTEQ(int, pr3.next(), 30057);
+	for (u32 i = 128; i != 256; i++) {
+		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
+		UASSERTEQ(int, pr2.next(), expected_pseudorandom_results[i]);
+	}
+
+	PseudoRandom pr3(0);
+	UASSERTEQ(int, pr3.next(), 0);
+	UASSERTEQ(int, pr3.next(), 21469);
+	UASSERTEQ(int, pr3.next(), 9989);
+
+	PseudoRandom pr4(-101);
+	UASSERTEQ(int, pr4.next(), 3267);
+	UASSERTEQ(int, pr4.next(), 2485);
+	UASSERTEQ(int, pr4.next(), 30057);
 }
 
 
@@ -101,8 +109,18 @@ void TestRandom::testPcgRandom()
 {
 	PcgRandom pr(814538, 998877);
 
-	for (u32 i = 0; i != 256; i++)
+	for (u32 i = 0; i != 128; i++)
 		UASSERTEQ(u32, pr.next(), expected_pcgrandom_results[i]);
+
+	PcgRandom pr2(0, 0);
+	u64 state[2];
+	pr.getState(state);
+	pr2.setState(state);
+
+	for (u32 i = 128; i != 256; i++) {
+		UASSERTEQ(u32, pr.next(), expected_pcgrandom_results[i]);
+		UASSERTEQ(u32, pr2.next(), expected_pcgrandom_results[i]);
+	}
 }
 
 
