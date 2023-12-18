@@ -6754,7 +6754,7 @@ Misc.
   (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
-    * `name`: `"breath"` or `"health"`
+    * `name`: `"breath"`, `"health"` or `"minimap"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.parse_relative_number(arg, relative_to)`: returns number or nil
     * Helper function for chat commands.

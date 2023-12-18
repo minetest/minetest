@@ -1,26 +1,25 @@
-local hud_ids = {}
-local minimap_size = 256
+local minimap_def = {
+	hud_elem_type = "minimap",
+	position = {x=1, y=0},
+	alignment = {x=-1, y=1},
+	offset = {x=-10, y=10},
+	size = {x = 256 , y = 256}
+}
+
+local minimap_hud_id = {}
 local function update_builtin_minimap(player)
 	local name = player:get_player_name()
-	local id = hud_ids[name]
+	local id = minimap_hud_id[name]
 	-- mimic wired flag behavior of deprecated non HUD element minimap
 	if player:hud_get_flags().minimap then
-		if id then
-			player:hud_change(id, "size", {x = minimap_size , y = minimap_size})
-		else
-			hud_ids[name] = player:hud_add({
-				hud_elem_type = "minimap",
-				position = {x=1, y=0},
-				alignment = {x=-1, y=1},
-				offset = {x=-10, y=10},
-				size = {x = minimap_size , y = minimap_size}
-			})
+		if not id then
+			minimap_hud_id[name] = player:hud_add(minimap_def)
 		end
 	else
 		if id then
 			player:hud_remove(id)
 		end
-		hud_ids[name] = nil
+		minimap_hud_id[name] = nil
 	end
 end
 
@@ -44,10 +43,27 @@ local function player_event_handler(player, eventname)
 	return false
 end
 
-
 core.register_playerevent(player_event_handler)
 
 core.register_on_leaveplayer(function(player)
-	hud_ids[player:get_player_name()] = nil
+	minimap_hud_id[player:get_player_name()] = nil
 end)
 
+-- Eventually builtin Lua HUD elements should be generalized
+-- this is temporary to make hud_replace_builtin work with the builtin minimap
+local old_hud_replace_builtin = core.hud_replace_builtin(hud_name, definition)
+function core.hud_replace_builtin(hud_name, definition)
+	if hud_name == "minimap" then
+		minimap_def = table.copy(definition)
+		for name, id in pairs(minimap_hud_id) do
+			local player = core.get_player_by_name(name)
+			if player then
+				player:hud_remove(id)
+				minimap_hud_id[name] = nil
+				update_builtin_minimap(player)
+			end
+		end
+		return true
+	end
+	return old_hud_replace_builtin(hud_name, definition)
+end
