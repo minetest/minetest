@@ -580,6 +580,17 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 #    Requires: shaders, enable_auto_exposure
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
+#    Apply dithering to reduce color banding artifacts.
+#    Dithering significantly increases the size of losslessly-compressed
+#    screenshots and it works incorrectly if the display or operating system
+#    performs additional dithering or if the color channels are not quantized
+#    to 8 bits.
+#    With OpenGL ES, dithering only works if the shader supports high
+#    floating-point precision and it may have a higher performance impact.
+#
+#    Requires: shaders
+debanding (Enable Debanding) bool true
+
 [**Bloom]
 
 #    Set to true to enable bloom effect.

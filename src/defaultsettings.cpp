@@ -264,6 +264,7 @@ void set_default_settings()
 	settings->setDefault("enable_waving_plants", "false");
 	settings->setDefault("exposure_compensation", "0.0");
 	settings->setDefault("enable_auto_exposure", "false");
+	settings->setDefault("debanding", "true");
 	settings->setDefault("antialiasing", "none");
 	settings->setDefault("enable_bloom", "false");
 	settings->setDefault("enable_bloom_debug", "false");
@@ -499,6 +500,7 @@ void set_default_settings()
 	settings->setDefault("active_block_range", "2");
 	settings->setDefault("viewing_range", "50");
 	settings->setDefault("leaves_style", "simple");
+	settings->setDefault("debanding", "false");
 	settings->setDefault("curl_verify_cert", "false");
 
 	// Apply settings according to screen size
