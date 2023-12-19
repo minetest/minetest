@@ -71,5 +71,4 @@ float getDisplayDensity();
 v2u32 getDisplaySize();
 #endif
 
-std::string getLanguageAndroid();
 }
