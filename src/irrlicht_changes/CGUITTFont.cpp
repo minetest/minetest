@@ -32,8 +32,6 @@
 
 #include <irrlicht.h>
 #include <iostream>
-#include <codecvt>
-#include <locale>
 #include "CGUITTFont.h"
 
 namespace irr
@@ -1251,21 +1249,31 @@ std::u32string CGUITTFont::convertWCharToU32String(const wchar_t* const charArra
 {
 	static_assert(sizeof(wchar_t) == 2 || sizeof(wchar_t) == 4, "unexpected wchar size");
 
-	if (sizeof(wchar_t) == 4) // Systems where wchar_t is UTF-32
+	if (sizeof(wchar_t) == 4) // wchar_t is UTF-32
 		return std::u32string(reinterpret_cast<const char32_t*>(charArray));
 
-	// Systems where wchar_t is UTF-16:
-	// First, convert to UTF-8
-	std::u16string utf16String(reinterpret_cast<const char16_t*>(charArray));
-	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter1;
-	std::string utf8String = converter1.to_bytes(utf16String);
+	// wchar_t is UTF-16 and we need to convert.
+	// std::codecvt could do this for us but aside from being deprecated,
+	// it turns out that it's laughably slow on MSVC. Thanks Microsoft.
 
-	// Next, convert to UTF-32
-	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter2;
-	return converter2.from_bytes(utf8String);
-
-	// This is inefficient, but importantly it is _correct_, rather than a hand-rolled UTF-16 to
-	// UTF-32 converter which may or may not be correct.
+	std::u32string ret;
+	ret.reserve(wcslen(charArray));
+	const wchar_t *p = charArray;
+	while (*p) {
+		char32_t c = *p;
+		if (c >= 0xD800 && c < 0xDC00) {
+			p++;
+			char32_t c2 = *p;
+			if (!c2)
+				break;
+			else if (c2 < 0xDC00 || c2 > 0xDFFF)
+				continue; // can't find low surrogate, skip
+			c = 0x10000 + ( ((c & 0x3ff) << 10) | (c2 & 0x3ff) );
+		}
+		ret.push_back(c);
+		p++;
+	}
+	return ret;
 }
 
 
