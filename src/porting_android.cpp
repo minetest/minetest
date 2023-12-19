@@ -40,7 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern int main(int argc, char *argv[]);
 
 namespace porting {
-	void cleanupAndroid(); // used here
+	// used here:
+	void cleanupAndroid();
+	std::string getLanguageAndroid();
 	bool setSystemPaths(); // used in porting.cpp
 }
 
@@ -100,6 +102,11 @@ void osSpecificInit()
 		errorstream <<
 			"porting::initAndroid unable to find Java native activity class" <<
 			std::endl;
+
+	// Set default language
+	auto lang = getLanguageAndroid();
+	unsetenv("LANGUAGE");
+	setenv("LANG", lang.c_str(), 1);
 
 #ifdef GPROF
 	// in the start-up code
