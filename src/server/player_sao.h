@@ -90,6 +90,7 @@ public:
 	void step(float dtime, bool send_recommended) override;
 	void setBasePosition(v3f position);
 	void setPos(const v3f &pos) override;
+	void addPos(const v3f &added_pos) override;
 	void moveTo(v3f pos, bool continuous) override;
 	void setPlayerYaw(const float yaw);
 	// Data should not be sent at player initialization

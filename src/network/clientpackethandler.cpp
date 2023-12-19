@@ -635,6 +635,17 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
+void Client::handleCommand_PlayerPos(NetworkPacket *pkt)
+{
+	v3f added_pos;
+
+	*pkt >> added_pos;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	player->addPosition(added_pos);
+}
+
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
 {
 	bool set_camera_point_target;

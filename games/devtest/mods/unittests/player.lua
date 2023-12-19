@@ -68,3 +68,19 @@ local function run_player_meta_tests(player)
 	assert(meta:equals(meta2))
 end
 unittests.register("test_player_meta", run_player_meta_tests, {player=true})
+
+--
+-- Player add pos
+--
+local function run_player_add_pos(player)
+	local pos = player:get_pos();
+	player:add_pos(vector.new(0,1000,0))
+	local newpos = player:get_pos();
+	player:add_pos(vector.new(0,-1000,0))
+	local backpos = player:get_pos();
+	local newdist = vector.distance(pos, newpos)
+	assert( (newdist>995) and (newdist<1001) )
+	assert(vector.distance(pos, backpos)<=1)
+end
+unittests.register("test_player_meta", run_player_add_pos, {player=true})
+

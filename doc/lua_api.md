@@ -7463,15 +7463,19 @@ child will follow movement and rotation of that bone.
     * Sets the position of the object.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`
+* `add_pos(pos)`:
+    * Changes pos by addint to the current pos.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`.
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-      Additionally, players also do not support set_velocity.
+    * In comparison to using `get_velocity`, adding the velocity and then using
+      `set_velocity`, `add_velocity` is supposed to avoid synchronization problems.
+      Additionally, players also do not support `set_velocity`.
     * If object is a player:
-        * Does not apply during free_move.
+        * Does not apply during `free_move`.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
