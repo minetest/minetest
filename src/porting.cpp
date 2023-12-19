@@ -723,7 +723,13 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 
 void osSpecificInit()
 {
-	// nothing here yet
+#ifdef _WIN32
+	// hardening options
+	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+	SetSearchPathMode(BASE_SEARCH_PATH_ENABLE_SAFE_SEARCHMODE |
+		BASE_SEARCH_PATH_PERMANENT);
+	SetProcessDEPPolicy(PROCESS_DEP_ENABLE);
+#endif
 }
 
 #endif
