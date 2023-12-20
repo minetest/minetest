@@ -1235,15 +1235,23 @@ core.register_chatcommand("kick", {
 })
 
 core.register_chatcommand("clearobjects", {
-	params = S("[full | quick]"),
+	params = S("[soft | full | quick | rules] [<rules_table>]"),
 	description = S("Clear all objects in world"),
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
-		if param == "" or param == "quick" then
+		if param == "" or param == "soft" then
+			options.mode = "soft"
+		elseif param == "quick" then
 			options.mode = "quick"
 		elseif param == "full" then
 			options.mode = "full"
+		elseif param:sub(1,6)=="rules " then
+			options.mode = "rules"
+			options.rules = minetest.deserialize("return "..param:sub(7,-1), true)
+			if type(options.rules)~="table" then
+				return false, ("invalid usage, deserializable table is expected.")
+			end
 		else
 			return false, S("Invalid usage, see /help clearobjects.")
 		end
