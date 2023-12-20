@@ -528,12 +528,12 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 		return 0;
 
 	std::string bone;
-	if (!lua_isnil(L, 2))
+	if (!lua_isnoneornil(L, 2))
 		bone = readParam<std::string>(L, 2);
 	BoneOverride props;
-	if (!lua_isnil(L, 3))
+	if (!lua_isnoneornil(L, 3))
 		props.position.vector = check_v3f(L, 3);
-	if (!lua_isnil(L, 4))
+	if (!lua_isnoneornil(L, 4))
 		props.rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
 	props.position.absolute = true;
 	props.rotation.absolute = true;
