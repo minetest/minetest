@@ -7552,7 +7552,7 @@ child will follow movement and rotation of that bone.
         * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
     * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
     * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
-    * Compatibility note: Clients prior to 5.8.0 only support absolute position and rotation.
+    * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
       All values are treated as absolute and are set immediately (no interpolation).
 * `get_bone_override(bone)`: returns `override` in the above format
 	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
