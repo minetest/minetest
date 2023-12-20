@@ -52,26 +52,32 @@ core.clear_objects = function(options)
 		end
 	elseif (options.mode=="rules") then
 		local rules = options.rules
-		minetest.log("action", "Clearing objects with rules "..dump(rules))
-		for _, entity in pairs(minetest.luaentities) do
-			if (type(rules.e)=="table") then
-				local values = entity.object:get_luaentity()
-				for key, rule in pairs(rules.e) do
-					if check_rule(rule, values[key]) then
-						entity.object:remove()
-						break
+		local remove_init = ((type(rules.e)=="table") and (not rawequal(next(rules.e), nil)))
+		                    or ((type(rules.p)=="table") and (not rawequal(next(rules.p), nil)))
+		if remove_init then
+			minetest.log("action", S("Clearing objects with rules").." "..dump(rules))
+			for _, entity in pairs(minetest.luaentities) do
+				local remove = remove_init
+				if (type(rules.e)=="table") then
+					local values = entity.object:get_luaentity()
+					for key, rule in pairs(rules.e) do
+						remove = remove and check_rule(rule, values[key])
+						if not remove then break end
 					end
 				end
-			end
-			if (type(rules.p)=="table") then
-				local values = entity.object:get_properties()
-				for key, rule in pairs(rules.p) do
-					if check_rule(rule, values[key]) then
-						entity.object:remove()
-						break
+				if (type(rules.p)=="table") then
+					local values = entity.object:get_properties()
+					for key, rule in pairs(rules.p) do
+						remove = remove and check_rule(rule, values[key])
+						if not remove then break end
 					end
 				end
+				if remove then
+					entity.object:remove()
+				end
 			end
+		else
+			minetest.log("action", S("No usefull rules for clearig objects has been set."))
 		end
 	end
 end
