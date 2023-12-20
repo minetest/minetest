@@ -46,11 +46,16 @@ local register_functions = {
 	register_on_mapblocks_changed = 0,
 }
 
+local function regex_escape(s)
+	return s:gsub("(%W)", "%%%1")
+end
+
 ---
 -- Create an unique instrument name.
 -- Generate a missing label with a running index number.
 --
 local counts = {}
+local worldmods_path = regex_escape(minetest.get_worldpath() .. DIR_DELIM .. "worldmods")
 local function generate_name(def)
 	local class, label, func_name = def.class, def.label, def.func_name
 	if label then
@@ -65,7 +70,15 @@ local function generate_name(def)
 	local index_id = def.mod .. (class or func_name)
 	local index = counts[index_id] or 1
 	counts[index_id] = index + 1
-	return format("%s[%d] %s", class or func_name, index, class and func_name or ""):trim()
+	local info = debug.getinfo(def.func)
+	local modpath = regex_escape(minetest.get_modpath(def.mod) or "")
+	local source
+	if modpath == "" then
+		source = info.source:gsub(worldmods_path, "")
+	else
+		source = info.source:gsub(modpath, def.mod):gsub(worldmods_path, "")
+	end
+	return format("%s[%d] %s#%s", class or func_name, index, source, info.linedefined)
 end
 
 ---
