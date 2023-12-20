@@ -1135,7 +1135,7 @@ bool Game::startup(bool *kill,
 	this->error_message       = &error_message;
 	this->reconnect_requested = reconnect;
 	this->reconnect_address   = &reconnect_address;
-	this->reconnect_port = &reconnect_port;
+	this->reconnect_port      = &reconnect_port;
 	this->input               = input;
 	this->chat_backend        = chat_backend;
 	simple_singleplayer_mode  = start_data.isSinglePlayer();

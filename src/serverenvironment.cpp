@@ -609,7 +609,7 @@ void ServerEnvironment::transferPlayer(const std::string &name, const std::strin
 
 	for (RemotePlayer *player : m_players) {
 		if (name.compare(player->getName()) == 0) {
-			m_server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_TRANSFER, "Transfer denied.");
+			m_server->DenyAccess(player->getPeerId(), SERVER_ACCESSDENIED_TRANSFER, addressPack, false);
 		}
 	}
 }
