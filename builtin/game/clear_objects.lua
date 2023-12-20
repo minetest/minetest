@@ -46,7 +46,7 @@ core.clear_objects = function(options)
 		raw_clear_objects(options)
 	elseif (options.mode=="soft") then
 		for _, entity in pairs(minetest.luaentities) do
-			if not entity.object.get_luaentity().prevent_soft_clearobjects then
+			if not entity.object:get_luaentity().prevent_soft_clearobjects then
 				entity.object:remove()
 			end
 		end
