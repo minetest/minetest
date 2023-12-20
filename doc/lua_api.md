@@ -7556,17 +7556,32 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
-* `get_bone_position(bone)`:
-    * returns bone parameters previously set by `set_bone_position`
-    * returns `position, rotation` of the specified bone (as vectors)
-    * note: position is relative to the object
-* `set_properties(object property table)`:
-    * set a number of object properties in the given table
-    * only properties listed in the table will be changed
-    * see the 'Object properties' section for details
+	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+	* **Note:** Rotation is in degrees, not radians.
+	* **Deprecated:** Use `set_bone_override` instead.
+* `get_bone_position(bone)`: returns the previously set position and rotation of the bone
+	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+	* **Note:** Returned rotation is in degrees, not radians.
+	* **Deprecated:** Use `get_bone_override` instead.
+* `set_bone_override(bone, override)`
+    * `bone`: string
+    * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
+        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
+            * `vec` is in the same coordinate system as the model, and in degrees for rotation
+        * `property = nil` is equivalent to no override on that property
+        * `absolute`: If set to `false`, the override will be relative to the animated property:
+            * Transposition in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Multiplication in the case of `scale`
+        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
+    * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
+    * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
+      All values are treated as absolute and are set immediately (no interpolation).
+* `get_bone_override(bone)`: returns `override` in the above format
+	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+* `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
+* `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`

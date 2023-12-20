@@ -76,20 +76,20 @@ void UnitSAO::setAnimationSpeed(float frame_speed)
 	m_animation_speed_sent = false;
 }
 
-void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
+void UnitSAO::setBoneOverride(const std::string &bone, const BoneOverride &props)
 {
 	// store these so they can be updated to clients
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
+	m_bone_override[bone] = props;
+	m_bone_override_sent = false;
 }
 
-void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
+BoneOverride UnitSAO::getBoneOverride(const std::string &bone)
 {
-	auto it = m_bone_position.find(bone);
-	if (it != m_bone_position.end()) {
-		*position = it->second.X;
-		*rotation = it->second.Y;
-	}
+	auto it = m_bone_override.find(bone);
+	BoneOverride props;
+	if (it != m_bone_override.end())
+		props = it->second;
+	return props;
 }
 
 void UnitSAO::sendOutdatedData()
@@ -109,11 +109,11 @@ void UnitSAO::sendOutdatedData()
 		m_messages_out.emplace(getId(), true, generateUpdateAnimationSpeedCommand());
 	}
 
-	if (!m_bone_position_sent) {
-		m_bone_position_sent = true;
-		for (const auto &bone_pos : m_bone_position) {
-			m_messages_out.emplace(getId(), true, generateUpdateBonePositionCommand(
-				bone_pos.first, bone_pos.second.X, bone_pos.second.Y));
+	if (!m_bone_override_sent) {
+		m_bone_override_sent = true;
+		for (const auto &bone_pos : m_bone_override) {
+			m_messages_out.emplace(getId(), true, generateUpdateBoneOverrideCommand(
+				bone_pos.first, bone_pos.second));
 		}
 	}
 
@@ -275,16 +275,25 @@ std::string UnitSAO::generateUpdateAttachmentCommand() const
 	return os.str();
 }
 
-std::string UnitSAO::generateUpdateBonePositionCommand(
-		const std::string &bone, const v3f &position, const v3f &rotation)
+std::string UnitSAO::generateUpdateBoneOverrideCommand(
+		const std::string &bone, const BoneOverride &props)
 {
 	std::ostringstream os(std::ios::binary);
 	// command
 	writeU8(os, AO_CMD_SET_BONE_POSITION);
 	// parameters
 	os << serializeString16(bone);
-	writeV3F32(os, position);
-	writeV3F32(os, rotation);
+	writeV3F32(os, props.position.vector);
+	v3f euler_rot;
+	props.rotation.next.toEuler(euler_rot);
+	writeV3F32(os, euler_rot * core::RADTODEG);
+	writeV3F32(os, props.scale.vector);
+	writeF32(os, props.position.interp_timer);
+	writeF32(os, props.rotation.interp_timer);
+	writeF32(os, props.scale.interp_timer);
+	writeU8(os, (props.position.absolute & 1) << 0
+	          | (props.rotation.absolute & 1) << 1
+	          | (props.scale.absolute & 1) << 2);
 	return os.str();
 }
 
