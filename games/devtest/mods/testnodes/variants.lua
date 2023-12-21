@@ -163,13 +163,21 @@ minetest.register_node("testnodes:variant_overlay", {
 		S("Has two variants"),
 	is_ground_content = false,
 	groups = {dig_immediate = 3},
-	variant_count = 2,
+	variant_count = 4,
 	param2_variant = {width = 1, offset = 0},
 	tiles = {"testnodes_node.png"},
+	overlay_tiles = {{name = "testnodes_overlay.png", color = "#555"}},
 	variants = {
 		{
 			tiles = {"testnodes_node.png"},
+		},
+		{
+			tiles = {"testnodes_node.png"},
 			overlay_tiles = {{name = "testnodes_overlay.png", color = "#FFF"}},
+		},
+		{
+			tiles = {"testnodes_node.png"},
+			overlay_tiles = {},
 		},
 	},
 	color = "#F00",
@@ -182,7 +190,7 @@ minetest.register_node("testnodes:variant_plantlike_rooted", {
 	is_ground_content = false,
 	groups = {dig_immediate = 3},
 	drawtype = "plantlike_rooted",
-	variant_count = 6,
+	variant_count = 8,
 	param2_variant = {width = 8, offset = 0},
 	tiles = {"testnodes_1.png"},
 	special_tiles = {"testnodes_6.png"},
@@ -192,6 +200,8 @@ minetest.register_node("testnodes:variant_plantlike_rooted", {
 		{tiles = {"testnodes_4.png"}, special_tiles = {"testnodes_3.png"}},
 		{tiles = {"testnodes_5.png"}, special_tiles = {"testnodes_2.png"}},
 		{tiles = {"testnodes_6.png"}, special_tiles = {"testnodes_1.png"}},
+		{tiles = {"testnodes_6.png"}},
+		{special_tiles = {"testnodes_1.png"}},
 	},
 })
 
