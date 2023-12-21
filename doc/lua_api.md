@@ -9616,10 +9616,13 @@ Used by `minetest.register_node`.
             -- tiles, overlay_tiles and special_tiles
             -- defined above (outside from variants table).
             { -- Variant number 1.
+                -- this field is reused from above definition if is not specified.
                 tiles = {tile definition 1, def2, def3, def4, def5, def6},
 
+                -- this field is reused from above definition if is not specified.
                 overlay_tiles = {def1, def2, def3, def4, def5, def6},
 
+                -- this field is reused from above definition if is not specified.
                 special_tiles = {def1, def2},
             },
             { -- Variant number 2.
