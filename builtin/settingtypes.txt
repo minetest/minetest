@@ -810,6 +810,14 @@ bind_address (Bind address) string
 #    to new servers, but they may not support all new features that you are expecting.
 strict_protocol_version_checking (Strict protocol checking) bool false
 
+#    Define the oldest clients allowed to connect.
+#    Older clients are compatible in the sense that they will not crash when connecting
+#    to new servers, but they may not support all new features that you are expecting.
+#    This allows for more fine-grained control than strict_protocol_version_checking.
+#    Minetest still enforces its own internal minimum, and enabling
+#    strict_protocol_version_checking will effectively override this.
+protocol_version_min (Protocol version minimum) int 1 1 65535
+
 #    Specifies URL from which client fetches media instead of using UDP.
 #    $filename should be accessible from $remote_media$filename via cURL
 #    (obviously, remote_media should end with a slash).

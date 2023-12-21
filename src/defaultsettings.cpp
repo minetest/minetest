@@ -365,6 +365,7 @@ void set_default_settings()
 	settings->setDefault("max_packets_per_iteration", "1024");
 	settings->setDefault("port", "30000");
 	settings->setDefault("strict_protocol_version_checking", "false");
+	settings->setDefault("protocol_version_min", "1");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "40");
 	settings->setDefault("time_send_interval", "5");
