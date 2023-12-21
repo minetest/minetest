@@ -1009,8 +1009,11 @@ item has at least one variant (numbered 0). Nodes can specify a part of param2
 to read as the variant number by setting the `param2_variant` field to a
 `BitField`.
 
-The currently supported variant properties are `tiles`, `overlay_tiles`, and
-`special_tiles`. The `variants` table in the item definition is a mapping from
+The currently supported variant properties are:
+* `tiles`
+* `overlay_tiles`
+* `special_tiles`
+The `variants` table in the item definition is a mapping from
 variant numbers to variant tables. These tables can include the aforementioned
 fields to set the properties for particular variants. Variants not present in
 the mapping default to the values of the aforementioned fields specified in the
@@ -9291,6 +9294,7 @@ Used by `minetest.register_node`.
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
     -- Textures of node; +Y, -Y, +X, -X, +Z, -Z
     -- List can be shortened to needed length.
+    -- This field is also used for Variant number 0, see "Variants" for details.
 
     overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6},
     -- Same as `tiles`, but these textures are drawn on top of the base
@@ -9298,19 +9302,28 @@ Used by `minetest.register_node`.
     -- texture. If the texture name is an empty string, that overlay is not
     -- drawn. Since such tiles are drawn twice, it is not recommended to use
     -- overlays on very common nodes.
+    -- This field is also used for Variant number 0, see "Variants" for details.
 
     special_tiles = {tile definition 1, Tile definition 2},
     -- Special textures of node; used rarely.
     -- List can be shortened to needed length.
+    -- This field is also used for Variant number 0, see "Variants" for details.
 
     -- See "Variants"
+    -- This field is optional.
 	  variants = {
-            [variant number] = {
+            -- Variant number 0 is created from fields 
+            -- tiles, overlay_tiles and special_tiles
+            -- defined above (outside from variants table).
+            { -- Variant number 1.
                 tiles = {tile definition 1, def2, def3, def4, def5, def6},
 
                 overlay_tiles = {def1, def2, def3, def4, def5, def6},
 
                 special_tiles = {def1, def2},
+            },
+            { -- Variant number 2.
+              ...
             },
             ...
         },
