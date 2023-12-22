@@ -4056,6 +4056,8 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
+	// This must be done first so that GUIModalMenu can set m_pointer_type
+	// correctly.
 	if (GUIModalMenu::preprocessEvent(event))
 		return true;
 
