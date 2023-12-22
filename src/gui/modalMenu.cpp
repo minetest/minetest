@@ -221,7 +221,7 @@ void GUIModalMenu::enter(gui::IGUIElement *hovered)
 	SEvent gui_event{};
 	gui_event.EventType = EET_GUI_EVENT;
 	gui_event.GUIEvent.Caller = m_touch_hovered.get();
-	gui_event.GUIEvent.EventType = irr::gui::EGET_ELEMENT_HOVERED;
+	gui_event.GUIEvent.EventType = gui::EGET_ELEMENT_HOVERED;
 	gui_event.GUIEvent.Element = gui_event.GUIEvent.Caller;
 	m_touch_hovered->OnEvent(gui_event);
 }
@@ -233,7 +233,7 @@ void GUIModalMenu::leave()
 	SEvent gui_event{};
 	gui_event.EventType = EET_GUI_EVENT;
 	gui_event.GUIEvent.Caller = m_touch_hovered.get();
-	gui_event.GUIEvent.EventType = irr::gui::EGET_ELEMENT_LEFT;
+	gui_event.GUIEvent.EventType = gui::EGET_ELEMENT_LEFT;
 	m_touch_hovered->OnEvent(gui_event);
 	m_touch_hovered.reset();
 }
