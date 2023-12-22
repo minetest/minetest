@@ -1052,12 +1052,14 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 		}
 	}
 
+#ifndef __ANDROID__
 	if (m_drawer.m_hovertag)
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_HAND);
 	else
 		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
 				gui::ECI_NORMAL);
+#endif
 }
 
 bool GUIHyperText::OnEvent(const SEvent &event)
@@ -1073,10 +1075,12 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 	if (event.EventType == EET_GUI_EVENT &&
 			event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
 		m_drawer.m_hovertag = nullptr;
+#ifndef __ANDROID__
 		gui::ICursorControl *cursor_control =
 				RenderingEngine::get_raw_device()->getCursorControl();
 		if (cursor_control->isVisible())
 			cursor_control->setActiveIcon(gui::ECI_NORMAL);
+#endif
 	}
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
