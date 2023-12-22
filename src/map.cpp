@@ -1155,10 +1155,6 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_check) {
-	return isBlockOccluded(block->getPosRelative(), cam_pos_nodes, simple_check);
-}
-
 bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_check)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
