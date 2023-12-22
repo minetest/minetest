@@ -187,6 +187,56 @@ s16 adjustDist(s16 dist, float zoom_fov)
 	return std::round(adjustDist((float)dist, zoom_fov));
 }
 
+void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxindex)
+{
+	if (length < 1 || pagecount < 1 || page < 1 || page > pagecount) {
+		// Special cases or invalid parameters
+		minindex = maxindex = 0;
+	} else if(pagecount <= length) {
+		// Less pages than entries in the list:
+		// Each page contains at least one entry
+		minindex = (length * (page-1) + (pagecount-1)) / pagecount;
+		maxindex = (length * page + (pagecount-1)) / pagecount;
+	} else {
+		// More pages than entries in the list:
+		// Make sure the empty pages are at the end
+		if (page < length) {
+			minindex = page-1;
+			maxindex = page;
+		} else {
+			minindex = 0;
+			maxindex = 0;
+		}
+	}
+}
+
+void wrappedApproachShortest(float &current, float target, float stepsize, float maximum)
+{
+	float delta = target - current;
+	if (delta < 0)
+		delta += maximum;
+
+	if (delta > stepsize && maximum - delta > stepsize) {
+		current += (delta < maximum / 2) ? stepsize : -stepsize;
+		if (current >= maximum)
+			current -= maximum;
+	} else {
+		current = target;
+	}
+}
+
+void wrappedApproachFactor(float &current, float target, float factor, float maximum)
+{
+	float delta = fmod(target - current, maximum); // range ]-max, +max[
+	if (delta < -maximum * 0.5f)
+		delta += maximum; // -340° -> +20°
+	else if (delta > maximum * 0.5f)
+		delta -= maximum; // +340° -> -20°
+
+	current += delta * rangelim(factor, 0.0f, 1.0f);
+}
+
+
 void setPitchYawRollRad(core::matrix4 &m, const v3f &rot)
 {
 	f64 a1 = rot.Z, a2 = rot.X, a3 = rot.Y;

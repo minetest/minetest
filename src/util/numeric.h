@@ -384,35 +384,7 @@ private:
 
 	Ensures 0 <= minindex <= maxindex <= length.
 */
-inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxindex)
-{
-	if (length < 1 || pagecount < 1 || page < 1 || page > pagecount) {
-		// Special cases or invalid parameters
-		minindex = maxindex = 0;
-	} else if(pagecount <= length) {
-		// Less pages than entries in the list:
-		// Each page contains at least one entry
-		minindex = (length * (page-1) + (pagecount-1)) / pagecount;
-		maxindex = (length * page + (pagecount-1)) / pagecount;
-	} else {
-		// More pages than entries in the list:
-		// Make sure the empty pages are at the end
-		if (page < length) {
-			minindex = page-1;
-			maxindex = page;
-		} else {
-			minindex = 0;
-			maxindex = 0;
-		}
-	}
-}
-
-inline float cycle_shift(float value, float by = 0, float max = 1)
-{
-    if (value + by < 0)   return value + by + max;
-    if (value + by > max) return value + by - max;
-    return value + by;
-}
+void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxindex);
 
 inline bool is_power_of_two(u32 n)
 {
@@ -431,24 +403,15 @@ inline u32 npot2(u32 orig) {
 	return orig + 1;
 }
 
-// Gradual steps towards the target value in a wrapped (circular) system
-// using the shorter of both ways
-template<typename T>
-inline void wrappedApproachShortest(T &current, const T target, const T stepsize,
-	const T maximum)
-{
-	T delta = target - current;
-	if (delta < 0)
-		delta += maximum;
+/// Linear interpolation of two values in a wrapped range (radians, degrees)
+/// @param stepsize Maximal step size between function calls
+/// @param maximum Usually 360.0f or (2 * M_PI)
+void wrappedApproachShortest(float &current, float target, float stepsize, float maximum);
 
-	if (delta > stepsize && maximum - delta > stepsize) {
-		current += (delta < maximum / 2) ? stepsize : -stepsize;
-		if (current >= maximum)
-			current -= maximum;
-	} else {
-		current = target;
-	}
-}
+/// Exponential interpolation of two values in a wrapped range (radians, degrees)
+/// @param factor Interpolation factor in range [0,1]
+/// @param maximum Usually 360.0f or (2 * M_PI)
+void wrappedApproachFactor(float &current, float target, float factor, float maximum);
 
 void setPitchYawRollRad(core::matrix4 &m, const v3f &rot);
 

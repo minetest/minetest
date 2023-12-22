@@ -39,8 +39,8 @@ struct RunStats {
 };
 
 struct CameraOrientation {
-	f32 camera_yaw;    // "right/left"
-	f32 camera_pitch;  // "up/down"
+	f32 camera_yaw;    // "right/left" in degrees
+	f32 camera_pitch;  // "up/down" in degrees
 };
 
 
