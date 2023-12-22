@@ -306,6 +306,7 @@ public:
 	}
 
 	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_check = false);
+	bool isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_check = false);
 protected:
 	IGameDef *m_gamedef;
 

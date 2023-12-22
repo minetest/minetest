@@ -216,10 +216,14 @@ public:
 		return m_pos_relative;
 	}
 
-	inline core::aabbox3d<s16> getBox()
+	inline core::aabbox3d<s16> getBox() {
+		return getBox(getPosRelative());
+	}
+
+	static inline core::aabbox3d<s16> getBox(const v3s16 &pos_relative)
 	{
-		return core::aabbox3d<s16>(getPosRelative(),
-				getPosRelative()
+		return core::aabbox3d<s16>(pos_relative,
+				pos_relative
 				+ v3s16(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE)
 				- v3s16(1,1,1));
 	}

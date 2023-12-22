@@ -350,18 +350,18 @@ void RemoteClient::GetNextBlocks (
 					if (!block->getIsUnderground() && !block->getDayNightDiff())
 						continue;
 				}
+			}
 
-				/*
-					Check occlusion cache first.
-				 */
-				if (m_blocks_occ.find(p) != m_blocks_occ.end())
-					continue;
+			/*
+				Check occlusion cache first.
+			 */
+			if (m_blocks_occ.find(p) != m_blocks_occ.end())
+				continue;
 
-				if (m_occ_cull && !block_not_found &&
-						env->getMap().isBlockOccluded(block, cam_pos_nodes, d >= d_cull_opt)) {
-					m_blocks_occ.insert(p);
-					continue;
-				}
+			if (m_occ_cull && !block_not_found &&
+					env->getMap().isBlockOccluded(p * MAP_BLOCKSIZE, cam_pos_nodes, d >= d_cull_opt)) {
+				m_blocks_occ.insert(p);
+				continue;
 			}
 
 			/*
