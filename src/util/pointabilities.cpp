@@ -32,7 +32,7 @@ PointabilityType Pointabilities::deSerializePointabilityType(std::istream &is)
 		case PointabilityType::POINTABLE_BLOCKING:
 			break;
 		default:
-			warningstream << "Received unsupported PointabilityType" << std::endl;
+			pointable_type = PointabilityType::POINTABLE;
 			break;
     }
     return pointable_type;
@@ -53,7 +53,7 @@ std::string Pointabilities::toStringPointabilityType(PointabilityType pointable_
 		case PointabilityType::POINTABLE_BLOCKING:
 			return "\"blocking\"";
 		default:
-			return "";
+			return "unknown";
     }
 }
 
