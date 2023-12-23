@@ -82,7 +82,7 @@ void read_item_definition(lua_State* L, int index,
 	lua_pop(L, 1);
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
-	
+
 	lua_getfield(L, index, "pointabilities");
 	if(lua_istable(L, -1)){
 		def.pointabilities = new Pointabilities(
@@ -206,7 +206,7 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_pushboolean(L, i.liquids_pointable);
 	lua_setfield(L, -2, "liquids_pointable");
 	if (i.pointabilities) {
-		push_pointabilities(L, *i.pointabilities); 
+		push_pointabilities(L, *i.pointabilities);
 		lua_setfield(L, -2, "pointabilities");
 	}
 	if (i.tool_capabilities) {
@@ -796,14 +796,14 @@ void read_content_features(lua_State *L, ContentFeatures &f, int index)
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	getboolfield(L, index, "walkable", f.walkable);
-	
+
 	// Player can point to these, point through or it is blocking
 	lua_getfield(L, index, "pointable");
 	if(!lua_isnil(L, -1)){
 		f.pointable = read_pointability_type(L, -1);
 	}
 	lua_pop(L, 1);
-	
+
 	// Player can dig these
 	getboolfield(L, index, "diggable", f.diggable);
 	// Player can climb these
@@ -1634,7 +1634,7 @@ PointabilityType read_pointability_type(lua_State *L, int index)
 Pointabilities read_pointabilities(lua_State *L, int index)
 {
 	Pointabilities pointabilities;
-	
+
 	lua_getfield(L, index, "nodes");
 	if(lua_istable(L, -1)){
 		int ti = lua_gettop(L);
@@ -1642,20 +1642,20 @@ Pointabilities read_pointabilities(lua_State *L, int index)
 		while(lua_next(L, ti) != 0) {
 			// key at index -2 and value at index -1
 			std::string name = luaL_checkstring(L, -2);
-			
+
 			// handle groups
 			if(std::string_view(name).substr(0,6)=="group:") {
 				pointabilities.node_groups[name.substr(6)] = read_pointability_type(L, -1);
 			} else {
 				pointabilities.nodes[name] = read_pointability_type(L, -1);
 			}
-			
+
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	}
 	lua_pop(L, 1);
-	
+
 	lua_getfield(L, index, "objects");
 	if(lua_istable(L, -1)){
 		int ti = lua_gettop(L);
@@ -1663,20 +1663,20 @@ Pointabilities read_pointabilities(lua_State *L, int index)
 		while(lua_next(L, ti) != 0) {
 			// key at index -2 and value at index -1
 			std::string name = luaL_checkstring(L, -2);
-			
+
 			// handle groups
 			if(std::string_view(name).substr(0,6)=="group:") {
 				pointabilities.object_groups[name.substr(6)] = read_pointability_type(L, -1);
 			} else {
 				pointabilities.objects[name] = read_pointability_type(L, -1);
 			}
-			
+
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	}
 	lua_pop(L, 1);
-	
+
 	return pointabilities;
 }
 
@@ -1704,7 +1704,7 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 {
 	// pointabilities table
 	lua_newtable(L);
-	
+
 	if (!pointabilities.nodes.empty() || !pointabilities.node_groups.empty()) {
 		// Create and fill table
 		lua_newtable(L);
@@ -1718,7 +1718,7 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 		}
 		lua_setfield(L, -2, "nodes");
 	}
-	
+
 	if (!pointabilities.objects.empty() || !pointabilities.object_groups.empty()) {
 		// Create and fill table
 		lua_newtable(L);

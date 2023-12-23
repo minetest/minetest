@@ -326,18 +326,9 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		if (readU8(is)) // protocol_version >= 43
 			place_param2 = readU8(is);
-<<<<<<< HEAD
 
 		wallmounted_rotate_vertical = readU8(is); // 0 if missing
 		touch_interaction.deSerialize(is);
-
-		u32 pointabilities_size = readU16(is);
-		if (pointabilities_size > 0){
-			pointabilities = new PointingAbilities;
-			for(u32 i=0; i<pointabilities_size; i++){
-				std::string name = deSerializeString16(is);
-				(*pointabilities)[name] = (enum PointabilityType)readU8(is);
-			}
 
 		std::string pointabilities_s = deSerializeString16(is);
 		if (!pointabilities_s.empty()) {

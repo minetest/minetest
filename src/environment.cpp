@@ -115,7 +115,7 @@ inline static PointabilityType isPointableNode(const MapNode &n,
 		if (match)
 			return match.value();
 	}
-	
+
 	if (features.isLiquid() && liquids_pointable)
 		return PointabilityType::POINTABLE;
 	return features.pointable;
@@ -140,7 +140,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		// Setting is done
 		state->m_initialization_needed = false;
 	}
-	
+
 	Map &map = getMap();
 	// If a node is found, this is the center of the
 	// first nodebox the shootline meets.
@@ -188,7 +188,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 			n = map.getNode(np, &is_valid_position);
 			if (!is_valid_position)
 				continue;
-	
+
 			PointabilityType pointable = isPointableNode(n, nodedef,
 					state->m_liquids_pointable,
 					state->m_pointabilities);
@@ -283,7 +283,7 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result_p)
 		state->m_previous_node = state->m_iterator.m_current_node_pos;
 		state->m_iterator.next();
 	}
-	
+
 	// Return empty PointedThing if nothing left on the ray or it is blocking pointable
 	if (state->m_found.empty()) {
 		result_p->type = POINTEDTHING_NOTHING;

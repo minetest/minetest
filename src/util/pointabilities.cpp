@@ -135,7 +135,7 @@ void Pointabilities::deSerialize(std::istream &is)
 	int version = readU8(is);
 	if (version != 0)
 		throw SerializationError("unsupported Pointabilities version");
-		
+
 	deSerializeTypeMap(is, nodes);
 	deSerializeTypeMap(is, node_groups);
 	deSerializeTypeMap(is, objects);

@@ -36,27 +36,27 @@ struct Pointabilities
 	// Nodes
 	std::unordered_map<std::string, PointabilityType> nodes;
 	std::unordered_map<std::string, PointabilityType> node_groups;
-	
+
 	// Objects
 	std::unordered_map<std::string, PointabilityType> objects;
 	std::unordered_map<std::string, PointabilityType> object_groups; // armor_groups
-	
+
 	// Match functions return fitting pointability,
 	// otherwise the default pointability should be used.
-	
+
 	std::optional<PointabilityType> matchNode(const std::string &name,
 		const ItemGroupList &groups) const;
 	std::optional<PointabilityType> matchObject(const std::string &name,
 		const ItemGroupList &groups) const;
-	
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	// For a save enum conversion.
 	static PointabilityType deSerializePointabilityType(std::istream &is);
 	static void serializePointabilityType(std::ostream &os, PointabilityType pointable_type);
 	static std::string toStringPointabilityType(PointabilityType pointable_type);
-	
+
 private:
 	static std::optional<PointabilityType> matchGroups(const ItemGroupList &groups,
 		const std::unordered_map<std::string, PointabilityType> &pointable_groups);
