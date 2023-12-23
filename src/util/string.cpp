@@ -846,7 +846,7 @@ std::string sanitizeDirName(const std::string &str, const std::string &optional_
 {
 	std::wstring safe_name = utf8_to_wide(str);
 
-	for (std::wstring disallowed_name : disallowed_dir_names) {
+	for (auto &disallowed_name : disallowed_dir_names) {
 		if (str_equal(safe_name, disallowed_name, true)) {
 			safe_name = utf8_to_wide(optional_prefix) + safe_name;
 			break;

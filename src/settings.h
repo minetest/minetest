@@ -147,7 +147,7 @@ public:
 	bool updateConfigFile(const char *filename);
 	// NOTE: Types of allowed_options are ignored.  Returns success.
 	bool parseCommandLine(int argc, char *argv[],
-			std::map<std::string, ValueSpec> &allowed_options);
+			const std::map<std::string, ValueSpec> &allowed_options);
 	bool parseConfigLines(std::istream &is);
 	void writeLines(std::ostream &os, u32 tab_depth=0) const;
 

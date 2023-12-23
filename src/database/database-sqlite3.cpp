@@ -942,8 +942,8 @@ void ModStorageDatabaseSQLite3::listMods(std::vector<std::string> *res)
 			return 0;
 		}, (void *) res, &errmsg);
 	if (status != SQLITE_OK) {
-		DatabaseException e(std::string("Error trying to list mods with metadata: ") + errmsg);
+		auto msg = std::string("Error trying to list mods with metadata: ") + errmsg;
 		sqlite3_free(errmsg);
-		throw e;
+		throw DatabaseException(msg);
 	}
 }

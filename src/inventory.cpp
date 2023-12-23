@@ -392,7 +392,7 @@ bool ItemStack::itemFits(ItemStack newitem,
 	return newitem.empty();
 }
 
-bool ItemStack::stacksWith(ItemStack other) const
+bool ItemStack::stacksWith(const ItemStack &other) const
 {
 	return (this->name == other.name &&
 			this->wear == other.wear &&

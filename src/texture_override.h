@@ -70,13 +70,13 @@ struct TextureOverride
 class TextureOverrideSource
 {
 public:
-	TextureOverrideSource(std::string filepath);
+	TextureOverrideSource(const std::string &filepath);
 
 	//! Get all overrides that apply to item definitions
-	std::vector<TextureOverride> getItemTextureOverrides();
+	std::vector<TextureOverride> getItemTextureOverrides() const;
 
 	//! Get all overrides that apply to node definitions
-	std::vector<TextureOverride> getNodeTileOverrides();
+	std::vector<TextureOverride> getNodeTileOverrides() const;
 
 private:
 	std::vector<TextureOverride> m_overrides;
