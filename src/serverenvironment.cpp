@@ -1878,8 +1878,6 @@ void ServerEnvironment::getSelectedActiveObjects(
 					(s16) obj->getId(), current_intersection, current_normal, current_raw_normal,
 					(current_intersection - shootline_on_map.start).getLengthSQ(), pointable);
 			}
-			if (pointable == PointabilityType::POINTABLE_BLOCKING)
-				break;
 		}
 	}
 }
