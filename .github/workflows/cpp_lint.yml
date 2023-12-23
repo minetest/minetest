@@ -24,23 +24,6 @@ on:
       - '.github/workflows/**.yml'
 
 jobs:
-
-#  clang_format:
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Install clang-format
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y clang-format-9
-#
-#      - name: Run clang-format
-#        run: |
-#          source ./util/ci/clang-format.sh
-#          check_format
-#        env:
-#          CLANG_FORMAT: clang-format-9
-
   clang_tidy:
     runs-on: ubuntu-20.04
     steps:

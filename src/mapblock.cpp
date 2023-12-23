@@ -66,10 +66,10 @@ static const char *modified_reason_strings[] = {
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef):
-		m_parent(parent),
+MapBlock::MapBlock(v3s16 pos, IGameDef *gamedef):
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
+		data(new MapNode[nodecount]),
 		m_gamedef(gamedef)
 {
 	reallocate();
@@ -83,6 +83,8 @@ MapBlock::~MapBlock()
 		mesh = nullptr;
 	}
 #endif
+
+	delete[] data;
 }
 
 bool MapBlock::onObjectsActivation()
@@ -141,25 +143,6 @@ void MapBlock::step(float dtime, const std::function<bool(v3s16, MapNode, f32)> 
 				setNodeTimer(NodeTimer(elapsed_timer.timeout, 0, elapsed_timer.position));
 		}
 	}
-}
-
-bool MapBlock::isValidPositionParent(v3s16 p)
-{
-	if (isValidPosition(p)) {
-		return true;
-	}
-
-	return m_parent->isValidPosition(getPosRelative() + p);
-}
-
-MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
-{
-	if (!isValidPosition(p))
-		return m_parent->getNode(getPosRelative() + p, is_valid_position);
-
-	if (is_valid_position)
-		*is_valid_position = true;
-	return data[p.Z * zstride + p.Y * ystride + p.X];
 }
 
 std::string MapBlock::getModifiedReasonString()

@@ -249,6 +249,10 @@ GUI
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      touch_controls = false,
   }
   ```
 

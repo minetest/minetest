@@ -114,9 +114,7 @@ else()
 	find_package(IrrlichtMt QUIET)
 	if(NOT TARGET IrrlichtMt::IrrlichtMt)
 		string(CONCAT explanation_msg
-			"The Minetest team has forked Irrlicht to make their own customizations. "
-			"It can be found here: https://github.com/minetest/irrlicht\n"
-			"For example use: git clone --depth=1 https://github.com/minetest/irrlicht lib/irrlichtmt\n")
+			"You must install IrrlichMt as described in docs/compiling/\n")
 		if(BUILD_CLIENT)
 			message(FATAL_ERROR "IrrlichtMt is required to build the client, but it was not found.\n${explanation_msg}")
 		endif()

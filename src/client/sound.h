@@ -184,3 +184,9 @@ public:
 	void fadeSound(sound_handle_t sound, f32 step, f32 target_gain) override {}
 	void updateSoundPosVel(sound_handle_t sound, const v3f &pos, const v3f &vel) override {}
 };
+
+/**
+ * A helper function to control sound volume based on some values: sound volume
+ * settings, mute sound setting, and window activity.
+ */
+void sound_volume_control(ISoundManager *sound_mgr, bool is_window_active);

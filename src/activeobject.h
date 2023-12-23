@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irr_aabb3d.h"
 #include "irr_v3d.h"
+#include <quaternion.h>
 #include <string>
+#include <unordered_map>
 
 
 enum ActiveObjectType {
@@ -71,6 +73,78 @@ enum ActiveObjectCommand {
 	AO_CMD_SPAWN_INFANT,
 	AO_CMD_SET_ANIMATION_SPEED
 };
+
+struct BoneOverride
+{
+	struct PositionProperty
+	{
+		v3f previous;
+		v3f vector;
+		bool absolute = false;
+		f32 interp_timer = 0;
+	} position;
+
+	v3f getPosition(v3f anim_pos) const {
+		f32 progress = dtime_passed / position.interp_timer;
+		if (progress > 1.0f || position.interp_timer == 0.0f)
+			progress = 1.0f;
+		return position.vector.getInterpolated(position.previous, progress)
+				+ (position.absolute ? v3f() : anim_pos);
+	}
+
+	struct RotationProperty
+	{
+		core::quaternion previous;
+		core::quaternion next;
+		bool absolute = false;
+		f32 interp_timer = 0;
+	} rotation;
+
+	v3f getRotationEulerDeg(v3f anim_rot_euler) const {
+		core::quaternion rot;
+
+		f32 progress = dtime_passed / rotation.interp_timer;
+		if (progress > 1.0f || rotation.interp_timer == 0.0f)
+			progress = 1.0f;
+		rot.slerp(rotation.previous, rotation.next, progress);
+		if (!rotation.absolute) {
+			core::quaternion anim_rot(anim_rot_euler * core::DEGTORAD);
+			rot = rot * anim_rot; // first rotate by anim. bone rot., then rot.
+		}
+
+		v3f rot_euler;
+		rot.toEuler(rot_euler);
+		return rot_euler * core::RADTODEG;
+	}
+
+	struct ScaleProperty
+	{
+		v3f previous;
+		v3f vector{1, 1, 1};
+		bool absolute = false;
+		f32 interp_timer = 0;
+	} scale;
+
+	v3f getScale(v3f anim_scale) const {
+		f32 progress = dtime_passed / scale.interp_timer;
+		if (progress > 1.0f || scale.interp_timer == 0.0f)
+			progress = 1.0f;
+		return scale.vector.getInterpolated(scale.previous, progress)
+				* (scale.absolute ? v3f(1) : anim_scale);
+	}
+
+	f32 dtime_passed = 0;
+
+	bool isIdentity() const
+	{
+		return !position.absolute && position.vector == v3f()
+				&& !rotation.absolute && rotation.next == core::quaternion()
+				&& !scale.absolute && scale.vector == v3f(1);
+	}
+};
+
+typedef std::unordered_map<std::string, BoneOverride> BoneOverrideMap;
+
 
 /*
 	Parent class for ServerActiveObject and ClientActiveObject

@@ -404,6 +404,12 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
 	float m_bloom_radius;
 	CachedPixelShaderSetting<float> m_saturation_pixel;
+	bool m_volumetric_light_enabled;
+	CachedPixelShaderSetting<float, 3> m_sun_position_pixel;
+	CachedPixelShaderSetting<float> m_sun_brightness_pixel;
+	CachedPixelShaderSetting<float, 3> m_moon_position_pixel;
+	CachedPixelShaderSetting<float> m_moon_brightness_pixel;
+	CachedPixelShaderSetting<float> m_volumetric_light_strength_pixel;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -461,7 +467,12 @@ public:
 		m_bloom_intensity_pixel("bloomIntensity"),
 		m_bloom_strength_pixel("bloomStrength"),
 		m_bloom_radius_pixel("bloomRadius"),
-		m_saturation_pixel("saturation")
+		m_saturation_pixel("saturation"),
+		m_sun_position_pixel("sunPositionScreen"),
+		m_sun_brightness_pixel("sunBrightness"),
+		m_moon_position_pixel("moonPositionScreen"),
+		m_moon_brightness_pixel("moonBrightness"),
+		m_volumetric_light_strength_pixel("volumetricLightStrength")
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
@@ -475,6 +486,7 @@ public:
 		m_bloom_intensity = g_settings->getFloat("bloom_intensity", 0.01f, 1.0f);
 		m_bloom_strength = RenderingEngine::BASE_BLOOM_STRENGTH * g_settings->getFloat("bloom_strength_factor", 0.1f, 10.0f);
 		m_bloom_radius = g_settings->getFloat("bloom_radius", 0.1f, 8.0f);
+		m_volumetric_light_enabled = g_settings->getBool("enable_volumetric_lighting") && m_bloom_enabled;
 	}
 
 	~GameGlobalShaderConstantSetter()
@@ -579,6 +591,54 @@ public:
 		}
 		float saturation = m_client->getEnv().getLocalPlayer()->getLighting().saturation;
 		m_saturation_pixel.set(&saturation, services);
+
+		if (m_volumetric_light_enabled) {
+			// Map directional light to screen space
+			auto camera_node = m_client->getCamera()->getCameraNode();
+			core::matrix4 transform = camera_node->getProjectionMatrix();
+			transform *= camera_node->getViewMatrix();
+
+			if (m_sky->getSunVisible()) {
+				v3f sun_position = camera_node->getAbsolutePosition() +
+						10000. * m_sky->getSunDirection();
+				transform.transformVect(sun_position);
+				sun_position.normalize();
+
+				float sun_position_array[3] = { sun_position.X, sun_position.Y, sun_position.Z};
+				m_sun_position_pixel.set(sun_position_array, services);
+
+				float sun_brightness = rangelim(107.143f * m_sky->getSunDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				m_sun_brightness_pixel.set(&sun_brightness, services);
+			} else {
+				float sun_position_array[3] = { 0.f, 0.f, -1.f };
+				m_sun_position_pixel.set(sun_position_array, services);
+
+				float sun_brightness = 0.f;
+				m_sun_brightness_pixel.set(&sun_brightness, services);
+			}
+
+			if (m_sky->getMoonVisible()) {
+				v3f moon_position = camera_node->getAbsolutePosition() +
+						10000. * m_sky->getMoonDirection();
+				transform.transformVect(moon_position);
+				moon_position.normalize();
+
+				float moon_position_array[3] = { moon_position.X, moon_position.Y, moon_position.Z};
+				m_moon_position_pixel.set(moon_position_array, services);
+
+				float moon_brightness = rangelim(107.143f * m_sky->getMoonDirection().dotProduct(v3f(0.f, 1.f, 0.f)), 0.f, 1.f);
+				m_moon_brightness_pixel.set(&moon_brightness, services);
+			}
+			else {
+				float moon_position_array[3] = { 0.f, 0.f, -1.f };
+				m_moon_position_pixel.set(moon_position_array, services);
+
+				float moon_brightness = 0.f;
+				m_moon_brightness_pixel.set(&moon_brightness, services);
+			}
+			float volumetric_light_strength = m_client->getEnv().getLocalPlayer()->getLighting().volumetric_light_strength;
+			m_volumetric_light_strength_pixel.set(&volumetric_light_strength, services);
+		}
 	}
 
 	void onSetMaterial(const video::SMaterial &material) override
@@ -821,6 +881,7 @@ protected:
 			const CameraOrientation &cam);
 	void updateClouds(float dtime);
 	void updateShadows();
+	void drawScene(ProfilerGraph *graph, RunStats *stats);
 
 	// Misc
 	void showOverlayMessage(const char *msg, float dtime, int percent,
@@ -1428,12 +1489,6 @@ bool Game::createClient(const GameStartData &start_data)
 		return false;
 
 	bool could_connect, connect_aborted;
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
-		g_touchscreengui->init(texture_src);
-		g_touchscreengui->hide();
-	}
-#endif
 	if (!connectToServer(start_data, &could_connect, &connect_aborted))
 		return false;
 
@@ -1542,10 +1597,8 @@ bool Game::initGui()
 			-1, chat_backend, client, &g_menumgr);
 
 #ifdef HAVE_TOUCHSCREENGUI
-
 	if (g_touchscreengui)
-		g_touchscreengui->show();
-
+		g_touchscreengui->init(texture_src);
 #endif
 
 	return true;
@@ -2616,7 +2669,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
 		cam->camera_yaw   += g_touchscreengui->getYawChange();
-		cam->camera_pitch  = g_touchscreengui->getPitch();
+		cam->camera_pitch += g_touchscreengui->getPitchChange();
 	} else {
 #endif
 		v2s32 center(driver->getScreenSize().Width / 2, driver->getScreenSize().Height / 2);
@@ -3035,7 +3088,6 @@ void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
 	else
 		sky->setFogStart(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
 
-
 	delete event->set_sky;
 }
 
@@ -3209,19 +3261,7 @@ void Game::updateSound(f32 dtime)
 			camera->getDirection(),
 			camera->getCameraNode()->getUpVector());
 
-	bool mute_sound = g_settings->getBool("mute_sound");
-	if (mute_sound) {
-		sound_manager->setListenerGain(0.0f);
-	} else {
-		// Check if volume is in the proper range, else fix it.
-		float old_volume = g_settings->getFloat("sound_volume");
-		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-		sound_manager->setListenerGain(new_volume);
-
-		if (old_volume != new_volume) {
-			g_settings->setFloat("sound_volume", new_volume);
-		}
-	}
+	sound_volume_control(sound_manager.get(), device->isWindowActive());
 
 	// Tell the sound maker whether to make footstep sounds
 	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
@@ -4022,31 +4062,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	client->getParticleManager()->step(dtime);
 
 	/*
-		Fog
-	*/
-	if (m_cache_enable_fog) {
-		driver->setFog(
-				sky->getBgColor(),
-				video::EFT_FOG_LINEAR,
-				runData.fog_range * sky->getFogStart(),
-				runData.fog_range * 1.0,
-				0.01,
-				false, // pixel fog
-				true // range fog
-		);
-	} else {
-		driver->setFog(
-				sky->getBgColor(),
-				video::EFT_FOG_LINEAR,
-				100000 * BS,
-				110000 * BS,
-				0.01f,
-				false, // pixel fog
-				false // range fog
-		);
-	}
-
-	/*
 		Damage camera tilt
 	*/
 	if (player->hurt_tilt_timer > 0.0f) {
@@ -4124,6 +4139,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			break;
 
 		if (formspec->getReferenceCount() == 1) {
+			// See GUIFormSpecMenu::create what refcnt = 1 means
 			m_game_ui->deleteFormspec();
 			break;
 		}
@@ -4144,52 +4160,18 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		==================== Drawing begins ====================
 	*/
-	const video::SColor skycolor = sky->getSkyColor();
-
-	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
-	driver->beginScene(true, true, skycolor);
-
-	bool draw_wield_tool = (m_game_ui->m_flags.show_hud &&
-			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			(camera->getCameraMode() == CAMERA_MODE_FIRST));
-	bool draw_crosshair = (
-			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	if (isNoCrosshairAllowed())
-		draw_crosshair = false;
-#endif
-	m_rendering_engine->draw_scene(skycolor, m_game_ui->m_flags.show_hud,
-			m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
-
-	/*
-		Profiler graph
-	*/
-	v2u32 screensize = driver->getScreenSize();
-
-	if (m_game_ui->m_flags.show_profiler_graph)
-		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
-
-	/*
-		Damage flash
-	*/
-	if (runData.damage_flash > 0.0f) {
-		video::SColor color(runData.damage_flash, 180, 0, 0);
-		driver->draw2DRectangle(color,
-					core::rect<s32>(0, 0, screensize.X, screensize.Y),
-					NULL);
-
-		runData.damage_flash -= 384.0f * dtime;
-	}
-
+	if (RenderingEngine::shouldRender())
+		drawScene(graph, stats);
 	/*
 		==================== End scene ====================
 	*/
 
-	driver->endScene();
+	// Damage flash is drawn in drawScene, but the timing update is done here to
+	// keep dtime out of the drawing code.
+	if (runData.damage_flash > 0.0f) {
+		runData.damage_flash -= 384.0f * dtime;
+	}
 
-	stats->drawtime = tt_draw.stop(true);
-	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 
@@ -4255,6 +4237,81 @@ void Game::updateShadows()
 	shadow->setTimeOfDay(in_timeofday);
 
 	shadow->getDirectionalLight().update_frustum(camera, client, m_camera_offset_changed);
+}
+
+void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
+{
+	const video::SColor bg_color = this->sky->getBgColor();
+	const video::SColor sky_color = this->sky->getSkyColor();
+
+	/*
+		Fog
+	*/
+	if (this->m_cache_enable_fog) {
+		this->driver->setFog(
+				bg_color,
+				video::EFT_FOG_LINEAR,
+				this->runData.fog_range * this->sky->getFogStart(),
+				this->runData.fog_range * 1.0f,
+				0.01f,
+				false, // pixel fog
+				true // range fog
+		);
+	} else {
+		this->driver->setFog(
+				bg_color,
+				video::EFT_FOG_LINEAR,
+				100000 * BS,
+				110000 * BS,
+				0.01f,
+				false, // pixel fog
+				false // range fog
+		);
+	}
+
+	/*
+		Drawing
+	*/
+	TimeTaker tt_draw("Draw scene", nullptr, PRECISION_MICRO);
+	this->driver->beginScene(true, true, sky_color);
+
+	const LocalPlayer *player = this->client->getEnv().getLocalPlayer();
+	bool draw_wield_tool = (this->m_game_ui->m_flags.show_hud &&
+			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
+			(this->camera->getCameraMode() == CAMERA_MODE_FIRST));
+	bool draw_crosshair = (
+			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
+			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
+#ifdef HAVE_TOUCHSCREENGUI
+	if (this->isNoCrosshairAllowed())
+		draw_crosshair = false;
+#endif
+	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
+			this->m_game_ui->m_flags.show_minimap, draw_wield_tool, draw_crosshair);
+
+	/*
+		Profiler graph
+	*/
+	v2u32 screensize = this->driver->getScreenSize();
+
+	if (this->m_game_ui->m_flags.show_profiler_graph)
+		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
+
+	/*
+		Damage flash
+	*/
+	if (this->runData.damage_flash > 0.0f) {
+		video::SColor color(this->runData.damage_flash, 180, 0, 0);
+		this->driver->draw2DRectangle(color,
+					core::rect<s32>(0, 0, screensize.X, screensize.Y),
+					NULL);
+	}
+
+	this->driver->endScene();
+
+	stats->drawtime = tt_draw.stop(true);
+	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
+
 }
 
 /****************************************************************************

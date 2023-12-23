@@ -164,11 +164,11 @@ MapNode Map::getNode(v3s16 p, bool *is_valid_position)
 	return node;
 }
 
-static void set_node_in_block(MapBlock *block, v3s16 relpos, MapNode n)
+static void set_node_in_block(const NodeDefManager *nodedef, MapBlock *block,
+		v3s16 relpos, MapNode n)
 {
 	// Never allow placing CONTENT_IGNORE, it causes problems
 	if(n.getContent() == CONTENT_IGNORE){
-		const NodeDefManager *nodedef = block->getParent()->getNodeDefManager();
 		v3s16 blockpos = block->getPos();
 		v3s16 p = blockpos * MAP_BLOCKSIZE + relpos;
 		errorstream<<"Not allowing to place CONTENT_IGNORE"
@@ -186,7 +186,7 @@ void Map::setNode(v3s16 p, MapNode n)
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-	set_node_in_block(block, relpos, n);
+	set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 }
 
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
@@ -215,14 +215,14 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		// No light update needed, just copy over the old light.
 		n.setLight(LIGHTBANK_DAY, oldnode.getLightRaw(LIGHTBANK_DAY, oldf), f);
 		n.setLight(LIGHTBANK_NIGHT, oldnode.getLightRaw(LIGHTBANK_NIGHT, oldf), f);
-		set_node_in_block(block, relpos, n);
+		set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 
 		modified_blocks[blockpos] = block;
 	} else {
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
 		n.setLight(LIGHTBANK_DAY, 0, f);
 		n.setLight(LIGHTBANK_NIGHT, 0, f);
-		set_node_in_block(block, relpos, n);
+		set_node_in_block(m_gamedef->ndef(), block, relpos, n);
 
 		// Update lighting
 		std::vector<std::pair<v3s16, MapNode> > oldnodes;
@@ -512,6 +512,31 @@ struct NodeNeighbor {
 	{ }
 };
 
+static s8 get_max_liquid_level(NodeNeighbor nb, s8 current_max_node_level)
+{
+	s8 max_node_level = current_max_node_level;
+	u8 nb_liquid_level = (nb.n.param2 & LIQUID_LEVEL_MASK);
+	switch (nb.t) {
+		case NEIGHBOR_UPPER:
+			if (nb_liquid_level + WATER_DROP_BOOST > current_max_node_level) {
+				max_node_level = LIQUID_LEVEL_MAX;
+				if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
+					max_node_level = nb_liquid_level + WATER_DROP_BOOST;
+			} else if (nb_liquid_level > current_max_node_level) {
+				max_node_level = nb_liquid_level;
+			}
+			break;
+		case NEIGHBOR_LOWER:
+			break;
+		case NEIGHBOR_SAME_LEVEL:
+			if ((nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
+					nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level)
+				max_node_level = nb_liquid_level - 1;
+			break;
+	}
+	return max_node_level;
+}
+
 void ServerMap::transforming_liquid_add(v3s16 p) {
 		m_transforming_liquid.push_back(p);
 }
@@ -654,7 +679,13 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 						(nb.n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK) {
 						// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 						// but exclude falling liquids on the same level, they cannot flow here anyway
-						if (liquid_kind == CONTENT_AIR)
+
+						// used to determine if the neighbor can even flow into this node
+						s8 max_level_from_neighbor = get_max_liquid_level(nb, -1);
+						u8 range = m_nodedef->get(cfnb.liquid_alternative_flowing_id).liquid_range;
+
+						if (liquid_kind == CONTENT_AIR &&
+								max_level_from_neighbor >= (LIQUID_LEVEL_MAX + 1 - range))
 							liquid_kind = cfnb.liquid_alternative_flowing_id;
 					}
 					if (cfnb.liquid_alternative_flowing_id != liquid_kind) {
@@ -699,25 +730,7 @@ void ServerMap::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
-				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
-				switch (flows[i].t) {
-					case NEIGHBOR_UPPER:
-						if (nb_liquid_level + WATER_DROP_BOOST > max_node_level) {
-							max_node_level = LIQUID_LEVEL_MAX;
-							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
-								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
-						} else if (nb_liquid_level > max_node_level) {
-							max_node_level = nb_liquid_level;
-						}
-						break;
-					case NEIGHBOR_LOWER:
-						break;
-					case NEIGHBOR_SAME_LEVEL:
-						if ((flows[i].n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
-								nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level)
-							max_node_level = nb_liquid_level - 1;
-						break;
-				}
+				max_node_level = get_max_liquid_level(flows[i], max_node_level);
 			}
 
 			u8 viscosity = m_nodedef->get(liquid_kind).liquid_viscosity;
@@ -1142,7 +1155,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_check)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
@@ -1179,6 +1192,14 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
 	// require at least two solid blocks
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
+
+	v3s16 random_point(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2));
+	if (!isOccluded(cam_pos_nodes, pos_blockcenter + random_point, step, stepfac,
+				start_offset, end_offset, needed_count))
+		return false;
+
+	if (simple_check)
+		return true;
 
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
