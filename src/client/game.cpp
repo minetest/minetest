@@ -1489,12 +1489,6 @@ bool Game::createClient(const GameStartData &start_data)
 		return false;
 
 	bool could_connect, connect_aborted;
-#ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui) {
-		g_touchscreengui->init(texture_src);
-		g_touchscreengui->hide();
-	}
-#endif
 	if (!connectToServer(start_data, &could_connect, &connect_aborted))
 		return false;
 
@@ -1603,10 +1597,8 @@ bool Game::initGui()
 			-1, chat_backend, client, &g_menumgr);
 
 #ifdef HAVE_TOUCHSCREENGUI
-
 	if (g_touchscreengui)
-		g_touchscreengui->show();
-
+		g_touchscreengui->init(texture_src);
 #endif
 
 	return true;
