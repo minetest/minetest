@@ -518,7 +518,7 @@ void ClientEnvironment::getSelectedActiveObjects(
 		}
 		if (collision) {
 			PointabilityType pointable;
-			if (pointabilities && ! gcao->isPlayer()) {
+			if (pointabilities) {
 				pointable = pointabilities->matchObject(gcao->getName(),
 							gcao->getGroups()).value_or(gcao->getProperties().pointable);
 			} else {

@@ -1865,10 +1865,16 @@ void ServerEnvironment::getSelectedActiveObjects(
 		}
 		if (collision) {
 			PointabilityType pointable;
-			LuaEntitySAO* lsao = dynamic_cast<LuaEntitySAO*>(obj);
-			if (lsao && pointabilities) {
-				pointable = pointabilities->matchObject(lsao->getName(),
-						usao->getArmorGroups()).value_or(props->pointable);
+			if (pointabilities) {
+				if (LuaEntitySAO* lsao = dynamic_cast<LuaEntitySAO*>(obj)) {
+					pointable = pointabilities->matchObject(lsao->getName(),
+							usao->getArmorGroups()).value_or(props->pointable);
+				} else if (PlayerSAO* psao = dynamic_cast<PlayerSAO*>(obj)) {
+					pointable = pointabilities->matchObject("",
+							psao->getArmorGroups()).value_or(props->pointable);
+				} else {
+					pointable = props->pointable;
+				}
 			} else {
 				pointable = props->pointable;
 			}
