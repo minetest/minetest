@@ -467,7 +467,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_pushboolean(L, prop->rotate_selectionbox);
 	lua_setfield(L, -2, "rotate");
 	lua_setfield(L, -2, "selectionbox");
-	push_pointability(L, prop->pointable);
+	push_pointability_type(L, prop->pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
@@ -1026,7 +1026,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "is_ground_content");
 	lua_pushboolean(L, c.walkable);
 	lua_setfield(L, -2, "walkable");
-	push_pointability(L, c.pointable);
+	push_pointability_type(L, c.pointable);
 	lua_setfield(L, -2, "pointable");
 	lua_pushboolean(L, c.diggable);
 	lua_setfield(L, -2, "diggable");
@@ -1681,7 +1681,7 @@ Pointabilities read_pointabilities(lua_State *L, int index)
 }
 
 /******************************************************************************/
-void push_pointability(lua_State *L, PointabilityType pointable)
+void push_pointability_type(lua_State *L, PointabilityType pointable)
 {
 	switch(pointable)
 	{
@@ -1709,11 +1709,11 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 		// Create and fill table
 		lua_newtable(L);
 		for (const auto &entry : pointabilities.nodes) {
-			push_pointability(L, entry.second);
+			push_pointability_type(L, entry.second);
 			lua_setfield(L, -2, entry.first.c_str());
 		}
 		for (const auto &entry : pointabilities.node_groups) {
-			push_pointability(L, entry.second);
+			push_pointability_type(L, entry.second);
 			lua_setfield(L, -2, ("group:" + entry.first).c_str());
 		}
 		lua_setfield(L, -2, "nodes");
@@ -1723,11 +1723,11 @@ void push_pointabilities(lua_State *L, const Pointabilities &pointabilities)
 		// Create and fill table
 		lua_newtable(L);
 		for (const auto &entry : pointabilities.objects) {
-			push_pointability(L, entry.second);
+			push_pointability_type(L, entry.second);
 			lua_setfield(L, -2, entry.first.c_str());
 		}
 		for (const auto &entry : pointabilities.object_groups) {
-			push_pointability(L, entry.second);
+			push_pointability_type(L, entry.second);
 			lua_setfield(L, -2, ("group:" + entry.first).c_str());
 		}
 		lua_setfield(L, -2, "objects");

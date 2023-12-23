@@ -110,7 +110,7 @@ struct TileAnimationParams read_animation_definition(lua_State *L, int index);
 
 PointabilityType   read_pointability_type    (lua_State *L, int index);
 Pointabilities     read_pointabilities       (lua_State *L, int index);
-void               push_pointability         (lua_State *L, PointabilityType pointable);
+void               push_pointability_type    (lua_State *L, PointabilityType pointable);
 void               push_pointabilities       (lua_State *L, const Pointabilities &pointabilities);
 
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
