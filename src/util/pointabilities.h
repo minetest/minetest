@@ -22,8 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include "itemgroup.h"
 #include <optional>
+#include "irrlichttypes.h"
 
-enum class PointabilityType
+enum class PointabilityType : u8
 {
 	POINTABLE,
 	POINTABLE_NOT, // Can be pointed through.
