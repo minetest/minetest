@@ -261,10 +261,9 @@ void RemoteClient::GetNextBlocks (
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		const auto &list = FacePositionCache::getFacePositions(d);
 
-		std::vector<v3s16>::iterator li;
-		for (li = list.begin(); li != list.end(); ++li) {
+		for (auto li = list.begin(); li != list.end(); ++li) {
 			v3s16 p = *li + center;
 
 			/*

@@ -678,7 +678,7 @@ int ModApiItem::l_get_content_id(lua_State *L)
 
 	// If this is called at mod load time, NodeDefManager isn't aware of
 	// aliases yet, so we need to handle them manually
-	std::string alias_name = idef->getAlias(name);
+	const auto &alias_name = idef->getAlias(name);
 
 	content_t content_id;
 	if (alias_name != name) {

@@ -625,7 +625,7 @@ void Schematic::condenseContentIds()
 			numids++;
 
 			m_nodenames.push_back(m_ndef->get(c).name);
-			nodeidmap.emplace(std::make_pair(c, id));
+			nodeidmap.emplace(c, id);
 		} else {
 			id = it->second;
 		}

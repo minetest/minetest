@@ -29,13 +29,13 @@ public:
 	 * Hand over MainMenuDataForScript to lua to inform lua of the content
 	 * @param data the data
 	 */
-	void setMainMenuData(MainMenuDataForScript *data);
+	void setMainMenuData(const MainMenuDataForScript *data);
 
 	/**
 	 * process events received from formspec
 	 * @param text events in textual form
 	 */
-	void handleMainMenuEvent(std::string text);
+	void handleMainMenuEvent(const std::string &text);
 
 	/**
 	 * process field data received from formspec
