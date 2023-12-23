@@ -5298,9 +5298,9 @@ Utilities
       -- wallmounted nodes mounted at floor or ceiling may additionally
       -- be rotated by 90° with special param2 values (5.9.0)
       wallmounted_rotate = true,
-      -- Availability of the `pointabilities` property in the item definition
+      -- Availability of the `pointabilities` property in the item definition (5.9.0)
       item_specific_pointabilities = true,
-      -- Nodes `pointable` property can be `"blocking"`
+      -- Nodes `pointable` property can be `"blocking"` (5.9.0)
       blocking_pointability_type = true,
   }
   ```
