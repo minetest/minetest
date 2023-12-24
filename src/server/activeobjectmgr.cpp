@@ -69,7 +69,6 @@ void ActiveObjectMgr::step(
 	}
 }
 
-// clang-format off
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
 {
 	assert(obj); // Pre-condition
@@ -126,7 +125,6 @@ void ActiveObjectMgr::removeObject(u16 id)
 	m_active_objects.erase(id); // `it` can be invalid now
 }
 
-// clang-format on
 void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,
 		std::vector<ServerActiveObject *> &result,
 		std::function<bool(ServerActiveObject *obj)> include_obj_cb)

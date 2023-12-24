@@ -397,6 +397,7 @@ private:
 	const float m_min_time_from_building;
 	const s16 m_max_send_distance;
 	const s16 m_block_optimize_distance;
+	const s16 m_block_cull_optimize_distance;
 	const s16 m_max_gen_distance;
 	const bool m_occ_cull;
 

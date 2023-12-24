@@ -393,8 +393,8 @@ void Client::connect(Address address, bool is_local_server)
 void Client::step(float dtime)
 {
 	// Limit a bit
-	if (dtime > 2.0)
-		dtime = 2.0;
+	if (dtime > DTIME_LIMIT)
+		dtime = DTIME_LIMIT;
 
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
@@ -1439,6 +1439,7 @@ void Client::sendUpdateClientInfo(const ClientDynamicInfo& info)
 	pkt << info.real_gui_scaling;
 	pkt << info.real_hud_scaling;
 	pkt << (f32)info.max_fs_size.X << (f32)info.max_fs_size.Y;
+	pkt << info.touch_controls;
 
 	Send(&pkt);
 }

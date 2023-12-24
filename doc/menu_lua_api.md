@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 5.8.0
+Minetest Lua Mainmenu API Reference 5.9.0
 =========================================
 
 Introduction
@@ -249,6 +249,10 @@ GUI
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      touch_controls = false,
   }
   ```
 

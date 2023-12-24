@@ -383,6 +383,9 @@ public:
 	static bool migrateModStorageDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
 
+	static u16 getProtocolVersionMin();
+	static u16 getProtocolVersionMax();
+
 	// Lua files registered for init of async env, pair of modname + path
 	std::vector<std::pair<std::string, std::string>> m_async_init_files;
 

@@ -946,6 +946,10 @@ int ModApiMainMenu::l_get_window_info(lua_State *L)
 	lua_pushnumber(L, info.real_hud_scaling);
 	lua_settable(L, top);
 
+	lua_pushstring(L, "touch_controls");
+	lua_pushboolean(L, info.touch_controls);
+	lua_settable(L, top);
+
 	return 1;
 }
 

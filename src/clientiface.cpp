@@ -59,6 +59,7 @@ RemoteClient::RemoteClient() :
 		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
 	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
 	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
+	m_block_cull_optimize_distance(g_settings->getS16("block_cull_optimize_distance")),
 	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
 	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
 {
@@ -225,6 +226,8 @@ void RemoteClient::GetNextBlocks (
 		wanted_range);
 	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, prop_zoom_fov),
 		wanted_range);
+	const s16 d_cull_opt = std::min(adjustDist(m_block_cull_optimize_distance, prop_zoom_fov),
+		wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
@@ -355,7 +358,7 @@ void RemoteClient::GetNextBlocks (
 					continue;
 
 				if (m_occ_cull && !block_not_found &&
-						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+						env->getMap().isBlockOccluded(block, cam_pos_nodes, d >= d_cull_opt)) {
 					m_blocks_occ.insert(p);
 					continue;
 				}

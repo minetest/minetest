@@ -171,7 +171,11 @@ public:
 		return res;
 	}
 
-	double getPitch() { return m_camera_pitch; }
+	double getPitchChange() {
+		double res = m_camera_pitch_change;
+		m_camera_pitch_change = 0;
+		return res;
+	}
 
 	/**
 	 * Returns a line which describes what the player is pointing at.
@@ -213,7 +217,7 @@ private:
 
 	// value in degree
 	double m_camera_yaw_change = 0.0;
-	double m_camera_pitch = 0.0;
+	double m_camera_pitch_change = 0.0;
 
 	/**
 	 * A line starting at the camera and pointing towards the selected object.

@@ -38,10 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define SWPRINTF_CHARSTRING L"%s"
 #endif
 
-//currently not needed
-//template<typename T> struct alignment_trick { char c; T member; };
-//#define ALIGNOF(type) offsetof (alignment_trick<type>, member)
-
 #ifdef _WIN32
 	#include <windows.h>
 
@@ -49,12 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define sleep_us(x) Sleep((x)/1000)
 #else
 	#include <unistd.h>
-	#include <cstdint> //for uintptr_t
 
-	// Use standard Posix macro for Linux
-	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
-		#define __linux__
-	#endif
 	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
@@ -64,18 +55,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #ifdef _MSC_VER
-	#define ALIGNOF(x) __alignof(x)
 	#define strtok_r(x, y, z) strtok_s(x, y, z)
 	#define strtof(x, y) (float)strtod(x, y)
 	#define strtoll(x, y, z) _strtoi64(x, y, z)
 	#define strtoull(x, y, z) _strtoui64(x, y, z)
 	#define strcasecmp(x, y) stricmp(x, y)
 	#define strncasecmp(x, y, n) strnicmp(x, y, n)
-#else
-	#define ALIGNOF(x) __alignof__(x)
 #endif
 
 #ifdef __MINGW32__
+	// was broken in 2013, unclear if still needed
 	#define strtok_r(x, y, z) mystrtok_r(x, y, z)
 #endif
 
@@ -97,21 +86,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define strlcpy(d, s, n) mystrlcpy(d, s, n)
 #endif
 
-#define PADDING(x, y) ((ALIGNOF(y) - ((uintptr_t)(x) & (ALIGNOF(y) - 1))) & (ALIGNOF(y) - 1))
-
-#if defined(__APPLE__)
-	#include <mach-o/dyld.h>
-	#include <CoreFoundation/CoreFoundation.h>
-#endif
-
-#ifndef _WIN32 // Posix
+#ifndef _WIN32 // POSIX
 	#include <sys/time.h>
 	#include <ctime>
-
-#if defined(__MACH__) && defined(__APPLE__)
-		#include <mach/clock.h>
-		#include <mach/mach.h>
-	#endif
+    #if defined(__MACH__) && defined(__APPLE__)
+        #include <TargetConditionals.h>
+    #endif
 #endif
 
 namespace porting
@@ -178,7 +158,7 @@ void initializePaths();
 std::string get_sysinfo();
 
 
-// Monotonic counter getters.
+// Monotonic timer
 
 #ifdef _WIN32 // Windows
 
@@ -197,25 +177,20 @@ inline u64 getTimeMs() { return os_get_time(1000); }
 inline u64 getTimeUs() { return os_get_time(1000*1000); }
 inline u64 getTimeNs() { return os_get_time(1000*1000*1000); }
 
-#else // Posix
+#else // POSIX
 
 inline void os_get_clock(struct timespec *ts)
 {
-#if defined(__MACH__) && defined(__APPLE__)
-// From http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
-// OS X does not have clock_gettime, use clock_get_time
-	clock_serv_t cclock;
-	mach_timespec_t mts;
-	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-	clock_get_time(cclock, &mts);
-	mach_port_deallocate(mach_task_self(), cclock);
-	ts->tv_sec = mts.tv_sec;
-	ts->tv_nsec = mts.tv_nsec;
-#elif defined(CLOCK_MONOTONIC_RAW)
+#if defined(CLOCK_MONOTONIC_RAW)
 	clock_gettime(CLOCK_MONOTONIC_RAW, ts);
-#elif defined(_POSIX_MONOTONIC_CLOCK)
+#elif defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK > 0
 	clock_gettime(CLOCK_MONOTONIC, ts);
 #else
+# if defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK == 0
+	// zero means it might be supported at runtime
+	if (clock_gettime(CLOCK_MONOTONIC, ts) == 0)
+		return;
+# endif
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	TIMEVAL_TO_TIMESPEC(&tv, ts);
@@ -314,7 +289,7 @@ inline const char *getPlatformName()
 	"Cygwin"
 #elif defined(__unix__) || defined(__unix)
 	#if defined(_POSIX_VERSION)
-		"Posix"
+		"POSIX"
 	#else
 		"Unix"
 	#endif

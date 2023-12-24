@@ -1804,4 +1804,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 				>> lighting.exposure.speed_bright_dark
 				>> lighting.exposure.center_weight_power;
 	}
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.volumetric_light_strength;
 }

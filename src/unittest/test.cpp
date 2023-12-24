@@ -330,7 +330,7 @@ std::string TestBase::getTestTempDirectory()
 
 	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
 	if (!fs::CreateDir(m_test_dir))
-		throw TestFailedException();
+		UASSERT(false);
 
 	return m_test_dir;
 }
@@ -343,6 +343,26 @@ std::string TestBase::getTestTempFile()
 	return getTestTempDirectory() + DIR_DELIM + buf + ".tmp";
 }
 
+void TestBase::runTest(const char *name, std::function<void()> &&test)
+{
+	u64 t1 = porting::getTimeMs();
+	try {
+		test();
+		rawstream << "[PASS] ";
+	} catch (TestFailedException &e) {
+		rawstream << "Test assertion failed: " << e.message << std::endl;
+		rawstream << "    at " << e.file << ":" << e.line << std::endl;
+		rawstream << "[FAIL] ";
+		num_tests_failed++;
+	} catch (std::exception &e) {
+		rawstream << "Caught unhandled exception: " << e.what() << std::endl;
+		rawstream << "[FAIL] ";
+		num_tests_failed++;
+	}
+	num_tests_run++;
+	u64 tdiff = porting::getTimeMs() - t1;
+	rawstream << name << " - " << tdiff << "ms" << std::endl;
+}
 
 /*
 	NOTE: These tests became non-working then NodeContainer was removed.

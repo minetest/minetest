@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "client/shader.h"
 #include "client/minimap.h"
+#include <quaternion.h>
 
 class Settings;
 struct ToolCapabilities;
@@ -828,7 +829,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	updateMarker();
 	updateNodePos();
 	updateAnimation();
-	updateBonePosition();
+	updateBones(.0f);
 	updateAttachments();
 	setNodeLight(m_last_light);
 	updateMeshCulling();
@@ -1246,7 +1247,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updatePositionRecursive(m_matrixnode);
 		m_animated_meshnode->updateAbsolutePosition();
 		m_animated_meshnode->animateJoints();
-		updateBonePosition();
+		updateBones(dtime);
 	}
 }
 
@@ -1527,19 +1528,28 @@ void GenericCAO::updateAnimationSpeed()
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
-void GenericCAO::updateBonePosition()
+void GenericCAO::updateBones(f32 dtime)
 {
-	if (m_bone_position.empty() || !m_animated_meshnode)
+	if (!m_animated_meshnode)
 		return;
+	if (m_bone_override.empty()) {
+		m_animated_meshnode->setJointMode(scene::EJUOR_NONE);
+		return;
+	}
 
 	m_animated_meshnode->setJointMode(scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for (auto &it : m_bone_position) {
+	for (auto &it : m_bone_override) {
 		std::string bone_name = it.first;
 		scene::IBoneSceneNode* bone = m_animated_meshnode->getJointNode(bone_name.c_str());
-		if (bone) {
-			bone->setPosition(it.second.X);
-			bone->setRotation(it.second.Y);
-		}
+		if (!bone)
+			continue;
+
+		BoneOverride &props = it.second;
+		props.dtime_passed += dtime;
+
+		bone->setPosition(props.getPosition(bone->getPosition()));
+		bone->setRotation(props.getRotationEulerDeg(bone->getRotation()));
+		bone->setScale(props.getScale(bone->getScale()));
 	}
 
 	// search through bones to find mistakenly rotated bones due to bug in Irrlicht
@@ -1550,7 +1560,7 @@ void GenericCAO::updateBonePosition()
 
 		//If bone is manually positioned there is no need to perform the bug check
 		bool skip = false;
-		for (auto &it : m_bone_position) {
+		for (auto &it : m_bone_override) {
 			if (it.first == bone->getName()) {
 				skip = true;
 				break;
@@ -1852,11 +1862,46 @@ void GenericCAO::processMessage(const std::string &data)
 		updateAnimationSpeed();
 	} else if (cmd == AO_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString16(is);
-		v3f position = readV3F32(is);
-		v3f rotation = readV3F32(is);
-		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-
-		// updateBonePosition(); now called every step
+		auto it = m_bone_override.find(bone);
+		BoneOverride props;
+		if (it != m_bone_override.end()) {
+			props = it->second;
+			// Reset timer
+			props.dtime_passed = 0;
+			// Save previous values for interpolation
+			props.position.previous = props.position.vector;
+			props.rotation.previous = props.rotation.next;
+			props.scale.previous = props.scale.vector;
+		} else {
+			// Disable interpolation
+			props.position.interp_timer = 0.0f;
+			props.rotation.interp_timer = 0.0f;
+			props.scale.interp_timer = 0.0f;
+		}
+		// Read new values
+		props.position.vector = readV3F32(is);
+		props.rotation.next = core::quaternion(readV3F32(is) * core::DEGTORAD);
+		props.scale.vector = readV3F32(is); // reads past end of string on older cmds
+		if (is.eof()) {
+			// Backwards compatibility
+			props.scale.vector = v3f(1, 1, 1); // restore the scale which was not sent
+			props.position.absolute = true;
+			props.rotation.absolute = true;
+		} else {
+			props.position.interp_timer = readF32(is);
+			props.rotation.interp_timer = readF32(is);
+			props.scale.interp_timer = readF32(is);
+			u8 absoluteFlag = readU8(is);
+			props.position.absolute = (absoluteFlag & 1) > 0;
+			props.rotation.absolute = (absoluteFlag & 2) > 0;
+			props.scale.absolute = (absoluteFlag & 4) > 0;
+		}
+		if (props.isIdentity()) {
+			m_bone_override.erase(bone);
+		} else {
+			m_bone_override[bone] = props;
+		}
+		// updateBones(); now called every step
 	} else if (cmd == AO_CMD_ATTACH_TO) {
 		u16 parent_id = readS16(is);
 		std::string bone = deSerializeString16(is);
