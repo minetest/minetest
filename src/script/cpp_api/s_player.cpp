@@ -248,6 +248,61 @@ void ScriptApiPlayer::on_authplayer(const std::string &name, const std::string &
 	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
+void ScriptApiPlayer::on_stepplayer(ServerActiveObject *player, float dtime, bool do_drowning, bool do_breathing, bool do_node_hurt)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_player_step
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_step");
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 2); // Pop registered_on_player_step and core
+		return;
+	}
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	// Callback params
+	objectrefGetOrCreate(L, player);
+	lua_pushnumber(L, dtime);
+	lua_pushboolean(L, do_drowning);
+	lua_pushboolean(L, do_breathing);
+	lua_pushboolean(L, do_node_hurt);
+	// Call it
+	runCallback(5);
+}
+
+/*void ScriptApiPlayer::on_punchplayer(ServerActiveObject *player, int drowning)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	
+	assert(puncher);
+
+	// Get core.registered_on_player_punch
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_punch");
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 2); // Pop on_punch and entity
+		return false;
+	}
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Callback params
+	lua_pushvalue(L, object);  // self
+	objectrefGetOrCreate(L, puncher);  // Clicker reference
+	lua_pushnumber(L, time_from_last_punch);
+	push_tool_capabilities(L, *toolcap);
+	push_v3f(L, dir);
+	lua_pushnumber(L, damage);
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 6, 1, error_handler));
+
+	bool retval = readParam<bool>(L, -1);
+	lua_pop(L, 2); // Pop object and error handler
+	return retval;
+}*/
+
 void ScriptApiPlayer::pushMoveArguments(
 		const MoveAction &ma, int count,
 		ServerActiveObject *player)

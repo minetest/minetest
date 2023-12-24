@@ -81,6 +81,7 @@ std::string ObjectProperties::dump()
 	os << ", damage_texture_modifier=" << damage_texture_modifier;
 	os << ", shaded=" << shaded;
 	os << ", show_on_minimap=" << show_on_minimap;
+	os << ", engine_mask=0x" << std::hex << engine_mask;
 	return os.str();
 }
 
@@ -171,6 +172,10 @@ void ObjectProperties::serialize(std::ostream &os) const
 		writeARGB8(os, nametag_bgcolor.value());
 
 	writeU8(os, rotate_selectionbox);
+
+	writeF32(os, drowning_interval);
+	writeF32(os, breathing_interval);
+	writeF32(os, node_hurt_interval);
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -243,5 +248,18 @@ void ObjectProperties::deSerialize(std::istream &is)
 		if (is.eof())
 			return;
 		rotate_selectionbox = tmp;
+
+		float interval = readF32(is);
+		if (is.eof())
+			return;
+		drowning_interval = interval;
+		interval = readF32(is);
+		if (is.eof())
+			return;
+		breathing_interval = interval;
+		interval = readF32(is);
+		if (is.eof())
+			return;
+		node_hurt_interval = interval;
 	} catch (SerializationError &e) {}
 }

@@ -51,6 +51,9 @@ extern "C" {
 	}                                       \
 }
 
+#define runCallback(nargs) \
+	runCallbackRaw((nargs), __FUNCTION__)
+
 #define runCallbacks(nargs, mode) \
 	runCallbacksRaw((nargs), (mode), __FUNCTION__)
 
@@ -93,6 +96,7 @@ public:
 	void loadModFromMemory(const std::string &mod_name);
 #endif
 
+	void runCallbackRaw(int nargs, const char *fxn);
 	void runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn);
 
