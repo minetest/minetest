@@ -367,32 +367,31 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	}
 
 	/*
-		Find out which blocks on the old list are not on the new list
-	*/
-	// Go through old list
-	for (v3s16 p : m_list) {
-		// If not on new list, it's been removed
-		if (newlist.find(p) == newlist.end() && extralist.find(p) == newlist.end())
-			blocks_removed.insert(p);
-	}
-
-	/*
 		Find out which blocks on the new list are not on the old list
 	*/
-	// Go through new list
 	for (v3s16 p : newlist) {
-		// remove duplicate blocks from the extra list
+		// also remove duplicate blocks from the extra list
 		extralist.erase(p);
 		// If not on old list, it's been added
 		if (m_list.find(p) == m_list.end())
 			blocks_added.insert(p);
 	}
+	/*
+		Find out which blocks on the extra list are not on the old list
+	*/
 	for (v3s16 p : extralist) {
+		// also make sure newlist has all blocks
 		newlist.insert(p);
 		// If not on old list, it's been added
 		if (m_list.find(p) == m_list.end())
 			extra_blocks_added.insert(p);
 	}
+
+	/*
+		Find out which blocks on the old list are not on the new + extra list
+	*/
+	std::set_difference(m_list.begin(), m_list.end(), newlist.begin(), newlist.end(),
+			std::inserter(blocks_removed, blocks_removed.end()));
 
 	/*
 		Update m_list
