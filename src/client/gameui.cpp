@@ -334,3 +334,15 @@ void GameUI::deleteFormspec()
 
 	m_formname.clear();
 }
+void GameUI::Clear()
+{
+	
+	if(m_guitext_chat)
+	{
+		m_guitext_chat->setText(L"");
+	}
+	if(m_guitext)
+	{
+		m_guitext->setText(L"");
+	}
+}
