@@ -1966,13 +1966,13 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	std::string deprecated_type_string;
 	if (getstringfield(L, 2, "hud_elem_type", deprecated_type_string)) {
 		if (has_type && deprecated_type_string != type_string) {
-			script_log_unique(L, "Ambiguous HUD element fields \"type\" and \"hud_elem_type\", "
-					"\"type\" will be used.", warningstream);
+			log_deprecated(L, "Ambiguous HUD element fields \"type\" and \"hud_elem_type\", "
+					"\"type\" will be used.", 1, true);
 		} else {
 			has_type = true;
 			type_string = deprecated_type_string;
-			script_log_unique(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.",
-					warningstream);
+			log_deprecated(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.",
+					1, true);
 		}
 	}
 
