@@ -3128,6 +3128,12 @@
 #    type: path
 # map-dir =
 
+#    Game directory. Ignored if map-dir set, or if world or game
+#    is specified on the command line.
+#    Not needed if starting from the main menu.
+#    type: path
+# game_dir =
+
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 #    type: enum values: 0, 1, 2
 # sqlite_synchronous = 2

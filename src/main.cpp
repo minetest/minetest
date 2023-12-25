@@ -122,6 +122,7 @@ static bool auto_select_world(GameParams *game_params);
 static std::string get_clean_world_path(const std::string &path);
 
 static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_args);
+static bool get_game_from_config(GameParams *game_params);
 static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
@@ -810,14 +811,17 @@ static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 {
 	game_configure_port(game_params, cmd_args);
 
-	// TODO: add get_game_from_config.
-	const bool got_game = get_game_from_cmdline(game_params, cmd_args);
+	// Try to get game first so that if the world is not specified,
+	// game_configure_world will use the game to create the world.
+	bool got_game = (get_game_from_cmdline(game_params, cmd_args) ||
+	                 get_game_from_config(game_params));
 
 	if (!game_configure_world(game_params, cmd_args)) {
 		errorstream << "No world path specified or found." << std::endl;
 		return false;
 	}
 
+	// If the game wass not specified ahead of time, infer it from the world.
 	if (!got_game) {
 		determine_subgame(game_params);
 	}
@@ -994,6 +998,18 @@ static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_a
 	}
 
 	return false;
+}
+
+static bool get_game_from_config(GameParams *game_params)
+{
+	static constexpr const char* game_dir_setting_key = "game_dir";
+
+	if (!g_settings->exists(game_dir_setting_key)) {
+		return false;
+	}
+	game_params->game_spec = subgameFromDir(g_settings->get(game_dir_setting_key));
+
+	return game_params->game_spec.isValid();
 }
 
 static bool determine_subgame(GameParams *game_params)

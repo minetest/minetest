@@ -62,6 +62,7 @@ struct SubgameSpec
 };
 
 SubgameSpec findSubgame(const std::string &id);
+SubgameSpec subgameFromDir(const std::string &game_path);
 SubgameSpec findWorldSubgame(const std::string &world_path);
 
 std::set<std::string> getAvailableGameIds();
