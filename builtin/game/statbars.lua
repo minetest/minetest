@@ -139,8 +139,7 @@ end
 
 function core.hud_replace_builtin(hud_name, definition)
 	if type(definition) ~= "table" or
-			(definition.hud_elem_type ~= "statbar" and
-			definition.type ~= "statbar") then
+			(definition.type or definition.hud_elem_type) ~= "statbar" then
 		return false
 	end
 
