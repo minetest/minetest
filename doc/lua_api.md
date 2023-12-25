@@ -5278,7 +5278,7 @@ Utilities
       -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
       -- acceleration_default, acceleration_air (5.8.0)
       physics_overrides_v2 = true,
-      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated
+      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
       hud_def_type_field = true,
   }
   ```
@@ -10057,7 +10057,7 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
     -- If undefined "text" will be used.
-    
+
     hud_elem_type = "image",
     -- Deprecated, same as `type`.
     -- In case both are specified `type` will be used.
