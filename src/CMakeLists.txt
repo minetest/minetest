@@ -314,10 +314,9 @@ else()
 	endif()
 endif()
 
-# On clang and gcc, some functionalities of std::atomic require -latomic.
+# On gcc, some functionalities of std::atomic require -latomic.
 # See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-		OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
 endif()
 
