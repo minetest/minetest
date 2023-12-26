@@ -317,6 +317,7 @@ endif()
 # On non-recent clang and gcc, some functionalities of std::atomic require -latomic.
 # See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
 find_library(ATOMIC_LIBRARY atomic)
+message(ATOMIC_LIBRARY="${ATOMIC_LIBRARY}")
 if (ATOMIC_LIBRARY)
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
 endif()
