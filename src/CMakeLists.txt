@@ -316,10 +316,10 @@ endif()
 
 # On non-recent clang and gcc, some functionalities of std::atomic require -latomic.
 # See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
-if((CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-		OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  AND (NOT APPLE))
-	set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
+find_library(ATOMIC_LIBRARY atomic)
+mark_as_advanced(ATOMIC_LIBRARY)
+if (ATOMIC_LIBRARY)
+	set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ATOMIC_LIBRARY})
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
