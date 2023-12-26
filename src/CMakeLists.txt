@@ -316,9 +316,13 @@ endif()
 
 # On non-recent clang and gcc, some functionalities of std::atomic require -latomic.
 # See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
-if((CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-		OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  AND (NOT APPLE))
+# Use -latomic if it works
+# Note that find_library does not reliably find it so we have to resort to this.
+include(CheckCSourceCompiles)
+set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+set(CMAKE_REQUIRED_LIBRARIES "")
+if(HAVE_LINK_ATOMIC)
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
 endif()
 
