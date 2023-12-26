@@ -2708,6 +2708,12 @@ Elements
   (if present).
 * Disables player:set_formspec_prepend() from applying to this formspec.
 
+### `allow_quit[<bool>]`
+
+* Controls whether players can quit the formspec (e.g. by pressing ESC).
+* Players can still quit the formspec using exit buttons.
+* `minetest.close_formspec` will still work.
+
 ### `real_coordinates[<bool>]`
 
 * INFORMATION: Enable it automatically using `formspec_version` version 2 or newer.

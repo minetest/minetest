@@ -3049,6 +3049,10 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 		return;
 	}
 
+	if (type == "allow_quit") {
+		data->allowclose = is_yes(description);
+	}
+
 	// Ignore others
 	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
 			<< std::endl;
@@ -3098,6 +3102,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	mydata.anchor = v2f32(0.5f, 0.5f);
 	mydata.padding = v2f32(0.05f, 0.05f);
 	mydata.simple_field_count = 0;
+	mydata.allowclose = m_allowclose_default;
 
 	// Base position of contents of form
 	mydata.basepos = getBasePos();
@@ -3457,6 +3462,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_last_formname = m_text_dst->m_formname;
 		m_is_form_regenerated = true;
 	}
+
+	m_allowclose = mydata.allowclose;
 }
 
 void GUIFormSpecMenu::legacySortElements(std::list<IGUIElement *>::iterator from)
@@ -4967,12 +4974,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					s.send = true;
 					if (s.is_exit) {
-						if (m_allowclose) {
-							acceptInput(quit_mode_accept);
-							quitMenu();
-						} else {
-							m_text_dst->gotText(L"ExitButton");
-						}
+						acceptInput(quit_mode_accept);
+						quitMenu();
 						return true;
 					}
 

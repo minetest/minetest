@@ -464,6 +464,17 @@ mouse control = true]
 			background9[0,0;0,0;testformspec_bg_9slice.png;true;4,6]
 			background[1,1;0,0;testformspec_bg.png;true]
 		]],
+
+	-- Allow Close
+		[[
+			formspec_version[3]
+			size[12,4]
+			allow_quit[false]
+			button_exit[0.5,0.5;3,1;exitbtn;Exit (Button)]
+			button[0.5,2;3,1;exitapi;Exit (close_formspec)]
+			label[4,1;You should only be able to quit this formspec
+by clicking one of these buttons (or switching to another tab).]
+		]]
 }
 
 local page_id = 2
@@ -473,7 +484,7 @@ local function show_test_formspec(pname)
 		page = page()
 	end
 
-	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized;" .. page_id .. ";false;false]"
+	local fs = page .. "tabheader[0,0;11,0.65;maintabs;Real Coord,Styles,Noclip,Hypertext,Tabs,Invs,Window,Anim,Model,ScrollC,Sound,Background,Unsized,Allow Close;" .. page_id .. ";false;false]"
 
 	minetest.show_formspec(pname, "testformspec:formspec", fs)
 end
@@ -520,6 +531,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.submit_window then
 		show_test_formspec(player:get_player_name())
+	end
+
+	if fields.exitapi then
+		minetest.close_formspec(player:get_player_name(), "testformspec:formspec")
+		return true
 	end
 end)
 

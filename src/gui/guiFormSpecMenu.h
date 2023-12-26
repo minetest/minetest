@@ -216,9 +216,9 @@ public:
 		m_text_dst = text_dst;
 	}
 
-	void allowClose(bool value)
+	void setAllowCloseDefault(bool value)
 	{
-		m_allowclose = value;
+		m_allowclose_default = value;
 	}
 
 	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0))
@@ -366,7 +366,8 @@ protected:
 	u64 m_hovered_time = 0;
 	s32 m_old_tooltip_id = -1;
 
-	bool m_allowclose = true;
+	bool m_allowclose_default = true;
+	bool m_allowclose;
 	bool m_lock = false;
 	v2u32 m_lockscreensize;
 
@@ -389,6 +390,7 @@ private:
 	struct parserData {
 		bool explicit_size;
 		bool real_coordinates;
+		bool allowclose;
 		u8 simple_field_count;
 		v2f invsize;
 		v2s32 size;
