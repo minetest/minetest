@@ -77,7 +77,7 @@ protected:
 	bool DoubleClickDetection(const SEvent &event);
 
 	// Stores the last known pointer type.
-	PointerType m_pointer_type;
+	PointerType m_pointer_type = PointerType::Mouse;
 	// Stores the last known pointer position.
 	// If the last input event was a mouse event, it's the cursor position.
 	// If the last input event was a touch event, it's the finger position.
@@ -115,6 +115,8 @@ private:
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal = false;
+
+	// Stuff related to touchscreen input
 
 	irr_ptr<gui::IGUIElement> m_touch_hovered;
 
