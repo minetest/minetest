@@ -45,12 +45,15 @@ local raw_clear_objects = core.clear_objects
 local function check_rule(rule, value)
 	--print("Checking rule "..dump(rule).." and value "..dump(value))
 	if type(rule)==type(value) then
+		-- direct comparison, rule and value have equel type
 		if rule==value then
 			return true
 		end
 	elseif type(rule)=="table" then
+		-- rule table, check type of value
 		if rule.type==type(value) then
 			if rule.type=="number" then
+				-- rule for number, check value min/max limits
 				if (rule.min~=nil) and (value>=rule.min) then
 					if (rule.max~=nil) and (value<=rule.max) then
 						return true
@@ -61,6 +64,7 @@ local function check_rule(rule, value)
 					return true
 				end
 			elseif rule.type=="string" then
+				-- rule for string, check if value match or contain specified substring
 				if (rule.match~=nil) and (string.match(value, rule.match)~=nil) then
 					return true
 				end
@@ -68,10 +72,6 @@ local function check_rule(rule, value)
 					return true
 				end
 			end
-		end
-	elseif type(rule)=="string" then
-		if type(value)==rule then
-			return true
 		end
 	end
 	return false
@@ -98,6 +98,7 @@ core.clear_objects = function(options)
 			minetest.log("action", S("Clearing objects with rules").." "..dump(rules))
 			for _, entity in pairs(minetest.luaentities) do
 				local remove = remove_init
+				-- rules for luaentity table
 				if (type(rules.e)=="table") then
 					local values = entity.object:get_luaentity()
 					for key, rule in pairs(rules.e) do
@@ -105,6 +106,7 @@ core.clear_objects = function(options)
 						if not remove then break end
 					end
 				end
+				-- rules for properties table
 				if (type(rules.p)=="table") then
 					local values = entity.object:get_properties()
 					for key, rule in pairs(rules.p) do
@@ -117,7 +119,7 @@ core.clear_objects = function(options)
 				end
 			end
 		else
-			minetest.log("action", S("No usefull rules for clearig objects has been set."))
+			minetest.log("action", S("No usefull rules for clearing objects has been set."))
 		end
 	end
 end
