@@ -343,4 +343,16 @@ void GameUI::clearText()
 	
 	if (m_guitext)
 		m_guitext->setText(L"");
+		
+	if (m_guitext2)
+		m_guitext2->setText(L"");
+	
+	if (m_guitext_info)
+		m_guitext_info->setText(L"");
+		
+	if (m_guitext_status)
+		m_guitext_status->setText(L"");
+		
+	if(m_guitext_profiler)
+		m_guitext_profiler->setText(L"");
 }
