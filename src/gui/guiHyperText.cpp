@@ -1054,10 +1054,8 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 
 	ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
 
-	if (cursor_control && m_drawer.m_hovertag)
-		cursor_control->setActiveIcon(gui::ECI_HAND);
-	else if (cursor_control)
-		cursor_control->setActiveIcon(gui::ECI_NORMAL);
+	if (cursor_control)
+		cursor_control->setActiveIcon(m_drawer.m_hovertag ? gui::ECI_HAND : gui::ECI_NORMAL);
 }
 
 bool GUIHyperText::OnEvent(const SEvent &event)
