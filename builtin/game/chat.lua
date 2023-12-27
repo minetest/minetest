@@ -1235,8 +1235,8 @@ core.register_chatcommand("kick", {
 })
 
 core.register_chatcommand("clearobjects", {
-	params = S("[soft | full | quick | rules <rules_table>]"),
-	description = S("Clear all objects in world"),
+	params = S("[soft | full | quick | (rules <rules_table>)]"),
+	description = S("Clear objects in world"),
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
@@ -1259,12 +1259,12 @@ core.register_chatcommand("clearobjects", {
 		core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
 		if options.mode == "full" then
-			core.chat_send_all(S("Clearing all objects. This may take a long time. "
+			core.chat_send_all(S("Clearing objects. This may take a long time. "
 				.. "You may experience a timeout. (by @1)", name))
 		end
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** "..S("Cleared all objects."))
+		core.chat_send_all("*** "..S("Cleared objects with using rule "..options.mode.."."))
 		return true
 	end,
 })
