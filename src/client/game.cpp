@@ -1332,7 +1332,10 @@ void Game::shutdown()
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
-	m_game_ui->Clear();
+		
+	// Clear text when leaving.
+	m_game_ui->clearText();
+	
 #ifdef HAVE_TOUCHSCREENGUI
 	g_touchscreengui->hide();
 #endif
