@@ -105,6 +105,19 @@ local function gen_checkers(w, h, tile)
 	return r
 end
 
+-- The engine should perform color reduction of the generated PNG in certain
+-- cases, so we have this helper to check the result
+local function encode_and_check(w, h, ctype, data)
+	local ret = core.encode_png(w, h, data)
+	assert(ret:sub(1, 8) == "\137PNG\r\n\026\n", "missing png signature")
+	assert(ret:sub(9, 16) == "\000\000\000\rIHDR", "didn't find ihdr chunk")
+	local ctype_actual = ret:byte(26) -- Color Type (1 byte)
+	ctype = ({rgba=6, rgb=2, gray=0})[ctype]
+	assert(ctype_actual == ctype, "png should have color type " .. ctype ..
+		" but actually has " .. ctype_actual)
+	return ret
+end
+
 local fractal = mandelbrot(512, 512, 128)
 local frac_emb = mandelbrot(64, 64, 64)
 local checker = gen_checkers(512, 512, 32)
@@ -129,17 +142,21 @@ for i=1, #fractal do
 		b = floor(abs(1 - fractal[i]) * 255),
 		a = 255,
 	}
-	data_ck[i] = checker[i] > 0 and "#F80" or "#000"
+	data_ck[i] = checker[i] > 0 and "#888" or "#000"
 end
+
+fractal = nil
+frac_emb = nil
+checker = nil
 
 local textures_path = minetest.get_modpath( minetest.get_current_modname() ) .. "/textures/"
 minetest.safe_file_write(
 	textures_path .. "testnodes_generated_mb.png",
-	minetest.encode_png(512,512,data_mb)
+	encode_and_check(512, 512, "rgb", data_mb)
 )
 minetest.safe_file_write(
 	textures_path .. "testnodes_generated_ck.png",
-	minetest.encode_png(512,512,data_ck)
+	encode_and_check(512, 512, "gray", data_ck)
 )
 
 minetest.register_node("testnodes:generated_png_mb", {
@@ -155,7 +172,8 @@ minetest.register_node("testnodes:generated_png_ck", {
 	groups = { dig_immediate = 2 },
 })
 
-local png_emb = "[png:" .. minetest.encode_base64(minetest.encode_png(64,64,data_emb))
+local png_emb = "[png:" .. minetest.encode_base64(
+	encode_and_check(64, 64, "rgba", data_emb))
 
 minetest.register_node("testnodes:generated_png_emb", {
 	description = S("Generated In-Band Mandelbrot PNG Test Node"),
@@ -181,6 +199,10 @@ minetest.register_node("testnodes:generated_png_dst_emb", {
 
 	groups = { dig_immediate = 2 },
 })
+
+data_emb = nil
+data_mb = nil
+data_ck = nil
 
 --[[
 

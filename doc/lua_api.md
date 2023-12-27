@@ -5418,9 +5418,8 @@ Utilities
     * `compression`: Optional zlib compression level, number in range 0 to 9.
   The data is one-dimensional, starting in the upper left corner of the image
   and laid out in scanlines going from left to right, then top to bottom.
-  Please note that it's not safe to use string.char to generate raw data,
-  use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
-  The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
+  You can use `colorspec_to_bytes` to generate raw RGBA values.
+  Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
 * `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
