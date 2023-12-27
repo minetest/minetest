@@ -314,19 +314,15 @@ else()
 	endif()
 endif()
 
-# On non-recent clang and gcc, some functionalities of std::atomic require -latomic.
+# On clang and gcc, some functionalities of std::atomic require -latomic.
 # See <https://en.cppreference.com/w/cpp/atomic/atomic#Notes>.
-# Use -latomic if it works
 # Note that find_library does not reliably find it so we have to resort to this.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-		OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	include(CheckCSourceCompiles)
-	set(CMAKE_REQUIRED_LIBRARIES "-latomic")
-	check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
-	set(CMAKE_REQUIRED_LIBRARIES "")
-	if(HAVE_LINK_ATOMIC)
-		set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
-	endif()
+include(CheckCSourceCompiles)
+set(CMAKE_REQUIRED_LIBRARIES "-latomic")
+check_c_source_compiles("int main(){}" HAVE_LINK_ATOMIC)
+set(CMAKE_REQUIRED_LIBRARIES "")
+if(HAVE_LINK_ATOMIC)
+	set(PLATFORM_LIBS ${PLATFORM_LIBS} atomic)
 endif()
 
 check_include_files(endian.h HAVE_ENDIAN_H)
