@@ -1960,9 +1960,9 @@ void Server::SendMovePlayer(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerPos(session_t peer_id, const v3f &added_pos)
+void Server::SendMovePlayerRel(session_t peer_id, const v3f &added_pos)
 {
-	NetworkPacket pkt(TOCLIENT_PLAYER_POS, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER_REL, 0, peer_id);
 	pkt << added_pos;
 	Send(&pkt);
 }
@@ -3419,6 +3419,10 @@ Address Server::getPeerAddress(session_t peer_id)
 {
 	// Note that this is only set after Init was received in Server::handleCommand_Init
 	return getClient(peer_id, CS_Invalid)->getAddress();
+}
+u16 Server::getPeerProtocolVersion(session_t peer_id)
+{
+	return m_clients.getProtocolVersion(peer_id);
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,

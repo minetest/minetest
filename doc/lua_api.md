@@ -7464,7 +7464,7 @@ child will follow movement and rotation of that bone.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`
 * `add_pos(pos)`:
-    * Changes pos by addint to the current pos.
+    * Changes position by adding to the current position.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`.
 * `get_velocity()`: returns the velocity, a vector.

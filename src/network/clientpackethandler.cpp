@@ -635,7 +635,7 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
-void Client::handleCommand_PlayerPos(NetworkPacket *pkt)
+void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 {
 	v3f added_pos;
 

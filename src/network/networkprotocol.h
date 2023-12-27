@@ -221,7 +221,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		[scheduled bump for 5.8.0]
 	PROTOCOL VERSION 44:
 		AO_CMD_SET_BONE_POSITION extended
-		Add TOCLUENT_OKATER_POS
+		Add TOCLIENT_MOVE_PLAYER_REL
 		[scheduled bump for 5.9.0]
 */
 
@@ -874,7 +874,7 @@ enum ToClientCommand
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_PLAYER_POS = 0x64,
+	TOCLIENT_MOVE_PLAYER_REL = 0x64,
 	/*
 		v3f added_pos
 	 */

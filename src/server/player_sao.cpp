@@ -369,6 +369,12 @@ void PlayerSAO::setPos(const v3f &pos)
 
 void PlayerSAO::addPos(const v3f &added_pos)
 {
+	// Backward compatibility for older clients
+	if (m_env->getGameDef()->getPeerProtocolVersion(m_peer_id) < 44) {
+		setPos(getBasePosition()+added_pos);
+		return;
+	}
+
 	if(isAttached())
 		return;
 
@@ -382,7 +388,7 @@ void PlayerSAO::addPos(const v3f &added_pos)
 	m_last_good_position = getBasePosition();
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
-	m_env->getGameDef()->SendPlayerPos(m_peer_id, added_pos);
+	m_env->getGameDef()->SendMovePlayerRel(m_peer_id, added_pos);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
