@@ -352,7 +352,7 @@ void PlayerSAO::setBasePosition(v3f position)
 
 void PlayerSAO::setPos(const v3f &pos)
 {
-	if(isAttached())
+	if (isAttached())
 		return;
 
 	// Send mapblock of target location
@@ -375,7 +375,7 @@ void PlayerSAO::addPos(const v3f &added_pos)
 		return;
 	}
 
-	if(isAttached())
+	if (isAttached())
 		return;
 
 	// Send mapblock of target location
