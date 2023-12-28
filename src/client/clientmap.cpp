@@ -63,6 +63,58 @@ void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 	list.emplace_back(l);
 }
 
+//TODO:move
+// std::hash for integral types, including ptrs, is identity, which is bad for
+// aligned ptrs.
+template <typename T>
+struct PtrHash
+{
+	size_t operator()(const T *p) const noexcept
+	{
+		uintptr_t v = reinterpret_cast<uintptr_t>(p);
+		v = (v >> 4) ^ (v & 0xf);
+		return std::hash<uintptr_t>{}(v);
+	}
+};
+
+// struct MeshBufListMaps
+
+struct MeshBufListMaps
+{
+	struct MaterialHash
+	{
+		size_t operator()(const video::SMaterial &m) const noexcept
+		{
+			return PtrHash<video::ITexture>{}(m.TextureLayers[0].Texture);
+		}
+	};
+
+	using MeshBufListMap = std::unordered_map<
+			video::SMaterial,
+			std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
+			MaterialHash>;
+
+	std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+	void clear();
+	void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer);
+};
+
+void MeshBufListMaps::clear()
+{
+	for (auto &map : maps)
+		map.clear();
+}
+
+void MeshBufListMaps::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+{
+	// Append to the correct layer
+	auto &map = maps[layer];
+	const video::SMaterial &m = buf->getMaterial();
+	auto &bufs = map[m]; // default constructs if non-existent
+	bufs.emplace_back(position, buf);
+}
+
 static void on_settings_changed(const std::string &name, void *data)
 {
 	static_cast<ClientMap*>(data)->onSettingChanged(name);
@@ -737,7 +789,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Draw the selected MapBlocks
 	*/
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
@@ -819,11 +871,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 			}
 		}
 	}
