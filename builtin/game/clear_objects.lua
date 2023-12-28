@@ -95,7 +95,7 @@ core.clear_objects = function(options)
 		local remove_init = ((type(rules.e)=="table") and (not rawequal(next(rules.e), nil)))
 		                    or ((type(rules.p)=="table") and (not rawequal(next(rules.p), nil)))
 		if remove_init then
-			minetest.log("action", S("Clearing objects with rules").." "..dump(rules))
+			minetest.log("action", S("Clearing objects with rules: @1", dump(rules)))
 			for _, entity in pairs(minetest.luaentities) do
 				local remove = remove_init
 				-- rules for luaentity table

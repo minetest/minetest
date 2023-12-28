@@ -1265,7 +1265,7 @@ core.register_chatcommand("clearobjects", {
 		end
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** "..S("Cleared objects with using rule "..options.mode.."."))
+		core.chat_send_all("*** "..S("Cleared objects with using rule @1.", options.mode))
 		return true
 	end,
 })
