@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: French (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-05 18:57+0000\n"
-"Last-Translator: waxtatect <piero@live.ie>\n"
+"PO-Revision-Date: 2023-12-30 17:06+0000\n"
+"Last-Translator: Gaël Chrétien <gael.chretien@akeonet.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
 "fr/>\n"
 "Language: fr\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
-msgstr "Effacer la file de sortie de message du tchat"
+msgstr "Effacer la file d'attente du tchat"
 
 #: builtin/client/chatcommands.lua
 msgid "Empty command."
@@ -44,7 +44,7 @@ msgstr "Joueurs en ligne : "
 
 #: builtin/client/chatcommands.lua
 msgid "The out chat queue is now empty."
-msgstr "La file de sortie de message du tchat est maintenant vide."
+msgstr "La file d'attente du tchat est maintenant vide."
 
 #: builtin/client/chatcommands.lua
 msgid "This command is disabled by server."
@@ -111,7 +111,7 @@ msgstr "Se reconnecter"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Le serveur souhaite rétablir une connexion :"
+msgstr "Le serveur demande de se reconnecter :"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -510,11 +510,11 @@ msgstr "Générateur de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Drapeaux de génération de terrain"
+msgstr "Options de génération de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen-specific flags"
-msgstr "Drapeaux spécifiques au générateur de terrain"
+msgstr "Options spécifiques au générateur de terrain"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mountains"
@@ -597,7 +597,7 @@ msgstr "Varier la profondeur des rivières"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Very large caverns deep in the underground"
-msgstr "Très grandes cavernes profondes souterraines"
+msgstr "Très grandes cavernes loin sous la surface"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -682,7 +682,7 @@ msgstr "Minetest Game n'est plus installé par défaut"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Reinstall Minetest Game"
-msgstr "Reinstaller Minetest Game"
+msgstr "Réinstaller Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -1173,7 +1173,7 @@ msgstr "Reconstruction des shaders…"
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Erreur de connexion (perte de connexion ?)"
+msgstr "Erreur de connexion (perdue ?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game: "
@@ -1247,7 +1247,7 @@ msgstr "Une erreur de sérialisation est survenue :"
 #: src/client/game.cpp
 #, c-format
 msgid "Access denied. Reason: %s"
-msgstr "Accès refusé. Raison : %s"
+msgstr "Accès refusé. Cause : %s"
 
 #: src/client/game.cpp
 msgid "Automatic forward disabled"
@@ -1336,20 +1336,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"Contrôles :\n"
-"– %s : avancer\n"
-"– %s : reculer\n"
-"– %s : à gauche\n"
-"– %s : à droite\n"
-"– %s : sauter/grimper\n"
-"– %s : creuser/taper/utiliser\n"
-"– %s : placer/utiliser\n"
-"– %s : marcher lentement/descendre\n"
-"– %s : lâcher un objet\n"
-"– %s : inventaire\n"
-"– Souris : tourner/regarder\n"
-"– Molette souris : sélectionner un objet\n"
-"– %s : tchat\n"
+"Contrôles :\n"
+"– %s : avancer\n"
+"– %s : reculer\n"
+"– %s : à gauche\n"
+"– %s : à droite\n"
+"– %s : sauter/grimper\n"
+"– %s : creuser/frapper/utiliser\n"
+"– %s : placer/utiliser\n"
+"– %s : marcher lentement/descendre\n"
+"– %s : lâcher un objet\n"
+"– %s : inventaire\n"
+"– Souris : tourner/regarder\n"
+"– Molette souris : sélectionner un objet\n"
+"– %s : tchat\n"
 
 #: src/client/game.cpp
 msgid ""
@@ -1366,15 +1366,15 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Contrôles :\n"
-"Sans menu ouvert :\n"
-"– glissement du doigt : regarder autour\n"
-"– appui : placer/utiliser\n"
-"– appui long : creuser/taper/utiliser\n"
-"Menu/Inventaire ouvert :\n"
-"– double-appui (en dehors) : fermer\n"
-"– appui sur objets dans l'inventaire : déplacer\n"
-"– appui, glissement et appui : pose d'un seul objet par emplacement\n"
+"Contrôles :\n"
+"Sans menu ouvert :\n"
+"– glissement du doigt : regarder autour\n"
+"– appui : placer/utiliser\n"
+"– appui long : creuser/frapper/utiliser\n"
+"Menu/Inventaire ouvert :\n"
+"– double-appui (en dehors) : fermer\n"
+"– appui sur objets dans l'inventaire : déplacer\n"
+"– appui, glissement et appui : pose d'un seul objet par emplacement\n"
 
 #: src/client/game.cpp
 #, c-format
