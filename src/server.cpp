@@ -3420,10 +3420,6 @@ Address Server::getPeerAddress(session_t peer_id)
 	// Note that this is only set after Init was received in Server::handleCommand_Init
 	return getClient(peer_id, CS_Invalid)->getAddress();
 }
-u16 Server::getPeerProtocolVersion(session_t peer_id)
-{
-	return m_clients.getProtocolVersion(peer_id);
-}
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
 		v2s32 animation_frames[4], f32 frame_speed)

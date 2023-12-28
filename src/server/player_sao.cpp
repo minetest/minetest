@@ -370,8 +370,8 @@ void PlayerSAO::setPos(const v3f &pos)
 void PlayerSAO::addPos(const v3f &added_pos)
 {
 	// Backward compatibility for older clients
-	if (m_env->getGameDef()->getPeerProtocolVersion(m_peer_id) < 44) {
-		setPos(getBasePosition()+added_pos);
+	if (m_player->protocol_version < 44) {
+		setPos(getBasePosition() + added_pos);
 		return;
 	}
 
@@ -379,7 +379,7 @@ void PlayerSAO::addPos(const v3f &added_pos)
 		return;
 
 	// Send mapblock of target location
-	v3f pos = getBasePosition()+added_pos;
+	v3f pos = getBasePosition() + added_pos;
 	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
 	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
 
