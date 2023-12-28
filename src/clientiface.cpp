@@ -228,7 +228,8 @@ void RemoteClient::GetNextBlocks (
 		wanted_range);
 	const s16 d_cull_opt = std::min(adjustDist(m_block_cull_optimize_distance, prop_zoom_fov),
 		wanted_range);
-	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	// f32 to prevent overflow, it is also what isBlockInSight(...) expects
+	const f32 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
