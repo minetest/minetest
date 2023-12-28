@@ -44,31 +44,31 @@ local raw_clear_objects = core.clear_objects
 
 local function check_rule(rule, value)
 	--print("Checking rule "..dump(rule).." and value "..dump(value))
-	if type(rule)==type(value) then
+	if type(rule) == type(value) then
 		-- direct comparison, rule and value have equel type
-		if rule==value then
+		if rule == value then
 			return true
 		end
-	elseif type(rule)=="table" then
+	elseif type(rule) == "table" then
 		-- rule table, check type of value
-		if rule.type==type(value) then
-			if rule.type=="number" then
+		if rule.type == type(value) then
+			if rule.type == "number" then
 				-- rule for number, check value min/max limits
-				if (rule.min~=nil) and (value>=rule.min) then
-					if (rule.max~=nil) and (value<=rule.max) then
+				if (rule.min ~= nil) and (value >= rule.min) then
+					if (rule.max ~= nil) and (value <= rule.max) then
 						return true
 					else
 						return true
 					end
-				elseif (rule.max~=nil) and (value<=rule.max) then
+				elseif (rule.max ~= nil) and (value <= rule.max) then
 					return true
 				end
-			elseif rule.type=="string" then
+			elseif rule.type == "string" then
 				-- rule for string, check if value match or contain specified substring
-				if (rule.match~=nil) and (string.match(value, rule.match)~=nil) then
+				if (rule.match ~= nil) and (string.match(value, rule.match) ~= nil) then
 					return true
 				end
-				if (rule.find~=nil) and (string.find(value, rule.find)~=nil) then
+				if (rule.find ~= nil) and (string.find(value, rule.find) ~= nil) then
 					return true
 				end
 			end
@@ -78,17 +78,17 @@ local function check_rule(rule, value)
 end
 
 core.clear_objects = function(options)
-	if (options.mode=="full") or (options.mode=="quick") then
+	if (options.mode == "full") or (options.mode == "quick") then
 		-- C++ powered clear objects function, fast, bud not selective
 		raw_clear_objects(options)
-	elseif (options.mode=="soft") then
+	elseif options.mode == "soft" then
 		-- soft mode remove all entities without prevet_soft_clearobjects field
 		for _, entity in pairs(minetest.luaentities) do
 			if not entity.object:get_luaentity().prevent_soft_clearobjects then
 				entity.object:remove()
 			end
 		end
-	elseif (options.mode=="rules") then
+	elseif options.mode == "rules" then
 		-- rules mod apply rules to decide if object should be removed or kept
 		-- object is removed only when all rules match
 		local rules = options.rules
@@ -99,7 +99,7 @@ core.clear_objects = function(options)
 			for _, entity in pairs(minetest.luaentities) do
 				local remove = remove_init
 				-- rules for luaentity table
-				if (type(rules.e)=="table") then
+				if type(rules.e) == "table" then
 					local values = entity.object:get_luaentity()
 					for key, rule in pairs(rules.e) do
 						remove = remove and check_rule(rule, values[key])
@@ -107,7 +107,7 @@ core.clear_objects = function(options)
 					end
 				end
 				-- rules for properties table
-				if (type(rules.p)=="table") then
+				if type(rules.p) == "table" then
 					local values = entity.object:get_properties()
 					for key, rule in pairs(rules.p) do
 						remove = remove and check_rule(rule, values[key])
