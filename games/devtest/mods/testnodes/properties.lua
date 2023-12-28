@@ -672,7 +672,7 @@ minetest.register_node("testnodes:pointable", {
 	drawtype = "glasslike_framed",
 	paramtype = "light",
 	walkable = false,
-	groups = {dig_immediate=3, pointable_test=1,},
+	groups = {dig_immediate=3, pointable_test=1},
 })
 
 minetest.register_node("testnodes:not_pointable", {
