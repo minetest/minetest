@@ -8676,6 +8676,9 @@ Used by `minetest.register_entity`.
     on_detach = function(self, parent) end,
     get_staticdata = function(self) end,
 
+    -- if is true, /clearobjects in soft mode will not delete entity
+    prevent_soft_clearobjects = false,
+
     _custom_field = whatever,
     -- You can define arbitrary member variables here (see Item definition
     -- for more info) by using a '_' prefix
