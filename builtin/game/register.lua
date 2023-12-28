@@ -118,10 +118,10 @@ function core.override_abm(name, redefinition)
 		error("Attempt to redefine abm name of "..name.." to "..dump(redefinition.name), 2)
 	end
 	check_node_list(redefinition.nodenames, "nodenames")
-	for k, v in pairs(core.registered_abms) do
-		if (v.name == name) then
+	for _, abm in pairs(core.registered_abms) do
+		if (abm.name == name) then
 			for k, v in pairs(redefinition) do
-				rawset(item, k, v)
+				rawset(abm, k, v)
 			end
 			return
 		end

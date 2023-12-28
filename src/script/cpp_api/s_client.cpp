@@ -43,7 +43,7 @@ void ScriptApiClient::on_mods_loaded()
 	// set is_mods_loaded
 	lua_getglobal(L, "core");
 	lua_pushboolean(L, true);
-	lua_setfield(L, -1, "is_mods_loaded");
+	lua_setfield(L, -2, "is_mods_loaded");
 }
 
 void ScriptApiClient::on_shutdown()
