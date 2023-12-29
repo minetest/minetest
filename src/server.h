@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include "nodedef.h"
 #include <atomic>
 #include <string>
 #include <list>
@@ -356,6 +357,8 @@ public:
 
 	void setLighting(RemotePlayer *player, const Lighting &lighting);
 
+	void setNodeVisual(RemotePlayer *player, const std::string &node_name, const NodeVisual &node_visual);
+
 	void RespawnPlayer(session_t peer_id);
 
 	/* con::PeerHandler implementation. */
@@ -516,6 +519,7 @@ private:
 	void SendCloudParams(session_t peer_id, const CloudParams &params);
 	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void SendSetLighting(session_t peer_id, const Lighting &lighting);
+	void SendSetNodeVisual(session_t peer_id, const std::string &node_name, const NodeVisual &node_visual);
 	void broadcastModChannelMessage(const std::string &channel,
 			const std::string &message, session_t from_peer);
 
