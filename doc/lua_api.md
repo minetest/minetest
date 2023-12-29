@@ -7772,7 +7772,7 @@ child will follow movement and rotation of that bone.
     * `stat` supports the same keys as in the hud definition table except for
       `"hud_elem_type"`.
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
-* `hud_get_elements()`:
+* `hud_get_all()`:
     * Returns a table in the form `{ [id] = HUD definition, [id] = ... }`.
     * A mod should keep track of its introduced IDs and only use this to access foreign elements.
     * It is discouraged to change foreign HUD elements.

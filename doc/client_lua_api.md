@@ -1152,7 +1152,7 @@ Methods:
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
 * `hud_get(id)`
     * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
-* `hud_get_elements()`:
+* `hud_get_all()`:
     * Returns a table in the form `{ [id] = HUD definition, [id] = ... }`.
     * A mod should keep track of its introduced IDs and only use this to access foreign elements.
     * It is discouraged to change foreign HUD elements.

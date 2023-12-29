@@ -219,7 +219,7 @@ minetest.register_chatcommand("hudprint", {
 		end
 
 		local s = "HUD elements:"
-		for k, elem in pairs(player:hud_get_elements()) do
+		for k, elem in pairs(player:hud_get_all()) do
 			local ename = dump(elem.name)
 			local etype = dump(elem.type)
 			local epos = "{x="..elem.position.x..", y="..elem.position.y.."}"

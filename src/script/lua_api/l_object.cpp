@@ -1596,8 +1596,8 @@ int ObjectRef::l_hud_get(lua_State *L)
 	return 1;
 }
 
-// hud_get_elements(self)
-int ObjectRef::l_hud_get_elements(lua_State *L)
+// hud_get_all(self)
+int ObjectRef::l_hud_get_all(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
@@ -2551,7 +2551,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
-	luamethod(ObjectRef, hud_get_elements),
+	luamethod(ObjectRef, hud_get_all),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_get_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),

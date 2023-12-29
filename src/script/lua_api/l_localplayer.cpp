@@ -422,8 +422,8 @@ int LuaLocalPlayer::l_hud_get(lua_State *L)
 	return 1;
 }
 
-// hud_get_elements(self)
-int LuaLocalPlayer::l_hud_get_elements(lua_State *L)
+// hud_get_all(self)
+int LuaLocalPlayer::l_hud_get_all(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 	if (player == nullptr)
@@ -503,7 +503,7 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, hud_remove),
 		luamethod(LuaLocalPlayer, hud_change),
 		luamethod(LuaLocalPlayer, hud_get),
-		luamethod(LuaLocalPlayer, hud_get_elements),
+		luamethod(LuaLocalPlayer, hud_get_all),
 
 		luamethod(LuaLocalPlayer, get_move_resistance),
 
