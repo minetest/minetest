@@ -604,7 +604,8 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		SendBlocks(dtime);
 	}
 
-	if ((dtime < 0.001f) && !initial_step)
+	// If paused, this function is called with a 0.0f literal
+	if ((dtime == 0.0f) && !initial_step)
 		return;
 
 	ScopeProfiler sp(g_profiler, "Server::AsyncRunStep()", SPT_AVG);
