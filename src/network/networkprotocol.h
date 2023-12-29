@@ -836,6 +836,11 @@ enum ToClientCommand
 		f32 day_opacity
 	*/
 
+	TOCLIENT_MOVE_PLAYER_REL = 0x5d,
+	/*
+		v3f added_pos
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.
@@ -874,12 +879,7 @@ enum ToClientCommand
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_MOVE_PLAYER_REL = 0x64,
-	/*
-		v3f added_pos
-	 */
-
-	TOCLIENT_NUM_MSG_TYPES = 0x65,
+	TOCLIENT_NUM_MSG_TYPES = 0x64,
 };
 
 enum ToServerCommand
