@@ -34,36 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
-// struct MeshBufListList
-void MeshBufListList::clear()
-{
-	for (auto &list : lists)
-		list.clear();
-}
-
-void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
-{
-	// Append to the correct layer
-	std::vector<MeshBufList> &list = lists[layer];
-	const video::SMaterial &m = buf->getMaterial();
-	for (MeshBufList &l : list) {
-		// comparing a full material is quite expensive so we don't do it if
-		// not even first texture is equal
-		if (l.m.TextureLayers[0].Texture != m.TextureLayers[0].Texture)
-			continue;
-
-		if (l.m == m) {
-			l.bufs.emplace_back(position, buf);
-			return;
-		}
-	}
-	MeshBufList l;
-	l.m = m;
-	l.bufs.emplace_back(position, buf);
-	list.emplace_back(l);
-}
-
-//TODO:move
+//FIXME: where should I move this to?
 // std::hash for integral types, including ptrs, is identity, which is bad for
 // aligned ptrs.
 template <typename T>
@@ -85,6 +56,7 @@ namespace {
 		{
 			size_t operator()(const video::SMaterial &m) const noexcept
 			{
+				// Only hash first texture. Simple and fast.
 				return PtrHash<video::ITexture>{}(m.TextureLayers[0].Texture);
 			}
 		};
