@@ -76,6 +76,8 @@ namespace {
 
 		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
 		{
+			assert(layer < MAX_TILE_LAYERS);
+
 			// Append to the correct layer
 			auto &map = maps[layer];
 			const video::SMaterial &m = buf->getMaterial();
