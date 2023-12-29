@@ -369,14 +369,14 @@ void PlayerSAO::setPos(const v3f &pos)
 
 void PlayerSAO::addPos(const v3f &added_pos)
 {
+	if (isAttached())
+		return;
+
 	// Backward compatibility for older clients
 	if (m_player->protocol_version < 44) {
 		setPos(getBasePosition() + added_pos);
 		return;
 	}
-
-	if (isAttached())
-		return;
 
 	// Send mapblock of target location
 	v3f pos = getBasePosition() + added_pos;

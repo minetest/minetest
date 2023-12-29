@@ -642,7 +642,7 @@ void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
 	*pkt >> added_pos;
 
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	player->addPosition(added_pos);
 }
 
