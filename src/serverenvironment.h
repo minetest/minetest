@@ -168,7 +168,8 @@ public:
 		s16 active_block_range,
 		s16 active_object_range,
 		std::set<v3s16> &blocks_removed,
-		std::set<v3s16> &blocks_added);
+		std::set<v3s16> &blocks_added,
+		std::set<v3s16> &extra_blocks_added);
 
 	bool contains(v3s16 p) const {
 		return (m_list.find(p) != m_list.end());

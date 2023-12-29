@@ -335,12 +335,14 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	s16 active_block_range,
 	s16 active_object_range,
 	std::set<v3s16> &blocks_removed,
-	std::set<v3s16> &blocks_added)
+	std::set<v3s16> &blocks_added,
+	std::set<v3s16> &extra_blocks_added)
 {
 	/*
 		Create the new list
 	*/
 	std::set<v3s16> newlist = m_forceloaded_list;
+	std::set<v3s16> extralist;
 	m_abm_list = m_forceloaded_list;
 	for (const PlayerSAO *playersao : active_players) {
 		v3s16 pos = getNodeBlockPos(floatToInt(playersao->getBasePosition(), BS));
@@ -360,28 +362,51 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 				playersao->getEyePosition(),
 				camera_dir,
 				playersao->getFov(),
-				newlist);
+				extralist);
 		}
-	}
-
-	/*
-		Find out which blocks on the old list are not on the new list
-	*/
-	// Go through old list
-	for (v3s16 p : m_list) {
-		// If not on new list, it's been removed
-		if (newlist.find(p) == newlist.end())
-			blocks_removed.insert(p);
 	}
 
 	/*
 		Find out which blocks on the new list are not on the old list
 	*/
-	// Go through new list
 	for (v3s16 p : newlist) {
+		// also remove duplicate blocks from the extra list
+		extralist.erase(p);
 		// If not on old list, it's been added
 		if (m_list.find(p) == m_list.end())
 			blocks_added.insert(p);
+	}
+	/*
+		Find out which blocks on the extra list are not on the old list
+	*/
+	for (v3s16 p : extralist) {
+		// also make sure newlist has all blocks
+		newlist.insert(p);
+		// If not on old list, it's been added
+		if (m_list.find(p) == m_list.end())
+			extra_blocks_added.insert(p);
+	}
+
+	/*
+		Find out which blocks on the old list are not on the new + extra list
+	*/
+	std::set_difference(m_list.begin(), m_list.end(), newlist.begin(), newlist.end(),
+			std::inserter(blocks_removed, blocks_removed.end()));
+
+	/*
+		Some sanity checks
+	 */
+	assert(newlist.size() >= extralist.size());
+	assert(blocks_removed.size() <= m_list.size());
+	if (!blocks_added.empty())
+	  assert(newlist.count(*blocks_added.begin()) > 0);
+	if (!extra_blocks_added.empty()) {
+	  assert(newlist.count(*extra_blocks_added.begin()) > 0);
+	  assert(blocks_added.count(*extra_blocks_added.begin()) == 0);
+	}
+	if (!blocks_removed.empty()) {
+	  assert(newlist.count(*blocks_removed.begin()) == 0);
+	  assert(m_list.count(*blocks_removed.begin()) > 0);
 	}
 
 	/*
@@ -1403,8 +1428,9 @@ void ServerEnvironment::step(float dtime)
 				g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
+		std::set<v3s16> extra_blocks_added;
 		m_active_blocks.update(players, active_block_range, active_object_range,
-			blocks_removed, blocks_added);
+			blocks_removed, blocks_added, extra_blocks_added);
 
 		/*
 			Handle removed blocks
@@ -1433,6 +1459,17 @@ void ServerEnvironment::step(float dtime)
 				// on the next cycle. To minimize the latency of objects being
 				// activated we could remember the blocks pending activating
 				// and activate them instantly as soon as they're loaded.
+				m_active_blocks.remove(p);
+				continue;
+			}
+
+			activateBlock(block);
+		}
+
+		for (const v3s16 &p: extra_blocks_added) {
+			// only activate if the block is already loaded
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if (!block) {
 				m_active_blocks.remove(p);
 				continue;
 			}
