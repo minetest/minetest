@@ -1155,7 +1155,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 	return false;
 }
 
-bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_check)
+bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_check)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
@@ -1172,7 +1172,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_chec
 		v3s16(-1, -1, -1) * bs2,
 	};
 
-	v3s16 pos_blockcenter = block->getPosRelative() + (MAP_BLOCKSIZE / 2);
+	v3s16 pos_blockcenter = pos_relative + (MAP_BLOCKSIZE / 2);
 
 	// Starting step size, value between 1m and sqrt(3)m
 	float step = BS * 1.2f;
@@ -1203,7 +1203,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes, bool simple_chec
 
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
-	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
+	if (determineAdditionalOcclusionCheck(cam_pos_nodes, MapBlock::getBox(pos_relative), check)) {
 		// node is always on a side facing the camera, end_offset can be lower
 		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
 				-1.0f, needed_count))
