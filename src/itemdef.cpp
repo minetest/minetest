@@ -460,7 +460,7 @@ protected:
 				<< cache_key << "\"" << std::endl;
 
 		ITextureSource *tsrc = client->getTextureSource();
-		
+
 		u16 variant_count = client->ndef()->get(cache_key).variant_count;
 
 		// Create new ClientCached
