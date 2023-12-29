@@ -7775,7 +7775,7 @@ child will follow movement and rotation of that bone.
 * `hud_get_elements()`:
     * returns a table indexed by all present HUD IDs and containing corresponding HUD element definition structures.
     * A mod should keep track of its introduced IDs and only use this to access foreign elements.
-    * It is discourage to change foreign HUD elements.
+    * It is discouraged to change foreign HUD elements.
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
         * `hotbar`
