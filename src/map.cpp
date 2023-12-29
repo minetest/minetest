@@ -1124,7 +1124,7 @@ bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 }
 
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-	float step, float stepfac, float offset, float end_offset, u32 needed_count)
+	float step, float stepfac, float offset, float end_offset)
 {
 	v3f direction = intToFloat(pos_target - pos_camera, BS);
 	float distance = direction.getLength();
@@ -1134,7 +1134,6 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		direction /= distance;
 
 	v3f pos_origin_f = intToFloat(pos_camera, BS);
-	u32 count = 0;
 	bool is_valid_position;
 
 	for (; offset < distance + end_offset; offset += step) {
@@ -1146,31 +1145,18 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		if (is_valid_position &&
 				!m_nodedef->getLightingFlags(node).light_propagates) {
 			// Cannot see through light-blocking nodes --> occluded
-			count++;
-			if (count >= needed_count)
-				return true;
+			return true;
 		}
 		step *= stepfac;
 	}
 	return false;
 }
 
-bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_check)
+bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d)
 {
 	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
 	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
-	static const v3s16 dir9[9] = {
-		v3s16( 0,  0,  0),
-		v3s16( 1,  1,  1) * bs2,
-		v3s16( 1,  1, -1) * bs2,
-		v3s16( 1, -1,  1) * bs2,
-		v3s16( 1, -1, -1) * bs2,
-		v3s16(-1,  1,  1) * bs2,
-		v3s16(-1,  1, -1) * bs2,
-		v3s16(-1, -1,  1) * bs2,
-		v3s16(-1, -1, -1) * bs2,
-	};
 
 	v3s16 pos_blockcenter = pos_relative + (MAP_BLOCKSIZE / 2);
 
@@ -1188,31 +1174,24 @@ bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_c
 	// sqrt(1^2 + 1^2 + 1^2) = 1.732
 	float end_offset = -BS * MAP_BLOCKSIZE * 1.732f;
 
-	// to reduce the likelihood of falsely occluded blocks
-	// require at least two solid blocks
-	// this is a HACK, we should think of a more precise algorithm
-	u32 needed_count = 2;
+	// sample based on distance, start with 8 samples
+	s16 rounds = MYMAX(1, 8-d/4);
 
-	v3s16 random_point(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2));
-	if (!isOccluded(cam_pos_nodes, pos_blockcenter + random_point, step, stepfac,
-				start_offset, end_offset, needed_count))
-		return false;
-
-	if (simple_check)
-		return true;
-
-	// Additional occlusion check, see comments in that function
-	v3s16 check;
-	if (determineAdditionalOcclusionCheck(cam_pos_nodes, MapBlock::getBox(pos_relative), check)) {
-		// node is always on a side facing the camera, end_offset can be lower
-		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
-				-1.0f, needed_count))
-			return false;
+	// don't perform this check at a distance
+	if (rounds > 1) {
+		// Additional occlusion check, see comments in that function
+		v3s16 check;
+		if (determineAdditionalOcclusionCheck(cam_pos_nodes, MapBlock::getBox(pos_relative), check)) {
+			// node is always on a side facing the camera, end_offset can be lower
+			if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
+					-1.0f))
+				return false;
+		}
 	}
 
-	for (const v3s16 &dir : dir9) {
-		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
-				start_offset, end_offset, needed_count))
+	for (int i=0; i<rounds; i++) {
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + v3s16(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2)), step, stepfac,
+				start_offset, end_offset))
 			return false;
 	}
 	return true;
