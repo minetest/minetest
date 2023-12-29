@@ -77,42 +77,40 @@ struct PtrHash
 	}
 };
 
-// struct MeshBufListMaps
-
-struct MeshBufListMaps
-{
-	struct MaterialHash
+namespace {
+	// A helper struct
+	struct MeshBufListMaps
 	{
-		size_t operator()(const video::SMaterial &m) const noexcept
+		struct MaterialHash
 		{
-			return PtrHash<video::ITexture>{}(m.TextureLayers[0].Texture);
+			size_t operator()(const video::SMaterial &m) const noexcept
+			{
+				return PtrHash<video::ITexture>{}(m.TextureLayers[0].Texture);
+			}
+		};
+
+		using MeshBufListMap = std::unordered_map<
+				video::SMaterial,
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
+				MaterialHash>;
+
+		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+		void clear()
+		{
+			for (auto &map : maps)
+				map.clear();
+		}
+
+		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+		{
+			// Append to the correct layer
+			auto &map = maps[layer];
+			const video::SMaterial &m = buf->getMaterial();
+			auto &bufs = map[m]; // default constructs if non-existent
+			bufs.emplace_back(position, buf);
 		}
 	};
-
-	using MeshBufListMap = std::unordered_map<
-			video::SMaterial,
-			std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
-			MaterialHash>;
-
-	std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
-
-	void clear();
-	void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer);
-};
-
-void MeshBufListMaps::clear()
-{
-	for (auto &map : maps)
-		map.clear();
-}
-
-void MeshBufListMaps::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
-{
-	// Append to the correct layer
-	auto &map = maps[layer];
-	const video::SMaterial &m = buf->getMaterial();
-	auto &bufs = map[m]; // default constructs if non-existent
-	bufs.emplace_back(position, buf);
 }
 
 static void on_settings_changed(const std::string &name, void *data)
@@ -845,7 +843,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
@@ -1155,7 +1153,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 
 
@@ -1196,7 +1194,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
@@ -1219,18 +1217,18 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	}
 
 	u32 buffer_count = 0;
-	for (auto &lists : grouped_buffers.lists)
-		for (MeshBufList &list : lists)
-			buffer_count += list.bufs.size();
+	for (auto &map : grouped_buffers.maps)
+		for (auto &list : map)
+			buffer_count += list.second.size();
 
 	draw_order.reserve(draw_order.size() + buffer_count);
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it)
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it)
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 		}
 	}
 
