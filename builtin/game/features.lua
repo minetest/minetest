@@ -29,6 +29,7 @@ core.features = {
 	compress_zstd = true,
 	sound_params_start_time = true,
 	physics_overrides_v2 = true,
+	hud_def_type_field = true,
 }
 
 function core.has_feature(arg)

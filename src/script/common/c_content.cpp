@@ -1959,8 +1959,28 @@ void push_objectRef(lua_State *L, const u16 id)
 
 void read_hud_element(lua_State *L, HudElement *elem)
 {
-	elem->type = (HudElementType)getenumfield(L, 2, "hud_elem_type",
-									es_HudElementType, HUD_ELEM_TEXT);
+	std::string type_string;
+	bool has_type = getstringfield(L, 2, "type", type_string);
+
+	// Handle deprecated hud_elem_type
+	std::string deprecated_type_string;
+	if (getstringfield(L, 2, "hud_elem_type", deprecated_type_string)) {
+		if (has_type && deprecated_type_string != type_string) {
+			log_deprecated(L, "Ambiguous HUD element fields \"type\" and \"hud_elem_type\", "
+					"\"type\" will be used.", 1, true);
+		} else {
+			has_type = true;
+			type_string = deprecated_type_string;
+			log_deprecated(L, "Deprecated \"hud_elem_type\" field, use \"type\" instead.",
+					1, true);
+		}
+	}
+
+	int type_enum;
+	if (has_type && string_to_enum(es_HudElementType, type_enum, type_string))
+		elem->type = static_cast<HudElementType>(type_enum);
+	else
+		elem->type = HUD_ELEM_TEXT;
 
 	lua_getfield(L, 2, "position");
 	elem->pos = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
