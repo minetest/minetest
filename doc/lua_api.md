@@ -5455,8 +5455,11 @@ Call these functions only at load time!
       `name` from `minetest.registered_items` and from the associated item table
       according to its nature: `minetest.registered_nodes`, etc.
 * `minetest.register_entity(name, entity definition)`
+* `minetest.override_entity(name, entity definition)`
 * `minetest.register_abm(abm definition)`
+* `minetest.override_abm(name, abm definition)`
 * `minetest.register_lbm(lbm definition)`
+* `minetest.override_lbm(name, lbm definition)`
 * `minetest.register_alias(alias, original_name)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
       mapgens. See [Mapgen aliases] section above.
@@ -8459,7 +8462,7 @@ Player properties need to be saved manually.
 Entity definition
 -----------------
 
-Used by `minetest.register_entity`.
+Used by `minetest.register_entity` and `minetest.override_entity`.
 
 ```lua
 {
@@ -8494,13 +8497,17 @@ Used by `minetest.register_entity`.
 ABM (ActiveBlockModifier) definition
 ------------------------------------
 
-Used by `minetest.register_abm`.
+Used by `minetest.register_abm` and `minetest.override_abm`.
 
 ```lua
 {
     label = "Lava cooling",
     -- Descriptive label for profiling purposes (optional).
     -- Definitions with identical labels will be listed as one.
+
+    name = "modname:replace_legacy_door",
+    -- Optional filed, required for make ABM overridable.
+    -- Identifier of the ABM, should follow the modname:<whatever> convention.
 
     nodenames = {"default:lava_source"},
     -- Apply `action` function to these nodes.
@@ -8543,7 +8550,7 @@ Used by `minetest.register_abm`.
 LBM (LoadingBlockModifier) definition
 -------------------------------------
 
-Used by `minetest.register_lbm`.
+Used by `minetest.register_lbm` and `minetest.override_lbm`.
 
 A loading block modifier (LBM) is used to define a function that is called for
 specific nodes (defined by `nodenames`) when a mapblock which contains such nodes
@@ -8556,7 +8563,8 @@ gets activated (not loaded!)
     -- Definitions with identical labels will be listed as one.
 
     name = "modname:replace_legacy_door",
-    -- Identifier of the LBM, should follow the modname:<whatever> convention
+    -- Identifier of the LBM, should follow the modname:<whatever> convention.
+    -- Also used for overriding LBM.
 
     nodenames = {"default:lava_source"},
     -- List of node names to trigger the LBM on.
