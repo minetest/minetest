@@ -394,6 +394,22 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 			std::inserter(blocks_removed, blocks_removed.end()));
 
 	/*
+		Some sanity checks
+	 */
+	assert(newlist.size() >= extralist.size());
+	assert(blocks_removed.size() <= m_list.size());
+	if (!blocks_added.empty())
+	  assert(newlist.count(*blocks_added.begin()) > 0);
+	if (!extra_blocks_added.empty()) {
+	  assert(newlist.count(*extra_blocks_added.begin()) > 0);
+	  assert(blocks_added.count(*extra_blocks_added.begin()) == 0);
+	}
+	if (!blocks_removed.empty()) {
+	  assert(newlist.count(*blocks_removed.begin()) == 0);
+	  assert(m_list.count(*blocks_removed.begin()) > 0);
+	}
+
+	/*
 		Update m_list
 	*/
 	m_list = std::move(newlist);
