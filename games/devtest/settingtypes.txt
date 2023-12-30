@@ -30,3 +30,18 @@ devtest_dungeon_mossycobble (Generate mossy cobblestone) bool false
 
 # If enabled, some very basic biomes will be registered.
 devtest_register_biomes (Register biomes) bool true
+
+# If enabled, minetest.override_biome function will be tested over some of registered biome/biomes.
+devtest_overide_biomes (Override biomes) bool true
+
+# If enabled, some very basic decorations will be registered.
+devtest_register_decorations (Register decorations) bool true
+
+# If enabled, minetest.override_decoration function will be tested over some of registered decoration/decorations.
+devtest_overide_decorations (Override biomes) bool true
+
+# If enabled, some very basic ores will be registered.
+devtest_register_ores (Register ores) bool true
+
+# If enabled, minetest.override_ore function will be tested over some of registered ore/ores.
+devtest_overide_ores (Override ores) bool true

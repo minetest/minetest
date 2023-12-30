@@ -53,8 +53,10 @@ end
 
 minetest.clear_registered_biomes()
 minetest.clear_registered_decorations()
+minetest.clear_registered_ores()
 
 if minetest.settings:get_bool("devtest_register_biomes", true) then
+	minetest.log("action", "Devtest: register biomes")
 	minetest.register_biome({
 		name = "mapgen:grassland",
 		node_top = "basenodes:dirt_with_grass",
@@ -101,4 +103,85 @@ if minetest.settings:get_bool("devtest_register_biomes", true) then
 		heat_point = 50,
 		humidity_point = 50,
 	})
+
+	minetest.register_biome({
+		name = "mapgen:desert",
+		node_top = "basenodes:desert_stone", -- error, to try override of it, to fix it
+		depth_top = 1,
+		node_filler = "basenodes:desert_sand",
+		depth_filler = 1,
+		node_riverbed = "basenodes:sand",
+		depth_riverbed = 2,
+		node_dungeon = "basenodes:cobble",
+		node_dungeon_alt = "basenodes:mossycobble",
+		node_dungeon_stair = "stairs:stair_cobble",
+		y_max = 31000,
+		y_min = 4,
+		heat_point = 60,
+		humidity_point = 40,
+	})
+end
+
+if minetest.settings:get_bool("devtest_override_biomes", true) then
+	minetest.log("action", "Devtest: override biomes")
+	minetest.override_biome("mapgen:desert", {
+		node_top = "basenodes:desert_sand"
+	})
+end
+
+if minetest.settings:get_bool("devtest_register_decorations", true) then
+	minetest.log("action", "Devtest: register decorations")
+	minetest.register_decoration({
+		name         = "mapgen:junglegrass",
+		deco_type    = "simple",
+		place_on     = "basenodes:dirt_with_grass",
+		sidelen      = 16,
+		noise_params = {
+			offset  = 0,
+			scale   = 0.007,
+			spread  = {x = 100, y = 100, z = 100},
+			seed    = 329,
+			octaves = 3,
+			persist = 0.6
+		},
+		y_max       = 30,
+		y_min       = 1,
+		biomes      = {"mapgen:grassland"},
+		decoration  = "basenodes:leaves",
+	})
+end
+
+if minetest.settings:get_bool("devtest_override_decorations", true) then
+	minetest.log("action", "Devtest: override decorations")
+	minetest.override_decoration("mapgen:junglegrass", {
+		decoration = "basenodes:junglegrass"
+	})
+
+	minetest.reregister_decorations()
+end
+
+if minetest.settings:get_bool("devtest_register_ores", true) then
+	minetest.log("action", "Devtest: register ores")
+	minetest.register_ore({
+		name           = "mapgen:test_ore",
+		ore_type       = "scatter",
+		ore            = "basenodes:desert_stone",
+		wherein        = "basenodes:stone",
+		clust_scarcity = 8 * 8 * 8,
+		clust_num_ores = 9,
+		clust_size     = 3,
+		y_max          = 31000,
+		y_min          = -31000,
+		biomes         = {"mapgen:grassland_under"}
+	})
+end
+
+if minetest.settings:get_bool("devtest_override_ores", true) then
+	minetest.log("action", "Devtest: override ores")
+	minetest.override_ore("mapgen:test_ore", {
+		ore    = "basenodes:test_ore",
+		biomes = {"mapgen:grassland_under", "mapgen:grassland"},
+	})
+
+	minetest.reregister_ores()
 end
