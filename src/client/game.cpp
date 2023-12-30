@@ -4435,17 +4435,15 @@ void Game::readSettings()
  ****************************************************************************/
 /****************************************************************************/
 
+static std::string size_tag() {
+  return g_touchscreengui ? "size[11,5.5]" : "size[11,5.5,true]";
+}
+
 void Game::showDeathFormspec()
 {
-	std::string size_tag;
-	if (g_touchscreengui)
-		size_tag = "size[11,5.5]";
-	else
-		size_tag = "size[11,5.5,true]"; // Fixed size on desktop
-
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +
-		size_tag +
+		size_tag() +
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
@@ -4467,10 +4465,9 @@ void Game::showDeathFormspec()
 #define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
-	std::string control_text, size_tag;
+	std::string control_text;
 
 	if (g_touchscreengui) {
-		size_tag = "size[11,5.5]";
 		control_text = strgettext("Controls:\n"
 			"No menu open:\n"
 			"- slide finger: look around\n"
@@ -4489,7 +4486,7 @@ void Game::showPauseMenu()
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
-	os << "formspec_version[1]" << size_tag
+	os << "formspec_version[1]" << size_tag()
 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 		<< strgettext("Continue") << "]";
 
