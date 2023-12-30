@@ -278,9 +278,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 		if (g_touchscreengui) {
 			delete g_touchscreengui;
+			g_touchscreengui = NULL;
+			receiver->m_touchscreengui = NULL;
 		}
-		g_touchscreengui = NULL;
-		receiver->m_touchscreengui = NULL;
 
 		/* Save the settings when leaving the game.
 		 * This makes sure that setting changes made in-game are persisted even
