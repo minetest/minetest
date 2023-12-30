@@ -1175,7 +1175,7 @@ end
 
 function store.handle_events(event)
 	if event == "DialogShow" then
-		-- On touchscreen, Don't show the "MINETEST" header behind the dialog.
+		-- On touchscreen, don't show the "MINETEST" header behind the dialog.
 		mm_game_theme.set_engine(core.settings:get_bool("enable_touch"))
 
 		-- If the store is already loaded, auto-install packages here.
