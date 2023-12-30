@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <memory>
+#include "debug.h"
 #include "util/container.h"
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"

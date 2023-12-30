@@ -343,7 +343,7 @@ public:
 	ModifySafeMap() {
 		// the null value must convert to false and all others to true, but
 		// we can't statically check that I think.
-		assert(!null_value);
+		assert(!m_null);
 	}
 	~ModifySafeMap() {
 		assert(!m_iterating);
@@ -353,17 +353,17 @@ public:
 	DISABLE_CLASS_COPY(ModifySafeMap)
 	ALLOW_CLASS_MOVE(ModifySafeMap)
 
-	V get(const K &key) const {
+	const V &get(const K &key) const {
 		if (m_iterating) {
 			auto it = m_new.find(key);
 			if (it != m_new.end())
 				return it->second;
 		}
 		auto it = m_values.find(key);
-		return it == m_values.end() ? null_value : it->second;
+		return it == m_values.end() ? m_null : it->second;
 	}
 
-	void put(const K &key, V value) {
+	void put(const K &key, const V &value) {
 		if (!value) {
 			assert(false);
 			return;
@@ -372,6 +372,17 @@ public:
 			m_new.emplace(key, value);
 		else
 			m_values.emplace(key, value);
+	}
+
+	void put(const K &key, V &&value) {
+		if (!value) {
+			assert(false);
+			return;
+		}
+		if (m_iterating)
+			m_new.emplace(key, std::move(value));
+		else
+			m_values.emplace(key, std::move(value));
 	}
 
 	bool remove(const K &key) {
@@ -387,7 +398,7 @@ public:
 		if (it == m_values.end())
 			return ret;
 		if (m_iterating) {
-			it->second = null_value;
+			it->second = V();
 			m_garbage++;
 		} else {
 			m_values.erase(it);
@@ -405,7 +416,7 @@ public:
 		if (m_garbage == 0)
 			return m_values.size();
 		size_t n = 0;
-		for (auto it : m_values)
+		for (auto &it : m_values)
 			n += !it.second ? 0 : 1;
 		return n;
 	}
@@ -415,7 +426,7 @@ public:
 			return false; // maybe
 		if (m_garbage == 0)
 			return m_values.empty();
-		for (auto it : m_values) {
+		for (auto &it : m_values) {
 			if (!!it.second)
 				return false;
 		}
@@ -427,7 +438,7 @@ public:
 	void clear() {
 		if (m_iterating) {
 			for (auto &it : m_values)
-				it.second = null_value;
+				it.second = V();
 			m_garbage = m_values.size();
 		} else {
 			m_values.clear();
@@ -435,8 +446,6 @@ public:
 			m_garbage = 0;
 		}
 	}
-
-	static constexpr V null_value = V();
 
 	// returned by size() if called during iteration
 	static constexpr size_t unknown = static_cast<size_t>(-1);
@@ -492,6 +501,7 @@ private:
 	std::map<K, V> m_new;
 	unsigned int m_iterating = 0;
 	size_t m_garbage = 0; // upper bound for null-placeholders in m_values
+	const V m_null = V();
 
 	static constexpr size_t GC_MIN_SIZE = 30;
 };
