@@ -57,6 +57,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BLOCK_SEND_DISABLE_LIMITS_MAX_D 1
 
 /*
+    Client/Server
+*/
+
+// Limit maximum dtime in client/server step(...) and for collision detection
+#define DTIME_LIMIT 2.5f
+
+/*
     Map-related things
 */
 

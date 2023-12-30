@@ -66,7 +66,7 @@ minetest.register_globalstep(function()
 			local ent = pointed_thing.ref:get_luaentity()
 			if ent and ent.name == "testentities:selectionbox" then
 				hud_ids[pname] = hud_id or player:hud_add({
-					hud_elem_type = "text",  -- See HUD element types
+					type = "text",  -- See HUD element types
 					position = {x=0.5, y=0.5},
 			        text = "X",
 					number = 0xFF0000,

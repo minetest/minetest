@@ -63,9 +63,15 @@ void ParsedText::Element::setStyle(StyleList &style)
 		this->hovercolor = color;
 
 	unsigned int font_size = std::atoi(style["fontsize"].c_str());
+
 	FontMode font_mode = FM_Standard;
 	if (style["fontstyle"] == "mono")
 		font_mode = FM_Mono;
+
+	// hypertext[] only accepts absolute font size values and has a hardcoded
+	// default font size of 16. This is the only way to make hypertext[]
+	// respect font size settings that I can think of.
+	font_size = myround(font_size / 16.0f * g_fontengine->getFontSize(font_mode));
 
 	FontSpec spec(font_size, font_mode,
 		is_yes(style["bold"]), is_yes(style["italic"]));
@@ -1046,14 +1052,10 @@ void GUIHyperText::checkHover(s32 X, s32 Y)
 		}
 	}
 
-#ifndef HAVE_TOUCHSCREENGUI
-	if (m_drawer.m_hovertag)
-		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
-				gui::ECI_HAND);
-	else
-		RenderingEngine::get_raw_device()->getCursorControl()->setActiveIcon(
-				gui::ECI_NORMAL);
-#endif
+	ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
+
+	if (cursor_control)
+		cursor_control->setActiveIcon(m_drawer.m_hovertag ? gui::ECI_HAND : gui::ECI_NORMAL);
 }
 
 bool GUIHyperText::OnEvent(const SEvent &event)
@@ -1069,12 +1071,11 @@ bool GUIHyperText::OnEvent(const SEvent &event)
 	if (event.EventType == EET_GUI_EVENT &&
 			event.GUIEvent.EventType == EGET_ELEMENT_LEFT) {
 		m_drawer.m_hovertag = nullptr;
-#ifndef HAVE_TOUCHSCREENGUI
-		gui::ICursorControl *cursor_control =
-				RenderingEngine::get_raw_device()->getCursorControl();
-		if (cursor_control->isVisible())
+
+		ICursorControl *cursor_control = RenderingEngine::get_raw_device()->getCursorControl();
+
+		if (cursor_control && cursor_control->isVisible())
 			cursor_control->setActiveIcon(gui::ECI_NORMAL);
-#endif
 	}
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
@@ -1126,8 +1127,16 @@ void GUIHyperText::draw()
 	m_display_text_rect = AbsoluteRect;
 	m_drawer.place(m_display_text_rect);
 
-	// Show scrollbar if text overflow
+	// Show a scrollbar if the text overflows vertically
 	if (m_drawer.getHeight() > m_display_text_rect.getHeight()) {
+		// Showing a scrollbar will reduce the width of the viewport, causing
+		// more text to be wrapped and thus increasing the height of the text.
+		// Therefore, we have to re-layout the text *before* setting the height
+		// of the scrollbar.
+		core::rect<s32> smaller_rect = m_display_text_rect;
+		smaller_rect.LowerRightCorner.X -= m_scrollbar_width;
+		m_drawer.place(smaller_rect);
+
 		m_vscrollbar->setSmallStep(m_display_text_rect.getHeight() * 0.1f);
 		m_vscrollbar->setLargeStep(m_display_text_rect.getHeight() * 0.5f);
 		m_vscrollbar->setMax(m_drawer.getHeight() - m_display_text_rect.getHeight());
@@ -1135,11 +1144,6 @@ void GUIHyperText::draw()
 		m_vscrollbar->setVisible(true);
 
 		m_vscrollbar->setPageSize(s32(m_drawer.getHeight()));
-
-		core::rect<s32> smaller_rect = m_display_text_rect;
-
-		smaller_rect.LowerRightCorner.X -= m_scrollbar_width;
-		m_drawer.place(smaller_rect);
 	} else {
 		m_vscrollbar->setMax(0);
 		m_vscrollbar->setPos(0);

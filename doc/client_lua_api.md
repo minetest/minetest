@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 5.8.0
+Minetest Lua Client Modding API Reference 5.9.0
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -672,6 +672,9 @@ Minetest namespace reference
    * If a flag in this table is set to true, the feature is RESTRICTED.
    * Possible flags: `load_client_mods`, `chat_messages`, `read_itemdefs`,
                    `read_nodedefs`, `lookup_nodes`, `read_playerinfo`
+* `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
+  percent sign followed by two hex digits. See
+  [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 ### Logging
 * `minetest.debug(...)`
@@ -1329,8 +1332,10 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ```lua
 {
-    hud_elem_type = "image", -- see HUD element types, default "text"
+    type = "image", -- see HUD element types, default "text"
 --  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
+    hud_elem_type = "image",
+--  ^ Deprecated, same as `type`. In case both are specified `type` will be used.
     position = {x=0.5, y=0.5},
 --  ^ Left corner position of element, default `{x=0,y=0}`.
     name = "<name>",    -- default ""

@@ -49,7 +49,6 @@ ServerModManager::ServerModManager(const std::string &worldpath):
 	configuration.checkConflictsAndDeps();
 }
 
-// clang-format off
 // This function cannot be currenctly easily tested but it should be ASAP
 void ServerModManager::loadMods(ServerScripting *script)
 {
@@ -75,7 +74,6 @@ void ServerModManager::loadMods(ServerScripting *script)
 	script->on_mods_loaded();
 }
 
-// clang-format on
 const ModSpec *ServerModManager::getModSpec(const std::string &modname) const
 {
 	for (const auto &mod : configuration.getMods()) {

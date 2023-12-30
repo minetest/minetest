@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "constants.h"
 #include <cassert>
+#include <memory>
 
 class Camera;
 class Client;
@@ -103,7 +104,7 @@ private:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
-	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	BoneOverrideMap m_bone_override;
 
 	int m_attachment_parent_id = 0;
 	std::unordered_set<int> m_attachment_child_ids;
@@ -139,9 +140,9 @@ public:
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
+	static std::unique_ptr<ClientActiveObject> create(Client *client, ClientEnvironment *env)
 	{
-		return new GenericCAO(client, env);
+		return std::make_unique<GenericCAO>(client, env);
 	}
 
 	inline ActiveObjectType getType() const override
@@ -266,7 +267,7 @@ public:
 
 	void updateAnimationSpeed();
 
-	void updateBonePosition();
+	void updateBones(f32 dtime);
 
 	void processMessage(const std::string &data) override;
 

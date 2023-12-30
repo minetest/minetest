@@ -25,17 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace client
 {
 
-void ActiveObjectMgr::clear()
+ActiveObjectMgr::~ActiveObjectMgr()
 {
-	// delete active objects
-	for (auto &active_object : m_active_objects.iter()) {
-		if (!active_object.second)
-			continue;
-		delete active_object.second;
-		// Object must be marked as gone when children try to detach
-		m_active_objects.remove(active_object.first);
+	if (!m_active_objects.empty()) {
+		warningstream << "client::ActiveObjectMgr::~ActiveObjectMgr(): not cleared."
+				<< std::endl;
+		clear();
 	}
-	m_active_objects.clear();
 }
 
 void ActiveObjectMgr::step(
@@ -45,12 +41,11 @@ void ActiveObjectMgr::step(
 	for (auto &ao_it : m_active_objects.iter()) {
 		if (!ao_it.second)
 			continue;
-		f(ao_it.second);
+		f(ao_it.second.get());
 	}
 }
 
-// clang-format off
-bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
+bool ActiveObjectMgr::registerObject(std::unique_ptr<ClientActiveObject> obj)
 {
 	assert(obj); // Pre-condition
 	if (obj->getId() == 0) {
@@ -59,7 +54,6 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 			infostream << "Client::ActiveObjectMgr::registerObject(): "
 					<< "no free id available" << std::endl;
 
-			delete obj;
 			return false;
 		}
 		obj->setId(new_id);
@@ -68,12 +62,11 @@ bool ActiveObjectMgr::registerObject(ClientActiveObject *obj)
 	if (!isFreeId(obj->getId())) {
 		infostream << "Client::ActiveObjectMgr::registerObject(): "
 				<< "id is not free (" << obj->getId() << ")" << std::endl;
-		delete obj;
 		return false;
 	}
 	infostream << "Client::ActiveObjectMgr::registerObject(): "
 			<< "added (id=" << obj->getId() << ")" << std::endl;
-	m_active_objects.put(obj->getId(), obj);
+	m_active_objects.put(obj->getId(), std::move(obj));
 	return true;
 }
 
@@ -81,26 +74,27 @@ void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Client::ActiveObjectMgr::removeObject(): "
 			<< "id=" << id << std::endl;
-	ClientActiveObject *obj = getActiveObject(id);
-	if (!obj) {
+	auto &it = m_active_objects.get(id);
+	if (!it) {
 		infostream << "Client::ActiveObjectMgr::removeObject(): "
 				<< "id=" << id << " not found" << std::endl;
 		return;
 	}
 
+	// the map doesn't like this but we're about to delete it anyway
+	auto &unsafe_it = const_cast<std::unique_ptr<ClientActiveObject>&>(it);
+	std::unique_ptr<ClientActiveObject> obj = std::move(unsafe_it);
 	m_active_objects.remove(id);
 
 	obj->removeFromScene(true);
-	delete obj;
 }
 
-// clang-format on
 void ActiveObjectMgr::getActiveObjects(const v3f &origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest)
 {
 	f32 max_d2 = max_d * max_d;
 	for (auto &ao_it : m_active_objects.iter()) {
-		ClientActiveObject *obj = ao_it.second;
+		ClientActiveObject *obj = ao_it.second.get();
 		if (!obj)
 			continue;
 
@@ -120,7 +114,7 @@ std::vector<DistanceSortedActiveObject> ActiveObjectMgr::getActiveSelectableObje
 	v3f dir = shootline.getVector().normalize();
 
 	for (auto &ao_it : m_active_objects.iter()) {
-		ClientActiveObject *obj = ao_it.second;
+		ClientActiveObject *obj = ao_it.second.get();
 		if (!obj)
 			continue;
 

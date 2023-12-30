@@ -72,6 +72,17 @@ local nodebox_wall = {
 	connect_right = {0.125, -0.500, -0.125, 0.500, 0.400, 0.125},
 }
 
+local nodebox_cable = {
+	type = "connected",
+	fixed          = {-2/16, -2/16, -2/16,  2/16,  2/16,  2/16},
+	connect_front  = {-1/16, -1/16, -8/16,  1/16,  1/16, -2/16},
+	connect_back   = {-1/16, -1/16,  2/16,  1/16,  1/16,  8/16},
+	connect_left   = {-8/16, -1/16, -1/16, -2/16,  1/16,  1/16},
+	connect_right  = { 2/16, -1/16, -1/16,  8/16,  1/16,  1/16},
+	connect_bottom = {-1/16, -8/16, -1/16,  1/16, -2/16,  1/16},
+	connect_top    = {-1/16,  2/16, -1/16,  1/16,  8/16,  1/16},
+}
+
 local nodebox_wall_thick = {
 	type = "connected",
 	fixed = {-0.25, -0.500, -0.25, 0.25, 0.500, 0.25},
@@ -81,10 +92,10 @@ local nodebox_wall_thick = {
 	connect_right = {0.25, -0.500, -0.25, 0.500, 0.400, 0.25},
 }
 
--- Wall-like nodebox that connects to neighbors
+-- Wall-like nodebox that connects to 4 neighbors
 minetest.register_node("testnodes:nodebox_connected", {
-	description = S("Connected Nodebox Test Node").."\n"..
-		S("Connects to neighbors"),
+	description = S("Connected Nodebox Test Node (4 Side Wall)").."\n"..
+		S("Connects to 4 neighbors sideways"),
 	tiles = {"testnodes_nodebox.png^[colorize:#F00:32"},
 	groups = {connected_nodebox=1, dig_immediate=3},
 	drawtype = "nodebox",
@@ -94,8 +105,22 @@ minetest.register_node("testnodes:nodebox_connected", {
 	node_box = nodebox_wall,
 })
 
+-- Cable-like nodebox that connects to 6 neighbors
+minetest.register_node("testnodes:nodebox_connected_6side", {
+	description = S("Connected Nodebox Test Node (6 Side Cable)").."\n"..
+		S("Connects to 6 neighbors"),
+	tiles = {"testnodes_nodebox.png^[colorize:#F00:32"},
+	groups = {connected_nodebox=1, dig_immediate=3},
+	drawtype = "nodebox",
+	paramtype = "light",
+	connects_to = {"group:connected_nodebox"},
+	connect_sides = {"front", "back", "left", "right", "top", "bottom"},
+	node_box = nodebox_cable,
+})
+
+-- More walls
 minetest.register_node("testnodes:nodebox_connected_facedir", {
-	description = S("Facedir Connected Nodebox Test Node").."\n"..
+	description = S("Facedir Connected Nodebox Test Node (4 Side Wall)").."\n"..
 		S("Connects to neighbors").."\n"..
 		S("param2 = facedir rotation of textures (not of the nodebox!)"),
 	tiles = {
@@ -136,3 +161,22 @@ minetest.register_node("testnodes:nodebox_connected_4dir", {
 	node_box = nodebox_wall_thick,
 })
 
+-- Doesn't connect, but lets other nodes connect
+minetest.register_node("testnodes:facedir_to_connect_to", {
+	description = S("Facedir Node that connected Nodeboxes connect to").."\n"..
+		S("Neighbors connect only to left (blue 4) and top (yellow 1) face").."\n"..
+		S("(Currently broken for param2 >= 4, see FIXME in nodedef.cpp)").."\n"..
+		S("param2 = facedir"),
+	tiles = {
+		"testnodes_1.png",
+		"testnodes_2.png",
+		"testnodes_3.png",
+		"testnodes_4.png",
+		"testnodes_5.png",
+		"testnodes_6.png",
+	},
+	groups = {connected_nodebox=1, dig_immediate=3},
+	drawtype = "normal",
+	paramtype2 = "facedir",
+	connect_sides = {"left", "top"},
+})

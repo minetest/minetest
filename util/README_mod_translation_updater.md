@@ -1,4 +1,4 @@
-# `mtt_update.py`—Minetest Translation Updater
+# `mod_translation_updater.py`—Minetest Mod Translation Updater
 
 This Python script is intended for use with localized Minetest mods, i.e., mods that use
 `*.tr` and contain translatable strings of the form `S("This string can be translated")`.
@@ -111,7 +111,7 @@ the locale files in an entire game.
 
 It has the following command line options:
 
-    mtt_update.py [OPTIONS] [PATHS...]
+    mod_translation_updater.py [OPTIONS] [PATHS...]
 
     --help, -h: prints this help message
     --recursive, -r: run on all subfolders of paths given

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/thread.h"
 #include "util/container.h"
 #include "log.h"
+#include <set>
 #include <sstream>
 
 
@@ -103,7 +104,7 @@ private:
 	u8 m_utf8_bytes_to_wait = 0;
 	std::string m_pending_utf8_bytes;
 
-	std::list<std::string> m_nicks;
+	std::set<std::string> m_nicks;
 
 	int m_cols;
 	int m_rows;

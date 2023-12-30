@@ -50,7 +50,7 @@ methods:
   ^ tab:
   {
 	name               = "tabname",      -- name of tab to create
-	caption            = "tab caption",  -- text to show for tab header
+	caption            = "tab caption",  -- text to show for tab header. Either a string or a function: (tabview) -> string
 	cbf_button_handler = function(tabview, fields, tabname, tabdata), -- callback for button events
 	--TODO cbf_events         = function(tabview, event, tabname),           -- callback for events
 	cbf_formspec       = function(tabview, name, tabdata),            -- get formspec

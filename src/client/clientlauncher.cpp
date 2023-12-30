@@ -138,6 +138,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 
 	guienv = m_rendering_engine->get_gui_env();
 	skin = guienv->getSkin();
+	skin->setColor(gui::EGDC_WINDOW_SYMBOL, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
 	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));

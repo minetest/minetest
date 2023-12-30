@@ -20,16 +20,10 @@ git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
-Download Minetest Game (otherwise only the "Development Test" game is available) using Git:
-
-```
-git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
-```
-
 Download Minetest's fork of Irrlicht:
 
-```
-git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+```bash
+git clone --depth 1 --branch "$(cat misc/irrlichtmt_tag.txt)" https://github.com/minetest/irrlicht.git lib/irrlichtmt
 ```
 
 ## Build
@@ -39,13 +33,15 @@ mkdir build
 cd build
 
 cmake .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
     -DCMAKE_FIND_FRAMEWORK=LAST \
     -DCMAKE_INSTALL_PREFIX=../build/macos/ \
     -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
 
 make -j$(sysctl -n hw.logicalcpu)
 make install
+
+# M1 Macs w/ MacOS >= BigSur
+codesign --force --deep -s - macos/minetest.app
 ```
 
 ## Run

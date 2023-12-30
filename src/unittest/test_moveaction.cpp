@@ -36,6 +36,7 @@ public:
 	void runTests(IGameDef *gamedef);
 
 	void testMove(ServerActiveObject *obj, IGameDef *gamedef);
+	void testMoveFillStack(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMoveUnallowed(ServerActiveObject *obj, IGameDef *gamedef);
 	void testMovePartial(ServerActiveObject *obj, IGameDef *gamedef);
@@ -51,14 +52,24 @@ void TestMoveAction::runTests(IGameDef *gamedef)
 	MockServer server;
 
 	ServerScripting server_scripting(&server);
-	server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
-	server_scripting.loadMod(std::string(HELPERS_PATH) + DIR_DELIM "helper_moveaction.lua",	BUILTIN_MOD_NAME);
+	try {
+		server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+		server_scripting.loadMod(
+			std::string(HELPERS_PATH) + DIR_DELIM "helper_moveaction.lua", BUILTIN_MOD_NAME
+		);
+	} catch (ModError &e) {
+		// Print backtrace in case of syntax errors
+		rawstream << e.what() << std::endl;
+		num_tests_failed = 1;
+		return;
+	}
 
 	MetricsBackend mb;
 	ServerEnvironment server_env(nullptr, &server_scripting, &server, "", &mb);
 	MockServerActiveObject obj(&server_env);
 
 	TEST(testMove, &obj, gamedef);
+	TEST(testMoveFillStack, &obj, gamedef);
 	TEST(testMoveSomewhere, &obj, gamedef);
 	TEST(testMoveUnallowed, &obj, gamedef);
 	TEST(testMovePartial, &obj, gamedef);
@@ -93,6 +104,26 @@ void TestMoveAction::testMove(ServerActiveObject *obj, IGameDef *gamedef)
 
 	UASSERT(inv.p1.getList("main")->getItem(0).getItemString() == "default:stone 30");
 	UASSERT(inv.p2.getList("main")->getItem(0).getItemString() == "default:stone 20");
+}
+
+void TestMoveAction::testMoveFillStack(ServerActiveObject *obj, IGameDef *gamedef)
+{
+	MockInventoryManager inv(gamedef);
+
+	auto list = inv.p1.addList("main", 10);
+	list->changeItem(0, parse_itemstack("default:stone 209"));
+	list->changeItem(1, parse_itemstack("default:stone 90")); // 9 free slots
+
+	apply_action("Move 209 player:p1 main 0 player:p1 main 1", &inv, obj, gamedef);
+
+	UASSERT(list->getItem(0).getItemString() == "default:stone 200");
+	UASSERT(list->getItem(1).getItemString() == "default:stone 99");
+
+	// Trigger stack swap
+	apply_action("Move 200 player:p1 main 0 player:p1 main 1", &inv, obj, gamedef);
+
+	UASSERT(list->getItem(0).getItemString() == "default:stone 99");
+	UASSERT(list->getItem(1).getItemString() == "default:stone 200");
 }
 
 void TestMoveAction::testMoveSomewhere(ServerActiveObject *obj, IGameDef *gamedef)

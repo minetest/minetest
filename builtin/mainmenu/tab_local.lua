@@ -53,11 +53,10 @@ end
 
 -- Apply menu changes from given game
 function apply_game(game)
-	core.set_topleft_text(game.name)
 	core.settings:set("menu_last_game", game.id)
 	menudata.worldlist:set_filtercriteria(game.id)
 
-	mm_game_theme.update("singleplayer", game) -- this refreshes the formspec
+	mm_game_theme.set_game(game)
 
 	local index = filterlist.get_current_index(menudata.worldlist,
 		tonumber(core.settings:get("mainmenu_last_selected_world")))
@@ -396,7 +395,6 @@ local function main_button_handler(this, fields, name, tabdata)
 		create_world_dlg:set_parent(this)
 		this:hide()
 		create_world_dlg:show()
-		mm_game_theme.update("singleplayer", current_game())
 		return true
 	end
 
@@ -413,7 +411,6 @@ local function main_button_handler(this, fields, name, tabdata)
 				delete_world_dlg:set_parent(this)
 				this:hide()
 				delete_world_dlg:show()
-				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -431,7 +428,6 @@ local function main_button_handler(this, fields, name, tabdata)
 				configdialog:set_parent(this)
 				this:hide()
 				configdialog:show()
-				mm_game_theme.update("singleplayer",current_game())
 			end
 		end
 
@@ -439,26 +435,23 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 end
 
-local function on_change(type, old_tab, new_tab)
-	if (type == "ENTER") then
+local function on_change(type)
+	if type == "ENTER" then
 		local game = current_game()
 		if game then
 			apply_game(game)
+		else
+			mm_game_theme.set_engine()
 		end
 
 		if singleplayer_refresh_gamebar() then
 			ui.find_by_name("game_button_bar"):show()
 		end
-	else
+	elseif type == "LEAVE" then
 		menudata.worldlist:set_filtercriteria(nil)
 		local gamebar = ui.find_by_name("game_button_bar")
 		if gamebar then
 			gamebar:hide()
-		end
-		core.set_topleft_text("")
-		-- If new_tab is nil, a dialog is being shown; avoid resetting the theme
-		if new_tab then
-			mm_game_theme.update(new_tab,nil)
 		end
 	end
 end

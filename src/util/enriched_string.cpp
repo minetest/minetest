@@ -59,10 +59,11 @@ void EnrichedString::clear()
 	m_background = irr::video::SColor(0, 0, 0, 0);
 }
 
-void EnrichedString::operator=(const wchar_t *str)
+EnrichedString &EnrichedString::operator=(const wchar_t *str)
 {
 	clear();
 	addAtEnd(translate_string(std::wstring(str)), m_default_color);
+	return *this;
 }
 
 void EnrichedString::addAtEnd(const std::wstring &s, SColor initial_color)

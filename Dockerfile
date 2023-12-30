@@ -1,7 +1,6 @@
 ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS dev
 
-ENV MINETEST_GAME_VERSION master
 ENV IRRLICHT_VERSION master
 ENV SPATIALINDEX_VERSION 1.9.3
 ENV LUAJIT_VERSION v2.1
@@ -52,18 +51,16 @@ COPY src /usr/src/minetest/src
 COPY textures /usr/src/minetest/textures
 
 WORKDIR /usr/src/minetest
-RUN git clone --depth=1 -b ${MINETEST_GAME_VERSION} https://github.com/minetest/minetest_game.git ./games/minetest_game && \
-		rm -fr ./games/minetest_game/.git && \
-		cmake -B build \
-			-DCMAKE_INSTALL_PREFIX=/usr/local \
-			-DCMAKE_BUILD_TYPE=Release \
-			-DBUILD_SERVER=TRUE \
-			-DENABLE_PROMETHEUS=TRUE \
-			-DBUILD_UNITTESTS=FALSE \
-			-DBUILD_CLIENT=FALSE \
-			-GNinja && \
-		cmake --build build && \
-		cmake --install build
+RUN cmake -B build \
+		-DCMAKE_INSTALL_PREFIX=/usr/local \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_SERVER=TRUE \
+		-DENABLE_PROMETHEUS=TRUE \
+		-DBUILD_UNITTESTS=FALSE \
+		-DBUILD_CLIENT=FALSE \
+		-GNinja && \
+	cmake --build build && \
+	cmake --install build
 
 ARG DOCKER_IMAGE=alpine:3.16
 FROM $DOCKER_IMAGE AS runtime

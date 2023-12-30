@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <cstdlib>
+#include <IEventReceiver.h>
 #include "client/renderingengine.h"
 #include "modalMenu.h"
 #include "gettext.h"
@@ -29,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-// clang-format off
 GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	s32 id, IMenuManager *menumgr, bool remap_dbl_click) :
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
@@ -49,7 +49,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 #endif
 
 	setVisible(true);
-	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 
 	m_doubleclickdetect[0].time = 0;
@@ -58,7 +57,6 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	m_doubleclickdetect[0].pos = v2s32(0, 0);
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 }
-// clang-format on
 
 GUIModalMenu::~GUIModalMenu()
 {
@@ -106,12 +104,11 @@ void GUIModalMenu::quitMenu()
 	m_menumgr->deletingMenu(this);
 	this->remove();
 #ifdef HAVE_TOUCHSCREENGUI
-	if (g_touchscreengui && m_touchscreen_visible)
+	if (g_touchscreengui)
 		g_touchscreengui->show();
 #endif
 }
 
-// clang-format off
 bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 {
 	/* The following code is for capturing double-clicks of the mouse button
@@ -161,7 +158,6 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 
 	return false;
 }
-// clang-format on
 
 static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 {
@@ -173,8 +169,6 @@ static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
 	}
 	return false;
 }
-
-#ifdef HAVE_TOUCHSCREENGUI
 
 bool GUIModalMenu::simulateMouseEvent(
 		gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event)
@@ -199,45 +193,54 @@ bool GUIModalMenu::simulateMouseEvent(
 	default:
 		return false;
 	}
-	if (preprocessEvent(mouse_event))
-		return true;
-	if (!target)
-		return false;
-	return target->OnEvent(mouse_event);
+
+	bool retval;
+	m_simulated_mouse = true;
+	do {
+		if (preprocessEvent(mouse_event)) {
+			retval = true;
+			break;
+		}
+		if (!target) {
+			retval = false;
+			break;
+		}
+		retval = target->OnEvent(mouse_event);
+	} while (false);
+	m_simulated_mouse = false;
+
+	return retval;
 }
 
 void GUIModalMenu::enter(gui::IGUIElement *hovered)
 {
 	if (!hovered)
 		return;
-	sanity_check(!m_hovered);
-	m_hovered.grab(hovered);
+	sanity_check(!m_touch_hovered);
+	m_touch_hovered.grab(hovered);
 	SEvent gui_event{};
 	gui_event.EventType = EET_GUI_EVENT;
-	gui_event.GUIEvent.Caller = m_hovered.get();
-	gui_event.GUIEvent.EventType = EGET_ELEMENT_HOVERED;
+	gui_event.GUIEvent.Caller = m_touch_hovered.get();
+	gui_event.GUIEvent.EventType = gui::EGET_ELEMENT_HOVERED;
 	gui_event.GUIEvent.Element = gui_event.GUIEvent.Caller;
-	m_hovered->OnEvent(gui_event);
+	m_touch_hovered->OnEvent(gui_event);
 }
 
 void GUIModalMenu::leave()
 {
-	if (!m_hovered)
+	if (!m_touch_hovered)
 		return;
 	SEvent gui_event{};
 	gui_event.EventType = EET_GUI_EVENT;
-	gui_event.GUIEvent.Caller = m_hovered.get();
-	gui_event.GUIEvent.EventType = EGET_ELEMENT_LEFT;
-	m_hovered->OnEvent(gui_event);
-	m_hovered.reset();
+	gui_event.GUIEvent.Caller = m_touch_hovered.get();
+	gui_event.GUIEvent.EventType = gui::EGET_ELEMENT_LEFT;
+	m_touch_hovered->OnEvent(gui_event);
+	m_touch_hovered.reset();
 }
-
-#endif
 
 bool GUIModalMenu::preprocessEvent(const SEvent &event)
 {
 #ifdef __ANDROID__
-	// clang-format off
 	// display software keyboard when clicking edit boxes
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
@@ -274,68 +277,63 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 	}
 #endif
 
-#ifdef HAVE_TOUCHSCREENGUI
+	// Convert touch events into mouse events.
 	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		irr_ptr<GUIModalMenu> holder;
 		holder.grab(this); // keep this alive until return (it might be dropped downstream [?])
 
-		switch ((int)event.TouchInput.touchedCount) {
-		case 1: {
-			if (event.TouchInput.Event == ETIE_PRESSED_DOWN || event.TouchInput.Event == ETIE_MOVED)
-				m_pointer = v2s32(event.TouchInput.X, event.TouchInput.Y);
-			if (event.TouchInput.Event == ETIE_PRESSED_DOWN)
-				m_down_pos = m_pointer;
+		if (event.TouchInput.touchedCount == 1) {
+			m_pointer_type = PointerType::Touch;
+			m_pointer = v2s32(event.TouchInput.X, event.TouchInput.Y);
+
 			gui::IGUIElement *hovered = Environment->getRootGUIElement()->getElementFromPoint(core::position2d<s32>(m_pointer));
 			if (event.TouchInput.Event == ETIE_PRESSED_DOWN)
 				Environment->setFocus(hovered);
-			if (m_hovered != hovered) {
+			if (m_touch_hovered != hovered) {
 				leave();
 				enter(hovered);
 			}
 			gui::IGUIElement *focused = Environment->getFocus();
 			bool ret = simulateMouseEvent(focused, event.TouchInput.Event);
-			if (!ret && m_hovered != focused)
-				ret = simulateMouseEvent(m_hovered.get(), event.TouchInput.Event);
+			if (!ret && m_touch_hovered != focused)
+				ret = simulateMouseEvent(m_touch_hovered.get(), event.TouchInput.Event);
 			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				leave();
 			return ret;
-		}
-		case 2: {
-			if (event.TouchInput.Event != ETIE_PRESSED_DOWN)
+		} else if (event.TouchInput.touchedCount == 2) {
+			if (event.TouchInput.Event != ETIE_LEFT_UP)
 				return true; // ignore
 			auto focused = Environment->getFocus();
 			if (!focused)
 				return true;
-			SEvent rclick_event{};
-			rclick_event.EventType = EET_MOUSE_INPUT_EVENT;
-			rclick_event.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
-			rclick_event.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
-			rclick_event.MouseInput.X = m_pointer.X;
-			rclick_event.MouseInput.Y = m_pointer.Y;
-			focused->OnEvent(rclick_event);
-			rclick_event.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
-			rclick_event.MouseInput.ButtonStates = EMBSM_LEFT;
-			focused->OnEvent(rclick_event);
+			// The second-touch event is propagated as is (not converted).
+			m_second_touch = true;
+			focused->OnEvent(event);
+			m_second_touch = false;
 			return true;
-		}
-		default: // ignored
+		} else {
+			// Any other touch after the second touch is ignored.
 			return true;
 		}
 	}
-#endif
 
 	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-		s32 x = event.MouseInput.X;
-		s32 y = event.MouseInput.Y;
+		if (!m_simulated_mouse) {
+			// Only set the pointer type to mouse if this is a real mouse event.
+			m_pointer_type = PointerType::Mouse;
+			m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
+			m_touch_hovered.reset();
+		}
+
 		gui::IGUIElement *hovered =
-				Environment->getRootGUIElement()->getElementFromPoint(
-						core::position2d<s32>(x, y));
+				Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
 		if (!isChild(hovered, this)) {
 			if (DoubleClickDetection(event)) {
 				return true;
 			}
 		}
 	}
+
 	return false;
 }
 
