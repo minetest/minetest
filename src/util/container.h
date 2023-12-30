@@ -331,14 +331,27 @@ template<typename K, typename V>
 class ModifySafeMap
 {
 public:
-	static_assert(std::is_pointer<V>::value, "Data structure requires pointer values");
-	// TODO is_default_constructible + is_convertible to bool?
+	// this allows bare pointers but also e.g. std::unique_ptr
+	static_assert(std::is_default_constructible<V>::value,
+		"Value type must be default constructible");
+	static_assert(std::is_constructible<bool, V>::value,
+		"Value type must be convertible to bool");
 
 	typedef K key_type;
 	typedef V mapped_type;
 
-	ModifySafeMap() = default;
-	~ModifySafeMap() { assert(!m_iterating); }
+	ModifySafeMap() {
+		// the null value must convert to false and all others to true, but
+		// we can't statically check that I think.
+		assert(!null_value);
+	}
+	~ModifySafeMap() {
+		assert(!m_iterating);
+	}
+
+	// possible to implement but we don't need it
+	DISABLE_CLASS_COPY(ModifySafeMap)
+	ALLOW_CLASS_MOVE(ModifySafeMap)
 
 	V get(const K &key) const {
 		if (m_iterating) {
@@ -347,7 +360,7 @@ public:
 				return it->second;
 		}
 		auto it = m_values.find(key);
-		return it == m_values.end() ? nullptr : it->second;
+		return it == m_values.end() ? null_value : it->second;
 	}
 
 	void put(const K &key, V value) {
@@ -374,7 +387,7 @@ public:
 		if (it == m_values.end())
 			return ret;
 		if (m_iterating) {
-			it->second = nullptr;
+			it->second = null_value;
 			m_garbage++;
 		} else {
 			m_values.erase(it);
@@ -393,7 +406,7 @@ public:
 			return m_values.size();
 		size_t n = 0;
 		for (auto it : m_values)
-			n += it.second == nullptr ? 0 : 1;
+			n += !it.second ? 0 : 1;
 		return n;
 	}
 
@@ -403,7 +416,7 @@ public:
 		if (m_garbage == 0)
 			return m_values.empty();
 		for (auto it : m_values) {
-			if (!(it.second == nullptr))
+			if (!!it.second)
 				return false;
 		}
 		return true;
@@ -414,7 +427,7 @@ public:
 	void clear() {
 		if (m_iterating) {
 			for (auto &it : m_values)
-				it.second = nullptr;
+				it.second = null_value;
 			m_garbage = m_values.size();
 		} else {
 			m_values.clear();
@@ -422,6 +435,8 @@ public:
 			m_garbage = 0;
 		}
 	}
+
+	static constexpr V null_value = V();
 
 	// returned by size() if called during iteration
 	static constexpr size_t unknown = static_cast<size_t>(-1);
@@ -441,7 +456,7 @@ protected:
 		if (m_values.size() < GC_MIN_SIZE || m_garbage < m_values.size() / 2)
 			return;
 		for (auto it = m_values.begin(); it != m_values.end(); ) {
-			if (it->second == nullptr)
+			if (!it->second)
 				it = m_values.erase(it);
 			else
 				it++;
@@ -449,7 +464,6 @@ protected:
 		m_garbage = 0;
 	}
 
-	// not reentrant!
 	struct IterationHelper {
 		friend class ModifySafeMap<K, V>;
 		~IterationHelper() {
@@ -477,7 +491,7 @@ private:
 	std::map<K, V> m_values;
 	std::map<K, V> m_new;
 	unsigned int m_iterating = 0;
-	size_t m_garbage = 0; // upper bound for nullptr-placeholders in m_values
+	size_t m_garbage = 0; // upper bound for null-placeholders in m_values
 
-	static constexpr size_t GC_MIN_SIZE = 42;
+	static constexpr size_t GC_MIN_SIZE = 30;
 };
