@@ -63,7 +63,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	const float s = m_gui_scale * RenderingEngine::getDisplayDensity() / 2;
+	const float s = m_gui_scale;
 
 	DesiredRect = core::rect<s32>(
 		screensize.X / 2 - 580 * s / 2,
