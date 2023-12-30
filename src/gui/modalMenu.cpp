@@ -155,10 +155,13 @@ bool GUIModalMenu::remapDoubleClick(const SEvent &event)
 	return true;
 }
 
-bool GUIModalMenu::simulateMouseEvent(
-		gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event)
+bool GUIModalMenu::simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try)
 {
-	gui::IGUIElement *focused = Environment->getFocus();
+	IGUIElement *target;
+	if (!second_try)
+		target = Environment->getFocus();
+	else
+		target = m_touch_hovered.get();
 
 	SEvent mouse_event{}; // value-initialized, not unitialized
 	mouse_event.EventType = EET_MOUSE_INPUT_EVENT;
@@ -201,9 +204,8 @@ bool GUIModalMenu::simulateMouseEvent(
 	} while (false);
 	m_simulated_mouse = false;
 
-	if (!retval && target == focused && m_touch_hovered != focused) {
-		return simulateMouseEvent(m_touch_hovered.get(), touch_event);
-	}
+	if (!retval && !second_try)
+		return simulateMouseEvent(touch_event, true);
 
 	return retval;
 }
@@ -289,8 +291,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				leave();
 				enter(hovered);
 			}
-			gui::IGUIElement *focused = Environment->getFocus();
-			bool ret = simulateMouseEvent(focused, event.TouchInput.Event);
+			bool ret = simulateMouseEvent(event.TouchInput.Event);
 			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				leave();
 
@@ -305,7 +306,7 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 
 				if (time_delta < 400 && distance_sq < (30 * 30)) {
 					// ETIE_COUNT is used for double-tap events.
-					simulateMouseEvent(focused, ETIE_COUNT);
+					simulateMouseEvent(ETIE_COUNT);
 				}
 
 				m_last_touch.time = time_now;

@@ -108,7 +108,7 @@ private:
 
 	irr_ptr<gui::IGUIElement> m_touch_hovered;
 
-	bool simulateMouseEvent(gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event);
+	bool simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try=false);
 	void enter(gui::IGUIElement *element);
 	void leave();
 
