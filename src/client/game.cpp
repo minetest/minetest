@@ -1017,7 +1017,7 @@ private:
 
 	bool m_touch_simulate_aux1;
 	bool m_touch_use_crosshair;
-	inline bool isNoCrosshairAllowed() {
+	inline bool isTouchCrosshairDisabled() {
 		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
 	}
 #ifdef __ANDROID__
@@ -1507,7 +1507,7 @@ bool Game::createClient(const GameStartData &start_data)
 	client->setCamera(camera);
 
 	if (g_touchscreengui) {
-		g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
+		g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
 	}
 
 	/* Clouds
@@ -3205,7 +3205,7 @@ void Game::updateCamera(f32 dtime)
 		camera->toggleCameraMode();
 
 		if (g_touchscreengui)
-			g_touchscreengui->setUseCrosshair(!isNoCrosshairAllowed());
+			g_touchscreengui->setUseCrosshair(!isTouchCrosshairDisabled());
 
 		// Make the player visible depending on camera mode.
 		playercao->updateMeshCulling();
@@ -3306,7 +3306,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud)
 	}
 	shootline.end = shootline.start + camera_direction * BS * d;
 
-	if (g_touchscreengui && isNoCrosshairAllowed()) {
+	if (g_touchscreengui && isTouchCrosshairDisabled()) {
 		shootline = g_touchscreengui->getShootline();
 		// Scale shootline to the acual distance the player can reach
 		shootline.end = shootline.start +
@@ -4311,7 +4311,7 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats)
 			(player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
 			(this->camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
-	if (g_touchscreengui && isNoCrosshairAllowed())
+	if (g_touchscreengui && isTouchCrosshairDisabled())
 		draw_crosshair = false;
 
 	this->m_rendering_engine->draw_scene(sky_color, this->m_game_ui->m_flags.show_hud,
