@@ -1015,7 +1015,7 @@ private:
 	// this happens in pause menu in singleplayer
 	bool m_is_paused = false;
 
-	bool m_cache_hold_aux1;
+	bool m_touch_simulate_aux1;
 	bool m_touch_use_crosshair;
 	inline bool isNoCrosshairAllowed() {
 		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
@@ -1068,7 +1068,7 @@ Game::Game() :
 
 	readSettings();
 
-	m_cache_hold_aux1 = false;	// This is initialised properly later
+	m_touch_simulate_aux1 = false;	// This is initialised properly later
 
 }
 
@@ -1207,7 +1207,7 @@ void Game::run()
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
-	m_cache_hold_aux1 = g_settings->getBool("fast_move")
+	m_touch_simulate_aux1 = g_settings->getBool("fast_move")
 			&& client->checkPrivilege("fast");
 
 	const irr::core::dimension2du initial_screen_size(
@@ -2363,7 +2363,7 @@ void Game::toggleFast()
 		m_game_ui->showTranslatedStatusText("Fast mode disabled");
 	}
 
-	m_cache_hold_aux1 = fast_move && has_fast_privs;
+	m_touch_simulate_aux1 = fast_move && has_fast_privs;
 }
 
 
@@ -2721,7 +2721,7 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	 * touch then its meaning is inverted (i.e. holding aux1 means walk and
 	 * not fast)
 	 */
-	if (g_touchscreengui && m_cache_hold_aux1) {
+	if (g_touchscreengui && m_touch_simulate_aux1) {
 		control.aux1 = control.aux1 ^ true;
 	}
 
