@@ -4181,7 +4181,23 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	if (runData.damage_flash > 0.0f) {
 		runData.damage_flash -= 384.0f * dtime;
 	}
+<<<<<<< HEAD
 
+=======
+		s32 chat_y = screensize.Y - 130;
+		video::SColor color(200, 200, 0, 0);
+		driver->draw2DRectangle(color, 
+					core::rect<s32>(10, chat_y, screensize.X - 20, 0),
+					NULL);
+	/*
+		==================== End scene ====================
+	*/
+
+	driver->endScene();
+
+	stats->drawtime = tt_draw.stop(true);
+	g_profiler->graphAdd("Draw scene [us]", stats->drawtime);
+>>>>>>> 1fc712969 (Fix bug)
 	g_profiler->avg("Game::updateFrame(): update frame [ms]", tt_update.stop(true));
 }
 
