@@ -4182,6 +4182,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		runData.damage_flash -= 384.0f * dtime;
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 		s32 chat_y = screensize.Y - 130;
@@ -4189,6 +4190,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		driver->draw2DRectangle(color, 
 					core::rect<s32>(10, chat_y, screensize.X - 20, 0),
 					NULL);
+=======
+	
+	
+>>>>>>> 3a84b9472 (Fix game.cpp)
 	/*
 		==================== End scene ====================
 	*/
