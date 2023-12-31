@@ -25,6 +25,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "playing_sound.h"
+#include "al_extensions.h"
 #include "sound_constants.h"
 #include "sound_manager_messages.h"
 #include "../sound.h"
@@ -51,8 +52,10 @@ class OpenALSoundManager final : public Thread
 private:
 	std::unique_ptr<SoundFallbackPathProvider> m_fallback_path_provider;
 
-	ALCdevice *m_device;
-	ALCcontext *m_context;
+	ALCdevice *const m_device;
+	ALCcontext *const m_context;
+
+	const ALExtensions m_exts;
 
 	// time in seconds until which removeDeadSounds will be called again
 	f32 m_time_until_dead_removal = REMOVE_DEAD_SOUNDS_INTERVAL;

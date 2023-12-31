@@ -25,6 +25,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "sound_data.h"
+namespace sound { struct ALExtensions; }
 
 namespace sound {
 
@@ -51,7 +52,8 @@ class PlayingSound final
 public:
 	PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data, bool loop,
 			f32 volume, f32 pitch, f32 start_time,
-			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt);
+			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt,
+			[[maybe_unused]] const ALExtensions &exts);
 
 	~PlayingSound() noexcept
 	{

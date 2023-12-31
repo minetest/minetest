@@ -181,7 +181,7 @@ std::shared_ptr<PlayingSound> OpenALSoundManager::createPlayingSound(
 	}
 
 	auto sound = std::make_shared<PlayingSound>(source_id, std::move(lsnd), loop,
-			volume, pitch, start_time, pos_vel_opt);
+			volume, pitch, start_time, pos_vel_opt, m_exts);
 
 	sound->play();
 
@@ -271,7 +271,8 @@ OpenALSoundManager::OpenALSoundManager(SoundManagerSingleton *smg,
 	Thread("OpenALSoundManager"),
 	m_fallback_path_provider(std::move(fallback_path_provider)),
 	m_device(smg->m_device.get()),
-	m_context(smg->m_context.get())
+	m_context(smg->m_context.get()),
+	m_exts(m_device)
 {
 	SANITY_CHECK(!!m_fallback_path_provider);
 
