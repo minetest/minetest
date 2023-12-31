@@ -25,6 +25,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "sound_data.h"
 
 #include "sound_constants.h"
+#include <algorithm>
 
 namespace sound {
 
