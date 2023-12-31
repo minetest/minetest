@@ -53,7 +53,7 @@ public:
 	PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data, bool loop,
 			f32 volume, f32 pitch, f32 start_time,
 			const std::optional<std::pair<v3f, v3f>> &pos_vel_opt,
-			[[maybe_unused]] const ALExtensions &exts);
+			const ALExtensions &exts [[maybe_unused]]);
 
 	~PlayingSound() noexcept
 	{

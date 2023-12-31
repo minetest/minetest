@@ -28,7 +28,7 @@ namespace sound {
  */
 struct ALExtensions
 {
-	explicit ALExtensions([[maybe_unused]] const ALCdevice *deviceHandle);
+	explicit ALExtensions(const ALCdevice *deviceHandle [[maybe_unused]]);
 
 #ifdef AL_SOFT_direct_channels_remix
 	bool have_ext_AL_SOFT_direct_channels_remix = false;
