@@ -55,4 +55,11 @@ struct GameStartData : GameParams
 
 	// "world_path" must be kept in sync!
 	WorldSpec world_spec;
+
+	void erasePassword() {
+		/* make sure that password will not stay somewhere in memory */
+		for (size_t i=0;i<password.size();i++)
+			password[i] = '*';
+		password.clear();
+	}
 };

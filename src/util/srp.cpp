@@ -249,8 +249,7 @@ struct SRPUser {
 
 	char *username;
 	char *username_verifier;
-	unsigned char *password;
-	size_t password_len;
+	unsigned char ucp_hash[SHA512_DIGEST_LENGTH];
 
 	unsigned char M[SHA512_DIGEST_LENGTH];
 	unsigned char H_AMK[SHA512_DIGEST_LENGTH];
@@ -430,11 +429,9 @@ static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char 
 	return SRP_OK;
 }
 
-static int calculate_x(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *salt,
-	size_t salt_len, const char *username, const unsigned char *password,
-	size_t password_len)
+static void precalculate_x(SRP_HashAlgorithm alg, const char *username,
+	const unsigned char *password, size_t password_len, unsigned char *ucp_hash)
 {
-	unsigned char ucp_hash[SHA512_DIGEST_LENGTH];
 	HashCTX ctx;
 	hash_init(alg, &ctx);
 
@@ -445,8 +442,11 @@ static int calculate_x(mpz_t result, SRP_HashAlgorithm alg, const unsigned char 
 	hash_update(alg, &ctx, password, password_len);
 
 	hash_final(alg, &ctx, ucp_hash);
-
-	return H_ns(result, alg, salt, salt_len, ucp_hash, hash_length(alg));
+}
+static int calculate_x(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *salt,
+	size_t salt_len, const unsigned char *ucp_hash)
+{
+	return H_ns(result, alg, salt, salt_len, (const unsigned char *)ucp_hash, hash_length(alg));
 }
 
 static SRP_Result update_hash_n(SRP_HashAlgorithm alg, HashCTX *ctx, const mpz_t n)
@@ -612,8 +612,11 @@ SRP_Result srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 		g_rand_idx += size_to_fill;
 	}
 
+	unsigned char ucp_hash[SHA512_DIGEST_LENGTH];
+	precalculate_x(alg, username_for_verifier,
+			password, len_password, ucp_hash);
 	if (!calculate_x(
-			x, alg, *bytes_s, *len_s, username_for_verifier, password, len_password))
+			x, alg, *bytes_s, *len_s, ucp_hash))
 		goto error_and_exit;
 
 	srp_dbg_num(x, "Server calculated x: ");
@@ -836,14 +839,13 @@ struct SRPUser *srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
 
 	usr->username = (char *)srp_alloc(ulen);
 	usr->username_verifier = (char *)srp_alloc(uvlen);
-	usr->password = (unsigned char *)srp_alloc(len_password);
-	usr->password_len = len_password;
 
-	if (!usr->username || !usr->password || !usr->username_verifier) goto err_exit;
+	if (!usr->username || !usr->username_verifier) goto err_exit;
 
 	memcpy(usr->username, username, ulen);
 	memcpy(usr->username_verifier, username_for_verifier, uvlen);
-	memcpy(usr->password, bytes_password, len_password);
+
+	precalculate_x(alg, username_for_verifier, bytes_password, len_password, usr->ucp_hash);
 
 	usr->authenticated = 0;
 
@@ -859,10 +861,6 @@ err_exit:
 		delete_ng(usr->ng);
 		srp_free(usr->username);
 		srp_free(usr->username_verifier);
-		if (usr->password) {
-			memset(usr->password, 0, usr->password_len);
-			srp_free(usr->password);
-		}
 		srp_free(usr);
 	}
 
@@ -878,11 +876,8 @@ void srp_user_delete(struct SRPUser *usr)
 
 		delete_ng(usr->ng);
 
-		memset(usr->password, 0, usr->password_len);
-
 		srp_free(usr->username);
 		srp_free(usr->username_verifier);
-		srp_free(usr->password);
 
 		if (usr->bytes_A) srp_free(usr->bytes_A);
 
@@ -967,8 +962,7 @@ void  srp_user_process_challenge(struct SRPUser *usr,
 
 	srp_dbg_num(u, "Client calculated u: ");
 
-	if (!calculate_x(x, usr->hash_alg, bytes_s, len_s, usr->username_verifier,
-			usr->password, usr->password_len))
+	if (!calculate_x(x, usr->hash_alg, bytes_s, len_s, usr->ucp_hash))
 		goto cleanup_and_exit;
 
 	srp_dbg_num(x, "Client calculated x: ");
