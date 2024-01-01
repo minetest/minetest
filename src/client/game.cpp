@@ -1028,6 +1028,8 @@ private:
 	bool m_cache_enable_noclip;
 	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
+	f32  m_cache_key_look_sensitivity_h;
+	f32  m_cache_key_look_sensitivity_v;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_place_time;
 	f32  m_cache_cam_smoothing;
@@ -2690,6 +2692,19 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) * c;
 	}
 
+	if (input->isKeyDown(KeyType::LOOK_UP)) {
+		cam->camera_pitch -= m_cache_key_look_sensitivity_v * dtime;
+	}
+	if (input->isKeyDown(KeyType::LOOK_DOWN)) {
+		cam->camera_pitch += m_cache_key_look_sensitivity_v * dtime;
+	}
+	if (input->isKeyDown(KeyType::LOOK_LEFT)) {
+		cam->camera_yaw += m_cache_key_look_sensitivity_h * dtime;
+	}
+	if (input->isKeyDown(KeyType::LOOK_RIGHT)) {
+		cam->camera_yaw -= m_cache_key_look_sensitivity_h * dtime;
+	}
+
 	cam->camera_pitch = rangelim(cam->camera_pitch, -89.5, 89.5);
 }
 
@@ -2707,6 +2722,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		isKeyDown(KeyType::RIGHT),
 		isKeyDown(KeyType::JUMP) || player->getAutojump(),
 		isKeyDown(KeyType::AUX1),
+		isKeyDown(KeyType::LOOK_UP),
+		isKeyDown(KeyType::LOOK_DOWN),
+		isKeyDown(KeyType::LOOK_LEFT),
+		isKeyDown(KeyType::LOOK_RIGHT),
 		isKeyDown(KeyType::SNEAK),
 		isKeyDown(KeyType::ZOOM),
 		isKeyDown(KeyType::DIG),
@@ -4389,6 +4408,9 @@ void Game::readSettings()
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0);
 
+	m_cache_key_look_sensitivity_h       = g_settings->getFloat("key_look_sensitivity_horizontal");
+	m_cache_key_look_sensitivity_v       = g_settings->getFloat("key_look_sensitivity_vertical");
+
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
@@ -4400,6 +4422,8 @@ void Game::readSettings()
 
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+	m_cache_key_look_sensitivity_h = rangelim(m_cache_key_look_sensitivity_h, 0.001, 360.0);
+	m_cache_key_look_sensitivity_v = rangelim(m_cache_key_look_sensitivity_v, 0.001, 360.0);
 
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_enable_hotbar_mouse_wheel = g_settings->getBool("enable_hotbar_mouse_wheel");

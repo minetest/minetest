@@ -171,7 +171,11 @@ u32 PlayerControl::getKeysPressed() const
 		( (u32)(sneak & 1) << 6) |
 		( (u32)(dig   & 1) << 7) |
 		( (u32)(place & 1) << 8) |
-		( (u32)(zoom  & 1) << 9)
+		( (u32)(zoom  & 1) << 9) |
+		( (u32)(look_up    & 1) << 10) |
+		( (u32)(look_down  & 1) << 11) |
+		( (u32)(look_left  & 1) << 12) |
+		( (u32)(look_right & 1) << 13)
 	;
 
 	// If any direction keys are pressed pass those through

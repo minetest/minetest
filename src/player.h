@@ -50,6 +50,7 @@ struct PlayerControl
 
 	PlayerControl(
 		bool a_up, bool a_down, bool a_left, bool a_right,
+		bool a_lookup, bool a_lookdown, bool a_lookleft, bool a_lookright,
 		bool a_jump, bool a_aux1, bool a_sneak,
 		bool a_zoom,
 		bool a_dig, bool a_place,
@@ -61,6 +62,12 @@ struct PlayerControl
 		// as movement_{speed,direction} is supposed to be the source of truth.
 		direction_keys = (a_up&1) | ((a_down&1) << 1) |
 			((a_left&1) << 2) | ((a_right&1) << 3);
+		// Allow keyboard control of the look direction
+		// TODO conver to single value like above
+		lookup = a_lookup,
+		lookdown = a_lookdown,
+		lookleft = a_lookleft,
+		lookright = a_lookright,
 		jump = a_jump;
 		aux1 = a_aux1;
 		sneak = a_sneak;
@@ -83,6 +90,10 @@ struct PlayerControl
 	void unpackKeysPressed(u32 keypress_bits);
 
 	u8 direction_keys = 0;
+	bool lookup = false;
+	bool lookdown = false;
+	bool lookleft = false;
+	bool lookright = false;
 	bool jump = false;
 	bool aux1 = false;
 	bool sneak = false;

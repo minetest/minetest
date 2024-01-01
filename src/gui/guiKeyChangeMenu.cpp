@@ -80,6 +80,11 @@ enum
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
 	GUI_ID_CB_AUTOJUMP,
+        // keyboard look control
+	GUI_ID_KEY_LOOK_UP_BUTTON,
+	GUI_ID_KEY_LOOK_DOWN_BUTTON,
+	GUI_ID_KEY_LOOK_LEFT_BUTTON,
+	GUI_ID_KEY_LOOK_RIGHT_BUTTON,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -417,4 +422,9 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_HUD_BUTTON,          wstrgettext("Toggle HUD"),       "keymap_toggle_hud");
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,      wstrgettext("Toggle chat log"),  "keymap_toggle_chat");
 	this->add_key(GUI_ID_KEY_FOG_BUTTON,          wstrgettext("Toggle fog"),       "keymap_toggle_fog");
+	// keyboard look control
+	this->add_key(GUI_ID_KEY_LOOK_UP_BUTTON,      wgettext("Look up"),             "keymap_look_up");
+	this->add_key(GUI_ID_KEY_LOOK_DOWN_BUTTON,    wgettext("Look down"),           "keymap_look_down");
+	this->add_key(GUI_ID_KEY_LOOK_LEFT_BUTTON,    wgettext("Look left"),           "keymap_look_left");
+	this->add_key(GUI_ID_KEY_LOOK_RIGHT_BUTTON,   wgettext("Look right"),          "keymap_look_right");
 }
