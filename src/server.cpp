@@ -1961,6 +1961,13 @@ void Server::SendMovePlayer(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendMovePlayerRel(session_t peer_id, const v3f &added_pos)
+{
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER_REL, 0, peer_id);
+	pkt << added_pos;
+	Send(&pkt);
+}
+
 void Server::SendPlayerFov(session_t peer_id)
 {
 	NetworkPacket pkt(TOCLIENT_FOV, 4 + 1 + 4, peer_id);

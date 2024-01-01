@@ -221,6 +221,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		[scheduled bump for 5.8.0]
 	PROTOCOL VERSION 44:
 		AO_CMD_SET_BONE_POSITION extended
+		Add TOCLIENT_MOVE_PLAYER_REL
 		[scheduled bump for 5.9.0]
 */
 
@@ -833,6 +834,11 @@ enum ToClientCommand
 		u8[4] starcolor (ARGB)
 		f32 scale
 		f32 day_opacity
+	*/
+
+	TOCLIENT_MOVE_PLAYER_REL = 0x5d,
+	/*
+		v3f added_pos
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

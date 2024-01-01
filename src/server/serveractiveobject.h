@@ -91,6 +91,8 @@ public:
 
 	virtual void setPos(const v3f &pos)
 		{ setBasePosition(pos); }
+	virtual void addPos(const v3f &added_pos)
+		{ setBasePosition(m_base_position + added_pos); }
 	// continuous: if true, object does not stop immediately at pos
 	virtual void moveTo(v3f pos, bool continuous)
 		{ setBasePosition(pos); }
