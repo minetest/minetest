@@ -163,6 +163,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 	m_state = LC_Init;
 }
+
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
 	deleteAuthData();

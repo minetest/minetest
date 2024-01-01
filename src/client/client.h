@@ -122,7 +122,6 @@ public:
 	Client(
 			const char *playername,
 			const std::string &password,
-			const std::string &address_name,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -131,7 +130,6 @@ public:
 			ISoundManager *sound,
 			MtEventManager *event,
 			RenderingEngine *rendering_engine,
-			bool ipv6,
 			GameUI *game_ui,
 			ELoginRegister allow_login_or_register
 	);
@@ -155,11 +153,8 @@ public:
 
 	bool isShutdown();
 
-	/*
-		The name of the local player should already be set when
-		calling this, as it is sent in the initialization.
-	*/
-	void connect(Address address, bool is_local_server);
+	void connect(const Address &address, const std::string &address_name,
+		bool is_local_server);
 
 	/*
 		Stuff that references the environment is valid only as
@@ -351,7 +346,7 @@ public:
 	bool activeObjectsReceived() const
 	{ return m_activeobjects_received; }
 
-	u16 getProtoVersion()
+	u16 getProtoVersion() const
 	{ return m_proto_ver; }
 
 	bool m_simple_singleplayer_mode;
@@ -363,6 +358,10 @@ public:
 
 	float getRTT();
 	float getCurRate();
+	// has the server ever replied to us, used for connection retry/fallback
+	bool hasServerReplied() const {
+		return getProtoVersion() != 0; // (set in TOCLIENT_HELLO)
+	}
 
 	Minimap* getMinimap() { return m_minimap; }
 	void setCamera(Camera* camera) { m_camera = camera; }
@@ -415,8 +414,10 @@ public:
 
 	void showMinimap(bool show = true);
 
+	// IP and port we're connected to
 	const Address getServerAddress();
 
+	// Hostname of the connected server (but can also be a numerical IP)
 	const std::string &getAddressName() const
 	{
 		return m_address_name;

@@ -1613,13 +1613,15 @@ bool Game::connectToServer(const GameStartData &start_data,
 	*connect_ok = false;	// Let's not be overly optimistic
 	*connection_aborted = false;
 	bool local_server_mode = false;
+	const auto &address_name = start_data.address;
 
 	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
 	Address connect_address(0, 0, 0, 0, start_data.socket_port);
+	Address fallback_address;
 
 	try {
-		connect_address.Resolve(start_data.address.c_str());
+		connect_address.Resolve(address_name.c_str(), &fallback_address);
 
 		if (connect_address.isAny()) {
 			// replace with localhost IP
@@ -1639,38 +1641,50 @@ bool Game::connectToServer(const GameStartData &start_data,
 		return false;
 	}
 
-	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	// this shouldn't normally happen since Address::Resolve() checks for enable_ipv6
+	if (g_settings->getBool("enable_ipv6")) {
+		// empty
+	} else if (connect_address.isIPv6()) {
 		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
+	} else if (fallback_address.isIPv6()) {
+		fallback_address = Address();
 	}
+
+	fallback_address.setPort(connect_address.getPort());
+	if (fallback_address.isValid()) {
+		infostream << "Resolved two addresses for \"" << address_name
+			<< "\" isIPv6[0]=" << connect_address.isIPv6()
+			<< " isIPv6[1]=" << fallback_address.isIPv6() << std::endl;
+	} else {
+		infostream << "Resolved one address for \"" << address_name
+			<< "\" isIPv6=" << connect_address.isIPv6() << std::endl;
+	}
+
 
 	try {
 		client = new Client(start_data.name.c_str(),
-				start_data.password, start_data.address,
+				start_data.password,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
-				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
+				m_rendering_engine, m_game_ui.get(),
 				start_data.allow_login_or_register);
-		client->migrateModStorage();
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
+	client->migrateModStorage();
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
-
-	infostream << "Connecting to server at ";
-	connect_address.print(infostream);
-	infostream << std::endl;
-
-	client->connect(connect_address,
-		simple_singleplayer_mode || local_server_mode);
 
 	/*
 		Wait for server to accept connection
 	*/
+
+	client->connect(connect_address, address_name,
+		simple_singleplayer_mode || local_server_mode);
 
 	try {
 		input->clear();
@@ -1678,6 +1692,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 		FpsControl fps_control;
 		f32 dtime;
 		f32 wait_time = 0; // in seconds
+		bool did_fallback = false;
 
 		fps_control.reset();
 
@@ -1712,8 +1727,15 @@ bool Game::connectToServer(const GameStartData &start_data,
 			}
 
 			wait_time += dtime;
-			// Only time out if we aren't waiting for the server we started
-			if (!start_data.address.empty() && wait_time > 10) {
+			if (local_server_mode) {
+				// never time out
+			} else if (wait_time > GAME_FALLBACK_TIMEOUT && !did_fallback) {
+				if (!client->hasServerReplied() && fallback_address.isValid()) {
+					client->connect(fallback_address, address_name,
+						simple_singleplayer_mode || local_server_mode);
+				}
+				did_fallback = true;
+			} else if (wait_time > GAME_CONNECTION_TIMEOUT) {
 				*error_message = gettext("Connection timed out.");
 				errorstream << *error_message << std::endl;
 				break;
@@ -1723,8 +1745,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
-		// TODO: Should something be done here? At least an info/error
-		// message?
+		warningstream << "This should not happen. Please report a bug." << std::endl;
 		return false;
 	}
 
