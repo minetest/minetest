@@ -36,16 +36,6 @@ extern android_app *app_global;
 // java <-> c++ interaction interface
 extern JNIEnv *jnienv;
 
-// do initialization required on android only
-void initAndroid();
-
-void cleanupAndroid();
-
-/**
- * Initializes path_* variables for Android
- */
-void initializePathsAndroid();
-
 /**
  * show text input dialog in java
  * @param acceptButton text to display on accept button
@@ -56,8 +46,6 @@ void initializePathsAndroid();
  */
 void showInputDialog(const std::string &acceptButton,
 					const std::string &hint, const std::string &current, int editType);
-
-void openURIAndroid(const std::string &url);
 
 /**
  * Opens a share intent to the file at path
@@ -83,5 +71,4 @@ float getDisplayDensity();
 v2u32 getDisplaySize();
 #endif
 
-std::string getLanguageAndroid();
 }

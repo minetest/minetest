@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Czech (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-06-19 10:48+0000\n"
 "Last-Translator: Robinson <simekm@yahoo.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -6107,10 +6107,6 @@ msgid "The URL for the content repository"
 msgstr "URL pro úložiště obsahu"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "Mrtvá zóna joysticku"
 
@@ -6435,8 +6431,8 @@ msgstr "Při kosém pohledu na texturu použijte anizotropní filtrování."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Při změně velikosti textur použijte bilineární filtrování."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Při změně velikosti textur použijte trilineární filtrování."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6453,7 +6449,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6473,7 +6469,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6686,6 +6682,29 @@ msgstr ""
 "(false), vratí se \n"
 "ke staré metodě změny měřítka, pro ovladače GPU, které \n"
 "nesprávně podporují stahování textur zpět z hardwaru."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Při použití bilineárních/trilineárních/anizotropních filtrů mohou být "
+"textury \n"
+"s nízkým rozlišením rozmazané, takže se automaticky upgradují dle nejbližší "
+"sousední\n"
+"interpolace pro zachování ostrých pixelů. Tím se nastaví minimální velikost "
+"textury\n"
+"pro zvětšené textury; vyšší hodnoty vypadají ostřeji, ale vyžadují více\n"
+"paměti. Doporučují se mocniny 2. Toto nastavení se použije POUZE pokud\n"
+"je povoleno bilineární/trilineární/anizotropní filtrování.\n"
+"Používá se také jako základní velikost textury bloku pro \n"
+"automatické změny velikosti textur zarovnaných se Světem."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8246,6 +8265,10 @@ msgstr "cURL limit paralelních stahování"
 #~ msgid "Up"
 #~ msgstr "Nahoru"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Při změně velikosti textur použijte bilineární filtrování."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8263,9 +8286,6 @@ msgstr "cURL limit paralelních stahování"
 #~ "Když jsou shadery vypnuté, objeví se mezi kostkami viditelné mezery. \n"
 #~ "Pokud je nastaveno na 0, MSAA je zakázáno. \n"
 #~ "Po změně této možnosti je vyžadován restart."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Při změně velikosti textur použijte trilineární filtrování."
 
 #~ msgid ""
 #~ "Version number which was last seen during an update check.\n"
@@ -8299,30 +8319,6 @@ msgstr "cURL limit paralelních stahování"
 
 #~ msgid "Waving water"
 #~ msgstr "Vlnění vody"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Při použití bilineárních/trilineárních/anizotropních filtrů mohou být "
-#~ "textury \n"
-#~ "s nízkým rozlišením rozmazané, takže se automaticky upgradují dle "
-#~ "nejbližší sousední\n"
-#~ "interpolace pro zachování ostrých pixelů. Tím se nastaví minimální "
-#~ "velikost textury\n"
-#~ "pro zvětšené textury; vyšší hodnoty vypadají ostřeji, ale vyžadují více\n"
-#~ "paměti. Doporučují se mocniny 2. Toto nastavení se použije POUZE pokud\n"
-#~ "je povoleno bilineární/trilineární/anizotropní filtrování.\n"
-#~ "Používá se také jako základní velikost textury bloku pro \n"
-#~ "automatické změny velikosti textur zarovnaných se Světem."
 
 #~ msgid "Whether to allow players to damage and kill each other."
 #~ msgstr "Zda-li povolit hráčům vzájemně se napadat a zabíjet."

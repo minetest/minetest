@@ -17,7 +17,12 @@ After you successfully built vcpkg you can easily install the required libraries
 vcpkg install zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry gettext --triplet x64-windows
 ```
 
-- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt` as described in the Linux section.
+- **Don't forget about IrrlichtMt.** The easiest way is to clone it to `lib/irrlichtmt`:
+
+```bat
+for /F %i in (misc\irrlichtmt_tag.txt) do git clone --depth 1 --branch %i https://github.com/minetest/irrlicht.git lib\irrlichtmt
+```
+
 - `curl` is optional, but required to read the serverlist, `curl[winssl]` is required to use the content store.
 - `openal-soft`, `libvorbis` and `libogg` are optional, but required to use sound.
 - `luajit` is optional, it replaces the integrated Lua interpreter with a faster just-in-time interpreter.

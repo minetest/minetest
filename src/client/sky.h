@@ -120,6 +120,9 @@ public:
 	void setFogStart(float fog_start) { m_sky_params.fog_start = fog_start; }
 	float getFogStart() const { return m_sky_params.fog_start; }
 
+	void setVolumetricLightStrength(float volumetric_light_strength) { m_sky_params.volumetric_light_strength = volumetric_light_strength; }
+	float getVolumetricLightStrength() const { return m_sky_params.volumetric_light_strength; }
+
 private:
 	aabb3f m_box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];

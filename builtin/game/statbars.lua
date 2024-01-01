@@ -3,7 +3,7 @@ local enable_damage = core.settings:get_bool("enable_damage")
 
 local bar_definitions = {
 	hp = {
-		hud_elem_type = "statbar",
+		type = "statbar",
 		position = {x = 0.5, y = 1},
 		text = "heart.png",
 		text2 = "heart_gone.png",
@@ -14,7 +14,7 @@ local bar_definitions = {
 		offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 16)},
 	},
 	breath = {
-		hud_elem_type = "statbar",
+		type = "statbar",
 		position = {x = 0.5, y = 1},
 		text = "bubble.png",
 		text2 = "bubble_gone.png",
@@ -139,7 +139,7 @@ end
 
 function core.hud_replace_builtin(hud_name, definition)
 	if type(definition) ~= "table" or
-			definition.hud_elem_type ~= "statbar" then
+			(definition.type or definition.hud_elem_type) ~= "statbar" then
 		return false
 	end
 

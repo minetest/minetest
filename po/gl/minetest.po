@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2022-11-21 05:47+0000\n"
 "Last-Translator: runs <runspect@yahoo.es>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/minetest/"
@@ -6147,10 +6147,6 @@ msgid "The URL for the content repository"
 msgstr "O URL do repositorio de contido"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr "A zona morta do joystick"
 
@@ -6485,8 +6481,8 @@ msgstr "Usa o filtro anisótropo ao ver texturas desde un ángulo."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Usa o filtro bilineal ao escalar texturas."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Usa o filtro trilineal ao escalar texturas."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6501,7 +6497,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6519,7 +6515,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6732,6 +6728,30 @@ msgstr ""
 "do hardware ao software para escalar. Cando sexa falso, retrocede\n"
 "ao método de escala antigo para controladores de vídeo que non o fan\n"
 "admite correctamente a descarga de texturas desde o hardware."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Cando se usan filtros bilineais/trilineais/anisótropos, texturas de baixa "
+"resolución\n"
+"poden ser borrosas, polo que amplíaos automaticamente co veciño máis "
+"próximo\n"
+"interpolación para preservar píxeles nítidos. Isto establece o tamaño mínimo "
+"de textura\n"
+"para as texturas mejoradas; valores máis altos parecen máis nítidos, pero "
+"requiren máis\n"
+"memoria. Recoméndase potencias de 2. Esta configuración só se aplica se\n"
+"O filtrado bilineal/trilineal/anisótropo está activado.\n"
+"Tamén se usa como tamaño de textura do nodo base para aliñados ao mundo\n"
+"autoescalado de texturas."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8185,6 +8205,10 @@ msgstr "Límite paralelo de cURL"
 #~ msgid "Up"
 #~ msgstr "Arriba"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Usa o filtro bilineal ao escalar texturas."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8204,9 +8228,6 @@ msgstr "Límite paralelo de cURL"
 #~ "desactivados.\n"
 #~ "Se se establece en 0, MSAA está desactivado.\n"
 #~ "É necesario reiniciar logo de cambiar esta opción."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Usa o filtro trilineal ao escalar texturas."
 
 #~ msgid "Vertical screen synchronization."
 #~ msgstr "Sincronización de pantalla vertical."
@@ -8232,31 +8253,6 @@ msgstr "Límite paralelo de cURL"
 
 #~ msgid "Waving Plants"
 #~ msgstr "Movemento das plantas"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Cando se usan filtros bilineais/trilineais/anisótropos, texturas de baixa "
-#~ "resolución\n"
-#~ "poden ser borrosas, polo que amplíaos automaticamente co veciño máis "
-#~ "próximo\n"
-#~ "interpolación para preservar píxeles nítidos. Isto establece o tamaño "
-#~ "mínimo de textura\n"
-#~ "para as texturas mejoradas; valores máis altos parecen máis nítidos, pero "
-#~ "requiren máis\n"
-#~ "memoria. Recoméndase potencias de 2. Esta configuración só se aplica se\n"
-#~ "O filtrado bilineal/trilineal/anisótropo está activado.\n"
-#~ "Tamén se usa como tamaño de textura do nodo base para aliñados ao mundo\n"
-#~ "autoescalado de texturas."
 
 #~ msgid "Whether to allow players to damage and kill each other."
 #~ msgstr "Se permitir que os xogadores se danen e se maten entre si."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2023-10-19 04:10+0000\n"
 "Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -6078,10 +6078,6 @@ msgid "The URL for the content repository"
 msgstr "URL al la deponejo de enhavo"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "La nerespondema zono de la stirstango"
@@ -6407,8 +6403,8 @@ msgstr "Uzi neizotropan filtradon vidante teksturojn deflanke."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Uzi dulinearan filtradon skalante teksturojn."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Uzi trilinearan filtradon skalante teksturojn."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6423,7 +6419,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6440,7 +6436,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6653,6 +6649,27 @@ msgstr ""
 "de aparataro al programaro por skalado.  Kiam malveras, repaŝu\n"
 "al la malnova metodo de skalado, por vid-peliloj, kiuj ne subtenas\n"
 "bone elŝutadon de teksturoj de la aparataro."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Dum uzo de duliniaj/triliniaj/neizotropaj filtriloj, teksturoj je malaltaj\n"
+"distingumoj povas malklariĝi; tial memage grandigu ĝin per interpolado\n"
+"laŭ plej proksimaj bilderoj por teni klarajn bilderojn. Ĉi tio agordas la\n"
+"malplejaltan grandecon de teksturo por la grandigitaj teksturoj; pli altaj\n"
+"valoroj aspektas pli klare, sed bezonas pli da memoro. Potencoj de duo\n"
+"estas rekomendataj. Valoroj pli grandaj ol 1 eble ne estos videblaj, se ne\n"
+"estas ŝaltita dulinia, trilinia, aŭ neizotropa filtrado.\n"
+"Ĉi tio ankaŭ uziĝas kiel la baza grando de monderaj teksturoj por memaga\n"
+"grandigado de monde laŭigitaj teksturoj."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -8428,6 +8445,10 @@ msgstr "Samtempa limo de cURL"
 #~ msgid "Up"
 #~ msgstr "Supren"
 
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Uzi dulinearan filtradon skalante teksturojn."
+
 #~ msgid ""
 #~ "Use multi-sample antialiasing (MSAA) to smooth out block edges.\n"
 #~ "This algorithm smooths out the 3D viewport while keeping the image "
@@ -8447,9 +8468,6 @@ msgstr "Samtempa limo de cURL"
 #~ "Se la valoro de ĉi tiu elekteblo estas 0, multspecimena glatigo estas "
 #~ "malŝaltita.\n"
 #~ "Vi devas relanĉi post ŝanĝo de ĉi tiu elekteblo."
-
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Uzi trilinearan filtradon skalante teksturojn."
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8489,32 +8507,6 @@ msgstr "Samtempa limo de cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Ondanta akvo"
-
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Dum uzo de duliniaj/triliniaj/neizotropaj filtriloj, teksturoj je "
-#~ "malaltaj\n"
-#~ "distingumoj povas malklariĝi; tial memage grandigu ĝin per interpolado\n"
-#~ "laŭ plej proksimaj bilderoj por teni klarajn bilderojn. Ĉi tio agordas "
-#~ "la\n"
-#~ "malplejaltan grandecon de teksturo por la grandigitaj teksturoj; pli "
-#~ "altaj\n"
-#~ "valoroj aspektas pli klare, sed bezonas pli da memoro. Potencoj de duo\n"
-#~ "estas rekomendataj. Valoroj pli grandaj ol 1 eble ne estos videblaj, se "
-#~ "ne\n"
-#~ "estas ŝaltita dulinia, trilinia, aŭ neizotropa filtrado.\n"
-#~ "Ĉi tio ankaŭ uziĝas kiel la baza grando de monderaj teksturoj por memaga\n"
-#~ "grandigado de monde laŭigitaj teksturoj."
 
 #~ msgid ""
 #~ "Whether FreeType fonts are used, requires FreeType support to be compiled "

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <json/json.h>
 #include "convert_json.h"
 #include "httpfetch.h"
+#include "server.h"
 
 namespace ServerList
 {
@@ -50,12 +51,11 @@ void sendAnnounce(AnnounceAction action,
 		server["address"] = g_settings->get("server_address");
 	}
 	if (action != AA_DELETE) {
-		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
 		server["name"]         = g_settings->get("server_name");
 		server["description"]  = g_settings->get("server_description");
 		server["version"]      = g_version_string;
-		server["proto_min"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MIN;
-		server["proto_max"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MAX;
+		server["proto_min"]    = Server::getProtocolVersionMin();
+		server["proto_max"]    = Server::getProtocolVersionMax();
 		server["url"]          = g_settings->get("server_url");
 		server["creative"]     = g_settings->getBool("creative_mode");
 		server["damage"]       = g_settings->getBool("enable_damage");

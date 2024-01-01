@@ -695,10 +695,11 @@ local function resolve_auto_install_spec()
 		return nil
 	end
 
+	local spec = store.aliases[auto_install_spec] or auto_install_spec
 	local resolved = nil
 
 	for _, pkg in ipairs(store.packages_full_unordered) do
-		if pkg.id == auto_install_spec then
+		if pkg.id == spec then
 			resolved = pkg
 			break
 		end

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "util/container.h"
 
+
 /*
 
 Some planning
@@ -167,14 +168,16 @@ public:
 	{}
 	virtual void setAnimationSpeed(float frame_speed)
 	{}
-	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
+	virtual void setBoneOverride(const std::string &bone, const BoneOverride &props)
 	{}
-	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
-	{}
+	virtual BoneOverride getBoneOverride(const std::string &bone)
+	{ BoneOverride props; return props; }
+	virtual const BoneOverrideMap &getBoneOverrides() const
+	{ static BoneOverrideMap rv; return rv; }
 	virtual const std::unordered_set<int> &getAttachmentChildIds() const
 	{ static std::unordered_set<int> rv; return rv; }
 	virtual ServerActiveObject *getParent() const { return nullptr; }
-	virtual ObjectProperties* accessObjectProperties()
+	virtual ObjectProperties *accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
 	{}

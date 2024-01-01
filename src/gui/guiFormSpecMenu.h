@@ -282,6 +282,9 @@ public:
 	GUITable* getTable(const std::string &tablename);
 	std::vector<std::string>* getDropDownValues(const std::string &name);
 
+	// This will only return a meaningful value if called after drawMenu().
+	core::rect<s32> getAbsoluteRect();
+
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
 #endif
@@ -499,6 +502,9 @@ private:
 
 	int m_btn_height;
 	gui::IGUIFont *m_font = nullptr;
+
+	// used by getAbsoluteRect
+	s32 m_tabheader_upper_edge = 0;
 };
 
 class FormspecFormSource: public IFormSource

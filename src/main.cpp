@@ -95,7 +95,7 @@ static void set_allowed_options(OptionList *allowed_options);
 
 static void print_help(const OptionList &allowed_options);
 static void print_allowed_options(const OptionList &allowed_options);
-static void print_version();
+static void print_version(std::ostream &os);
 static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 	std::ostream &os, bool print_name = true, bool print_path = true);
 static void print_modified_quicktune_values();
@@ -143,6 +143,8 @@ int main(int argc, char *argv[])
 	g_logger.registerThread("Main");
 	g_logger.addOutputMaxLevel(&stderr_output, LL_ACTION);
 
+	porting::osSpecificInit();
+
 	Settings cmd_args;
 	get_env_opts(cmd_args);
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);
@@ -158,9 +160,12 @@ int main(int argc, char *argv[])
 
 	if (cmd_args.getFlag("version")) {
 		porting::attachOrCreateConsole();
-		print_version();
+		print_version(std::cout);
 		return 0;
 	}
+
+	// Debug handler
+	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	if (!setup_log_params(cmd_args))
 		return 1;
@@ -171,21 +176,12 @@ int main(int argc, char *argv[])
 	}
 
 	porting::signal_handler_init();
-
-#ifdef __ANDROID__
-	porting::initAndroid();
-	porting::initializePathsAndroid();
-#else
 	porting::initializePaths();
-#endif
 
 	if (!create_userdata_path()) {
 		errorstream << "Cannot create user data directory" << std::endl;
 		return 1;
 	}
-
-	// Debug handler
-	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	// List gameids if requested
 	if (cmd_args.exists("gameid") && cmd_args.get("gameid") == "list") {
@@ -215,7 +211,6 @@ int main(int argc, char *argv[])
 	if (g_settings->getBool("enable_console"))
 		porting::attachOrCreateConsole();
 
-#ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
 #if BUILD_UNITTESTS
@@ -234,7 +229,10 @@ int main(int argc, char *argv[])
 	// Run benchmarks
 	if (cmd_args.getFlag("run-benchmarks")) {
 #if BUILD_BENCHMARKS
-		return run_benchmarks();
+		if (cmd_args.exists("test-module"))
+			return run_benchmarks(cmd_args.get("test-module").c_str()) ? 0 : 1;
+		else
+			return run_benchmarks() ? 0 : 1;
 #else
 		errorstream << "Benchmark support is not enabled in this binary. "
 			<< "If you want to enable it, compile project with BUILD_BENCHMARKS=1 flag."
@@ -242,7 +240,6 @@ int main(int argc, char *argv[])
 		return 1;
 #endif
 	}
-#endif // __ANDROID__
 
 	GameStartData game_params;
 #ifdef SERVER
@@ -340,7 +337,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("run-benchmarks", ValueSpec(VALUETYPE_FLAG,
 			_("Run the benchmarks and exit"))));
 	allowed_options->insert(std::make_pair("test-module", ValueSpec(VALUETYPE_STRING,
-			_("Only run the specified test module"))));
+			_("Only run the specified test module or benchmark"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
@@ -427,19 +424,20 @@ static void print_allowed_options(const OptionList &allowed_options)
 	}
 }
 
-static void print_version()
+static void print_version(std::ostream &os)
 {
-	std::cout << PROJECT_NAME_C " " << g_version_hash
+	os << PROJECT_NAME_C " " << g_version_hash
 		<< " (" << porting::getPlatformName() << ")" << std::endl;
 #ifndef SERVER
-	std::cout << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
+	os << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
 #endif
 #if USE_LUAJIT
-	std::cout << "Using " << LUAJIT_VERSION << std::endl;
+	os << "Using " << LUAJIT_VERSION << std::endl;
 #else
-	std::cout << "Using " << LUA_RELEASE << std::endl;
+	os << "Using " << LUA_RELEASE << std::endl;
 #endif
-	std::cout << g_build_info << std::endl;
+	os << "Running on " << porting::get_sysinfo() << std::endl;
+	os << g_build_info << std::endl;
 }
 
 static void list_game_ids()
@@ -715,10 +713,11 @@ static void uninit_common()
 
 static void startup_message()
 {
-	infostream << PROJECT_NAME_C << " " << g_version_hash
-		<< "\nwith SER_FMT_VER_HIGHEST_READ="
-		<< (int)SER_FMT_VER_HIGHEST_READ << ", "
-		<< g_build_info << std::endl;
+	print_version(infostream);
+	infostream << "SER_FMT_VER_HIGHEST_READ=" <<
+		TOSTRING(SER_FMT_VER_HIGHEST_READ) <<
+		" LATEST_PROTOCOL_VERSION=" << TOSTRING(LATEST_PROTOCOL_VERSION)
+		<< std::endl;
 }
 
 static bool read_config_file(const Settings &cmd_args)
@@ -1269,7 +1268,7 @@ static bool recompress_map_database(const GameParams &game_params, const Setting
 		iss.clear();
 
 		{
-			MapBlock mb(nullptr, v3s16(0,0,0), &server);
+			MapBlock mb(v3s16(0,0,0), &server);
 			u8 ver = readU8(iss);
 			mb.deSerialize(iss, ver, true);
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Korean (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2022-05-08 00:22+0000\n"
 "Last-Translator: Han So Ri <2_0_2_0_@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -5752,10 +5752,6 @@ msgid "The URL for the content repository"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "The dead zone of the joystick"
 msgstr ""
 
@@ -6030,8 +6026,8 @@ msgstr "각도에 따라 텍스처를 볼 때 이방성 필터링을 사용 합�
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "이중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "삼중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6045,7 +6041,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6059,7 +6055,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6257,6 +6253,29 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"이중선형/삼중선형/이방성 필터를 사용할 때 \n"
+"저해상도 택스쳐는 희미하게 보일 수 있습니다.\n"
+"so automatically upscale them with nearest-neighbor interpolation to "
+"preserve crisp pixels. \n"
+"This sets the minimum texture size for the upscaled textures; \n"
+"값이 높을수록 선명하게 보입니다. \n"
+"하지만 많은 메모리가 필요합니다. \n"
+"Powers of 2 are recommended. \n"
+"Setting this higher than 1 may not have a visible effect\n"
+"unless bilinear/trilinear/anisotropic filtering is enabled."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -7734,8 +7753,9 @@ msgstr ""
 #~ msgid "Up"
 #~ msgstr "위"
 
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "삼중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "이중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
 
 #~ msgid "Vertical screen synchronization."
 #~ msgstr "세로 화면 동기화."
@@ -7770,30 +7790,6 @@ msgstr ""
 
 #~ msgid "Waving water"
 #~ msgstr "물결 효과"
-
-#, fuzzy
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "이중선형/삼중선형/이방성 필터를 사용할 때 \n"
-#~ "저해상도 택스쳐는 희미하게 보일 수 있습니다.\n"
-#~ "so automatically upscale them with nearest-neighbor interpolation to "
-#~ "preserve crisp pixels. \n"
-#~ "This sets the minimum texture size for the upscaled textures; \n"
-#~ "값이 높을수록 선명하게 보입니다. \n"
-#~ "하지만 많은 메모리가 필요합니다. \n"
-#~ "Powers of 2 are recommended. \n"
-#~ "Setting this higher than 1 may not have a visible effect\n"
-#~ "unless bilinear/trilinear/anisotropic filtering is enabled."
 
 #~ msgid "Whether to allow players to damage and kill each other."
 #~ msgstr "플레이어끼리 서로 공격하고 죽이는 것에 대한 허락 여부."

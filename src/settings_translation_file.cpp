@@ -135,11 +135,11 @@ fake_function() {
 	gettext("Use 3D cloud look instead of flat.");
 	gettext("Filtering and Antialiasing");
 	gettext("Mipmapping");
-	gettext("Use mipmaps when scaling textures down. May slightly increase performance,\nespecially when using a high-resolution texture pack.\nGamma-correct downscaling is not supported.");
+	gettext("Use mipmaps when scaling textures. May slightly increase performance,\nespecially when using a high-resolution texture pack.\nGamma-correct downscaling is not supported.");
 	gettext("Bilinear filtering");
-	gettext("Use bilinear filtering when scaling textures down.");
+	gettext("Use bilinear filtering when scaling textures.");
 	gettext("Trilinear filtering");
-	gettext("Use trilinear filtering when scaling textures down.\nIf both bilinear and trilinear filtering are enabled, trilinear filtering\nis applied.");
+	gettext("Use trilinear filtering when scaling textures.\nIf both bilinear and trilinear filtering are enabled, trilinear filtering\nis applied.");
 	gettext("Anisotropic filtering");
 	gettext("Use anisotropic filtering when looking at textures from an angle.");
 	gettext("Antialiasing method");
@@ -847,7 +847,7 @@ fake_function() {
 	gettext("Autoscaling mode");
 	gettext("World-aligned textures may be scaled to span several nodes. However,\nthe server may not send the scale you want, especially if you use\na specially-designed texture pack; with this option, the client tries\nto determine the scale automatically basing on the texture size.\nSee also texture_min_size.\nWarning: This option is EXPERIMENTAL!");
 	gettext("Base texture size");
-	gettext("The base node texture size used for world-aligned texture autoscaling.");
+	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels. This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory. Powers of 2 are recommended. This setting is ONLY applied if\nbilinear/trilinear/anisotropic filtering is enabled.\nThis is also used as the base node texture size for world-aligned\ntexture autoscaling.");
 	gettext("Client Mesh Chunksize");
 	gettext("Side length of a cube of map blocks that the client will consider together\nwhen generating meshes.\nLarger values increase the utilization of the GPU by reducing the number of\ndraw calls, benefiting especially high-end GPUs.\nSystems with a low-end GPU (or no GPU) would benefit from smaller values.");
 	gettext("Font");
