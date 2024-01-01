@@ -1186,8 +1186,8 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			char *bytes_A = 0;
 			size_t len_A = 0;
 			SRP_Result res = srp_user_start_authentication(
-				(struct SRPUser *) auth_data, NULL, NULL, 0,
-				(unsigned char **) &bytes_A, &len_A);
+				static_cast<struct SRPUser *>(auth_data), NULL, NULL, 0,
+				reinterpret_cast<unsigned char **>(&bytes_A), &len_A);
 			FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
 			NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_A, 0);

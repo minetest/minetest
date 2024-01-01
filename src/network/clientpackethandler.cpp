@@ -1570,16 +1570,16 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 
 	char *bytes_M = 0;
 	size_t len_M = 0;
-	SRPUser *usr = (SRPUser *) m_auth.getAuthData(m_chosen_auth_mech);
+	SRPUser *usr = static_cast<SRPUser *>(m_auth.getAuthData(m_chosen_auth_mech));
 	std::string s;
 	std::string B;
 	*pkt >> s >> B;
 
 	infostream << "Client: Received TOCLIENT_SRP_BYTES_S_B." << std::endl;
 
-	srp_user_process_challenge(usr, (const unsigned char *) s.c_str(), s.size(),
-		(const unsigned char *) B.c_str(), B.size(),
-		(unsigned char **) &bytes_M, &len_M);
+	srp_user_process_challenge(usr, reinterpret_cast<const unsigned char *>(s.c_str()), s.size(),
+		reinterpret_cast<const unsigned char *>(B.c_str()), B.size(),
+		reinterpret_cast<unsigned char **>(&bytes_M), &len_M);
 
 	if ( !bytes_M ) {
 		errorstream << "Client: SRP-6a S_B safety check violation!" << std::endl;
