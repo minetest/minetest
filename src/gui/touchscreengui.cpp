@@ -546,7 +546,7 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 			AHBB_Dir_Left_Right, 2.0f);
 
 	m_rare_controls_bar.addButton(chat_id, L"chat", "chat_btn.png");
-	m_rare_controls_bar.addButton(inventory_id, L"inv", "inventory_btn.png");
+	m_rare_controls_bar.addButton(inventory_id, L"inventory", "inventory_btn.png");
 	m_rare_controls_bar.addButton(drop_id, L"drop", "drop_btn.png");
 	m_rare_controls_bar.addButton(exit_id, L"exit", "exit_btn.png");
 
