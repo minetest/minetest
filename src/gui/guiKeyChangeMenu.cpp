@@ -423,8 +423,8 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,      wstrgettext("Toggle chat log"),  "keymap_toggle_chat");
 	this->add_key(GUI_ID_KEY_FOG_BUTTON,          wstrgettext("Toggle fog"),       "keymap_toggle_fog");
 	// keyboard look control
-	this->add_key(GUI_ID_KEY_LOOK_UP_BUTTON,      wgettext("Look up"),             "keymap_look_up");
-	this->add_key(GUI_ID_KEY_LOOK_DOWN_BUTTON,    wgettext("Look down"),           "keymap_look_down");
-	this->add_key(GUI_ID_KEY_LOOK_LEFT_BUTTON,    wgettext("Look left"),           "keymap_look_left");
-	this->add_key(GUI_ID_KEY_LOOK_RIGHT_BUTTON,   wgettext("Look right"),          "keymap_look_right");
+	this->add_key(GUI_ID_KEY_LOOK_UP_BUTTON,      wstrgettext("Look up"),          "keymap_look_up");
+	this->add_key(GUI_ID_KEY_LOOK_DOWN_BUTTON,    wstrgettext("Look down"),        "keymap_look_down");
+	this->add_key(GUI_ID_KEY_LOOK_LEFT_BUTTON,    wstrgettext("Look left"),        "keymap_look_left");
+	this->add_key(GUI_ID_KEY_LOOK_RIGHT_BUTTON,   wstrgettext("Look right"),       "keymap_look_right");
 }
