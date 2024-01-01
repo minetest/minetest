@@ -21,13 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include "network/networkprotocol.h"
+#include "util/basic_macros.h"
 
 class ClientAuth
 {
 public:
 	ClientAuth();
 	ClientAuth(const std::string &player_name, const std::string &password);
+
 	~ClientAuth();
+	DISABLE_CLASS_COPY(ClientAuth);
 
 	void moveFrom(ClientAuth& other);
 

@@ -58,7 +58,7 @@ struct GameStartData : GameParams
 
 	void erasePassword() {
 		/* make sure that password will not stay somewhere in memory */
-		for (size_t i=0;i<password.size();i++)
+		for (size_t i = 0; i < password.size(); i++)
 			password[i] = '*';
 		password.clear();
 	}

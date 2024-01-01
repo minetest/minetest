@@ -35,6 +35,7 @@ ClientAuth::ClientAuth(const std::string &player_name, const std::string &passwo
 
 ClientAuth::~ClientAuth()
 {
+	deleteAuthData();
 }
 
 void ClientAuth::moveFrom(ClientAuth& other)
@@ -63,13 +64,13 @@ void ClientAuth::applyPassword(const std::string &player_name, const std::string
 	// AUTH_MECHANISM_SRP
 	m_srp_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 			player_name.c_str(), player_name_u.c_str(),
-			(const unsigned char *) password.c_str(),
+			reinterpret_cast<const unsigned char *>(password.c_str()),
 			password.length(), NULL, NULL);
 	// AUTH_MECHANISM_LEGACY_PASSWORD
 	std::string translated = translate_password(player_name, password);
 	m_legacy_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
 			player_name.c_str(), player_name_u.c_str(),
-			(const unsigned char *) translated.c_str(),
+			reinterpret_cast<const unsigned char *>(translated.c_str()),
 			translated.length(), NULL, NULL);
 }
 
@@ -87,12 +88,12 @@ void * ClientAuth::getAuthData(AuthMechanism chosen_auth_mech) const
 
 void ClientAuth::deleteAuthData()
 {
-	if (m_legacy_auth_data!=nullptr) {
-		srp_user_delete((SRPUser *) m_legacy_auth_data);
+	if (m_legacy_auth_data != nullptr) {
+		srp_user_delete(static_cast<SRPUser *>(m_legacy_auth_data));
 		m_legacy_auth_data = nullptr;
 	}
-	if (m_srp_auth_data!=nullptr) {
-		srp_user_delete((SRPUser *) m_srp_auth_data);
+	if (m_srp_auth_data != nullptr) {
+		srp_user_delete(static_cast<SRPUser *>(m_srp_auth_data));
 		m_srp_auth_data = nullptr;
 	}
 }
