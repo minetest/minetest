@@ -647,12 +647,6 @@ sound_volume_unfocused (Volume when unfocused) float 0.3 0.0 1.0
 #    pause menu.
 mute_sound (Mute sound) bool false
 
-[**Advanced]
-
-#    Comma-separated list of AL and ALC extensions that should not be used.
-#    Useful for testing. See al_extensions.[h,cpp] for details.
-sound_extensions_blacklist (Sound Extensions Blacklist) string
-
 [*User Interfaces]
 
 #    Set the language. Leave empty to use the system language.
@@ -1875,6 +1869,11 @@ texture_min_size (Base texture size) int 64 1 32768
 #    draw calls, benefiting especially high-end GPUs.
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
+
+[**Sound]
+#    Comma-separated list of AL and ALC extensions that should not be used.
+#    Useful for testing. See al_extensions.[h,cpp] for details.
+sound_extensions_blacklist (Sound Extensions Blacklist) string
 
 [**Font]
 
