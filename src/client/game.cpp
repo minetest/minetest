@@ -1621,7 +1621,8 @@ bool Game::connectToServer(const GameStartData &start_data,
 	try {
 		connect_address.Resolve(start_data.address.c_str());
 
-		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
+		if (connect_address.isAny()) {
+			// replace with localhost IP
 			if (connect_address.isIPv6()) {
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
