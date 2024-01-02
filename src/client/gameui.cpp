@@ -45,7 +45,6 @@ inline static const char *yawToDirectionString(int yaw)
 
 std::string get_videoDriver()
 {
-
 	auto driver = RenderingEngine::get_video_driver()->getName();
 	return wide_to_utf8(driver).c_str();
 }
@@ -119,7 +118,7 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 		m_drawtime_avg *= 0.95f;
 		m_drawtime_avg += 0.05f * (stats.drawtime / 1000);
 		const int max_fps = (g_settings->getU64("fps_max"));
-		
+
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 			<< PROJECT_NAME_C " " << g_version_hash
