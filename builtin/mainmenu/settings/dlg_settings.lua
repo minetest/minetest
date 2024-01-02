@@ -641,7 +641,15 @@ local function buttonhandler(this, fields)
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
 		write_settings_early()
+	end
 
+	if fields.enable_touch ~= nil then
+		local value = core.is_yes(fields.enable_touch)
+		core.settings:set_bool("enable_touch", value)
+		write_settings_early()
+	end
+
+	if fields.show_advanced ~= nil or fields.enable_touch ~= nil then
 		local suggested_page_id = update_filtered_pages(dialogdata.query)
 
 		if not filtered_page_by_id[dialogdata.page_id] then
