@@ -196,13 +196,11 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 		throw SerializationError("unsupported ItemDefinition version");
 
 	type = static_cast<ItemType>(readU8(is));
-	name = deSerializeString16(is);
-	
 	if (type >= ItemType_END) {
-		warningstream << "Received unsupported ItemType for an item named "
-				<< name << std::endl;
+		type = ITEM_NONE;
 	}
-	
+
+	name = deSerializeString16(is);
 	description = deSerializeString16(is);
 	inventory_image = deSerializeString16(is);
 	wield_image = deSerializeString16(is);

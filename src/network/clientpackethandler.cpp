@@ -1228,9 +1228,9 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	u8 stat;
 
 	*pkt >> server_id >> stat;
-	
+
+	// Do nothing if stat is not known
 	if (stat >= HudElementStat_END) {
-		warningstream << "Received unsupported HudElementStat for HudChange." << std::endl;
 		return;
 	}
 

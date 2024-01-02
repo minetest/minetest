@@ -113,7 +113,7 @@ void TweenedParameter<T>::deSerialize(std::istream &is)
 {
 	style = static_cast<TweenStyle>(readU8(is));
 	if (style >= TweenStyle::TweenStyle_END)
-		warningstream << "Received unsupported TweenStyle." << std::endl;
+		style = TweenStyle::fwd;
 	reps = readU16(is);
 	beginning = readF32(is);
 	start.deSerialize(is);
