@@ -254,7 +254,6 @@ private:
 	std::vector<std::unique_ptr<Particle>> m_particles;
 	std::unordered_map<u64, std::unique_ptr<ParticleSpawner>> m_particle_spawners;
 	std::vector<std::unique_ptr<ParticleSpawner>> m_dying_particle_spawners;
-	// FIXME: std::hash is not suitable for aligned pointers (it's identity)
 	std::unordered_map<video::ITexture *, irr_ptr<ParticleBuffer>> m_particle_buffers;
 	// Start the particle spawner ids generated from here after u32_max. lower values are
 	// for server sent spawners.
