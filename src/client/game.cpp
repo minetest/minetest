@@ -1562,9 +1562,6 @@ bool Game::createClient(const GameStartData &start_data)
 	str += simple_singleplayer_mode ? wstrgettext("Singleplayer")
 			: wstrgettext("Multiplayer");
 	str += L"]";
-	str += L" [";
-	str += driver->getName();
-	str += L"]";
 
 	device->setWindowCaption(str.c_str());
 
