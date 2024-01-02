@@ -35,8 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 
 //FIXME: where should I move this to?
-// std::hash for integral types, including ptrs, is identity, which is bad for
-// aligned ptrs.
+// std::hash for integral types, including ptrs, is identity. This is bad for
+// aligned ptrs, because hashtables use modulo base bucket count on the hashcode
+// to get the bucket index.
 template <typename T>
 struct PtrHash
 {
@@ -81,8 +82,13 @@ namespace {
 			// Append to the correct layer
 			auto &map = maps[layer];
 			const video::SMaterial &m = buf->getMaterial();
+			size_t old_bucket_cnt = map.bucket_count();
 			auto &bufs = map[m]; // default constructs if non-existent
+			size_t bucket_cnt = map.bucket_count();
 			bufs.emplace_back(position, buf);
+			if (bucket_cnt != old_bucket_cnt) {
+				errorstream << "new bucket count: "<<bucket_cnt <<std::endl;
+			}
 		}
 	};
 }
