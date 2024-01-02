@@ -737,12 +737,14 @@ void osSpecificInit()
 void attachOrCreateConsole()
 {
 #ifdef _WIN32
-	static bool consoleAllocated = false;
-	const bool redirected = (_fileno(stdout) == -2 || _fileno(stdout) == -1); // If output is redirected to e.g a file
-	if (!consoleAllocated && redirected && (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole())) {
-		freopen("CONOUT$", "w", stdout);
-		freopen("CONOUT$", "w", stderr);
-		consoleAllocated = true;
+	static bool once = false;
+	const bool redirected = _fileno(stdout) >= 0; // If output is redirected to e.g a file
+	if (!once && !redirected) {
+		if (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole()) {
+			freopen("CONOUT$", "w", stdout);
+			freopen("CONOUT$", "w", stderr);
+		}
+		once = true;
 	}
 #endif
 }
