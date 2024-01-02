@@ -34,21 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
-//FIXME: where should I move this to?
-// std::hash for integral types, including ptrs, is identity. This is bad for
-// aligned ptrs, because hashtables use modulo base bucket count on the hashcode
-// to get the bucket index.
-template <typename T>
-struct PtrHash
-{
-	size_t operator()(const T *p) const noexcept
-	{
-		uintptr_t v = reinterpret_cast<uintptr_t>(p);
-		v = (v >> 4) ^ (v & 0xf);
-		return std::hash<uintptr_t>{}(v);
-	}
-};
-
 namespace {
 	// A helper struct
 	struct MeshBufListMaps
@@ -58,7 +43,7 @@ namespace {
 			size_t operator()(const video::SMaterial &m) const noexcept
 			{
 				// Only hash first texture. Simple and fast.
-				return PtrHash<video::ITexture>{}(m.TextureLayers[0].Texture);
+				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
 			}
 		};
 
@@ -82,13 +67,8 @@ namespace {
 			// Append to the correct layer
 			auto &map = maps[layer];
 			const video::SMaterial &m = buf->getMaterial();
-			size_t old_bucket_cnt = map.bucket_count();
 			auto &bufs = map[m]; // default constructs if non-existent
-			size_t bucket_cnt = map.bucket_count();
 			bufs.emplace_back(position, buf);
-			if (bucket_cnt != old_bucket_cnt) {
-				errorstream << "new bucket count: "<<bucket_cnt <<std::endl;
-			}
 		}
 	};
 }
