@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Chinese (Simplified) (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-15 17:10+0000\n"
-"Last-Translator: Tianshu Feng <admin@theaceblock.space>\n"
+"PO-Revision-Date: 2024-01-04 05:46+0000\n"
+"Last-Translator: Tianshu Feng <me@theaceblock.dev>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "minetest/minetest/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -153,9 +153,8 @@ msgstr ""
 "$2 排队中"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
-#, fuzzy
 msgid "$1 downloading..."
-msgstr "正在下载 $1 ……"
+msgstr "正在下载 $1…"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 required dependencies could not be found."
@@ -280,7 +279,7 @@ msgstr "材质包"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "找不到包 “$1”。"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -742,9 +741,8 @@ msgid "Select file"
 msgstr "选择文件"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "选择键"
+msgstr "设置"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -855,7 +853,7 @@ msgstr "恢复默认设置"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "恢复默认设置 ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -887,7 +885,7 @@ msgstr "（子游戏需要支持阴影才能生效）"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "自定义"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -939,8 +937,9 @@ msgid "Core Team"
 msgstr "核心团队"
 
 #: builtin/mainmenu/tab_about.lua
+#, fuzzy
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Irrlicht 渲染设备："
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -971,18 +970,16 @@ msgid "Browse online content"
 msgstr "浏览在线内容"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "浏览在线内容"
+msgstr "浏览在线内容 [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "内容"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "内容"
+msgstr "内容 [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1007,7 +1004,7 @@ msgstr "重命名"
 #: builtin/mainmenu/tab_content.lua
 #, fuzzy
 msgid "Update available?"
-msgstr "更新可用？"
+msgstr "有更新可用？"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1547,7 +1544,7 @@ msgstr "已取消静音"
 #: src/client/game.cpp
 #, c-format
 msgid "The server is probably running a different version of %s."
-msgstr "此服务器运行的可能是别的版本，%s。"
+msgstr "此服务器运行的可能是另一版本的 %s。"
 
 #: src/client/game.cpp
 #, c-format
