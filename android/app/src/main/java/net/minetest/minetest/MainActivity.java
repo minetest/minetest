@@ -20,23 +20,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package net.minetest.minetest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static net.minetest.minetest.UnzipService.*;
 
 public class MainActivity extends AppCompatActivity {
+	public static final String NOTIFICATION_CHANNEL_ID = "Minetest channel";
+
 	private final static int versionCode = BuildConfig.VERSION_CODE;
 	private static final String SETTINGS = "MinetestSettings";
 	private static final String TAG_VERSION_CODE = "versionCode";
@@ -81,12 +87,18 @@ public class MainActivity extends AppCompatActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
 		IntentFilter filter = new IntentFilter(ACTION_UPDATE);
 		registerReceiver(myReceiver, filter);
+
 		mProgressBar = findViewById(R.id.progressBar);
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
+
 		checkAppVersion();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			createNotificationChannel();
 	}
 
 	private void checkAppVersion() {
@@ -112,6 +124,28 @@ public class MainActivity extends AppCompatActivity {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
+	private void createNotificationChannel() {
+		NotificationManager notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (notifyManager == null)
+			return;
+
+		NotificationChannel notifyChannel = new NotificationChannel(
+			NOTIFICATION_CHANNEL_ID,
+			getString(R.string.notification_channel_name),
+			NotificationManager.IMPORTANCE_LOW
+		);
+		notifyChannel.setDescription(getString(R.string.notification_channel_description));
+		// Configure the notification channel without sound set
+		notifyChannel.setSound(null, null);
+		notifyChannel.enableLights(false);
+		notifyChannel.enableVibration(false);
+
+		// It is fine to always create the notification channel because creating a channel
+		// with the same ID is the same as overriding it (only its name and description).
+		notifyManager.createNotificationChannel(notifyChannel);
 	}
 
 	@Override
