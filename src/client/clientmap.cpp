@@ -34,33 +34,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <queue>
 
-// struct MeshBufListList
-void MeshBufListList::clear()
-{
-	for (auto &list : lists)
-		list.clear();
-}
+namespace {
+	// A helper struct
+	struct MeshBufListMaps
+	{
+		struct MaterialHash
+		{
+			size_t operator()(const video::SMaterial &m) const noexcept
+			{
+				// Only hash first texture. Simple and fast.
+				return std::hash<video::ITexture *>{}(m.TextureLayers[0].Texture);
+			}
+		};
 
-void MeshBufListList::add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
-{
-	// Append to the correct layer
-	std::vector<MeshBufList> &list = lists[layer];
-	const video::SMaterial &m = buf->getMaterial();
-	for (MeshBufList &l : list) {
-		// comparing a full material is quite expensive so we don't do it if
-		// not even first texture is equal
-		if (l.m.TextureLayers[0].Texture != m.TextureLayers[0].Texture)
-			continue;
+		using MeshBufListMap = std::unordered_map<
+				video::SMaterial,
+				std::vector<std::pair<v3s16, scene::IMeshBuffer *>>,
+				MaterialHash>;
 
-		if (l.m == m) {
-			l.bufs.emplace_back(position, buf);
-			return;
+		std::array<MeshBufListMap, MAX_TILE_LAYERS> maps;
+
+		void clear()
+		{
+			for (auto &map : maps)
+				map.clear();
 		}
-	}
-	MeshBufList l;
-	l.m = m;
-	l.bufs.emplace_back(position, buf);
-	list.emplace_back(l);
+
+		void add(scene::IMeshBuffer *buf, v3s16 position, u8 layer)
+		{
+			assert(layer < MAX_TILE_LAYERS);
+
+			// Append to the correct layer
+			auto &map = maps[layer];
+			const video::SMaterial &m = buf->getMaterial();
+			auto &bufs = map[m]; // default constructs if non-existent
+			bufs.emplace_back(position, buf);
+		}
+	};
 }
 
 static void on_settings_changed(const std::string &name, void *data)
@@ -737,7 +747,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Draw the selected MapBlocks
 	*/
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 	video::SMaterial previous_material;
 
@@ -793,7 +803,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 				scene::IMesh *mesh = block_mesh->getMesh(layer);
 				assert(mesh);
@@ -819,11 +829,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it) {
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it) {
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 			}
 		}
 	}
@@ -1103,7 +1113,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	u32 drawcall_count = 0;
 	u32 vertex_count = 0;
 
-	MeshBufListList grouped_buffers;
+	MeshBufListMaps grouped_buffers;
 	std::vector<DrawDescriptor> draw_order;
 
 
@@ -1144,7 +1154,7 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 		}
 		else {
 			// otherwise, group buffers across meshes
-			// using MeshBufListList
+			// using MeshBufListMaps
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
@@ -1167,18 +1177,18 @@ void ClientMap::renderMapShadows(video::IVideoDriver *driver,
 	}
 
 	u32 buffer_count = 0;
-	for (auto &lists : grouped_buffers.lists)
-		for (MeshBufList &list : lists)
-			buffer_count += list.bufs.size();
+	for (auto &map : grouped_buffers.maps)
+		for (auto &list : map)
+			buffer_count += list.second.size();
 
 	draw_order.reserve(draw_order.size() + buffer_count);
 
 	// Capture draw order for all solid meshes
-	for (auto &lists : grouped_buffers.lists) {
-		for (MeshBufList &list : lists) {
+	for (auto &map : grouped_buffers.maps) {
+		for (auto &list : map) {
 			// iterate in reverse to draw closest blocks first
-			for (auto it = list.bufs.rbegin(); it != list.bufs.rend(); ++it)
-				draw_order.emplace_back(it->first, it->second, it != list.bufs.rbegin());
+			for (auto it = list.second.rbegin(); it != list.second.rend(); ++it)
+				draw_order.emplace_back(it->first, it->second, it != list.second.rbegin());
 		}
 	}
 
