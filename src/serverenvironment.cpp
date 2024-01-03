@@ -1231,7 +1231,7 @@ u8 ServerEnvironment::findSunlight(v3s16 pos) const
 	return found_light;
 }
 
-void ServerEnvironment::clearObjects(ClearObjectsMode mode)
+void ServerEnvironment::clearObjects(ClearObjectsConfig &config)
 {
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
@@ -1266,7 +1266,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	// Get list of loadable blocks
 	std::vector<v3s16> loadable_blocks;
-	if (mode == CLEAR_OBJECTS_MODE_FULL) {
+	if (config.mode == CLEAR_OBJECTS_MODE_FULL) {
 		infostream << "ServerEnvironment::clearObjects(): "
 			<< "Listing all loadable blocks" << std::endl;
 		m_map->listAllLoadableBlocks(loadable_blocks);
@@ -1290,7 +1290,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 	// Remove objects in all loadable blocks
 	u32 unload_interval = U32_MAX;
-	if (mode == CLEAR_OBJECTS_MODE_FULL) {
+	if (config.mode == CLEAR_OBJECTS_MODE_FULL) {
 		unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
 		unload_interval = MYMAX(unload_interval, 1);
 	}
@@ -1308,7 +1308,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 			continue;
 		}
 
-		u32 num_cleared = block->clearObjects();
+		u32 num_cleared = block->clearObjects(config);
 		if (num_cleared > 0) {
 			num_objs_cleared += num_cleared;
 			num_blocks_cleared++;
