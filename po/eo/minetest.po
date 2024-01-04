@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-10-19 04:10+0000\n"
-"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
+"PO-Revision-Date: 2024-01-05 14:21+0000\n"
+"Last-Translator: Jaidyn Ann <jadedctrl@posteo.net>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -247,7 +247,7 @@ msgstr "Modifaĵoj"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "No packages could be retrieved"
-msgstr "Neniujn pakaĵojn eblis ricevi"
+msgstr "Neniun pakaĵon sukcesis ricevi"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/settings/dlg_settings.lua
@@ -280,7 +280,7 @@ msgstr "Teksturaroj"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "La pakaĵo $1 estas ne trovita."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -302,7 +302,7 @@ msgstr "Vidi pli da informoj per TTT-legilo"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Vi devos instali ludon antaŭ vi povos instali modifaĵon"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -658,21 +658,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Dum jaroj, la ludmotoro Minetest instaliĝis kun implicita ludo nomita «"
+"Minetest Game». Ekde Minetest versio 5.8.0, Minetest instaliĝas sen "
+"implicita ludo."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Se vi volus ankoraŭ ludi viajn mondojn de Minetest Game, vi devos reinstali "
+"Minetest Game."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "Minetest Game estas ne plu implicite instalita"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Instali alian ludon"
+msgstr "Reinstali Minetest Game"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -748,9 +752,8 @@ msgid "Select file"
 msgstr "Elekti dosieron"
 
 #: builtin/mainmenu/settings/components.lua
-#, fuzzy
 msgid "Set"
-msgstr "Elekti"
+msgstr "Agordi"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
@@ -819,11 +822,12 @@ msgstr "faciligita"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Uzu lingvon de la sistemo)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
+#, fuzzy
 msgid "Accessibility"
-msgstr ""
+msgstr "Alirebleco"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -848,7 +852,7 @@ msgstr "Stirado"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Ĝenerale"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 #, fuzzy
@@ -856,13 +860,12 @@ msgid "Movement"
 msgstr "Rapida moviĝo"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Restarigi pravaloron"
+msgstr "Reagordi al implicita valoro"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Reagordi al implicita valoro ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -870,7 +873,7 @@ msgstr "Serĉi"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Montri porspertulajn agordojn"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -889,12 +892,14 @@ msgid "Content: Mods"
 msgstr "Enhavo: Modifaĵoj"
 
 #: builtin/mainmenu/settings/shadows_component.lua
+#, fuzzy
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(La ludo devus ŝalti ankaŭ ombrojn)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
+#, fuzzy
 msgid "Custom"
-msgstr ""
+msgstr "Propra"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -947,7 +952,7 @@ msgstr "Ĉefaj zorgantoj"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Irrlicht aparato:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -978,18 +983,16 @@ msgid "Browse online content"
 msgstr "Foliumi enretan enhavon"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Browse online content [$1]"
-msgstr "Foliumi enretan enhavon"
+msgstr "Foliumi ĉeretajn pakaĵojn [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Content"
 msgstr "Enhavo"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Content [$1]"
-msgstr "Enhavo"
+msgstr "Enhavo [$1]"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Disable Texture Pack"
@@ -1012,9 +1015,8 @@ msgid "Rename"
 msgstr "Alinomi"
 
 #: builtin/mainmenu/tab_content.lua
-#, fuzzy
 msgid "Update available?"
-msgstr "<neniu disponebla>"
+msgstr "Ĉu akireblas ĝisdatigo?"
 
 #: builtin/mainmenu/tab_content.lua
 msgid "Use Texture Pack"
@@ -1276,7 +1278,6 @@ msgid "Camera update enabled"
 msgstr "Ĝisdatigo de vidpunkto ŝaltita"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Can't show block bounds (disabled by game or mod)"
 msgstr "Ne povas montri monderlimojn (malŝaltita de ludo aŭ modifaĵo)"
 
@@ -1313,7 +1314,7 @@ msgid "Continue"
 msgstr "Daŭrigi"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -1346,7 +1347,6 @@ msgstr ""
 "– %s: babili\n"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid ""
 "Controls:\n"
 "No menu open:\n"
@@ -1363,11 +1363,11 @@ msgid ""
 msgstr ""
 "Implicita stirado:\n"
 "Senmenue:\n"
-"- unuobla tuŝeto: aktivigi butonon\n"
-"- duobla tuŝeto: meti/uzi\n"
-"- ŝova fingro: rigardi\n"
-"Videbla menuo/portaĵujo:\n"
-"- duobla tuŝeto (ekstere):\n"
+"- tiri: rigardi ĉirkaŭen\n"
+"- tuŝeti: meti/uzi\n"
+"- longe tuŝeti: fosi/frapi/uzi\n"
+"Menue/portaĵuje:\n"
+"- dufoje tuŝeti (ekstere):\n"
 " -->fermi\n"
 "- tuŝi portaĵaron, tuŝi portaĵingon:\n"
 " --> movi portaĵaron\n"
@@ -1568,28 +1568,29 @@ msgid "Unable to listen on %s because IPv6 is disabled"
 msgstr "Ne povas aŭskulti je %s ĉar IPv6 estas malŝaltita"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range disabled"
-msgstr "Ŝaltis senliman vidodistancon"
+msgstr "Malŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled"
 msgstr "Ŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
+#, fuzzy
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
-msgstr ""
+msgstr "Senlima vidodistanco ŝaltita, sed ĝin malpermesas ludo aŭ modifaĵo"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Vidodistanco je la minimumo: %d"
+msgstr "Vidodistanco agordita al %d (la minimumo)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Vidodistanco agordita al %d (la minimumo), sed ĝin limigas al %d ludo aŭ "
+"modifaĵo"
 
 #: src/client/game.cpp
 #, c-format
@@ -1597,20 +1598,22 @@ msgid "Viewing range changed to %d"
 msgstr "Vidodistanco agordita al %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d (the maximum)"
-msgstr "Vidodistanco agordita al %d"
+msgstr "Vidodistanco agordita al %d (la maksimumo)"
 
 #: src/client/game.cpp
 #, c-format
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Vidodistanco agordita al %d (la maksimumo), sed ĝin limigas al %d ludo aŭ "
+"modifaĵo"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Vidodistanco agordita al %d"
+msgstr "Vidodistanco agordita al %d, sed limigas ĝin al %d ludo aŭ modifaĵo"
 
 #: src/client/game.cpp
 #, c-format
@@ -1682,9 +1685,8 @@ msgid "Clear Key"
 msgstr "Vakigo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Control Key"
-msgstr "Stiro"
+msgstr "Stirklavo"
 
 #: src/client/keycode.cpp
 #, fuzzy
