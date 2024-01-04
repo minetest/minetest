@@ -1551,29 +1551,22 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 {
 	// Somebody wants to make a new connection
 
-	// Get a unique peer id (2 or higher)
-	session_t peer_id_new = m_next_remote_peer_id;
-	u16 overflow =  MAX_UDP_PEERS;
+	// Get a unique peer id
+	const session_t minimum = 2;
+	const session_t overflow = MAX_UDP_PEERS;
 
 	/*
 		Find an unused peer id
 	*/
+
 	MutexAutoLock lock(m_peers_mutex);
-	bool out_of_ids = false;
-	for(;;) {
-		// Check if exists
+	session_t peer_id_new;
+	for (int tries = 0; tries < 100; tries++) {
+		peer_id_new = myrand_range(minimum, overflow - 1);
 		if (m_peers.find(peer_id_new) == m_peers.end())
-
 			break;
-		// Check for overflow
-		if (peer_id_new == overflow) {
-			out_of_ids = true;
-			break;
-		}
-		peer_id_new++;
 	}
-
-	if (out_of_ids) {
+	if (m_peers.find(peer_id_new) != m_peers.end()) {
 		errorstream << getDesc() << " ran out of peer ids" << std::endl;
 		return PEER_ID_INEXISTENT;
 	}
@@ -1584,8 +1577,6 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 
 	m_peers[peer->id] = peer;
 	m_peer_ids.push_back(peer->id);
-
-	m_next_remote_peer_id = (peer_id_new +1 ) % MAX_UDP_PEERS;
 
 	LOG(dout_con << getDesc()
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
