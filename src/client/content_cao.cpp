@@ -638,7 +638,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	} else {
 		if (m_prop.use_texture_alpha) {
 			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			m_material_type_param = 0.01f; // minimal alpha for texture rendering
+			m_material_type_param = 1.0f / 256.f; // minimal alpha for texture rendering
 		} else {
 			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		}
