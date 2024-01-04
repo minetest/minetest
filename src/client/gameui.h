@@ -106,6 +106,7 @@ public:
 	const std::string &getFormspecName() { return m_formname; }
 	GUIFormSpecMenu *&getFormspecGUI() { return m_formspec; }
 	void deleteFormspec();
+	void clearText();
 
 private:
 	Flags m_flags;
