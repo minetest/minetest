@@ -793,8 +793,6 @@ private:
 	u32 m_bc_receive_timeout = 0;
 
 	bool m_shutting_down = false;
-
-	session_t m_next_remote_peer_id = 2;
 };
 
 } // namespace

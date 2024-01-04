@@ -245,7 +245,7 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.last_id == 1);
 	// Server should have the client
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 
 	//sleep_ms(50);
 
@@ -300,7 +300,7 @@ void TestConnection::testConnectSendReceive()
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
 
-	session_t peer_id_client = 2;
+	const session_t peer_id_client = hand_server.last_id;
 	/*
 		Send a large packet
 	*/
@@ -374,5 +374,5 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_client.count == 1);
 	UASSERT(hand_client.last_id == 1);
 	UASSERT(hand_server.count == 1);
-	UASSERT(hand_server.last_id == 2);
+	UASSERT(hand_server.last_id >= 2);
 }
