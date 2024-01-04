@@ -359,7 +359,7 @@ void RemoteClient::GetNextBlocks (
 				Note that we do this even before the block is loaded as this does not depend on its contents.
 			 */
 			if (m_occ_cull &&
-					env->getMap().isBlockOccluded(p * MAP_BLOCKSIZE, cam_pos_nodes, d)) {
+					env->getServerMap().isBlockOccluded(p * MAP_BLOCKSIZE, cam_pos_nodes, d)) {
 				m_blocks_occ.insert(p);
 				continue;
 			}

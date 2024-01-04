@@ -1124,7 +1124,7 @@ bool Map::determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 }
 
 bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-	float step, float stepfac, float offset, float end_offset)
+	float step, float stepfac, float offset, float end_offset, u32 needed_count)
 {
 	v3f direction = intToFloat(pos_target - pos_camera, BS);
 	float distance = direction.getLength();
@@ -1134,6 +1134,7 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		direction /= distance;
 
 	v3f pos_origin_f = intToFloat(pos_camera, BS);
+	u32 count = 0;
 	bool is_valid_position;
 
 	for (; offset < distance + end_offset; offset += step) {
@@ -1145,16 +1146,17 @@ bool Map::isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
 		if (is_valid_position &&
 				!m_nodedef->getLightingFlags(node).light_propagates) {
 			// Cannot see through light-blocking nodes --> occluded
-			return true;
+			count++;
+			if (count >= needed_count)
+				return true;
 		}
 		step *= stepfac;
 	}
 	return false;
 }
 
-bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d)
+bool ServerMap::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d)
 {
-	// Check occlusion for center and all 8 corners of the mapblock
 	// Overshoot a little for less flickering
 	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
 
@@ -1184,14 +1186,14 @@ bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d)
 		if (determineAdditionalOcclusionCheck(cam_pos_nodes, MapBlock::getBox(pos_relative), check)) {
 			// node is always on a side facing the camera, end_offset can be lower
 			if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
-					-1.0f))
+					-1.0f, 2))
 				return false;
 		}
 	}
 
 	for (int i=0; i<rounds; i++) {
 		if (!isOccluded(cam_pos_nodes, pos_blockcenter + v3s16(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2)), step, stepfac,
-				start_offset, end_offset))
+				start_offset, end_offset, 1))
 			return false;
 	}
 	return true;

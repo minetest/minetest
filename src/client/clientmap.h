@@ -121,6 +121,8 @@ public:
 
 	void onSettingChanged(const std::string &name);
 
+	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
+
 protected:
 	void reportMetrics(u64 save_time_us, u32 saved_blocks, u32 all_blocks) override;
 private:

@@ -305,12 +305,6 @@ public:
 		}
 	}
 
-	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
-	{
-		return isBlockOccluded(block->getPosRelative(), cam_pos_nodes);
-	}
-	bool isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d = 0);
-
 protected:
 	IGameDef *m_gamedef;
 
@@ -331,7 +325,8 @@ protected:
 	bool determineAdditionalOcclusionCheck(const v3s16 &pos_camera,
 		const core::aabbox3d<s16> &block_bounds, v3s16 &check);
 	bool isOccluded(const v3s16 &pos_camera, const v3s16 &pos_target,
-		float step, float stepfac, float start_offset, float end_offset);
+		float step, float stepfac, float start_offset, float end_offset,
+		u32 needed_count);
 };
 
 /*
@@ -448,6 +443,8 @@ public:
 			ServerEnvironment *env);
 
 	void transforming_liquid_add(v3s16 p);
+
+	bool isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, s16 d);
 
 	MapSettingsManager settings_mgr;
 

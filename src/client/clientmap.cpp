@@ -215,6 +215,62 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
+bool ClientMap::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes)
+{
+	// Check occlusion for center and all 8 corners of the mapblock
+	// Overshoot a little for less flickering
+	static const s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+	static const v3s16 dir9[9] = {
+		v3s16( 0,  0,  0),
+		v3s16( 1,  1,  1) * bs2,
+		v3s16( 1,  1, -1) * bs2,
+		v3s16( 1, -1,  1) * bs2,
+		v3s16( 1, -1, -1) * bs2,
+		v3s16(-1,  1,  1) * bs2,
+		v3s16(-1,  1, -1) * bs2,
+		v3s16(-1, -1,  1) * bs2,
+		v3s16(-1, -1, -1) * bs2,
+	};
+
+	v3s16 pos_relative = block->getPosRelative();
+	v3s16 pos_blockcenter = pos_relative + (MAP_BLOCKSIZE / 2);
+
+	// Starting step size, value between 1m and sqrt(3)m
+	float step = BS * 1.2f;
+	// Multiply step by each iteraction by 'stepfac' to reduce checks in distance
+	float stepfac = 1.05f;
+
+	float start_offset = BS * 1.0f;
+
+	// The occlusion search of 'isOccluded()' must stop short of the target
+	// point by distance 'end_offset' to not enter the target mapblock.
+	// For the 8 mapblock corners 'end_offset' must therefore be the maximum
+	// diagonal of a mapblock, because we must consider all view angles.
+	// sqrt(1^2 + 1^2 + 1^2) = 1.732
+	float end_offset = -BS * MAP_BLOCKSIZE * 1.732f;
+
+	// to reduce the likelihood of falsely occluded blocks
+	// require at least two solid blocks
+	// this is a HACK, we should think of a more precise algorithm
+	u32 needed_count = 2;
+
+	// Additional occlusion check, see comments in that function
+	v3s16 check;
+	if (determineAdditionalOcclusionCheck(cam_pos_nodes, block->getBox(), check)) {
+		// node is always on a side facing the camera, end_offset can be lower
+		if (!isOccluded(cam_pos_nodes, check, step, stepfac, start_offset,
+				-1.0f, needed_count))
+			return false;
+	}
+
+	for (const v3s16 &dir : dir9) {
+		if (!isOccluded(cam_pos_nodes, pos_blockcenter + dir, step, stepfac,
+				start_offset, end_offset, needed_count))
+			return false;
+	}
+	return true;
+}
+
 class MapBlockFlags
 {
 public:
