@@ -4524,19 +4524,16 @@ void Game::showPauseMenu()
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
 	const std::string &address = client->getAddressName();
-	static const std::string mode = strgettext("- Mode: ");
+	os << strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
-		Address serverAddress = client->getServerAddress();
-		if (!address.empty()) {
-			os << mode << strgettext("Remote server") << "\n"
-					<< strgettext("- Address: ") << address;
-		} else {
-			os << mode << strgettext("Hosting server");
-		}
-		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+		if (address.empty())
+			os << strgettext("Hosting server");
+		else
+			os << strgettext("Remote server");
 	} else {
-		os << mode << strgettext("Singleplayer") << "\n";
+		os << strgettext("Singleplayer");
 	}
+	os << "\n";
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
