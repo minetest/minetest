@@ -325,7 +325,9 @@ void TestCAO::processMessage(const std::string &data)
 #include "clientobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
-		ClientActiveObject(0, client, env)
+		ClientActiveObject(0, client, env),
+		m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
+		m_material_type_param(0.5f)
 {
 	if (!client) {
 		ClientActiveObject::registerType(getType(), create);
@@ -634,8 +636,12 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		u32 shader_id = shader_source->getShader("object_shader", material_type, NDT_NORMAL);
 		m_material_type = shader_source->getShaderInfo(shader_id).material;
 	} else {
-		m_material_type = (m_prop.use_texture_alpha) ?
-			video::EMT_TRANSPARENT_ALPHA_CHANNEL : video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		if (m_prop.use_texture_alpha) {
+			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			m_material_type_param = 0.01f; // minimal alpha for texture rendering
+		} else {
+			m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		}
 	}
 
 	auto grabMatrixNode = [this] {
@@ -1341,7 +1347,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 			video::SMaterial &material = m_spritenode->getMaterial(0);
 			material.MaterialType = m_material_type;
-			material.MaterialTypeParam = 0.5f;
+			material.MaterialTypeParam = m_material_type_param;
 			material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 
 			// This allows setting per-material colors. However, until a real lighting
@@ -1377,7 +1383,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial &material = m_animated_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
-				material.MaterialTypeParam = 0.5f;
+				material.MaterialTypeParam = m_material_type_param;
 				material.TextureLayers[0].Texture = texture;
 				material.Lighting = true;
 				material.BackfaceCulling = m_prop.backface_culling;
@@ -1421,7 +1427,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// Set material flags and texture
 				video::SMaterial &material = m_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
-				material.MaterialTypeParam = 0.5f;
+				material.MaterialTypeParam = m_material_type_param;
 				material.Lighting = false;
 				material.setTexture(0, tsrc->getTextureForMesh(texturestring));
 				material.getTextureMatrix(0).makeIdentity();
