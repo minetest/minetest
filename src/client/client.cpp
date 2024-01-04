@@ -1118,7 +1118,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 
 void Client::deleteAuthData()
 {
-	m_auth.deleteAuthData();
+	m_auth.clear();
 	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 }
 

@@ -97,7 +97,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
 		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
 				m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD) {
-			m_auth.deleteAuthData();
+			m_auth.clear();
 		}
 	}
 
@@ -193,6 +193,8 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
 	m_access_denied_reason = "Unknown";
+
+  deleteAuthData();
 
 	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
 		// Legacy code from 0.4.12 and older but is still used

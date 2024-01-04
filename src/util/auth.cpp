@@ -135,3 +135,11 @@ bool decode_srp_verifier_and_salt(const std::string &encoded,
 	return true;
 
 }
+
+/// Override every character before clearing
+void clear_string(std::string &text)
+{
+	for (size_t i = 0; i < text.size(); i++)
+		text[i] = 0;
+	text.clear();
+}

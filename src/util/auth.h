@@ -45,3 +45,6 @@ std::string encode_srp_verifier(const std::string &verifier,
 /// and salt components.
 bool decode_srp_verifier_and_salt(const std::string &encoded,
 	std::string *verifier, std::string *salt);
+
+/// Override every character before clearing
+void clear_string(std::string &text);

@@ -43,7 +43,7 @@ public:
 	void * getSrpAuthData() const { return m_srp_auth_data; }
 	void * getAuthData(AuthMechanism chosen_auth_mech) const;
 	
-	void deleteAuthData();
+	void clear();
 private:
 	bool m_is_empty;
 

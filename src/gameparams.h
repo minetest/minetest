@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "content/subgames.h"
+#include "util/auth.h"
 
 // Information provided from "main"
 struct GameParams
@@ -58,8 +59,6 @@ struct GameStartData : GameParams
 
 	void erasePassword() {
 		/* make sure that password will not stay somewhere in memory */
-		for (size_t i = 0; i < password.size(); i++)
-			password[i] = '*';
-		password.clear();
+    clear_string(password);
 	}
 };
