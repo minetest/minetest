@@ -42,7 +42,10 @@ void ClientAuth::moveFrom(ClientAuth& other)
 {
 	clear();
 
-  m_is_empty = other.m_is_empty;
+	m_is_empty = other.m_is_empty;
+
+	m_srp_verifier = other.m_srp_verifier;
+	m_srp_salt = other.m_srp_salt;
 
 	m_legacy_auth_data = other.m_legacy_auth_data;
 	m_srp_auth_data = other.m_srp_auth_data;
