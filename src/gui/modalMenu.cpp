@@ -51,11 +51,8 @@ GUIModalMenu::GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	setVisible(true);
 	m_menumgr->createdMenu(this);
 
-	m_doubleclickdetect[0].time = 0;
-	m_doubleclickdetect[1].time = 0;
-
-	m_doubleclickdetect[0].pos = v2s32(0, 0);
-	m_doubleclickdetect[1].pos = v2s32(0, 0);
+	m_last_touch.time = 0;
+	m_last_touch.pos = v2s32(0, 0);
 }
 
 GUIModalMenu::~GUIModalMenu()
@@ -109,7 +106,18 @@ void GUIModalMenu::quitMenu()
 #endif
 }
 
-bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
+static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
+{
+	while (tocheck) {
+		if (tocheck == parent) {
+			return true;
+		}
+		tocheck = tocheck->getParent();
+	}
+	return false;
+}
+
+bool GUIModalMenu::remapDoubleClick(const SEvent &event)
 {
 	/* The following code is for capturing double-clicks of the mouse button
 	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
@@ -124,55 +132,37 @@ bool GUIModalMenu::DoubleClickDetection(const SEvent &event)
 	if (!m_remap_dbl_click)
 		return false;
 
-	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-		m_doubleclickdetect[0].pos = m_doubleclickdetect[1].pos;
-		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
+	if (event.EventType != EET_MOUSE_INPUT_EVENT ||
+			event.MouseInput.Event != EMIE_LMOUSE_DOUBLE_CLICK)
+		return false;
 
-		m_doubleclickdetect[1].pos = m_pointer;
-		m_doubleclickdetect[1].time = porting::getTimeMs();
-	} else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-		u64 delta = porting::getDeltaMs(
-			m_doubleclickdetect[0].time, porting::getTimeMs());
-		if (delta > 400)
-			return false;
+	// Only exit if the double-click happened outside the menu.
+	gui::IGUIElement *hovered =
+			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
+	if (isChild(hovered, this))
+		return false;
 
-		double squaredistance = m_doubleclickdetect[0].pos.
-			getDistanceFromSQ(m_doubleclickdetect[1].pos);
+	// Translate double-click to escape.
+	SEvent translated{};
+	translated.EventType            = EET_KEY_INPUT_EVENT;
+	translated.KeyInput.Key         = KEY_ESCAPE;
+	translated.KeyInput.Control     = false;
+	translated.KeyInput.Shift       = false;
+	translated.KeyInput.PressedDown = true;
+	translated.KeyInput.Char        = 0;
+	OnEvent(translated);
 
-		if (squaredistance > (30 * 30)) {
-			return false;
-		}
-
-		SEvent translated{};
-		// translate doubleclick to escape
-		translated.EventType            = EET_KEY_INPUT_EVENT;
-		translated.KeyInput.Key         = KEY_ESCAPE;
-		translated.KeyInput.Control     = false;
-		translated.KeyInput.Shift       = false;
-		translated.KeyInput.PressedDown = true;
-		translated.KeyInput.Char        = 0;
-		OnEvent(translated);
-
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
-static bool isChild(gui::IGUIElement *tocheck, gui::IGUIElement *parent)
+bool GUIModalMenu::simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try)
 {
-	while (tocheck) {
-		if (tocheck == parent) {
-			return true;
-		}
-		tocheck = tocheck->getParent();
-	}
-	return false;
-}
+	IGUIElement *target;
+	if (!second_try)
+		target = Environment->getFocus();
+	else
+		target = m_touch_hovered.get();
 
-bool GUIModalMenu::simulateMouseEvent(
-		gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event)
-{
 	SEvent mouse_event{}; // value-initialized, not unitialized
 	mouse_event.EventType = EET_MOUSE_INPUT_EVENT;
 	mouse_event.MouseInput.X = m_pointer.X;
@@ -189,6 +179,11 @@ bool GUIModalMenu::simulateMouseEvent(
 	case ETIE_LEFT_UP:
 		mouse_event.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
 		mouse_event.MouseInput.ButtonStates = 0;
+		break;
+	case ETIE_COUNT:
+		// ETIE_COUNT is used for double-tap events.
+		mouse_event.MouseInput.Event = EMIE_LMOUSE_DOUBLE_CLICK;
+		mouse_event.MouseInput.ButtonStates = EMBSM_LEFT;
 		break;
 	default:
 		return false;
@@ -208,6 +203,9 @@ bool GUIModalMenu::simulateMouseEvent(
 		retval = target->OnEvent(mouse_event);
 	} while (false);
 	m_simulated_mouse = false;
+
+	if (!retval && !second_try)
+		return simulateMouseEvent(touch_event, true);
 
 	return retval;
 }
@@ -293,12 +291,28 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 				leave();
 				enter(hovered);
 			}
-			gui::IGUIElement *focused = Environment->getFocus();
-			bool ret = simulateMouseEvent(focused, event.TouchInput.Event);
-			if (!ret && m_touch_hovered != focused)
-				ret = simulateMouseEvent(m_touch_hovered.get(), event.TouchInput.Event);
+			bool ret = simulateMouseEvent(event.TouchInput.Event);
 			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				leave();
+
+			// Detect double-taps and convert them into double-click events.
+			if (event.TouchInput.Event == ETIE_PRESSED_DOWN) {
+				u64 time_now = porting::getTimeMs();
+				u64 time_delta = porting::getDeltaMs(m_last_touch.time, time_now);
+
+				v2s32 pos_delta = m_pointer - m_last_touch.pos;
+				f32 distance_sq = (f32)pos_delta.X * pos_delta.X +
+						(f32)pos_delta.Y * pos_delta.Y;
+
+				if (time_delta < 400 && distance_sq < (30 * 30)) {
+					// ETIE_COUNT is used for double-tap events.
+					simulateMouseEvent(ETIE_COUNT);
+				}
+
+				m_last_touch.time = time_now;
+				m_last_touch.pos = m_pointer;
+			}
+
 			return ret;
 		} else if (event.TouchInput.touchedCount == 2) {
 			if (event.TouchInput.Event != ETIE_LEFT_UP)
@@ -325,13 +339,8 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			m_touch_hovered.reset();
 		}
 
-		gui::IGUIElement *hovered =
-				Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
-		if (!isChild(hovered, this)) {
-			if (DoubleClickDetection(event)) {
-				return true;
-			}
-		}
+		if (remapDoubleClick(event))
+			return true;
 	}
 
 	return false;

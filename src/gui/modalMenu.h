@@ -69,13 +69,6 @@ protected:
 	virtual std::wstring getLabelByID(s32 id) = 0;
 	virtual std::string getNameByID(s32 id) = 0;
 
-	/**
-	 * check if event is part of a double click
-	 * @param event event to evaluate
-	 * @return true/false if a doubleclick was detected
-	 */
-	bool DoubleClickDetection(const SEvent &event);
-
 	// Stores the last known pointer type.
 	PointerType m_pointer_type = PointerType::Mouse;
 	// Stores the last known pointer position.
@@ -97,13 +90,6 @@ protected:
 	bool m_simulated_mouse = false;
 
 private:
-	struct clickpos
-	{
-		v2s32 pos;
-		s64 time;
-	};
-	clickpos m_doubleclickdetect[2];
-
 	IMenuManager *m_menumgr;
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so
 	 * that, for example, Android users can double-tap to close a formspec.
@@ -112,6 +98,8 @@ private:
 	 * and the default value for the setting is true.
 	 */
 	bool m_remap_dbl_click;
+	bool remapDoubleClick(const SEvent &event);
+
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal = false;
@@ -120,7 +108,13 @@ private:
 
 	irr_ptr<gui::IGUIElement> m_touch_hovered;
 
-	bool simulateMouseEvent(gui::IGUIElement *target, ETOUCH_INPUT_EVENT touch_event);
+	bool simulateMouseEvent(ETOUCH_INPUT_EVENT touch_event, bool second_try=false);
 	void enter(gui::IGUIElement *element);
 	void leave();
+
+	// Used to detect double-taps and convert them into double-click events.
+	struct {
+		v2s32 pos;
+		s64 time;
+	} m_last_touch;
 };
