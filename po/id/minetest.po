@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Indonesian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-25 19:31+0000\n"
-"Last-Translator: Christian Elbrianno <crse@protonmail.ch>\n"
+"PO-Revision-Date: 2024-01-05 14:21+0000\n"
+"Last-Translator: JUST PLAYING <aryadhisuma@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
 "minetest/id/>\n"
 "Language: id\n"
@@ -842,7 +842,7 @@ msgstr "Obrolan"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Clear"
-msgstr "Clear"
+msgstr "Bersihkan/Jernih"
 
 #: builtin/mainmenu/settings/dlg_settings.lua src/settings_translation_file.cpp
 msgid "Controls"
@@ -1701,7 +1701,7 @@ msgstr "Erase OEF"
 
 #: src/client/keycode.cpp
 msgid "Execute"
-msgstr "Execute"
+msgstr "Menjalankan"
 
 #: src/client/keycode.cpp
 msgid "Help"
@@ -1713,23 +1713,23 @@ msgstr "Home"
 
 #: src/client/keycode.cpp
 msgid "IME Accept"
-msgstr "IME Accept"
+msgstr "IME Terima"
 
 #: src/client/keycode.cpp
 msgid "IME Convert"
-msgstr "IME Convert"
+msgstr "IME Konversi"
 
 #: src/client/keycode.cpp
 msgid "IME Escape"
-msgstr "IME Escape"
+msgstr "IME Pelarian"
 
 #: src/client/keycode.cpp
 msgid "IME Mode Change"
-msgstr "IME Mode Change"
+msgstr "IME Perubahan Mode"
 
 #: src/client/keycode.cpp
 msgid "IME Nonconvert"
-msgstr "IME Nonconvert"
+msgstr "IME Tidak Berkonversi"
 
 #: src/client/keycode.cpp
 msgid "Insert"
@@ -1774,67 +1774,67 @@ msgstr "Num Lock"
 
 #: src/client/keycode.cpp
 msgid "Numpad *"
-msgstr "Numpad *"
+msgstr "Papan Angka *"
 
 #: src/client/keycode.cpp
 msgid "Numpad +"
-msgstr "Numpad +"
+msgstr "Papan Angka +"
 
 #: src/client/keycode.cpp
 msgid "Numpad -"
-msgstr "Numpad -"
+msgstr "Papan Angka -"
 
 #: src/client/keycode.cpp
 msgid "Numpad ."
-msgstr "Numpad ."
+msgstr "Papan Angka ."
 
 #: src/client/keycode.cpp
 msgid "Numpad /"
-msgstr "Numpad /"
+msgstr "Papan Angka /"
 
 #: src/client/keycode.cpp
 msgid "Numpad 0"
-msgstr "Numpad 0"
+msgstr "Papan Angka 0"
 
 #: src/client/keycode.cpp
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr "Papan Angka 1"
 
 #: src/client/keycode.cpp
 msgid "Numpad 2"
-msgstr "Numpad 2"
+msgstr "Papan Angka 2"
 
 #: src/client/keycode.cpp
 msgid "Numpad 3"
-msgstr "Numpad 3"
+msgstr "Papan Angka 3"
 
 #: src/client/keycode.cpp
 msgid "Numpad 4"
-msgstr "Numpad 4"
+msgstr "Papan Angka 4"
 
 #: src/client/keycode.cpp
 msgid "Numpad 5"
-msgstr "Numpad 5"
+msgstr "Papan Angka 5"
 
 #: src/client/keycode.cpp
 msgid "Numpad 6"
-msgstr "Numpad 6"
+msgstr "Papan Angka 6"
 
 #: src/client/keycode.cpp
 msgid "Numpad 7"
-msgstr "Numpad 7"
+msgstr "Papan Angka 7"
 
 #: src/client/keycode.cpp
 msgid "Numpad 8"
-msgstr "Numpad 8"
+msgstr "Papan Angka 8"
 
 #: src/client/keycode.cpp
 msgid "Numpad 9"
-msgstr "Numpad 9"
+msgstr "Papan Angka 9"
 
 #: src/client/keycode.cpp
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "OEM Bersihkan"
 
 #: src/client/keycode.cpp
 msgid "Page Down"
@@ -1851,12 +1851,12 @@ msgstr "Pause"
 
 #: src/client/keycode.cpp
 msgid "Play"
-msgstr "Play"
+msgstr "Main"
 
 #. ~ "Print screen" key
 #: src/client/keycode.cpp
 msgid "Print"
-msgstr "Print"
+msgstr "Cetak"
 
 #: src/client/keycode.cpp
 msgid "Return Key"
@@ -1893,7 +1893,7 @@ msgstr "Scroll Lock"
 #. ~ Key name
 #: src/client/keycode.cpp
 msgid "Select"
-msgstr "Select"
+msgstr "Pilih"
 
 #: src/client/keycode.cpp
 msgid "Shift Key"
@@ -1901,7 +1901,7 @@ msgstr "Shift"
 
 #: src/client/keycode.cpp
 msgid "Sleep"
-msgstr "Sleep"
+msgstr "Tidur"
 
 #: src/client/keycode.cpp
 msgid "Snapshot"
@@ -2595,7 +2595,7 @@ msgstr "Jarak optimasi pengiriman blok"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom"
-msgstr "Bloom"
+msgstr "Bloom(Bunga)"
 
 #: src/settings_translation_file.cpp
 msgid "Bloom Intensity"
@@ -2611,7 +2611,7 @@ msgstr "Pengali Kekuatan Bloom"
 
 #: src/settings_translation_file.cpp
 msgid "Bobbing"
-msgstr "Bobbing"
+msgstr "Bobbing(Terombang-Ambing)"
 
 #: src/settings_translation_file.cpp
 msgid "Bold and italic font path"
@@ -4884,7 +4884,7 @@ msgstr "Batas minimal nilai acak untuk gua kecil per potongan peta."
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
-msgstr "Mipmapping"
+msgstr "Pemetaan Ulang"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
@@ -5074,11 +5074,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culler"
-msgstr "Occlusion Culler"
+msgstr "Oklusi Culler"
 
 #: src/settings_translation_file.cpp
 msgid "Occlusion Culling"
-msgstr "Occlusion Culling"
+msgstr "Pemusnahan Oklusi"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
@@ -6336,7 +6336,7 @@ msgstr "URL ke daftar server yang tampil pada Tab Multipemain."
 
 #: src/settings_translation_file.cpp
 msgid "Undersampling"
-msgstr "Undersampling"
+msgstr "Undersampling(Pengambilan sampel yang terlalu rendah)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -6423,14 +6423,13 @@ msgstr ""
 "untuk ukuran mesh klien yang lebih kecil daripada 4x4x4 blok peta."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
-"Gunakan pemfilteran trilinear saat memperkecil tekstur.\n"
-"Jika pemfilteran bilinear dan trilinear dinyalakan bersamaan,\n"
+"Gunakan pemfilteran trilinear saat menskalakan tekstur.\n"
+"Jika kedua pemfilteran bilinear dan trilinear dinyalakan bersamaan,\n"
 "pemfilteran trilinear akan digunakan."
 
 #: src/settings_translation_file.cpp
