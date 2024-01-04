@@ -70,6 +70,7 @@ public:
 
 private:
 	void runTimeouts(float dtime);
+	void resendReliable(Channel &channel, const BufferedPacket *k, float resend_timeout);
 	void rawSend(const BufferedPacket *p);
 	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
 			const SharedBuffer<u8> &data, bool reliable);

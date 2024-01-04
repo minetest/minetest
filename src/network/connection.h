@@ -313,7 +313,8 @@ enum ConnectionCommandType{
 	CONNCMD_SEND,
 	CONNCMD_SEND_TO_ALL,
 	CONCMD_ACK,
-	CONCMD_CREATE_PEER
+	CONCMD_CREATE_PEER,
+	CONNCMD_RESEND_ONE
 };
 
 struct ConnectionCommand;
@@ -336,6 +337,7 @@ struct ConnectionCommand
 	static ConnectionCommandPtr connect(Address address);
 	static ConnectionCommandPtr disconnect();
 	static ConnectionCommandPtr disconnect_peer(session_t peer_id);
+	static ConnectionCommandPtr resend_one(session_t peer_id);
 	static ConnectionCommandPtr send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 	static ConnectionCommandPtr ack(session_t peer_id, u8 channelnum, const Buffer<u8> &data);
 	static ConnectionCommandPtr createPeer(session_t peer_id, const Buffer<u8> &data);
@@ -520,6 +522,9 @@ class Peer {
 		void ResetTimeout()
 			{MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter = 0.0; };
 
+		bool isHalfOpen() const { return m_half_open; }
+		void SetFullyOpen() { m_half_open = false; }
+
 		bool isTimedOut(float timeout);
 
 		unsigned int m_increment_packets_remaining = 0;
@@ -589,6 +594,15 @@ class Peer {
 
 		rttstats m_rtt;
 		float m_last_rtt = -1.0f;
+
+		/*
+			Until the peer has communicated with us using their assigned peer id
+			the connection is considered half-open.
+			During this time we inhibit re-sending any reliables or pings. This
+			is to avoid spending too many resources on a potential DoS attack
+			and to make sure Minetest servers are not useful for UDP amplificiation.
+		*/
+		bool m_half_open = true;
 
 		// current usage count
 		unsigned int m_usage = 0;
@@ -735,6 +749,8 @@ protected:
 	bool deletePeer(session_t peer_id, bool timeout);
 
 	void SetPeerID(session_t id) { m_peer_id = id; }
+
+	void doResendOne(session_t peer_id);
 
 	void sendAck(session_t peer_id, u8 channelnum, u16 seqnum);
 

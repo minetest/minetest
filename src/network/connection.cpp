@@ -49,7 +49,7 @@ namespace con
 // TODO: Clean this up.
 #define LOG(a) a
 
-#define PING_TIMEOUT 5.0
+#define PING_TIMEOUT 5.0f
 
 u16 BufferedPacket::getSeqnum() const
 {
@@ -548,6 +548,15 @@ ConnectionCommandPtr ConnectionCommand::disconnect_peer(session_t peer_id)
 	return c;
 }
 
+ConnectionCommandPtr ConnectionCommand::resend_one(session_t peer_id)
+{
+	auto c = create(CONNCMD_RESEND_ONE);
+	c->peer_id = peer_id;
+	c->channelnum = 0; // must be same as createPeer
+	c->reliable = true;
+	return c;
+}
+
 ConnectionCommandPtr ConnectionCommand::send(session_t peer_id, u8 channelnum,
 	NetworkPacket *pkt, bool reliable)
 {
@@ -984,12 +993,12 @@ void UDPPeer::reportRTT(float rtt)
 bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
 {
 	m_ping_timer += dtime;
-	if (m_ping_timer >= PING_TIMEOUT)
+	if (!isHalfOpen() && m_ping_timer >= PING_TIMEOUT)
 	{
 		// Create and send PING packet
 		writeU8(&data[0], PACKET_TYPE_CONTROL);
 		writeU8(&data[1], CONTROLTYPE_PING);
-		m_ping_timer = 0.0;
+		m_ping_timer = 0.0f;
 		return true;
 	}
 	return false;
@@ -1608,6 +1617,12 @@ void Connection::DisconnectPeer(session_t peer_id)
 	putCommand(ConnectionCommand::disconnect_peer(peer_id));
 }
 
+void Connection::doResendOne(session_t peer_id)
+{
+	assert(peer_id != PEER_ID_INEXISTENT);
+	putCommand(ConnectionCommand::resend_one(peer_id));
+}
+
 void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
@@ -1634,6 +1649,7 @@ UDPPeer* Connection::createServerPeer(Address& address)
 	}
 
 	UDPPeer *peer = new UDPPeer(PEER_ID_SERVER, address, this);
+	peer->SetFullyOpen();
 
 	{
 		MutexAutoLock lock(m_peers_mutex);
