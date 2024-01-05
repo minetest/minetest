@@ -22,7 +22,7 @@
 #    type: float min: 0 max: 0.99
 # camera_smoothing = 0.0
 
-#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.
 #    type: float min: 0 max: 0.99
 # cinematic_camera_smoothing = 0.7
 
@@ -3636,4 +3636,3 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
-
