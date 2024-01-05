@@ -44,8 +44,6 @@ namespace con
 // TODO: Clean this up.
 #define LOG(a) a
 
-#define WINDOW_SIZE 5
-
 static inline session_t readPeerId(const u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
@@ -519,9 +517,9 @@ void ConnectionSendThread::serve(Address bind_address)
 
 void ConnectionSendThread::connect(Address address)
 {
-	LOG(dout_con << m_connection->getDesc() << " connecting to "
-		<< address.serializeString()
-		<< ":" << address.getPort() << std::endl);
+	dout_con << m_connection->getDesc() << " connecting to ";
+	address.print(dout_con);
+	dout_con << std::endl;
 
 	UDPPeer *peer = m_connection->createServerPeer(address);
 
@@ -529,11 +527,10 @@ void ConnectionSendThread::connect(Address address)
 	m_connection->putEvent(ConnectionEvent::peerAdded(peer->id, peer->address));
 
 	Address bind_addr;
-
 	if (address.isIPv6())
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
+		bind_addr.setAddress(static_cast<IPv6AddressBytes*>(nullptr));
 	else
-		bind_addr.setAddress(0, 0, 0, 0);
+		bind_addr.setAddress(static_cast<u32>(0));
 
 	m_connection->m_udpSocket.Bind(bind_addr);
 
@@ -951,9 +948,9 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 		session_t peer_id = readPeerId(*packetdata);
 		u8 channelnum = readChannel(*packetdata);
 
-		if (channelnum > CHANNEL_COUNT - 1) {
+		if (channelnum >= CHANNEL_COUNT) {
 			LOG(derr_con << m_connection->getDesc()
-				<< "Receive(): Invalid channel " << (u32)channelnum << std::endl);
+				<< "Receive(): Invalid channel " << (int)channelnum << std::endl);
 			return;
 		}
 
@@ -1008,15 +1005,14 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			peer->ResetTimeout();
 		}
 
-		Channel *channel = nullptr;
-		if (dynamic_cast<UDPPeer *>(&peer)) {
-			channel = &dynamic_cast<UDPPeer *>(&peer)->channels[channelnum];
-		} else {
+		auto *udpPeer = dynamic_cast<UDPPeer *>(&peer);
+		if (!udpPeer) {
 			LOG(derr_con << m_connection->getDesc()
 				<< "Receive(): peer_id=" << peer_id << " isn't an UDPPeer?!"
 				" Ignoring." << std::endl);
 			return;
 		}
+		Channel *channel = &udpPeer->channels[channelnum];
 
 		channel->UpdateBytesReceived(received_size);
 

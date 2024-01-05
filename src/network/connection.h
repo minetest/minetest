@@ -250,8 +250,6 @@ private:
 	for fast access to the smallest one.
 */
 
-typedef std::list<BufferedPacketPtr>::iterator RPBSearchResult;
-
 class ReliablePacketBuffer
 {
 public:
@@ -264,7 +262,7 @@ public:
 	void insert(BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::list<ConstSharedPtr<BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
+	std::vector<ConstSharedPtr<BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
@@ -272,7 +270,9 @@ public:
 
 
 private:
-	RPBSearchResult findPacketNoLock(u16 seqnum);
+	typedef std::list<BufferedPacketPtr>::iterator FindResult;
+
+	FindResult findPacketNoLock(u16 seqnum);
 
 	std::list<BufferedPacketPtr> m_list;
 
@@ -743,9 +743,9 @@ public:
 
 protected:
 	PeerHelper getPeerNoEx(session_t peer_id);
-	u16   lookupPeer(Address& sender);
+	session_t   lookupPeer(const Address& sender);
 
-	u16 createPeer(Address& sender, MTProtocols protocol, int fd);
+	session_t createPeer(Address& sender, MTProtocols protocol, int fd);
 	UDPPeer*  createServerPeer(Address& sender);
 	bool deletePeer(session_t peer_id, bool timeout);
 
