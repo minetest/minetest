@@ -262,7 +262,9 @@ public:
 	void insert(BufferedPacketPtr &p_ptr, u16 next_expected);
 
 	void incrementTimeouts(float dtime);
-	std::vector<ConstSharedPtr<BufferedPacket>> getTimedOuts(float timeout, u32 max_packets);
+	u32 getTimedOuts(float timeout);
+	// timeout relative to last resend
+	std::vector<ConstSharedPtr<BufferedPacket>> getResend(float timeout, u32 max_packets);
 
 	void print();
 	bool empty();
@@ -525,7 +527,7 @@ class Peer {
 		bool isHalfOpen() const { return m_half_open; }
 		void SetFullyOpen() { m_half_open = false; }
 
-		bool isTimedOut(float timeout);
+		virtual bool isTimedOut(float timeout, std::string &reason);
 
 		unsigned int m_increment_packets_remaining = 0;
 
@@ -635,6 +637,8 @@ public:
 
 	SharedBuffer<u8> addSplitPacket(u8 channel, BufferedPacketPtr &toadd,
 		bool reliable);
+
+	bool isTimedOut(float timeout, std::string &reason) override;
 
 protected:
 	/*

@@ -363,8 +363,19 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 	}
 }
 
+u32 ReliablePacketBuffer::getTimedOuts(float timeout)
+{
+	MutexAutoLock listlock(m_list_mutex);
+	u32 count = 0;
+	for (auto &packet : m_list) {
+		if (packet->totaltime >= timeout)
+			count++;
+	}
+	return count;
+}
+
 std::vector<ConstSharedPtr<BufferedPacket>>
-	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
+	ReliablePacketBuffer::getResend(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
 	std::vector<ConstSharedPtr<BufferedPacket>> timed_outs;
@@ -939,17 +950,22 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 	m_last_rtt = rtt;
 }
 
-bool Peer::isTimedOut(float timeout)
+bool Peer::isTimedOut(float timeout, std::string &reason)
 {
 	MutexAutoLock lock(m_exclusive_access_mutex);
-	u64 current_time = porting::getTimeMs();
 
-	float dtime = CALC_DTIME(m_last_timeout_check,current_time);
-	m_last_timeout_check = current_time;
+	{
+		u64 current_time = porting::getTimeMs();
+		float dtime = CALC_DTIME(m_last_timeout_check, current_time);
+		m_last_timeout_check = current_time;
+		m_timeout_counter += dtime;
+	}
+	if (m_timeout_counter > timeout) {
+		reason = "timeout counter";
+		return true;
+	}
 
-	m_timeout_counter += dtime;
-
-	return m_timeout_counter > timeout;
+	return false;
 }
 
 void Peer::Drop()
@@ -978,6 +994,24 @@ UDPPeer::UDPPeer(session_t a_id, Address a_address, Connection* connection) :
 {
 	for (Channel &channel : channels)
 		channel.setWindowSize(START_RELIABLE_WINDOW_SIZE);
+}
+
+bool UDPPeer::isTimedOut(float timeout, std::string &reason)
+{
+	if (Peer::isTimedOut(timeout, reason))
+		return true;
+
+	MutexAutoLock lock(m_exclusive_access_mutex);
+
+	for (int i = 0; i < CHANNEL_COUNT; i++) {
+		Channel &channel = channels[i];
+		if (channel.outgoing_reliables_sent.getTimedOuts(timeout) > 0) {
+			reason = "outgoing reliables channel=" + itos(i);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool UDPPeer::getAddress(MTProtocols type,Address& toset)
