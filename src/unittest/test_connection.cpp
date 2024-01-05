@@ -277,8 +277,8 @@ void TestConnection::testConnectSendReceive()
 		Simple send-receive test
 	*/
 	{
-		NetworkPacket pkt;
-		pkt.putRawPacket((u8*) "Hello World !", 14, 0);
+		NetworkPacket pkt(0x4b, 0);
+		pkt.putRawString("Hello World !", 14);
 
 		auto sentdata = pkt.oldForgePacket();
 
@@ -306,9 +306,9 @@ void TestConnection::testConnectSendReceive()
 	*/
 	{
 		const int datasize = 30000;
-		NetworkPacket pkt(0, datasize);
+		NetworkPacket pkt(0xff, datasize);
 		for (u16 i=0; i<datasize; i++) {
-			pkt << (u8) i/4;
+			pkt << static_cast<u8>(i/4);
 		}
 
 		infostream << "Sending data (size=" << datasize << "):";
