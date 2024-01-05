@@ -248,9 +248,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			rawSendAsPacket(udpPeer->id, 0, data, true);
 		}
 
-		udpPeer->RunCommandQueues(m_max_packet_size,
-			m_max_commands_per_iteration,
-			m_max_packets_requeued);
+		udpPeer->RunCommandQueues(m_max_packet_size, m_max_packets_requeued);
 	}
 
 	// Remove timed out peers

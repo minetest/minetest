@@ -645,7 +645,6 @@ protected:
 
 	void RunCommandQueues(
 					unsigned int max_packet_size,
-					unsigned int maxcommands,
 					unsigned int maxtransfer);
 
 	float getResendTimeout()
