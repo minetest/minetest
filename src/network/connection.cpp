@@ -194,7 +194,7 @@ u32 ReliablePacketBuffer::size()
 	return m_list.size();
 }
 
-RPBSearchResult ReliablePacketBuffer::findPacketNoLock(u16 seqnum)
+ReliablePacketBuffer::FindResult ReliablePacketBuffer::findPacketNoLock(u16 seqnum)
 {
 	for (auto it = m_list.begin(); it != m_list.end(); ++it) {
 		if ((*it)->getSeqnum() == seqnum)
@@ -232,7 +232,7 @@ BufferedPacketPtr ReliablePacketBuffer::popFirst()
 BufferedPacketPtr ReliablePacketBuffer::popSeqnum(u16 seqnum)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	RPBSearchResult r = findPacketNoLock(seqnum);
+	auto r = findPacketNoLock(seqnum);
 	if (r == m_list.end()) {
 		LOG(dout_con<<"Sequence number: " << seqnum
 				<< " not found in reliable buffer"<<std::endl);
@@ -325,15 +325,21 @@ void ReliablePacketBuffer::insert(BufferedPacketPtr &p_ptr, u16 next_expected)
 			)
 		{
 			/* if this happens your maximum transfer window may be to big */
-			fprintf(stderr,
+			char buf[200];
+			snprintf(buf, sizeof(buf),
 					"Duplicated seqnum %d non matching packet detected:\n",
 					seqnum);
-			fprintf(stderr, "Old: seqnum: %05d size: %04zu, address: %s\n",
+			warningstream << buf;
+			snprintf(buf, sizeof(buf),
+					"Old: seqnum: %05d size: %04zu, address: %s\n",
 					i->getSeqnum(), i->size(),
 					i->address.serializeString().c_str());
-			fprintf(stderr, "New: seqnum: %05d size: %04zu, address: %s\n",
+			warningstream << buf;
+			snprintf(buf, sizeof(buf),
+					"New: seqnum: %05d size: %04zu, address: %s\n",
 					p.getSeqnum(), p.size(),
 					p.address.serializeString().c_str());
+			warningstream << buf << std::flush;
 			throw IncomingDataCorruption("duplicated packet isn't same as original one");
 		}
 	}
@@ -357,11 +363,11 @@ void ReliablePacketBuffer::incrementTimeouts(float dtime)
 	}
 }
 
-std::list<ConstSharedPtr<BufferedPacket>>
+std::vector<ConstSharedPtr<BufferedPacket>>
 	ReliablePacketBuffer::getTimedOuts(float timeout, u32 max_packets)
 {
 	MutexAutoLock listlock(m_list_mutex);
-	std::list<ConstSharedPtr<BufferedPacket>> timed_outs;
+	std::vector<ConstSharedPtr<BufferedPacket>> timed_outs;
 	for (auto &packet : m_list) {
 		// resend time scales exponentially with each cycle
 		const float pkt_timeout = timeout * powf(RESEND_SCALE_BASE, packet->resend_count);
@@ -504,9 +510,9 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacketPtr &p_ptr, bool reli
 
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
+	MutexAutoLock listlock(m_map_mutex);
 	std::vector<u16> remove_queue;
 	{
-		MutexAutoLock listlock(m_map_mutex);
 		for (const auto &i : m_buf) {
 			IncomingSplitPacket *p = i.second;
 			// Reliable ones are not removed by timeout
@@ -518,10 +524,10 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 		}
 	}
 	for (u16 j : remove_queue) {
-		MutexAutoLock listlock(m_map_mutex);
 		LOG(dout_con<<"NOTE: Removing timed out unreliable split packet"<<std::endl);
-		delete m_buf[j];
-		m_buf.erase(j);
+		auto it = m_buf.find(j);
+		delete it->second;
+		m_buf.erase(it);
 	}
 }
 
@@ -967,7 +973,7 @@ void Peer::Drop()
 	delete this;
 }
 
-UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
+UDPPeer::UDPPeer(session_t a_id, Address a_address, Connection* connection) :
 	Peer(a_address,a_id,connection)
 {
 	for (Channel &channel : channels)
@@ -1134,8 +1140,6 @@ bool UDPPeer::processReliableSendCommand(
 		FATAL_ERROR_IF(!successfully_put_back_sequence_number, "error");
 	}
 
-	// DO NOT REMOVE n_queued! It avoids a deadlock of async locked
-	// 'log_message_mutex' and 'm_list_mutex'.
 	u32 n_queued = chan.outgoing_reliables_sent.size();
 
 	LOG(dout_con<<m_connection->getDesc()
@@ -1339,7 +1343,7 @@ PeerHelper Connection::getPeerNoEx(session_t peer_id)
 }
 
 /* find peer_id for address */
-u16 Connection::lookupPeer(Address& sender)
+session_t Connection::lookupPeer(const Address& sender)
 {
 	MutexAutoLock peerlock(m_peers_mutex);
 	std::map<u16, Peer*>::iterator j;
@@ -1559,7 +1563,7 @@ float Connection::getLocalStat(rate_stat_type type)
 	return retval;
 }
 
-u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
+session_t Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 {
 	// Somebody wants to make a new connection
 
