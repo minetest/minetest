@@ -653,6 +653,7 @@ protected:
 
 	void setResendTimeout(float timeout)
 		{ MutexAutoLock lock(m_exclusive_access_mutex); resend_timeout = timeout; }
+
 	bool Ping(float dtime,SharedBuffer<u8>& data);
 
 	Channel channels[CHANNEL_COUNT];
