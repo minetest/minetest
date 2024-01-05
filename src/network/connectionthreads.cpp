@@ -193,7 +193,11 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		/*
 			Check peer timeout
 		*/
-		if (peer->isTimedOut(m_timeout)) {
+		// When the connection is half-open give the peer less time.
+		// Note that this time is also fixed since the timeout is not reset in half-open state.
+		const float peer_timeout = peer->isHalfOpen() ?
+			MYMAX(5.0f, m_timeout / 4) : m_timeout;
+		if (peer->isTimedOut(peer_timeout)) {
 			infostream << m_connection->getDesc()
 				<< "RunTimeouts(): Peer " << peer->id
 				<< " has timed out."
@@ -208,7 +212,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		for (Channel &channel : udpPeer->channels) {
 
 			// Remove timed out incomplete unreliable split packets
-			channel.incoming_splits.removeUnreliableTimedOuts(dtime, m_timeout);
+			channel.incoming_splits.removeUnreliableTimedOuts(dtime, peer_timeout);
 
 			// Increment reliable packet times
 			channel.outgoing_reliables_sent.incrementTimeouts(dtime);
@@ -243,11 +247,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		if (udpPeer->Ping(dtime, data)) {
 			LOG(dout_con << m_connection->getDesc()
 				<< "Sending ping for peer_id: " << udpPeer->id << std::endl);
-			/* this may fail if there ain't a sequence number left */
-			if (!rawSendAsPacket(udpPeer->id, 0, data, true)) {
-				//retrigger with reduced ping interval
-				udpPeer->Ping(4.0, data);
-			}
+			rawSendAsPacket(udpPeer->id, 0, data, true);
 		}
 
 		udpPeer->RunCommandQueues(m_max_packet_size,
@@ -1002,10 +1002,11 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			return;
 		}
 
-		if (knew_peer_id)
+		if (knew_peer_id) {
 			peer->SetFullyOpen();
-
-		peer->ResetTimeout();
+			// Setup phase has a fixed timeout
+			peer->ResetTimeout();
+		}
 
 		Channel *channel = nullptr;
 		if (dynamic_cast<UDPPeer *>(&peer)) {
