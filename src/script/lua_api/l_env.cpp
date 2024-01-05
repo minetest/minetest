@@ -359,6 +359,39 @@ int ModApiEnv::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+// bulk_get_node([pos1, pos2, ...])
+// pos = {x=num, y=num, z=num}
+int ModApiEnv::l_bulk_get_node(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	// parameters
+	if (!lua_istable(L, 1)) {
+		return 0;
+	}
+
+	s32 len = lua_objlen(L, 1);
+
+	// Do it
+	std::vector<MapNode> nodes;
+
+	for (s32 i = 1; i <= len; i++) {
+		lua_rawgeti(L, 1, i);
+		nodes.push_back(env->getMap().getNode(read_v3s16(L, -1)));
+		lua_pop(L, 1);
+	}
+
+	// create table for return data
+	lua_newtable(L);
+
+	for (s32 i = 0; i < len; ) {
+		pushnode(L, nodes[i]);
+		lua_rawseti(L, -2, ++i);
+	}
+
+	return 1;
+}
+
 // get_node_light(pos, timeofday)
 // pos = {x=num, y=num, z=num}
 // timeofday: nil = current time, 0 = night, 0.5 = day
@@ -1447,6 +1480,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(remove_node);
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
+	API_FCT(bulk_get_node);
 	API_FCT(get_node_light);
 	API_FCT(get_natural_light);
 	API_FCT(place_node);

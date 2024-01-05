@@ -82,6 +82,10 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node_or_nil(lua_State *L);
 
+	// bulk_get_node([pos1, pos2, ...])
+	// pos = {x=num, y=num, z=num}
+	static int l_bulk_get_node(lua_State *L);
+
 	// get_node_light(pos, timeofday)
 	// pos = {x=num, y=num, z=num}
 	// timeofday: nil = current time, 0 = night, 0.5 = day
