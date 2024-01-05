@@ -38,8 +38,8 @@ const char *ClientInterface::statenames[] = {
 	"Disconnecting",
 	"Denied",
 	"Created",
-	"AwaitingInit2",
 	"HelloSent",
+	"AwaitingInit2",
 	"InitDone",
 	"DefinitionsSent",
 	"Active",
@@ -647,8 +647,7 @@ u64 RemoteClient::uptime() const
 ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
 :
 	m_con(con),
-	m_env(NULL),
-	m_print_info_timer(0.0f)
+	m_env(nullptr)
 {
 
 }
@@ -705,6 +704,34 @@ void ClientInterface::step(float dtime)
 	if (m_print_info_timer >= 30.0f) {
 		m_print_info_timer = 0.0f;
 		UpdatePlayerList();
+	}
+
+	m_check_linger_timer += dtime;
+	if (m_check_linger_timer < 1.0f)
+		return;
+	m_check_linger_timer = 0;
+
+	RecursiveMutexAutoLock clientslock(m_clients_mutex);
+	for (const auto &it : m_clients) {
+		auto state = it.second->getState();
+		if (state >= CS_HelloSent)
+			continue;
+		if (it.second->uptime() <= LINGER_TIMEOUT)
+			continue;
+		// CS_Created means nobody has even noticed the client is there
+		//            (this is before on_prejoinplayer runs)
+		// CS_Invalid should not happen
+		// -> log those as warning, the rest as info
+		std::ostream &os = state == CS_Created || state == CS_Invalid ?
+			warningstream : infostream;
+		try {
+			Address addr = m_con->GetPeerAddress(it.second->peer_id);
+			os << "Disconnecting lingering client from "
+				<< addr.serializeString() << " (state="
+				<< state2Name(state) << ")" << std::endl;
+			m_con->DisconnectPeer(it.second->peer_id);
+		} catch (con::PeerNotFoundException &e) {
+		}
 	}
 }
 

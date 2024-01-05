@@ -181,8 +181,8 @@ enum ClientState
 	CS_Disconnecting,
 	CS_Denied,
 	CS_Created,
-	CS_AwaitingInit2,
 	CS_HelloSent,
+	CS_AwaitingInit2,
 	CS_InitDone,
 	CS_DefinitionsSent,
 	CS_Active,
@@ -550,7 +550,10 @@ private:
 	// Environment
 	ServerEnvironment *m_env;
 
-	float m_print_info_timer;
+	float m_print_info_timer = 0;
+	float m_check_linger_timer = 0;
 
 	static const char *statenames[];
+
+	static constexpr int LINGER_TIMEOUT = 10;
 };
