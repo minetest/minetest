@@ -325,9 +325,7 @@ void TestCAO::processMessage(const std::string &data)
 #include "clientobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
-		ClientActiveObject(0, client, env),
-		m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
-		m_material_type_param(0.5f)
+		ClientActiveObject(0, client, env)
 {
 	if (!client) {
 		ClientActiveObject::registerType(getType(), create);
@@ -621,6 +619,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		return;
 
 	infostream << "GenericCAO::addToScene(): " << m_prop.visual << std::endl;
+
+	m_material_type_param = 0.5f; // May cut off alpha < 128 depending on m_material_type
 
 	if (m_enable_shaders) {
 		IShaderSource *shader_source = m_client->getShaderSource();
