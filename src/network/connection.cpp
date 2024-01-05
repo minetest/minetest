@@ -1158,16 +1158,13 @@ bool UDPPeer::processReliableSendCommand(
 
 void UDPPeer::RunCommandQueues(
 							unsigned int max_packet_size,
-							unsigned int maxcommands,
 							unsigned int maxtransfer)
 {
 
 	for (Channel &channel : channels) {
-		unsigned int commands_processed = 0;
 
 		if ((!channel.queued_commands.empty()) &&
-				(channel.queued_reliables.size() < maxtransfer) &&
-				(commands_processed < maxcommands)) {
+				(channel.queued_reliables.size() < maxtransfer)) {
 			try {
 				ConnectionCommandPtr c = channel.queued_commands.front();
 

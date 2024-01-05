@@ -102,7 +102,6 @@ private:
 	Semaphore m_send_sleep_semaphore;
 
 	unsigned int m_iteration_packets_avaialble;
-	unsigned int m_max_commands_per_iteration = 1;
 	unsigned int m_max_data_packets_per_iteration;
 	unsigned int m_max_packets_requeued = 256;
 };
