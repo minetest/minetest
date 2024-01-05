@@ -69,7 +69,7 @@ public:
 	void setPeerTimeout(float peer_timeout) { m_timeout = peer_timeout; }
 
 private:
-	void runTimeouts(float dtime);
+	void runTimeouts(float dtime, u32 peer_packet_quota);
 	void resendReliable(Channel &channel, const BufferedPacket *k, float resend_timeout);
 	void rawSend(const BufferedPacket *p);
 	bool rawSendAsPacket(session_t peer_id, u8 channelnum,
@@ -86,7 +86,7 @@ private:
 	void sendToAll(u8 channelnum, const SharedBuffer<u8> &data);
 	void sendToAllReliable(ConnectionCommandPtr &c);
 
-	void sendPackets(float dtime);
+	void sendPackets(float dtime, u32 peer_packet_quota);
 
 	void sendAsPacket(session_t peer_id, u8 channelnum, const SharedBuffer<u8> &data,
 			bool ack = false);
