@@ -195,10 +195,11 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		// Note that this time is also fixed since the timeout is not reset in half-open state.
 		const float peer_timeout = peer->isHalfOpen() ?
 			MYMAX(5.0f, m_timeout / 4) : m_timeout;
-		if (peer->isTimedOut(peer_timeout)) {
+		std::string reason;
+		if (peer->isTimedOut(peer_timeout, reason)) {
 			infostream << m_connection->getDesc()
 				<< "RunTimeouts(): Peer " << peer->id
-				<< " has timed out."
+				<< " has timed out (" << reason << ")"
 				<< std::endl;
 			// Add peer to the list
 			timeouted_peers.push_back(peer->id);
@@ -216,7 +217,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			channel.outgoing_reliables_sent.incrementTimeouts(dtime);
 
 			// Re-send timed out outgoing reliables
-			auto timed_outs = channel.outgoing_reliables_sent.getTimedOuts(resend_timeout,
+			auto timed_outs = channel.outgoing_reliables_sent.getResend(resend_timeout,
 				(m_max_data_packets_per_iteration / numpeers));
 
 			channel.UpdatePacketLossCounter(timed_outs.size());
@@ -424,10 +425,10 @@ void ConnectionSendThread::processReliableCommand(ConnectionCommandPtr &c)
 				return;
 			Channel &channel = dynamic_cast<UDPPeer *>(&peer)->channels[c->channelnum];
 
-			auto timed_outs = channel.outgoing_reliables_sent.getTimedOuts(0, 1);
+			auto list = channel.outgoing_reliables_sent.getResend(0, 1);
 
-			if (!timed_outs.empty())
-				resendReliable(channel, timed_outs.front().get(), -1);
+			if (!list.empty())
+				resendReliable(channel, list.front().get(), -1);
 
 			return;
 		}
