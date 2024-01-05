@@ -162,8 +162,25 @@ private:
 				bool reliable);
 	};
 
+	struct RateLimitHelper {
+		u64 time = 0;
+		int counter = 0;
+		bool logged = false;
+
+		void tick() {
+			u64 now = porting::getTimeS();
+			if (time != now) {
+				time = now;
+				counter = 0;
+				logged = false;
+			}
+		}
+	};
+
 	static const PacketTypeHandler packetTypeRouter[PACKET_TYPE_MAX];
 
 	Connection *m_connection = nullptr;
+
+	RateLimitHelper m_new_peer_ratelimit;
 };
 }
