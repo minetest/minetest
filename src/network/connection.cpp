@@ -51,6 +51,15 @@ namespace con
 
 #define PING_TIMEOUT 5.0f
 
+// exponent base
+#define RESEND_SCALE_BASE 1.5f
+
+// since spacing is exponential the numbers here shouldn't be too high
+// (it's okay to start out quick)
+#define RESEND_TIMEOUT_MIN 0.1f
+#define RESEND_TIMEOUT_MAX 2.0f
+#define RESEND_TIMEOUT_FACTOR 2
+
 u16 BufferedPacket::getSeqnum() const
 {
 	if (size() < BASE_HEADER_SIZE + 3)
@@ -354,7 +363,10 @@ std::list<ConstSharedPtr<BufferedPacket>>
 	MutexAutoLock listlock(m_list_mutex);
 	std::list<ConstSharedPtr<BufferedPacket>> timed_outs;
 	for (auto &packet : m_list) {
-		if (packet->time < timeout)
+		// resend time scales exponentially with each cycle
+		const float pkt_timeout = timeout * powf(RESEND_SCALE_BASE, packet->resend_count);
+
+		if (packet->time < pkt_timeout)
 			continue;
 
 		// caller will resend packet so reset time and increase counter
@@ -980,14 +992,14 @@ void UDPPeer::reportRTT(float rtt)
 	}
 	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
 
+	// use this value to decide the resend timeout
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)
 		timeout = RESEND_TIMEOUT_MIN;
 	if (timeout > RESEND_TIMEOUT_MAX)
 		timeout = RESEND_TIMEOUT_MAX;
 
-	MutexAutoLock usage_lock(m_exclusive_access_mutex);
-	resend_timeout = timeout;
+	setResendTimeout(timeout);
 }
 
 bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
