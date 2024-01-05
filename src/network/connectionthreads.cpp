@@ -44,6 +44,8 @@ namespace con
 // TODO: Clean this up.
 #define LOG(a) a
 
+#define MAX_NEW_PEERS_PER_SEC 30
+
 static inline session_t readPeerId(const u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
@@ -971,7 +973,19 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 
 			// Someone new is trying to talk to us. Add them.
 			if (peer_id == PEER_ID_INEXISTENT) {
-				peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
+				auto &l = m_new_peer_ratelimit;
+				l.tick();
+				if (++l.counter > MAX_NEW_PEERS_PER_SEC) {
+					if (!l.logged) {
+						warningstream << m_connection->getDesc()
+							<< "Receive(): More than " << MAX_NEW_PEERS_PER_SEC
+							<< " new clients within 1s. Throttling." << std::endl;
+					}
+					l.logged = true;
+					// We simply drop the packet, the client can try again.
+				} else {
+					peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
+				}
 			}
 		}
 
