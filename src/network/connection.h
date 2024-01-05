@@ -764,6 +764,8 @@ protected:
 		return m_peer_ids;
 	}
 
+	u32 getActiveCount();
+
 	UDPSocket m_udpSocket;
 	// Command queue: user -> SendThread
 	MutexedQueue<ConnectionCommandPtr> m_command_queue;

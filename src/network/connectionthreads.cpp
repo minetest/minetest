@@ -86,8 +86,6 @@ void *ConnectionSendThread::run()
 		BEGIN_DEBUG_EXCEPTION_HANDLER
 		PROFILE(ScopeProfiler sp(g_profiler, ThreadIdentifier.str(), SPT_AVG));
 
-		m_iteration_packets_avaialble = m_max_data_packets_per_iteration;
-
 		/* wait for trigger or timeout */
 		m_send_sleep_semaphore.wait(50);
 
@@ -99,8 +97,16 @@ void *ConnectionSendThread::run()
 		curtime = porting::getTimeMs();
 		float dtime = CALC_DTIME(lasttime, curtime);
 
+		m_iteration_packets_avaialble = m_max_data_packets_per_iteration;
+		const auto &calculate_quota = [&] () -> u32 {
+			u32 numpeers = m_connection->getActiveCount();
+			if (numpeers > 0)
+				return MYMAX(1, m_iteration_packets_avaialble / numpeers);
+			return m_iteration_packets_avaialble;
+		};
+
 		/* first resend timed-out packets */
-		runTimeouts(dtime);
+		runTimeouts(dtime, calculate_quota());
 		if (m_iteration_packets_avaialble == 0) {
 			LOG(warningstream << m_connection->getDesc()
 				<< " Packet quota used up after re-sending packets, "
@@ -119,7 +125,7 @@ void *ConnectionSendThread::run()
 		}
 
 		/* send queued packets */
-		sendPackets(dtime);
+		sendPackets(dtime, calculate_quota());
 
 		END_DEBUG_EXCEPTION_HANDLER
 	}
@@ -160,17 +166,12 @@ bool ConnectionSendThread::packetsQueued()
 	return false;
 }
 
-void ConnectionSendThread::runTimeouts(float dtime)
+void ConnectionSendThread::runTimeouts(float dtime, u32 peer_packet_quota)
 {
 	std::vector<session_t> timeouted_peers;
 	std::vector<session_t> peerIds = m_connection->getPeerIDs();
 
-	const u32 numpeers = m_connection->m_peers.size();
-
-	if (numpeers == 0)
-		return;
-
-	for (session_t &peerId : peerIds) {
+	for (const session_t peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 
 		if (!peer)
@@ -217,8 +218,8 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			channel.outgoing_reliables_sent.incrementTimeouts(dtime);
 
 			// Re-send timed out outgoing reliables
-			auto timed_outs = channel.outgoing_reliables_sent.getResend(resend_timeout,
-				(m_max_data_packets_per_iteration / numpeers));
+			auto timed_outs = channel.outgoing_reliables_sent.getResend(
+				resend_timeout, peer_packet_quota);
 
 			channel.UpdatePacketLossCounter(timed_outs.size());
 			g_profiler->graphAdd("packets_lost", timed_outs.size());
@@ -235,7 +236,11 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				continue;
 			}
 
-			m_iteration_packets_avaialble -= timed_outs.size();
+			if (m_iteration_packets_avaialble > timed_outs.size())
+				m_iteration_packets_avaialble -= timed_outs.size();
+			else
+				m_iteration_packets_avaialble = 0;
+
 			for (const auto &k : timed_outs)
 				resendReliable(channel, k.get(), resend_timeout);
 
@@ -643,14 +648,11 @@ void ConnectionSendThread::sendToAllReliable(ConnectionCommandPtr &c)
 	}
 }
 
-void ConnectionSendThread::sendPackets(float dtime)
+void ConnectionSendThread::sendPackets(float dtime, u32 peer_packet_quota)
 {
 	std::vector<session_t> peerIds = m_connection->getPeerIDs();
 	std::vector<session_t> pendingDisconnect;
 	std::map<session_t, bool> pending_unreliable;
-
-	const unsigned int peer_packet_quota = m_iteration_packets_avaialble
-		/ MYMAX(peerIds.size(), 1);
 
 	for (session_t peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);

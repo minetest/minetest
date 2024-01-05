@@ -1397,6 +1397,21 @@ session_t Connection::lookupPeer(const Address& sender)
 	return PEER_ID_INEXISTENT;
 }
 
+u32 Connection::getActiveCount()
+{
+	MutexAutoLock peerlock(m_peers_mutex);
+	u32 count = 0;
+	for (auto &it : m_peers) {
+		Peer *peer = it.second;
+		if (peer->isPendingDeletion())
+			continue;
+		if (peer->isHalfOpen())
+			continue;
+		count++;
+	}
+	return count;
+}
+
 bool Connection::deletePeer(session_t peer_id, bool timeout)
 {
 	Peer *peer = 0;
