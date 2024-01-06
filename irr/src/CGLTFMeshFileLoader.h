@@ -10,9 +10,11 @@
 #include "path.h"
 #include "S3DVertex.h"
 
-#include <tiniergltf.hpp>
+#include "tiniergltf.hpp"
 
+#include <functional>
 #include <cstddef>
+#include <tuple>
 #include <vector>
 
 namespace irr
@@ -26,9 +28,9 @@ class CGLTFMeshFileLoader : public IMeshLoader
 public:
 	CGLTFMeshFileLoader() noexcept {};
 
-	bool isALoadableFileExtension(const io::path& filename) const override;
+	bool isALoadableFileExtension(const io::path &filename) const override;
 
-	IAnimatedMesh* createMesh(io::IReadFile* file) override;
+	IAnimatedMesh *createMesh(io::IReadFile *file) override;
 
 private:
 	template <typename T>
@@ -94,7 +96,8 @@ private:
 			const NormalizedValuesAccessor<N> &accessor,
 			const std::size_t i);
 
-	class MeshExtractor {
+	class MeshExtractor
+	{
 	public:
 		MeshExtractor(tiniergltf::GlTF &&model,
 				CSkinnedMesh *mesh) noexcept
@@ -114,11 +117,14 @@ private:
 
 		std::size_t getPrimitiveCount(const std::size_t meshIdx) const;
 
-		void loadNodes() const;
+		void load();
 
 	private:
 		const tiniergltf::GlTF m_gltf_model;
 		CSkinnedMesh *m_irr_model;
+
+		std::vector<std::function<void()>> m_mesh_loaders;
+		std::vector<CSkinnedMesh::SJoint *> m_loaded_nodes;
 
 		void copyPositions(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
@@ -129,16 +135,24 @@ private:
 		void copyTCoords(const std::size_t accessorIdx,
 				std::vector<video::S3DVertex>& vertices) const;
 
-		void loadMesh(
-			std::size_t meshIdx,
-			ISkinnedMesh::SJoint *parentJoint) const;
+		void addPrimitive(const tiniergltf::MeshPrimitive &primitive,
+				const std::optional<std::size_t> skinIdx,
+				CSkinnedMesh::SJoint *parent);
 
-		void loadNode(
-			const std::size_t nodeIdx,
-			ISkinnedMesh::SJoint *parentJoint) const;
+		void deferAddMesh(const std::size_t meshIdx,
+				const std::optional<std::size_t> skinIdx,
+				CSkinnedMesh::SJoint *parentJoint);
+
+		void loadNode(const std::size_t nodeIdx, CSkinnedMesh::SJoint *parentJoint);
+
+		void loadNodes();
+
+		void loadSkins();
+
+		void loadAnimation(const std::size_t animIdx);
 	};
 
-	std::optional<tiniergltf::GlTF> tryParseGLTF(io::IReadFile* file);
+	std::optional<tiniergltf::GlTF> tryParseGLTF(io::IReadFile *file);
 };
 
 } // namespace scene

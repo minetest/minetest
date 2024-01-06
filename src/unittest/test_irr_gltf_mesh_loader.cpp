@@ -8,6 +8,7 @@
 #include "irr_v2d.h"
 #include "irr_ptr.h"
 
+#include "ISkinnedMesh.h"
 #include <irrlicht.h>
 
 #include "catch.h"
@@ -371,7 +372,91 @@ SECTION("simple sparse accessor")
 		CHECK(vertices[i].Pos == expectedPositions[i]);
 }
 
+// https://github.com/KhronosGroup/glTF-Sample-Models/tree/main/2.0/SimpleSkin
+SECTION("simple skin")
+{
+	using ISkinnedMesh = irr::scene::ISkinnedMesh;
+	const auto mesh = loadMesh(model_stem + "simple_skin.gltf");
+	REQUIRE(mesh != nullptr);
+	auto csm = dynamic_cast<const ISkinnedMesh*>(mesh);
+	const auto joints = csm->getAllJoints();
+	REQUIRE(joints.size() == 3);
+
+	const auto findJoint = [&](const std::function<bool(ISkinnedMesh::SJoint*)> &predicate) {
+		for (std::size_t i = 0; i < joints.size(); ++i) {
+			if (predicate(joints[i])) {
+				return joints[i];
+			}
+		}
+		throw std::runtime_error("joint not found");
+	};
+
+	// Check the node hierarchy
+	const auto parent = findJoint([](auto joint) {
+		return !joint->Children.empty();
+	});
+	REQUIRE(parent->Children.size() == 1);
+	const auto child = parent->Children[0];
+	REQUIRE(child != parent);
+
+	SECTION("transformations are correct")
+	{
+		CHECK(parent->Animatedposition == v3f(0, 0, 0));
+		CHECK(parent->Animatedrotation == irr::core::quaternion());
+		CHECK(parent->Animatedscale == v3f(1, 1, 1));
+		CHECK(parent->GlobalInversedMatrix == irr::core::matrix4());
+		const v3f childTranslation(0, 1, 0);
+		CHECK(child->Animatedposition == childTranslation);
+		CHECK(child->Animatedrotation == irr::core::quaternion());
+		CHECK(child->Animatedscale == v3f(1, 1, 1));
+		irr::core::matrix4 inverseBindMatrix;
+		inverseBindMatrix.setInverseTranslation(childTranslation);
+		CHECK(child->GlobalInversedMatrix == inverseBindMatrix);
+	}
+
+	SECTION("weights are correct")
+	{
+		const auto weights = [&](const ISkinnedMesh::SJoint *joint) {
+			std::unordered_map<irr::u32, irr::f32> weights;
+			for (std::size_t i = 0; i < joint->Weights.size(); ++i) {
+				const auto weight = joint->Weights[i];
+				REQUIRE(weight.buffer_id == 0);
+				weights[weight.vertex_id] = weight.strength;
+			}
+			return weights;
+		};
+		const auto parentWeights = weights(parent);
+		const auto childWeights = weights(child);
+
+		const auto checkWeights = [&](irr::u32 index, irr::f32 parentWeight, irr::f32 childWeight) {
+			const auto getWeight = [](auto weights, auto index) {
+				const auto it = weights.find(index);
+				return it == weights.end() ? 0.0f : it->second;
+			};
+			CHECK(getWeight(parentWeights, index) == parentWeight);
+			CHECK(getWeight(childWeights, index) == childWeight);
+		};
+		checkWeights(0, 1.00, 0.00);
+		checkWeights(1, 1.00, 0.00);
+		checkWeights(2, 0.75, 0.25);
+		checkWeights(3, 0.75, 0.25);
+		checkWeights(4, 0.50, 0.50);
+		checkWeights(5, 0.50, 0.50);
+		checkWeights(6, 0.25, 0.75);
+		checkWeights(7, 0.25, 0.75);
+		checkWeights(8, 0.00, 1.00);
+		checkWeights(9, 0.00, 1.00);
+	}
+
+	SECTION("there should be a third node not involved in skinning")
+	{
+		const auto other = findJoint([&](auto joint) {
+			return joint != child && joint != parent;
+		});
+		CHECK(other->Weights.empty());
+	}
+}
+
 driver->closeDevice();
 driver->drop();
-
 }

@@ -294,7 +294,7 @@ depends on by supplying a file with an equal name.
 Only a subset of model file format features is supported:
 
 Simple textured meshes (with multiple textures), optionally with normals.
-The .x and .b3d formats additionally support skeletal animation.
+The .x, .b3d and .gltf formats additionally support (a single) animation.
 
 #### glTF
 
@@ -307,7 +307,10 @@ due to their space savings.
 
 This means that many glTF features are not supported *yet*, including:
 
-* Animation
+* Animations
+  * Only a single animation is supported,
+    use frame ranges within this animation.
+  * Only integer frames are supported.
 * Cameras
 * Materials
   * Only base color textures are supported
