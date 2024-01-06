@@ -1018,6 +1018,13 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			peer->SetFullyOpen();
 			// Setup phase has a fixed timeout
 			peer->ResetTimeout();
+		} else if (!peer->isHalfOpen()) {
+			// If the peer talks to us without a peer ID when it has done so
+			// before something is definitely fishy.
+			LOG(derr_con << m_connection->getDesc()
+				<< " Peer " << peer_id << " sending without peer id?!"
+				" Ignoring." << std::endl);
+			return;
 		}
 
 		auto *udpPeer = dynamic_cast<UDPPeer *>(&peer);
