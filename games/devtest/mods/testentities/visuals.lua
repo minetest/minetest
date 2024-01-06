@@ -55,6 +55,29 @@ minetest.register_entity("testentities:mesh", {
 	},
 })
 
+minetest.register_entity("testentities:gltf_spider_static", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "testentities_gltf_spider_static.gltf",
+		textures = {
+			"testentities_gltf_spider.png"
+		},
+	},
+})
+
+minetest.register_entity("testentities:gltf_spider_animated", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "testentities_gltf_spider_animated.gltf",
+		textures = {
+			"testentities_gltf_spider.png"
+		},
+	},
+	on_activate = function(self)
+		self.object:set_animation({x = 0, y = 140}, 10)
+	end
+})
+
 minetest.register_entity("testentities:mesh_unshaded", {
 	initial_properties = {
 		visual = "mesh",
