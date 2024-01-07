@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
-#include "network/clientopcodes.h"
 #include "ban.h"
 #include "environment.h"
 #include "map.h"
@@ -1390,9 +1389,9 @@ void Server::Send(session_t peer_id, NetworkPacket *pkt)
 void Server::SendToServer(session_t peer_id, NetworkPacket *pkt)
 {
 	m_con->Send(peer_id,
-		serverCommandFactoryTable[pkt->getCommand()].channel,
+		serverToServerCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
-		serverCommandFactoryTable[pkt->getCommand()].reliable);
+		serverToServerCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
 void Server::SendMovement(session_t peer_id)

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "serveriface.h"
 #include "network/connection.h"
-#include "network/clientopcodes.h"
+#include "network/serveropcodes.h"
 #include "network/networkpacket.h"
 #include "settings.h"
 #include "emerge.h"
@@ -96,8 +96,8 @@ void ServerInterface::sendToAll(NetworkPacket *pkt)
 		RemoteServer *server = server_it.second;
 
 		m_con->Send(server->peer_id,
-				serverCommandFactoryTable[pkt->getCommand()].channel, pkt,
-				serverCommandFactoryTable[pkt->getCommand()].reliable);
+				serverToServerCommandFactoryTable[pkt->getCommand()].channel, pkt,
+				serverToServerCommandFactoryTable[pkt->getCommand()].reliable);
 	}
 }
 

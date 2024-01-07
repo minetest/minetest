@@ -225,3 +225,101 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MINIMAP_MODES",            0, true }, // 0x62
 	{ "TOCLIENT_SET_LIGHTING",             0, true }, // 0x63
 };
+
+const static ServerToServerCommandFactory null_command_factory_2 = { "TOSERVER_NULL", 0, false };
+
+/*
+	Channels used for Server -> Server communication
+	0: messages
+
+	Packet order is only guaranteed inside a channel, so packets that operate on
+	the same objects are *required* to be in the same channel.
+*/
+
+const ServerToServerCommandFactory serverToServerCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
+{
+	null_command_factory_2, // 0x00
+	null_command_factory_2, // 0x01
+	null_command_factory_2, // 0x02
+	null_command_factory_2, // 0x03
+	null_command_factory_2, // 0x04
+	null_command_factory_2, // 0x05
+	null_command_factory_2, // 0x06
+	null_command_factory_2, // 0x07
+	{ "TOSERVER_SERVERMSG",              0, true }, // 0x08
+	null_command_factory_2, // 0x09
+	null_command_factory_2, // 0x0a
+	null_command_factory_2, // 0x0b
+	null_command_factory_2, // 0x0c
+	null_command_factory_2, // 0x0d
+	null_command_factory_2, // 0x0e
+	null_command_factory_2, // 0x0f
+	null_command_factory_2, // 0x10
+	null_command_factory_2, // 0x11
+	null_command_factory_2, // 0x12
+	null_command_factory_2, // 0x13
+	null_command_factory_2, // 0x14
+	null_command_factory_2, // 0x15
+	null_command_factory_2, // 0x16
+	null_command_factory_2, // 0x17
+	null_command_factory_2, // 0x18
+	null_command_factory_2, // 0x19
+	null_command_factory_2, // 0x1a
+	null_command_factory_2, // 0x1b
+	null_command_factory_2, // 0x1c
+	null_command_factory_2, // 0x1d
+	null_command_factory_2, // 0x1e
+	null_command_factory_2, // 0x1f
+	null_command_factory_2, // 0x20
+	null_command_factory_2, // 0x21
+	null_command_factory_2, // 0x22
+	null_command_factory_2, // 0x23
+	null_command_factory_2, // 0x24
+	null_command_factory_2, // 0x25
+	null_command_factory_2, // 0x26
+	null_command_factory_2, // 0x27
+	null_command_factory_2, // 0x28
+	null_command_factory_2, // 0x29
+	null_command_factory_2, // 0x2a
+	null_command_factory_2, // 0x2b
+	null_command_factory_2, // 0x2c
+	null_command_factory_2, // 0x2d
+	null_command_factory_2, // 0x2e
+	null_command_factory_2, // 0x2f
+	null_command_factory_2, // 0x30
+	null_command_factory_2, // 0x31
+	null_command_factory_2, // 0x32
+	null_command_factory_2, // 0x33
+	null_command_factory_2, // 0x34
+	null_command_factory_2, // 0x35
+	null_command_factory_2, // 0x36
+	null_command_factory_2, // 0x37
+	null_command_factory_2, // 0x38
+	null_command_factory_2, // 0x39
+	null_command_factory_2, // 0x3a
+	null_command_factory_2, // 0x3b
+	null_command_factory_2, // 0x3c
+	null_command_factory_2, // 0x3d
+	null_command_factory_2, // 0x3e
+	null_command_factory_2, // 0x3f
+	null_command_factory_2, // 0x40
+	null_command_factory_2, // 0x10
+	null_command_factory_2, // 0x42
+	null_command_factory_2, // 0x43
+	null_command_factory_2, // 0x44
+	null_command_factory_2, // 0x45
+	null_command_factory_2, // 0x46
+	null_command_factory_2, // 0x47
+	null_command_factory_2, // 0x48
+	null_command_factory_2, // 0x49
+	null_command_factory_2, // 0x4a
+	null_command_factory_2, // 0x4b
+	null_command_factory_2, // 0x4c
+	null_command_factory_2, // 0x4d
+	null_command_factory_2, // 0x4e
+	null_command_factory_2, // 0x4f
+	null_command_factory_2, // 0x50
+	null_command_factory_2, // 0x51
+	null_command_factory_2, // 0x52
+	null_command_factory_2, // 0x53
+};
