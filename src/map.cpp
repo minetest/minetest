@@ -1193,13 +1193,14 @@ bool Map::isBlockOccluded(v3s16 pos_relative, v3s16 cam_pos_nodes, bool simple_c
 	// this is a HACK, we should think of a more precise algorithm
 	u32 needed_count = 2;
 
-	v3s16 random_point(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2));
-	if (!isOccluded(cam_pos_nodes, pos_blockcenter + random_point, step, stepfac,
-				start_offset, end_offset, needed_count))
-		return false;
-
-	if (simple_check)
-		return true;
+	// This should be only used in server occlusion cullung.
+	// The client recalculates the complete drawlist periodically,
+	// and random sampling could lead to visible flicker.
+	if (simple_check) {
+		v3s16 random_point(myrand_range(-bs2, bs2), myrand_range(-bs2, bs2), myrand_range(-bs2, bs2));
+		return isOccluded(cam_pos_nodes, pos_blockcenter + random_point, step, stepfac,
+					start_offset, end_offset, 1);
+	}
 
 	// Additional occlusion check, see comments in that function
 	v3s16 check;
