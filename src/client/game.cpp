@@ -373,43 +373,55 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	bool m_fog_enabled;
-	CachedPixelShaderSetting<float, 4> m_sky_bg_color;
-	CachedPixelShaderSetting<float> m_fog_distance;
-	CachedPixelShaderSetting<float> m_fog_shading_parameter;
-	CachedVertexShaderSetting<float> m_animation_timer_vertex;
-	CachedPixelShaderSetting<float> m_animation_timer_pixel;
-	CachedVertexShaderSetting<float> m_animation_timer_delta_vertex;
-	CachedPixelShaderSetting<float> m_animation_timer_delta_pixel;
-	CachedPixelShaderSetting<float, 3> m_day_light;
-	CachedPixelShaderSetting<float, 4> m_star_color;
-	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
-	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
-	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
-	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel;
-	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture0;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture1;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture2;
-	CachedPixelShaderSetting<SamplerLayer_t> m_texture3;
-	CachedVertexShaderSetting<float, 2> m_texel_size0_vertex;
-	CachedPixelShaderSetting<float, 2> m_texel_size0_pixel;
+	CachedPixelShaderSetting<float, 4> m_sky_bg_color{"skyBgColor"};
+	CachedPixelShaderSetting<float> m_fog_distance{"fogDistance"};
+	CachedPixelShaderSetting<float>
+		m_fog_shading_parameter{"fogShadingParameter"};
+	CachedVertexShaderSetting<float> m_animation_timer_vertex{"animationTimer"};
+	CachedPixelShaderSetting<float> m_animation_timer_pixel{"animationTimer"};
+	CachedVertexShaderSetting<float>
+		m_animation_timer_delta_vertex{"animationTimerDelta"};
+	CachedPixelShaderSetting<float>
+		m_animation_timer_delta_pixel{"animationTimerDelta"};
+	CachedPixelShaderSetting<float, 3> m_day_light{"dayLight"};
+	CachedPixelShaderSetting<float, 4> m_star_color{"starColor"};
+	CachedPixelShaderSetting<float, 3> m_eye_position_pixel{"eyePosition"};
+	CachedVertexShaderSetting<float, 3> m_eye_position_vertex{"eyePosition"};
+	CachedPixelShaderSetting<float, 3> m_minimap_yaw{"yawVec"};
+	CachedPixelShaderSetting<float, 3> m_camera_offset_pixel{"cameraOffset"};
+	CachedPixelShaderSetting<float, 3> m_camera_offset_vertex{"cameraOffset"};
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture0{"texture0"};
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture1{"texture1"};
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture2{"texture2"};
+	CachedPixelShaderSetting<SamplerLayer_t> m_texture3{"texture3"};
+	CachedVertexShaderSetting<float, 2> m_texel_size0_vertex{"texelSize0"};
+	CachedPixelShaderSetting<float, 2> m_texel_size0_pixel{"texelSize0"};
 	std::array<float, 2> m_texel_size0_values;
-	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel;
+	CachedStructPixelShaderSetting<float, 7> m_exposure_params_pixel{
+		"exposureParams",
+		std::array<const char*, 7> {
+			"luminanceMin", "luminanceMax", "exposureCorrection",
+			"speedDarkBright", "speedBrightDark", "centerWeightPower",
+			"compensationFactor"
+		}};
 	float m_user_exposure_compensation;
 	bool m_bloom_enabled;
-	CachedPixelShaderSetting<float> m_bloom_intensity_pixel;
+	CachedPixelShaderSetting<float> m_bloom_intensity_pixel{"bloomIntensity"};
 	float m_bloom_intensity;
-	CachedPixelShaderSetting<float> m_bloom_strength_pixel;
+	CachedPixelShaderSetting<float> m_bloom_strength_pixel{"bloomStrength"};
 	float m_bloom_strength;
-	CachedPixelShaderSetting<float> m_bloom_radius_pixel;
+	CachedPixelShaderSetting<float> m_bloom_radius_pixel{"bloomRadius"};
 	float m_bloom_radius;
-	CachedPixelShaderSetting<float> m_saturation_pixel;
+	CachedPixelShaderSetting<float> m_saturation_pixel{"saturation"};
 	bool m_volumetric_light_enabled;
-	CachedPixelShaderSetting<float, 3> m_sun_position_pixel;
-	CachedPixelShaderSetting<float> m_sun_brightness_pixel;
-	CachedPixelShaderSetting<float, 3> m_moon_position_pixel;
-	CachedPixelShaderSetting<float> m_moon_brightness_pixel;
-	CachedPixelShaderSetting<float> m_volumetric_light_strength_pixel;
+	CachedPixelShaderSetting<float, 3>
+		m_sun_position_pixel{"sunPositionScreen"};
+	CachedPixelShaderSetting<float> m_sun_brightness_pixel{"sunBrightness"};
+	CachedPixelShaderSetting<float, 3>
+		m_moon_position_pixel{"moonPositionScreen"};
+	CachedPixelShaderSetting<float> m_moon_brightness_pixel{"moonBrightness"};
+	CachedPixelShaderSetting<float>
+		m_volumetric_light_strength_pixel{"volumetricLightStrength"};
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -438,41 +450,7 @@ public:
 		m_sky(sky),
 		m_client(client),
 		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range),
-		m_sky_bg_color("skyBgColor"),
-		m_fog_distance("fogDistance"),
-		m_fog_shading_parameter("fogShadingParameter"),
-		m_animation_timer_vertex("animationTimer"),
-		m_animation_timer_pixel("animationTimer"),
-		m_animation_timer_delta_vertex("animationTimerDelta"),
-		m_animation_timer_delta_pixel("animationTimerDelta"),
-		m_day_light("dayLight"),
-		m_star_color("starColor"),
-		m_eye_position_pixel("eyePosition"),
-		m_eye_position_vertex("eyePosition"),
-		m_minimap_yaw("yawVec"),
-		m_camera_offset_pixel("cameraOffset"),
-		m_camera_offset_vertex("cameraOffset"),
-		m_texture0("texture0"),
-		m_texture1("texture1"),
-		m_texture2("texture2"),
-		m_texture3("texture3"),
-		m_texel_size0_vertex("texelSize0"),
-		m_texel_size0_pixel("texelSize0"),
-		m_exposure_params_pixel("exposureParams",
-				std::array<const char*, 7> {
-						"luminanceMin", "luminanceMax", "exposureCorrection",
-						"speedDarkBright", "speedBrightDark", "centerWeightPower", "compensationFactor"
-				}),
-		m_bloom_intensity_pixel("bloomIntensity"),
-		m_bloom_strength_pixel("bloomStrength"),
-		m_bloom_radius_pixel("bloomRadius"),
-		m_saturation_pixel("saturation"),
-		m_sun_position_pixel("sunPositionScreen"),
-		m_sun_brightness_pixel("sunBrightness"),
-		m_moon_position_pixel("moonPositionScreen"),
-		m_moon_brightness_pixel("moonBrightness"),
-		m_volumetric_light_strength_pixel("volumetricLightStrength")
+		m_fog_range(fog_range)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		g_settings->registerChangedCallback("exposure_compensation", settingsCallback, this);
