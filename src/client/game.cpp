@@ -2277,7 +2277,7 @@ void Game::openConsole(float scale, const wchar_t *line)
 	assert(scale > 0.0f && scale <= 1.0f);
 
 #ifdef __ANDROID__
-	porting::showInputDialog(gettext("ok"), "", "", 2);
+	porting::showTextInputDialog("", "", 2);
 	m_android_chat_open = true;
 #else
 	if (gui_chat_console->isOpenInhibited())
@@ -2293,14 +2293,18 @@ void Game::openConsole(float scale, const wchar_t *line)
 #ifdef __ANDROID__
 void Game::handleAndroidChatInput()
 {
-	if (m_android_chat_open && porting::getInputDialogState() == 0) {
-		std::string text = porting::getInputDialogValue();
-		client->typeChatMessage(utf8_to_wide(text));
-		m_android_chat_open = false;
+	// It has to be a text input
+	if (m_android_chat_open && porting::getLastInputDialogType() == porting::TEXT_INPUT) {
+		porting::AndroidDialogState dialogState = porting::getInputDialogState();
+		if (dialogState == porting::DIALOG_INPUTTED) {
+			std::string text = porting::getInputDialogMessage();
+			client->typeChatMessage(utf8_to_wide(text));
+		}
+		if (dialogState != porting::DIALOG_SHOWN)
+			m_android_chat_open = false;
 	}
 }
 #endif
-
 
 void Game::toggleFreeMove()
 {

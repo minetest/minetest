@@ -268,9 +268,32 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 			if (((gui::IGUIEditBox *)hovered)->isPasswordBox())
 				type = 3;
 
-			porting::showInputDialog(gettext("OK"), "",
-				wide_to_utf8(((gui::IGUIEditBox *)hovered)->getText()), type);
+			porting::showTextInputDialog("",
+					wide_to_utf8(((gui::IGUIEditBox *) hovered)->getText()), type);
 			return retval;
+		}
+	}
+
+	if (event.EventType == EET_GUI_EVENT) {
+		if (event.GUIEvent.EventType == gui::EGET_LISTBOX_OPENED) {
+			gui::IGUIComboBox *dropdown = (gui::IGUIComboBox *) event.GUIEvent.Caller;
+
+			std::string field_name = getNameByID(dropdown->getID());
+			if (field_name.empty())
+				return false;
+
+			m_jni_field_name = field_name;
+
+			s32 selected_idx = dropdown->getSelected();
+			s32 option_size = dropdown->getItemCount();
+			std::string list_of_options[option_size];
+
+			for (s32 i = 0; i < option_size; i++) {
+				list_of_options[i] = wide_to_utf8(dropdown->getItem(i));
+			}
+
+			porting::showComboBoxDialog(list_of_options, option_size, selected_idx);
+			return true; // Prevent the Irrlicht dropdown from opening.
 		}
 	}
 #endif
@@ -347,22 +370,12 @@ bool GUIModalMenu::preprocessEvent(const SEvent &event)
 }
 
 #ifdef __ANDROID__
-bool GUIModalMenu::hasAndroidUIInput()
+porting::AndroidDialogState GUIModalMenu::getAndroidUIInputState()
 {
-	// no dialog shown
+	// No dialog is shown
 	if (m_jni_field_name.empty())
-		return false;
+		return porting::DIALOG_CANCELED;
 
-	// still waiting
-	if (porting::getInputDialogState() == -1)
-		return true;
-
-	// no value abort dialog processing
-	if (porting::getInputDialogState() != 0) {
-		m_jni_field_name.clear();
-		return false;
-	}
-
-	return true;
+	return porting::getInputDialogState();
 }
 #endif
