@@ -47,10 +47,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CAOShaderConstantSetter : public IShaderConstantSetter
 {
 public:
-	CAOShaderConstantSetter():
-			m_emissive_color_setting("emissiveColor")
-	{}
-
 	~CAOShaderConstantSetter() override = default;
 
 	void onSetConstants(video::IMaterialRendererServices *services) override
@@ -74,7 +70,8 @@ public:
 
 private:
 	video::SColor m_emissive_color;
-	CachedPixelShaderSetting<float, 4> m_emissive_color_setting;
+	CachedPixelShaderSetting<float, 4>
+		m_emissive_color_setting{"emissiveColor"};
 };
 
 class CAOShaderConstantSetterFactory : public IShaderConstantSetterFactory
