@@ -1255,6 +1255,10 @@ void Game::run()
 		);
 	const bool initial_window_maximized = g_settings->getBool("window_maximized");
 
+#ifdef __ANDROID__
+	porting::setPlayingNowNotification(true);
+#endif
+
 	while (m_rendering_engine->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->isShutdownRequested()))) {
@@ -1322,6 +1326,10 @@ void Game::run()
 			showPauseMenu();
 		}
 	}
+
+#ifdef __ANDROID__
+	porting::setPlayingNowNotification(false);
+#endif
 
 	RenderingEngine::autosaveScreensizeAndCo(initial_screen_size, initial_window_maximized);
 }

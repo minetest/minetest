@@ -21,8 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package net.minetest.minetest;
 
 import android.app.NativeActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -53,11 +58,13 @@ public class GameActivity extends NativeActivity {
 
 	private int messageReturnCode = -1;
 	private String messageReturnValue = "";
+	private NotificationManager mNotifyManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		setPlayingNowNotification(false); // Remove notification on engine start
 	}
 
 	private void makeFullScreen() {
@@ -216,5 +223,38 @@ public class GameActivity extends NativeActivity {
 		}
 
 		return langCode;
+	}
+
+	public void setPlayingNowNotification(boolean show) {
+		if (mNotifyManager == null)
+			mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		int notificationId = 2;
+
+		if (!show) {
+			mNotifyManager.cancel(notificationId);
+			return;
+		}
+
+		Notification.Builder builder;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			builder = new Notification.Builder(this, "net.minetest.minetest");
+		} else {
+			builder = new Notification.Builder(this);
+		}
+
+		Intent notificationIntent = new Intent(this, GameActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		int pendingIntentFlag = 0;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			pendingIntentFlag = PendingIntent.FLAG_MUTABLE;
+		}
+		PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, pendingIntentFlag);
+
+		builder.setContentTitle(getString(R.string.game_notification_title))
+			.setSmallIcon(R.mipmap.ic_launcher)
+			.setContentIntent(intent)
+			.setOngoing(true);
+
+		mNotifyManager.notify(notificationId, builder.build());
 	}
 }

@@ -20,17 +20,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package net.minetest.minetest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -87,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 		mTextView = findViewById(R.id.textView);
 		sharedPreferences = getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
 		checkAppVersion();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			createNotificationChannel();
 	}
 
 	private void checkAppVersion() {
@@ -112,6 +119,28 @@ public class MainActivity extends AppCompatActivity {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(intent);
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
+	private void createNotificationChannel() {
+		NotificationManager notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (notifyManager != null) {
+			NotificationChannel notifyChannel;
+			String channelId = "net.minetest.minetest";
+			String channelName = "General notification";
+			String channelDescription = "Notifications from Minetest";
+			int importance = NotificationManager.IMPORTANCE_LOW;
+			notifyChannel = notifyManager.getNotificationChannel(channelId);
+			if (notifyChannel == null) {
+				notifyChannel = new NotificationChannel(channelId, channelName, importance);
+				notifyChannel.setDescription(channelDescription);
+				// Configure the notification channel, NO SOUND
+				notifyChannel.setSound(null, null);
+				notifyChannel.enableLights(false);
+				notifyChannel.enableVibration(false);
+				notifyManager.createNotificationChannel(notifyChannel);
+			}
+		}
 	}
 
 	@Override
