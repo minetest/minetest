@@ -488,15 +488,12 @@ void set_default_settings()
 
 	settings->setDefault("touchscreen_threshold", "20");
 	settings->setDefault("touchscreen_sensitivity", "0.2");
-#ifdef ENABLE_TOUCH
 	settings->setDefault("touch_use_crosshair", "false");
 	settings->setDefault("fixed_virtual_joystick", "false");
 	settings->setDefault("virtual_joystick_triggers_aux1", "false");
+#ifdef ENABLE_TOUCH
 	settings->setDefault("clickable_chat_weblinks", "false");
 #else
-	settings->setDefault("touch_use_crosshair", "true");
-	settings->setDefault("fixed_virtual_joystick", "true");
-	settings->setDefault("virtual_joystick_triggers_aux1", "true");
 	settings->setDefault("clickable_chat_weblinks", "true");
 #endif
 	// Altered settings for Android
