@@ -9,8 +9,8 @@ local function test_bulk_get_set(_,pos)
 
 	minetest.bulk_set_node(positions, {name="basenodes:stone"})
 
-	for index,pos in pairs(positions) do
-		minetest.set_node(pos, nodes[index])
+	for index, set_pos in pairs(positions) do
+		minetest.set_node(set_pos, nodes[index])
 	end
 end
 unittests.register("test_bulk_get_set", test_bulk_get_set, {map=true})
