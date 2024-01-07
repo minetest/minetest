@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mipmap_generation.h"
 
 #include <array>
+#include <vector>
 #include <memory>
 #include <stdexcept>
 #include <IImage.h>
