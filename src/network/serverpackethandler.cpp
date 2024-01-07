@@ -1882,3 +1882,15 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	RemoteClient *client = getClient(peer_id, CS_Invalid);
 	client->setDynamicInfo(info);
 }
+
+void Server::handleCommand_ServerMsg(NetworkPacket *pkt)
+{
+	std::string auth;
+	std::string msg;
+	*pkt >> auth;
+	*pkt >> msg;
+
+	verbosestream << "Server received MSG from another server \"" << msg << "\" received." << std::endl;
+
+	getScriptIface()->on_server_receive_msg(auth, msg);
+}

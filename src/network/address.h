@@ -47,8 +47,8 @@ public:
 	Address(u8 a, u8 b, u8 c, u8 d, u16 port);
 	Address(const IPv6AddressBytes *ipv6_bytes, u16 port);
 
-	bool operator==(const Address &address);
-	bool operator!=(const Address &address) { return !(*this == address); }
+	bool operator==(const Address &address) const;
+	bool operator!=(const Address &address) const { return !(*this == address); }
 
 	struct in_addr getAddress() const;
 	struct in6_addr getAddress6() const;

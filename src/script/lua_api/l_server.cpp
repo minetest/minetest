@@ -666,6 +666,76 @@ int ModApiServer::l_serialize_roundtrip(lua_State *L)
 	return 1;
 }
 
+// set_another_server(name, server_spec)
+int ModApiServer::l_set_another_server(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name;
+	if(lua_isstring(L, 1))
+		name = readParam<std::string>(L, 1);
+	AnotherServer server;
+	read_anotherserver(L, 2, server);
+
+	ServerNetwork &network = getServer(L)->getServerNetwork();
+
+	try {
+		network.setServer(name, server);
+	} catch (ResolveError &e) {
+		std::stringstream error_msg;
+		error_msg << "Couldn't resolve address " << server.address_string << ": " << e.what();
+
+		LuaError(error_msg.str());
+		return false;
+	}
+	return 1;
+}
+
+// get_another_server(name)
+int ModApiServer::l_get_another_server(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name;
+	if(lua_isstring(L, 1))
+		name = readParam<std::string>(L, 1);
+
+	ServerNetwork &network = getServer(L)->getServerNetwork();
+
+	const AnotherServer *server = network.getServer(name);
+	if (!server) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	push_anotherserver(L, *server);
+	return 1;
+}
+
+// send_msg_another_server(name, msg)
+int ModApiServer::l_send_msg_another_server(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name;
+	if(lua_isstring(L, 1))
+		name = readParam<std::string>(L, 1);
+	std::string msg;
+	if(lua_isstring(L, 2))
+		msg = readParam<std::string>(L, 2);
+
+	Server *server = getServer(L);
+	ServerNetwork &network = server->getServerNetwork();
+
+	const AnotherServer *receiver = network.getServer(name);
+	if (!receiver) {
+		lua_pushboolean(L, false);
+		return 0;
+	}
+
+	server->SendServerMsg(*receiver, msg);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -705,6 +775,10 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(do_async_callback);
 	API_FCT(register_async_dofile);
 	API_FCT(serialize_roundtrip);
+
+	API_FCT(set_another_server);
+	API_FCT(get_another_server);
+	API_FCT(send_msg_another_server);
 }
 
 void ModApiServer::InitializeAsync(lua_State *L, int top)

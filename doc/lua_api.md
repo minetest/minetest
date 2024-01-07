@@ -5763,6 +5763,11 @@ Call these functions only at load time!
       The set is a table where the keys are hashes and the values are `true`.
     * `modified_block_count` is the number of entries in the set.
     * Note: callbacks must be registered at mod load time.
+* `minetest.register_server_receive_message(function(server_name, message))`
+    * Called after message from another server is received.
+    * `server_name` is name of server identified by using data 
+      from `minetest.set_another_server`
+    * `message` is a string message received.
 
 Setting-related
 ---------------
@@ -6572,6 +6577,19 @@ Server
     * Clients will attempt to fetch files added this way via remote media,
       this can make transfer of bigger files painless (if set up). Nevertheless
       it is advised not to use dynamic media for big media files.
+* `minetest.set_another_server(name, server_spec)`: 
+    * `name`: Unique name of another server
+    * `server spec`: 
+      * Set this to nil for remove server.
+      * Table with server specification to be set:
+        * `address`: Address of server.
+        * `port`: Port where is server listening.
+        * `auth_send`: Authorization string to be used to verify sender ofserver message on receiver side.
+        * `auth_receive`: Authorization string to be used to verify sender identity of received server messages.
+    * Returns boolean indicating success (false if player nonexistent)
+* `minetest.get_another_server(name)`: 
+    * `name`: Name of another server
+    * Returns table contains server data or nil if server is not known
 
 Bans
 ----

@@ -895,6 +895,14 @@ enum ToServerCommand
 		std::string player name
 	*/
 
+	/*
+		Sent message to another minetest server
+
+		std::string authorization
+		std::string message
+	*/
+	TOSERVER_SERVERMSG = 0x08,
+
 	TOSERVER_INIT_LEGACY = 0x10, // Obsolete
 
 	TOSERVER_INIT2 = 0x11,

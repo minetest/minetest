@@ -32,7 +32,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x05
 	null_command_handler, // 0x06
 	null_command_handler, // 0x07
-	null_command_handler, // 0x08
+	{ "TOSERVER_SERVERMSG",                TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_ServerMsg}, // 0x08
 	null_command_handler, // 0x09
 	null_command_handler, // 0x0a
 	null_command_handler, // 0x0b

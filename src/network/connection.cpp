@@ -946,8 +946,8 @@ void Peer::Drop()
 	delete this;
 }
 
-UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
-	Peer(a_address,a_id,connection)
+UDPPeer::UDPPeer(u16 a_id, const Address a_address, bool another_server, Connection* connection) :
+	Peer(a_address,a_id,another_server,connection)
 {
 	for (Channel &channel : channels)
 		channel.setWindowSize(START_RELIABLE_WINDOW_SIZE);
@@ -1220,20 +1220,22 @@ ConnectionEventPtr ConnectionEvent::dataReceived(session_t peer_id, const Buffer
 	return e;
 }
 
-ConnectionEventPtr ConnectionEvent::peerAdded(session_t peer_id, Address address)
+ConnectionEventPtr ConnectionEvent::peerAdded(session_t peer_id, Address address, bool another_server)
 {
 	auto e = create(CONNEVENT_PEER_ADDED);
 	e->peer_id = peer_id;
 	e->address = address;
+	e->another_server = another_server;
 	return e;
 }
 
-ConnectionEventPtr ConnectionEvent::peerRemoved(session_t peer_id, bool is_timeout, Address address)
+ConnectionEventPtr ConnectionEvent::peerRemoved(session_t peer_id, bool is_timeout, Address address, bool another_server)
 {
 	auto e = create(CONNEVENT_PEER_REMOVED);
 	e->peer_id = peer_id;
 	e->timeout = is_timeout;
 	e->address = address;
+	e->another_server = another_server;
 	return e;
 }
 
@@ -1318,7 +1320,7 @@ PeerHelper Connection::getPeerNoEx(session_t peer_id)
 }
 
 /* find peer_id for address */
-u16 Connection::lookupPeer(Address& sender)
+u16 Connection::lookupPeer(const Address& sender)
 {
 	MutexAutoLock peerlock(m_peers_mutex);
 	std::map<u16, Peer*>::iterator j;
@@ -1361,7 +1363,7 @@ bool Connection::deletePeer(session_t peer_id, bool timeout)
 	peer->getAddress(MTP_PRIMARY, peer_address);
 
 	// Create event
-	putEvent(ConnectionEvent::peerRemoved(peer_id, timeout, peer_address));
+	putEvent(ConnectionEvent::peerRemoved(peer_id, timeout, peer_address, peer->another_server));
 
 	peer->Drop();
 	return true;
@@ -1446,13 +1448,13 @@ bool Connection::ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms)
 			pkt->putRawPacket(*e.data, e.data.getSize(), e.peer_id);
 			return true;
 		case CONNEVENT_PEER_ADDED: {
-			UDPPeer tmp(e.peer_id, e.address, this);
+			UDPPeer tmp(e.peer_id, e.address, e.another_server, this);
 			if (m_bc_peerhandler)
 				m_bc_peerhandler->peerAdded(&tmp);
 			continue;
 		}
 		case CONNEVENT_PEER_REMOVED: {
-			UDPPeer tmp(e.peer_id, e.address, this);
+			UDPPeer tmp(e.peer_id, e.address, e.another_server, this);
 			if (m_bc_peerhandler)
 				m_bc_peerhandler->deletingPeer(&tmp, e.timeout);
 			continue;
@@ -1538,13 +1540,13 @@ float Connection::getLocalStat(rate_stat_type type)
 	return retval;
 }
 
-u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
+u16 Connection::createPeer(const Address& sender, MTProtocols protocol, int fd, bool another_server)
 {
 	// Somebody wants to make a new connection
 
 	// Get a unique peer id (2 or higher)
 	session_t peer_id_new = m_next_remote_peer_id;
-	u16 overflow =  MAX_UDP_PEERS;
+	u16 overflow = MAX_UDP_PEERS;
 
 	/*
 		Find an unused peer id
@@ -1554,14 +1556,17 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	for(;;) {
 		// Check if exists
 		if (m_peers.find(peer_id_new) == m_peers.end())
-
 			break;
 		// Check for overflow
-		if (peer_id_new == overflow) {
+		if (overflow == 0) {
 			out_of_ids = true;
 			break;
 		}
 		peer_id_new++;
+		if (peer_id_new == MAX_UDP_PEERS) {
+			peer_id_new = 2;
+		}
+		overflow--;
 	}
 
 	if (out_of_ids) {
@@ -1571,12 +1576,14 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 
 	// Create a peer
 	Peer *peer = 0;
-	peer = new UDPPeer(peer_id_new, sender, this);
+	peer = new UDPPeer(peer_id_new, sender, another_server, this);
 
 	m_peers[peer->id] = peer;
 	m_peer_ids.push_back(peer->id);
 
-	m_next_remote_peer_id = (peer_id_new +1 ) % MAX_UDP_PEERS;
+	m_next_remote_peer_id = (peer_id_new + 1) % MAX_UDP_PEERS;
+	if (m_next_remote_peer_id<2) 
+		m_next_remote_peer_id = 2;
 
 	LOG(dout_con << getDesc()
 			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
@@ -1590,7 +1597,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	}
 
 	// Create peer addition event
-	putEvent(ConnectionEvent::peerAdded(peer_id_new, sender));
+	putEvent(ConnectionEvent::peerAdded(peer_id_new, sender, another_server));
 
 	// We're now talking to a valid peer_id
 	return peer_id_new;
@@ -1626,14 +1633,14 @@ void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 	m_sendThread->Trigger();
 }
 
-UDPPeer* Connection::createServerPeer(Address& address)
+UDPPeer* Connection::createServerPeer(const Address& address)
 {
 	if (ConnectedToServer())
 	{
 		throw ConnectionException("Already connected to a server");
 	}
 
-	UDPPeer *peer = new UDPPeer(PEER_ID_SERVER, address, this);
+	UDPPeer *peer = new UDPPeer(PEER_ID_SERVER, address, false, this);
 
 	{
 		MutexAutoLock lock(m_peers_mutex);

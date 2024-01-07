@@ -487,7 +487,7 @@ void ConnectionSendThread::connect(Address address)
 	UDPPeer *peer = m_connection->createServerPeer(address);
 
 	// Create event
-	m_connection->putEvent(ConnectionEvent::peerAdded(peer->id, peer->address));
+	m_connection->putEvent(ConnectionEvent::peerAdded(peer->id, peer->address, peer->another_server));
 
 	Address bind_addr;
 
@@ -930,8 +930,19 @@ void ConnectionReceiveThread::receive(SharedBuffer<u8> &packetdata,
 			/* Ignore it if we are a client */
 			if (m_connection->ConnectedToServer())
 				return;
-			/* The peer was not found in our lists. Add it. */
-			peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0);
+			/* The peer was not found in our lists. Add it. Client peer. */
+			peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0, false);
+		}
+
+		// Try to identify another server by address or create new peer for him.
+		if (peer_id == PEER_ID_SERVER) {
+			if (m_connection->GetPeerID()==PEER_ID_SERVER) {
+				peer_id = m_connection->lookupPeer(sender);
+				if (peer_id == PEER_ID_INEXISTENT) {
+					// The peer was not found in out list. Create another server peer for it.
+					peer_id = m_connection->createPeer(sender, MTP_MINETEST_RELIABLE_UDP, 0, true);
+				}
+			}
 		}
 
 		PeerHelper peer = m_connection->getPeerNoEx(peer_id);

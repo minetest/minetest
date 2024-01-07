@@ -84,7 +84,7 @@ Address::Address(const IPv6AddressBytes *ipv6_bytes, u16 port)
 }
 
 // Equality (address family, IP and port must be equal)
-bool Address::operator==(const Address &other)
+bool Address::operator==(const Address &other) const
 {
 	if (other.m_addr_family != m_addr_family || other.m_port != m_port)
 		return false;

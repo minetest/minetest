@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
+#include "network/clientopcodes.h"
 #include "ban.h"
 #include "environment.h"
 #include "map.h"
@@ -263,6 +264,7 @@ Server::Server(
 	m_craftdef(createCraftDefManager()),
 	m_thread(new ServerThread(this)),
 	m_clients(m_con),
+	m_servers(m_con),
 	m_admin_chat(iface),
 	m_shutdown_errmsg(shutdown_errmsg),
 	m_modchannel_mgr(new ModChannelMgr())
@@ -1264,7 +1266,10 @@ void Server::peerAdded(con::Peer *peer)
 	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 
-	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
+	Address address;
+	peer->getAddress(con::MTP_MINETEST_RELIABLE_UDP, address);
+
+	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, peer->another_server, address, false));
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -1272,8 +1277,12 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	verbosestream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 
-	m_clients.event(peer->id, CSE_Disconnect);
-	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
+	if (!peer->another_server)
+		m_clients.event(peer->id, CSE_Disconnect);
+
+	Address address;
+	peer->getAddress(con::MTP_MINETEST_RELIABLE_UDP, address);
+	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, peer->another_server, address, timeout));
 }
 
 bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
@@ -1331,11 +1340,21 @@ void Server::handlePeerChanges()
 		switch(c.type)
 		{
 		case con::PEER_ADDED:
-			m_clients.CreateClient(c.peer_id);
+			if (!c.another_server)
+				m_clients.CreateClient(c.peer_id);
+			else {
+				verbosestream << "Server: Another server added."<<std::endl;
+				m_servers.CreateServer(c.peer_id, c.address);
+      }
 			break;
 
 		case con::PEER_REMOVED:
-			DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
+			if (!c.another_server)
+				DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
+			else {
+				verbosestream << "Server: Another server removed."<<std::endl;
+				m_servers.DeleteServer(c.peer_id);
+      }
 			break;
 
 		default:
@@ -1366,6 +1385,14 @@ void Server::Send(session_t peer_id, NetworkPacket *pkt)
 		clientCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		clientCommandFactoryTable[pkt->getCommand()].reliable);
+}
+
+void Server::SendToServer(session_t peer_id, NetworkPacket *pkt)
+{
+	m_con->Send(peer_id,
+		serverCommandFactoryTable[pkt->getCommand()].channel,
+		pkt,
+		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
 void Server::SendMovement(session_t peer_id)
@@ -2818,6 +2845,19 @@ void Server::sendDetachedInventory(Inventory *inventory, const std::string &name
 	else
 		Send(&pkt);
 }
+void Server::SendServerMsg(const AnotherServer &server, const std::string &message)
+{
+	session_t peer_id = m_con->lookupPeer(server.address);
+	if (peer_id == PEER_ID_INEXISTENT) {
+		peer_id = m_con->createPeer(server.address, con::MTP_MINETEST_RELIABLE_UDP, 0, true);
+	}
+	if (peer_id == PEER_ID_INEXISTENT) {
+		return;
+	}
+	NetworkPacket pkt(TOSERVER_SERVERMSG, 0, PEER_ID_SERVER);
+	pkt << server.auth_send << message;
+	SendToServer(peer_id, &pkt);
+}
 
 void Server::sendDetachedInventories(session_t peer_id, bool incremental)
 {
@@ -3165,6 +3205,11 @@ RemoteClient *Server::getClientNoEx(session_t peer_id, ClientState state_min)
 	return m_clients.getClientNoEx(peer_id, state_min);
 }
 
+RemoteServer *Server::getServerNoEx(session_t peer_id)
+{
+	return m_servers.getServerNoEx(peer_id);
+}
+
 std::string Server::getPlayerName(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -3419,7 +3464,15 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, const std::string &
 Address Server::getPeerAddress(session_t peer_id)
 {
 	// Note that this is only set after Init was received in Server::handleCommand_Init
-	return getClient(peer_id, CS_Invalid)->getAddress();
+	RemoteClient *client = getClientNoEx(peer_id, CS_Invalid);
+	if (client)
+		return client->getAddress();
+
+	RemoteServer *server = getServerNoEx(peer_id);
+	if (server)
+		return server->getAddress();
+
+	throw con::PeerNotFoundException("Peer not found");
 }
 
 void Server::setLocalPlayerAnimations(RemotePlayer *player,
