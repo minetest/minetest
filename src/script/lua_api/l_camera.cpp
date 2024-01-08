@@ -139,7 +139,7 @@ int LuaCamera::l_get_look_horizontal(lua_State *L)
 	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
 	sanity_check(player);
 
-	lua_pushnumber(L, (player->getYaw() + 90.f) * core::DEGTORAD);
+	lua_pushnumber(L, (player->getYawWorld() + 90.f) * core::DEGTORAD);
 	return 1;
 }
 
@@ -150,7 +150,7 @@ int LuaCamera::l_get_look_vertical(lua_State *L)
 	LocalPlayer *player = getClient(L)->getEnv().getLocalPlayer();
 	sanity_check(player);
 
-	lua_pushnumber(L, -1.0f * player->getPitch() * core::DEGTORAD);
+	lua_pushnumber(L, -1.0f * player->getPitchWorld() * core::DEGTORAD);
 	return 1;
 }
 

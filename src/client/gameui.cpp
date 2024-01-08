@@ -146,9 +146,9 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< "pos: (" << (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS)
-			<< ") | yaw: " << (wrapDegrees_0_360(cam.camera_yaw)) << "° "
-			<< yawToDirectionString(cam.camera_yaw)
-			<< " | pitch: " << (-wrapDegrees_180(cam.camera_pitch)) << "°"
+			<< ") | yaw: " << (player->getYawWorld()) << "° "
+			<< yawToDirectionString(player->getYawWorld())
+			<< " | pitch: " << (-player->getPitchWorld()) << "°"
 			<< " | seed: " << ((u64)client->getMapSeed());
 
 		if (pointed_old.type == POINTEDTHING_NODE) {

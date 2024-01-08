@@ -12,6 +12,11 @@ minetest.register_entity("testentities:attach", {
 			"testentities_cube5.png",
 			"testentities_cube6.png",
 		},
+		infotext = "Right click/place -> attach/detach\n"..
+			"AUX1 -> change mode\n"..
+			"Right/Left -> change X axis of vector\n"..
+			"Up/Down -> change Z axis of vector\n"..
+			"Jump/Sneak -> change Y axis of vector",
 	},
 	control_mode = "parent_rotation",
 	

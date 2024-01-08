@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "util/container.h"
 
-
 /*
 
 Some planning
@@ -89,6 +88,13 @@ public:
 		Some more dynamic interface
 	*/
 
+	virtual void calculateRelativeTransformation(core::matrix4 &relative) const {};
+	virtual const core::matrix4 &getTransformation() const
+		{ return m_transformation; }
+	virtual void updateTransformation() {};
+	virtual void updateChildsTransformation() {};
+	virtual v3f getPos() const
+		{ return m_base_position; }
 	virtual void setPos(const v3f &pos)
 		{ setBasePosition(pos); }
 	virtual void addPos(const v3f &added_pos)
@@ -246,6 +252,7 @@ protected:
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
+	core::matrix4 m_transformation;
 	std::unordered_set<u32> m_attached_particle_spawners;
 
 	/*

@@ -373,6 +373,9 @@ private:
 	// get_local_animation(self)
 	static int l_get_local_animation(lua_State *L);
 
+	// get_eye_pos(self)
+	static int l_get_eye_pos(lua_State *L);
+
 	// set_eye_offset(self, firstperson, thirdperson, thirdperson_front)
 	static int l_set_eye_offset(lua_State *L);
 

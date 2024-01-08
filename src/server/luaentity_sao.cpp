@@ -201,6 +201,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 				m_rotation.Y = target_yaw;
 			}
 		}
+		updateTransformation();
+		updateChildsTransformation();
 	}
 
 	if (fabs(m_prop.automatic_rotate) > 0.001f) {

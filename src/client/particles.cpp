@@ -318,8 +318,8 @@ void Particle::updateVertices()
 			vertex.Pos.rotateXZBy(std::atan2(ppos.Z - m_pos.Z, ppos.X - m_pos.X) /
 				core::DEGTORAD + 90);
 		} else {
-			vertex.Pos.rotateYZBy(m_player->getPitch());
-			vertex.Pos.rotateXZBy(m_player->getYaw());
+			vertex.Pos.rotateYZBy(m_player->getPitchWorld());
+			vertex.Pos.rotateXZBy(m_player->getYawWorld());
 		}
 		m_box.addInternalPoint(vertex.Pos);
 	}
