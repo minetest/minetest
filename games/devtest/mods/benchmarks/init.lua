@@ -114,4 +114,39 @@ minetest.register_chatcommand("bench_bulk_set_node", {
 	end,
 })
 
+minetest.register_chatcommand("bench_bulk_get_node", {
+	params = "",
+	description = "Benchmark: Bulk-get 99×99×99 stone nodes",
+	func = function(name, param)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+		local pos_list = {}
+		local ppos = player:get_pos()
+		local i = 1
+		for x=2,100 do
+			for y=2,100 do
+				for z=2,100 do
+					pos_list[i] = {x=ppos.x + x,y = ppos.y + y,z = ppos.z + z}
+					i = i + 1
+				end
+			end
+		end
 
+		minetest.chat_send_player(name, "Benchmarking minetest.bulk_get_node...");
+
+		local start_time = minetest.get_us_time()
+		for i=1,#pos_list do
+			minetest.get_node(pos_list[i])
+		end
+		local middle_time = minetest.get_us_time()
+		minetest.bulk_get_node(pos_list, {name = "mapgen_stone"})
+		local end_time = minetest.get_us_time()
+		local msg = string.format("Benchmark results: minetest.set_node loop: %.2f ms; minetest.bulk_set_node: %.2f ms",
+			((middle_time - start_time)) / 1000,
+			((end_time - middle_time)) / 1000
+		)
+		return true, msg
+	end,
+})
