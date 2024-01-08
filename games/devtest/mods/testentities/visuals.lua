@@ -58,23 +58,34 @@ minetest.register_entity("testentities:mesh", {
 minetest.register_entity("testentities:gltf_spider_static", {
 	initial_properties = {
 		visual = "mesh",
+		visual_size = vector.new(1.5, 1.5, 1.5),
 		mesh = "testentities_gltf_spider_static.gltf",
-		textures = {
-			"testentities_gltf_spider.png"
-		},
+		textures = {"testentities_gltf_spider.png"},
 	},
 })
 
 minetest.register_entity("testentities:gltf_spider_animated", {
 	initial_properties = {
 		visual = "mesh",
+		visual_size = vector.new(1.5, 1.5, 1.5),
 		mesh = "testentities_gltf_spider_animated.gltf",
-		textures = {
-			"testentities_gltf_spider.png"
-		},
+		textures = {"testentities_gltf_spider.png"},
 	},
 	on_activate = function(self)
-		self.object:set_animation({x = 0, y = 140}, 10)
+		self.object:set_animation({x = 0, y = 140}, 1)
+	end
+})
+
+minetest.register_entity("testentities:gltf_bendy_plane", {
+	initial_properties = {
+		visual = "mesh",
+		visual_size = vector.new(5, 5, 5),
+		mesh = "testentities_gltf_bendy_plane.gltf",
+		textures = {},
+		backface_culling = false
+	},
+	on_activate = function(self)
+		self.object:set_animation({x = 0, y = 5.5}, 1)
 	end
 })
 
