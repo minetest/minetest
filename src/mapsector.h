@@ -64,6 +64,10 @@ public:
 
 	void getBlocks(MapBlockVect &dest);
 
+	// Get access to the internal map.
+	// When iterating over this map, do NOT call any MapSector methods that modify this map
+	const auto & getBlocksUnsafe() const { return m_blocks; }
+
 	bool empty() const { return m_blocks.empty(); }
 
 	int size() const { return m_blocks.size(); }

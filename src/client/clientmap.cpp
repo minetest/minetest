@@ -339,11 +339,9 @@ void ClientMap::updateDrawList()
 					continue;
 			}
 
-			sectorblocks.clear();
-			sector->getBlocks(sectorblocks);
-
 			// Loop through blocks in sector
-			for (MapBlock *block : sectorblocks) {
+			for (const auto &entry : sector->getBlocksUnsafe()) {
+				MapBlock *block = entry.second.get();
 				MapBlockMesh *mesh = block->mesh;
 
 				// Calculate the coordinates for range and frustum culling
@@ -659,14 +657,12 @@ void ClientMap::touchMapBlocks()
 				continue;
 		}
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
 
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocksUnsafe()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 
 			// Calculate the coordinates for range and frustum culling
@@ -1271,13 +1267,11 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 			continue;
 		blocks_loaded += sector->size();
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocksUnsafe()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 			if (!mesh) {
 				// Ignore if mesh doesn't exist
