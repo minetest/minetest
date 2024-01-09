@@ -45,7 +45,7 @@ public:
 
 	void deleteBlocks();
 
-	v2s16 getPos()
+	v2s16 getPos() const
 	{
 		return m_pos;
 	}
@@ -67,6 +67,7 @@ public:
 	// Get access to the internal map.
 	// When iterating over this map, do NOT call any MapSector methods that modify this map
 	const auto & getBlocksUnsafe() const { return m_blocks; }
+	const auto & getBlocksUnsafe() = delete;
 
 	bool empty() const { return m_blocks.empty(); }
 
