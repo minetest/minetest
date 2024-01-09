@@ -275,7 +275,7 @@ bool ScriptApiEnv::on_clear_object(
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, state->callback_ref);
-	luaL_checktype(L, -1, LUA_TFUNCTION);
+	//luaL_checktype(L, -1, LUA_TFUNCTION);
 
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, staticdata.c_str());

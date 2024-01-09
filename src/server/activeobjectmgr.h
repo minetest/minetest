@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../activeobjectmgr.h"
 #include "serveractiveobject.h"
 
+struct ClearObjectsConfig;
+
 namespace server
 {
 class ActiveObjectMgr final : public ::ActiveObjectMgr<ServerActiveObject>
@@ -33,6 +35,7 @@ public:
 
 	// If cb returns true, the obj will be deleted
 	void clearIf(const std::function<bool(ServerActiveObject *, u16)> &cb);
+	void clearIf(const std::function<bool(ServerActiveObject *, u16, ClearObjectsConfig &)> &cb, ClearObjectsConfig &config);
 	void step(float dtime,
 			const std::function<void(ServerActiveObject *)> &f) override;
 	bool registerObject(std::unique_ptr<ServerActiveObject> obj) override;

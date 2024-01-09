@@ -1235,10 +1235,22 @@ void ServerEnvironment::clearObjects(ClearObjectsConfig &config)
 {
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
-	auto cb_removal = [this] (ServerActiveObject *obj, u16 id) {
+	auto cb_removal = [this] (ServerActiveObject *obj, u16 id, ClearObjectsConfig &config) {
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			return false;
 
+		
+		if ((config.callback != nullptr)
+				&& (obj->getType() == ACTIVEOBJECT_TYPE_LUAENTITY)) {
+			LuaEntitySAO *sao = dynamic_cast<LuaEntitySAO *>(obj);
+			const std::string &name = sao->getInitName();
+			std::string static_data;
+			if (sao->isStaticAllowed())
+				sao->getClearObjectsStaticData(static_data);
+			if (!config.callback(name, static_data, config.param)) {
+				return false;
+			}
+		}
 		// Delete static object if block is loaded
 		deleteStaticFromBlock(obj, id, MOD_REASON_CLEAR_ALL_OBJECTS, true);
 		obj->markForRemoval();
@@ -1253,7 +1265,7 @@ void ServerEnvironment::clearObjects(ClearObjectsConfig &config)
 		return true;
 	};
 
-	m_ao_manager.clearIf(cb_removal);
+	m_ao_manager.clearIf(cb_removal, config);
 
 	// Get list of loaded blocks
 	std::vector<v3s16> loaded_blocks;

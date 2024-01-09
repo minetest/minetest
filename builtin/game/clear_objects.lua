@@ -77,7 +77,7 @@ local function check_rule(rule, value)
 	return false
 end
 
-core.clear_objects = function(options)
+core.clear_objects_remove = function(options)
 	if (options.mode == "full") or (options.mode == "quick") then
 		-- C++ powered clear objects function, fast, bud not selective
 		raw_clear_objects(options)
