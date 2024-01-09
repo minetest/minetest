@@ -1304,8 +1304,8 @@ void Game::run()
 		updatePauseState();
 		if (m_is_paused)
 			dtime = 0.0f;
-		else
-			step(dtime);
+
+		step(dtime);
 
 		processClientEvents(&cam_view_target);
 		updateDebugState();
@@ -1332,6 +1332,9 @@ void Game::shutdown()
 	auto formspec = m_game_ui->getFormspecGUI();
 	if (formspec)
 		formspec->quitMenu();
+
+	// Clear text when exiting.
+	m_game_ui->clearText();
 
 #ifdef HAVE_TOUCHSCREENGUI
 	g_touchscreengui->hide();
@@ -1454,7 +1457,7 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 	} else {
 		bind_str = g_settings->get("bind_address");
 	}
-	
+
 	Address bind_addr(0, 0, 0, 0, port);
 
 	if (g_settings->getBool("ipv6_server"))
@@ -1610,15 +1613,18 @@ bool Game::connectToServer(const GameStartData &start_data,
 	*connect_ok = false;	// Let's not be overly optimistic
 	*connection_aborted = false;
 	bool local_server_mode = false;
+	const auto &address_name = start_data.address;
 
 	showOverlayMessage(N_("Resolving address..."), 0, 15);
 
 	Address connect_address(0, 0, 0, 0, start_data.socket_port);
+	Address fallback_address;
 
 	try {
-		connect_address.Resolve(start_data.address.c_str());
+		connect_address.Resolve(address_name.c_str(), &fallback_address);
 
-		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
+		if (connect_address.isAny()) {
+			// replace with localhost IP
 			if (connect_address.isIPv6()) {
 				IPv6AddressBytes addr_bytes;
 				addr_bytes.bytes[15] = 1;
@@ -1635,38 +1641,50 @@ bool Game::connectToServer(const GameStartData &start_data,
 		return false;
 	}
 
-	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	// this shouldn't normally happen since Address::Resolve() checks for enable_ipv6
+	if (g_settings->getBool("enable_ipv6")) {
+		// empty
+	} else if (connect_address.isIPv6()) {
 		*error_message = fmtgettext("Unable to connect to %s because IPv6 is disabled", connect_address.serializeString().c_str());
 		errorstream << *error_message << std::endl;
 		return false;
+	} else if (fallback_address.isIPv6()) {
+		fallback_address = Address();
 	}
+
+	fallback_address.setPort(connect_address.getPort());
+	if (fallback_address.isValid()) {
+		infostream << "Resolved two addresses for \"" << address_name
+			<< "\" isIPv6[0]=" << connect_address.isIPv6()
+			<< " isIPv6[1]=" << fallback_address.isIPv6() << std::endl;
+	} else {
+		infostream << "Resolved one address for \"" << address_name
+			<< "\" isIPv6=" << connect_address.isIPv6() << std::endl;
+	}
+
 
 	try {
 		client = new Client(start_data.name.c_str(),
-				start_data.password, start_data.address,
+				start_data.password,
 				*draw_control, texture_src, shader_src,
 				itemdef_manager, nodedef_manager, sound_manager.get(), eventmgr,
-				m_rendering_engine, connect_address.isIPv6(), m_game_ui.get(),
+				m_rendering_engine, m_game_ui.get(),
 				start_data.allow_login_or_register);
-		client->migrateModStorage();
 	} catch (const BaseException &e) {
 		*error_message = fmtgettext("Error creating client: %s", e.what());
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
+	client->migrateModStorage();
 	client->m_simple_singleplayer_mode = simple_singleplayer_mode;
-
-	infostream << "Connecting to server at ";
-	connect_address.print(infostream);
-	infostream << std::endl;
-
-	client->connect(connect_address,
-		simple_singleplayer_mode || local_server_mode);
 
 	/*
 		Wait for server to accept connection
 	*/
+
+	client->connect(connect_address, address_name,
+		simple_singleplayer_mode || local_server_mode);
 
 	try {
 		input->clear();
@@ -1674,6 +1692,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 		FpsControl fps_control;
 		f32 dtime;
 		f32 wait_time = 0; // in seconds
+		bool did_fallback = false;
 
 		fps_control.reset();
 
@@ -1682,10 +1701,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			fps_control.limit(device, &dtime);
 
 			// Update client and server
-			client->step(dtime);
-
-			if (server != NULL)
-				server->step(dtime);
+			step(dtime);
 
 			// End condition
 			if (client->getState() == LC_Init) {
@@ -1711,8 +1727,15 @@ bool Game::connectToServer(const GameStartData &start_data,
 			}
 
 			wait_time += dtime;
-			// Only time out if we aren't waiting for the server we started
-			if (!start_data.address.empty() && wait_time > 10) {
+			if (local_server_mode) {
+				// never time out
+			} else if (wait_time > GAME_FALLBACK_TIMEOUT && !did_fallback) {
+				if (!client->hasServerReplied() && fallback_address.isValid()) {
+					client->connect(fallback_address, address_name,
+						simple_singleplayer_mode || local_server_mode);
+				}
+				did_fallback = true;
+			} else if (wait_time > GAME_CONNECTION_TIMEOUT) {
 				*error_message = gettext("Connection timed out.");
 				errorstream << *error_message << std::endl;
 				break;
@@ -1722,8 +1745,7 @@ bool Game::connectToServer(const GameStartData &start_data,
 			showOverlayMessage(N_("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
-		// TODO: Should something be done here? At least an info/error
-		// message?
+		warningstream << "This should not happen. Please report a bug." << std::endl;
 		return false;
 	}
 
@@ -1744,10 +1766,7 @@ bool Game::getServerContent(bool *aborted)
 		fps_control.limit(device, &dtime);
 
 		// Update client and server
-		client->step(dtime);
-
-		if (server != NULL)
-			server->step(dtime);
+		step(dtime);
 
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
@@ -2280,7 +2299,7 @@ void Game::openConsole(float scale, const wchar_t *line)
 	assert(scale > 0.0f && scale <= 1.0f);
 
 #ifdef __ANDROID__
-	porting::showInputDialog(gettext("ok"), "", "", 2);
+	porting::showTextInputDialog("", "", 2);
 	m_android_chat_open = true;
 #else
 	if (gui_chat_console->isOpenInhibited())
@@ -2296,14 +2315,18 @@ void Game::openConsole(float scale, const wchar_t *line)
 #ifdef __ANDROID__
 void Game::handleAndroidChatInput()
 {
-	if (m_android_chat_open && porting::getInputDialogState() == 0) {
-		std::string text = porting::getInputDialogValue();
-		client->typeChatMessage(utf8_to_wide(text));
-		m_android_chat_open = false;
+	// It has to be a text input
+	if (m_android_chat_open && porting::getLastInputDialogType() == porting::TEXT_INPUT) {
+		porting::AndroidDialogState dialogState = porting::getInputDialogState();
+		if (dialogState == porting::DIALOG_INPUTTED) {
+			std::string text = porting::getInputDialogMessage();
+			client->typeChatMessage(utf8_to_wide(text));
+		}
+		if (dialogState != porting::DIALOG_SHOWN)
+			m_android_chat_open = false;
 	}
 }
 #endif
-
 
 void Game::toggleFreeMove()
 {
@@ -2765,10 +2788,23 @@ void Game::updatePauseState()
 
 inline void Game::step(f32 dtime)
 {
-	if (server)
-		server->step(dtime);
+	if (server) {
+		float fps_max = (!device->isWindowFocused() || g_menumgr.pausesGame()) ?
+				g_settings->getFloat("fps_max_unfocused") :
+				g_settings->getFloat("fps_max");
+		fps_max = std::max(fps_max, 1.0f);
+		float steplen = 1.0f / fps_max;
 
-	client->step(dtime);
+		server->setStepSettings(Server::StepSettings{
+				steplen,
+				m_is_paused
+			});
+
+		server->step();
+	}
+
+	if (!m_is_paused)
+		client->step(dtime);
 }
 
 static void pauseNodeAnimation(PausedNodesList &paused, scene::ISceneNode *node) {
@@ -4447,41 +4483,6 @@ void Game::showPauseMenu()
 		"- touch&drag, tap 2nd finger\n"
 		" --> place single item to slot\n"
 		);
-#else
-	static const std::string control_text_template = strgettext("Controls:\n"
-		"- %s: move forwards\n"
-		"- %s: move backwards\n"
-		"- %s: move left\n"
-		"- %s: move right\n"
-		"- %s: jump/climb up\n"
-		"- %s: dig/punch/use\n"
-		"- %s: place/use\n"
-		"- %s: sneak/climb down\n"
-		"- %s: drop item\n"
-		"- %s: inventory\n"
-		"- Mouse: turn/look\n"
-		"- Mouse wheel: select item\n"
-		"- %s: chat\n"
-	);
-
-	char control_text_buf[600];
-
-	porting::mt_snprintf(control_text_buf, sizeof(control_text_buf), control_text_template.c_str(),
-		GET_KEY_NAME(keymap_forward),
-		GET_KEY_NAME(keymap_backward),
-		GET_KEY_NAME(keymap_left),
-		GET_KEY_NAME(keymap_right),
-		GET_KEY_NAME(keymap_jump),
-		GET_KEY_NAME(keymap_dig),
-		GET_KEY_NAME(keymap_place),
-		GET_KEY_NAME(keymap_sneak),
-		GET_KEY_NAME(keymap_drop),
-		GET_KEY_NAME(keymap_inventory),
-		GET_KEY_NAME(keymap_chat)
-	);
-
-	std::string control_text = std::string(control_text_buf);
-	str_formspec_escape(control_text);
 #endif
 
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
@@ -4506,30 +4507,29 @@ void Game::showPauseMenu()
 	}
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-		<< strgettext("Change Keys")  << "]";
+		<< strgettext("Controls")  << "]";
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-		<< strgettext("Exit to OS")   << "]"
-		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
+		<< strgettext("Exit to OS")   << "]";
+#ifdef HAVE_TOUCHSCREENGUI
+	os		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]";
+#endif
+	os		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
 	const std::string &address = client->getAddressName();
-	static const std::string mode = strgettext("- Mode: ");
+	os << strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
-		Address serverAddress = client->getServerAddress();
-		if (!address.empty()) {
-			os << mode << strgettext("Remote server") << "\n"
-					<< strgettext("- Address: ") << address;
-		} else {
-			os << mode << strgettext("Hosting server");
-		}
-		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+		if (address.empty())
+			os << strgettext("Hosting server");
+		else
+			os << strgettext("Remote server");
 	} else {
-		os << mode << strgettext("Singleplayer") << "\n";
+		os << strgettext("Singleplayer");
 	}
+	os << "\n";
 	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");

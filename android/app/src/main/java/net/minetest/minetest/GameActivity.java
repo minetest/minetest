@@ -51,8 +51,13 @@ public class GameActivity extends NativeActivity {
 		System.loadLibrary("minetest");
 	}
 
-	private int messageReturnCode = -1;
+	enum DialogType { TEXT_INPUT, SELECTION_INPUT }
+	enum DialogState { DIALOG_SHOWN, DIALOG_INPUTTED, DIALOG_CANCELED }
+
+	private DialogType lastDialogType = DialogType.TEXT_INPUT;
+	private DialogState inputDialogState = DialogState.DIALOG_CANCELED;
 	private String messageReturnValue = "";
+	private int selectionReturnValue = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,11 +90,17 @@ public class GameActivity extends NativeActivity {
 		// Ignore the back press so Minetest can handle it
 	}
 
-	public void showDialog(String acceptButton, String hint, String current, int editType) {
-		runOnUiThread(() -> showDialogUI(hint, current, editType));
+	public void showTextInputDialog(String hint, String current, int editType) {
+		runOnUiThread(() -> showTextInputDialogUI(hint, current, editType));
 	}
 
-	private void showDialogUI(String hint, String current, int editType) {
+	public void showSelectionInputDialog(String[] optionList, int selectedIdx) {
+		runOnUiThread(() -> showSelectionInputDialogUI(optionList, selectedIdx));
+	}
+
+	private void showTextInputDialogUI(String hint, String current, int editType) {
+		lastDialogType = DialogType.TEXT_INPUT;
+		inputDialogState = DialogState.DIALOG_SHOWN;
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		LinearLayout container = new LinearLayout(this);
 		container.setOrientation(LinearLayout.VERTICAL);
@@ -114,7 +125,7 @@ public class GameActivity extends NativeActivity {
 			// For multi-line, do not submit the text after pressing Enter key
 			if (keyCode == KeyEvent.KEYCODE_ENTER && editType != 1) {
 				imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-				messageReturnCode = 0;
+				inputDialogState = DialogState.DIALOG_INPUTTED;
 				messageReturnValue = editText.getText().toString();
 				alertDialog.dismiss();
 				return true;
@@ -128,27 +139,53 @@ public class GameActivity extends NativeActivity {
 			doneButton.setText(R.string.ime_dialog_done);
 			doneButton.setOnClickListener((view -> {
 				imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-				messageReturnCode = 0;
+				inputDialogState = DialogState.DIALOG_INPUTTED;
 				messageReturnValue = editText.getText().toString();
 				alertDialog.dismiss();
 			}));
 		}
 		alertDialog.setOnCancelListener(dialog -> {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+			inputDialogState = DialogState.DIALOG_CANCELED;
 			messageReturnValue = current;
-			messageReturnCode = -1;
 		});
 		alertDialog.show();
 		editText.requestFocusTryShow();
 	}
 
-	public int getDialogState() {
-		return messageReturnCode;
+	public void showSelectionInputDialogUI(String[] optionList, int selectedIdx) {
+		lastDialogType = DialogType.SELECTION_INPUT;
+		inputDialogState = DialogState.DIALOG_SHOWN;
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setSingleChoiceItems(optionList, selectedIdx, (dialog, selection) -> {
+			inputDialogState = DialogState.DIALOG_INPUTTED;
+			selectionReturnValue = selection;
+			dialog.dismiss();
+		});
+		builder.setOnCancelListener(dialog -> {
+			inputDialogState = DialogState.DIALOG_CANCELED;
+			selectionReturnValue = selectedIdx;
+		});
+		AlertDialog alertDialog = builder.create();
+		alertDialog.show();
 	}
 
-	public String getDialogValue() {
-		messageReturnCode = -1;
+	public int getLastDialogType() {
+		return lastDialogType.ordinal();
+	}
+
+	public int getInputDialogState() {
+		return inputDialogState.ordinal();
+	}
+
+	public String getDialogMessage() {
+		inputDialogState = DialogState.DIALOG_CANCELED;
 		return messageReturnValue;
+	}
+
+	public int getDialogSelection() {
+		inputDialogState = DialogState.DIALOG_CANCELED;
+		return selectionReturnValue;
 	}
 
 	public float getDensity() {

@@ -352,7 +352,7 @@ void PlayerSAO::setBasePosition(v3f position)
 
 void PlayerSAO::setPos(const v3f &pos)
 {
-	if(isAttached())
+	if (isAttached())
 		return;
 
 	// Send mapblock of target location
@@ -365,6 +365,30 @@ void PlayerSAO::setPos(const v3f &pos)
 	m_move_pool.empty();
 	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
+}
+
+void PlayerSAO::addPos(const v3f &added_pos)
+{
+	if (isAttached())
+		return;
+
+	// Backward compatibility for older clients
+	if (m_player->protocol_version < 44) {
+		setPos(getBasePosition() + added_pos);
+		return;
+	}
+
+	// Send mapblock of target location
+	v3f pos = getBasePosition() + added_pos;
+	v3s16 blockpos = v3s16(pos.X / MAP_BLOCKSIZE, pos.Y / MAP_BLOCKSIZE, pos.Z / MAP_BLOCKSIZE);
+	m_env->getGameDef()->SendBlock(m_peer_id, blockpos);
+
+	setBasePosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = getBasePosition();
+	m_move_pool.empty();
+	m_time_from_last_teleport = 0.0;
+	m_env->getGameDef()->SendMovePlayerRel(m_peer_id, added_pos);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)

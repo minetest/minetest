@@ -228,7 +228,8 @@ void RemoteClient::GetNextBlocks (
 		wanted_range);
 	const s16 d_cull_opt = std::min(adjustDist(m_block_cull_optimize_distance, prop_zoom_fov),
 		wanted_range);
-	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	// f32 to prevent overflow, it is also what isBlockInSight(...) expects
+	const f32 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
 	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
 		wanted_range);
@@ -261,10 +262,9 @@ void RemoteClient::GetNextBlocks (
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		const auto &list = FacePositionCache::getFacePositions(d);
 
-		std::vector<v3s16>::iterator li;
-		for (li = list.begin(); li != list.end(); ++li) {
+		for (auto li = list.begin(); li != list.end(); ++li) {
 			v3s16 p = *li + center;
 
 			/*
@@ -350,18 +350,21 @@ void RemoteClient::GetNextBlocks (
 					if (!block->getIsUnderground() && !block->getDayNightDiff())
 						continue;
 				}
+			}
 
-				/*
-					Check occlusion cache first.
-				 */
-				if (m_blocks_occ.find(p) != m_blocks_occ.end())
-					continue;
+			/*
+				Check occlusion cache first.
+			 */
+			if (m_blocks_occ.find(p) != m_blocks_occ.end())
+				continue;
 
-				if (m_occ_cull && !block_not_found &&
-						env->getMap().isBlockOccluded(block, cam_pos_nodes, d >= d_cull_opt)) {
-					m_blocks_occ.insert(p);
-					continue;
-				}
+			/*
+				Note that we do this even before the block is loaded as this does not depend on its contents.
+			 */
+			if (m_occ_cull &&
+					env->getMap().isBlockOccluded(p * MAP_BLOCKSIZE, cam_pos_nodes, d >= d_cull_opt)) {
+				m_blocks_occ.insert(p);
+				continue;
 			}
 
 			/*

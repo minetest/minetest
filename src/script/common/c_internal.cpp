@@ -180,16 +180,17 @@ void log_deprecated(lua_State *L, std::string message, int stack_depth, bool onc
 	if (mode == DeprecatedHandlingMode::Ignore)
 		return;
 
+	bool log = true;
 	if (once) {
-		script_log_unique(L, message, warningstream, stack_depth);
+		log = script_log_unique(L, message, warningstream, stack_depth);
 	} else {
 		script_log_add_source(L, message, stack_depth);
 		warningstream << message << std::endl;
 	}
 
 	if (mode == DeprecatedHandlingMode::Error)
-		script_error(L, LUA_ERRRUN, NULL, NULL);
-	else
+		script_error(L, LUA_ERRRUN, nullptr, nullptr);
+	else if (log)
 		infostream << script_get_backtrace(L) << std::endl;
 }
 

@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2023 DS
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -19,27 +19,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "cpp_api/s_base.h"
-#include "util/string.h"
-#include "gui/guiMainMenu.h"
+#include "al_helpers.h"
 
-class ScriptApiMainMenu : virtual public ScriptApiBase {
-public:
-	/**
-	 * Hand over MainMenuDataForScript to lua to inform lua of the content
-	 * @param data the data
-	 */
-	void setMainMenuData(const MainMenuDataForScript *data);
+namespace sound {
 
-	/**
-	 * process events received from formspec
-	 * @param text events in textual form
-	 */
-	void handleMainMenuEvent(const std::string &text);
+/**
+ * Struct for AL and ALC extensions
+ */
+struct ALExtensions
+{
+	explicit ALExtensions(const ALCdevice *deviceHandle [[maybe_unused]]);
 
-	/**
-	 * process field data received from formspec
-	 * @param fields data in field format
-	 */
-	void handleMainMenuButtons(const StringMap &fields);
+#ifdef AL_SOFT_direct_channels_remix
+	bool have_ext_AL_SOFT_direct_channels_remix = false;
+#endif
 };
+
+}

@@ -5278,6 +5278,8 @@ Utilities
       -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
       -- acceleration_default, acceleration_air (5.8.0)
       physics_overrides_v2 = true,
+      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
+      hud_def_type_field = true,
   }
   ```
 
@@ -5418,9 +5420,8 @@ Utilities
     * `compression`: Optional zlib compression level, number in range 0 to 9.
   The data is one-dimensional, starting in the upper left corner of the image
   and laid out in scanlines going from left to right, then top to bottom.
-  Please note that it's not safe to use string.char to generate raw data,
-  use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
-  The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
+  You can use `colorspec_to_bytes` to generate raw RGBA values.
+  Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
 * `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
@@ -7464,15 +7465,20 @@ child will follow movement and rotation of that bone.
     * Sets the position of the object.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`
+* `add_pos(pos)`:
+    * Changes position by adding to the current position.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`.
+    * In comparison to using `set_pos`, `add_pos` will avoid synchronization problems.
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-      Additionally, players also do not support set_velocity.
+    * In comparison to using `get_velocity`, adding the velocity and then using
+      `set_velocity`, `add_velocity` is supposed to avoid synchronization problems.
+      Additionally, players also do not support `set_velocity`.
     * If object is a player:
-        * Does not apply during free_move.
+        * Does not apply during `free_move`.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
@@ -7791,7 +7797,7 @@ child will follow movement and rotation of that bone.
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
-      `"hud_elem_type"`.
+      `"type"` (or the deprecated `"hud_elem_type"`).
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -8022,9 +8028,8 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-          values > 1 increase the saturation
-          values in [0,1) decrease the saturation
-            * This value has no effect on clients who have the "Tone Mapping" shader disabled.
+        * values > 1 increase the saturation
+        * values in [0,1] decrease the saturation
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
@@ -10051,9 +10056,14 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
 ```lua
 {
-    hud_elem_type = "image",
+    type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- If undefined "text" will be used.
+
+    hud_elem_type = "image",
+    -- Deprecated, same as `type`.
+    -- In case both are specified `type` will be used.
 
     position = {x=0.5, y=0.5},
     -- Top left corner position of element

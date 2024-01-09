@@ -33,7 +33,7 @@ end)
 core.after(1, function()
 	print("armor: " .. dump(core.localplayer:get_armor_groups()))
 	id = core.localplayer:hud_add({
-			hud_elem_type = "text",
+			type = "text",
 			name = "example",
 			number = 0xff0000,
 			position = {x=0, y=1},

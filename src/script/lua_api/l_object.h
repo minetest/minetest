@@ -73,6 +73,9 @@ private:
 	// set_pos(self, pos)
 	static int l_set_pos(lua_State *L);
 
+	// add_pos(self, pos)
+	static int l_add_pos(lua_State *L);
+
 	// move_to(self, pos, continuous)
 	static int l_move_to(lua_State *L);
 

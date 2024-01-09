@@ -12,7 +12,7 @@ local font_states = {
 
 
 local font_default_def = {
-	hud_elem_type = "text",
+	type = "text",
 	position = {x = 0.5, y = 0.5},
 	scale = {x = 2, y = 2},
 	alignment = { x = 0, y = 0 },
@@ -102,14 +102,14 @@ minetest.register_chatcommand("hudwaypoints", {
 			return false
 		end
 		local regular = player:hud_add {
-			hud_elem_type = "waypoint",
+			type = "waypoint",
 			name = "regular waypoint",
 			text = "m",
 			number = 0xFFFFFF,
 			world_pos = vector.add(player:get_pos(), {x = 0, y = 1.5, z = 0})
 		}
 		local reduced_precision = player:hud_add {
-			hud_elem_type = "waypoint",
+			type = "waypoint",
 			name = "imprecise waypoint",
 			text = "m (0.1 steps, precision = 10)",
 			precision = 10,
@@ -117,7 +117,7 @@ minetest.register_chatcommand("hudwaypoints", {
 			world_pos = vector.add(player:get_pos(), {x = 0, y = 1, z = 0})
 		}
 		local hidden_distance = player:hud_add {
-			hud_elem_type = "waypoint",
+			type = "waypoint",
 			name = "waypoint with hidden distance",
 			text = "this text is hidden as well (precision = 0)",
 			precision = 0,
@@ -149,7 +149,7 @@ minetest.register_chatcommand("hudwaypoints", {
 			minetest.after(0.5, change, player)
 		end
 		local image_waypoint = player:hud_add {
-			hud_elem_type = "image_waypoint",
+			type = "image_waypoint",
 			text = "testhud_waypoint.png",
 			world_pos = player:get_pos(),
 			scale = {x = 3, y = 3},

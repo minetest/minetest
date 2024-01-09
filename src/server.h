@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
+#include <atomic>
 #include <string>
 #include <list>
 #include <map>
@@ -157,12 +158,12 @@ public:
 
 	void start();
 	void stop();
-	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in another thread.
-	void step(float dtime);
+	// This just checks if there was an error in that thread.
+	void step();
 	// This is run by ServerThread and does the actual processing
-	void AsyncRunStep(bool initial_step=false);
-	void Receive();
+	void AsyncRunStep(float dtime, bool initial_step = false);
+	void Receive(float timeout);
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
@@ -293,6 +294,14 @@ public:
 	inline bool isSingleplayer() const
 			{ return m_simple_singleplayer_mode; }
 
+	struct StepSettings {
+		float steplen;
+		bool pause;
+	};
+
+	void setStepSettings(StepSettings spdata) { m_step_settings.store(spdata); }
+	StepSettings getStepSettings() { return m_step_settings.load(); }
+
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
 	inline void setAsyncFatalError(const LuaError &e)
@@ -355,6 +364,7 @@ public:
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO *playerSAO, bool incremental);
 	void SendMovePlayer(session_t peer_id);
+	void SendMovePlayerRel(session_t peer_id, const v3f &added_pos);
 	void SendPlayerSpeed(session_t peer_id, const v3f &added_vel);
 	void SendPlayerFov(session_t peer_id);
 
@@ -624,10 +634,8 @@ private:
 	/*
 		Threads
 	*/
-	// A buffer for time steps
-	// step() increments and AsyncRunStep() run by m_thread reads it.
-	float m_step_dtime = 0.0f;
-	std::mutex m_step_dtime_mutex;
+	// Set by Game
+	std::atomic<StepSettings> m_step_settings{{0.1f, false}};
 
 	// The server mainly operates in this thread
 	ServerThread *m_thread = nullptr;

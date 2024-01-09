@@ -134,6 +134,21 @@ int ObjectRef::l_set_pos(lua_State *L)
 	return 0;
 }
 
+// add_pos(self, pos)
+int ObjectRef::l_add_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	v3f pos = checkFloatPos(L, 2);
+
+	sao->addPos(pos);
+	return 0;
+}
+
 // move_to(self, pos, continuous)
 int ObjectRef::l_move_to(lua_State *L)
 {
@@ -2597,6 +2612,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, remove),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
+	luamethod(ObjectRef, add_pos),
 	luamethod_aliased(ObjectRef, move_to, moveto),
 	luamethod(ObjectRef, punch),
 	luamethod(ObjectRef, right_click),
