@@ -5878,7 +5878,7 @@ Environment access
       than Lua Voxel Manipulators (LVM) for large numbers of nodes.
       It also allows getting nodes from spread out positions which would cause
       LVMs to waste memory.
-      For getting a cube, this is 1.25x faster than `set_node`.
+      For getting a cube, this is 1.3x faster than `set_node`.
 * `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want

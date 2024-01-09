@@ -359,8 +359,7 @@ int ModApiEnv::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
-// bulk_get_node([pos1, pos2, ...])
-// pos = {x=num, y=num, z=num}
+// bulk_get_node(pos_list)
 int ModApiEnv::l_bulk_get_node(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -371,22 +370,18 @@ int ModApiEnv::l_bulk_get_node(lua_State *L)
 	}
 
 	s32 len = lua_objlen(L, 1);
+	Map &map = env->getMap();
 
-	// Do it
-	std::vector<MapNode> nodes;
+	// create table for return data
+	lua_createtable(L, len, 0);
+	const int result = lua_gettop(L);
 
 	for (s32 i = 1; i <= len; i++) {
 		lua_rawgeti(L, 1, i);
-		nodes.push_back(env->getMap().getNode(read_v3s16(L, -1)));
+		auto pos = read_v3s16(L, -1);
 		lua_pop(L, 1);
-	}
-
-	// create table for return data
-	lua_newtable(L);
-
-	for (s32 i = 0; i < len; ) {
-		pushnode(L, nodes[i]);
-		lua_rawseti(L, -2, ++i);
+		pushnode(L, map.getNode(pos));
+		lua_rawseti(L, result, i);
 	}
 
 	return 1;
