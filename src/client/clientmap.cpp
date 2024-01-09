@@ -340,7 +340,7 @@ void ClientMap::updateDrawList()
 			}
 
 			// Loop through blocks in sector
-			for (const auto &entry : sector->getBlocksUnsafe()) {
+			for (const auto &entry : sector->getBlocks()) {
 				MapBlock *block = entry.second.get();
 				MapBlockMesh *mesh = block->mesh;
 
@@ -661,7 +661,7 @@ void ClientMap::touchMapBlocks()
 			Loop through blocks in sector
 		*/
 
-		for (const auto &entry : sector->getBlocksUnsafe()) {
+		for (const auto &entry : sector->getBlocks()) {
 			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 
@@ -1270,7 +1270,7 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 		/*
 			Loop through blocks in sector
 		*/
-		for (const auto &entry : sector->getBlocksUnsafe()) {
+		for (const auto &entry : sector->getBlocks()) {
 			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 			if (!mesh) {

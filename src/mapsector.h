@@ -62,12 +62,13 @@ public:
 	// Returns an owning ptr to block.
 	std::unique_ptr<MapBlock> detachBlock(MapBlock *block);
 
+	// This makes a copy of the internal collection.
+	// Prefer getBlocks() if possible.
 	void getBlocks(MapBlockVect &dest);
 
-	// Get access to the internal map.
-	// When iterating over this map, do NOT call any MapSector methods that modify this map
-	const auto & getBlocksUnsafe() const { return m_blocks; }
-	const auto & getBlocksUnsafe() = delete;
+	// Get access to the internal map. Only allowed from a const MapSector.
+	const auto & getBlocks() const { return m_blocks; }
+	const auto & getBlocks() = delete;
 
 	bool empty() const { return m_blocks.empty(); }
 
