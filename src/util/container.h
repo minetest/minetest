@@ -336,14 +336,16 @@ public:
 		"Value type must be default constructible");
 	static_assert(std::is_constructible<bool, V>::value,
 		"Value type must be convertible to bool");
+	static_assert(std::is_move_assignable<V>::value,
+		"Value type must be move-assignable");
 
 	typedef K key_type;
 	typedef V mapped_type;
 
 	ModifySafeMap() {
 		// the null value must convert to false and all others to true, but
-		// we can't statically check that I think.
-		assert(!m_null);
+		// we can't statically check the latter.
+		assert(!null_value);
 	}
 	~ModifySafeMap() {
 		assert(!m_iterating);
@@ -360,7 +362,7 @@ public:
 				return it->second;
 		}
 		auto it = m_values.find(key);
-		return it == m_values.end() ? m_null : it->second;
+		return it == m_values.end() ? null_value : it->second;
 	}
 
 	void put(const K &key, const V &value) {
@@ -385,13 +387,13 @@ public:
 			m_values.emplace(key, std::move(value));
 	}
 
-	bool remove(const K &key) {
-		bool ret = false;
+	V take(const K &key) {
+		V ret = V();
 		if (m_iterating) {
 			auto it = m_new.find(key);
 			if (it != m_new.end()) {
+				ret = std::move(it->second);
 				m_new.erase(it);
-				ret = true;
 			}
 		}
 		auto it = m_values.find(key);
@@ -403,7 +405,11 @@ public:
 		} else {
 			m_values.erase(it);
 		}
-		return true;
+		return ret;
+	}
+
+	bool remove(const K &key) {
+		return !!take(key);
 	}
 
 	size_t size() const {
@@ -446,6 +452,8 @@ public:
 			m_garbage = 0;
 		}
 	}
+
+	static inline const V null_value = V();
 
 	// returned by size() if called during iteration
 	static constexpr size_t unknown = static_cast<size_t>(-1);
@@ -501,7 +509,6 @@ private:
 	std::map<K, V> m_new;
 	unsigned int m_iterating = 0;
 	size_t m_garbage = 0; // upper bound for null-placeholders in m_values
-	const V m_null = V();
 
 	static constexpr size_t GC_MIN_SIZE = 30;
 };

@@ -108,19 +108,12 @@ void ActiveObjectMgr::removeObject(u16 id)
 {
 	verbosestream << "Server::ActiveObjectMgr::removeObject(): "
 			<< "id=" << id << std::endl;
-	auto &it = m_active_objects.get(id);
-	if (!it) {
+
+	bool ok = m_active_objects.remove(id);
+	if (!ok) {
 		infostream << "Server::ActiveObjectMgr::removeObject(): "
 				<< "id=" << id << " not found" << std::endl;
-		return;
 	}
-
-	// Delete the obj before erasing, as the destructor may indirectly access
-	// m_active_objects.
-	// (not intended by the map type but we're about to delete it anyway)
-	auto &unsafe_it = const_cast<std::unique_ptr<ServerActiveObject>&>(it);
-	unsafe_it.reset();
-	m_active_objects.remove(id);
 }
 
 void ActiveObjectMgr::getObjectsInsideRadius(const v3f &pos, float radius,

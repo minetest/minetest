@@ -90,7 +90,7 @@ TEST_CASE("ModifySafeMap") {
 
 	BENCH_REMOVE(50)
 	BENCH_REMOVE(400)
-	BENCH_REMOVE(100)
+	BENCH_REMOVE(1000)
 }
 
 using TestMap2 = std::map<u16, void*>;
@@ -140,13 +140,13 @@ static inline void remove2(TestMap2 &map, size_t offset, size_t count)
 	};
 
 #ifdef TEST_STDLIB
-TEST_CASE("plain std::map") {
+TEST_CASE("std::map") {
 	BENCH2_ITERATE(50)
 	BENCH2_ITERATE(400)
 	BENCH2_ITERATE(1000)
 
 	BENCH2_REMOVE(50)
 	BENCH2_REMOVE(400)
-	BENCH2_REMOVE(100)
+	BENCH2_REMOVE(1000)
 }
 #endif
