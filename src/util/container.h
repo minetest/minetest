@@ -399,6 +399,7 @@ public:
 		auto it = m_values.find(key);
 		if (it == m_values.end())
 			return ret;
+		ret = std::move(it->second);
 		if (m_iterating) {
 			it->second = V();
 			m_garbage++;
@@ -448,7 +449,6 @@ public:
 			m_garbage = m_values.size();
 		} else {
 			m_values.clear();
-			assert(m_new.empty());
 			m_garbage = 0;
 		}
 	}
@@ -499,6 +499,7 @@ protected:
 		IterationHelper(ModifySafeMap<K, V> *parent) : m(parent) {
 			assert(m->m_iterating < std::numeric_limits<decltype(m_iterating)>::max());
 			m->m_iterating++;
+			assert(m->m_new.empty());
 		}
 
 		ModifySafeMap<K, V> *m;
