@@ -5857,8 +5857,8 @@ Environment access
       than Lua Voxel Manipulators (LVM) for large numbers of nodes.
       Unlike LVMs, this will call node callbacks. It also allows setting nodes
       in spread out positions which would cause LVMs to waste memory.
-      For setting a cube, this is 1.3x faster than `set_node` whereas LVM is 20
-      times faster.
+      For setting a cube of size 99x99x99, this is 1.3x faster than `set_node`
+      whereas LVM is 20 times faster.
 * `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
@@ -5871,14 +5871,14 @@ Environment access
     * Same as `get_node` but returns `nil` for unloaded areas.
 * `minetest.bulk_get_node({pos1, pos2, pos3, ...})`
     * Get nodes from all positions set in the first argument.
-    * Returns list of nodes.
+    * Returns list of nodes in the same order as the input list.
     * e.g. `minetest.bulk_get_node({{x=0, y=1, z=1}, {x=1, y=2, z=2}})`
     * For node specification or position syntax see `minetest.get_node` call
     * Faster than `get_node` due to single call, but still considerably slower
       than Lua Voxel Manipulators (LVM) for large numbers of nodes.
       It also allows getting nodes from spread out positions which would cause
       LVMs to waste memory.
-      For getting a cube, this is 1.3x faster than `set_node`.
+      For getting a cube of size 99x99x99, this is 1.3x faster than `set_node`.
 * `minetest.get_node_light(pos[, timeofday])`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
