@@ -37,6 +37,7 @@ core.features = {
 	blocking_pointability_type = true,
 	dynamic_add_media_startup = true,
 	dynamic_add_media_filepath = true,
+	clear_objects_with_callback = true,
 }
 
 function core.has_feature(arg)
