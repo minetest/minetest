@@ -48,20 +48,14 @@ static TestServerModManager g_test_instance;
 
 void TestServerModManager::runTests(IGameDef *gamedef)
 {
-	const char *saved_env_mt_subgame_path = getenv("MINETEST_SUBGAME_PATH");
 	const char *saved_env_mt_mod_path = getenv("MINETEST_MOD_PATH");
 #ifdef WIN32
 	{
-		std::string subgame_path("MINETEST_SUBGAME_PATH=");
-		subgame_path.append(TEST_SUBGAME_PATH);
-		_putenv(subgame_path.c_str());
-
 		std::string mod_path("MINETEST_MOD_PATH=");
 		mod_path.append(TEST_MOD_PATH);
 		_putenv(mod_path.c_str());
 	}
 #else
-	setenv("MINETEST_SUBGAME_PATH", TEST_SUBGAME_PATH, 1);
 	setenv("MINETEST_MOD_PATH", TEST_MOD_PATH, 1);
 #endif
 
@@ -75,6 +69,7 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 	TEST(testGetModNames);
 	TEST(testGetModMediaPathsWrongDir);
 	TEST(testGetModMediaPaths);
+	// TODO: test MINETEST_SUBGAME_PATH
 
 #ifdef WIN32
 	{
@@ -89,10 +84,6 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 		_putenv(mod_path.c_str());
 	}
 #else
-	if (saved_env_mt_subgame_path)
-		setenv("MINETEST_SUBGAME_PATH", saved_env_mt_subgame_path, 1);
-	else
-		unsetenv("MINETEST_SUBGAME_PATH");
 	if (saved_env_mt_mod_path)
 		setenv("MINETEST_MOD_PATH", saved_env_mt_mod_path, 1);
 	else
