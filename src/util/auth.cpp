@@ -26,6 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "debug.h"
 
+#ifdef _WIN32
+	#include <windows.h>
+#endif
+
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as
 // their password. (Exception : if the password field is
@@ -139,7 +143,10 @@ bool decode_srp_verifier_and_salt(const std::string &encoded,
 /// Override every character before clearing
 void clear_string(std::string &text)
 {
-	for (size_t i = 0; i < text.size(); i++)
-		text[i] = 0;
+  #ifndef _WIN32
+  explicit_bzero((void *)text.data(), text.size());
+  #else
+  SecureZeroMemory((void *)text.data(), text.size())
+  #endif
 	text.clear();
 }
