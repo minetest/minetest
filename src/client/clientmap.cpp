@@ -1265,6 +1265,12 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 		const MapSector *sector = sector_it.second;
 		if (!sector)
 			continue;
+
+		v2s16 sp = sector->getPos();
+		if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
+				sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
+			continue;
+
 		blocks_loaded += sector->size();
 
 		/*
