@@ -66,9 +66,11 @@ public:
 	// Prefer getBlocks() if possible.
 	void getBlocks(MapBlockVect &dest);
 
-	// Get access to the internal map. Only allowed from a const MapSector.
-	const auto & getBlocks() const { return m_blocks; }
-	const auto & getBlocks() = delete;
+	// Get access to the internal collection
+	// This is explicitly only allowed on a const object since modifying anything while iterating is unsafe.
+	// The caller needs to make sure that this does not happen.
+	const auto &getBlocks() const { return m_blocks; }
+	const auto &getBlocks() = delete;
 
 	bool empty() const { return m_blocks.empty(); }
 
