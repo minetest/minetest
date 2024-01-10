@@ -1183,8 +1183,6 @@ int ModApiEnv::l_clear_objects(lua_State *L)
 	config.mode = CLEAR_OBJECTS_MODE_QUICK;
 	config.callback = nullptr;
 	if (lua_istable(L, 1)) {
-		const int table = lua_gettop(L);
-
 		lua_getfield(L, 1, "mode");
 		config.mode = (ClearObjectsMode)getenumfield(L, 1, "mode",
 			ModApiEnv::es_ClearObjectsMode, config.mode);
@@ -1194,10 +1192,9 @@ int ModApiEnv::l_clear_objects(lua_State *L)
 		if (lua_isfunction(L, -1)) {
 			config.callback = LuaClearObjectCallback;
 
-			lua_pushvalue(L, 2);
 			int callback_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
-			lua_pushvalue(L, table);
+			lua_getfield(L, 1, "params");
 			int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
 			state = new ScriptCallbackState;
@@ -1209,7 +1206,9 @@ int ModApiEnv::l_clear_objects(lua_State *L)
 
 			config.param = static_cast<void *>(state);
 		}
-		//lua_pop(L, 1);
+		else {
+			lua_pop(L, 1);
+		}
 	}
 
 	env->clearObjects(config);
