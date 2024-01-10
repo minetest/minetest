@@ -67,15 +67,7 @@ void TestServerModManager::runTests(IGameDef *gamedef)
 		ofs2 << "-- intentionally empty\n";
 	}
 
-#ifdef WIN32
-	{
-		std::string mod_path("MINETEST_MOD_PATH=");
-		mod_path.append(test_mods);
-		_putenv(mod_path.c_str());
-	}
-#else
 	setenv("MINETEST_MOD_PATH", test_mods.c_str(), 1);
-#endif
 
 	m_worlddir = getTestTempDirectory().append(DIR_DELIM "world");
 	fs::CreateDir(m_worlddir);

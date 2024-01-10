@@ -20,14 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <cstdlib>
 #include "gettext.h"
 #include "util/string.h"
+#include "porting.h"
 #include "log.h"
-
-#ifdef _WIN32
-#define setenv(n,v,o) _putenv_s(n,v)
-#endif
 
 #if USE_GETTEXT && defined(_MSC_VER)
 #include <windows.h>
