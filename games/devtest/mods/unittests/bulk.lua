@@ -23,7 +23,7 @@ local function test_bulk_get_set(_,pos)
 		assert(node.param2 == 0)
 	end
 
-	-- push back old nodes
+	-- put back old nodes
 	for ipos, npos in pairs(positions) do
 		minetest.set_node(npos, nodes[ipos])
 	end
