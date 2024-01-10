@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+// enable include of memset_s function
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <algorithm>
 #include <string>
 #include "auth.h"
@@ -143,10 +146,12 @@ bool decode_srp_verifier_and_salt(const std::string &encoded,
 /// Override every character before clearing
 void clear_string(std::string &text)
 {
-  #ifndef _WIN32
-  explicit_bzero((void *)text.data(), text.size());
-  #else
-  SecureZeroMemory((void *)text.data(), text.size());
-  #endif
+	#ifdef __STDC_LIB_EXT1__
+	memset_s((void *)text.data(), text.size(), '0', text.size());
+	#elif _WIN32
+	SecureZeroMemory((void *)text.data(), text.size());
+	#else
+	explicit_bzero((void *)text.data(), text.size());
+	#endif
 	text.clear();
 }
