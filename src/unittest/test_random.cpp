@@ -38,7 +38,7 @@ public:
 	void testPcgRandomBytes();
 	void testPcgRandomNormalDist();
 
-	static const int expected_pseudorandom_results[256];
+	static const s32 expected_pseudorandom_results[256];
 	static const u32 expected_pcgrandom_results[256];
 	static const u8 expected_pcgrandom_bytes_result[24];
 	static const u8 expected_pcgrandom_bytes_result2[24];
@@ -63,7 +63,17 @@ void TestRandom::testPseudoRandom()
 	PseudoRandom pr(814538);
 
 	for (u32 i = 0; i != 256; i++)
-		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
+		UASSERTEQ(s32, pr.next(), expected_pseudorandom_results[i]);
+
+	PseudoRandom pr2(0);
+	UASSERTEQ(int, pr2.next(), 0);
+	UASSERTEQ(int, pr2.next(), 21469);
+	UASSERTEQ(int, pr2.next(), 9989);
+
+	PseudoRandom pr3(-101);
+	UASSERTEQ(int, pr3.next(), 3267);
+	UASSERTEQ(int, pr3.next(), 2485);
+	UASSERTEQ(int, pr3.next(), 30057);
 }
 
 
@@ -186,7 +196,7 @@ void TestRandom::testPcgRandomNormalDist()
 }
 
 
-const int TestRandom::expected_pseudorandom_results[256] = {
+const s32 TestRandom::expected_pseudorandom_results[256] = {
 	0x02fa, 0x60d5, 0x6c10, 0x606b, 0x098b, 0x5f1e, 0x4f56, 0x3fbd, 0x77af,
 	0x4fe9, 0x419a, 0x6fe1, 0x177b, 0x6858, 0x36f8, 0x6d83, 0x14fc, 0x2d62,
 	0x1077, 0x23e2, 0x041b, 0x7a7e, 0x5b52, 0x215d, 0x682b, 0x4716, 0x47e3,
