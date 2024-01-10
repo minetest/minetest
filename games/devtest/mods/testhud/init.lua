@@ -152,7 +152,8 @@ minetest.register_chatcommand("hudwaypoints", {
 			type = "image_waypoint",
 			text = "testhud_waypoint.png",
 			world_pos = player:get_pos(),
-			scale = {x = 3, y = 3},
+			-- 20% of screen width, 3x image height
+			scale = {x = -20, y = 3},
 			offset = {x = 0, y = -32}
 		}
 		if not player_waypoints[name] then

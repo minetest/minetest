@@ -1678,10 +1678,12 @@ type are ignored.
 
 Displays an image on the HUD.
 
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
+* `scale`: The scale of the image, with `{x = 1, y = 1}` being the original texture size.
+  The `x` and `y` fields apply to the respective axes.
+  Positive values scale the source image.
+  Negative values represent percentages relative to screen dimensions.
+  Example: `{x = -20, y = 3}` means the image will be drawn 20% of screen width wide,
+  and 3 times as high as the source image is.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `offset`: offset in pixels from position.
@@ -1748,10 +1750,12 @@ Displays distance to selected world position.
 
 Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
 
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
+* `scale`: The scale of the image, with `{x = 1, y = 1}` being the original texture size.
+  The `x` and `y` fields apply to the respective axes.
+  Positive values scale the source image.
+  Negative values represent percentages relative to screen dimensions.
+  Example: `{x = -20, y = 3}` means the image will be drawn 20% of screen width wide,
+  and 3 times as high as the source image is.
 * `text`: The name of the texture that is displayed.
 * `alignment`: The alignment of the image.
 * `world_pos`: World position of the waypoint.
