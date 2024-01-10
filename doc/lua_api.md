@@ -8057,7 +8057,9 @@ A 32-bit pseudorandom number generator.
 Uses PCG32, an algorithm of the permuted congruential generator family,
 offering very strong randomness.
 
-It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
+* constructor `PcgRandom(seed, [seq])`
+  * `seed`: 64-bit unsigned seed
+  * `seq`: 64-bit unsigned sequence, optional
 
 ### Methods
 
@@ -8152,14 +8154,15 @@ Can be obtained using `player:get_meta()`.
 A 16-bit pseudorandom number generator.
 Uses a well-known LCG algorithm introduced by K&R.
 
-It can be created via `PseudoRandom(seed)`.
+* constructor `PseudoRandom(seed)`
+  * `seed`: 32-bit signed number
 
 ### Methods
 
 * `next()`: return next integer random number [`0`...`32767`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
-    * `((max - min) == 32767) or ((max-min) <= 6553))` must be true
-      due to the simple implementation making bad distribution otherwise.
+    * Either `max - min == 32767` or `max - min <= 6553` must be true
+      due to the simple implementation making a bad distribution otherwise.
 
 `Raycast`
 ---------

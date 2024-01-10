@@ -6,6 +6,8 @@ local function test_random()
 
 	local pr2 = PseudoRandom(-101)
 	assert(pr2:next(0, 100) == 35)
+	-- unusual case that is normally disallowed:
+	assert(pr2:next(10000, 42767) == 12485)
 end
 unittests.register("test_random", test_random)
 

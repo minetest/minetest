@@ -81,7 +81,7 @@ void TestRandom::testPseudoRandomRange()
 {
 	PseudoRandom pr((int)time(NULL));
 
-	EXCEPTION_CHECK(PrngException, pr.range(2000, 6000));
+	EXCEPTION_CHECK(PrngException, pr.range(2000, 8600));
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
 	for (u32 i = 0; i != 32768; i++) {

@@ -70,7 +70,7 @@ public:
 		PcgRandom, we cannot modify this RNG's range as it would change the
 		output of this RNG for reverse compatibility.
 		*/
-		if ((u32)(max - min) > (RANDOM_RANGE + 1) / 10)
+		if ((u32)(max - min) > (RANDOM_RANGE + 1) / 5)
 			throw PrngException("Range too large");
 
 		return (next() % (max - min + 1)) + min;
