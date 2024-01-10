@@ -329,7 +329,7 @@ void ClientMap::updateDrawList()
 		MapBlockVect sectorblocks;
 
 		for (auto &sector_it : m_sectors) {
-			MapSector *sector = sector_it.second;
+			const MapSector *sector = sector_it.second;
 			v2s16 sp = sector->getPos();
 
 			blocks_loaded += sector->size();
@@ -339,11 +339,9 @@ void ClientMap::updateDrawList()
 					continue;
 			}
 
-			sectorblocks.clear();
-			sector->getBlocks(sectorblocks);
-
 			// Loop through blocks in sector
-			for (MapBlock *block : sectorblocks) {
+			for (const auto &entry : sector->getBlocks()) {
+				MapBlock *block = entry.second.get();
 				MapBlockMesh *mesh = block->mesh;
 
 				// Calculate the coordinates for range and frustum culling
@@ -649,7 +647,7 @@ void ClientMap::touchMapBlocks()
 	u32 blocks_in_range_with_mesh = 0;
 
 	for (const auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+		const MapSector *sector = sector_it.second;
 		v2s16 sp = sector->getPos();
 
 		blocks_loaded += sector->size();
@@ -659,14 +657,12 @@ void ClientMap::touchMapBlocks()
 				continue;
 		}
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
 
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocks()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 
 			// Calculate the coordinates for range and frustum culling
@@ -1266,18 +1262,16 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 	u32 blocks_in_range_with_mesh = 0;
 
 	for (auto &sector_it : m_sectors) {
-		MapSector *sector = sector_it.second;
+		const MapSector *sector = sector_it.second;
 		if (!sector)
 			continue;
 		blocks_loaded += sector->size();
 
-		MapBlockVect sectorblocks;
-		sector->getBlocks(sectorblocks);
-
 		/*
 			Loop through blocks in sector
 		*/
-		for (MapBlock *block : sectorblocks) {
+		for (const auto &entry : sector->getBlocks()) {
+			MapBlock *block = entry.second.get();
 			MapBlockMesh *mesh = block->mesh;
 			if (!mesh) {
 				// Ignore if mesh doesn't exist
