@@ -140,10 +140,11 @@ local function test_entity_cleared(_, pos)
 
 	minetest.clear_objects({
 			mode = "soft",
-			callback = function (name)
-					print("Checking entity with name: "..name)
+			callback = function (name, staticdata, params)
+					assert(params=="test")
 					return name == "unittests:callbacks"
 				end,
+			params = "test",
 		});
 
 	check_log({nil})
