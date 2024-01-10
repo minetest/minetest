@@ -405,25 +405,22 @@ int LuaPseudoRandom::l_next(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPseudoRandom *o = checkObject<LuaPseudoRandom>(L, 1);
-	int min = 0;
-	int max = 32767;
-	lua_settop(L, 3);
+	int min = 0, max = PseudoRandom::RANDOM_RANGE;
 	if (lua_isnumber(L, 2))
 		min = luaL_checkinteger(L, 2);
 	if (lua_isnumber(L, 3))
 		max = luaL_checkinteger(L, 3);
-	if (max < min) {
-		errorstream<<"PseudoRandom.next(): max="<<max<<" min="<<min<<std::endl;
-		throw LuaError("PseudoRandom.next(): max < min");
+
+	int val;
+	if (max - min == PseudoRandom::RANDOM_RANGE) {
+		val = o->m_pseudo.next() + min;
+	} else {
+		try {
+			val = o->m_pseudo.range(min, max);
+		} catch (PrngException &e) {
+			throw LuaError(e.what());
+		}
 	}
-	if(max - min != 32767 && max - min > 32767/5)
-		throw LuaError("PseudoRandom.next() max-min is not 32767"
-				" and is > 32768/5. This is disallowed due to"
-				" the bad random distribution the"
-				" implementation would otherwise make.");
-	PseudoRandom &pseudo = o->m_pseudo;
-	int val = pseudo.next();
-	val = (val % (max-min+1)) + min;
 	lua_pushinteger(L, val);
 	return 1;
 }
