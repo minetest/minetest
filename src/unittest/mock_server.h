@@ -22,8 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MockServer : public Server
 {
 public:
-	MockServer() : Server(TEST_WORLDDIR, SubgameSpec("fakespec", "fakespec"), true,
-		Address(), true, nullptr)
+	/* Set path_world to a real existing folder if you plan to initialize scripting! */
+	MockServer(const std::string &path_world = "fakepath") :
+		Server(path_world, SubgameSpec("fakespec", "fakespec"), true,
+			Address(), true, nullptr
+		)
 	{}
 
 private:
