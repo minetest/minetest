@@ -146,7 +146,7 @@ void clear_string(std::string &text)
   #ifndef _WIN32
   explicit_bzero((void *)text.data(), text.size());
   #else
-  SecureZeroMemory((void *)text.data(), text.size())
+  SecureZeroMemory((void *)text.data(), text.size());
   #endif
 	text.clear();
 }
