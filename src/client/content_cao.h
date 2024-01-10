@@ -130,6 +130,7 @@ private:
 	bool m_is_visible = false;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
+	f32 m_material_type_param;
 	// Settings
 	bool m_enable_shaders = false;
 
