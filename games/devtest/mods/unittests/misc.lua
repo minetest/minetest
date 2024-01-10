@@ -1,8 +1,11 @@
 local function test_random()
-	-- Try out PseudoRandom
-	local pseudo = PseudoRandom(13)
-	assert(pseudo:next() == 22290)
-	assert(pseudo:next() == 13854)
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
+	local pr = PseudoRandom(13)
+	assert(pr:next() == 22290)
+	assert(pr:next() == 13854)
+
+	local pr2 = PseudoRandom(-101)
+	assert(pr2:next(0, 100) == 35)
 end
 unittests.register("test_random", test_random)
 
