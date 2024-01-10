@@ -433,7 +433,7 @@ int LuaPseudoRandom::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	u64 seed = luaL_checknumber(L, 1);
+	s32 seed = luaL_checkinteger(L, 1);
 	LuaPseudoRandom *o = new LuaPseudoRandom(seed);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
