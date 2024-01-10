@@ -23,6 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+	#define _GNU_SOURCE
+#endif
+
 #include <string>
 #include <vector>
 #include "irrlicht.h"
@@ -43,12 +47,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	#define sleep_ms(x) Sleep(x)
 	#define sleep_us(x) Sleep((x)/1000)
+
+	#define setenv(n,v,o) _putenv_s(n,v)
+	#define unsetenv(n) _putenv_s(n,"")
 #else
 	#include <unistd.h>
-
-	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
-		#define _GNU_SOURCE
-	#endif
+	#include <cstdlib> // setenv
 
 	#define sleep_ms(x) usleep((x)*1000)
 	#define sleep_us(x) usleep(x)
