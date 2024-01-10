@@ -44,23 +44,23 @@ class PseudoRandom {
 public:
 	const static u32 RANDOM_RANGE = 32767;
 
-	inline PseudoRandom(int seed=0):
-		m_next(seed)
+	inline PseudoRandom(s32 seed_=0)
 	{
+		seed(seed_);
 	}
 
-	inline void seed(int seed)
+	inline void seed(s32 seed)
 	{
 		m_next = seed;
 	}
 
-	inline int next()
+	inline u32 next()
 	{
 		m_next = m_next * 1103515245 + 12345;
-		return (unsigned)(m_next / 65536) % (RANDOM_RANGE + 1);
+		return (u32)(m_next / 65536) % (RANDOM_RANGE + 1);
 	}
 
-	inline int range(int min, int max)
+	inline s32 range(s32 min, s32 max)
 	{
 		if (max < min)
 			throw PrngException("Invalid range (max < min)");
@@ -77,7 +77,7 @@ public:
 	}
 
 private:
-	int m_next;
+	s32 m_next;
 };
 
 class PcgRandom {
