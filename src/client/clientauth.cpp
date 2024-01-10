@@ -38,7 +38,7 @@ ClientAuth::~ClientAuth()
 	clear();
 }
 
-void ClientAuth::moveFrom(ClientAuth& other)
+ClientAuth &ClientAuth::operator=(ClientAuth &&other)
 {
 	clear();
 
@@ -52,6 +52,10 @@ void ClientAuth::moveFrom(ClientAuth& other)
 
 	other.m_legacy_auth_data = nullptr;
 	other.m_srp_auth_data = nullptr;
+
+	other.clear();
+
+	return *this;
 }
 
 void ClientAuth::applyPassword(const std::string &player_name, const std::string &password)
@@ -90,11 +94,11 @@ void * ClientAuth::getAuthData(AuthMechanism chosen_auth_mech) const
 void ClientAuth::clear()
 {
 	if (m_legacy_auth_data != nullptr) {
-		srp_user_delete(static_cast<SRPUser *>(m_legacy_auth_data));
+		srp_user_delete(m_legacy_auth_data);
 		m_legacy_auth_data = nullptr;
 	}
 	if (m_srp_auth_data != nullptr) {
-		srp_user_delete(static_cast<SRPUser *>(m_srp_auth_data));
+		srp_user_delete(m_srp_auth_data);
 		m_srp_auth_data = nullptr;
 	}
 	m_srp_verifier.clear();

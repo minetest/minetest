@@ -95,7 +95,7 @@ void PacketCounter::print(std::ostream &o) const
 */
 
 Client::Client(
-		const char *playername,
+		const std::string &playername,
 		const std::string &password,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
@@ -124,7 +124,7 @@ Client::Client(
 	m_allow_login_or_register(allow_login_or_register),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
-	m_auth(std::string(playername), password),
+	m_auth(playername, password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
@@ -132,7 +132,7 @@ Client::Client(
 	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
-	m_env.setLocalPlayer(new LocalPlayer(this, playername));
+	m_env.setLocalPlayer(new LocalPlayer(this, playername.c_str()));
 
 	// Make the mod storage database and begin the save for later
 	m_mod_storage_database =

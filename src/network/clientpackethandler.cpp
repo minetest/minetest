@@ -165,10 +165,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
-	deleteAuthData();
-
-	m_auth.moveFrom(m_new_auth);
-	m_new_auth.clear();
+	m_auth = std::move(m_new_auth);
 
 	verbosestream << "Client: Received TOCLIENT_ACCEPT_SUDO_MODE." << std::endl;
 

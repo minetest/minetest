@@ -121,7 +121,7 @@ public:
 	*/
 
 	Client(
-			const char *playername,
+			const std::string &playername,
 			const std::string &password,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,

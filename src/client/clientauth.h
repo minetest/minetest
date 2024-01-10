@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
 
+struct SRPUser;
+
 class ClientAuth
 {
 public:
@@ -32,7 +34,8 @@ public:
 	~ClientAuth();
 	DISABLE_CLASS_COPY(ClientAuth);
 
-	void moveFrom(ClientAuth& other);
+	ClientAuth(ClientAuth &&other) { *this = std::move(other); }
+	ClientAuth &operator=(ClientAuth &&other);
 
 	void applyPassword(const std::string &player_name, const std::string &password);
 	
@@ -50,6 +53,6 @@ private:
 	std::string m_srp_verifier;
 	std::string m_srp_salt;
 	
-	void *m_legacy_auth_data = nullptr;
-	void *m_srp_auth_data = nullptr;
+	SRPUser *m_legacy_auth_data = nullptr;
+	SRPUser *m_srp_auth_data = nullptr;
 };
