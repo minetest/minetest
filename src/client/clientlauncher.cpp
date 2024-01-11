@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "renderingengine.h"
 #include "network/networkexceptions.h"
+#include <IGUISpriteBank.h>
+#include <ICameraSceneNode.h>
 
 #if USE_SOUND
 	#include "sound/sound_openal.h"

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <ICameraSceneNode.h>
 #include <IVideoDriver.h>
+#include <IFileSystem.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
