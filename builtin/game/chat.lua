@@ -1235,23 +1235,15 @@ core.register_chatcommand("kick", {
 })
 
 core.register_chatcommand("clearobjects", {
-	params = S("[soft | full | quick | (rules <rules_table>)]"),
-	description = S("Clear objects in world"),
+	params = S("[full | quick]"),
+	description = S("Clear all objects in world"),
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
-		if param == "" or param == "soft" then
-			options.mode = "soft"
-		elseif param == "quick" then
+		if param == "" or param == "quick" then
 			options.mode = "quick"
 		elseif param == "full" then
 			options.mode = "full"
-		elseif param:sub(1,6)=="rules " then
-			options.mode = "rules"
-			options.rules = minetest.parse_json(param:sub(7,-1))
-			if type(options.rules)~="table" then
-				return false, ("invalid usage, parsable json table is expected.")
-			end
 		else
 			return false, S("Invalid usage, see /help clearobjects.")
 		end
@@ -1259,12 +1251,12 @@ core.register_chatcommand("clearobjects", {
 		core.log("action", name .. " clears objects ("
 				.. options.mode .. " mode).")
 		if options.mode == "full" then
-			core.chat_send_all(S("Clearing objects. This may take a long time. "
+			core.chat_send_all(S("Clearing all objects. This may take a long time. "
 				.. "You may experience a timeout. (by @1)", name))
 		end
 		core.clear_objects(options)
 		core.log("action", "Object clearing done.")
-		core.chat_send_all("*** "..S("Cleared objects with using rule @1.", options.mode))
+		core.chat_send_all("*** "..S("Cleared all objects."))
 		return true
 	end,
 })
