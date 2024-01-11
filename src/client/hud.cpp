@@ -416,7 +416,9 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 0)  & 0xFF);
 				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				const std::string &unit = e->text;
-				// waypoints reuse the item field to store precision, item = precision + 1
+				// Waypoints reuse the item field to store precision,
+				// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+				// Also see `push_hud_element`.
 				u32 item = e->item;
 				float precision = (item == 0) ? 10.0f : (item - 1.f);
 				bool draw_precision = precision > 0;

@@ -2025,11 +2025,16 @@ void read_hud_element(lua_State *L, HudElement *elem)
 	elem->name    = getstringfield_default(L, 2, "name", "");
 	elem->text    = getstringfield_default(L, 2, "text", "");
 	elem->number  = getintfield_default(L, 2, "number", 0);
-	if (elem->type == HUD_ELEM_WAYPOINT)
-		// waypoints reuse the item field to store precision, item = precision + 1
-		elem->item = getintfield_default(L, 2, "precision", -1) + 1;
-	else
+	if (elem->type == HUD_ELEM_WAYPOINT) {
+		// Waypoints reuse the item field to store precision,
+		// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+		int precision = getintfield_default(L, 2, "precision", 10);
+		if (precision < 0)
+			throw LuaError("Waypoint precision must be non-negative");
+		elem->item = precision + 1;
+	} else {
 		elem->item = getintfield_default(L, 2, "item", 0);
+	}
 	elem->dir     = getintfield_default(L, 2, "direction", 0);
 	elem->z_index = MYMAX(S16_MIN, MYMIN(S16_MAX,
 			getintfield_default(L, 2, "z_index", 0)));
@@ -2081,8 +2086,10 @@ void push_hud_element(lua_State *L, HudElement *elem)
 	lua_setfield(L, -2, "number");
 
 	if (elem->type == HUD_ELEM_WAYPOINT) {
-		// waypoints reuse the item field to store precision, precision = item - 1
-		lua_pushnumber(L, elem->item - 1);
+		// Waypoints reuse the item field to store precision,
+		// item = precision + 1 and item = 0 <=> precision = 10 for backwards compatibility.
+		// See `Hud::drawLuaElements`, case `HUD_ELEM_WAYPOINT`.
+		lua_pushnumber(L, (elem->item == 0) ? 10 : (elem->item - 1));
 		lua_setfield(L, -2, "precision");
 	}
 	// push the item field for waypoints as well for backwards compatibility
