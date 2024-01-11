@@ -27,11 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define _GNU_SOURCE
 #endif
 
+// Be mindful of what you include here!
 #include <string>
-#include <vector>
-#include "irrlicht.h"
-#include "irrlichttypes.h" // u32
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h" // u64
 #include "debug.h"
 #include "constants.h"
 #include "gettime.h"

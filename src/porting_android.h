@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <android_native_app_glue.h>
 #include <android/log.h>
 
+#include "irrlichttypes_bloated.h"
+
 #include <string>
 
 namespace porting {

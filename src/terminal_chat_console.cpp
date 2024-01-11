@@ -280,7 +280,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			break;
-		case KEY_TAB:
+		case '\t':
 			// Tab pressed
 			// Nick completion
 			prompt.nickCompletion(m_nicks, false);
