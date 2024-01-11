@@ -286,10 +286,8 @@ bool ScriptApiEnv::on_clear_object(
 	try {
 		PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 
-		lua_pop(L, 1); // Pop callback result
 		bool result = lua_toboolean(L, -1);
-
-		lua_pop(L, 2); // Pop error handler
+		lua_pop(L, 2); // Pop callback result and error handler
 
 		return result;
 	} catch (LuaError &e) {
