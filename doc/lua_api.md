@@ -8234,32 +8234,38 @@ It can be created via `Settings(filename)`.
 ### Methods
 
 * `get(key)`: returns a value
+    * For the main settings object (`minetest.settings`), `get()` and other
+      getter functions fall back to default values for engine-defined settings.
+    * `get()` and other getter functions do not fall back to default values for
+      mod-defined settings.
+    * Returns `nil` if `key` is not found.
 * `get_bool(key, [default])`: returns a boolean
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+    * Returns `nil` if `key` is not found.
 * `get_flags(key)`:
     * Returns `{flag = true/false, ...}` according to the set flags.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
+    * Returns `nil` if `key` is not found.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set on the main settings
       object (`minetest.settings`).
 * `set_bool(key, value)`
-    * See documentation for set() above.
+    * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
-    * Also, see documentation for set() above.
+    * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
     * Returns a boolean indicating whether `key` exists.
-    * Note that for the main settings object (`minetest.settings`), `get(key)`
-      might return a value even if `has(key)` returns `false`. That's because
-      `get` can fall back to the so-called parent of the `Settings` object, i.e.
-      the default values.
+    * In contrast to `get()`, `has()` never considers default values.
+    * This means that for the main settings object (`minetest.settings`),
+      `get(key)` might return a value even if `has(key)` returns `false`.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
