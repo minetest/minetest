@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Esperanto (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2024-01-05 14:21+0000\n"
-"Last-Translator: Jaidyn Ann <jadedctrl@posteo.net>\n"
+"PO-Revision-Date: 2024-01-14 12:31+0000\n"
+"Last-Translator: Tirifto <tirifto@posteo.cz>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
 "minetest/eo/>\n"
 "Language: eo\n"
@@ -650,7 +650,7 @@ msgstr "Registriĝi"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Lasi"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -825,9 +825,8 @@ msgid "(Use system language)"
 msgstr "(Uzu lingvon de la sistemo)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Accessibility"
-msgstr "Alirebleco"
+msgstr "Faciluzo"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -855,9 +854,8 @@ msgid "General"
 msgstr "Ĝenerale"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Rapida moviĝo"
+msgstr "Moviĝo"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default"
@@ -892,12 +890,10 @@ msgid "Content: Mods"
 msgstr "Enhavo: Modifaĵoj"
 
 #: builtin/mainmenu/settings/shadows_component.lua
-#, fuzzy
 msgid "(The game will need to enable shadows as well)"
-msgstr "(La ludo devus ŝalti ankaŭ ombrojn)"
+msgstr "(La ludo bezonos ŝalti ankaŭ ombrojn)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
-#, fuzzy
 msgid "Custom"
 msgstr "Propra"
 
@@ -1576,7 +1572,6 @@ msgid "Unlimited viewing range enabled"
 msgstr "Ŝaltis senliman vidodistancon"
 
 #: src/client/game.cpp
-#, fuzzy
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr "Senlima vidodistanco ŝaltita, sed ĝin malpermesas ludo aŭ modifaĵo"
 
@@ -1680,7 +1675,6 @@ msgid "Caps Lock"
 msgstr "Majuskla baskulo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Clear Key"
 msgstr "Vakigo"
 
@@ -1689,13 +1683,12 @@ msgid "Control Key"
 msgstr "Stirklavo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Delete Key"
-msgstr "Forigi"
+msgstr "Forigo"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Malsupren"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1742,9 +1735,8 @@ msgid "Insert"
 msgstr "Enmeti"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Left Arrow"
-msgstr "Maldekstra Stiro"
+msgstr "Maldekstren"
 
 #: src/client/keycode.cpp
 msgid "Left Button"
@@ -1768,7 +1760,6 @@ msgstr "Maldekstra Vindozo"
 
 #. ~ Key name, common on Windows keyboards
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Menu Key"
 msgstr "Menuo"
 
@@ -1845,20 +1836,17 @@ msgid "OEM Clear"
 msgstr "OEM Vakigi"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Down"
-msgstr "Paĝon malsupren"
+msgstr "Paĝon suben"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Page Up"
 msgstr "Paĝon supren"
 
 #. ~ Usually paired with the Break key
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Pause Key"
-msgstr "Haltigo"
+msgstr "Paŭzo"
 
 #: src/client/keycode.cpp
 msgid "Play"
@@ -1870,14 +1858,12 @@ msgid "Print"
 msgstr "Presi"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Return Key"
-msgstr "Enen"
+msgstr "Enigo"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Right Arrow"
-msgstr "Dekstra Stiro"
+msgstr "Dekstren"
 
 #: src/client/keycode.cpp
 msgid "Right Button"
@@ -1909,7 +1895,6 @@ msgid "Select"
 msgstr "Elekti"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Shift Key"
 msgstr "Majuskligo"
 
@@ -1931,7 +1916,7 @@ msgstr "Tabo"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Supren"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -1942,7 +1927,6 @@ msgid "X Button 2"
 msgstr "X-Butono 2"
 
 #: src/client/keycode.cpp
-#, fuzzy
 msgid "Zoom Key"
 msgstr "Zomo"
 
@@ -2205,9 +2189,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "La nomo jam estas prenita. Bonvolu elekti alian nomon."
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Malŝaltiĝante…"
+msgstr "%s dum malstarto: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2278,7 +2262,7 @@ msgstr "2d-a bruo, kiu lokas la riverajn valojn kaj kanalojn."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -2487,14 +2471,12 @@ msgid "Announce to this serverlist."
 msgstr "Anonci al ĉi tiu servillisto."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anti-aliasing scale"
-msgstr "Glatigo:"
+msgstr "Skalo de glatigo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Antialiasing method"
-msgstr "Glatigo:"
+msgstr "Metodo de glatigo"
 
 #: src/settings_translation_file.cpp
 msgid "Append item name"
@@ -2576,9 +2558,8 @@ msgid "Base terrain height."
 msgstr "Baza alteco de tereno."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base texture size"
-msgstr "Minimuma grandeco de teksturoj"
+msgstr "Baza grandeco de teksturoj"
 
 #: src/settings_translation_file.cpp
 msgid "Basic privileges"
@@ -2601,9 +2582,8 @@ msgid "Bind address"
 msgstr "Bindi adreson"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome API"
-msgstr "Klimatoj"
+msgstr "API de klimatoj"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -2812,9 +2792,8 @@ msgid "Clouds"
 msgstr "Nuboj"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds are a client-side effect."
-msgstr "Nuboj kreiĝas klient-flanke."
+msgstr "Nuboj fariĝas klient-flanke."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -2945,6 +2924,8 @@ msgid ""
 "Controls sinking speed in liquid when idling. Negative values will cause\n"
 "you to rise instead."
 msgstr ""
+"Decidas rapidecon de malsupreniro en fluaĵo sen aktiva moviĝo.\n"
+"Minusaj valoroj kaŭzos supreniron anstataŭe."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
@@ -2973,13 +2954,12 @@ msgid "Crosshair alpha"
 msgstr "Travidebleco de celilo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Crosshair alpha (opaqueness, between 0 and 255).\n"
 "This also applies to the object crosshair."
 msgstr ""
 "Travidebleco de celilo (maltravidebleco, inter 0 kaj 255).\n"
-"Ankaŭ determinas la koloron de la celilo de objekto."
+"Ankaŭ decidas la koloron de la celilo de objekto."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
