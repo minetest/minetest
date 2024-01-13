@@ -165,16 +165,15 @@ static size_t httpfetch_discardfunction(
 
 class CurlHandlePool
 {
-	std::list<CURL*> handles;
+	std::vector<CURL*> handles;
 
 public:
 	CurlHandlePool() = default;
 
 	~CurlHandlePool()
 	{
-		for (std::list<CURL*>::iterator it = handles.begin();
-				it != handles.end(); ++it) {
-			curl_easy_cleanup(*it);
+		for (CURL *it : handles) {
+			curl_easy_cleanup(it);
 		}
 	}
 	CURL * alloc()
@@ -182,13 +181,11 @@ public:
 		CURL *curl;
 		if (handles.empty()) {
 			curl = curl_easy_init();
-			if (curl == NULL) {
-				errorstream<<"curl_easy_init returned NULL"<<std::endl;
-			}
-		}
-		else {
-			curl = handles.front();
-			handles.pop_front();
+			if (!curl)
+				throw std::bad_alloc();
+		} else {
+			curl = handles.back();
+			handles.pop_back();
 		}
 		return curl;
 	}
@@ -453,7 +450,7 @@ protected:
 	struct Request {
 		RequestType type;
 		HTTPFetchRequest fetch_request;
-		Event *event;
+		Event *event = nullptr;
 	};
 
 	CURLM *m_multi;
@@ -479,8 +476,7 @@ public:
 		Request req;
 		req.type = RT_FETCH;
 		req.fetch_request = fetch_request;
-		req.event = NULL;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
 	void requestClear(u64 caller, Event *event)
@@ -489,31 +485,29 @@ public:
 		req.type = RT_CLEAR;
 		req.fetch_request.caller = caller;
 		req.event = event;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
 	void requestWakeUp()
 	{
 		Request req;
 		req.type = RT_WAKEUP;
-		req.event = NULL;
-		m_requests.push_back(req);
+		m_requests.push_back(std::move(req));
 	}
 
 protected:
 	// Handle a request from some other thread
 	// E.g. new fetch; clear fetches for one caller; wake up
-	void processRequest(const Request &req)
+	void processRequest(Request &req)
 	{
 		if (req.type == RT_FETCH) {
 			// New fetch, queue until there are less
 			// than m_parallel_limit ongoing fetches
-			m_queued_fetches.push_back(req.fetch_request);
+			m_queued_fetches.push_back(std::move(req.fetch_request));
 
 			// see processQueued() for what happens next
 
-		}
-		else if (req.type == RT_CLEAR) {
+		} else if (req.type == RT_CLEAR) {
 			u64 caller = req.fetch_request.caller;
 
 			// Abort all ongoing fetches for the caller
@@ -526,20 +520,18 @@ protected:
 			}
 
 			// Also abort all queued fetches for the caller
-			for (std::list<HTTPFetchRequest>::iterator
-					it = m_queued_fetches.begin();
+			for (auto it = m_queued_fetches.begin();
 					it != m_queued_fetches.end();) {
 				if ((*it).caller == caller)
 					it = m_queued_fetches.erase(it);
 				else
 					++it;
 			}
-		}
-		else if (req.type == RT_WAKEUP) {
+		} else if (req.type == RT_WAKEUP) {
 			// Wakeup: Nothing to do, thread is awake at this point
 		}
 
-		if (req.event != NULL)
+		if (req.event)
 			req.event->signal();
 	}
 
@@ -548,7 +540,7 @@ protected:
 	{
 		while (m_all_ongoing.size() < m_parallel_limit &&
 				!m_queued_fetches.empty()) {
-			HTTPFetchRequest request = m_queued_fetches.front();
+			HTTPFetchRequest request = std::move(m_queued_fetches.front());
 			m_queued_fetches.pop_front();
 
 			// Create ongoing fetch data and make a cURL handle
@@ -568,20 +560,16 @@ protected:
 	// Process CURLMsg (indicates completion of a fetch)
 	void processCurlMessage(CURLMsg *msg)
 	{
+		if (msg->msg != CURLMSG_DONE)
+			return;
 		// Determine which ongoing fetch the message pertains to
-		size_t i = 0;
-		bool found = false;
-		for (i = 0; i < m_all_ongoing.size(); ++i) {
-			if (m_all_ongoing[i]->getEasyHandle() == msg->easy_handle) {
-				found = true;
-				break;
-			}
-		}
-		if (msg->msg == CURLMSG_DONE && found) {
-			// m_all_ongoing[i] succeeded or failed.
-			HTTPFetchOngoing &ongoing = *m_all_ongoing[i];
+		for (auto it = m_all_ongoing.begin(); it != m_all_ongoing.end(); ++it) {
+			auto &ongoing = **it;
+			if (ongoing.getEasyHandle() != msg->easy_handle)
+				continue;
 			httpfetch_deliver_result(*ongoing.complete(msg->data.result));
-			m_all_ongoing.erase(m_all_ongoing.begin() + i);
+			m_all_ongoing.erase(it);
+			return;
 		}
 	}
 
@@ -641,10 +629,7 @@ protected:
 		CurlHandlePool pool;
 
 		m_multi = curl_multi_init();
-		if (m_multi == NULL) {
-			errorstream<<"curl_multi_init returned NULL\n";
-			return NULL;
-		}
+		FATAL_ERROR_IF(!m_multi, "curl_multi_init returned NULL");
 
 		FATAL_ERROR_IF(!m_all_ongoing.empty(), "Expected empty");
 
@@ -716,15 +701,17 @@ protected:
 	}
 };
 
-std::unique_ptr<CurlFetchThread> g_httpfetch_thread = nullptr;
+static std::unique_ptr<CurlFetchThread> g_httpfetch_thread;
 
 void httpfetch_init(int parallel_limit)
 {
+	FATAL_ERROR_IF(g_httpfetch_thread, "httpfetch_init called twice");
+
 	verbosestream<<"httpfetch_init: parallel_limit="<<parallel_limit
 			<<std::endl;
 
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
-	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
+	FATAL_ERROR_IF(res != CURLE_OK, "cURL init failed");
 
 	g_httpfetch_thread = std::make_unique<CurlFetchThread>(parallel_limit);
 
@@ -762,7 +749,7 @@ static void httpfetch_request_clear(u64 caller)
 		g_httpfetch_thread->requestClear(caller, &event);
 		event.wait();
 	} else {
-		g_httpfetch_thread->requestClear(caller, NULL);
+		g_httpfetch_thread->requestClear(caller, nullptr);
 	}
 }
 
@@ -774,7 +761,7 @@ void httpfetch_sync(const HTTPFetchRequest &fetch_request,
 	CurlHandlePool pool;
 	HTTPFetchOngoing ongoing(fetch_request, &pool);
 	// Do the fetch (curl_easy_perform)
-	CURLcode res = ongoing.start(NULL);
+	CURLcode res = ongoing.start(nullptr);
 	// Update fetch result
 	fetch_result = *ongoing.complete(res);
 }
