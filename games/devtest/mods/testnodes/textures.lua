@@ -149,15 +149,20 @@ fractal = nil
 frac_emb = nil
 checker = nil
 
-local textures_path = minetest.get_modpath( minetest.get_current_modname() ) .. "/textures/"
-minetest.safe_file_write(
-	textures_path .. "testnodes_generated_mb.png",
-	encode_and_check(512, 512, "rgb", data_mb)
-)
-minetest.safe_file_write(
-	textures_path .. "testnodes_generated_ck.png",
-	encode_and_check(512, 512, "gray", data_ck)
-)
+local textures_path = minetest.get_worldpath() .. "/generated_textures/"
+local path_created = minetest.mkdir(textures_path)
+if not path_created then
+	minetest.log("error", "[testnodes] Could not create path for generated textures at "..textures_path)
+else
+	minetest.safe_file_write(
+		textures_path .. "testnodes_generated_mb.png",
+		encode_and_check(512, 512, "rgb", data_mb)
+	)
+	minetest.safe_file_write(
+		textures_path .. "testnodes_generated_ck.png",
+		encode_and_check(512, 512, "gray", data_ck)
+	)
+end
 
 minetest.register_node("testnodes:generated_png_mb", {
 	description = S("Generated Mandelbrot PNG Test Node"),
