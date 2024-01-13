@@ -542,7 +542,7 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	}
 	infostream << "Waited for other menus" << std::endl;
 
-	ICursorControl *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();
+	auto *cur_control = m_rendering_engine->get_raw_device()->getCursorControl();
 	if (cur_control) {
 		// Cursor can be non-visible when coming from the game
 		cur_control->setVisible(true);

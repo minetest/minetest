@@ -2613,7 +2613,7 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-	ICursorControl *cur_control = device->getCursorControl();
+	auto *cur_control = device->getCursorControl();
 
 	/* With CIrrDeviceSDL on Linux and Windows, enabling relative mouse mode
 	somehow results in simulated mouse events being generated from touch events,
