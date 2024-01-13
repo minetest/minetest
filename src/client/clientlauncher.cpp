@@ -277,6 +277,10 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			error_message = gettext("Connection error (timed out?)");
 			errorstream << error_message << std::endl;
 		}
+		catch (ShaderException &e) {
+			error_message = debug_describe_exc(e);
+			errorstream << error_message << std::endl;
+		}
 
 #ifdef NDEBUG
 		catch (std::exception &e) {
