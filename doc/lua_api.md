@@ -246,14 +246,14 @@ The format is documented in `builtin/settingtypes.txt`.
 It is parsed by the main menu settings dialogue to list mod-specific
 settings in the "Mods" category.
 
+`minetest.settings` can be used to read custom or engine settings.
+See [`Settings`].
+
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on minetest calling the
+wants to register. Subsequent execution depends on Minetest calling the
 registered callbacks.
-
-`minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See [`Settings`])
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
 
@@ -5772,7 +5772,7 @@ Setting-related
 ---------------
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`).
+  main config file (`minetest.conf`). See [`Settings`].
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
@@ -8229,15 +8229,18 @@ secure random device cannot be found on the system.
 
 An interface to read config files in the format of `minetest.conf`.
 
-It can be created via `Settings(filename)`.
+`minetest.settings` is a `Settings` instance that can be used to access the
+main config file (`minetest.conf`). Instances for other config files can be
+created via `Settings(filename)`.
+
+Engine settings on the `minetest.settings` object have internal defaults that
+will be returned if a setting is unset.
+The engine does *not* (yet) read `settingtypes.txt` for this purpose. This
+means that no defaults will be returned for mod settings.
 
 ### Methods
 
 * `get(key)`: returns a value
-    * For the main settings object (`minetest.settings`), `get()` and other
-      getter functions fall back to default values for engine-defined settings.
-    * `get()` and other getter functions do not fall back to default values for
-      mod-defined settings.
     * Returns `nil` if `key` is not found.
 * `get_bool(key, [default])`: returns a boolean
     * `default` is the value returned if `key` is not found.
@@ -8263,7 +8266,8 @@ It can be created via `Settings(filename)`.
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
     * Returns a boolean indicating whether `key` exists.
-    * In contrast to `get()`, `has()` never considers default values.
+    * In contrast to the various getter functions, `has()` doesn't consider
+      any default values.
     * This means that for the main settings object (`minetest.settings`),
       `get(key)` might return a value even if `has(key)` returns `false`.
 * `write()`: returns a boolean (`true` for success)
