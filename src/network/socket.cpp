@@ -43,7 +43,7 @@ typedef int socklen_t;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
-#include <netdb.h>
+#include <poll.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #define LAST_SOCKET_ERR() (errno)
@@ -332,46 +332,45 @@ void UDPSocket::setTimeoutMs(int timeout_ms)
 
 bool UDPSocket::WaitData(int timeout_ms)
 {
-	fd_set readset;
-	int result;
+	timeout_ms = MYMAX(timeout_ms, 0);
 
-	// Initialize the set
-	FD_ZERO(&readset);
-	FD_SET(m_handle, &readset);
-
-	// Initialize time out struct
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = timeout_ms * 1000;
-
-	// select()
-	result = select(m_handle + 1, &readset, NULL, NULL, &tv);
-
-	if (result == 0)
-		return false;
-
-	int e = LAST_SOCKET_ERR();
 #ifdef _WIN32
-	if (result < 0 && (e == WSAEINTR || e == WSAEBADF)) {
+	WSAPOLLFD pfd;
+	pfd.fd = m_handle;
+	pfd.events = POLLRDNORM;
+
+	int result = WSAPoll(&pfd, 1, timeout_ms);
 #else
-	if (result < 0 && (e == EINTR || e == EBADF)) {
+	struct pollfd pfd;
+	pfd.fd = m_handle;
+	pfd.events = POLLIN;
+
+	int result = poll(&pfd, 1, timeout_ms);
 #endif
-		// N.B. select() fails when sockets are destroyed on Connection's dtor
-		// with EBADF.  Instead of doing tricky synchronization, allow this
+
+	if (result == 0) {
+		return false; // No data
+	} else if (result > 0) {
+		// There might be data
+		return pfd.revents != 0;
+	}
+
+	// Error case
+	int e = LAST_SOCKET_ERR();
+
+#ifdef _WIN32
+	if (e == WSAEINTR || e == WSAEBADF) {
+#else
+	if (e == EINTR || e == EBADF) {
+#endif
+		// N.B. poll() fails when sockets are destroyed on Connection's dtor
+		// with EBADF. Instead of doing tricky synchronization, allow this
 		// thread to exit but don't throw an exception.
 		return false;
 	}
 
-	if (result < 0) {
-		tracestream << (int)m_handle << ": Select failed: " << SOCKET_ERR_STR(e)
-			<< std::endl;
+	tracestream << (int)m_handle << ": poll failed: "
+		<< SOCKET_ERR_STR(e) << std::endl;
 
-		throw SocketException("Select failed");
-	} else if (!FD_ISSET(m_handle, &readset)) {
-		// No data
-		return false;
-	}
-
-	// There is data
-	return true;
+	throw SocketException("poll failed");
 }
