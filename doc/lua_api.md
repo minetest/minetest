@@ -246,14 +246,14 @@ The format is documented in `builtin/settingtypes.txt`.
 It is parsed by the main menu settings dialogue to list mod-specific
 settings in the "Mods" category.
 
+`minetest.settings` can be used to read custom or engine settings.
+See [`Settings`].
+
 ### `init.lua`
 
 The main Lua script. Running this script should register everything it
-wants to register. Subsequent execution depends on minetest calling the
+wants to register. Subsequent execution depends on Minetest calling the
 registered callbacks.
-
-`minetest.settings` can be used to read custom or existing settings at load
-time, if necessary. (See [`Settings`])
 
 ### `textures`, `sounds`, `media`, `models`, `locale`
 
@@ -5772,7 +5772,7 @@ Setting-related
 ---------------
 
 * `minetest.settings`: Settings object containing all of the settings from the
-  main config file (`minetest.conf`).
+  main config file (`minetest.conf`). See [`Settings`].
 * `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
   parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
@@ -8229,37 +8229,47 @@ secure random device cannot be found on the system.
 
 An interface to read config files in the format of `minetest.conf`.
 
-It can be created via `Settings(filename)`.
+`minetest.settings` is a `Settings` instance that can be used to access the
+main config file (`minetest.conf`). Instances for other config files can be
+created via `Settings(filename)`.
+
+Engine settings on the `minetest.settings` object have internal defaults that
+will be returned if a setting is unset.
+The engine does *not* (yet) read `settingtypes.txt` for this purpose. This
+means that no defaults will be returned for mod settings.
 
 ### Methods
 
 * `get(key)`: returns a value
+    * Returns `nil` if `key` is not found.
 * `get_bool(key, [default])`: returns a boolean
     * `default` is the value returned if `key` is not found.
     * Returns `nil` if `key` is not found and `default` not specified.
 * `get_np_group(key)`: returns a NoiseParams table
+    * Returns `nil` if `key` is not found.
 * `get_flags(key)`:
     * Returns `{flag = true/false, ...}` according to the set flags.
     * Is currently limited to mapgen flags `mg_flags` and mapgen-specific
       flags like `mgv5_spflags`.
+    * Returns `nil` if `key` is not found.
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set on the main settings
       object (`minetest.settings`).
 * `set_bool(key, value)`
-    * See documentation for set() above.
+    * See documentation for `set()` above.
 * `set_np_group(key, value)`
     * `value` is a NoiseParams table.
-    * Also, see documentation for set() above.
+    * Also, see documentation for `set()` above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `has(key)`:
     * Returns a boolean indicating whether `key` exists.
-    * Note that for the main settings object (`minetest.settings`), `get(key)`
-      might return a value even if `has(key)` returns `false`. That's because
-      `get` can fall back to the so-called parent of the `Settings` object, i.e.
-      the default values.
+    * In contrast to the various getter functions, `has()` doesn't consider
+      any default values.
+    * This means that on the main settings object (`minetest.settings`),
+      `get(key)` might return a value even if `has(key)` returns `false`.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
