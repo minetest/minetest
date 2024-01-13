@@ -8268,7 +8268,7 @@ means that no defaults will be returned for mod settings.
     * Returns a boolean indicating whether `key` exists.
     * In contrast to the various getter functions, `has()` doesn't consider
       any default values.
-    * This means that for the main settings object (`minetest.settings`),
+    * This means that on the main settings object (`minetest.settings`),
       `get(key)` might return a value even if `has(key)` returns `false`.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
