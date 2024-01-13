@@ -348,7 +348,7 @@ void ClientMap::updateDrawList()
 				v3f mesh_sphere_center;
 				f32 mesh_sphere_radius;
 
-				v3s16 block_pos_nodes = block->getPos() * MAP_BLOCKSIZE;
+				v3s16 block_pos_nodes = block->getPosRelative();
 
 				if (mesh) {
 					mesh_sphere_center = intToFloat(block_pos_nodes, BS)
@@ -669,7 +669,7 @@ void ClientMap::touchMapBlocks()
 			v3f mesh_sphere_center;
 			f32 mesh_sphere_radius;
 
-			v3s16 block_pos_nodes = block->getPos() * MAP_BLOCKSIZE;
+			v3s16 block_pos_nodes = block->getPosRelative();
 
 			if (mesh) {
 				mesh_sphere_center = intToFloat(block_pos_nodes, BS)
@@ -1245,11 +1245,6 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawListShadow()", SPT_AVG);
 
-	v3s16 cam_pos_nodes = floatToInt(shadow_light_pos, BS);
-	v3s16 p_blocks_min;
-	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max, radius + length);
-
 	for (auto &i : m_drawlist_shadow) {
 		MapBlock *block = i.second;
 		block->refDrop();
@@ -1278,7 +1273,7 @@ void ClientMap::updateDrawListShadow(v3f shadow_light_pos, v3f shadow_light_dir,
 				continue;
 			}
 
-			v3f block_pos = intToFloat(block->getPos() * MAP_BLOCKSIZE, BS) + mesh->getBoundingSphereCenter();
+			v3f block_pos = intToFloat(block->getPosRelative(), BS) + mesh->getBoundingSphereCenter();
 			v3f projection = shadow_light_pos + shadow_light_dir * shadow_light_dir.dotProduct(block_pos - shadow_light_pos);
 			if (projection.getDistanceFrom(block_pos) > (radius + mesh->getBoundingRadius()))
 				continue;
