@@ -57,6 +57,8 @@ public:
 	ActiveBlockModifier() = default;
 	virtual ~ActiveBlockModifier() = default;
 
+	// Optional name of modifier.
+	virtual const std::string &getName() = 0;
 	// Set of contents to trigger on
 	virtual const std::vector<std::string> &getTriggerContents() const = 0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
@@ -72,6 +74,10 @@ public:
 	virtual s16 getMinY() = 0;
 	// get max Y for apply abm
 	virtual s16 getMaxY() = 0;
+	// Cancelable ABM will not be postponed
+	virtual bool getCancelable() = 0;
+	// Update trigger parameters
+	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y, bool cancelable) = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
@@ -84,6 +90,27 @@ struct ABMWithState
 	float timer = 0.0f;
 
 	ABMWithState(ActiveBlockModifier *abm_);
+};
+
+struct ABMPostponed;
+class ABMHandler;
+
+class ABMPostponedManager
+{
+public:
+	ABMPostponedManager() = default;
+	~ABMPostponedManager() = default;
+
+	DISABLE_CLASS_COPY(ABMPostponedManager)
+	
+	u32 postponed();
+	void push(ABMHandler &&abmhandler, std::vector<v3s16> &&blocks, const std::vector<v3s16>::iterator &begin);
+	const v3s16 &front();
+	void pop();
+	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached);
+private:
+	std::queue<ABMPostponed> m_postponed_abms;
+	u32 m_postponed = 0;
 };
 
 struct LoadingBlockModifierDef
@@ -330,6 +357,7 @@ public:
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
+	ActiveBlockModifier *getActiveBlockModifierNoEx(const std::string &name);
 	void addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm);
 
 	/*
@@ -494,6 +522,7 @@ private:
 	u32 m_last_clear_objects_time = 0;
 	// Active block modifiers
 	std::vector<ABMWithState> m_abms;
+	ABMPostponedManager m_postponed_abms;
 	LBMManager m_lbm_mgr;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval = 0.1f;

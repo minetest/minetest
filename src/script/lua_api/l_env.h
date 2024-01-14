@@ -232,6 +232,8 @@ private:
 	// get_translated_string(lang_code, string)
 	static int l_get_translated_string(lua_State * L);
 
+	// change_abm(abm_name, parameters)
+	static int l_change_abm(lua_State *L);
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeClient(lua_State *L, int top);
@@ -240,6 +242,7 @@ public:
 class LuaABM : public ActiveBlockModifier {
 private:
 	int m_id;
+	std::string m_name;
 
 	std::vector<std::string> m_trigger_contents;
 	std::vector<std::string> m_required_neighbors;
@@ -248,20 +251,28 @@ private:
 	bool m_simple_catch_up;
 	s16 m_min_y;
 	s16 m_max_y;
+	bool m_cancelable;
 public:
-	LuaABM(lua_State *L, int id,
+	LuaABM(lua_State *L, int id, const std::string &name,
 			const std::vector<std::string> &trigger_contents,
 			const std::vector<std::string> &required_neighbors,
-			float trigger_interval, u32 trigger_chance, bool simple_catch_up, s16 min_y, s16 max_y):
+			float trigger_interval, u32 trigger_chance, bool simple_catch_up,
+			s16 min_y, s16 max_y, bool cancelable):
 		m_id(id),
+		m_name(name),
 		m_trigger_contents(trigger_contents),
 		m_required_neighbors(required_neighbors),
 		m_trigger_interval(trigger_interval),
 		m_trigger_chance(trigger_chance),
 		m_simple_catch_up(simple_catch_up),
 		m_min_y(min_y),
-		m_max_y(max_y)
+		m_max_y(max_y),
+		m_cancelable(cancelable)
 	{
+	}
+	virtual const std::string &getName()
+	{
+		return m_name;
 	}
 	virtual const std::vector<std::string> &getTriggerContents() const
 	{
@@ -290,6 +301,18 @@ public:
 	virtual s16 getMaxY()
 	{
 		return m_max_y;
+	}
+	virtual bool getCancelable()
+	{
+		return m_cancelable;
+	}
+	virtual void change(float interval, u32 chance, s16 min_y, s16 max_y, bool cancelable)
+	{
+		m_trigger_interval = interval;
+		m_trigger_chance = chance;
+		m_min_y = min_y;
+		m_max_y = max_y;
+		m_cancelable = cancelable;
 	}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider);

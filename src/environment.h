@@ -148,6 +148,8 @@ protected:
 	float m_cache_abm_interval;
 	float m_cache_nodetimer_interval;
 	float m_cache_abm_time_budget;
+	u32 m_cache_abm_postponed_cache_size;
+	bool m_cache_abm_missed_as_warning;
 
 	IGameDef *m_gamedef;
 

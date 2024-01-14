@@ -5284,6 +5284,8 @@ Utilities
       physics_overrides_v2 = true,
       -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
       hud_def_type_field = true,
+      -- ABM can be set as uncancelable and ABM postponed buffer can be configured (5.9.0)
+      abm_cancelable = true,
   }
   ```
 
@@ -5461,6 +5463,8 @@ Call these functions only at load time!
       according to its nature: `minetest.registered_nodes`, etc.
 * `minetest.register_entity(name, entity definition)`
 * `minetest.register_abm(abm definition)`
+* `minetest.change_abm(abm_name, changed parameters)`
+    * see abm definition for changable parameters
 * `minetest.register_lbm(lbm definition)`
 * `minetest.register_alias(alias, original_name)`
     * Also use this to set the 'mapgen aliases' needed in a game for the core
@@ -8510,6 +8514,10 @@ Used by `minetest.register_abm`.
 
 ```lua
 {
+    name = "",
+    -- Optional name of ABM.
+    -- ABM with name can be changed at runtime (See `minetest.change_abm`).
+
     label = "Lava cooling",
     -- Descriptive label for profiling purposes (optional).
     -- Definitions with identical labels will be listed as one.
@@ -8526,14 +8534,26 @@ Used by `minetest.register_abm`.
 
     interval = 10.0,
     -- Operation interval in seconds
+    -- This value can be changed by `minetest.change_abm` call.
+    -- A negative interval value means that ABM is disabled.
+    -- The counter is running for disabled ABM as well. So it is recommended to use a negative value of normal interval to disable it.
+    -- If the interval is reduced to 50% or more, it can happen that ABM will be triggered in a few following server steps repeatedly.
 
     chance = 50,
     -- Chance of triggering `action` per-node per-interval is 1.0 / chance
+    -- This value can be changed by `minetest.change_abm` call.
 
     min_y = -32768,
     max_y = 32767,
     -- min and max height levels where ABM will be processed (inclusive)
     -- can be used to reduce CPU usage
+    -- These values can be changed by `minetest.change_abm` call.
+
+    cancelable = true,
+    -- Cancelable ABM will not be postponed if the postponed cache is enabled on the server.
+    -- Postponed ABMs will be called in some of the following server steps.
+    -- For postponed ABMs, the interval between calling ABM for the same node can be variable.
+    -- This value can be changed by `minetest.change_abm` call.
 
     catch_up = true,
     -- If true, catch-up behavior is enabled: The `chance` value is

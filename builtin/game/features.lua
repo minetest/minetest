@@ -30,6 +30,7 @@ core.features = {
 	sound_params_start_time = true,
 	physics_overrides_v2 = true,
 	hud_def_type_field = true,
+	abm_cancelable = true,
 }
 
 function core.has_feature(arg)

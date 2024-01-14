@@ -418,6 +418,8 @@ void set_default_settings()
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
 	settings->setDefault("abm_time_budget", "0.2");
+	settings->setDefault("abm_postponed_cache_size", "0");
+	settings->setDefault("abm_missed_as_warning", "true");
 	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");

@@ -98,6 +98,9 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		int id = lua_tonumber(L, -2);
 		int current_abm = lua_gettop(L);
 
+		std::string name;
+		getstringfield(L, current_abm, "name", name);
+
 		std::vector<std::string> trigger_contents;
 		lua_getfield(L, current_abm, "nodenames");
 		if (lua_istable(L, -1)) {
@@ -147,12 +150,16 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		s16 max_y = INT16_MAX;
 		getintfield(L, current_abm, "max_y", max_y);
 
+		bool cancelable = true;
+		getboolfield(L, current_abm, "cancelable", cancelable);
+
 		lua_getfield(L, current_abm, "action");
 		luaL_checktype(L, current_abm + 1, LUA_TFUNCTION);
 		lua_pop(L, 1);
 
-		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
-			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y);
+		LuaABM *abm = new LuaABM(L, id, name, trigger_contents, required_neighbors,
+			trigger_interval, trigger_chance, simple_catch_up, min_y, max_y,
+			cancelable);
 
 		env->addActiveBlockModifier(abm);
 

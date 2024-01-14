@@ -2068,6 +2068,14 @@ abm_interval (ABM interval) float 1.0 0.0
 #    (as a fraction of the ABM Interval)
 abm_time_budget (ABM time budget) float 0.2 0.1 0.9
 
+#    Size for postponed ABMs cache size.
+#    Zero size means, that postponed chache is disabled.
+abm_postponed_cache_size (ABM postponed cache size) int 0 0 4294967295
+
+#    Control if information about missed ABMs calls, due to limited time budget,
+#    is printed as warning or verbose information.
+abm_missed_as_warning (ABM missed printed as warning) bool true
+
 #    Length of time between NodeTimer execution cycles, stated in seconds.
 nodetimer_interval (NodeTimer interval) float 0.2 0.0
 

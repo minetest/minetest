@@ -1437,6 +1437,30 @@ int ModApiEnv::l_get_translated_string(lua_State * L)
 	return 1;
 }
 
+// change_abm(abm_name, parameters)
+int ModApiEnv::l_change_abm(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	std::string abm_name = readParam<std::string>(L, 1);
+
+	ActiveBlockModifier *abm = env->getActiveBlockModifierNoEx(abm_name);
+	if (!abm) {
+		throw LuaError("ABM not found.");
+		return 0;
+	}
+
+	float interval = getfloatfield_default(L, 2, "interval", abm->getTriggerInterval());
+	int chance = getintfield_default(L, 2, "chance", abm->getTriggerChance());
+	int min_y = getintfield_default(L, 2, "min_y", abm->getMinY());
+	int max_y = getintfield_default(L, 2, "max_y", abm->getMaxY());
+	bool cancelable = getboolfield_default(L, 2, "cancelable", abm->getCancelable());
+
+	abm->change(interval ,chance, min_y, max_y, cancelable);
+
+	return 0;
+}
+
 void ModApiEnv::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -1488,6 +1512,7 @@ void ModApiEnv::Initialize(lua_State *L, int top)
 	API_FCT(forceload_free_block);
 	API_FCT(compare_block_status);
 	API_FCT(get_translated_string);
+	API_FCT(change_abm);
 }
 
 void ModApiEnv::InitializeClient(lua_State *L, int top)

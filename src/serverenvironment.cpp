@@ -65,7 +65,7 @@ ABMWithState::ABMWithState(ActiveBlockModifier *abm_):
 	abm(abm_)
 {
 	// Initialize timer to random value to spread processing
-	float itv = abm->getTriggerInterval();
+	float itv = abs(abm->getTriggerInterval());
 	itv = MYMAX(0.001, itv); // No less than 1ms
 	int minval = MYMAX(-0.51*itv, -60); // Clamp to
 	int maxval = MYMIN(0.51*itv, 60);   // +-60 seconds
@@ -830,6 +830,14 @@ public:
 		for (ABMWithState &abmws : abms) {
 			ActiveBlockModifier *abm = abmws.abm;
 			float trigger_interval = abm->getTriggerInterval();
+			if(trigger_interval < 0) {
+				if(use_timers) {
+					abmws.timer += dtime_s;
+					if (abmws.timer > -trigger_interval)
+						abmws.timer += trigger_interval;
+				}
+				continue;
+			}
 			if(trigger_interval < 0.001)
 				trigger_interval = 0.001;
 			float actual_interval = dtime_s;
@@ -887,6 +895,44 @@ public:
 	{
 		for (auto &aabms : m_aabms)
 			delete aabms;
+	}
+
+	ABMHandler(ABMHandler&& other) :
+		m_env(other.m_env),
+		m_aabms(std::move(other.m_aabms))
+	{
+	}
+
+	ABMHandler& operator=(ABMHandler&& other)
+	{
+		m_env = other.m_env;
+		m_aabms = std::move(other.m_aabms);
+		return *this;
+	}
+
+	bool clearCancelable()
+	{
+		bool cleared_all = true;
+		for (auto &aabms : m_aabms)
+		{
+			if (aabms == nullptr)
+				continue;
+			bool keep = false;
+			for (auto &aabm : *aabms)
+			{
+				if (!aabm.abm->getCancelable())
+					keep = true;
+			}
+			if (!keep) {
+				delete aabms;
+				aabms = nullptr;
+			}
+			else
+			{
+				cleared_all = false;
+			}
+		}
+		return cleared_all;
 	}
 
 	// Find out how many objects the given block and its neighbors contain.
@@ -1030,6 +1076,57 @@ public:
 	}
 };
 
+struct ABMPostponed
+{
+	ABMHandler handler;
+	std::vector<v3s16> blocks;
+	std::vector<v3s16>::iterator begin;
+
+	ABMPostponed(ABMHandler &&abmhandler, std::vector<v3s16> &&blocks, const std::vector<v3s16>::iterator &begin) :
+		handler(std::move(abmhandler)),
+		blocks(std::move(blocks)),
+		begin(begin)
+	{
+	}
+
+	ABMPostponed(ABMPostponed&& other) :
+		handler(std::move(other.handler)),
+		blocks(std::move(other.blocks)),
+		begin(other.begin)
+	{
+	}
+};
+
+u32 ABMPostponedManager::postponed()
+{
+	return m_postponed;
+}
+void ABMPostponedManager::push(ABMHandler &&abmhandler, std::vector<v3s16> &&blocks, const std::vector<v3s16>::iterator &begin)
+{
+	m_postponed += std::distance(begin, blocks.end());
+	m_postponed_abms.push(std::move(ABMPostponed(std::move(abmhandler), std::move(blocks), begin)));
+}
+const v3s16 &ABMPostponedManager::front()
+{
+	return *m_postponed_abms.front().begin;
+}
+void ABMPostponedManager::pop()
+{
+	ABMPostponed &postponed = m_postponed_abms.front();
+	postponed.begin++;
+	m_postponed--;
+	if (postponed.begin==postponed.blocks.end()) {
+		m_postponed_abms.pop();
+	}
+}
+void ABMPostponedManager::apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
+{
+	ABMPostponed &postponed = m_postponed_abms.front();
+
+	/* Handle ActiveBlockModifiers */
+	postponed.handler.apply(block, blocks_scanned, abms_run, blocks_cached);
+}
+
 void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 {
 	// Reset usage timer immediately, otherwise a block that becomes active
@@ -1081,6 +1178,18 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 {
 	m_abms.emplace_back(abm);
+}
+
+ActiveBlockModifier *ServerEnvironment::getActiveBlockModifierNoEx(const std::string &name)
+{
+	if (name.empty())
+		return nullptr;
+	for (auto abm : m_abms) {
+		if (abm.abm->getName() == name) {
+			return abm.abm;
+		}
+	}
+	return nullptr;
 }
 
 void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
@@ -1542,13 +1651,17 @@ void ServerEnvironment::step(float dtime)
 
 		int i = 0;
 		// determine the time budget for ABMs
+		u32 time_ms;
 		u32 max_time_ms = m_cache_abm_interval * 1000 * m_cache_abm_time_budget;
-		for (const v3s16 &p : output) {
-			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if (!block)
+		for (auto it = output.begin(); it != output.end(); ) {
+			MapBlock *block = m_map->getBlockNoCreateNoEx(*it);
+			if (!block) {
+				it++;
 				continue;
+			}
 
 			i++;
+			it++;
 
 			// Set current time as timestamp
 			block->setTimestampNoChangedFlag(m_game_time);
@@ -1556,13 +1669,67 @@ void ServerEnvironment::step(float dtime)
 			/* Handle ActiveBlockModifiers */
 			abmhandler.apply(block, blocks_scanned, abms_run, blocks_cached);
 
-			u32 time_ms = timer.getTimerTime();
+			time_ms = timer.getTimerTime();
 
-			if (time_ms > max_time_ms) {
-				warningstream << "active block modifiers took "
-					  << time_ms << "ms (processed " << i << " of "
-					  << output.size() << " active blocks)" << std::endl;
+			if ((time_ms > max_time_ms) && (it != output.end()) ) {
+				if (m_cache_abm_postponed_cache_size > 0) {
+					// move to postponed cache
+					if (!abmhandler.clearCancelable()) {
+						if (m_postponed_abms.postponed() < m_cache_abm_postponed_cache_size) {
+							m_postponed_abms.push(std::move(abmhandler), std::move(output), it);
+						}
+						else
+						{
+							if (m_cache_abm_missed_as_warning) {
+								warningstream << "active block modifiers took "
+										<< time_ms << "ms (processed " << i << " of "
+										<< output.size() << " active blocks) and postponed cache is full." << std::endl;
+							}
+							else {
+								verbosestream << "active block modifiers took "
+										<< time_ms << "ms (processed " << i << " of "
+										<< output.size() << " active blocks) and postponed cache is full." << std::endl;
+							}
+						}
+					}
+				}
+				else {
+					if (m_cache_abm_missed_as_warning) {
+						warningstream << "active block modifiers took "
+								<< time_ms << "ms (processed " << i << " of "
+								<< output.size() << " active blocks)" << std::endl;
+					}
+					else {
+						verbosestream << "active block modifiers took "
+								<< time_ms << "ms (processed " << i << " of "
+								<< output.size() << " active blocks)" << std::endl;
+					}
+				}
 				break;
+			}
+		}
+		if (time_ms < max_time_ms) {
+			// process postponed ABMs
+			while (m_postponed_abms.postponed()>0) {
+				MapBlock *block = m_map->getBlockNoCreateNoEx(m_postponed_abms.front());
+				if (!block) {
+					m_postponed_abms.pop();
+					continue;
+				}
+
+				// Set current time as timestamp
+				block->setTimestampNoChangedFlag(m_game_time);
+
+				/* Handle ActiveBlockModifiers */
+				m_postponed_abms.apply(block, blocks_scanned, abms_run, blocks_cached);
+
+				// Remove block from postpone cache
+				m_postponed_abms.pop();
+
+				time_ms = timer.getTimerTime();
+
+				if (time_ms > max_time_ms)
+					break;
 			}
 		}
 		g_profiler->avg("ServerEnv: active blocks", m_active_blocks.m_abm_list.size());
