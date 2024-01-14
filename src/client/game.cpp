@@ -4435,15 +4435,11 @@ void Game::readSettings()
  ****************************************************************************/
 /****************************************************************************/
 
-static std::string size_tag() {
-  return g_touchscreengui ? "size[11,5.5]" : "size[11,5.5,true]";
-}
-
 void Game::showDeathFormspec()
 {
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +
-		size_tag() +
+		"size[11,5.5,true]" +
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
@@ -4486,7 +4482,7 @@ void Game::showPauseMenu()
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
-	os << "formspec_version[1]" << size_tag()
+	os << "formspec_version[1]" << "size[11,5.5,true]"
 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 		<< strgettext("Continue") << "]";
 
