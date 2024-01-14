@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "util/hex.h"
 #include "util/sha1.h"
+#include "util/sha256.h"
 #include "util/png.h"
 #include <cstdio>
 
@@ -566,6 +567,25 @@ int ModApiUtil::l_sha1(lua_State *L)
 	return 1;
 }
 
+int ModApiUtil::l_sha256(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	size_t size;
+	const char *data = luaL_checklstring(L, 1, &size);
+	const bool hex = !lua_isboolean(L, 2) || !readParam<bool>(L, 2);
+	
+	std::string data_sha256;
+	data_sha256.assign((char *) SHA256((const unsigned char*) data, size, NULL), SHA256_DIGEST_LENGTH);
+
+	if (hex) {
+		std::string sha256_hex = hex_encode(data_sha256);
+		lua_pushstring(L, sha256_hex.c_str());
+	} else {
+		lua_pushlstring(L, data_sha256.data(), data_sha256.size());
+	}
+	return 1;
+}
+
 // colorspec_to_colorstring(colorspec)
 int ModApiUtil::l_colorspec_to_colorstring(lua_State *L)
 {
@@ -690,6 +710,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(get_version);
 	API_FCT(sha1);
+	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 
@@ -723,6 +744,7 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 
 	API_FCT(get_version);
 	API_FCT(sha1);
+	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 
@@ -766,6 +788,7 @@ void ModApiUtil::InitializeAsync(lua_State *L, int top)
 
 	API_FCT(get_version);
 	API_FCT(sha1);
+	API_FCT(sha256);
 	API_FCT(colorspec_to_colorstring);
 	API_FCT(colorspec_to_bytes);
 
