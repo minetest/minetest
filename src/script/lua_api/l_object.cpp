@@ -1743,6 +1743,28 @@ int ObjectRef::l_hud_get(lua_State *L)
 	return 1;
 }
 
+// hud_get_all(self)
+int ObjectRef::l_hud_get_all(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	lua_newtable(L);
+	player->hudApply([&](const std::vector<HudElement*>& hud) {
+		for (std::size_t id = 0; id < hud.size(); ++id) {
+			HudElement *elem = hud[id];
+			if (elem != nullptr) {
+				push_hud_element(L, elem);
+				lua_rawseti(L, -2, id);
+			}
+		}
+	});
+	return 1;
+}
+
 // hud_set_flags(self, flags)
 int ObjectRef::l_hud_set_flags(lua_State *L)
 {
@@ -2691,6 +2713,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
+	luamethod(ObjectRef, hud_get_all),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_get_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
