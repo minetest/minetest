@@ -801,301 +801,256 @@ void ServerEnvironment::loadDefaultMeta()
 	m_lbm_mgr.loadIntroductionTimes("", m_server, m_game_time);
 }
 
-struct ActiveABM
-{
-	ActiveBlockModifier *abm;
-	int chance;
-	std::vector<content_t> required_neighbors;
-	bool check_required_neighbors; // false if required_neighbors is known to be empty
-	s16 min_y;
-	s16 max_y;
-};
-
 #define CONTENT_TYPE_CACHE_MAX 64
 
-class ABMHandler
+ABMHandler::ABMHandler(std::vector<ABMWithState> &abms,
+	float dtime_s, ServerEnvironment *env,
+	bool use_timers):
+	m_env(env)
 {
-private:
-	ServerEnvironment *m_env;
-	std::vector<std::vector<ActiveABM> *> m_aabms;
-public:
-	ABMHandler(std::vector<ABMWithState> &abms,
-		float dtime_s, ServerEnvironment *env,
-		bool use_timers):
-		m_env(env)
-	{
-		if(dtime_s < 0.001)
-			return;
-		const NodeDefManager *ndef = env->getGameDef()->ndef();
-		for (ABMWithState &abmws : abms) {
-			ActiveBlockModifier *abm = abmws.abm;
-			float trigger_interval = abm->getTriggerInterval();
-			if(trigger_interval < 0) {
-				if(use_timers) {
-					abmws.timer += dtime_s;
-					if (abmws.timer > -trigger_interval)
-						abmws.timer += trigger_interval;
-				}
-				continue;
-			}
-			if(trigger_interval < 0.001)
-				trigger_interval = 0.001;
-			float actual_interval = dtime_s;
-			if(use_timers){
+	if(dtime_s < 0.001)
+		return;
+	const NodeDefManager *ndef = env->getGameDef()->ndef();
+	for (ABMWithState &abmws : abms) {
+		ActiveBlockModifier *abm = abmws.abm;
+		float trigger_interval = abm->getTriggerInterval();
+		if(trigger_interval < 0) {
+			if(use_timers) {
 				abmws.timer += dtime_s;
-				if(abmws.timer < trigger_interval)
-					continue;
-				abmws.timer -= trigger_interval;
-				actual_interval = trigger_interval;
+				if (abmws.timer > -trigger_interval)
+					abmws.timer += trigger_interval;
 			}
-			float chance = abm->getTriggerChance();
-			if (chance == 0)
-				chance = 1;
-			ActiveABM aabm;
-			aabm.abm = abm;
-			if (abm->getSimpleCatchUp()) {
-				float intervals = actual_interval / trigger_interval;
-				if (intervals == 0)
-					continue;
-				aabm.chance = chance / intervals;
-				if (aabm.chance == 0)
-					aabm.chance = 1;
-			} else {
-				aabm.chance = chance;
-			}
-			// y limits
-			aabm.min_y = abm->getMinY();
-			aabm.max_y = abm->getMaxY();
-
-			// Trigger neighbors
-			const std::vector<std::string> &required_neighbors_s =
-				abm->getRequiredNeighbors();
-			for (const std::string &required_neighbor_s : required_neighbors_s) {
-				ndef->getIds(required_neighbor_s, aabm.required_neighbors);
-			}
-			aabm.check_required_neighbors = !required_neighbors_s.empty();
-
-			// Trigger contents
-			const std::vector<std::string> &contents_s = abm->getTriggerContents();
-			for (const std::string &content_s : contents_s) {
-				std::vector<content_t> ids;
-				ndef->getIds(content_s, ids);
-				for (content_t c : ids) {
-					if (c >= m_aabms.size())
-						m_aabms.resize(c + 256, NULL);
-					if (!m_aabms[c])
-						m_aabms[c] = new std::vector<ActiveABM>;
-					m_aabms[c]->push_back(aabm);
-				}
-			}
+			continue;
 		}
-	}
-
-	~ABMHandler()
-	{
-		for (auto &aabms : m_aabms)
-			delete aabms;
-	}
-
-	ABMHandler(ABMHandler&& other) :
-		m_env(other.m_env),
-		m_aabms(std::move(other.m_aabms))
-	{
-	}
-
-	ABMHandler& operator=(ABMHandler&& other)
-	{
-		m_env = other.m_env;
-		m_aabms = std::move(other.m_aabms);
-		return *this;
-	}
-
-	bool clearCancelable()
-	{
-		bool cleared_all = true;
-		for (auto &aabms : m_aabms)
-		{
-			if (aabms == nullptr)
+		if(trigger_interval < 0.001)
+			trigger_interval = 0.001;
+		float actual_interval = dtime_s;
+		if(use_timers){
+			abmws.timer += dtime_s;
+			if(abmws.timer < trigger_interval)
 				continue;
-			bool keep = false;
-			for (auto &aabm : *aabms)
-			{
-				if (!aabm.abm->getCancelable())
-					keep = true;
-			}
-			if (!keep) {
-				delete aabms;
-				aabms = nullptr;
-			}
-			else
-			{
-				cleared_all = false;
-			}
+			abmws.timer -= trigger_interval;
+			actual_interval = trigger_interval;
 		}
-		return cleared_all;
-	}
-
-	// Find out how many objects the given block and its neighbors contain.
-	// Returns the number of objects in the block, and also in 'wider' the
-	// number of objects in the block and all its neighbors. The latter
-	// may an estimate if any neighbors are unloaded.
-	u32 countObjects(MapBlock *block, ServerMap * map, u32 &wider)
-	{
-		wider = 0;
-		u32 wider_unknown_count = 0;
-		for(s16 x=-1; x<=1; x++)
-			for(s16 y=-1; y<=1; y++)
-				for(s16 z=-1; z<=1; z++)
-				{
-					MapBlock *block2 = map->getBlockNoCreateNoEx(
-						block->getPos() + v3s16(x,y,z));
-					if(block2==NULL){
-						wider_unknown_count++;
-						continue;
-					}
-					wider += block2->m_static_objects.size();
-				}
-		// Extrapolate
-		u32 active_object_count = block->m_static_objects.getActiveSize();
-		u32 wider_known_count = 3 * 3 * 3 - wider_unknown_count;
-		wider += wider_unknown_count * wider / wider_known_count;
-		return active_object_count;
-	}
-	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
-	{
-		if (m_aabms.empty())
-			return;
-
-		// Check the content type cache first
-		// to see whether there are any ABMs
-		// to be run at all for this block.
-		if (!block->contents.empty()) {
-			assert(!block->do_not_cache_contents); // invariant
-			blocks_cached++;
-			bool run_abms = false;
-			for (content_t c : block->contents) {
-				if (c < m_aabms.size() && m_aabms[c]) {
-					run_abms = true;
-					break;
-				}
-			}
-			if (!run_abms)
-				return;
-		}
-		blocks_scanned++;
-
-		ServerMap *map = &m_env->getServerMap();
-
-		u32 active_object_count_wider;
-		u32 active_object_count = this->countObjects(block, map, active_object_count_wider);
-		m_env->m_added_objects = 0;
-
-		bool want_contents_cached = block->contents.empty() && !block->do_not_cache_contents;
-
-		v3s16 p0;
-		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
-		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
-		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
-		{
-			MapNode n = block->getNodeNoCheck(p0);
-			content_t c = n.getContent();
-
-			// Cache content types as we go
-			if (want_contents_cached && !CONTAINS(block->contents, c)) {
-				if (block->contents.size() >= CONTENT_TYPE_CACHE_MAX) {
-					// Too many different nodes... don't try to cache
-					want_contents_cached = false;
-					block->do_not_cache_contents = true;
-					block->contents.clear();
-					block->contents.shrink_to_fit();
-				} else {
-					block->contents.push_back(c);
-				}
-			}
-
-			if (c >= m_aabms.size() || !m_aabms[c])
+		float chance = abm->getTriggerChance();
+		if (chance == 0)
+			chance = 1;
+		ActiveABM aabm;
+		aabm.abm = abm;
+		if (abm->getSimpleCatchUp()) {
+			float intervals = actual_interval / trigger_interval;
+			if (intervals == 0)
 				continue;
+			aabm.chance = chance / intervals;
+			if (aabm.chance == 0)
+				aabm.chance = 1;
+		} else {
+			aabm.chance = chance;
+		}
+		// y limits
+		aabm.min_y = abm->getMinY();
+		aabm.max_y = abm->getMaxY();
 
-			v3s16 p = p0 + block->getPosRelative();
-			for (ActiveABM &aabm : *m_aabms[c]) {
-				if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
-					continue;
+		// Trigger neighbors
+		const std::vector<std::string> &required_neighbors_s =
+			abm->getRequiredNeighbors();
+		for (const std::string &required_neighbor_s : required_neighbors_s) {
+			ndef->getIds(required_neighbor_s, aabm.required_neighbors);
+		}
+		aabm.check_required_neighbors = !required_neighbors_s.empty();
 
-				if (myrand() % aabm.chance != 0)
-					continue;
-
-				// Check neighbors
-				if (aabm.check_required_neighbors) {
-					v3s16 p1;
-					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
-					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
-					for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
-					{
-						if(p1 == p0)
-							continue;
-						content_t c;
-						if (block->isValidPosition(p1)) {
-							// if the neighbor is found on the same map block
-							// get it straight from there
-							const MapNode &n = block->getNodeNoCheck(p1);
-							c = n.getContent();
-						} else {
-							// otherwise consult the map
-							MapNode n = map->getNode(p1 + block->getPosRelative());
-							c = n.getContent();
-						}
-						if (CONTAINS(aabm.required_neighbors, c))
-							goto neighbor_found;
-					}
-					// No required neighbor found
-					continue;
-				}
-				neighbor_found:
-
-				abms_run++;
-				// Call all the trigger variations
-				aabm.abm->trigger(m_env, p, n);
-				aabm.abm->trigger(m_env, p, n,
-					active_object_count, active_object_count_wider);
-
-				if (block->isOrphan())
-					return;
-
-				// Count surrounding objects again if the abms added any
-				if(m_env->m_added_objects > 0) {
-					active_object_count = countObjects(block, map, active_object_count_wider);
-					m_env->m_added_objects = 0;
-				}
-
-				// Update and check node after possible modification
-				n = block->getNodeNoCheck(p0);
-				if (n.getContent() != c)
-					break;
+		// Trigger contents
+		const std::vector<std::string> &contents_s = abm->getTriggerContents();
+		for (const std::string &content_s : contents_s) {
+			std::vector<content_t> ids;
+			ndef->getIds(content_s, ids);
+			for (content_t c : ids) {
+				if (c >= m_aabms.size())
+					m_aabms.resize(c + 256, NULL);
+				if (!m_aabms[c])
+					m_aabms[c] = new std::vector<ActiveABM>;
+				m_aabms[c]->push_back(aabm);
 			}
 		}
 	}
-};
+}
 
-struct ABMPostponed
+ABMHandler::~ABMHandler()
 {
-	ABMHandler handler;
-	std::vector<v3s16> blocks;
-	std::vector<v3s16>::iterator begin;
+	for (auto &aabms : m_aabms)
+		delete aabms;
+}
 
-	ABMPostponed(ABMHandler &&abmhandler, std::vector<v3s16> &&blocks, const std::vector<v3s16>::iterator &begin) :
-		handler(std::move(abmhandler)),
-		blocks(std::move(blocks)),
-		begin(begin)
-	{
-	}
+ABMHandler::ABMHandler(ABMHandler&& other) :
+	m_env(other.m_env),
+	m_aabms(std::move(other.m_aabms))
+{
+}
 
-	ABMPostponed(ABMPostponed&& other) :
-		handler(std::move(other.handler)),
-		blocks(std::move(other.blocks)),
-		begin(other.begin)
+bool ABMHandler::clearCancelable()
+{
+	bool cleared_all = true;
+	for (auto &aabms : m_aabms)
 	{
+		if (aabms == nullptr)
+			continue;
+		bool keep = false;
+		for (auto &aabm : *aabms)
+		{
+			if (!aabm.abm->getCancelable())
+				keep = true;
+		}
+		if (!keep) {
+			delete aabms;
+			aabms = nullptr;
+		}
+		else
+		{
+			cleared_all = false;
+		}
 	}
-};
+	return cleared_all;
+}
+
+// Find out how many objects the given block and its neighbors contain.
+// Returns the number of objects in the block, and also in 'wider' the
+// number of objects in the block and all its neighbors. The latter
+// may an estimate if any neighbors are unloaded.
+u32 ABMHandler::countObjects(MapBlock *block, ServerMap * map, u32 &wider)
+{
+	wider = 0;
+	u32 wider_unknown_count = 0;
+	for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+			for(s16 z=-1; z<=1; z++)
+			{
+				MapBlock *block2 = map->getBlockNoCreateNoEx(
+					block->getPos() + v3s16(x,y,z));
+				if(block2==NULL){
+					wider_unknown_count++;
+					continue;
+				}
+				wider += block2->m_static_objects.size();
+			}
+	// Extrapolate
+	u32 active_object_count = block->m_static_objects.getActiveSize();
+	u32 wider_known_count = 3 * 3 * 3 - wider_unknown_count;
+	wider += wider_unknown_count * wider / wider_known_count;
+	return active_object_count;
+}
+void ABMHandler::apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached)
+{
+	if (m_aabms.empty())
+		return;
+
+	// Check the content type cache first
+	// to see whether there are any ABMs
+	// to be run at all for this block.
+	if (!block->contents.empty()) {
+		assert(!block->do_not_cache_contents); // invariant
+		blocks_cached++;
+		bool run_abms = false;
+		for (content_t c : block->contents) {
+			if (c < m_aabms.size() && m_aabms[c]) {
+				run_abms = true;
+				break;
+			}
+		}
+		if (!run_abms)
+			return;
+	}
+	blocks_scanned++;
+
+	ServerMap *map = &m_env->getServerMap();
+
+	u32 active_object_count_wider;
+	u32 active_object_count = this->countObjects(block, map, active_object_count_wider);
+	m_env->m_added_objects = 0;
+
+	bool want_contents_cached = block->contents.empty() && !block->do_not_cache_contents;
+
+	v3s16 p0;
+	for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+	for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+	for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+	{
+		MapNode n = block->getNodeNoCheck(p0);
+		content_t c = n.getContent();
+
+		// Cache content types as we go
+		if (want_contents_cached && !CONTAINS(block->contents, c)) {
+			if (block->contents.size() >= CONTENT_TYPE_CACHE_MAX) {
+				// Too many different nodes... don't try to cache
+				want_contents_cached = false;
+				block->do_not_cache_contents = true;
+				block->contents.clear();
+				block->contents.shrink_to_fit();
+			} else {
+				block->contents.push_back(c);
+			}
+		}
+
+		if (c >= m_aabms.size() || !m_aabms[c])
+			continue;
+
+		v3s16 p = p0 + block->getPosRelative();
+		for (ActiveABM &aabm : *m_aabms[c]) {
+			if ((p.Y < aabm.min_y) || (p.Y > aabm.max_y))
+				continue;
+
+			if (myrand() % aabm.chance != 0)
+				continue;
+
+			// Check neighbors
+			if (aabm.check_required_neighbors) {
+				v3s16 p1;
+				for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
+				for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
+				for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
+				{
+					if(p1 == p0)
+						continue;
+					content_t c;
+					if (block->isValidPosition(p1)) {
+						// if the neighbor is found on the same map block
+						// get it straight from there
+						const MapNode &n = block->getNodeNoCheck(p1);
+						c = n.getContent();
+					} else {
+						// otherwise consult the map
+						MapNode n = map->getNode(p1 + block->getPosRelative());
+						c = n.getContent();
+					}
+					if (CONTAINS(aabm.required_neighbors, c))
+						goto neighbor_found;
+				}
+				// No required neighbor found
+				continue;
+			}
+			neighbor_found:
+
+			abms_run++;
+			// Call all the trigger variations
+			aabm.abm->trigger(m_env, p, n);
+			aabm.abm->trigger(m_env, p, n,
+				active_object_count, active_object_count_wider);
+
+			if (block->isOrphan())
+				return;
+
+			// Count surrounding objects again if the abms added any
+			if(m_env->m_added_objects > 0) {
+				active_object_count = countObjects(block, map, active_object_count_wider);
+				m_env->m_added_objects = 0;
+			}
+
+			// Update and check node after possible modification
+			n = block->getNodeNoCheck(p0);
+			if (n.getContent() != c)
+				break;
+		}
+	}
+}
 
 u32 ABMPostponedManager::postponed()
 {

@@ -92,7 +92,57 @@ struct ABMWithState
 	ABMWithState(ActiveBlockModifier *abm_);
 };
 
-struct ABMPostponed;
+struct ActiveABM
+{
+	ActiveBlockModifier *abm;
+	int chance;
+	std::vector<content_t> required_neighbors;
+	bool check_required_neighbors; // false if required_neighbors is known to be empty
+	s16 min_y;
+	s16 max_y;
+};
+
+class ABMHandler
+{
+private:
+	ServerEnvironment *m_env;
+	std::vector<std::vector<ActiveABM> *> m_aabms;
+public:
+	ABMHandler(std::vector<ABMWithState> &abms,
+		float dtime_s, ServerEnvironment *env,
+		bool use_timers);
+
+	~ABMHandler();
+
+	ABMHandler(ABMHandler&& other);
+
+	bool clearCancelable();
+
+	u32 countObjects(MapBlock *block, ServerMap * map, u32 &wider);
+	void apply(MapBlock *block, int &blocks_scanned, int &abms_run, int &blocks_cached);
+};
+
+struct ABMPostponed
+{
+	ABMHandler handler;
+	std::vector<v3s16> blocks;
+	std::vector<v3s16>::iterator begin;
+
+	ABMPostponed(ABMHandler &&abmhandler, std::vector<v3s16> &&blocks, const std::vector<v3s16>::iterator &begin) :
+		handler(std::move(abmhandler)),
+		blocks(std::move(blocks)),
+		begin(begin)
+	{
+	}
+
+	ABMPostponed(ABMPostponed&& other) :
+		handler(std::move(other.handler)),
+		blocks(std::move(other.blocks)),
+		begin(other.begin)
+	{
+	}
+};
+
 class ABMHandler;
 
 class ABMPostponedManager
