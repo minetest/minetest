@@ -652,8 +652,9 @@ local function buttonhandler(this, fields)
 	if fields.show_advanced ~= nil or fields.enable_touch ~= nil then
 		local suggested_page_id = update_filtered_pages(dialogdata.query)
 
+		dialogdata.components = nil
+
 		if not filtered_page_by_id[dialogdata.page_id] then
-			dialogdata.components = nil
 			dialogdata.leftscroll = 0
 			dialogdata.rightscroll = 0
 
