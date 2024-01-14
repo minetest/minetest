@@ -4493,16 +4493,16 @@ void Game::showPauseMenu()
 		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
 	}
 
-#ifndef __ANDROID__
-#if USE_SOUND
+#if USE_SOUND && !defined(__ANDROID__)
 	if (g_settings->getBool("enable_sound")) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
 			<< strgettext("Sound Volume") << "]";
 	}
 #endif
+	if (!g_touchscreengui) {
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
 		<< strgettext("Controls")  << "]";
-#endif
+	}
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 		<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
