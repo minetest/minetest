@@ -2467,6 +2467,10 @@ video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
 		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> strip_size = crack->getDimension();
+
+	if (tiles == 0 || strip_size.getArea() == 0)
+		return nullptr;
+
 	core::dimension2d<u32> frame_size(strip_size.Width, strip_size.Width);
 	core::dimension2d<u32> tile_size(size / tiles);
 	s32 frame_count = strip_size.Height / strip_size.Width;
