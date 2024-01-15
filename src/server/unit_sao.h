@@ -70,8 +70,10 @@ public:
 	void setAnimationSpeed(float frame_speed);
 
 	// Bone position
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
-	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
+	void setBoneOverride(const std::string &bone, const BoneOverride &props);
+	BoneOverride getBoneOverride(const std::string &bone);
+	const std::unordered_map<std::string, BoneOverride>
+			&getBoneOverrides() const { return m_bone_override; };
 
 	// Attachments
 	ServerActiveObject *getParent() const;
@@ -100,8 +102,8 @@ public:
 			const v3f &velocity, const v3f &acceleration, const v3f &rotation,
 			bool do_interpolate, bool is_movement_end, f32 update_interval);
 	std::string generateSetPropertiesCommand(const ObjectProperties &prop) const;
-	static std::string generateUpdateBonePositionCommand(const std::string &bone,
-			const v3f &position, const v3f &rotation);
+	static std::string generateUpdateBoneOverrideCommand(
+			const std::string &bone, const BoneOverride &props);
 	void sendPunchCommand();
 
 protected:
@@ -117,7 +119,7 @@ protected:
 	ObjectProperties m_prop;
 
 	// Stores position and rotation for each bone name
-	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	std::unordered_map<std::string, BoneOverride> m_bone_override;
 
 	int m_attachment_parent_id = 0;
 
@@ -139,7 +141,7 @@ private:
 	bool m_animation_speed_sent = false;
 
 	// Bone positions
-	bool m_bone_position_sent = false;
+	bool m_bone_override_sent = false;
 
 	// Attachments
 	std::unordered_set<int> m_attachment_child_ids;

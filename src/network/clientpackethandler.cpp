@@ -163,6 +163,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 
 	m_state = LC_Init;
 }
+
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
 	deleteAuthData();
@@ -633,6 +634,17 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	event->player_force_move.pitch = pitch;
 	event->player_force_move.yaw = yaw;
 	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_MovePlayerRel(NetworkPacket *pkt)
+{
+	v3f added_pos;
+
+	*pkt >> added_pos;
+
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player);
+	player->addPosition(added_pos);
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
@@ -1804,4 +1816,6 @@ void Client::handleCommand_SetLighting(NetworkPacket *pkt)
 				>> lighting.exposure.speed_bright_dark
 				>> lighting.exposure.center_weight_power;
 	}
+	if (pkt->getRemainingBytes() >= 4)
+		*pkt >> lighting.volumetric_light_strength;
 }

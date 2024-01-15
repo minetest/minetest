@@ -53,4 +53,5 @@ struct Lighting
 	AutoExposure exposure;
 	float shadow_intensity {0.0f};
 	float saturation {1.0f};
+	float volumetric_light_strength {0.0f};
 };

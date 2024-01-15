@@ -210,51 +210,36 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<f32, 16> m_world_view_proj;
-	CachedVertexShaderSetting<f32, 16> m_world;
+	CachedVertexShaderSetting<f32, 16> m_world_view_proj{"mWorldViewProj"};
+	CachedVertexShaderSetting<f32, 16> m_world{"mWorld"};
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
-	CachedPixelShaderSetting<f32, 3> m_light_direction;
-	CachedPixelShaderSetting<f32> m_texture_res;
-	CachedPixelShaderSetting<f32> m_shadow_strength;
-	CachedPixelShaderSetting<f32> m_time_of_day;
-	CachedPixelShaderSetting<f32> m_shadowfar;
-	CachedPixelShaderSetting<f32, 4> m_camera_pos;
-	CachedPixelShaderSetting<s32> m_shadow_texture;
-	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
-	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
-	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj{"m_ShadowViewProj"};
+	CachedPixelShaderSetting<f32, 3> m_light_direction{"v_LightDirection"};
+	CachedPixelShaderSetting<f32> m_texture_res{"f_textureresolution"};
+	CachedPixelShaderSetting<f32> m_shadow_strength{"f_shadow_strength"};
+	CachedPixelShaderSetting<f32> m_time_of_day{"f_timeofday"};
+	CachedPixelShaderSetting<f32> m_shadowfar{"f_shadowfar"};
+	CachedPixelShaderSetting<f32, 4> m_camera_pos{"CameraPos"};
+	CachedPixelShaderSetting<s32> m_shadow_texture{"ShadowMapSampler"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_bias0_vertex{"xyPerspectiveBias0"};
+	CachedPixelShaderSetting<f32>
+		m_perspective_bias0_pixel{"xyPerspectiveBias0"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_bias1_vertex{"xyPerspectiveBias1"};
+	CachedPixelShaderSetting<f32>
+		m_perspective_bias1_pixel{"xyPerspectiveBias1"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_zbias_vertex{"zPerspectiveBias"};
+	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel{"zPerspectiveBias"};
 
 	// Modelview matrix
-	CachedVertexShaderSetting<float, 16> m_world_view;
+	CachedVertexShaderSetting<float, 16> m_world_view{"mWorldView"};
 	// Texture matrix
-	CachedVertexShaderSetting<float, 16> m_texture;
+	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
 public:
-	MainShaderConstantSetter() :
-		  m_world_view_proj("mWorldViewProj")
-		, m_world("mWorld")
-		, m_shadow_view_proj("m_ShadowViewProj")
-		, m_light_direction("v_LightDirection")
-		, m_texture_res("f_textureresolution")
-		, m_shadow_strength("f_shadow_strength")
-		, m_time_of_day("f_timeofday")
-		, m_shadowfar("f_shadowfar")
-		, m_camera_pos("CameraPos")
-		, m_shadow_texture("ShadowMapSampler")
-		, m_perspective_bias0_vertex("xyPerspectiveBias0")
-		, m_perspective_bias0_pixel("xyPerspectiveBias0")
-		, m_perspective_bias1_vertex("xyPerspectiveBias1")
-		, m_perspective_bias1_pixel("xyPerspectiveBias1")
-		, m_perspective_zbias_vertex("zPerspectiveBias")
-		, m_perspective_zbias_pixel("zPerspectiveBias")
-		, m_world_view("mWorldView")
-		, m_texture("mTexture")
-	{}
 	~MainShaderConstantSetter() = default;
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
@@ -765,6 +750,13 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		shaders_header << "#define ENABLE_SSAA 1\n";
 		u16 ssaa_scale = MYMAX(2, g_settings->getU16("fsaa"));
 		shaders_header << "#define SSAA_SCALE " << ssaa_scale << ".\n";
+	}
+
+	if (g_settings->getBool("debanding"))
+		shaders_header << "#define ENABLE_DITHERING 1\n";
+
+	if (g_settings->getBool("enable_volumetric_lighting")) {
+		shaders_header << "#define VOLUMETRIC_LIGHT 1\n";
 	}
 
 	shaders_header << "#line 0\n"; // reset the line counter for meaningful diagnostics

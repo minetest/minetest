@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 #include "server/serverinventorymgr.h"
+#include "server/unit_sao.h"
 
 /*
 	ObjectRef
@@ -130,6 +131,21 @@ int ObjectRef::l_set_pos(lua_State *L)
 	v3f pos = checkFloatPos(L, 2);
 
 	sao->setPos(pos);
+	return 0;
+}
+
+// add_pos(self, pos)
+int ObjectRef::l_add_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == nullptr)
+		return 0;
+
+	v3f pos = checkFloatPos(L, 2);
+
+	sao->addPos(pos);
 	return 0;
 }
 
@@ -518,16 +534,25 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L, "Deprecated call to set_bone_position, use set_bone_override instead", 1, true);
+
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
 
-	std::string bone = readParam<std::string>(L, 2, "");
-	v3f position = readParam<v3f>(L, 3, v3f(0, 0, 0));
-	v3f rotation = readParam<v3f>(L, 4, v3f(0, 0, 0));
-
-	sao->setBonePosition(bone, position, rotation);
+	std::string bone;
+	if (!lua_isnoneornil(L, 2))
+		bone = readParam<std::string>(L, 2);
+	BoneOverride props;
+	if (!lua_isnoneornil(L, 3))
+		props.position.vector = check_v3f(L, 3);
+	if (!lua_isnoneornil(L, 4))
+		props.rotation.next = core::quaternion(check_v3f(L, 4) * core::DEGTORAD);
+	props.position.absolute = true;
+	props.rotation.absolute = true;
+	sao->setBoneOverride(bone, props);
 	return 0;
 }
 
@@ -535,20 +560,142 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 int ObjectRef::l_get_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L, "Deprecated call to get_bone_position, use get_bone_override instead", 1, true);
+
 	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
 	ServerActiveObject *sao = getobject(ref);
 	if (sao == nullptr)
 		return 0;
 
 	std::string bone = readParam<std::string>(L, 2, "");
-
-	v3f position = v3f(0, 0, 0);
-	v3f rotation = v3f(0, 0, 0);
-	sao->getBonePosition(bone, &position, &rotation);
-
-	push_v3f(L, position);
-	push_v3f(L, rotation);
+	BoneOverride props = sao->getBoneOverride(bone);
+	push_v3f(L, props.position.vector);
+	v3f euler_rot;
+	props.rotation.next.toEuler(euler_rot);
+	push_v3f(L, euler_rot * core::RADTODEG);
 	return 2;
+}
+
+// set_bone_override(self, bone, override)
+int ObjectRef::l_set_bone_override(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == NULL)
+		return 0;
+
+	std::string bone = readParam<std::string>(L, 2);
+
+	BoneOverride props;
+	if (lua_isnoneornil(L, 3)) {
+		sao->setBoneOverride(bone, props);
+		return 0;
+	}
+
+	auto read_prop_attrs = [L](auto &prop) {
+		lua_getfield(L, -1, "absolute");
+		prop.absolute = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "interpolate");
+		if (lua_isnumber(L, -1))
+			prop.interp_timer = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	};
+
+	lua_getfield(L, 3, "position");
+	if (!lua_isnil(L, -1)) {
+		lua_getfield(L, -1, "vec");
+		if (!lua_isnil(L, -1))
+			props.position.vector = check_v3f(L, -1);
+		lua_pop(L, 1);
+
+		read_prop_attrs(props.position);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "rotation");
+	if (!lua_isnil(L, -1)) {
+		lua_getfield(L, -1, "vec");
+		if (!lua_isnil(L, -1))
+			props.rotation.next = core::quaternion(check_v3f(L, -1));
+		lua_pop(L, 1);
+
+		read_prop_attrs(props.rotation);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 3, "scale");
+	if (!lua_isnil(L, -1)) {
+		lua_getfield(L, -1, "vec");
+		props.scale.vector = lua_isnil(L, -1) ? v3f(1) : check_v3f(L, -1);
+		lua_pop(L, 1);
+
+		read_prop_attrs(props.scale);
+	}
+	lua_pop(L, 1);
+
+	sao->setBoneOverride(bone, props);
+	return 0;
+}
+
+static void push_bone_override(lua_State *L, const BoneOverride &props)
+{
+	lua_newtable(L);
+
+	auto push_prop = [L](const char *name, const auto &prop, v3f vec) {
+		lua_newtable(L);
+		push_v3f(L, vec);
+		lua_setfield(L, -2, "vec");
+		lua_pushnumber(L, prop.interp_timer);
+		lua_setfield(L, -2, "interpolate");
+		lua_pushboolean(L, prop.absolute);
+		lua_setfield(L, -2, "absolute");
+		lua_setfield(L, -2, name);
+	};
+
+	push_prop("position", props.position, props.position.vector);
+
+	v3f euler_rot;
+	props.rotation.next.toEuler(euler_rot);
+	push_prop("rotation", props.rotation, euler_rot);
+
+	push_prop("scale", props.scale, props.scale.vector);
+
+	// leave only override table on top of the stack
+}
+
+// get_bone_override(self, bone)
+int ObjectRef::l_get_bone_override(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *sao = getobject(ref);
+	if (sao == NULL)
+		return 0;
+
+	std::string bone = readParam<std::string>(L, 2);
+
+	push_bone_override(L, sao->getBoneOverride(bone));
+	return 1;
+}
+
+// get_bone_overrides(self)
+int ObjectRef::l_get_bone_overrides(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	lua_newtable(L);
+	for (const auto &bone_pos : co->getBoneOverrides()) {
+		push_bone_override(L, bone_pos.second);
+		lua_setfield(L, -2, bone_pos.first.c_str());
+	}
+	return 1;
 }
 
 // set_attach(self, parent, bone, position, rotation, force_visible)
@@ -1596,6 +1743,28 @@ int ObjectRef::l_hud_get(lua_State *L)
 	return 1;
 }
 
+// hud_get_all(self)
+int ObjectRef::l_hud_get_all(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkObject<ObjectRef>(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == nullptr)
+		return 0;
+
+	lua_newtable(L);
+	player->hudApply([&](const std::vector<HudElement*>& hud) {
+		for (std::size_t id = 0; id < hud.size(); ++id) {
+			HudElement *elem = hud[id];
+			if (elem != nullptr) {
+				push_hud_element(L, elem);
+				lua_rawseti(L, -2, id);
+			}
+		}
+	});
+	return 1;
+}
+
 // hud_set_flags(self, flags)
 int ObjectRef::l_hud_set_flags(lua_State *L)
 {
@@ -2363,7 +2532,14 @@ int ObjectRef::l_set_lighting(lua_State *L)
 			lighting.exposure.center_weight_power = getfloatfield_default(L, -1, "center_weight_power", lighting.exposure.center_weight_power);
 		}
 		lua_pop(L, 1); // exposure
-	}
+
+		lua_getfield(L, 2, "volumetric_light");
+		if (lua_istable(L, -1)) {
+			getfloatfield(L, -1, "strength", lighting.volumetric_light_strength);
+			lighting.volumetric_light_strength = rangelim(lighting.volumetric_light_strength, 0.0f, 1.0f);
+		}
+		lua_pop(L, 1); // volumetric_light
+}
 
 	getServer(L)->setLighting(player, lighting);
 	return 0;
@@ -2401,6 +2577,10 @@ int ObjectRef::l_get_lighting(lua_State *L)
 	lua_pushnumber(L, lighting.exposure.center_weight_power);
 	lua_setfield(L, -2, "center_weight_power");
 	lua_setfield(L, -2, "exposure");
+	lua_newtable(L); // "volumetric_light"
+	lua_pushnumber(L, lighting.volumetric_light_strength);
+	lua_setfield(L, -2, "strength");
+	lua_setfield(L, -2, "volumetric_light");
 	return 1;
 }
 
@@ -2454,6 +2634,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, remove),
 	luamethod_aliased(ObjectRef, get_pos, getpos),
 	luamethod_aliased(ObjectRef, set_pos, setpos),
+	luamethod(ObjectRef, add_pos),
 	luamethod_aliased(ObjectRef, move_to, moveto),
 	luamethod(ObjectRef, punch),
 	luamethod(ObjectRef, right_click),
@@ -2471,6 +2652,9 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_animation_frame_speed),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, get_bone_position),
+	luamethod(ObjectRef, set_bone_override),
+	luamethod(ObjectRef, get_bone_override),
+	luamethod(ObjectRef, get_bone_overrides),
 	luamethod(ObjectRef, set_attach),
 	luamethod(ObjectRef, get_attach),
 	luamethod(ObjectRef, get_children),
@@ -2529,6 +2713,7 @@ luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
 	luamethod(ObjectRef, hud_get),
+	luamethod(ObjectRef, hud_get_all),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_get_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),

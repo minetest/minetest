@@ -3,15 +3,15 @@ CORE_BRANCH=master
 CORE_NAME=minetest
 
 ogg_version=1.3.5
-openal_version=1.23.0
+openal_version=1.23.1
 vorbis_version=1.3.7
-curl_version=8.0.1
+curl_version=8.5.0
 gettext_version=0.20.2
-freetype_version=2.12.1
-sqlite3_version=3.41.2
-luajit_version=20230221
+freetype_version=2.13.2
+sqlite3_version=3.44.2
+luajit_version=20231211
 leveldb_version=1.23
-zlib_version=1.2.13
+zlib_version=1.3
 zstd_version=1.5.5
 
 download () {
@@ -23,6 +23,7 @@ download () {
 
 	[ -d "./$foldername" ] && return 0
 	wget "$url" -c -O "./$filename"
+	sha256sum -w -c <(grep -F "$filename" "$topdir/sha256sums.txt")
 	if [ "$extract" = "unzip" ]; then
 		unzip -o "$filename" -d "$foldername"
 	elif [ "$extract" = "unzip_nofolder" ]; then

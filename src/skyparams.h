@@ -46,6 +46,7 @@ struct SkyboxParams
 	float body_orbit_tilt { INVALID_SKYBOX_TILT };
 	s16 fog_distance { -1 };
 	float fog_start { -1.0f };
+	float volumetric_light_strength { 0.0f };
 };
 
 struct SunParams

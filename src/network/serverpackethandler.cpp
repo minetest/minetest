@@ -147,10 +147,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	client->net_proto_version = net_proto_version;
 
-	if ((g_settings->getBool("strict_protocol_version_checking") &&
-			net_proto_version != LATEST_PROTOCOL_VERSION) ||
-			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
-			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
+	if (net_proto_version < Server::getProtocolVersionMin() ||
+			net_proto_version > Server::getProtocolVersionMax()) {
 		actionstream << "Server: A mismatched client tried to connect from " <<
 			addr_s << " proto_max=" << (int)max_net_proto_version << std::endl;
 		DenyAccess(peer_id, SERVER_ACCESSDENIED_WRONG_VERSION);
@@ -1873,6 +1871,12 @@ void Server::handleCommand_UpdateClientInfo(NetworkPacket *pkt)
 	*pkt >> info.real_hud_scaling;
 	*pkt >> info.max_fs_size.X;
 	*pkt >> info.max_fs_size.Y;
+	try {
+		// added in 5.9.0
+		*pkt >> info.touch_controls;
+	} catch (PacketError &e) {
+		info.touch_controls = false;
+	}
 
 	session_t peer_id = pkt->getPeerId();
 	RemoteClient *client = getClient(peer_id, CS_Invalid);

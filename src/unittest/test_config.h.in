@@ -1,8 +1,0 @@
-// Filled in by the build system
-
-#pragma once
-
-#define TEST_WORLDDIR "@TEST_WORLDDIR@"
-#define TEST_SUBGAME_PATH "@TEST_SUBGAME_PATH@"
-#define TEST_MOD_PATH "@TEST_MOD_PATH@"
-#define HELPERS_PATH "@HELPERS_PATH@"

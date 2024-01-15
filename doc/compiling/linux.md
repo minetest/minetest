@@ -30,7 +30,7 @@ For openSUSE users:
 
 For Arch users:
 
-    sudo pacman -S base-devel libcurl-gnutls cmake libxi libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext
+    sudo pacman -S --needed base-devel libcurl-gnutls cmake libxi libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext
 
 For Alpine users:
 
@@ -71,7 +71,7 @@ Download source (this is the URL to the latest of source repository, which might
 
 Download IrrlichtMt to `lib/irrlichtmt`, it will be used to satisfy the IrrlichtMt dependency that way:
 
-    git clone --depth 1 https://github.com/minetest/irrlicht.git lib/irrlichtmt
+    git clone --depth 1 --branch "$(cat misc/irrlichtmt_tag.txt)" https://github.com/minetest/irrlicht.git lib/irrlichtmt
 
 Download source, without using Git:
 

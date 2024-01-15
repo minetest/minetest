@@ -33,9 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUICheckBox.h>
 #include <IGUIComboBox.h>
 #include <IGUIEditBox.h>
-#include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
+#include <IGUIImage.h>
+#include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
@@ -138,11 +139,23 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 	gui::IGUIEnvironment *guienv, JoystickController *joystick, IFormSource *fs_src,
 	TextDest *txt_dest, const std::string &formspecPrepend, ISoundManager *sound_manager)
 {
+	if (cur_formspec && cur_formspec->getReferenceCount() == 1) {
+		/*
+			Why reference count == 1? Reason:
+			1 on creation (see "drop()" remark below)
+			+1 for being a guiroot child
+			+1 when focused (CGUIEnvironment::setFocus)
+
+			Hence re-create the formspec when it's existing without any parent.
+		*/
+		cur_formspec->drop();
+		cur_formspec = nullptr;
+	}
+
 	if (cur_formspec == nullptr) {
 		cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
 			client, guienv, client->getTextureSource(), sound_manager, fs_src,
 			txt_dest, formspecPrepend);
-		cur_formspec->doPause = false;
 
 		/*
 			Caution: do not call (*cur_formspec)->drop() here --
@@ -151,12 +164,13 @@ void GUIFormSpecMenu::create(GUIFormSpecMenu *&cur_formspec, Client *client,
 			remaining reference (i.e. the menu was removed)
 			and delete it in that case.
 		*/
-
 	} else {
 		cur_formspec->setFormspecPrepend(formspecPrepend);
 		cur_formspec->setFormSource(fs_src);
 		cur_formspec->setTextDest(txt_dest);
 	}
+
+	cur_formspec->doPause = false;
 }
 
 void GUIFormSpecMenu::removeTooltip()
@@ -3484,46 +3498,58 @@ void GUIFormSpecMenu::legacySortElements(std::list<IGUIElement *>::iterator from
 }
 
 #ifdef __ANDROID__
-bool GUIFormSpecMenu::getAndroidUIInput()
+void GUIFormSpecMenu::getAndroidUIInput()
 {
-	if (!hasAndroidUIInput())
-		return false;
+	porting::AndroidDialogState dialogState = getAndroidUIInputState();
+	if (dialogState == porting::DIALOG_SHOWN) {
+		return;
+	} else if (dialogState == porting::DIALOG_CANCELED) {
+		m_jni_field_name.clear();
+		return;
+	}
 
-	// still waiting
-	if (porting::getInputDialogState() == -1)
-		return true;
+	porting::AndroidDialogType dialog_type = porting::getLastInputDialogType();
 
 	std::string fieldname = m_jni_field_name;
 	m_jni_field_name.clear();
 
 	for (const FieldSpec &field : m_fields) {
 		if (field.fname != fieldname)
-			continue;
+			continue; // Iterate until found
 
 		IGUIElement *element = getElementFromId(field.fid, true);
 
-		if (!element || element->getType() != irr::gui::EGUIET_EDIT_BOX)
-			return false;
+		if (!element)
+			return;
 
-		gui::IGUIEditBox *editbox = (gui::IGUIEditBox *)element;
-		std::string text = porting::getInputDialogValue();
-		editbox->setText(utf8_to_wide(text).c_str());
+		auto element_type = element->getType();
+		if (dialog_type == porting::TEXT_INPUT && element_type == irr::gui::EGUIET_EDIT_BOX) {
+			gui::IGUIEditBox *editbox = (gui::IGUIEditBox *)element;
+			std::string text = porting::getInputDialogMessage();
+			editbox->setText(utf8_to_wide(text).c_str());
 
-		bool enter_after_edit = false;
-		auto iter = field_enter_after_edit.find(fieldname);
-		if (iter != field_enter_after_edit.end()) {
-			enter_after_edit = iter->second;
+			bool enter_after_edit = false;
+			auto iter = field_enter_after_edit.find(fieldname);
+			if (iter != field_enter_after_edit.end()) {
+				enter_after_edit = iter->second;
+			}
+			if (enter_after_edit && editbox->getParent()) {
+				SEvent enter;
+				enter.EventType = EET_GUI_EVENT;
+				enter.GUIEvent.Caller = editbox;
+				enter.GUIEvent.Element = nullptr;
+				enter.GUIEvent.EventType = gui::EGET_EDITBOX_ENTER;
+				editbox->getParent()->OnEvent(enter);
+			}
+		} else if (dialog_type == porting::SELECTION_INPUT &&
+				element_type == irr::gui::EGUIET_COMBO_BOX) {
+			auto dropdown = (gui::IGUIComboBox *) element;
+			int selected = porting::getInputDialogSelection();
+			dropdown->setAndSendSelected(selected);
 		}
-		if (enter_after_edit && editbox->getParent()) {
-			SEvent enter;
-			enter.EventType = EET_GUI_EVENT;
-			enter.GUIEvent.Caller = editbox;
-			enter.GUIEvent.Element = nullptr;
-			enter.GUIEvent.EventType = gui::EGET_EDITBOX_ENTER;
-			editbox->getParent()->OnEvent(enter);
-		}
+
+		return; // Early-return after found
 	}
-	return false;
 }
 #endif
 
@@ -3643,22 +3669,18 @@ void GUIFormSpecMenu::drawMenu()
 			NULL, m_client, IT_ROT_HOVERED);
 	}
 
-	// On touchscreens, m_pointer is set by GUIModalMenu::preprocessEvent instead.
-#ifndef HAVE_TOUCHSCREENGUI
-	m_pointer = RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
-#endif
-
 	/*
 		Draw fields/buttons tooltips and update the mouse cursor
 	*/
 	gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(m_pointer);
 
-#ifndef HAVE_TOUCHSCREENGUI
 	gui::ICursorControl *cursor_control = RenderingEngine::get_raw_device()->
 			getCursorControl();
-	gui::ECURSOR_ICON current_cursor_icon = cursor_control->getActiveIcon();
-#endif
+	gui::ECURSOR_ICON current_cursor_icon = gui::ECI_NORMAL;
+	if (cursor_control)
+		current_cursor_icon = cursor_control->getActiveIcon();
+
 	bool hovered_element_found = false;
 
 	if (hovered) {
@@ -3702,11 +3724,10 @@ void GUIFormSpecMenu::drawMenu()
 							m_tooltips[field.fname].bgcolor);
 				}
 
-#ifndef HAVE_TOUCHSCREENGUI
-				if (field.ftype != f_HyperText && // Handled directly in guiHyperText
+				if (cursor_control &&
+						field.ftype != f_HyperText && // Handled directly in guiHyperText
 						current_cursor_icon != field.fcursor_icon)
 					cursor_control->setActiveIcon(field.fcursor_icon);
-#endif
 
 				hovered_element_found = true;
 
@@ -3717,10 +3738,8 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (!hovered_element_found) {
 		// no element is hovered
-#ifndef HAVE_TOUCHSCREENGUI
-		if (current_cursor_icon != ECI_NORMAL)
+		if (cursor_control && current_cursor_icon != ECI_NORMAL)
 			cursor_control->setActiveIcon(ECI_NORMAL);
-#endif
 	}
 
 	m_tooltip_element->draw();
@@ -3751,16 +3770,13 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 	v2u32 screenSize = Environment->getVideoDriver()->getScreenSize();
 	int tooltip_offset_x = m_btn_height;
 	int tooltip_offset_y = m_btn_height;
-#ifdef HAVE_TOUCHSCREENGUI
-	tooltip_offset_x *= 3;
-	tooltip_offset_y  = 0;
-	if (m_pointer.X > (s32)screenSize.X / 2)
-		tooltip_offset_x = -(tooltip_offset_x + tooltip_width);
 
-	// Hide tooltip after ETIE_LEFT_UP
-	if (m_pointer.X == 0)
-		return;
-#endif
+	if (m_pointer_type == PointerType::Touch) {
+		tooltip_offset_x *= 3;
+		tooltip_offset_y  = 0;
+		if (m_pointer.X > (s32)screenSize.X / 2)
+			tooltip_offset_x = -(tooltip_offset_x + tooltip_width);
+	}
 
 	// Calculate and set the tooltip position
 	s32 tooltip_x = m_pointer.X + tooltip_offset_x;
@@ -4057,6 +4073,11 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
+	// This must be done first so that GUIModalMenu can set m_pointer_type
+	// correctly.
+	if (GUIModalMenu::preprocessEvent(event))
+		return true;
+
 	// The IGUITabControl renders visually using the skin's selected
 	// font, which we override for the duration of form drawing,
 	// but computes tab hotspots based on how it would have rendered
@@ -4134,7 +4155,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		return handled;
 	}
 
-	return GUIModalMenu::preprocessEvent(event);
+	return false;
 }
 
 void GUIFormSpecMenu::tryClose()
@@ -4313,14 +4334,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 		}
 
-#ifdef HAVE_TOUCHSCREENGUI
 		// The second touch (see GUIModalMenu::preprocessEvent() function)
 		ButtonEventType touch = BET_OTHER;
 		if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 			if (event.TouchInput.Event == ETIE_LEFT_UP)
 				touch = BET_RIGHT;
 		}
-#endif
 
 		// Set this number to a positive value to generate a move action
 		// from m_selected_item to s.
@@ -4665,7 +4684,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			break;
 		}
 
-#ifdef HAVE_TOUCHSCREENGUI
 		if (touch == BET_RIGHT && m_selected_item && !m_left_dragging) {
 			if (!s.isValid()) {
 				// Not a valid slot
@@ -4685,7 +4703,6 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				}
 			}
 		}
-#endif
 
 		// Update left-dragged slots
 		if (m_left_dragging && m_left_drag_stacks.size() > 1) {
@@ -5054,10 +5071,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 	}
 
-#ifdef HAVE_TOUCHSCREENGUI
 	if (m_second_touch)
 		return true; // Stop propagating the event
-#endif
 
 	return Parent ? Parent->OnEvent(event) : false;
 }

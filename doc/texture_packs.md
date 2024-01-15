@@ -133,11 +133,6 @@ are placeholders intended to be overwritten by the game.
 
 ### Android textures
 
-* `down_arrow.png`
-* `left_arrow.png`
-* `right_arrow.png`
-* `up_arrow.png`
-
 * `drop_btn.png`
 * `fast_btn.png`
 * `fly_btn.png`

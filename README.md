@@ -25,11 +25,11 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: https://minetest.net/
+- Website: https://www.minetest.net/
 - Wiki: https://wiki.minetest.net/
-- Developer wiki: https://dev.minetest.net/
 - Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
+- [Developer documentation](doc/developing/)
 - [doc/](doc/) directory of source distribution
 
 Default controls
@@ -128,28 +128,7 @@ Docker
 
 - [Developing minetestserver with Docker](doc/developing/docker.md)
 
-We provide Minetest server Docker images using the GitLab mirror registry.
-
-Images are built on each commit and available using the following tag scheme:
-
-* `registry.gitlab.com/minetest/minetest/server:latest` (latest build)
-* `registry.gitlab.com/minetest/minetest/server:<branch/tag>` (current branch or current tag)
-* `registry.gitlab.com/minetest/minetest/server:<commit-id>` (current commit id)
-
-If you want to test it on a Docker server you can easily run:
-
-	sudo docker run registry.gitlab.com/minetest/minetest/server:<docker tag>
-
-If you want to use it in a production environment you should use volumes bound to the Docker host
-to persist data and modify the configuration:
-
-	sudo docker create -v /home/minetest/data/:/var/lib/minetest/ -v /home/minetest/conf/:/etc/minetest/ registry.gitlab.com/minetest/minetest/server:master
-
-Data will be written to `/home/minetest/data` on the host, and configuration will be read from `/home/minetest/conf/minetest.conf`.
-
-**Note:** If you don't understand the previous commands please read the official Docker documentation before use.
-
-You can also host your Minetest server inside a Kubernetes cluster. See our example implementation in [`misc/kubernetes.yml`](misc/kubernetes.yml).
+We provide a Dockerfile that can be used to build the server.
 
 
 Version scheme

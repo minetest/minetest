@@ -44,13 +44,11 @@ enum class OverrideTarget : override_t
 	SPECIAL_5 = 1 << 12,
 	SPECIAL_6 = 1 << 13,
 
-	// clang-format off
 	SIDES = LEFT | RIGHT | FRONT | BACK,
 	ALL_FACES = TOP | BOTTOM | SIDES,
 	ALL_SPECIAL = SPECIAL_1 | SPECIAL_2 | SPECIAL_3 | SPECIAL_4 | SPECIAL_5 | SPECIAL_6,
 	NODE_TARGETS = ALL_FACES | ALL_SPECIAL,
 	ITEM_TARGETS = INVENTORY | WIELD,
-	// clang-format on
 };
 
 struct TextureOverride
@@ -72,13 +70,13 @@ struct TextureOverride
 class TextureOverrideSource
 {
 public:
-	TextureOverrideSource(std::string filepath);
+	TextureOverrideSource(const std::string &filepath);
 
 	//! Get all overrides that apply to item definitions
-	std::vector<TextureOverride> getItemTextureOverrides();
+	std::vector<TextureOverride> getItemTextureOverrides() const;
 
 	//! Get all overrides that apply to node definitions
-	std::vector<TextureOverride> getNodeTileOverrides();
+	std::vector<TextureOverride> getNodeTileOverrides() const;
 
 private:
 	std::vector<TextureOverride> m_overrides;

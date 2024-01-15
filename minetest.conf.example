@@ -22,7 +22,7 @@
 #    type: float min: 0 max: 0.99
 # camera_smoothing = 0.0
 
-#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.
 #    type: float min: 0 max: 0.99
 # cinematic_camera_smoothing = 0.7
 
@@ -759,6 +759,15 @@
 #    to new servers, but they may not support all new features that you are expecting.
 #    type: bool
 # strict_protocol_version_checking = false
+
+#    Define the oldest clients allowed to connect.
+#    Older clients are compatible in the sense that they will not crash when connecting
+#    to new servers, but they may not support all new features that you are expecting.
+#    This allows more fine-grained control than strict_protocol_version_checking.
+#    Minetest may still enforce its own internal minimum, and enabling
+#    strict_protocol_version_checking will effectively override this.
+#    type: int min: 1 max: 65535
+# protocol_version_min = 1
 
 #    Specifies URL from which client fetches media instead of using UDP.
 #    $filename should be accessible from $remote_media$filename via cURL
@@ -3627,4 +3636,3 @@
 #    See https://github.com/minetest/irrlicht/blob/master/include/Keycodes.h
 #    type: key
 # keymap_decrease_viewing_range_min = -
-

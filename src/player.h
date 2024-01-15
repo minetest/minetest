@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <list>
 #include <mutex>
+#include <functional>
 
 #define PLAYERNAME_SIZE 20
 
@@ -225,6 +226,7 @@ public:
 	}
 
 	HudElement* getHud(u32 id);
+	void        hudApply(std::function<void(const std::vector<HudElement*>&)> f);
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
 	void        clearHud();
