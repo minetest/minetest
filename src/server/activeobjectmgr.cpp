@@ -49,15 +49,16 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 void ActiveObjectMgr::step(
 		float dtime, const std::function<void(ServerActiveObject *)> &f)
 {
-	size_t count = m_active_objects.size();
-	assert(count != decltype(m_active_objects)::unknown);
-	g_profiler->avg("ActiveObjectMgr: SAO count [#]", count);
+	size_t count = 0;
 
 	for (auto &ao_it : m_active_objects.iter()) {
 		if (!ao_it.second)
 			continue;
+		count++;
 		f(ao_it.second.get());
 	}
+
+	g_profiler->avg("ActiveObjectMgr: SAO count [#]", count);
 }
 
 bool ActiveObjectMgr::registerObject(std::unique_ptr<ServerActiveObject> obj)
@@ -109,6 +110,7 @@ void ActiveObjectMgr::removeObject(u16 id)
 	verbosestream << "Server::ActiveObjectMgr::removeObject(): "
 			<< "id=" << id << std::endl;
 
+	// this will take the object out of the map and then destruct it
 	bool ok = m_active_objects.remove(id);
 	if (!ok) {
 		infostream << "Server::ActiveObjectMgr::removeObject(): "

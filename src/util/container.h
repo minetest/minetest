@@ -325,6 +325,12 @@ private:
 	- you have to check for null elements during iteration, those are ones already deleted
 	- size() and empty() don't work during iteration
 	- not thread-safe in any way
+
+	How this is implemented:
+	- there are two maps: new and real
+	- if inserting duration iteration, the value is inserted into the "new" map
+	- if deleting during iteration, the value is set to null (to be GC'd later)
+	- when iteration finishes the "new" map is merged into the "real" map
 */
 
 template<typename K, typename V>
@@ -345,7 +351,7 @@ public:
 	ModifySafeMap() {
 		// the null value must convert to false and all others to true, but
 		// we can't statically check the latter.
-		assert(!null_value);
+		sanity_check(!null_value);
 	}
 	~ModifySafeMap() {
 		assert(!m_iterating);
@@ -413,6 +419,7 @@ public:
 		return !!take(key);
 	}
 
+	// Warning: not constant-time!
 	size_t size() const {
 		if (m_iterating) {
 			// This is by no means impossible to determine, it's just annoying
@@ -428,6 +435,7 @@ public:
 		return n;
 	}
 
+	// Warning: not constant-time!
 	bool empty() const {
 		if (m_iterating)
 			return false; // maybe
@@ -476,7 +484,7 @@ protected:
 			if (!it->second)
 				it = m_values.erase(it);
 			else
-				it++;
+				++it;
 		}
 		m_garbage = 0;
 	}
@@ -499,7 +507,6 @@ protected:
 		IterationHelper(ModifySafeMap<K, V> *parent) : m(parent) {
 			assert(m->m_iterating < std::numeric_limits<decltype(m_iterating)>::max());
 			m->m_iterating++;
-			assert(m->m_new.empty());
 		}
 
 		ModifySafeMap<K, V> *m;
