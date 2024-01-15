@@ -153,8 +153,10 @@ void clear_string(std::string &text)
 	#else
 	volatile char *ch = (char *)text.data();
 	size_t n = text.size();
-	for (;n>0;n--) 
+	for (;n>0;n--) {
 		*ch = 0;
+		ch++;
+	}
 	#endif
 	text.clear();
 }
