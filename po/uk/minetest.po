@@ -3,9 +3,8 @@ msgstr ""
 "Project-Id-Version: Ukrainian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-12-05 17:24+0000\n"
-"Last-Translator: YearOfFuture <YearOfFuture@users.noreply.hosted.weblate.org>"
-"\n"
+"PO-Revision-Date: 2024-06-23 19:09+0000\n"
+"Last-Translator: YearOfFuture <yearoffuture@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
 "minetest/uk/>\n"
 "Language: uk\n"
@@ -14,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.6-rc\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -141,7 +140,7 @@ msgstr "\"$1\" вже існує. Бажаєте перезаписати?"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 and $2 dependencies will be installed."
-msgstr "Будє встановлено залежності $1 та $2."
+msgstr "Буде встановлено залежності $1 та $2."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "$1 by $2"
@@ -2436,9 +2435,9 @@ msgid ""
 "This only has significant effect on daylight and artificial\n"
 "light, it has very little effect on natural night light."
 msgstr ""
-"Змінює криву світла застосовуючи до неї 'гамма-корекцію'.\n"
+"Змінює криву світла застосовуючи до неї \"гамма-корекцію\".\n"
 "Більше значення робить середній і нижчий рівень яскравості освітлення.\n"
-"Значення '1.0' залишає криву світла незмінною.\n"
+"Значення \"1.0\" залишає криву світла незмінною.\n"
 "Це впливає лише на денне і штучне світло,\n"
 "воно мало впливає на природне нічне світло."
 
@@ -2877,7 +2876,7 @@ msgstr "З'єднує скло, якщо підтримується блоком
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr "Прозорість консолі"
+msgstr "Нерозорість консолі"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
@@ -3593,7 +3592,7 @@ msgid ""
 "Font size of the recent chat text and chat prompt in point (pt).\n"
 "Value 0 will use the default font size."
 msgstr ""
-"Розмір шрифта останніх повідомлень чату й ввода у точках (pt).\n"
+"Розмір шрифта останніх повідомлень чату й ввода у пунктах (pt).\n"
 "Значення 0 використовуватиме звичайний розмір шрифта."
 
 #: src/settings_translation_file.cpp
@@ -4060,7 +4059,7 @@ msgstr "Ігнорувати помилки світу"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr "Непрозорість фону консоли в грі (між 0 і 255)."
+msgstr "Альфа-канал фону консолі чату в грі (непрозорість, між 0 і 255)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
