@@ -154,8 +154,8 @@ s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
 
 void PcgRandom::getState(u64 state[2]) const
 {
-  state[0] = m_state;
-  state[1] = m_inc;
+	state[0] = m_state;
+	state[1] = m_inc;
 }
 
 void PcgRandom::setState(const u64 state[2])

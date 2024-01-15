@@ -124,7 +124,7 @@ void TestRandom::testPcgRandom()
 
 void TestRandom::testPcgRandomRange()
 {
-	PcgRandom pr((s32)time(NULL));
+	PcgRandom pr((u64)time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
