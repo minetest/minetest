@@ -275,8 +275,9 @@ void TileDef::deSerialize(std::istream &is, NodeDrawType drawtype, u16 protocol_
 		align_style = static_cast<AlignStyle>(readU8(is));
 		if (align_style >= AlignStyle_END)
 			align_style = ALIGN_STYLE_NODE;
-	} else
+	} else {
 		align_style = ALIGN_STYLE_NODE;
+	}
 }
 
 void TextureSettings::readSettings()
