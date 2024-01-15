@@ -664,6 +664,8 @@ public:
 	}
 };
 
+#define SIZE_TAG "size[11,5.5,true]" // Fixed size (ignored in touchscreen mode)
+
 /****************************************************************************
  ****************************************************************************/
 
@@ -2608,10 +2610,8 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 	Since Minetest has its own code to synthesize mouse events from touch events,
 	this results in duplicated input. To avoid that, we don't enable relative
 	mouse mode if we're in touchscreen mode. */
-#ifndef HAVE_TOUCHSCREENGUI
 	if (cur_control)
-		cur_control->setRelativeMode(!isMenuActive());
-#endif
+		cur_control->setRelativeMode(!g_touchscreengui && !isMenuActive());
 
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
@@ -4439,7 +4439,7 @@ void Game::showDeathFormspec()
 {
 	static std::string formspec_str =
 		std::string("formspec_version[1]") +
-		"size[11,5.5,true]" +
+		SIZE_TAG
 		"bgcolor[#320000b4;true]"
 		"label[4.85,1.35;" + gettext("You died") + "]"
 		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
@@ -4482,7 +4482,7 @@ void Game::showPauseMenu()
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
-	os << "formspec_version[1]" << "size[11,5.5,true]"
+	os << "formspec_version[1]" << SIZE_TAG
 		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
 		<< strgettext("Continue") << "]";
 

@@ -545,9 +545,9 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 		if (id_to_keycode(pair.first) == KEY_KEY_CODES_COUNT)
 			continue;
 
-		m_settings_bar.addButton(pair.first,
-					 utf8_to_wide(pair.second).c_str(),
-					 pair.second + "_btn.png");
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_settings_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
 	}
 
 	// Chat is shown by default, so chat_hide_btn.png is shown first.
@@ -574,9 +574,9 @@ void TouchScreenGUI::init(ISimpleTextureSource *tsrc)
 		if (id_to_keycode(pair.first) == KEY_KEY_CODES_COUNT)
 			continue;
 
-		m_rare_controls_bar.addButton(pair.first,
-					      utf8_to_wide(pair.second).c_str(),
-					      pair.second + "_btn.png");
+		std::wstring wide = utf8_to_wide(pair.second);
+		m_rare_controls_bar.addButton(pair.first, wide.c_str(),
+				pair.second + "_btn.png");
 	}
 
 	m_initialized = true;
