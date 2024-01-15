@@ -517,12 +517,11 @@ int LuaPcgRandom::l_get_state(lua_State *L)
 	u64 state[2];
 	o->m_rnd.getState(state);
 
-	std::stringstream s_state;
-	
-	s_state << std::hex << std::setw(16) << std::setfill('0') << state[0];
-	s_state << std::hex << std::setw(16) << std::setfill('0') << state[1];
-	
-	lua_pushstring(L, s_state.str().c_str());
+	std::ostringstream oss;
+	oss << std::hex << std::setw(16) << std::setfill('0')
+		<< state[0] << state[1];
+
+	lua_pushstring(L, oss.str().c_str());
 	return 1;
 }
 

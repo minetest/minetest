@@ -62,43 +62,42 @@ void TestRandom::testPseudoRandom()
 {
 	PseudoRandom pr(814538);
 
-	for (u32 i = 0; i != 128; i++)
-		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
+	for (u32 i = 0; i != 256; i++)
+		UASSERTEQ(s32, pr.next(), expected_pseudorandom_results[i]);
 
-	int	state = pr.getState();
+	s32 state = pr.getState();
 	PseudoRandom pr2(state);
 
-	for (u32 i = 128; i != 256; i++) {
-		UASSERTEQ(int, pr.next(), expected_pseudorandom_results[i]);
-		UASSERTEQ(int, pr2.next(), expected_pseudorandom_results[i]);
+	for (u32 i = 0; i != 256; i++) {
+		UASSERTEQ(s32, pr.next(), pr2.next());
 	}
 
 	PseudoRandom pr3(0);
-	UASSERTEQ(int, pr3.next(), 0);
-	UASSERTEQ(int, pr3.next(), 21469);
-	UASSERTEQ(int, pr3.next(), 9989);
+	UASSERTEQ(s32, pr3.next(), 0);
+	UASSERTEQ(s32, pr3.next(), 21469);
+	UASSERTEQ(s32, pr3.next(), 9989);
 
 	PseudoRandom pr4(-101);
-	UASSERTEQ(int, pr4.next(), 3267);
-	UASSERTEQ(int, pr4.next(), 2485);
-	UASSERTEQ(int, pr4.next(), 30057);
+	UASSERTEQ(s32, pr4.next(), 3267);
+	UASSERTEQ(s32, pr4.next(), 2485);
+	UASSERTEQ(s32, pr4.next(), 30057);
 }
 
 
 void TestRandom::testPseudoRandomRange()
 {
-	PseudoRandom pr((int)time(NULL));
+	PseudoRandom pr((s32)time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(2000, 8600));
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = (pr.next() % 3000) - 500;
-		int max = (pr.next() % 3000) - 500;
+		s32 min = (pr.next() % 3000) - 500;
+		s32 max = (pr.next() % 3000) - 500;
 		if (min > max)
-			SWAP(int, min, max);
+			SWAP(s32, min, max);
 
-		int randval = pr.range(min, max);
+		s32 randval = pr.range(min, max);
 		UASSERT(randval >= min);
 		UASSERT(randval <= max);
 	}
@@ -109,7 +108,7 @@ void TestRandom::testPcgRandom()
 {
 	PcgRandom pr(814538, 998877);
 
-	for (u32 i = 0; i != 128; i++)
+	for (u32 i = 0; i != 256; i++)
 		UASSERTEQ(u32, pr.next(), expected_pcgrandom_results[i]);
 
 	PcgRandom pr2(0, 0);
@@ -117,16 +116,15 @@ void TestRandom::testPcgRandom()
 	pr.getState(state);
 	pr2.setState(state);
 
-	for (u32 i = 128; i != 256; i++) {
-		UASSERTEQ(u32, pr.next(), expected_pcgrandom_results[i]);
-		UASSERTEQ(u32, pr2.next(), expected_pcgrandom_results[i]);
+	for (u32 i = 0; i != 256; i++) {
+		UASSERTEQ(u32, pr.next(), pr2.next());
 	}
 }
 
 
 void TestRandom::testPcgRandomRange()
 {
-	PcgRandom pr((int)time(NULL));
+	PcgRandom pr((s32)time(NULL));
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
@@ -134,12 +132,12 @@ void TestRandom::testPcgRandomRange()
 	pr.range(pr.RANDOM_MIN, pr.RANDOM_MAX);
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = (pr.next() % 3000) - 500;
-		int max = (pr.next() % 3000) - 500;
+		s32 min = (pr.next() % 3000) - 500;
+		s32 max = (pr.next() % 3000) - 500;
 		if (min > max)
-			SWAP(int, min, max);
+			SWAP(s32, min, max);
 
-		int randval = pr.range(min, max);
+		s32 randval = pr.range(min, max);
 		UASSERT(randval >= min);
 		UASSERT(randval <= max);
 	}
@@ -165,8 +163,8 @@ void TestRandom::testPcgRandomBytes()
 
 void TestRandom::testPcgRandomNormalDist()
 {
-	static const int max = 120;
-	static const int min = -120;
+	static const s32 max = 120;
+	static const s32 min = -120;
 	static const int num_trials = 20;
 	static const u32 num_samples = 61000;
 	s32 bins[max - min + 1];

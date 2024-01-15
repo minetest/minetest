@@ -4,13 +4,8 @@ local function test_pseudo_random()
 	assert(gen1:next() == 22290)
 	assert(gen1:next() == 13854)
 
-	for n = 2, 128 do
-		gen1:next()
-	end
-
 	local gen2 = PseudoRandom(gen1:get_state())
-
-	for n = 128, 256 do
+	for n = 0, 16 do
 		assert(gen1:next() == gen2:next())
 	end
 
@@ -22,16 +17,17 @@ end
 unittests.register("test_pseudo_random", test_pseudo_random)
 
 local function test_pcg_random()
+	-- We have comprehensive unit tests in C++, this is just to make sure the API code isn't messing up
 	local gen1 = PcgRandom(55)
 
-	for n = 0, 128 do
+	for n = 0, 16 do
 		gen1:next()
 	end
 
 	local gen2 = PcgRandom(26)
 	gen2:set_state(gen1:get_state())
 
-	for n = 128, 256 do
+	for n = 16, 32 do
 		assert(gen1:next() == gen2:next())
 	end
 end

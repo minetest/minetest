@@ -77,7 +77,7 @@ public:
 	}
 
 	// Allow save and restore of state
-	inline int getState() const
+	inline s32 getState() const
 	{
 		return m_next;
 	}
