@@ -664,9 +664,7 @@ void ContentFeatures::deSerialize(std::istream &is, u16 protocol_version)
 		if (is.eof())
 			throw SerializationError("");
 		alpha = static_cast<enum AlphaMode>(tmp);
-		if (alpha >= AlphaMode_END)
-			throw SerializationError("unsupported AlphaMode");
-		if (alpha == ALPHAMODE_LEGACY_COMPAT)
+		if (alpha >= AlphaMode_END || alpha == ALPHAMODE_LEGACY_COMPAT)
 			alpha = ALPHAMODE_OPAQUE;
 
 		tmp = readU8(is);
