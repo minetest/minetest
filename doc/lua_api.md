@@ -4669,6 +4669,7 @@ differences:
   into it; it's not necessary to call `VoxelManip:read_from_map()`.
   Note that the region of map it has loaded is NOT THE SAME as the `minp`, `maxp`
   parameters of `on_generated()`. Refer to `minetest.get_mapgen_object` docs.
+  Once you're done you still need to call `VoxelManip:write_to_map()`
 
 * The `on_generated()` callbacks of some mods may place individual nodes in the
   generated area using non-VoxelManip map modification methods. Because the
@@ -4865,10 +4866,10 @@ Mapgen objects
 ==============
 
 A mapgen object is a construct used in map generation. Mapgen objects can be
-used by an `on_generate` callback to speed up operations by avoiding
+used by an `on_generated` callback to speed up operations by avoiding
 unnecessary recalculations, these can be retrieved using the
 `minetest.get_mapgen_object()` function. If the requested Mapgen object is
-unavailable, or `get_mapgen_object()` was called outside of an `on_generate()`
+unavailable, or `get_mapgen_object()` was called outside of an `on_generated`
 callback, `nil` is returned.
 
 The following Mapgen objects are currently available:
@@ -6537,6 +6538,8 @@ Refer to the above section for the usual disclaimer on what environment isolatio
       The chunk data resides in `vmanip`. Other parts of the map are not accessible.
       The area of the chunk if comprised of `minp` and `maxp`, note that is smaller
       than the emerged area of the VoxelManip.
+      Note that you don't need to call `read_from_map()` or `write_to_map()` on
+      the VoxelManipulator, doing so is in fact disallowed.
     * `blockseed`: 64-bit seed number used for this chunk
 * `minetest.save_gen_notify(id, data)`
     * Saves data for retrieval using the gennotify mechanism (see [Mapgen objects]).
@@ -6582,7 +6585,7 @@ Variables:
 * `minetest.registered_biomes`, `registered_ores`, `registered_decorations`
 
 Note that node metadata does not exist in the mapgen env, we suggest deferring
-setting any metadata you need to the on_generated callback in the regular env.
+setting any metadata you need to the `on_generated` callback in the regular env.
 You can use the gennotify mechanism to transfer this information.
 
 Server
