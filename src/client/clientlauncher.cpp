@@ -278,7 +278,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 			errorstream << error_message << std::endl;
 		}
 		catch (ShaderException &e) {
-			error_message = debug_describe_exc(e);
+			error_message = e.what();
 			errorstream << error_message << std::endl;
 		}
 
