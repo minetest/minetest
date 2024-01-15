@@ -70,7 +70,6 @@ RemoteClient::RemoteClient() :
 	m_min_time_from_building(
 		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
 	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
-	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
 	m_block_cull_optimize_distance(g_settings->getS16("block_cull_optimize_distance")),
 	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
 	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
@@ -236,8 +235,6 @@ void RemoteClient::GetNextBlocks (
 
 	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, prop_zoom_fov),
 		wanted_range);
-	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, prop_zoom_fov),
-		wanted_range);
 	const s16 d_cull_opt = std::min(adjustDist(m_block_cull_optimize_distance, prop_zoom_fov),
 		wanted_range);
 	// f32 to prevent overflow, it is also what isBlockInSight(...) expects
@@ -354,16 +351,10 @@ void RemoteClient::GetNextBlocks (
 					continue;
 
 				/*
-					If block is not close, don't send it unless it is near
-					ground level.
-
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
+					Don't send if it consists of air only.
 				*/
-				if (d >= d_opt) {
-					if (!block->getIsUnderground() && !block->getDayNightDiff())
-						continue;
-				}
+				if (block->isAir())
+					continue;
 			}
 
 			/*

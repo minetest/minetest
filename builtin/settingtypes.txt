@@ -2083,16 +2083,6 @@ liquid_queue_purge_time (Liquid queue purge time) int 0 0 65535
 #    Liquid update interval in seconds.
 liquid_update (Liquid update tick) float 1.0 0.001
 
-#    At this distance the server will aggressively optimize which blocks are sent to
-#    clients.
-#    Small values potentially improve performance a lot, at the expense of visible
-#    rendering glitches (some blocks will not be rendered under water and in caves,
-#    as well as sometimes on land).
-#    Setting this to a value greater than max_block_send_distance disables this
-#    optimization.
-#    Stated in MapBlocks (16 nodes).
-block_send_optimize_distance (Block send optimize distance) int 4 2 2047
-
 #    If enabled, the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
 #    sent to the client by 50-80%. Clients will no longer receive most

@@ -186,57 +186,27 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-void MapBlock::actuallyUpdateDayNightDiff()
+void MapBlock::actuallyUpdateIsAir()
 {
-	const NodeDefManager *nodemgr = m_gamedef->ndef();
-
 	// Running this function un-expires m_day_night_differs
-	m_day_night_differs_expired = false;
+	m_is_air_expired = false;
 
-	bool differs = false;
-
-	/*
-		Check if any lighting value differs
-	*/
-
-	MapNode previous_n(CONTENT_IGNORE);
+	bool only_air = true;
 	for (u32 i = 0; i < nodecount; i++) {
-		MapNode n = data[i];
-
-		// If node is identical to previous node, don't verify if it differs
-		if (n == previous_n)
-			continue;
-
-		differs = !n.isLightDayNightEq(nodemgr->getLightingFlags(n));
-		if (differs)
+		MapNode &n = data[i];
+		if (n.getContent() != CONTENT_AIR) {
+			only_air = false;
 			break;
-		previous_n = n;
-	}
-
-	/*
-		If some lighting values differ, check if the whole thing is
-		just air. If it is just air, differs = false
-	*/
-	if (differs) {
-		bool only_air = true;
-		for (u32 i = 0; i < nodecount; i++) {
-			MapNode &n = data[i];
-			if (n.getContent() != CONTENT_AIR) {
-				only_air = false;
-				break;
-			}
 		}
-		if (only_air)
-			differs = false;
 	}
 
 	// Set member variable
-	m_day_night_differs = differs;
+	m_is_air = only_air;
 }
 
-void MapBlock::expireDayNightDiff()
+void MapBlock::expireIsAirCache()
 {
-	m_day_night_differs_expired = true;
+	m_is_air_expired = true;
 }
 
 /*
@@ -369,7 +339,9 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	u8 flags = 0;
 	if(is_underground)
 		flags |= 0x01;
-	if(getDayNightDiff())
+	// This flag used to be day-night-differs,
+	// make sure it's always true for older versions
+	if(isAir() || version < 30)
 		flags |= 0x02;
 	if (!m_generated)
 		flags |= 0x08;
@@ -473,7 +445,7 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()<<std::endl);
 
-	m_day_night_differs_expired = false;
+	m_is_air_expired = false;
 
 	if(version <= 21)
 	{
@@ -489,7 +461,12 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
-	m_day_night_differs = (flags & 0x02) != 0;
+	if (version >= 30) {
+		m_is_air = (flags & 0x02) != 0;
+	} else {
+		m_is_air = false;
+		m_is_air_expired = true;
+	}
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;
 	else
@@ -647,7 +624,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 {
 	// Initialize default flags
 	is_underground = false;
-	m_day_night_differs = false;
+	m_is_air = false;
 	m_lighting_complete = 0xFFFF;
 	m_generated = true;
 
@@ -713,7 +690,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		u8 flags;
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 0x01) != 0;
-		m_day_night_differs = (flags & 0x02) != 0;
+		m_is_air = (flags & 0x02) != 0;
 		if (version >= 18)
 			m_generated = (flags & 0x08) == 0;
 
