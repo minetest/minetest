@@ -51,7 +51,7 @@ end)
 
 -- Eventually builtin Lua HUD elements should be generalized
 -- this is temporary to make hud_replace_builtin work with the builtin minimap
-local old_hud_replace_builtin = core.hud_replace_builtin(hud_name, definition)
+local old_hud_replace_builtin = core.hud_replace_builtin
 function core.hud_replace_builtin(hud_name, definition)
 	if hud_name == "minimap" then
 		minimap_def = table.copy(definition)
