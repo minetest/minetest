@@ -329,16 +329,10 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u64 uptime() const;
+	u64 uptime() const { return porting::getTimeS() - m_connection_time; }
 
 	/* set version information */
-	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
-	{
-		m_version_major = major;
-		m_version_minor = minor;
-		m_version_patch = patch;
-		m_full_version = full;
-	}
+	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full);
 
 	/* read version information */
 	u8 getMajor() const { return m_version_major; }
@@ -346,7 +340,7 @@ public:
 	u8 getPatch() const { return m_version_patch; }
 	const std::string &getFullVer() const { return m_full_version; }
 
-	void setLangCode(const std::string &code) { m_lang_code = code; }
+	void setLangCode(const std::string &code);
 	const std::string &getLangCode() const { return m_lang_code; }
 
 	void setCachedAddress(const Address &addr) { m_addr = addr; }

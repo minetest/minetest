@@ -33,6 +33,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "face_position_cache.h"
 
+static std::string string_sanitize_ascii(const std::string &s, u32 max_length)
+{
+	std::string out;
+	for (char c : s) {
+		if (out.size() >= max_length)
+			break;
+		if (c > 32 && c < 127)
+			out.push_back(c);
+	}
+	return out;
+}
+
 const char *ClientInterface::statenames[] = {
 	"Invalid",
 	"Disconnecting",
@@ -45,8 +57,6 @@ const char *ClientInterface::statenames[] = {
 	"Active",
 	"SudoMode",
 };
-
-
 
 std::string ClientInterface::state2Name(ClientState state)
 {
@@ -639,9 +649,17 @@ void RemoteClient::resetChosenMech()
 	chosen_mech = AUTH_MECHANISM_NONE;
 }
 
-u64 RemoteClient::uptime() const
+void RemoteClient::setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
 {
-	return porting::getTimeS() - m_connection_time;
+	m_version_major = major;
+	m_version_minor = minor;
+	m_version_patch = patch;
+	m_full_version = string_sanitize_ascii(full, 64);
+}
+
+void RemoteClient::setLangCode(const std::string &code)
+{
+	m_lang_code = string_sanitize_ascii(code, 12);
 }
 
 ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
