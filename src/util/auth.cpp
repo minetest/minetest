@@ -151,7 +151,10 @@ void clear_string(std::string &text)
 	#elif _WIN32
 	SecureZeroMemory((void *)text.data(), text.size());
 	#else
-	explicit_bzero((void *)text.data(), text.size());
+	volatile char *ch = (char *)text.data();
+	size_t n = text.size();
+	for (;n>0;n--) 
+		*ch = 0;
 	#endif
 	text.clear();
 }
