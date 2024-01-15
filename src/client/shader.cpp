@@ -589,7 +589,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
 		throw ShaderException("Shaders are enabled but GLSL is not supported "
-			"by the driver\n");
+			"by the driver");
 	}
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
@@ -791,7 +791,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
 		throw ShaderException("Failed to compile the \"" + name + "\" shader. "
-			"Check the log for details.");
+			"Check debug.txt for details.");
 	}
 
 	// Apply the newly created material type
