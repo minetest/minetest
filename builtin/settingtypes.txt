@@ -649,7 +649,7 @@ mute_sound (Mute sound) bool false
 
 [*User Interfaces]
 
-#    Set the language. Leave empty to use the system language.
+#    Set the language. By default, the system language is used.
 #    A restart is required after changing this.
 language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
 
