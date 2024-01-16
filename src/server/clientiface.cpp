@@ -354,7 +354,8 @@ void RemoteClient::GetNextBlocks (
 					continue;
 
 				/*
-					Don't send if it consists of air only.
+					If block is not close, don't send it if it
+					consists of air only.
 				*/
 				if (d >= d_opt && block->isAir())
 						continue;
