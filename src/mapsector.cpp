@@ -73,7 +73,7 @@ std::unique_ptr<MapBlock> MapSector::createBlankBlockNoInsert(s16 y)
 
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
 
-	return std::make_unique<MapBlock>(m_parent, blockpos_map, m_gamedef);
+	return std::make_unique<MapBlock>(blockpos_map, m_gamedef);
 }
 
 MapBlock *MapSector::createBlankBlock(s16 y)

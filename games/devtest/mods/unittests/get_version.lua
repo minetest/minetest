@@ -7,6 +7,10 @@ unittests.register("test_get_version", function()
     assert(type(version.proto_min) == "number")
     assert(type(version.proto_max) == "number")
     assert(version.proto_max >= version.proto_min)
-    assert(type(version.hash) == "string")
     assert(type(version.is_dev) == "boolean")
+    if version.is_dev then
+        assert(type(version.hash) == "string")
+    else
+        assert(version.hash == nil)
+    end
 end)

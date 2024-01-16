@@ -32,7 +32,6 @@
 // float, return the float.
 f32 u32Tof32Slow(u32 i)
 {
-	// clang-format off
 	int exp = (i >> 23) & 0xFF;
 	u32 sign = i & 0x80000000UL;
 	u32 imant = i & 0x7FFFFFUL;
@@ -56,7 +55,6 @@ f32 u32Tof32Slow(u32 i)
 
 	return sign ? -ldexpf((f32)(imant | 0x800000UL), exp - 150) :
 		ldexpf((f32)(imant | 0x800000UL), exp - 150);
-	// clang-format on
 }
 
 // Given a float, return an unsigned 32-bit integer representing the f32
@@ -94,7 +92,6 @@ u32 f32Tou32Slow(f32 f)
 // - The endianness of f32s and integers must match.
 FloatType getFloatSerializationType()
 {
-	// clang-format off
 	const f32 cf = -22220490.f;
 	const u32 cu = 0xCBA98765UL;
 	if (std::numeric_limits<f32>::is_iec559 && sizeof(cf) == 4 &&
@@ -132,5 +129,4 @@ FloatType getFloatSerializationType()
 	}
 
 	return FLOATTYPE_SLOW;
-	// clang-format on
 }

@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 5.8.0
+Minetest Lua Mainmenu API Reference 5.9.0
 =========================================
 
 Introduction
@@ -38,7 +38,9 @@ Functions
 ---------
 
 * `core.start()`
+  * start game session
 * `core.close()`
+  * exit engine
 * `core.get_min_supp_proto()`
   * returns the minimum supported network protocol version
 * `core.get_max_supp_proto()`
@@ -53,6 +55,10 @@ Functions
   * Android only. Shares file using the share popup
 * `core.get_version()` (possible in async calls)
   * returns current core version
+* `core.set_once(key, value)`:
+  * save a string value that persists even if menu is closed
+* `core.get_once(key)`:
+  * get a string value saved by above function, or `nil`
 
 
 
@@ -249,6 +255,10 @@ GUI
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      touch_controls = false,
   }
   ```
 

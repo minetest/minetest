@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Belarusian (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-11 12:10+0100\n"
+"POT-Creation-Date: 2023-12-03 18:48+0100\n"
 "PO-Revision-Date: 2019-11-19 23:04+0000\n"
 "Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
 "Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
@@ -6075,10 +6075,6 @@ msgid "The URL for the content repository"
 msgstr "URL рэпазіторыя"
 
 #: src/settings_translation_file.cpp
-msgid "The base node texture size used for world-aligned texture autoscaling."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "The dead zone of the joystick"
 msgstr "Ідэнтыфікатар джойсціка для выкарыстання"
@@ -6401,8 +6397,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Use bilinear filtering when scaling textures down."
-msgstr "Выкарыстоўваць білінейную фільтрацыю пры маштабаванні тэкстур."
+msgid "Use bilinear filtering when scaling textures."
+msgstr "Выкарыстоўваць трылінейную фільтрацыю пры маштабаванні тэкстур."
 
 #: src/settings_translation_file.cpp
 msgid "Use crosshair for touch screen"
@@ -6417,7 +6413,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Use mipmaps when scaling textures down. May slightly increase performance,\n"
+"Use mipmaps when scaling textures. May slightly increase performance,\n"
 "especially when using a high-resolution texture pack.\n"
 "Gamma-correct downscaling is not supported."
 msgstr ""
@@ -6435,7 +6431,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Use trilinear filtering when scaling textures down.\n"
+"Use trilinear filtering when scaling textures.\n"
 "If both bilinear and trilinear filtering are enabled, trilinear filtering\n"
 "is applied."
 msgstr ""
@@ -6651,6 +6647,30 @@ msgstr ""
 "з апаратуры ў праграмнае асяроддзе для маштабавання.\n"
 "Калі не, то вярнуцца да старога метаду маштабавання для відэадрайвераў,\n"
 "якія не падтрымліваюць перадачу тэкстур з апаратуры назад."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
+"can be blurred, so automatically upscale them with nearest-neighbor\n"
+"interpolation to preserve crisp pixels. This sets the minimum texture size\n"
+"for the upscaled textures; higher values look sharper, but require more\n"
+"memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
+"bilinear/trilinear/anisotropic filtering is enabled.\n"
+"This is also used as the base node texture size for world-aligned\n"
+"texture autoscaling."
+msgstr ""
+"Пры выкарыстанні білінейнага, трылінейнага або анізатропнага фільтра,\n"
+"тэкстуры малога памеру могуць быць расплывістыя, таму адбываецца\n"
+"аўтаматычнае маштабаванне іх з інтэрпаляцыяй па бліжэйшым суседзям,\n"
+"каб захаваць выразныя пікселі.\n"
+"Гэты параметр вызначае мінімальны памер для павялічаных тэкстур.\n"
+"Пры высокіх значэннях выглядае больш выразна, але патрабуе больш памяці.\n"
+"Рэкамендаванае значэнне - 2.\n"
+"Значэнне гэтага параметру вышэй за 1 можа не мець бачнага эфекту,\n"
+"калі не ўключаныя білінейная, трылінейная або анізатропная фільтрацыя.\n"
+"Таксама выкарыстоўваецца як памер тэкстуры базавага блока для\n"
+"сусветнага аўтамасштабавання тэкстур."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -8448,8 +8468,9 @@ msgstr "Ліміт адначасовых злучэнняў cURL"
 #~ msgid "Up"
 #~ msgstr "Уверх"
 
-#~ msgid "Use trilinear filtering when scaling textures."
-#~ msgstr "Выкарыстоўваць трылінейную фільтрацыю пры маштабаванні тэкстур."
+#, fuzzy
+#~ msgid "Use bilinear filtering when scaling textures down."
+#~ msgstr "Выкарыстоўваць білінейную фільтрацыю пры маштабаванні тэкстур."
 
 #~ msgid "Variation of hill height and lake depth on floatland smooth terrain."
 #~ msgstr ""
@@ -8486,31 +8507,6 @@ msgstr "Ліміт адначасовых злучэнняў cURL"
 
 #~ msgid "Waving water"
 #~ msgstr "Хваляванне вады"
-
-#, fuzzy
-#~ msgid ""
-#~ "When using bilinear/trilinear/anisotropic filters, low-resolution "
-#~ "textures\n"
-#~ "can be blurred, so automatically upscale them with nearest-neighbor\n"
-#~ "interpolation to preserve crisp pixels. This sets the minimum texture "
-#~ "size\n"
-#~ "for the upscaled textures; higher values look sharper, but require more\n"
-#~ "memory. Powers of 2 are recommended. This setting is ONLY applied if\n"
-#~ "bilinear/trilinear/anisotropic filtering is enabled.\n"
-#~ "This is also used as the base node texture size for world-aligned\n"
-#~ "texture autoscaling."
-#~ msgstr ""
-#~ "Пры выкарыстанні білінейнага, трылінейнага або анізатропнага фільтра,\n"
-#~ "тэкстуры малога памеру могуць быць расплывістыя, таму адбываецца\n"
-#~ "аўтаматычнае маштабаванне іх з інтэрпаляцыяй па бліжэйшым суседзям,\n"
-#~ "каб захаваць выразныя пікселі.\n"
-#~ "Гэты параметр вызначае мінімальны памер для павялічаных тэкстур.\n"
-#~ "Пры высокіх значэннях выглядае больш выразна, але патрабуе больш памяці.\n"
-#~ "Рэкамендаванае значэнне - 2.\n"
-#~ "Значэнне гэтага параметру вышэй за 1 можа не мець бачнага эфекту,\n"
-#~ "калі не ўключаныя білінейная, трылінейная або анізатропная фільтрацыя.\n"
-#~ "Таксама выкарыстоўваецца як памер тэкстуры базавага блока для\n"
-#~ "сусветнага аўтамасштабавання тэкстур."
 
 #, fuzzy
 #~ msgid ""

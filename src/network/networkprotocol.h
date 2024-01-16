@@ -219,9 +219,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		"start_time" added to TOCLIENT_PLAY_SOUND
 		place_param2 type change u8 -> optional<u8>
 		[scheduled bump for 5.8.0]
+	PROTOCOL VERSION 44:
+		AO_CMD_SET_BONE_POSITION extended
+		Add TOCLIENT_MOVE_PLAYER_REL
+		[scheduled bump for 5.9.0]
 */
 
-#define LATEST_PROTOCOL_VERSION 43
+#define LATEST_PROTOCOL_VERSION 44
 #define LATEST_PROTOCOL_VERSION_STRING TOSTRING(LATEST_PROTOCOL_VERSION)
 
 // Server's supported network protocol range
@@ -830,6 +834,11 @@ enum ToClientCommand
 		u8[4] starcolor (ARGB)
 		f32 scale
 		f32 day_opacity
+	*/
+
+	TOCLIENT_MOVE_PLAYER_REL = 0x5d,
+	/*
+		v3f added_pos
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

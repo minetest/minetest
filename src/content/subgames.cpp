@@ -64,17 +64,6 @@ void SubgameSpec::checkAndLog() const
 	}
 }
 
-
-struct GameFindPath
-{
-	std::string path;
-	bool user_specific;
-	GameFindPath(const std::string &path, bool user_specific) :
-			path(path), user_specific(user_specific)
-	{
-	}
-};
-
 std::string getSubgamePathEnv()
 {
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
@@ -85,38 +74,33 @@ SubgameSpec findSubgame(const std::string &id)
 {
 	if (id.empty())
 		return SubgameSpec();
-	std::string share = porting::path_share;
-	std::string user = porting::path_user;
 
 	// Get games install locations
 	Strfnd search_paths(getSubgamePathEnv());
 
 	// Get all possible paths fo game
-	std::vector<GameFindPath> find_paths;
+	std::vector<std::string> find_paths;
 	while (!search_paths.at_end()) {
 		std::string path = search_paths.next(PATH_DELIM);
 		path.append(DIR_DELIM).append(id);
-		find_paths.emplace_back(path, false);
+		find_paths.emplace_back(path);
 		path.append("_game");
-		find_paths.emplace_back(path, false);
+		find_paths.emplace_back(path);
 	}
 
 	std::string game_base = DIR_DELIM;
 	game_base = game_base.append("games").append(DIR_DELIM).append(id);
 	std::string game_suffixed = game_base + "_game";
-	find_paths.emplace_back(user + game_suffixed, true);
-	find_paths.emplace_back(user + game_base, true);
-	find_paths.emplace_back(share + game_suffixed, false);
-	find_paths.emplace_back(share + game_base, false);
+	find_paths.emplace_back(porting::path_user + game_suffixed);
+	find_paths.emplace_back(porting::path_user + game_base);
+	find_paths.emplace_back(porting::path_share + game_suffixed);
+	find_paths.emplace_back(porting::path_share + game_base);
 
 	// Find game directory
 	std::string game_path;
-	bool user_game = true; // Game is in user's directory
-	for (const GameFindPath &find_path : find_paths) {
-		const std::string &try_path = find_path.path;
+	for (const std::string &try_path : find_paths) {
 		if (fs::PathExists(try_path)) {
 			game_path = try_path;
-			user_game = find_path.user_specific;
 			break;
 		}
 	}
@@ -124,13 +108,19 @@ SubgameSpec findSubgame(const std::string &id)
 	if (game_path.empty())
 		return SubgameSpec();
 
+	return subgameFromDir(game_path);
+}
+
+SubgameSpec subgameFromDir(const std::string &game_path) {
 	std::string gamemod_path = game_path + DIR_DELIM + "mods";
 
 	// Find mod directories
 	std::unordered_map<std::string, std::string> mods_paths;
-	mods_paths["mods"] = user + DIR_DELIM + "mods";
-	if (!user_game && user != share)
-		mods_paths["share"] = share + DIR_DELIM + "mods";
+	mods_paths["mods"] = porting::path_user + DIR_DELIM + "mods";
+	// Game is in user's directory
+	bool user_game = (game_path.compare(0, porting::path_user.size(), porting::path_user) == 0);
+	if (!user_game && porting::path_user != porting::path_share)
+		mods_paths["share"] = porting::path_share + DIR_DELIM + "mods";
 
 	for (const std::string &mod_path : getEnvModPaths()) {
 		mods_paths[fs::AbsolutePath(mod_path)] = mod_path;
@@ -140,6 +130,8 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string conf_path = game_path + DIR_DELIM + "game.conf";
 	Settings conf;
 	conf.readConfigFile(conf_path.c_str());
+
+	std::string id = fs::GetFilenameFromPath(game_path.c_str());
 
 	std::string game_title;
 	if (conf.exists("title"))
@@ -344,7 +336,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
+std::string loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 		const SubgameSpec &gamespec, bool create_world)
 {
 	std::string final_path = path;
@@ -422,6 +414,7 @@ void loadGameConfAndInitWorld(const std::string &path, const std::string &name,
 	// The Settings object is no longer needed for created worlds
 	if (new_game_settings)
 		delete game_settings;
+	return final_path;
 }
 
 std::vector<std::string> getEnvModPaths()

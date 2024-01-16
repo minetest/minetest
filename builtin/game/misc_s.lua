@@ -64,6 +64,13 @@ function core.encode_png(width, height, data, compression)
 		error("Incorrect type for 'height', expected number, got " .. type(height))
 	end
 
+	if width < 1 then
+		error("Incorrect value for 'width', must be at least 1")
+	end
+	if height < 1 then
+		error("Incorrect value for 'height', must be at least 1")
+	end
+
 	local expected_byte_count = width * height * 4
 
 	if type(data) ~= "table" and type(data) ~= "string" then

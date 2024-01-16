@@ -335,12 +335,14 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 	s16 active_block_range,
 	s16 active_object_range,
 	std::set<v3s16> &blocks_removed,
-	std::set<v3s16> &blocks_added)
+	std::set<v3s16> &blocks_added,
+	std::set<v3s16> &extra_blocks_added)
 {
 	/*
 		Create the new list
 	*/
 	std::set<v3s16> newlist = m_forceloaded_list;
+	std::set<v3s16> extralist;
 	m_abm_list = m_forceloaded_list;
 	for (const PlayerSAO *playersao : active_players) {
 		v3s16 pos = getNodeBlockPos(floatToInt(playersao->getBasePosition(), BS));
@@ -360,28 +362,55 @@ void ActiveBlockList::update(std::vector<PlayerSAO*> &active_players,
 				playersao->getEyePosition(),
 				camera_dir,
 				playersao->getFov(),
-				newlist);
+				extralist);
 		}
-	}
-
-	/*
-		Find out which blocks on the old list are not on the new list
-	*/
-	// Go through old list
-	for (v3s16 p : m_list) {
-		// If not on new list, it's been removed
-		if (newlist.find(p) == newlist.end())
-			blocks_removed.insert(p);
 	}
 
 	/*
 		Find out which blocks on the new list are not on the old list
 	*/
-	// Go through new list
 	for (v3s16 p : newlist) {
+		// also remove duplicate blocks from the extra list
+		extralist.erase(p);
 		// If not on old list, it's been added
 		if (m_list.find(p) == m_list.end())
 			blocks_added.insert(p);
+	}
+	/*
+		Find out which blocks on the extra list are not on the old list
+	*/
+	for (v3s16 p : extralist) {
+		// also make sure newlist has all blocks
+		newlist.insert(p);
+		// If not on old list, it's been added
+		if (m_list.find(p) == m_list.end())
+			extra_blocks_added.insert(p);
+	}
+
+	/*
+		Find out which blocks on the old list are not on the new + extra list
+	*/
+	std::set_difference(m_list.begin(), m_list.end(), newlist.begin(), newlist.end(),
+			std::inserter(blocks_removed, blocks_removed.end()));
+
+	/*
+		Do some least-effort sanity checks to hopefully catch code bugs.
+	*/
+	assert(newlist.size() >= extralist.size());
+	assert(blocks_removed.size() <= m_list.size());
+	if (!blocks_added.empty()) {
+		assert(newlist.count(*blocks_added.begin()) > 0);
+		assert(blocks_removed.count(*blocks_added.begin()) == 0);
+	}
+	if (!extra_blocks_added.empty()) {
+		assert(newlist.count(*extra_blocks_added.begin()) > 0);
+		assert(extralist.count(*extra_blocks_added.begin()) > 0);
+		assert(blocks_added.count(*extra_blocks_added.begin()) == 0);
+	}
+	if (!blocks_removed.empty()) {
+		assert(newlist.count(*blocks_removed.begin()) == 0);
+		assert(extralist.count(*blocks_removed.begin()) == 0);
+		assert(m_list.count(*blocks_removed.begin()) > 0);
 	}
 
 	/*
@@ -782,6 +811,8 @@ struct ActiveABM
 	s16 max_y;
 };
 
+#define CONTENT_TYPE_CACHE_MAX 64
+
 class ABMHandler
 {
 private:
@@ -892,7 +923,8 @@ public:
 		// Check the content type cache first
 		// to see whether there are any ABMs
 		// to be run at all for this block.
-		if (block->contents_cached) {
+		if (!block->contents.empty()) {
+			assert(!block->do_not_cache_contents); // invariant
 			blocks_cached++;
 			bool run_abms = false;
 			for (content_t c : block->contents) {
@@ -903,9 +935,6 @@ public:
 			}
 			if (!run_abms)
 				return;
-		} else {
-			// Clear any caching
-			block->contents.clear();
 		}
 		blocks_scanned++;
 
@@ -915,6 +944,8 @@ public:
 		u32 active_object_count = this->countObjects(block, map, active_object_count_wider);
 		m_env->m_added_objects = 0;
 
+		bool want_contents_cached = block->contents.empty() && !block->do_not_cache_contents;
+
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
@@ -922,13 +953,17 @@ public:
 		{
 			MapNode n = block->getNodeNoCheck(p0);
 			content_t c = n.getContent();
+
 			// Cache content types as we go
-			if (!block->contents_cached && !block->do_not_cache_contents) {
-				block->contents.insert(c);
-				if (block->contents.size() > 64) {
+			if (want_contents_cached && !CONTAINS(block->contents, c)) {
+				if (block->contents.size() >= CONTENT_TYPE_CACHE_MAX) {
 					// Too many different nodes... don't try to cache
+					want_contents_cached = false;
 					block->do_not_cache_contents = true;
 					block->contents.clear();
+					block->contents.shrink_to_fit();
+				} else {
+					block->contents.push_back(c);
 				}
 			}
 
@@ -992,7 +1027,6 @@ public:
 					break;
 			}
 		}
-		block->contents_cached = !block->do_not_cache_contents;
 	}
 };
 
@@ -1398,8 +1432,9 @@ void ServerEnvironment::step(float dtime)
 				g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
+		std::set<v3s16> extra_blocks_added;
 		m_active_blocks.update(players, active_block_range, active_object_range,
-			blocks_removed, blocks_added);
+			blocks_removed, blocks_added, extra_blocks_added);
 
 		/*
 			Handle removed blocks
@@ -1428,6 +1463,17 @@ void ServerEnvironment::step(float dtime)
 				// on the next cycle. To minimize the latency of objects being
 				// activated we could remember the blocks pending activating
 				// and activate them instantly as soon as they're loaded.
+				m_active_blocks.remove(p);
+				continue;
+			}
+
+			activateBlock(block);
+		}
+
+		for (const v3s16 &p: extra_blocks_added) {
+			// only activate if the block is already loaded
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if (!block) {
 				m_active_blocks.remove(p);
 				continue;
 			}

@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TestFileSys : public TestBase
 {
 public:
-	TestFileSys() { TestManager::registerTestModule(this); }
-	const char *getName() { return "TestFileSys"; }
+	TestFileSys() {	TestManager::registerTestModule(this); }
+	const char *getName() {	return "TestFileSys"; }
 
 	void runTests(IGameDef *gamedef);
 
@@ -68,13 +68,14 @@ std::string p(std::string path)
 		}
 	}
 
-#ifdef _WIN32
+	#ifdef _WIN32
 	if (path[0] == '\\')
 		path = "C:" + path;
-#endif
+	#endif
 
 	return path;
 }
+
 
 void TestFileSys::testIsDirDelimiter()
 {
@@ -88,22 +89,23 @@ void TestFileSys::testIsDirDelimiter()
 #endif
 }
 
+
 void TestFileSys::testPathStartsWith()
 {
 	const int numpaths = 12;
 	std::string paths[numpaths] = {
-			"",
-			p("/"),
-			p("/home/user/minetest"),
-			p("/home/user/minetest/bin"),
-			p("/home/user/.minetest"),
-			p("/tmp/dir/file"),
-			p("/tmp/file/"),
-			p("/tmP/file"),
-			p("/tmp"),
-			p("/tmp/dir"),
-			p("/home/user2/minetest/worlds"),
-			p("/home/user2/minetest/world"),
+		"",
+		p("/"),
+		p("/home/user/minetest"),
+		p("/home/user/minetest/bin"),
+		p("/home/user/.minetest"),
+		p("/tmp/dir/file"),
+		p("/tmp/file/"),
+		p("/tmP/file"),
+		p("/tmp"),
+		p("/tmp/dir"),
+		p("/home/user2/minetest/worlds"),
+		p("/home/user2/minetest/world"),
 	};
 	/*
 		expected fs::PathStartsWith results
@@ -115,50 +117,54 @@ void TestFileSys::testPathStartsWith()
 			FILESYS_CASE_INSENSITIVE is true
 	*/
 	int expected_results[numpaths][numpaths] = {
-			{1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-			{1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-			{1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0},
-			{1, 1, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0},
-			{1, 1, 0, 0, 0, 0, 4, 1, 4, 0, 0, 0},
-			{1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-			{1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0},
-			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-			{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+		{1,2,0,0,0,0,0,0,0,0,0,0},
+		{1,1,0,0,0,0,0,0,0,0,0,0},
+		{1,1,1,0,0,0,0,0,0,0,0,0},
+		{1,1,1,1,0,0,0,0,0,0,0,0},
+		{1,1,0,0,1,0,0,0,0,0,0,0},
+		{1,1,0,0,0,1,0,0,1,1,0,0},
+		{1,1,0,0,0,0,1,4,1,0,0,0},
+		{1,1,0,0,0,0,4,1,4,0,0,0},
+		{1,1,0,0,0,0,0,0,1,0,0,0},
+		{1,1,0,0,0,0,0,0,1,1,0,0},
+		{1,1,0,0,0,0,0,0,0,0,1,0},
+		{1,1,0,0,0,0,0,0,0,0,0,1},
 	};
 
 	for (int i = 0; i < numpaths; i++)
-		for (int j = 0; j < numpaths; j++) {
-			/*verbosestream<<"testing fs::PathStartsWith(\""
-				<<paths[i]<<"\", \""
-				<<paths[j]<<"\")"<<std::endl;*/
-			bool starts = fs::PathStartsWith(paths[i], paths[j]);
-			int expected = expected_results[i][j];
-			if (expected == 0) {
-				UASSERT(starts == false);
-			} else if (expected == 1) {
-				UASSERT(starts == true);
-			}
-#ifdef _WIN32
-			else if (expected == 2) {
-				UASSERT(starts == false);
-			} else if (expected == 3) {
-				UASSERT(starts == true);
-			}
-#else
-			else if (expected == 2) {
-				UASSERT(starts == true);
-			} else if (expected == 3) {
-				UASSERT(starts == false);
-			}
-#endif
-			else if (expected == 4) {
-				UASSERT(starts == (bool)FILESYS_CASE_INSENSITIVE);
-			}
+	for (int j = 0; j < numpaths; j++){
+		/*verbosestream<<"testing fs::PathStartsWith(\""
+			<<paths[i]<<"\", \""
+			<<paths[j]<<"\")"<<std::endl;*/
+		bool starts = fs::PathStartsWith(paths[i], paths[j]);
+		int expected = expected_results[i][j];
+		if(expected == 0){
+			UASSERT(starts == false);
 		}
+		else if(expected == 1){
+			UASSERT(starts == true);
+		}
+		#ifdef _WIN32
+		else if(expected == 2){
+			UASSERT(starts == false);
+		}
+		else if(expected == 3){
+			UASSERT(starts == true);
+		}
+		#else
+		else if(expected == 2){
+			UASSERT(starts == true);
+		}
+		else if(expected == 3){
+			UASSERT(starts == false);
+		}
+		#endif
+		else if(expected == 4){
+			UASSERT(starts == (bool)FILESYS_CASE_INSENSITIVE);
+		}
+	}
 }
+
 
 void TestFileSys::testRemoveLastPathComponent()
 {
@@ -196,6 +202,7 @@ void TestFileSys::testRemoveLastPathComponent()
 	UASSERT(removed == p("home/user/minetest/bin/../worlds/world1"));
 }
 
+
 void TestFileSys::testRemoveLastPathComponentWithTrailingDelimiter()
 {
 	std::string path, result, removed;
@@ -231,6 +238,7 @@ void TestFileSys::testRemoveLastPathComponentWithTrailingDelimiter()
 	UASSERT(removed == p("home/user/minetest/bin/../worlds/world1"));
 }
 
+
 void TestFileSys::testRemoveRelativePathComponent()
 {
 	std::string path, result;
@@ -258,12 +266,14 @@ void TestFileSys::testRemoveRelativePathComponent()
 	UASSERT(result == p("/a/e"));
 }
 
+
 void TestFileSys::testSafeWriteToFile()
 {
 	const std::string dest_path = fs::TempPath() + DIR_DELIM + "testSafeWriteToFile.txt";
-	fs::safeWriteToFile(dest_path, "test");
+	const std::string test_data("hello\0world", 11);
+	fs::safeWriteToFile(dest_path, test_data);
 	UASSERT(fs::PathExists(dest_path));
 	std::string contents_actual;
 	UASSERT(fs::ReadFile(dest_path, contents_actual));
-	UASSERT(contents_actual == "test");
+	UASSERT(contents_actual == test_data);
 }

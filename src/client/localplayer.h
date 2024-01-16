@@ -129,6 +129,11 @@ public:
 		m_position = position;
 		m_sneak_node_exists = false;
 	}
+	inline void addPosition(const v3f &added_pos)
+	{
+		m_position += added_pos;
+		m_sneak_node_exists = false;
+	}
 
 	v3f getPosition() const { return m_position; }
 

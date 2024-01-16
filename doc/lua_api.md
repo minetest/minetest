@@ -5278,6 +5278,8 @@ Utilities
       -- liquid_fluidity, liquid_fluidity_smooth, liquid_sink,
       -- acceleration_default, acceleration_air (5.8.0)
       physics_overrides_v2 = true,
+      -- In HUD definitions the field `type` is used and `hud_elem_type` is deprecated (5.9.0)
+      hud_def_type_field = true,
   }
   ```
 
@@ -5350,6 +5352,12 @@ Utilities
       -- HUD Scaling multiplier
       -- Equal to the setting `hud_scaling` multiplied by `dpi / 96`
       real_hud_scaling = 1,
+
+      -- Whether the touchscreen controls are enabled.
+      -- Usually (but not always) `true` on Android.
+      -- Requires at least Minetest 5.9.0 on the client. For older clients, it
+      -- is always set to `false`.
+      touch_controls = false,
   }
   ```
 
@@ -5412,9 +5420,8 @@ Utilities
     * `compression`: Optional zlib compression level, number in range 0 to 9.
   The data is one-dimensional, starting in the upper left corner of the image
   and laid out in scanlines going from left to right, then top to bottom.
-  Please note that it's not safe to use string.char to generate raw data,
-  use `colorspec_to_bytes` to generate raw RGBA values in a predictable way.
-  The resulting PNG image is always 32-bit. Palettes are not supported at the moment.
+  You can use `colorspec_to_bytes` to generate raw RGBA values.
+  Palettes are not supported at the moment.
   You may use this to procedurally generate textures during server init.
 * `minetest.urlencode(str)`: Encodes non-unreserved URI characters by a
   percent sign followed by two hex digits. See
@@ -5920,7 +5927,7 @@ Environment access
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was
-  created.
+  created. The time is not available (`nil`) before the first server step.
 * `minetest.get_day_count()`: returns number days elapsed since world was
   created.
     * accounts for time changes.
@@ -7458,15 +7465,20 @@ child will follow movement and rotation of that bone.
     * Sets the position of the object.
     * No-op if object is attached.
     * `pos` is a vector `{x=num, y=num, z=num}`
+* `add_pos(pos)`:
+    * Changes position by adding to the current position.
+    * No-op if object is attached.
+    * `pos` is a vector `{x=num, y=num, z=num}`.
+    * In comparison to using `set_pos`, `add_pos` will avoid synchronization problems.
 * `get_velocity()`: returns the velocity, a vector.
 * `add_velocity(vel)`
     * Changes velocity by adding to the current velocity.
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
-    * In comparison to using get_velocity, adding the velocity and then using
-      set_velocity, add_velocity is supposed to avoid synchronization problems.
-      Additionally, players also do not support set_velocity.
+    * In comparison to using `get_velocity`, adding the velocity and then using
+      `set_velocity`, `add_velocity` is supposed to avoid synchronization problems.
+      Additionally, players also do not support `set_velocity`.
     * If object is a player:
-        * Does not apply during free_move.
+        * Does not apply during `free_move`.
         * Note that since the player speed is normalized at each move step,
           increasing e.g. Y velocity beyond what would usually be achieved
           (see: physics overrides) will cause existing X/Z velocity to be reduced.
@@ -7550,17 +7562,32 @@ child will follow movement and rotation of that bone.
     object.
 * `set_detach()`: Detaches object. No-op if object was not attached.
 * `set_bone_position([bone, position, rotation])`
-    * `bone`: string. Default is `""`, the root bone
-    * `position`: `{x=num, y=num, z=num}`, relative, `default {x=0, y=0, z=0}`
-    * `rotation`: `{x=num, y=num, z=num}`, default `{x=0, y=0, z=0}`
-* `get_bone_position(bone)`:
-    * returns bone parameters previously set by `set_bone_position`
-    * returns `position, rotation` of the specified bone (as vectors)
-    * note: position is relative to the object
-* `set_properties(object property table)`:
-    * set a number of object properties in the given table
-    * only properties listed in the table will be changed
-    * see the 'Object properties' section for details
+	* Shorthand for `set_bone_override(bone, {position = position, rotation = rotation:apply(math.rad)})` using absolute values.
+	* **Note:** Rotation is in degrees, not radians.
+	* **Deprecated:** Use `set_bone_override` instead.
+* `get_bone_position(bone)`: returns the previously set position and rotation of the bone
+	* Shorthand for `get_bone_override(bone).position.vec, get_bone_override(bone).rotation.vec:apply(math.deg)`.
+	* **Note:** Returned rotation is in degrees, not radians.
+	* **Deprecated:** Use `get_bone_override` instead.
+* `set_bone_override(bone, override)`
+    * `bone`: string
+    * `override`: `{ position = property, rotation = property, scale = property }` or `nil`
+        * `property`: `{ vec = vector, interpolation = 0, absolute = false}` or `nil`;
+            * `vec` is in the same coordinate system as the model, and in degrees for rotation
+        * `property = nil` is equivalent to no override on that property
+        * `absolute`: If set to `false`, the override will be relative to the animated property:
+            * Transposition in the case of `position`;
+            * Composition in the case of `rotation`;
+            * Multiplication in the case of `scale`
+        * `interpolation`: Old and new values are interpolated over this timeframe (in seconds)
+    * `override = nil` (including omission) is shorthand for `override = {}` which clears the override
+    * **Note:** Unlike `set_bone_position`, the rotation is in radians, not degrees.
+    * Compatibility note: Clients prior to 5.9.0 only support absolute position and rotation.
+      All values are treated as absolute and are set immediately (no interpolation).
+* `get_bone_override(bone)`: returns `override` in the above format
+	* **Note:** Unlike `get_bone_position`, the returned rotation is in radians, not degrees.
+* `get_bone_overrides()`: returns all bone overrides as table `{[bonename] = override, ...}`
+* `set_properties(object property table)`
 * `get_properties()`: returns a table of all object properties
 * `is_player()`: returns true for players, false otherwise
 * `get_nametag_attributes()`
@@ -7770,7 +7797,7 @@ child will follow movement and rotation of that bone.
 * `hud_change(id, stat, value)`: change a value of a previously added HUD
   element.
     * `stat` supports the same keys as in the hud definition table except for
-      `"hud_elem_type"`.
+      `"type"` (or the deprecated `"hud_elem_type"`).
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags of player.
     * `flags`: A table with the following fields set to boolean values
@@ -8001,9 +8028,8 @@ child will follow movement and rotation of that bone.
     * Passing no arguments resets lighting to its default values.
     * `light_definition` is a table with the following optional fields:
       * `saturation` sets the saturation (vividness; default: `1.0`).
-          values > 1 increase the saturation
-          values in [0,1) decrease the saturation
-            * This value has no effect on clients who have the "Tone Mapping" shader disabled.
+        * values > 1 increase the saturation
+        * values in [0,1] decrease the saturation
       * `shadows` is a table that controls ambient shadows
         * `intensity` sets the intensity of the shadows from 0 (no shadows, default) to 1 (blackness)
             * This value has no effect on clients who have the "Dynamic Shadows" shader disabled.
@@ -8015,6 +8041,9 @@ child will follow movement and rotation of that bone.
         * `speed_dark_bright` set the speed of adapting to bright light (default: `1000.0`)
         * `speed_bright_dark` set the speed of adapting to dark scene (default: `1000.0`)
         * `center_weight_power` set the power factor for center-weighted luminance measurement (default: `1.0`)
+      * `volumetric_light`: is a table that controls volumetric light (a.k.a. "godrays")
+        * `strength`: sets the strength of the volumetric light effect from 0 (off, default) to 1 (strongest)
+           * This value has no effect on clients who have the "Volumetric Lighting" or "Bloom" shaders disabled.
 
 * `get_lighting()`: returns the current state of lighting for the player.
     * Result is a table with the same fields as `light_definition` in `set_lighting`.
@@ -8837,8 +8866,8 @@ Used by `minetest.register_node`.
     --           depending on the alpha channel being below/above 50% in value
     -- * "blend": The alpha channel specifies how transparent a given pixel
     --            of the rendered node is
-    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid;
-    -- "clip" otherwise.
+    -- The default is "opaque" for drawtypes normal, liquid and flowingliquid,
+    -- mesh and nodebox or "clip" otherwise.
     -- If set to a boolean value (deprecated): true either sets it to blend
     -- or clip, false sets it to clip or opaque mode depending on the drawtype.
 
@@ -10027,9 +10056,14 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 
 ```lua
 {
-    hud_elem_type = "image",
+    type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
     -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- If undefined "text" will be used.
+
+    hud_elem_type = "image",
+    -- Deprecated, same as `type`.
+    -- In case both are specified `type` will be used.
 
     position = {x=0.5, y=0.5},
     -- Top left corner position of element
