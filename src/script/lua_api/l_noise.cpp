@@ -425,6 +425,17 @@ int LuaPseudoRandom::l_next(lua_State *L)
 	return 1;
 }
 
+int LuaPseudoRandom::l_get_state(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPseudoRandom *o = checkObject<LuaPseudoRandom>(L, 1);
+	PseudoRandom &pseudo = o->m_pseudo;
+	int val = pseudo.getState();
+	lua_pushinteger(L, val);
+	return 1;
+}
+
 
 int LuaPseudoRandom::create_object(lua_State *L)
 {
@@ -462,6 +473,7 @@ void LuaPseudoRandom::Register(lua_State *L)
 const char LuaPseudoRandom::className[] = "PseudoRandom";
 const luaL_Reg LuaPseudoRandom::methods[] = {
 	luamethod(LuaPseudoRandom, next),
+	luamethod(LuaPseudoRandom, get_state),
 	{0,0}
 };
 
@@ -496,6 +508,45 @@ int LuaPcgRandom::l_rand_normal_dist(lua_State *L)
 	return 1;
 }
 
+int LuaPcgRandom::l_get_state(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPcgRandom *o = checkObject<LuaPcgRandom>(L, 1);
+
+	u64 state[2];
+	o->m_rnd.getState(state);
+
+	std::ostringstream oss;
+	oss << std::hex << std::setw(16) << std::setfill('0')
+		<< state[0] << state[1];
+
+	lua_pushstring(L, oss.str().c_str());
+	return 1;
+}
+
+int LuaPcgRandom::l_set_state(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPcgRandom *o = checkObject<LuaPcgRandom>(L, 1);
+
+	std::string l_string = readParam<std::string>(L, 2);
+	if (l_string.size() != 32) {
+		throw LuaError("PcgRandom:set_state: Expected hex string of 32 characters");
+	}
+
+	std::istringstream s_state_0(l_string.substr(0, 16));
+	std::istringstream s_state_1(l_string.substr(16, 16));
+
+	u64 state[2];
+	s_state_0 >> std::hex >> state[0];
+	s_state_1 >> std::hex >> state[1];
+	
+	o->m_rnd.setState(state);
+	
+	return 0;
+}
 
 int LuaPcgRandom::create_object(lua_State *L)
 {
@@ -536,6 +587,8 @@ const char LuaPcgRandom::className[] = "PcgRandom";
 const luaL_Reg LuaPcgRandom::methods[] = {
 	luamethod(LuaPcgRandom, next),
 	luamethod(LuaPcgRandom, rand_normal_dist),
+	luamethod(LuaPcgRandom, get_state),
+	luamethod(LuaPcgRandom, set_state),
 	{0,0}
 };
 
