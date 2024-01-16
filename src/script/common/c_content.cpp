@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen/mg_schematic.h"
 #include "noise.h"
 #include "server/player_sao.h"
+#include "server/servernetwork.h"
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
@@ -2253,4 +2254,33 @@ void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied)
 		lua_rawseti(L, -2, i++);
 	}
 	lua_setfield(L, -2, "unsatisfied_depends");
+}
+
+/******************************************************************************/
+void read_anotherserver(lua_State *L, int index, AnotherServer &server)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	if (lua_isnil(L, index))
+		return;
+
+	if (lua_istable(L, index)) {
+		getstringfield(L, index, "address", server.address_string);
+		getintfield<u16>(L, index, "port", server.port);
+		getstringfield(L, index, "auth_send", server.auth_send);
+		getstringfield(L, index, "auth_receive", server.auth_receive);
+	}
+}
+
+void push_anotherserver(lua_State *L, const AnotherServer &server)
+{
+	lua_createtable(L, 0, 3);
+	lua_pushstring(L, server.address_string.c_str());
+	lua_setfield(L, -2, "address");
+	lua_pushnumber(L, server.port);
+	lua_setfield(L, -2, "port");
+	lua_pushstring(L, server.auth_send.c_str());
+	lua_setfield(L, -2, "auth_send");
+	lua_pushstring(L, server.auth_receive.c_str());
+	lua_setfield(L, -2, "auth_receive");
 }

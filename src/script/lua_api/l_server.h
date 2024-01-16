@@ -121,6 +121,14 @@ private:
 	// serialize_roundtrip(obj)
 	static int l_serialize_roundtrip(lua_State *L);
 
+	// set_another_server(name, server_spec)
+	static int l_set_another_server(lua_State *L);
+
+	// get_another_server(name)
+	static int l_get_another_server(lua_State *L);
+
+	// send_msg_another_server(name, msg)
+	static int l_send_msg_another_server(lua_State *L);
 public:
 	static void Initialize(lua_State *L, int top);
 	static void InitializeAsync(lua_State *L, int top);

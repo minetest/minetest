@@ -122,6 +122,7 @@ with a buffer in the receiving and transmitting end.
 #define SEQNUM_MAX 65535
 
 class NetworkPacket;
+class Server;
 
 namespace con
 {
@@ -491,8 +492,9 @@ class Peer {
 	public:
 		friend class PeerHelper;
 
-		Peer(Address address_,session_t id_,Connection* connection) :
+		Peer(const Address address_, session_t id_, bool another_server_, Connection* connection) :
 			id(id_),
+			another_server(another_server_),
 			m_connection(connection),
 			address(address_),
 			m_last_timeout_check(porting::getTimeMs())
@@ -506,6 +508,7 @@ class Peer {
 
 		// Unique id of the peer
 		const session_t id;
+		const bool another_server;
 
 		void Drop();
 
@@ -608,7 +611,7 @@ public:
 	friend class ConnectionSendThread;
 	friend class Connection;
 
-	UDPPeer(u16 a_id, Address a_address, Connection* connection);
+	UDPPeer(u16 a_id, const Address a_address, bool another_server, Connection* connection);
 	virtual ~UDPPeer() = default;
 
 	void PutReliableSendCommand(ConnectionCommandPtr &c,
@@ -672,6 +675,7 @@ struct ConnectionEvent
 {
 	const ConnectionEventType type;
 	session_t peer_id = 0;
+	bool another_server = false;
 	Buffer<u8> data;
 	bool timeout = false;
 	Address address;
@@ -681,8 +685,8 @@ struct ConnectionEvent
 
 	static ConnectionEventPtr create(ConnectionEventType type);
 	static ConnectionEventPtr dataReceived(session_t peer_id, const Buffer<u8> &data);
-	static ConnectionEventPtr peerAdded(session_t peer_id, Address address);
-	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address);
+	static ConnectionEventPtr peerAdded(session_t peer_id, Address address, bool another_server);
+	static ConnectionEventPtr peerRemoved(session_t peer_id, bool is_timeout, Address address, bool another_server);
 	static ConnectionEventPtr bindFailed();
 
 	const char *describe() const;
@@ -699,6 +703,7 @@ class Connection
 public:
 	friend class ConnectionSendThread;
 	friend class ConnectionReceiveThread;
+	friend class ::Server;
 
 	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
 			PeerHandler *peerhandler);
@@ -728,10 +733,10 @@ public:
 
 protected:
 	PeerHelper getPeerNoEx(session_t peer_id);
-	u16   lookupPeer(Address& sender);
+	u16   lookupPeer(const Address& sender);
 
-	u16 createPeer(Address& sender, MTProtocols protocol, int fd);
-	UDPPeer*  createServerPeer(Address& sender);
+	u16 createPeer(const Address& sender, MTProtocols protocol, int fd, bool another_server);
+	UDPPeer*  createServerPeer(const Address& sender);
 	bool deletePeer(session_t peer_id, bool timeout);
 
 	void SetPeerID(session_t id) { m_peer_id = id; }

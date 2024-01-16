@@ -260,3 +260,20 @@ void ScriptApiServer::on_dynamic_media_added(u32 token, const char *playername)
 	lua_pushstring(L, playername);
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
 }
+
+// on receive server message
+void ScriptApiServer::on_server_receive_msg(const std::string &name, const std::string &msg)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_server_receive_msgs
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_server_receive_message");
+	// Call callbacks
+	// param 1
+	lua_pushstring(L, name.c_str());
+	// param 2
+	lua_pushstring(L, msg.c_str());
+
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
+}

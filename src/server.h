@@ -34,7 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include "util/metricsbackend.h"
 #include "serverenvironment.h"
+#include "server/servernetwork.h"
 #include "clientiface.h"
+#include "serveriface.h"
 #include "chatmessage.h"
 #include "sound.h"
 #include "translation.h"
@@ -198,6 +200,7 @@ public:
 	void handleCommand_SrpBytesM(NetworkPacket* pkt);
 	void handleCommand_HaveMedia(NetworkPacket *pkt);
 	void handleCommand_UpdateClientInfo(NetworkPacket *pkt);
+	void handleCommand_ServerMsg(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -315,6 +318,7 @@ public:
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
+	ServerNetwork & getServerNetwork() { return m_network; }
 	v3f findSpawnPos();
 
 	u32 hudAdd(RemotePlayer *player, HudElement *element);
@@ -373,6 +377,8 @@ public:
 			size_t wanted_mode);
 
 	void sendDetachedInventories(session_t peer_id, bool incremental);
+
+	void SendServerMsg(const AnotherServer &server, const std::string &message);
 
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
@@ -445,6 +451,8 @@ private:
 	typedef std::unordered_map<std::pair<v3s16, u16>, std::string, SBCHash> SerializedBlockCache;
 
 	void init();
+
+	void SendToServer(session_t peer_id, NetworkPacket *pkt);
 
 	void SendMovement(session_t peer_id);
 	void SendHP(session_t peer_id, u16 hp, bool effect);
@@ -552,6 +560,7 @@ private:
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(session_t peer_id, ClientState state_min = CS_Active);
 	RemoteClient* getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
+	RemoteServer* getServerNoEx(session_t peer_id);
 
 	// When called, environment mutex should be locked
 	std::string getPlayerName(session_t peer_id);
@@ -596,6 +605,9 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
+
+  // Server network
+	ServerNetwork m_network;
 
 	// Reference to the server map until ServerEnvironment is initialized
 	// after that this variable must be a nullptr
@@ -650,6 +662,11 @@ private:
 	 	Client interface
 	*/
 	ClientInterface m_clients;
+
+	/*
+	  Server interface
+	*/
+	ServerInterface m_servers;
 
 	/*
 		Peer change queue.

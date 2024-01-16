@@ -415,6 +415,7 @@ set(common_SRCS
 	serialization.cpp
 	server.cpp
 	serverenvironment.cpp
+	serveriface.cpp
 	serverlist.cpp
 	settings.cpp
 	staticobject.cpp

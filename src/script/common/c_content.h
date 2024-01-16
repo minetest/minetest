@@ -69,6 +69,7 @@ struct NoiseParams;
 class Schematic;
 class ServerActiveObject;
 struct collisionMoveResult;
+struct AnotherServer;
 
 extern struct EnumString es_TileAnimationType[];
 
@@ -210,3 +211,6 @@ bool read_hud_change           (lua_State *L, HudElementStat &stat, HudElement *
 void push_collision_move_result(lua_State *L, const collisionMoveResult &res);
 
 void push_mod_spec(lua_State *L, const ModSpec &spec, bool include_unsatisfied);
+
+void read_anotherserver(lua_State *L, int index, AnotherServer &server);
+void push_anotherserver(lua_State *L, const AnotherServer &server);

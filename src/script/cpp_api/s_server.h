@@ -55,6 +55,9 @@ public:
 	void freeDynamicMediaCallback(u32 token);
 	void on_dynamic_media_added(u32 token, const char *playername);
 
+	// Called when message from another server is received
+	void on_server_receive_msg(const std::string &name, const std::string &msg);
+
 private:
 	void getAuthHandler();
 	void readPrivileges(int index, std::set<std::string> &result);
