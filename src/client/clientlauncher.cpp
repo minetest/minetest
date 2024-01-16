@@ -215,7 +215,8 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		m_rendering_engine->get_raw_device()->
 			setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
 			L" " + utf8_to_wide(g_version_hash) +
-			L" [" + wstrgettext("Main Menu") + L"]").c_str());
+			L" [" + wstrgettext("Main Menu") + L"]" +
+			L" [" + m_rendering_engine->getVideoDriver()->getName() + L"]"	).c_str());
 
 		try {	// This is used for catching disconnects
 
