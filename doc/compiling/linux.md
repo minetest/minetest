@@ -30,7 +30,7 @@ For openSUSE users:
 
 For Arch users:
 
-    sudo pacman -S base-devel libcurl-gnutls cmake libxi libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext
+    sudo pacman -S --needed base-devel libcurl-gnutls cmake libxi libpng sqlite libogg libvorbis openal freetype2 jsoncpp gmp luajit leveldb ncurses zstd gettext
 
 For Alpine users:
 

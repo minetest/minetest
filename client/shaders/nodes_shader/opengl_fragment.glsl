@@ -161,7 +161,7 @@ float getPenumbraRadius(sampler2D shadowsampler, vec2 smTexCoord, float realDist
 	float depth_to_blur = f_shadowfar / SOFTSHADOWRADIUS / xyPerspectiveBias0;
 	if (depth > 0.0 && f_normal_length > 0.0)
 		// 5 is empirical factor that controls how fast shadow loses sharpness
-		sharpness_factor = clamp(5 * depth * depth_to_blur, 0.0, 1.0);
+		sharpness_factor = clamp(5.0 * depth * depth_to_blur, 0.0, 1.0);
 	depth = 0.0;
 
 	float world_to_texture = xyPerspectiveBias1 / perspective_factor / perspective_factor

@@ -60,7 +60,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 		m_rowheight = MYMAX(m_rowheight, 1);
 	}
 
-	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
+	const s32 s = skin->getSize(gui::EGDS_SCROLLBAR_SIZE) * 1.5f;
 	m_scrollbar = new GUIScrollBar(Environment, this, -1,
 			core::rect<s32>(RelativeRect.getWidth() - s,
 					0,
@@ -77,18 +77,6 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	setTabStop(true);
 	setTabOrder(-1);
 	updateAbsolutePosition();
-#ifdef HAVE_TOUCHSCREENGUI
-	float density = 1; // dp scaling is applied by the skin
-#else
-	float density = RenderingEngine::getDisplayDensity();
-#endif
-	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth() / (2.0 / 3.0)) * density *
-			g_settings->getFloat("gui_scaling", 0.5f, 20.0f);
-	m_scrollbar->setRelativePosition(core::rect<s32>(
-			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
-			relative_rect.LowerRightCorner.X,relative_rect.LowerRightCorner.Y
-			));
 }
 
 GUITable::~GUITable()

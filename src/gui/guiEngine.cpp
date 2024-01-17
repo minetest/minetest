@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include "client/renderingengine.h"
 #include "scripting_mainmenu.h"
-#include "util/numeric.h"
 #include "config.h"
 #include "version.h"
 #include "porting.h"
@@ -266,36 +265,38 @@ void GUIEngine::run()
 	f32 dtime = 0.0f;
 
 	while (m_rendering_engine->run() && (!m_startgame) && (!m_kill)) {
+		if (RenderingEngine::shouldRender()) {
+			// check if we need to update the "upper left corner"-text
+			if (text_height != g_fontengine->getTextHeight()) {
+				updateTopLeftTextSize();
+				text_height = g_fontengine->getTextHeight();
+			}
 
-		//check if we need to update the "upper left corner"-text
-		if (text_height != g_fontengine->getTextHeight()) {
-			updateTopLeftTextSize();
-			text_height = g_fontengine->getTextHeight();
+			driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
+
+			if (m_clouds_enabled)
+			{
+				cloudPreProcess();
+				drawOverlay(driver);
+			}
+			else
+				drawBackground(driver);
+
+			drawFooter(driver);
+
+			m_rendering_engine->get_gui_env()->drawAll();
+
+			// The header *must* be drawn after the menu because it uses
+			// GUIFormspecMenu::getAbsoluteRect().
+			// The header *can* be drawn after the menu because it never intersects
+			// the menu.
+			drawHeader(driver);
+
+			driver->endScene();
 		}
-
-		driver->beginScene(true, true, RenderingEngine::MENU_SKY_COLOR);
-
-		if (m_clouds_enabled)
-		{
-			cloudPreProcess();
-			drawOverlay(driver);
-		}
-		else
-			drawBackground(driver);
-
-		drawFooter(driver);
-
-		m_rendering_engine->get_gui_env()->drawAll();
-
-		// The header *must* be drawn after the menu because it uses
-		// GUIFormspecMenu::getAbsoluteRect().
-		// The header *can* be drawn after the menu because it never intersects
-		// the menu.
-		drawHeader(driver);
-
-		driver->endScene();
 
 		IrrlichtDevice *device = m_rendering_engine->get_raw_device();
+
 		u32 frametime_min = 1000 / (device->isWindowFocused()
 			? g_settings->getFloat("fps_max")
 			: g_settings->getFloat("fps_max_unfocused"));
@@ -309,6 +310,8 @@ void GUIEngine::run()
 		t_last_frame = t_now;
 
 		m_script->step();
+
+		sound_volume_control(m_sound_manager.get(), device->isWindowActive());
 
 		m_sound_manager->step(dtime);
 

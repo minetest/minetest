@@ -455,7 +455,6 @@ bool GUIEditBox::processKey(const SEvent &event)
 
 bool GUIEditBox::onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
-	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
 		s32 lineNo = getLineFromPos(m_cursor_pos);
 		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
@@ -481,13 +480,11 @@ bool GUIEditBox::onKeyUp(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 		return true;
 	}
 
-	// clang-format on
 	return false;
 }
 
 bool GUIEditBox::onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 {
-	// clang-format off
 	if (m_multiline || (m_word_wrap && m_broken_text.size() > 1)) {
 		s32 lineNo = getLineFromPos(m_cursor_pos);
 		s32 mb = (m_mark_begin == m_mark_end) ? m_cursor_pos :
@@ -513,7 +510,6 @@ bool GUIEditBox::onKeyDown(const SEvent &event, s32 &mark_begin, s32 &mark_end)
 		return true;
 	}
 
-	// clang-format on
 	return false;
 }
 

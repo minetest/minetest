@@ -104,7 +104,7 @@ private:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
-	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
+	BoneOverrideMap m_bone_override;
 
 	int m_attachment_parent_id = 0;
 	std::unordered_set<int> m_attachment_child_ids;
@@ -130,6 +130,7 @@ private:
 	bool m_is_visible = false;
 	// Material
 	video::E_MATERIAL_TYPE m_material_type;
+	f32 m_material_type_param;
 	// Settings
 	bool m_enable_shaders = false;
 
@@ -267,7 +268,7 @@ public:
 
 	void updateAnimationSpeed();
 
-	void updateBonePosition();
+	void updateBones(f32 dtime);
 
 	void processMessage(const std::string &data) override;
 

@@ -1418,7 +1418,7 @@ void Connection::Disconnect()
 	putCommand(ConnectionCommand::disconnect());
 }
 
-bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
+bool Connection::ReceiveTimeoutMs(NetworkPacket *pkt, u32 timeout_ms)
 {
 	/*
 		Note that this function can potentially wait infinitely if non-data
@@ -1426,7 +1426,7 @@ bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 		This is not considered to be a problem (is it?)
 	*/
 	for(;;) {
-		ConnectionEventPtr e_ptr = waitEvent(timeout);
+		ConnectionEventPtr e_ptr = waitEvent(timeout_ms);
 		const ConnectionEvent &e = *e_ptr;
 
 		if (e.type != CONNEVENT_NONE) {
@@ -1467,14 +1467,14 @@ bool Connection::Receive(NetworkPacket *pkt, u32 timeout)
 
 void Connection::Receive(NetworkPacket *pkt)
 {
-	bool any = Receive(pkt, m_bc_receive_timeout);
+	bool any = ReceiveTimeoutMs(pkt, m_bc_receive_timeout);
 	if (!any)
 		throw NoIncomingDataException("No incoming data");
 }
 
 bool Connection::TryReceive(NetworkPacket *pkt)
 {
-	return Receive(pkt, 0);
+	return ReceiveTimeoutMs(pkt, 0);
 }
 
 void Connection::Send(session_t peer_id, u8 channelnum,

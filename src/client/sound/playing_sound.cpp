@@ -18,12 +18,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along
-with this program; ifnot, write to the Free Software Foundation, Inc.,
+with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "playing_sound.h"
 
+#include "al_extensions.h"
 #include "debug.h"
 #include <cassert>
 #include <cmath>
@@ -32,7 +33,8 @@ namespace sound {
 
 PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> data,
 		bool loop, f32 volume, f32 pitch, f32 start_time,
-		const std::optional<std::pair<v3f, v3f>> &pos_vel_opt)
+		const std::optional<std::pair<v3f, v3f>> &pos_vel_opt,
+		const ALExtensions &exts [[maybe_unused]])
 	: m_source_id(source_id), m_data(std::move(data)), m_looping(loop),
 	m_is_positional(pos_vel_opt.has_value())
 {
@@ -113,6 +115,15 @@ PlayingSound::PlayingSound(ALuint source_id, std::shared_ptr<ISoundDataOpen> dat
 		alSource3f(m_source_id, AL_POSITION, 0.0f, 0.0f, 0.0f);
 		alSource3f(m_source_id, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
 		warn_if_al_error("PlayingSound::PlayingSound at making position-less");
+
+#ifdef AL_SOFT_direct_channels_remix
+		// Play directly on stereo output channels if possible. Improves sound quality.
+		if (exts.have_ext_AL_SOFT_direct_channels_remix
+				&& m_data->m_decode_info.is_stereo) {
+			alSourcei(m_source_id, AL_DIRECT_CHANNELS_SOFT, AL_REMIX_UNMATCHED_SOFT);
+			warn_if_al_error("PlayingSound::PlayingSound at setting AL_DIRECT_CHANNELS_SOFT");
+		}
+#endif
 	}
 	setGain(volume);
 	setPitch(pitch);

@@ -22,7 +22,6 @@ package net.minetest.minetest;
 
 import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -58,9 +57,11 @@ public class UnzipService extends IntentService {
 	private String failureMessage;
 
 	private static boolean isRunning = false;
+
 	public static synchronized boolean getIsRunning() {
 		return isRunning;
 	}
+
 	private static synchronized void setIsRunning(boolean v) {
 		isRunning = v;
 	}
@@ -99,28 +100,13 @@ public class UnzipService extends IntentService {
 		}
 	}
 
+	@NonNull
 	private Notification.Builder createNotification() {
-		String name = "net.minetest.minetest";
-		String channelId = "Minetest channel";
-		String description = "notifications from Minetest";
 		Notification.Builder builder;
 		if (mNotifyManager == null)
 			mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			int importance = NotificationManager.IMPORTANCE_LOW;
-			NotificationChannel mChannel = null;
-			if (mNotifyManager != null)
-				mChannel = mNotifyManager.getNotificationChannel(channelId);
-			if (mChannel == null) {
-				mChannel = new NotificationChannel(channelId, name, importance);
-				mChannel.setDescription(description);
-				// Configure the notification channel, NO SOUND
-				mChannel.setSound(null, null);
-				mChannel.enableLights(false);
-				mChannel.enableVibration(false);
-				mNotifyManager.createNotificationChannel(mChannel);
-			}
-			builder = new Notification.Builder(this, channelId);
+			builder = new Notification.Builder(this, MainActivity.NOTIFICATION_CHANNEL_ID);
 		} else {
 			builder = new Notification.Builder(this);
 		}
@@ -135,9 +121,9 @@ public class UnzipService extends IntentService {
 		PendingIntent intent = PendingIntent.getActivity(this, 0,
 			notificationIntent, pendingIntentFlag);
 
-		builder.setContentTitle(getString(R.string.notification_title))
+		builder.setContentTitle(getString(R.string.unzip_notification_title))
 				.setSmallIcon(R.mipmap.ic_launcher)
-				.setContentText(getString(R.string.notification_description))
+				.setContentText(getString(R.string.unzip_notification_description))
 				.setContentIntent(intent)
 				.setOngoing(true)
 				.setProgress(0, 0, true);
@@ -198,7 +184,7 @@ public class UnzipService extends IntentService {
 		}
 	}
 
-	private void publishProgress(@Nullable  Notification.Builder notificationBuilder, @StringRes int message, int progress) {
+	private void publishProgress(@Nullable Notification.Builder notificationBuilder, @StringRes int message, int progress) {
 		Intent intentUpdate = new Intent(ACTION_UPDATE);
 		intentUpdate.putExtra(ACTION_PROGRESS, progress);
 		intentUpdate.putExtra(ACTION_PROGRESS_MESSAGE, message);

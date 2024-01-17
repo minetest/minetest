@@ -73,6 +73,7 @@ void sockets_cleanup()
 	// On Windows, cleanup sockets after use
 	WSACleanup();
 #endif
+	g_sockets_initialized = false;
 }
 
 /*
@@ -87,8 +88,16 @@ UDPSocket::UDPSocket(bool ipv6)
 bool UDPSocket::init(bool ipv6, bool noExceptions)
 {
 	if (!g_sockets_initialized) {
-		tracestream << "Sockets not initialized" << std::endl;
+		verbosestream << "Sockets not initialized" << std::endl;
 		return false;
+	}
+
+	if (m_handle >= 0) {
+		auto msg = "Cannot initialize socket twice";
+		verbosestream << msg << std::endl;
+		if (noExceptions)
+			return false;
+		throw SocketException(msg);
 	}
 
 	// Use IPv6 if specified
@@ -101,7 +110,7 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 			<< std::endl;
 	}
 
-	if (m_handle <= 0) {
+	if (m_handle < 0) {
 		if (noExceptions) {
 			return false;
 		}
@@ -131,11 +140,13 @@ UDPSocket::~UDPSocket()
 			<< std::endl;
 	}
 
+	if (m_handle >= 0) {
 #ifdef _WIN32
-	closesocket(m_handle);
+		closesocket(m_handle);
 #else
-	close(m_handle);
+		close(m_handle);
 #endif
+	}
 }
 
 void UDPSocket::Bind(Address addr)
@@ -251,8 +262,11 @@ void UDPSocket::Send(const Address &destination, const void *data, int size)
 int UDPSocket::Receive(Address &sender, void *data, int size)
 {
 	// Return on timeout
+	assert(m_timeout_ms >= 0);
 	if (!WaitData(m_timeout_ms))
 		return -1;
+
+	size = MYMAX(size, 0);
 
 	int received;
 	if (m_addr_family == AF_INET6) {
@@ -309,11 +323,6 @@ int UDPSocket::Receive(Address &sender, void *data, int size)
 	}
 
 	return received;
-}
-
-int UDPSocket::GetHandle()
-{
-	return m_handle;
 }
 
 void UDPSocket::setTimeoutMs(int timeout_ms)

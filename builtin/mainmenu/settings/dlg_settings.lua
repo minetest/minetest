@@ -47,13 +47,13 @@ end
 
 
 local change_keys = {
-	query_text = "Change Keys",
+	query_text = "Controls",
 	requires = {
 		keyboard_mouse = true,
 	},
 	get_formspec = function(self, avail_w)
 		local btn_w = math.min(avail_w, 3)
-		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Change Keys")), 0.8
+		return ("button[0,0;%f,0.8;btn_change_keys;%s]"):format(btn_w, fgettext("Controls")), 0.8
 	end,
 	on_submit = function(self, fields)
 		if fields.btn_change_keys then
@@ -312,7 +312,7 @@ local function check_requirements(name, requires)
 	end
 
 	local video_driver = core.get_active_driver()
-	local shaders_support = video_driver == "opengl" or video_driver == "ogles2"
+	local shaders_support = video_driver == "opengl" or video_driver == "opengl3" or video_driver == "ogles2"
 	local special = {
 		android = PLATFORM == "Android",
 		desktop = PLATFORM ~= "Android",

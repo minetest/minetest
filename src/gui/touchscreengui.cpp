@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
+#include <ISceneCollisionManager.h>
 
 #include <iostream>
 #include <algorithm>
@@ -832,7 +833,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 					const double d = g_settings->getFloat("touchscreen_sensitivity", 0.001f, 10.0f) * 3.0f;
 
 					m_camera_yaw_change -= dir_free.X * d;
-					m_camera_pitch = MYMIN(MYMAX(m_camera_pitch + (dir_free.Y * d), -180.0f), 180.0f);
+					m_camera_pitch_change += dir_free.Y * d;
 
 					// update shootline
 					// no need to update (X, Y) when using crosshair since the shootline is not used

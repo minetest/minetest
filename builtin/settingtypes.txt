@@ -90,7 +90,7 @@
 #    Smooths rotation of camera, also called look or mouse smoothing. 0 to disable.
 camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
 
-#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Change Keys.
+#    Smooths rotation of camera when in cinematic mode, 0 to disable. Enter cinematic mode by using the key set in Controls.
 #
 #    Requires: keyboard_mouse
 cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
@@ -440,7 +440,6 @@ enable_raytraced_culling (Enable Raytraced Culling) bool true
 
 #    Shaders allow advanced visual effects and may increase performance on some video
 #    cards.
-#    This only works with the OpenGL video backend.
 #
 #    Requires: shaders_support
 enable_shaders (Shaders) bool true
@@ -580,6 +579,17 @@ enable_auto_exposure (Enable Automatic Exposure) bool false
 #    Requires: shaders, enable_auto_exposure
 exposure_compensation (Exposure compensation) float 0.0 -1.0 1.0
 
+#    Apply dithering to reduce color banding artifacts.
+#    Dithering significantly increases the size of losslessly-compressed
+#    screenshots and it works incorrectly if the display or operating system
+#    performs additional dithering or if the color channels are not quantized
+#    to 8 bits.
+#    With OpenGL ES, dithering only works if the shader supports high
+#    floating-point precision and it may have a higher performance impact.
+#
+#    Requires: shaders
+debanding (Enable Debanding) bool true
+
 [**Bloom]
 
 #    Set to true to enable bloom effect.
@@ -616,12 +626,19 @@ bloom_strength_factor (Bloom Strength Factor) float 1.0 0.1 10.0
 #    Requires: shaders, enable_bloom
 bloom_radius (Bloom Radius) float 1 0.1 8
 
+#    Set to true to enable volumetric lighting effect (a.k.a. "Godrays").
+#
+#    Requires: shaders, enable_bloom
+enable_volumetric_lighting (Volumetric lighting) bool false
 
 [*Audio]
 
 #    Volume of all sounds.
 #    Requires the sound system to be enabled.
 sound_volume (Volume) float 0.8 0.0 1.0
+
+#    Volume multiplier when the window is unfocused.
+sound_volume_unfocused (Volume when unfocused) float 0.3 0.0 1.0
 
 #    Whether to mute sounds. You can unmute sounds at any time, unless the
 #    sound system is disabled (enable_sound=false).
@@ -631,7 +648,7 @@ mute_sound (Mute sound) bool false
 
 [*User Interfaces]
 
-#    Set the language. Leave empty to use the system language.
+#    Set the language. By default, the system language is used.
 #    A restart is required after changing this.
 language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,id,it,ja,jbo,kk,ko,lt,lv,ms,nb,nl,nn,pl,pt,pt_BR,ro,ru,sk,sl,sr_Cyrl,sr_Latn,sv,sw,tr,uk,vi,zh_CN,zh_TW
 
@@ -795,6 +812,14 @@ bind_address (Bind address) string
 #    Older clients are compatible in the sense that they will not crash when connecting
 #    to new servers, but they may not support all new features that you are expecting.
 strict_protocol_version_checking (Strict protocol checking) bool false
+
+#    Define the oldest clients allowed to connect.
+#    Older clients are compatible in the sense that they will not crash when connecting
+#    to new servers, but they may not support all new features that you are expecting.
+#    This allows for more fine-grained control than strict_protocol_version_checking.
+#    Minetest still enforces its own internal minimum, and enabling
+#    strict_protocol_version_checking will effectively override this.
+protocol_version_min (Protocol version minimum) int 1 1 65535
 
 #    Specifies URL from which client fetches media instead of using UDP.
 #    $filename should be accessible from $remote_media$filename via cURL
@@ -1772,8 +1797,8 @@ shader_path (Shader path) path
 #    The rendering back-end.
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
-#    Shaders are supported by OpenGL and OGLES2 (experimental).
-video_driver (Video driver) enum  ,opengl,ogles1,ogles2
+#    Shaders are supported by everything but OGLES1.
+video_driver (Video driver) enum  ,opengl,opengl3,ogles1,ogles2
 
 #    Distance in nodes at which transparency depth sorting is enabled
 #    Use this to limit the performance impact of transparency depth sorting
@@ -1843,6 +1868,11 @@ texture_min_size (Base texture size) int 64 1 32768
 #    draw calls, benefiting especially high-end GPUs.
 #    Systems with a low-end GPU (or no GPU) would benefit from smaller values.
 client_mesh_chunk (Client Mesh Chunksize) int 1 1 16
+
+[**Sound]
+#    Comma-separated list of AL and ALC extensions that should not be used.
+#    Useful for testing. See al_extensions.[h,cpp] for details.
+sound_extensions_blacklist (Sound Extensions Blacklist) string
 
 [**Font]
 
@@ -2058,14 +2088,21 @@ liquid_update (Liquid update tick) float 1.0 0.001
 #    as well as sometimes on land).
 #    Setting this to a value greater than max_block_send_distance disables this
 #    optimization.
-#    Stated in mapblocks (16 nodes).
-block_send_optimize_distance (Block send optimize distance) int 4 2 32767
+#    Stated in MapBlocks (16 nodes).
+block_send_optimize_distance (Block send optimize distance) int 4 2 2047
 
 #    If enabled, the server will perform map block occlusion culling based on
 #    on the eye position of the player. This can reduce the number of blocks
 #    sent to the client by 50-80%. Clients will no longer receive most
 #    invisible blocks, so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server-side occlusion culling) bool true
+
+#    At this distance the server will perform a simpler and cheaper occlusion check.
+#    Smaller values potentially improve performance, at the expense of temporarily visible
+#    rendering glitches (missing blocks).
+#    This is especially useful for very large viewing range (upwards of 500).
+#    Stated in MapBlocks (16 nodes).
+block_cull_optimize_distance (Block cull optimize distance) int 25 2 2047
 
 [**Mapgen]
 

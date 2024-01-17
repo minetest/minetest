@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <ICameraSceneNode.h>
 #include <IVideoDriver.h>
+#include <IFileSystem.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -1598,6 +1599,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 frame_count = stoi(sf.next(":"));
 			u32 frame_index = stoi(sf.next(":"));
 
+			if (frame_count == 0){
+				errorstream << "generateImagePart(): invalid frame_count "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", using frame_count = 1 instead." << std::endl;
+				frame_count = 1;
+			}
+
 			if (baseimg == NULL){
 				errorstream<<"generateImagePart(): baseimg != NULL "
 						<<"for part_of_name=\""<<part_of_name
@@ -1659,7 +1667,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 		[multiply:color
-		or 
+		or
 		[screen:color
 			Multiply and Screen blend modes are basic blend modes for darkening and lightening
 			images, respectively.
@@ -1685,7 +1693,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			if (!parseColorString(color_str, color, false))
 				return false;
 			if (str_starts_with(part_of_name, "[multiply:")) {
-				apply_multiplication(baseimg, v2u32(0, 0), 
+				apply_multiplication(baseimg, v2u32(0, 0),
 					baseimg->getDimension(), color);
 			} else {
 				apply_screen(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
@@ -1899,6 +1907,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 x0 = stoi(sf.next(","));
 			u32 y0 = stoi(sf.next(":"));
 
+			if (w0 == 0 || h0 == 0) {
+				errorstream << "generateImagePart(): invalid width or height "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
 			core::dimension2d<u32> img_dim = baseimg->getDimension();
 			core::dimension2d<u32> tile_dim(v2u32(img_dim) / v2u32(w0, h0));
 
@@ -1965,7 +1980,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 			[hsl:hue:saturation:lightness
-			or 
+			or
 			[colorizehsl:hue:saturation:lightness
 
 			Adjust the hue, saturation, and lightness of the base image. Like
@@ -1978,7 +1993,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			will be converted to a grayscale image as though seen through a
 			colored glass, like	"Colorize" in GIMP.
 		*/
-		else if (str_starts_with(part_of_name, "[hsl:") || 
+		else if (str_starts_with(part_of_name, "[hsl:") ||
 		         str_starts_with(part_of_name, "[colorizehsl:")) {
 
 			if (baseimg == nullptr) {
@@ -1995,7 +2010,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			Strfnd sf(part_of_name);
 			sf.next(":");
-			s32 hue = mystoi(sf.next(":"), -180, 360); 
+			s32 hue = mystoi(sf.next(":"), -180, 360);
 			s32 saturation = sf.at_end() ? defaultSaturation : mystoi(sf.next(":"), -100, 1000);
 			s32 lightness  = sf.at_end() ? 0 : mystoi(sf.next(":"), -100, 100);
 
@@ -2005,7 +2020,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		}
 		/*
 			[overlay:filename
-			or 
+			or
 			[hardlight:filename
 
 			"A.png^[hardlight:B.png" is the same as "B.png^[overlay:A.Png"
@@ -2069,7 +2084,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			s32 contrast = mystoi(sf.next(":"), -127, 127);
 			s32 brightness = sf.at_end() ? 0 : mystoi(sf.next(":"), -127, 127);
 
-			apply_brightness_contrast(baseimg, v2u32(0, 0), 
+			apply_brightness_contrast(baseimg, v2u32(0, 0),
 				baseimg->getDimension(), brightness, contrast);
 		}
 		else
@@ -2347,14 +2362,14 @@ static void apply_overlay(video::IImage *blend, video::IImage *dst,
 	v2s32 blend_layer_pos = hardlight ? dst_pos : blend_pos;
 	v2s32 base_layer_pos  = hardlight ? blend_pos : dst_pos;
 
-	for (u32 y = 0; y < size.Y; y++) 
+	for (u32 y = 0; y < size.Y; y++)
 	for (u32 x = 0; x < size.X; x++) {
 		s32 base_x = x + base_layer_pos.X;
 		s32 base_y = y + base_layer_pos.Y;
 
 		video::SColor blend_c =
 			blend_layer->getPixel(x + blend_layer_pos.X, y + blend_layer_pos.Y);
-		video::SColor base_c = base_layer->getPixel(base_x, base_y);		
+		video::SColor base_c = base_layer->getPixel(base_x, base_y);
 		double blend_r = blend_c.getRed()   / 255.0;
 		double blend_g = blend_c.getGreen() / 255.0;
 		double blend_b = blend_c.getBlue()  / 255.0;
@@ -2373,7 +2388,7 @@ static void apply_overlay(video::IImage *blend, video::IImage *dst,
 	}
 }
 
-/* 
+/*
 	Adjust the brightness and contrast of the base image.
 
 	Conceptually like GIMP's "Brightness-Contrast" feature but allows brightness to be
@@ -2387,17 +2402,17 @@ static void apply_brightness_contrast(video::IImage *dst, v2u32 dst_pos, v2u32 s
 	// (we could technically allow -128/128 here as that would just result in 0 slope)
 	double norm_c = core::clamp(contrast,   -127, 127) / 128.0;
 	double norm_b = core::clamp(brightness, -127, 127) / 127.0;
-	
+
 	// Scale brightness so its range is -127.5 to 127.5, otherwise brightness
 	// adjustments will outputs values from 0.5 to 254.5 instead of 0 to 255.
 	double scaled_b = brightness * 127.5 / 127;
 
-	// Calculate a contrast slope such that that no colors will get clamped due 
+	// Calculate a contrast slope such that that no colors will get clamped due
 	// to the brightness setting.
 	// This allows the texture modifier to used as a brightness modifier without
 	// the user having to calculate a contrast to avoid clipping at that brightness.
 	double slope = 1 - fabs(norm_b);
-	
+
 	// Apply the user's contrast adjustment to the calculated slope, such that
 	// -127 will make it near-vertical and +127 will make it horizontal
 	double angle = atan(slope);
@@ -2452,6 +2467,10 @@ video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
 		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> strip_size = crack->getDimension();
+
+	if (tiles == 0 || strip_size.getArea() == 0)
+		return nullptr;
+
 	core::dimension2d<u32> frame_size(strip_size.Width, strip_size.Width);
 	core::dimension2d<u32> tile_size(size / tiles);
 	s32 frame_count = strip_size.Height / strip_size.Width;
