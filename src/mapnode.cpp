@@ -95,6 +95,8 @@ v3s16 MapNode::getWallMountedDir(const NodeDefManager *nodemgr) const
 	case 3: return v3s16(-1,0,0);
 	case 4: return v3s16(0,0,1);
 	case 5: return v3s16(0,0,-1);
+	case 6: return v3s16(0,1,0);
+	case 7: return v3s16(0,-1,0);
 	}
 }
 
@@ -323,16 +325,45 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	else if(nodebox.type == NODEBOX_WALLMOUNTED)
 	{
 		v3s16 dir = n.getWallMountedDir(nodemgr);
+		u8 wall = n.getWallMounted(nodemgr);
 
 		// top
 		if(dir == v3s16(0,1,0))
 		{
-			boxes.push_back(nodebox.wall_top);
+			if (wall == DWM_S1) {
+				v3f vertices[2] =
+				{
+					nodebox.wall_top.MinEdge,
+					nodebox.wall_top.MaxEdge
+				};
+				for (v3f &vertex : vertices) {
+					vertex.rotateXZBy(90);
+				}
+				aabb3f box = aabb3f(vertices[0]);
+				box.addInternalPoint(vertices[1]);
+				boxes.push_back(box);
+			} else {
+				boxes.push_back(nodebox.wall_top);
+			}
 		}
 		// bottom
 		else if(dir == v3s16(0,-1,0))
 		{
-			boxes.push_back(nodebox.wall_bottom);
+			if (wall == DWM_S2) {
+				v3f vertices[2] =
+				{
+					nodebox.wall_bottom.MinEdge,
+					nodebox.wall_bottom.MaxEdge
+				};
+				for (v3f &vertex : vertices) {
+					vertex.rotateXZBy(-90);
+				}
+				aabb3f box = aabb3f(vertices[0]);
+				box.addInternalPoint(vertices[1]);
+				boxes.push_back(box);
+			} else {
+				boxes.push_back(nodebox.wall_bottom);
+			}
 		}
 		// side
 		else

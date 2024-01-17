@@ -69,6 +69,7 @@ enum Direction6D {
 /// Direction in the wallmounted format.
 /// P is Positive, N is Negative.
 enum DirectionWallmounted {
+	// The 6 wallmounted directions
 	DWM_YP,
 	DWM_YN,
 	DWM_XP,
@@ -76,6 +77,11 @@ enum DirectionWallmounted {
 	DWM_ZP,
 	DWM_ZN,
 	DWM_COUNT,
+	// There are 6 wallmounted directions, but 8 possible states (3 bits).
+	// So we have 2 additional states, which drawtypes might use for
+	// special ("S") behavior.
+	DWM_S1,
+	DWM_S2
 };
 
 extern const v3s16 g_6dirs[DWM_COUNT];

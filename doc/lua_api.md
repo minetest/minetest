@@ -1270,11 +1270,14 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`
     * Node is 'mounted'/facing towards one of 6 directions
     * You can make this value by using `minetest.dir_to_wallmounted()`
-    * Values range 0 - 5
+    * Values range 0 - 7
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+      6 = y+, but rotated by  90°
+      7 = y-, but rotated by -90°
     * By default, on placement the param2 is automatically set to the
-      appropriate rotation, depending on which side was pointed at
+      appropriate rotation (0 to 5), depending on which side
+      was pointed at
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
