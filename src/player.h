@@ -128,6 +128,7 @@ struct PlayerPhysicsOverride
 	float acceleration_air = 1.f;
 	float speed_fast = 1.f;
 	float acceleration_fast = 1.f;
+	float speed_walk = 1.f;
 
 private:
 	auto tie() const {
@@ -135,7 +136,7 @@ private:
 		return std::tie(
 		speed, jump, gravity, sneak, sneak_glitch, new_move, speed_climb, speed_crouch,
 		liquid_fluidity, liquid_fluidity_smooth, liquid_sink, acceleration_default,
-		acceleration_air, speed_fast, acceleration_fast
+		acceleration_air, speed_fast, acceleration_fast, speed_walk
 		);
 	}
 
