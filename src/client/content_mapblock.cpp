@@ -1008,7 +1008,9 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	switch (wall) {
 		case DWM_YP: tileindex = 1; break; // ceiling
 		case DWM_YN: tileindex = 0; break; // floor
-		default:     tileindex = 2; // side (or invalid—should we care?)
+		case DWM_S1: tileindex = 1; break; // ceiling, but rotated
+		case DWM_S2: tileindex = 0; break; // floor, but rotated
+		default: tileindex = 2; // side (or invalid, shouldn't happen)
 	}
 	useTile(tileindex, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 
@@ -1044,6 +1046,17 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 			case DWM_ZN:
 				vertex.X += -size + BS/2;
 				vertex.rotateXZBy(-90);
+				break;
+			case DWM_S1:
+				// same as DWM_YP, but rotated 90°
+				vertex.Y += -size + BS/2;
+				vertex.rotateXZBy(45);
+				break;
+			case DWM_S2:
+				// same as DWM_YN, but rotated -90°
+				vertex.Y += size - BS/2;
+				vertex.rotateXZBy(-45);
+				break;
 		}
 	}
 	drawQuad(vertices);
@@ -1077,6 +1090,10 @@ void MapblockMeshGenerator::drawSignlikeNode()
 				vertex.rotateXZBy( 90); break;
 			case DWM_ZN:
 				vertex.rotateXZBy(-90); break;
+			case DWM_S1:
+				vertex.rotateXYBy( 90); vertex.rotateXZBy(90); break;
+			case DWM_S2:
+				vertex.rotateXYBy(-90); vertex.rotateXZBy(-90); break;
 		}
 	}
 	drawQuad(vertices);

@@ -1270,11 +1270,15 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * The rotation of the node is stored in `param2`
     * Node is 'mounted'/facing towards one of 6 directions
     * You can make this value by using `minetest.dir_to_wallmounted()`
-    * Values range 0 - 5
+    * Values range 0 - 7
     * The value denotes at which direction the node is "mounted":
       0 = y+,   1 = y-,   2 = x+,   3 = x-,   4 = z+,   5 = z-
+      6 = y+, but rotated by  90°
+      7 = y-, but rotated by -90°
     * By default, on placement the param2 is automatically set to the
-      appropriate rotation, depending on which side was pointed at
+      appropriate rotation (0 to 5), depending on which side was
+      pointed at. With the node field `wallmounted_rotate_vertical = true`,
+      the param2 values 6 and 7 might additionally be set
 * `paramtype2 = "facedir"`
     * Supported drawtypes: "normal", "nodebox", "mesh"
     * The rotation of the node is stored in `param2`.
@@ -5291,6 +5295,9 @@ Utilities
       -- minetest.after guarantees that coexisting jobs are executed primarily
       -- in order of expiry and secondarily in order of registration (5.9.0)
       after_order_expiry_registration = true,
+      -- wallmounted nodes mounted at floor or ceiling may additionally
+      -- be rotated by 90° with special param2 values (5.9.0)
+      wallmounted_rotate = true,
   }
   ```
 
@@ -8925,6 +8932,13 @@ Used by `minetest.register_node`.
 
     place_param2 = 0,
     -- Value for param2 that is set when player places node
+
+    wallmounted_rotate_vertical = false,
+    -- If true, place_param2 is nil, and this is a wallmounted node,
+    -- this node might use the special 90° rotation when placed
+    -- on the floor or ceiling, depending on the direction.
+    -- See the explanation about wallmounted for details.
+    -- Otherwise, the rotation is always the same on vertical placement.
 
     is_ground_content = true,
     -- If false, the cave generator and dungeon generator will not carve

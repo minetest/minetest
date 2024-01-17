@@ -76,6 +76,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	groups = def.groups;
 	node_placement_prediction = def.node_placement_prediction;
 	place_param2 = def.place_param2;
+	wallmounted_rotate_vertical = def.wallmounted_rotate_vertical;
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	sound_use = def.sound_use;
@@ -124,6 +125,7 @@ void ItemDefinition::reset()
 	range = -1;
 	node_placement_prediction.clear();
 	place_param2.reset();
+	wallmounted_rotate_vertical = false;
 }
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
@@ -183,6 +185,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << (u8)place_param2.has_value(); // protocol_version >= 43
 	if (place_param2)
 		os << *place_param2;
+	writeU8(os, wallmounted_rotate_vertical);
 }
 
 void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
@@ -251,6 +254,8 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 
 		if (readU8(is)) // protocol_version >= 43
 			place_param2 = readU8(is);
+
+		wallmounted_rotate_vertical = readU8(is); // 0 if missing
 	} catch(SerializationError &e) {};
 }
 

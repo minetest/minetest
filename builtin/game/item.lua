@@ -202,7 +202,40 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2,
 	elseif (def.paramtype2 == "wallmounted" or
 			def.paramtype2 == "colorwallmounted") and not param2 then
 		local dir = vector.subtract(under, above)
+		-- If you change this code, also change src/client/game.cpp
 		newnode.param2 = core.dir_to_wallmounted(dir)
+		if def.wallmounted_rotate_vertical and
+				(newnode.param2 == 0 or newnode.param2 == 1) then
+			local placer_pos = placer and placer:get_pos()
+			if placer_pos then
+				local pdir = {
+					x = above.x - placer_pos.x,
+					y = dir.y,
+					z = above.z - placer_pos.z
+				}
+				local rotate = false
+				if def.drawtype == "torchlike" then
+					if not ((pdir.x < 0 and pdir.z > 0) or
+							(pdir.x > 0 and pdir.z < 0)) then
+						rotate = true
+					end
+					if pdir.y > 0 then
+						rotate = not rotate
+					end
+				elseif def.drawtype == "signlike" then
+					if math.abs(pdir.x) < math.abs(pdir.z) then
+						rotate = true
+					end
+				else
+					if math.abs(pdir.x) > math.abs(pdir.z) then
+						rotate = true
+					end
+				end
+				if rotate then
+					newnode.param2 = newnode.param2 + 6
+				end
+			end
+		end
 	-- Calculate the direction for furnaces and chests and stuff
 	elseif (def.paramtype2 == "facedir" or
 			def.paramtype2 == "colorfacedir" or

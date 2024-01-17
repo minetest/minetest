@@ -61,8 +61,8 @@ minetest.register_node("testnodes:attached", {
 -- when the node it attaches to is gone.
 minetest.register_node("testnodes:attached_wallmounted", {
 	description = S("Wallmounted Attached Node").."\n"..
-		S("Attaches to wall; drops as item if neighbor node is gone").."\n"..
-		S("param2 = wallmounted rotation (0..5)"),
+		S("Attaches to solid node it was placed on; drops as item if neighbor node is gone").."\n"..
+		S("param2 = wallmounted rotation (0..7)"),
 	paramtype2 = "wallmounted",
 	tiles = {
 		"testnodes_attachedw_top.png",
@@ -72,9 +72,29 @@ minetest.register_node("testnodes:attached_wallmounted", {
 	groups = { attached_node = 1, dig_immediate = 3 },
 })
 
+-- This node attaches to the side of a node and drops as item
+-- when the node it attaches to is gone.
+-- Also adds vertical 90° rotation variants.
+minetest.register_node("testnodes:attached_wallmounted_rot", {
+	description = S("Rotatable Wallmounted Attached Node").."\n"..
+		S("Attaches to solid node it was placed on; drops as item if neighbor node is gone").."\n"..
+		S("param2 = wallmounted rotation (0..7)").."\n"..
+		S("May be rotated by 90° if placed at floor or ceiling"),
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_attachedwr_top.png",
+		"testnodes_attachedwr_bottom.png",
+		"testnodes_attachedwr_side.png",
+	},
+	wallmounted_rotate_vertical = true,
+	groups = { attached_node = 1, dig_immediate = 3 },
+})
+
 -- Wallmounted node that always attaches to the floor
 minetest.register_node("testnodes:attached_wallmounted_floor", {
-	description = S("Floor-Attached Wallmounted Node"),
+	description = S("Floor-Attached Wallmounted Node").."\n"..
+		S("Drops as item if no solid node below (regardless of rotation)").."\n"..
+		S("param2 = wallmounted rotation (visual only) (0..7)"),
 	paramtype2 = "wallmounted",
 	tiles = {
 		"testnodes_attached_top.png",
@@ -85,10 +105,28 @@ minetest.register_node("testnodes:attached_wallmounted_floor", {
 	color = "#FF8080",
 })
 
+-- Wallmounted node that always attaches to the floor.
+-- Also adds 90° rotation variants.
+minetest.register_node("testnodes:attached_wallmounted_floor_rot", {
+	description = S("Rotatable Floor-Attached Wallmounted Node").."\n"..
+		S("Drops as item if no solid node below (regardless of rotation)").."\n"..
+		S("param2 = wallmounted rotation (visual only) (0..7)").."\n"..
+		S("May be rotated by 90° if placed at floor or ceiling"),
+	paramtype2 = "wallmounted",
+	tiles = {
+		"testnodes_attachedfr_top.png",
+		"testnodes_attachedfr_bottom.png",
+		"testnodes_attachedfr_side.png",
+	},
+	wallmounted_rotate_vertical = true,
+	groups = { attached_node = 3, dig_immediate = 3 },
+})
+
 -- This node attaches to the ceiling and drops as item
 -- when the ceiling is gone.
 minetest.register_node("testnodes:attached_top", {
-	description = S("Ceiling-Attached Node"),
+	description = S("Ceiling-Attached Node").."\n"..
+		S("Drops as item if no solid node above"),
 	tiles = {
 		"testnodes_attached_bottom.png",
 		"testnodes_attached_top.png",
@@ -99,7 +137,9 @@ minetest.register_node("testnodes:attached_top", {
 
 -- Same as wallmounted attached, but for facedir
 minetest.register_node("testnodes:attached_facedir", {
-	description = S("Facedir Attached Node"),
+	description = S("Facedir Attached Node").."\n"..
+		S("Attaches to a neighboring solid node; drops as item if that node is gone").."\n"..
+		S("param2 = facedir rotation (0..23)"),
 	paramtype2 = "facedir",
 	tiles = {
 		"testnodes_attachedf_side.png^[transformR180",
@@ -114,7 +154,9 @@ minetest.register_node("testnodes:attached_facedir", {
 
 -- Same as facedir attached, but for 4dir
 minetest.register_node("testnodes:attached_4dir", {
-	description = S("4dir Attached Node"),
+	description = S("4dir Attached Node").."\n"..
+		S("Attaches to the side of a solid node; drops as item if that node is gone").."\n"..
+		S("param2 = 4dir rotation (0..3)"),
 	paramtype2 = "4dir",
 	tiles = {
 		"testnodes_attached4_side.png^[transformR180",
