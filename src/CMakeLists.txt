@@ -695,6 +695,8 @@ endif()
 include(CheckCSourceCompiles)
 include(CheckSymbolExists)
 
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
+
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
 	set(CMAKE_REQUIRED_LIBRARIES ${LUA_LIBRARY})
