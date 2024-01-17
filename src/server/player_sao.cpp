@@ -336,6 +336,8 @@ std::string PlayerSAO::generateUpdatePhysicsOverrideCommand() const
 	writeF32(os, phys.liquid_sink);
 	writeF32(os, phys.acceleration_default);
 	writeF32(os, phys.acceleration_air);
+	writeF32(os, phys.speed_fast);
+	writeF32(os, phys.acceleration_fast);
 	return os.str();
 }
 
@@ -649,8 +651,8 @@ bool PlayerSAO::checkMovementCheat()
 	float player_max_walk = 0; // horizontal movement
 	float player_max_jump = 0; // vertical upwards movement
 
-	float speed_walk   = m_player->movement_speed_walk;
-	float speed_fast   = m_player->movement_speed_fast;
+	float speed_walk = m_player->movement_speed_walk * m_player->physics_override.speed;
+	float speed_fast = m_player->movement_speed_fast * m_player->physics_override.speed_fast;
 	float speed_crouch = m_player->movement_speed_crouch * m_player->physics_override.speed_crouch;
 	float speed_climb  = m_player->movement_speed_climb  * m_player->physics_override.speed_climb;
 	speed_walk   *= m_player->physics_override.speed;

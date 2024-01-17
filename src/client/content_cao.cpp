@@ -1811,6 +1811,8 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_liquid_sink = readF32(is);
 		float override_acceleration_default = readF32(is);
 		float override_acceleration_air = readF32(is);
+		float override_speed_fast = readF32(is);
+		float override_acceleration_fast = readF32(is);
 		// fallback for new overrides (since 5.8.0)
 		if (is.eof()) {
 			override_speed_climb = 1.0f;
@@ -1820,6 +1822,8 @@ void GenericCAO::processMessage(const std::string &data)
 			override_liquid_sink = 1.0f;
 			override_acceleration_default = 1.0f;
 			override_acceleration_air = 1.0f;
+			override_speed_fast = 1.0f;
+			override_acceleration_fast = 1.0f;
 		}
 
 		if (m_is_local_player) {
@@ -1837,6 +1841,8 @@ void GenericCAO::processMessage(const std::string &data)
 			phys.liquid_sink = override_liquid_sink;
 			phys.acceleration_default = override_acceleration_default;
 			phys.acceleration_air = override_acceleration_air;
+			phys.speed_fast = override_speed_fast;
+			phys.acceleration_fast = override_acceleration_fast;
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
