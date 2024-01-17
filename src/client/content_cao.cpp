@@ -1816,6 +1816,7 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_speed_walk = readF32(is);
 		// fallback for new overrides (since 5.8.0)
 		if (is.eof()) {
+			// since 5.8.0
 			override_speed_climb = 1.0f;
 			override_speed_crouch = 1.0f;
 			override_liquid_fluidity = 1.0f;
@@ -1823,6 +1824,7 @@ void GenericCAO::processMessage(const std::string &data)
 			override_liquid_sink = 1.0f;
 			override_acceleration_default = 1.0f;
 			override_acceleration_air = 1.0f;
+			// since 5.9.0
 			override_speed_fast = 1.0f;
 			override_acceleration_fast = 1.0f;
 			override_speed_walk = 1.0f;
