@@ -8180,6 +8180,11 @@ Can be obtained using `player:get_meta()`.
 A 16-bit pseudorandom number generator.
 Uses a well-known LCG algorithm introduced by K&R.
 
+> [!NOTE]
+> `PseudoRandom` is slower and has worse random distribution than `PcgRandom`.
+> Use `PseudoRandom` only if you need output to match the well-known LCG algorithm introduced by K&R.
+> Otherwise, use `PcgRandom`.
+
 * constructor `PseudoRandom(seed)`
   * `seed`: 32-bit signed number
 
