@@ -89,6 +89,7 @@ struct ItemDefinition
 	// "" = no prediction
 	std::string node_placement_prediction;
 	std::optional<u8> place_param2;
+	bool wallmounted_rotate_vertical;
 
 	/*
 		Some helpful methods

@@ -181,12 +181,15 @@ minetest.register_node("testnodes:facedir_to_connect_to", {
 	connect_sides = {"left", "top"},
 })
 
--- Sign
+-- 3D sign and button:
+-- These are example nodes for more realistic example uses
+-- of wallmounted_rotate_vertical
 minetest.register_node("testnodes:sign3d", {
 	description = S("Nodebox Sign, Nodebox Type \"fixed\""),
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
 	sunlight_propagates = true,
 	walkable = false,
 	tiles = {
@@ -204,6 +207,7 @@ minetest.register_node("testnodes:sign3d_wallmounted", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
 	sunlight_propagates = true,
 	walkable = false,
 	tiles = {
@@ -223,6 +227,7 @@ minetest.register_node("testnodes:button", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
 	sunlight_propagates = true,
 	walkable = false,
 	tiles = {

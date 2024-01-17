@@ -8929,6 +8929,13 @@ Used by `minetest.register_node`.
     place_param2 = 0,
     -- Value for param2 that is set when player places node
 
+    wallmounted_rotate_vertical = false,
+    -- If true, place_param2 is nil, and this is a wallmounted node,
+    -- this node might use the special 90° rotation when placed
+    -- on the floor or ceiling, depending on the direction.
+    -- See the explanation about wallmounted for details.
+    -- Otherwise, the rotation is always the same on vertical placement.
+
     is_ground_content = true,
     -- If false, the cave generator and dungeon generator will not carve
     -- through this node.

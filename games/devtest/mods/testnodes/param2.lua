@@ -94,6 +94,22 @@ minetest.register_node("testnodes:wallmounted", {
 	groups = { dig_immediate = 3 },
 })
 
+minetest.register_node("testnodes:wallmounted_rot", {
+	description = S("Wallmounted Rotatable Test Node"),
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	tiles = {
+		"testnodes_1w.png^[colorize:#FFFF00:40",
+		"testnodes_2w.png^[colorize:#FFFF00:40",
+		"testnodes_3w.png^[colorize:#FFFF00:40",
+		"testnodes_4w.png^[colorize:#FFFF00:40",
+		"testnodes_5w.png^[colorize:#FFFF00:40",
+		"testnodes_6w.png^[colorize:#FFFF00:40",
+	},
+
+	groups = { dig_immediate = 3 },
+})
+
 minetest.register_node("testnodes:wallmounted_nodebox", {
 	description = S("Wallmounted Nodebox Test Node").."\n"..
 		S("param2 = wallmounted rotation (0..5)"),
@@ -106,6 +122,30 @@ minetest.register_node("testnodes:wallmounted_nodebox", {
 		"testnodes_4w.png",
 		"testnodes_5w.png",
 		"testnodes_6w.png",
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "wallmounted",
+		wall_top = { -0.5, 0, -0.5, 0.5, 0.5, 0.5 },
+		wall_bottom = { -0.5, -0.5, -0.5, 0.5, 0, 0.5 },
+		wall_side = { -0.5, -0.5, -0.5, 0, 0.5, 0.5 },
+	},
+
+	groups = { dig_immediate = 3 },
+})
+
+minetest.register_node("testnodes:wallmounted_nodebox_rot", {
+	description = S("Wallmounted Rotatable Nodebox Test Node"),
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	paramtype = "light",
+	tiles = {
+		"testnodes_1w.png^[colorize:#FFFF00:40",
+		"testnodes_2w.png^[colorize:#FFFF00:40",
+		"testnodes_3w.png^[colorize:#FFFF00:40",
+		"testnodes_4w.png^[colorize:#FFFF00:40",
+		"testnodes_5w.png^[colorize:#FFFF00:40",
+		"testnodes_6w.png^[colorize:#FFFF00:40",
 	},
 	drawtype = "nodebox",
 	node_box = {
