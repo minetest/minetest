@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <string>
 
-enum PointedThingType
+enum PointedThingType : u8
 {
 	POINTEDTHING_NOTHING,
 	POINTEDTHING_NODE,

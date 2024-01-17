@@ -2104,7 +2104,7 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 			return false;
 		}
 
-		stat = (HudElementStat)statint;
+		stat = static_cast<HudElementStat>(statint);
 	}
 
 	switch (stat) {
@@ -2165,6 +2165,9 @@ bool read_hud_change(lua_State *L, HudElementStat &stat, HudElement *elem, void 
 		case HUD_STAT_STYLE:
 			elem->style = luaL_checknumber(L, 4);
 			*value = &elem->style;
+			break;
+		case HudElementStat_END:
+			return false;
 			break;
 	}
 

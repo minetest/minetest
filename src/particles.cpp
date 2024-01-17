@@ -84,6 +84,8 @@ T TweenedParameter<T>::blend(float fac) const
 					fac *= myrand_range(0.7f, 1.0f);
 				}
 			}
+			case TweenStyle::TweenStyle_END:
+				break;
 		}
 		if (fac>1.f)
 			fac = 1.f;
@@ -110,6 +112,8 @@ template<typename T>
 void TweenedParameter<T>::deSerialize(std::istream &is)
 {
 	style = static_cast<TweenStyle>(readU8(is));
+	if (style >= TweenStyle::TweenStyle_END)
+		style = TweenStyle::fwd;
 	reps = readU16(is);
 	beginning = readF32(is);
 	start.deSerialize(is);

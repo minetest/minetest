@@ -92,7 +92,7 @@ void PointedThing::deSerialize(std::istream &is)
 	int version = readU8(is);
 	if (version != 0) throw SerializationError(
 			"unsupported PointedThing version");
-	type = (PointedThingType) readU8(is);
+	type = static_cast<PointedThingType>(readU8(is));
 	switch (type) {
 	case POINTEDTHING_NOTHING:
 		break;
