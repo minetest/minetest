@@ -249,11 +249,7 @@ public:
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
 
-	void setEncryptedPassword(const std::string& pwd) {
-		enc_pwd = pwd;
-		// We just set SRP encrypted password, we accept only it now
-		allowed_auth_mechs = AUTH_MECHANISM_SRP;
-	}
+	void setEncryptedPassword(const std::string& pwd);
 
 	RemoteClient();
 	~RemoteClient() = default;
