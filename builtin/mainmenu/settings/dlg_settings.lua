@@ -622,12 +622,15 @@ local function buttonhandler(this, fields)
 	if fields.show_technical_names ~= nil then
 		local value = core.is_yes(fields.show_technical_names)
 		core.settings:set_bool("show_technical_names", value)
+		write_settings_if_android()
+
 		return true
 	end
 
 	if fields.show_advanced ~= nil then
 		local value = core.is_yes(fields.show_advanced)
 		core.settings:set_bool("show_advanced", value)
+		write_settings_if_android()
 
 		local suggested_page_id = update_filtered_pages(dialogdata.query)
 
@@ -672,12 +675,15 @@ local function buttonhandler(this, fields)
 
 	for i, comp in ipairs(dialogdata.components) do
 		if comp.on_submit and comp:on_submit(fields, this) then
+			write_settings_if_android()
+
 			-- Clear components so they regenerate
 			dialogdata.components = nil
 			return true
 		end
 		if comp.setting and fields["reset_" .. i] then
 			core.settings:remove(comp.setting.name)
+			write_settings_if_android()
 
 			-- Clear components so they regenerate
 			dialogdata.components = nil
