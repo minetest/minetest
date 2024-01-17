@@ -8008,9 +8008,10 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to *all* movement speed and acceleration values (default: `1`)
-                   (see note below)
+        * `speed`: multiplier to *all* movement speed (`speed_*`) and
+                   acceleration (`accelleration_*`) values (default: `1`)
         * `speed_walk`: multiplier to default walk speed value (default: `1`)
+            * Note: The actual walk speed is the product of `speed` and `speed_walk`
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
             * Note: The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
@@ -8045,10 +8046,6 @@ child will follow movement and rotation of that bone.
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
     * Note: All numeric fields above modify a corresponding `movement_*` setting.
-    * Note: `speed` and the other `speed_*` modifiers will be multiplied with
-      each other. Example: If `speed=2`, `speed_walk=3` and everything else is default,
-      walking speed factor is 6, while climbing, sneaking and Fast Mode speed has
-      a factor of 2.
     * For games, we recommend for simpler code to first modify the `movement_*`
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change
