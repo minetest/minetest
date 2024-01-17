@@ -7765,15 +7765,17 @@ child will follow movement and rotation of that bone.
 * `set_physics_override(override_table)`
     * Overrides the physics attributes of the player
     * `override_table` is a table with the following fields:
-        * `speed`: multiplier to default movement speed and acceleration values (default: `1`)
-        * `jump`: multiplier to default jump value (default: `1`)
-        * `gravity`: multiplier to default gravity value (default: `1`)
+        * `speed`: multiplier to *all* movement speed and acceleration values (default: `1`)
+                   (see note below)
+        * `speed_walk`: multiplier to default walk speed value (default: `1`)
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
             * Note: The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
             * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
         * `speed_fast`: multiplier to default speed value in Fast Mode (default: `1`)
             * Note: The actual fast speed is the product of `speed` and `speed_fast`
+        * `jump`: multiplier to default jump value (default: `1`)
+        * `gravity`: multiplier to default gravity value (default: `1`)
         * `liquid_fluidity`: multiplier to liquid movement resistance value
           (for nodes with `liquid_move_physics`); the higher this value, the lower the
           resistance to movement. At `math.huge`, the resistance is zero and you can
@@ -7800,6 +7802,10 @@ child will follow movement and rotation of that bone.
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
     * Note: All numeric fields above modify a corresponding `movement_*` setting.
+    * Note: `speed` and the other `speed_*` modifiers will be multiplied with
+      each other. Example: If `speed=2`, `speed_walk=3` and everything else is default,
+      walking speed factor is 6, while climbing, sneaking and Fast Mode speed has
+      a factor of 2.
     * For games, we recommend for simpler code to first modify the `movement_*`
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change

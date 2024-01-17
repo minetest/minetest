@@ -204,6 +204,8 @@ int LuaLocalPlayer::l_get_physics_override(lua_State *L)
 	lua_pushnumber(L, phys.acceleration_fast);
 	lua_setfield(L, -2, "acceleration_fast");
 
+	lua_pushnumber(L, phys.speed_walk);
+	lua_setfield(L, -2, "speed_walk");
 	return 1;
 }
 

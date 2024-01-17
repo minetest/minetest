@@ -705,6 +705,7 @@ Methods:
             speed_climb = float,
             speed_crouch = float,
             speed_fast = float,
+            speed_walk = float,
             acceleration_default = float,
             acceleration_air = float,
             acceleration_fast = float,

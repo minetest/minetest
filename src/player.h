@@ -117,6 +117,7 @@ struct PlayerPhysicsOverride
 	float acceleration_air = 1.f;
 	float speed_fast = 1.f;
 	float acceleration_fast = 1.f;
+	float speed_walk = 1.f;
 };
 
 struct PlayerSettings
