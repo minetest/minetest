@@ -1,0 +1,25 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"runArgs": [
+		// Allows debuggers to disable ASLR
+		// "--privileged"
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"charliermarsh.ruff",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"ms-python.python",
+				"ms-vscode.cmake-tools",
+				"vadimcn.vscode-lldb"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/rocker-org/devcontainer-features/miniforge:1": {}
+	},
+	"postCreateCommand": "bash -c 'mamba init && mamba env create'"
+}

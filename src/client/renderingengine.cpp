@@ -18,11 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "cmake_config.h"
 #include <optional>
 #include <IrrlichtDevice.h>
 #include "fontengine.h"
 #include "client.h"
 #include "clouds.h"
+#include "settings.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "localplayer.h"
@@ -39,6 +41,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../gui/guiSkin.h"
 #include "irrlicht_changes/static_text.h"
 #include "irr_ptr.h"
+#if BUILD_HEADLESS
+#include <SDL_video.h>
+#endif
 
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 const video::SColor RenderingEngine::MENU_SKY_COLOR = video::SColor(255, 140, 186, 250);
@@ -148,6 +153,12 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 			+ "shaders" + DIR_DELIM + "Irrlicht";
 	params.OGLES2ShaderPath = (porting::path_share + DIR_DELIM + rel_path + DIR_DELIM).c_str();
 
+#if BUILD_HEADLESS
+	if (g_settings->getBool("headless")) {
+		SDL_VideoInit("offscreen");
+	}
+#endif
+
 	m_device = createDevice(params, driverType);
 	driver = m_device->getVideoDriver();
 	infostream << "Using the " << RenderingEngine::getVideoDriverInfo(driver->getDriverType()).friendly_name << " video driver" << std::endl;
@@ -191,6 +202,11 @@ void RenderingEngine::cleanupMeshCache()
 		if (scene::IAnimatedMesh *mesh = mesh_cache->getMeshByIndex(0))
 			mesh_cache->removeMesh(mesh);
 	}
+}
+
+irr::video::IImage *RenderingEngine::get_screenshot()
+{
+	return core->get_screenshot();
 }
 
 bool RenderingEngine::setupTopLevelWindow()
@@ -306,8 +322,9 @@ std::vector<video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers()
 	return drivers;
 }
 
-void RenderingEngine::initialize(Client *client, Hud *hud)
+void RenderingEngine::initialize(Client *client, Hud *hud, bool headless)
 {
+	this->headless = headless;
 	const std::string &draw_mode = g_settings->get("3d_mode");
 	core.reset(createRenderingCore(draw_mode, m_device, client, hud));
 }

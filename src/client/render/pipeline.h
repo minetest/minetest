@@ -141,6 +141,7 @@ public:
 	virtual u8 getTextureCount() override { return m_textures.size(); }
 	virtual video::ITexture *getTexture(u8 index) override;
 	virtual void reset(PipelineContext &context) override;
+	core::array<video::ITexture *> m_textures;
 	void swapTextures(u8 texture_a, u8 texture_b);
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
@@ -169,7 +170,6 @@ private:
 
 	video::IVideoDriver *m_driver { nullptr };
 	std::vector<TextureDefinition> m_definitions;
-	core::array<video::ITexture *> m_textures;
 };
 
 /**
@@ -424,10 +424,11 @@ public:
 
 	virtual void setRenderSource(RenderSource *source) override;
 	virtual void setRenderTarget(RenderTarget *target) override;
-private:
 	std::vector<RenderStep *> m_pipeline;
-	std::vector< std::unique_ptr<RenderPipelineObject> > m_objects;
-	DynamicSource m_input;
 	DynamicTarget m_output;
-	v2f scale { 1.0f, 1.0f };
+
+private:
+	std::vector<std::unique_ptr<RenderPipelineObject>> m_objects;
+	DynamicSource m_input;
+	v2f scale{1.0f, 1.0f};
 };

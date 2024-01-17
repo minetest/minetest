@@ -45,11 +45,13 @@ struct GameStartData : GameParams
 	GameStartData() = default;
 
 	bool isSinglePlayer() const { return address.empty() && !local_server; }
+	bool isHeadless() const { return headless; }
 
 	std::string name;
 	std::string password;
 	std::string address;
 	bool local_server;
+	bool headless;
 
 	ELoginRegister allow_login_or_register = ELoginRegister::Any;
 

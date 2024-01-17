@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <memory>
 #include <string>
+#include "IImage.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "client/render/core.h"
@@ -117,7 +118,7 @@ public:
 	void draw_scene(video::SColor skycolor, bool show_hud,
 			bool show_minimap, bool draw_wield_tool, bool draw_crosshair);
 
-	void initialize(Client *client, Hud *hud);
+	void initialize(Client *client, Hud *hud, bool headless);
 	void finalize();
 
 	bool run()
@@ -133,6 +134,8 @@ public:
 		return nullptr;
 	}
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+	irr::video::IImage *get_screenshot();
+	bool headless;
 
 	static void autosaveScreensizeAndCo(
 			const irr::core::dimension2d<u32> initial_screen_size,

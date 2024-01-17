@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug for handshaker.py",
+            "program": "${workspaceFolder}/bin/minetest",
+            // You can generate the config file by running the python tests:
+            // pushd python && pytest . && popd
+            // Then get the name of a config file in the artifacts/ dir and paste it below.
+            // Then you can use this launch config to start the client.
+            // Then use python/tools/handshaker.py to connect to the minetest client.
+            "args": [
+                "--config",
+                "${workspaceFolder}/python/artifacts/7fe1c8de-e46b-42f7-9211-db31694e1e2a.conf",
+                "--go",
+                "--remote-input",
+                "127.0.0.1:54321",
+                "--gameid",
+                "devtest",
+                "--verbose"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug multiplayer client",
+            "program": "${workspaceFolder}/bin/minetest",
+            // taken from test_multiplayer.sh.
+            // First run:
+            // ./util/test_multiplayer.sh # this creates the server.conf and world
+            // Then start the server manually:
+            // ./bin/minetest --debugger --server --config ./tests/server.conf --world ./tests/world --gameid devtest
+            // Then you can use this launch config to start the client.
+            "args": [
+                "--config",
+                "${workspaceFolder}/tests/client1.conf",
+                "--go",
+                "--address",
+                "127.0.0.1"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

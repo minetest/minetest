@@ -1,0 +1,7 @@
+day_count = 0
+lbm_introduction_times = :doors:replace_doors_door_glass~0;:doors:replace_doors_door_obsidian_glass~0;:doors:replace_doors_door_steel~0;:doors:replace_doors_door_wood~0;:doors:replace_xpanes_door_steel_bar~0;:farming:start_nodetimer_cotton~0;:farming:start_nodetimer_wheat~0;default:3dtorch~0;default:convert_saplings_to_node_timer~0;default:upgrade_chest_locked_v2~0;default:upgrade_chest_v2~0;xpanes:gen2~0;
+lbm_introduction_times_version = 1
+last_clear_objects_time = 0
+time_of_day = 6610
+game_time = 24
+EnvArgsEnd

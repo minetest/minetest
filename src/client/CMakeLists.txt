@@ -63,6 +63,7 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/mesh_generator_thread.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/minimap.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/particles.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/remoteinputhandler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/renderingengine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sky.cpp

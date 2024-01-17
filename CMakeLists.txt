@@ -39,6 +39,7 @@ endif()
 
 # Configuration options
 set(BUILD_CLIENT TRUE CACHE BOOL "Build client")
+set(BUILD_HEADLESS TRUE CACHE BOOL "Build in headless mode")
 set(BUILD_SERVER FALSE CACHE BOOL "Build server")
 set(BUILD_UNITTESTS TRUE CACHE BOOL "Build unittests")
 set(BUILD_BENCHMARKS FALSE CACHE BOOL "Build benchmarks")
@@ -267,6 +268,13 @@ if(INSTALL_DEVTEST)
 		PATTERN ".git*" EXCLUDE )
 endif()
 
+set(INSTALL_MINETEST_GAME FALSE CACHE BOOL "Install Minetest game")
+
+if(INSTALL_MINETEST_GAME)
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/"
+		PATTERN ".git*" EXCLUDE )
+endif()
+
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
@@ -303,6 +311,8 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+find_package(Zmq REQUIRED)
+find_package(Zmqpp REQUIRED)
 if(NOT USE_LUAJIT)
 	add_subdirectory(lib/bitop)
 endif()

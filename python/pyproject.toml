@@ -1,0 +1,23 @@
+[tool.ruff]
+# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
+select = [
+  # pycodestyle
+  "E",
+  # Pyflakes
+  "F",
+  # pyupgrade
+  "UP",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # isort
+  "I",
+]
+# 2. Avoid enforcing line-length violations (`E501`)
+ignore = ["E501"]
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore::DeprecationWarning:pygame.pkgdata.*',
+    'ignore:.*PYGAME_DETECT_AVX2=1.*:RuntimeWarning',
+]

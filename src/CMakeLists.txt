@@ -36,6 +36,10 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 
+if(BUILD_CLIENT AND BUILD_HEADLESS)
+	find_package(SDL2 REQUIRED NO_DEFAULT_PATH)
+	get_target_property(SDL2_LIB_LOCATION SDL2::SDL2 LOCATION)
+endif()
 
 if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 	message(WARNING "Neither BUILD_CLIENT nor BUILD_SERVER is set! Setting BUILD_SERVER=true")
@@ -193,6 +197,15 @@ endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
+
+
+find_package(CapnProto CONFIG REQUIRED)
+include_directories(${CAPNP_INCLUDE_DIRS})
+get_filename_component(PROTO_PARENT ${PROJECT_SOURCE_DIR}/.. ABSOLUTE)
+file(GLOB PROTO_FILES ${PROTO_PARENT}/src/network/proto/*.capnp)
+capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${PROTO_FILES})
+add_custom_target(capnproto ALL DEPENDS ${CAPNP_SRCS} ${CAPNP_HDRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/network/proto)
 
 
 OPTION(ENABLE_PROMETHEUS "Enable prometheus client support" FALSE)
@@ -478,6 +491,7 @@ set(client_SRCS
 	${client_network_SRCS}
 	${client_irrlicht_changes_SRCS}
 	${client_SCRIPT_SRCS}
+	${CAPNP_SRCS}
 )
 
 if(BUILD_UNITTESTS)
@@ -496,13 +510,6 @@ set(server_SRCS
 )
 list(SORT server_SRCS)
 
-# Avoid source_group on broken CMake version.
-# see issue #7074 #7075
-if (CMAKE_VERSION VERSION_GREATER 3.8.1)
-	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${client_SRCS})
-	source_group(TREE ${PROJECT_SOURCE_DIR} PREFIX "Source Files" FILES ${server_SRCS})
-endif()
-
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${PROJECT_SOURCE_DIR}
@@ -511,6 +518,8 @@ include_directories(
 include_directories(SYSTEM
 	${ZLIB_INCLUDE_DIR}
 	${ZSTD_INCLUDE_DIR}
+	${ZMQ_INCLUDE_DIR}
+	${ZMQPP_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
@@ -547,13 +556,20 @@ if(BUILD_CLIENT)
 		add_executable(${PROJECT_NAME} ${client_SRCS} ${extra_windows_SRCS})
 	endif()
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
+	if(BUILD_HEADLESS)
+		set(SDL2_TARGET SDL2::SDL2)
+	endif()
 	target_link_libraries(
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		IrrlichtMt::IrrlichtMt
+		${SDL2_TARGET}
 		${ZSTD_LIBRARY}
+		${ZMQ_LIBRARY}
+		${ZMQPP_LIBRARY}
 		${SOUND_LIBRARIES}
 		${SQLITE3_LIBRARY}
+		${SDL2_LIBRARIES}
 		${LUA_LIBRARY}
 		${GMP_LIBRARY}
 		${JSON_LIBRARY}
@@ -561,6 +577,8 @@ if(BUILD_CLIENT)
 		${FREETYPE_LIBRARY}
 		${PLATFORM_LIBS}
 	)
+	target_link_libraries(${PROJECT_NAME} ${CAPNP_LIBRARIES})
+
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
 			# This is necessary for dynamic Lua modules

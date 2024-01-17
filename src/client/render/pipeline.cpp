@@ -21,10 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/hud.h"
 #include "IRenderTarget.h"
+#include "client/renderingengine.h"
 
 #include <vector>
 #include <memory>
-
 
 TextureBuffer::~TextureBuffer()
 {
@@ -225,6 +225,7 @@ video::ITexture *DynamicSource::getTexture(u8 index)
 
 void ScreenTarget::activate(PipelineContext &context)
 {
+	if (context.client->getRenderingEngine()->headless) { return; }
 	auto driver = context.device->getVideoDriver();
 	driver->setRenderTarget(nullptr, m_clear, m_clear, context.clear_color);
 	driver->OnResize(size);

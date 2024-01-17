@@ -1,5 +1,9 @@
 # Compiling on MacOS
 
+Note: the conda environment.yml file currently doesn't work on arm64,
+and that's what's tested on the CI (which uses x86-64).
+So these instructions should work aren't tested.
+
 ## Requirements
 
 - [Homebrew](https://brew.sh/)
@@ -8,7 +12,7 @@
 Install dependencies with homebrew:
 
 ```
-brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
+brew install cmake capnp freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext sdl2 zeromq zmqpp ninja
 ```
 
 ## Download
@@ -20,32 +24,32 @@ git clone --depth 1 https://github.com/minetest/minetest.git
 cd minetest
 ```
 
-Download Minetest's fork of Irrlicht:
-
-```bash
-git clone --depth 1 --branch "$(cat misc/irrlichtmt_tag.txt)" https://github.com/minetest/irrlicht.git lib/irrlichtmt
-```
-
 ## Build
 
+Note the `-DICONV_LIBRARY` should only be set if a conda environment is active
+(even an empty conda environment seems to have libiconv which conflicts with system iconv).
+
 ```bash
-mkdir build
-cd build
-
-cmake .. \
+cmake -B build -S . \
     -DCMAKE_FIND_FRAMEWORK=LAST \
-    -DCMAKE_INSTALL_PREFIX=../build/macos/ \
-    -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE
+    -DCMAKE_INSTALL_PREFIX=$(pwd)/build/macos/ \
+    -GNinja \
+    -DBUILD_HEADLESS=FALSE \
+    -DRUN_IN_PLACE=FALSE  \
+    -DENABLE_GETTEXT=TRUE \
+    -DINSTALL_DEVTEST=TRUE \
+    -DINSTALL_MINETEST_GAME=TRUE \
+    -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations" \
+    -DICONV_LIBRARY="${CONDA_PREFIX}/lib/libiconv.dylib"
+cmake --build build
+cmake --install build
 
-make -j$(sysctl -n hw.logicalcpu)
-make install
-
-# M1 Macs w/ MacOS >= BigSur
-codesign --force --deep -s - macos/minetest.app
+# arm64 Macs w/ MacOS >= BigSur
+codesign --force --deep -s - build/macos/minetest.app
 ```
 
 ## Run
 
-```
-open ./build/macos/minetest.app
+```bash
+./build/macos/minetest.app/Contents/MacOS/minetest
 ```

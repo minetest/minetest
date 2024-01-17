@@ -414,6 +414,8 @@ public:
 
 	void showMinimap(bool show = true);
 
+	RenderingEngine *getRenderingEngine();
+
 	// IP and port we're connected to
 	const Address getServerAddress();
 
