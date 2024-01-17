@@ -115,6 +115,8 @@ struct PlayerPhysicsOverride
 	float liquid_sink = 1.f;
 	float acceleration_default = 1.f;
 	float acceleration_air = 1.f;
+	float speed_fast = 1.f;
+	float acceleration_fast = 1.f;
 };
 
 struct PlayerSettings
