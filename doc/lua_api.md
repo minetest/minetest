@@ -5295,6 +5295,9 @@ Utilities
       -- minetest.after guarantees that coexisting jobs are executed primarily
       -- in order of expiry and secondarily in order of registration (5.9.0)
       after_order_expiry_registration = true,
+      -- wallmounted nodes mounted at floor or ceiling may additionally
+      -- be rotated by 90° with special param2 values (5.9.0)
+      wallmounted_rotate = true,
   }
   ```
 
