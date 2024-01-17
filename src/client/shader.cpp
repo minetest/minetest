@@ -322,44 +322,6 @@ public:
 };
 
 
-namespace {
-	class IrrlichtErrorCapturer : public IEventReceiver
-	{
-		std::string &m_output;
-		IEventReceiver *m_old_recv;
-
-	public:
-		IrrlichtErrorCapturer(std::string &output):
-			m_output{output}
-		{
-			IrrlichtDevice *device{RenderingEngine::get_raw_device()};
-			m_old_recv = device->getEventReceiver();
-			device->setEventReceiver(this);
-		}
-
-		~IrrlichtErrorCapturer()
-		{
-			IrrlichtDevice *device{RenderingEngine::get_raw_device()};
-			device->setEventReceiver(m_old_recv);
-		}
-
-		IrrlichtErrorCapturer(const IrrlichtErrorCapturer&) = delete;
-		IrrlichtErrorCapturer &operator=(const IrrlichtErrorCapturer&) = delete;
-
-		virtual bool OnEvent(const SEvent &event)
-		{
-			if (event.EventType == EET_LOG_TEXT_EVENT &&
-					event.LogEvent.Level == ELL_ERROR) {
-				// Log messages from Irrlicht are *usually* not
-				// newline-terminated.
-				m_output.append(event.LogEvent.Text).append("\n");
-				return true;
-			}
-			return m_old_recv->OnEvent(event);
-		}
-	};
-}
-
 /*
 	ShaderSource
 */
@@ -815,16 +777,11 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	irr_ptr<ShaderCallback> cb{new ShaderCallback(m_setter_factories)};
 	infostream<<"Compiling high level shaders for "<<name<<std::endl;
-	std::string shader_compilation_errors{""};
-	s32 shadermat;
-	{
-		IrrlichtErrorCapturer capturer{shader_compilation_errors};
-		shadermat = gpu->addHighLevelShaderMaterial(
-			vertex_shader.c_str(), nullptr, video::EVST_VS_1_1,
-			fragment_shader.c_str(), nullptr, video::EPST_PS_1_1,
-			geometry_shader_ptr, nullptr, video::EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLES, 0,
-			cb.get(), shaderinfo.base_material,  1);
-	}
+	s32 shadermat = gpu->addHighLevelShaderMaterial(
+		vertex_shader.c_str(), nullptr, video::EVST_VS_1_1,
+		fragment_shader.c_str(), nullptr, video::EPST_PS_1_1,
+		geometry_shader_ptr, nullptr, video::EGST_GS_4_0, scene::EPT_TRIANGLES, scene::EPT_TRIANGLES, 0,
+		cb.get(), shaderinfo.base_material,  1);
 	if (shadermat == -1) {
 		errorstream<<"generate_shader(): "
 				"failed to generate \""<<name<<"\", "
@@ -833,13 +790,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		dumpShaderProgram(warningstream, "Vertex", vertex_shader);
 		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
-		throw ShaderException(
-			"Failed to compile the \"" + name + "\" shader.\n" +
-			shader_compilation_errors +
+		throw ShaderException("Failed to compile the \"" + name + "\" shader. "
 			"Check debug.txt for details.");
-	} else if (!shader_compilation_errors.empty()) {
-		// Don't suppress any error messages.
-		errorstream << shader_compilation_errors;
 	}
 
 	// Apply the newly created material type
