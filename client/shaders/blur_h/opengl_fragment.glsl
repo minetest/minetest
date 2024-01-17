@@ -14,7 +14,7 @@ centroid varying vec2 varTexCoord;
 // smoothstep - squared
 float smstsq(float f)
 {
-	f = f * f * (3 - 2 * f);
+	f = f * f * (3. - 2. * f);
 	return f;
 }
 

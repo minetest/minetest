@@ -180,3 +180,63 @@ minetest.register_node("testnodes:facedir_to_connect_to", {
 	paramtype2 = "facedir",
 	connect_sides = {"left", "top"},
 })
+
+-- 3D sign and button:
+-- These are example nodes for more realistic example uses
+-- of wallmounted_rotate_vertical
+minetest.register_node("testnodes:sign3d", {
+	description = S("Nodebox Sign, Nodebox Type \"fixed\""),
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	sunlight_propagates = true,
+	walkable = false,
+	tiles = {
+		"testnodes_sign3d.png",
+	},
+	groups = { dig_immediate = 3 },
+	node_box = {
+		type = "fixed",
+		fixed = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+	},
+})
+
+minetest.register_node("testnodes:sign3d_wallmounted", {
+	description = S("Nodebox Sign, Nodebox Type \"wallmounted\""),
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	sunlight_propagates = true,
+	walkable = false,
+	tiles = {
+		"testnodes_sign3d.png^[colorize:#ff0000:127",
+	},
+	groups = { dig_immediate = 3 },
+	node_box = {
+		type = "wallmounted",
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
+	},
+})
+
+minetest.register_node("testnodes:button", {
+	description = S("Button Nodebox Test Node"),
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	wallmounted_rotate_vertical = true,
+	sunlight_propagates = true,
+	walkable = false,
+	tiles = {
+		"testnodes_nodebox.png",
+	},
+	groups = { dig_immediate = 3 },
+	node_box = {
+		type = "fixed",
+		fixed = { -4/16, -8/16, -2/16, 4/16, -6/16, 2/16 },
+	},
+})
+

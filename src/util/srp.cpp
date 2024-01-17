@@ -50,11 +50,13 @@
 	#include <mini-gmp.h>
 #endif
 
-#include <util/sha2.h>
+#include "util/sha256.h"
 
 #include "srp.h"
 //#define CSRP_USE_SHA1
 #define CSRP_USE_SHA256
+
+#define CSRP_MAX_HASH (SHA256_DIGEST_LENGTH)
 
 #define srp_dbg_data(data, datalen, prevtext) ;
 /*void srp_dbg_data(unsigned char * data, size_t datalen, char * prevtext)
@@ -218,7 +220,7 @@ static NGConstant *new_ng(SRP_NGType ng_type, const char *n_hex, const char *g_h
 }
 
 typedef union {
-	SHA_CTX sha;
+	// SHA_CTX sha;
 	SHA256_CTX sha256;
 	// SHA512_CTX sha512;
 } HashCTX;
@@ -231,9 +233,9 @@ struct SRPVerifier {
 	unsigned char *bytes_B;
 	int authenticated;
 
-	unsigned char M[SHA512_DIGEST_LENGTH];
-	unsigned char H_AMK[SHA512_DIGEST_LENGTH];
-	unsigned char session_key[SHA512_DIGEST_LENGTH];
+	unsigned char M[CSRP_MAX_HASH];
+	unsigned char H_AMK[CSRP_MAX_HASH];
+	unsigned char session_key[CSRP_MAX_HASH];
 };
 
 struct SRPUser {
@@ -252,9 +254,9 @@ struct SRPUser {
 	unsigned char *password;
 	size_t password_len;
 
-	unsigned char M[SHA512_DIGEST_LENGTH];
-	unsigned char H_AMK[SHA512_DIGEST_LENGTH];
-	unsigned char session_key[SHA512_DIGEST_LENGTH];
+	unsigned char M[CSRP_MAX_HASH];
+	unsigned char H_AMK[CSRP_MAX_HASH];
+	unsigned char session_key[CSRP_MAX_HASH];
 };
 
 static int hash_init(SRP_HashAlgorithm alg, HashCTX *c)
@@ -395,7 +397,7 @@ inline static void mpz_subm(
 static SRP_Result H_nn(
 	mpz_t result, SRP_HashAlgorithm alg, const mpz_t N, const mpz_t n1, const mpz_t n2)
 {
-	unsigned char buff[SHA512_DIGEST_LENGTH];
+	unsigned char buff[CSRP_MAX_HASH];
 	size_t len_N = mpz_num_bytes(N);
 	size_t len_n1 = mpz_num_bytes(n1);
 	size_t len_n2 = mpz_num_bytes(n2);
@@ -418,7 +420,7 @@ static SRP_Result H_nn(
 static SRP_Result H_ns(mpz_t result, SRP_HashAlgorithm alg, const unsigned char *n,
 	size_t len_n, const unsigned char *bytes, size_t len_bytes)
 {
-	unsigned char buff[SHA512_DIGEST_LENGTH];
+	unsigned char buff[CSRP_MAX_HASH];
 	size_t nbytes = len_n + len_bytes;
 	unsigned char *bin = (unsigned char *)srp_alloc(nbytes);
 	if (!bin) return SRP_ERR;
@@ -434,7 +436,7 @@ static int calculate_x(mpz_t result, SRP_HashAlgorithm alg, const unsigned char 
 	size_t salt_len, const char *username, const unsigned char *password,
 	size_t password_len)
 {
-	unsigned char ucp_hash[SHA512_DIGEST_LENGTH];
+	unsigned char ucp_hash[CSRP_MAX_HASH];
 	HashCTX ctx;
 	hash_init(alg, &ctx);
 
@@ -475,10 +477,10 @@ static SRP_Result calculate_M(SRP_HashAlgorithm alg, NGConstant *ng, unsigned ch
 	const char *I, const unsigned char *s_bytes, size_t s_len, const mpz_t A,
 	const mpz_t B, const unsigned char *K)
 {
-	unsigned char H_N[SHA512_DIGEST_LENGTH];
-	unsigned char H_g[SHA512_DIGEST_LENGTH];
-	unsigned char H_I[SHA512_DIGEST_LENGTH];
-	unsigned char H_xor[SHA512_DIGEST_LENGTH];
+	unsigned char H_N[CSRP_MAX_HASH];
+	unsigned char H_g[CSRP_MAX_HASH];
+	unsigned char H_I[CSRP_MAX_HASH];
+	unsigned char H_xor[CSRP_MAX_HASH];
 	HashCTX ctx;
 	size_t i = 0;
 	size_t hash_len = hash_length(alg);
@@ -798,7 +800,7 @@ size_t srp_verifier_get_session_key_length(struct SRPVerifier *ver)
 	return hash_length(ver->hash_alg);
 }
 
-/* user_M must be exactly SHA512_DIGEST_LENGTH bytes in size */
+/* user_M must be exactly CSRP_MAX_HASH bytes in size */
 void srp_verifier_verify_session(
 	struct SRPVerifier *ver, const unsigned char *user_M, unsigned char **bytes_HAMK)
 {
@@ -944,7 +946,7 @@ error_and_exit:
 	return SRP_ERR;
 }
 
-/* Output: bytes_M. Buffer length is SHA512_DIGEST_LENGTH */
+/* Output: bytes_M. Buffer length is CSRP_MAX_HASH */
 void  srp_user_process_challenge(struct SRPUser *usr,
 	const unsigned char *bytes_s, size_t len_s,
 	const unsigned char *bytes_B, size_t len_B,

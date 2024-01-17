@@ -25,11 +25,11 @@ Table of Contents
 
 Further documentation
 ----------------------
-- Website: https://minetest.net/
+- Website: https://www.minetest.net/
 - Wiki: https://wiki.minetest.net/
-- Developer wiki: https://dev.minetest.net/
 - Forum: https://forum.minetest.net/
 - GitHub: https://github.com/minetest/minetest/
+- [Developer documentation](doc/developing/)
 - [doc/](doc/) directory of source distribution
 
 Default controls

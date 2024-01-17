@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "irrlichttypes_bloated.h"
 
-enum TileAnimationType
+enum TileAnimationType : u8
 {
 	TAT_NONE = 0,
 	TAT_VERTICAL_FRAMES = 1,

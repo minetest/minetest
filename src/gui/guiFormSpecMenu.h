@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 #include "StyleSpec.h"
+#include <IGUIStaticText.h>
 
 class InventoryManager;
 class ISimpleTextureSource;

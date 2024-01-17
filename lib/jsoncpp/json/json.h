@@ -93,10 +93,10 @@ license you like.
 // 3. /CMakeLists.txt
 // IMPORTANT: also update the SOVERSION!!
 
-#define JSONCPP_VERSION_STRING "1.9.4"
+#define JSONCPP_VERSION_STRING "1.9.5"
 #define JSONCPP_VERSION_MAJOR 1
 #define JSONCPP_VERSION_MINOR 9
-#define JSONCPP_VERSION_PATCH 3
+#define JSONCPP_VERSION_PATCH 5
 #define JSONCPP_VERSION_QUALIFIER
 #define JSONCPP_VERSION_HEXA                                                   \
   ((JSONCPP_VERSION_MAJOR << 24) | (JSONCPP_VERSION_MINOR << 16) |             \
@@ -161,11 +161,10 @@ public:
    * Release memory which was allocated for N items at pointer P.
    *
    * The memory block is filled with zeroes before being released.
-   * The pointer argument is tagged as "volatile" to prevent the
-   * compiler optimizing out this critical step.
    */
-  void deallocate(volatile pointer p, size_type n) {
-    std::memset(p, 0, n * sizeof(T));
+  void deallocate(pointer p, size_type n) {
+    // memset_s is used because memset may be optimized away by the compiler
+    memset_s(p, n * sizeof(T), 0, n * sizeof(T));
     // free using "global operator delete"
     ::operator delete(p);
   }
@@ -575,7 +574,7 @@ public:
 // be used by...
 #if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
 #pragma warning(push)
-#pragma warning(disable : 4251)
+#pragma warning(disable : 4251 4275)
 #endif // if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
 
 #pragma pack(push, 8)
@@ -788,10 +787,10 @@ private:
     CZString(ArrayIndex index);
     CZString(char const* str, unsigned length, DuplicationPolicy allocate);
     CZString(CZString const& other);
-    CZString(CZString&& other);
+    CZString(CZString&& other) noexcept;
     ~CZString();
     CZString& operator=(const CZString& other);
-    CZString& operator=(CZString&& other);
+    CZString& operator=(CZString&& other) noexcept;
 
     bool operator<(CZString const& other) const;
     bool operator==(CZString const& other) const;
@@ -869,13 +868,13 @@ public:
   Value(bool value);
   Value(std::nullptr_t ptr) = delete;
   Value(const Value& other);
-  Value(Value&& other);
+  Value(Value&& other) noexcept;
   ~Value();
 
   /// \note Overwrite existing comments. To preserve comments, use
   /// #swapPayload().
   Value& operator=(const Value& other);
-  Value& operator=(Value&& other);
+  Value& operator=(Value&& other) noexcept;
 
   /// Swap everything.
   void swap(Value& other);
@@ -1160,9 +1159,9 @@ private:
   public:
     Comments() = default;
     Comments(const Comments& that);
-    Comments(Comments&& that);
+    Comments(Comments&& that) noexcept;
     Comments& operator=(const Comments& that);
-    Comments& operator=(Comments&& that);
+    Comments& operator=(Comments&& that) noexcept;
     bool has(CommentPlacement slot) const;
     String get(CommentPlacement slot) const;
     void set(CommentPlacement slot, String comment);
@@ -1443,8 +1442,8 @@ public:
    *  because the returned references/pointers can be used
    *  to change state of the base class.
    */
-  reference operator*() { return deref(); }
-  pointer operator->() { return &deref(); }
+  reference operator*() const { return const_cast<reference>(deref()); }
+  pointer operator->() const { return const_cast<pointer>(&deref()); }
 };
 
 inline void swap(Value& a, Value& b) { a.swap(b); }
@@ -1507,8 +1506,7 @@ namespace Json {
  * \deprecated Use CharReader and CharReaderBuilder.
  */
 
-class JSONCPP_DEPRECATED(
-    "Use CharReader and CharReaderBuilder instead.") JSON_API Reader {
+class JSON_API Reader {
 public:
   using Char = char;
   using Location = const Char*;
@@ -1525,13 +1523,13 @@ public:
   };
 
   /** \brief Constructs a Reader allowing all features for parsing.
+    * \deprecated Use CharReader and CharReaderBuilder.
    */
-  JSONCPP_DEPRECATED("Use CharReader and CharReaderBuilder instead")
   Reader();
 
   /** \brief Constructs a Reader allowing the specified feature set for parsing.
+    * \deprecated Use CharReader and CharReaderBuilder.
    */
-  JSONCPP_DEPRECATED("Use CharReader and CharReaderBuilder instead")
   Reader(const Features& features);
 
   /** \brief Read a Value from a <a HREF="http://www.json.org">JSON</a>
@@ -1798,6 +1796,9 @@ public:
    * - `"allowSpecialFloats": false or true`
    *   - If true, special float values (NaNs and infinities) are allowed and
    *     their values are lossfree restorable.
+   * - `"skipBom": false or true`
+   *   - If true, if the input starts with the Unicode byte order mark (BOM),
+   *     it is skipped.
    *
    * You can examine 'settings_` yourself to see the defaults. You can also
    * write and read them just like any JSON Value.
@@ -2001,6 +2002,8 @@ public:
    *  - Number of precision digits for formatting of real values.
    *  - "precisionType": "significant"(default) or "decimal"
    *  - Type of precision for formatting of real values.
+   *  - "emitUTF8": false or true
+   *  - If true, outputs raw UTF8 strings instead of escaping them.
 
    *  You can examine 'settings_` yourself
    *  to see the defaults. You can also write and read them just like any
@@ -2036,7 +2039,7 @@ public:
 /** \brief Abstract class for writers.
  * \deprecated Use StreamWriter. (And really, this is an implementation detail.)
  */
-class JSONCPP_DEPRECATED("Use StreamWriter instead") JSON_API Writer {
+class JSON_API Writer {
 public:
   virtual ~Writer();
 
@@ -2056,7 +2059,7 @@ public:
 #pragma warning(push)
 #pragma warning(disable : 4996) // Deriving from deprecated class
 #endif
-class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API FastWriter
+class JSON_API FastWriter
     : public Writer {
 public:
   FastWriter();
@@ -2116,7 +2119,7 @@ private:
 #pragma warning(push)
 #pragma warning(disable : 4996) // Deriving from deprecated class
 #endif
-class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API
+class JSON_API
     StyledWriter : public Writer {
 public:
   StyledWriter();
@@ -2185,7 +2188,7 @@ private:
 #pragma warning(push)
 #pragma warning(disable : 4996) // Deriving from deprecated class
 #endif
-class JSONCPP_DEPRECATED("Use StreamWriterBuilder instead") JSON_API
+class JSON_API
     StyledStreamWriter {
 public:
   /**

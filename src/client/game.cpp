@@ -74,6 +74,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "hud.h"
 #include "clientdynamicinfo.h"
+#include <IAnimatedMeshSceneNode.h>
 
 #if USE_SOUND
 	#include "client/sound/sound_openal.h"
@@ -2613,23 +2614,27 @@ void Game::checkZoomEnabled()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-#ifndef __ANDROID__
-	if (isMenuActive())
-		device->getCursorControl()->setRelativeMode(false);
-	else
-		device->getCursorControl()->setRelativeMode(true);
+	auto *cur_control = device->getCursorControl();
+
+	/* With CIrrDeviceSDL on Linux and Windows, enabling relative mouse mode
+	somehow results in simulated mouse events being generated from touch events,
+	although SDL_HINT_MOUSE_TOUCH_EVENTS and SDL_HINT_TOUCH_MOUSE_EVENTS are set to 0.
+	Since Minetest has its own code to synthesize mouse events from touch events,
+	this results in duplicated input. To avoid that, we don't enable relative
+	mouse mode if we're in touchscreen mode. */
+#ifndef HAVE_TOUCHSCREENGUI
+	if (cur_control)
+		cur_control->setRelativeMode(!isMenuActive());
 #endif
 
 	if ((device->isWindowActive() && device->isWindowFocused()
 			&& !isMenuActive()) || input->isRandom()) {
 
-#ifndef __ANDROID__
-		if (!input->isRandom()) {
+		if (cur_control && !input->isRandom()) {
 			// Mac OSX gets upset if this is set every frame
-			if (device->getCursorControl()->isVisible())
-				device->getCursorControl()->setVisible(false);
+			if (cur_control->isVisible())
+				cur_control->setVisible(false);
 		}
-#endif
 
 		if (m_first_loop_after_window_activation) {
 			m_first_loop_after_window_activation = false;
@@ -2641,15 +2646,11 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 		}
 
 	} else {
-
-#ifndef ANDROID
 		// Mac OSX gets upset if this is set every frame
-		if (!device->getCursorControl()->isVisible())
-			device->getCursorControl()->setVisible(true);
-#endif
+		if (cur_control && !cur_control->isVisible())
+			cur_control->setVisible(true);
 
 		m_first_loop_after_window_activation = true;
-
 	}
 }
 
@@ -3026,6 +3027,9 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 		CASE_SET(HUD_STAT_TEXT2, text2, sdata);
 
 		CASE_SET(HUD_STAT_STYLE, style, data);
+
+		case HudElementStat_END:
+			break;
 	}
 
 #undef CASE_SET
@@ -3703,7 +3707,36 @@ bool Game::nodePlacement(const ItemDefinition &selected_def,
 		v3s16 dir = nodepos - neighborpos;
 
 		if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
-			predicted_node.setParam2(dir.Y < 0 ? 1 : 0);
+			// If you change this code, also change builtin/game/item.lua
+			u8 predicted_param2 = dir.Y < 0 ? 1 : 0;
+			if (selected_def.wallmounted_rotate_vertical) {
+				bool rotate90 = false;
+				v3f fnodepos = v3f(neighborpos.X, neighborpos.Y, neighborpos.Z);
+				v3f ppos = client->getEnv().getLocalPlayer()->getPosition() / BS;
+				v3f pdir = fnodepos - ppos;
+				switch (predicted_f.drawtype) {
+					case NDT_TORCHLIKE: {
+						rotate90 = !((pdir.X < 0 && pdir.Z > 0) ||
+								(pdir.X > 0 && pdir.Z < 0));
+						if (dir.Y > 0) {
+							rotate90 = !rotate90;
+						}
+						break;
+					};
+					case NDT_SIGNLIKE: {
+						rotate90 = abs(pdir.X) < abs(pdir.Z);
+						break;
+					}
+					default: {
+						rotate90 = abs(pdir.X) > abs(pdir.Z);
+						break;
+					}
+				}
+				if (rotate90) {
+					predicted_param2 += 6;
+				}
+			}
+			predicted_node.setParam2(predicted_param2);
 		} else if (abs(dir.X) > abs(dir.Z)) {
 			predicted_node.setParam2(dir.X < 0 ? 3 : 2);
 		} else {

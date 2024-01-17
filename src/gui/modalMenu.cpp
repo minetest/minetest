@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cstdlib>
 #include <IEventReceiver.h>
+#include <IGUIComboBox.h>
+#include <IGUIEditBox.h>
 #include "client/renderingengine.h"
 #include "modalMenu.h"
 #include "gettext.h"

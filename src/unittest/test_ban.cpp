@@ -37,6 +37,7 @@ private:
 	void testGetBanName();
 	void testGetBanDescription();
 
+	std::string m_testbm, m_testbm2;
 	void reinitTestEnv();
 };
 
@@ -61,32 +62,31 @@ void TestBan::runTests(IGameDef *gamedef)
 
 	reinitTestEnv();
 	TEST(testGetBanDescription);
-
-	// Delete leftover files
-	reinitTestEnv();
 }
 
-// This module is stateful due to disk writes, add helper to remove files
 void TestBan::reinitTestEnv()
 {
-	fs::DeleteSingleFileOrEmptyDirectory("testbm.txt");
-	fs::DeleteSingleFileOrEmptyDirectory("testbm2.txt");
+	m_testbm = getTestTempDirectory().append(DIR_DELIM "testbm.txt");
+	m_testbm2 = getTestTempDirectory().append(DIR_DELIM "testbm2.txt");
+
+	fs::DeleteSingleFileOrEmptyDirectory(m_testbm);
+	fs::DeleteSingleFileOrEmptyDirectory(m_testbm2);
 }
 
 void TestBan::testCreate()
 {
 	// test save on object removal
 	{
-		BanManager bm("testbm.txt");
+		BanManager bm(m_testbm);
 	}
 
-	UASSERT(std::ifstream("testbm.txt", std::ios::binary).is_open());
+	UASSERT(std::ifstream(m_testbm, std::ios::binary).is_open());
 
 	// test manual save
 	{
-		BanManager bm("testbm2.txt");
+		BanManager bm(m_testbm2);
 		bm.save();
-		UASSERT(std::ifstream("testbm2.txt", std::ios::binary).is_open());
+		UASSERT(std::ifstream(m_testbm2, std::ios::binary).is_open());
 	}
 }
 
@@ -95,7 +95,7 @@ void TestBan::testAdd()
 	std::string bm_test1_entry = "192.168.0.246";
 	std::string bm_test1_result = "test_username";
 
-	BanManager bm("testbm.txt");
+	BanManager bm(m_testbm);
 	bm.add(bm_test1_entry, bm_test1_result);
 
 	UASSERT(bm.getBanName(bm_test1_entry) == bm_test1_result);
@@ -109,7 +109,7 @@ void TestBan::testRemove()
 	std::string bm_test2_entry = "192.168.0.250";
 	std::string bm_test2_result = "test_username7";
 
-	BanManager bm("testbm.txt");
+	BanManager bm(m_testbm);
 
 	// init data
 	bm.add(bm_test1_entry, bm_test1_result);
@@ -125,7 +125,7 @@ void TestBan::testRemove()
 
 void TestBan::testModificationFlag()
 {
-	BanManager bm("testbm.txt");
+	BanManager bm(m_testbm);
 	bm.add("192.168.0.247", "test_username");
 	UASSERT(bm.isModified());
 
@@ -145,7 +145,7 @@ void TestBan::testGetBanName()
 	std::string bm_test1_entry = "192.168.0.247";
 	std::string bm_test1_result = "test_username";
 
-	BanManager bm("testbm.txt");
+	BanManager bm(m_testbm);
 	bm.add(bm_test1_entry, bm_test1_result);
 
 	// Test with valid entry
@@ -162,7 +162,7 @@ void TestBan::testGetBanDescription()
 
 	std::string bm_test1_result = "192.168.0.247|test_username";
 
-	BanManager bm("testbm.txt");
+	BanManager bm(m_testbm);
 	bm.add(bm_test1_entry, bm_test1_entry2);
 
 	UASSERT(bm.getBanDescription(bm_test1_entry) == bm_test1_result);

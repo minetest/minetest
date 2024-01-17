@@ -41,12 +41,13 @@ struct ItemStack;
 	Base item definition
 */
 
-enum ItemType
+enum ItemType : u8
 {
 	ITEM_NONE,
 	ITEM_NODE,
 	ITEM_CRAFT,
 	ITEM_TOOL,
+	ItemType_END // Dummy for validity check
 };
 
 struct ItemDefinition
@@ -89,6 +90,7 @@ struct ItemDefinition
 	// "" = no prediction
 	std::string node_placement_prediction;
 	std::optional<u8> place_param2;
+	bool wallmounted_rotate_vertical;
 
 	/*
 		Some helpful methods

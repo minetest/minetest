@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <ICameraSceneNode.h>
 #include <IVideoDriver.h>
+#include <IFileSystem.h>
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -2466,6 +2467,10 @@ video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
 		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> strip_size = crack->getDimension();
+
+	if (tiles == 0 || strip_size.getArea() == 0)
+		return nullptr;
+
 	core::dimension2d<u32> frame_size(strip_size.Width, strip_size.Width);
 	core::dimension2d<u32> tile_size(size / tiles);
 	s32 frame_count = strip_size.Height / strip_size.Width;

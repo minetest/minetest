@@ -552,6 +552,12 @@ NetworkPacket& NetworkPacket::operator<<(video::SColor src)
 
 Buffer<u8> NetworkPacket::oldForgePacket()
 {
+	// this is the dummy packet used to first contact the server
+	if (m_command == 0) {
+		assert(m_datasize == 0);
+		return Buffer<u8>();
+	}
+
 	Buffer<u8> sb(m_datasize + 2);
 	writeU16(&sb[0], m_command);
 	if (m_datasize > 0)
