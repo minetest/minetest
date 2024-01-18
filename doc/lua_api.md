@@ -1812,6 +1812,26 @@ Displays a minimap on the HUD.
 * `alignment`: The alignment of the minimap.
 * `offset`: offset in pixels from position.
 
+### `crosshair`
+
+Displays a crosshair on the HUD.
+
+* `scale`: The scale of the crosshair.
+  For image crosshairs it works the same as the scale of `image` HUD elements.
+  For line crosshairs the length is multiplied by the
+* `alignment`: The alignment of the crosshair.
+* `offset`: offset in pixels from position.
+* `style`: The style of the crosshair:
+  * 0 - The default crosshair which when pointing at a node or nothing shows two
+        perpendicular lines of size 20, and when pointing at an object shows two
+        diagonal lines of size 16. The lines get replaced by images when textures
+        named `"crosshair.png"` and for objects `"object_crosshair.png"` exist.
+  * 1 - A crosshair that shows an image.
+        When pointing at nodes or nothing it uses as texture name `text`.
+        When pointing at objects it uses as texture name `text2`.
+* `text`: Only relevent for `style` = 1.
+* `text2`: Only relevent for `style` = 1.
+
 Representations of simple things
 ================================
 
@@ -5435,6 +5455,9 @@ Utilities
       -- Allow passing an optional "actor" ObjectRef to the following functions:
       -- minetest.place_node, minetest.dig_node, minetest.punch_node (5.9.0)
       node_interaction_actor = true,
+      -- HUD elements of type crosshair exist and
+      -- the predefined crosshair is a Lua HUD elements.
+      crosshair_hud_element = true,
   }
   ```
 
@@ -7041,7 +7064,7 @@ Misc.
   (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
-    * `name`: `"breath"`, `"health"` or `"minimap"`
+    * `name`: `"breath"`, `"health"`, `"minimap"` or `"crosshair"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.parse_relative_number(arg, relative_to)`: returns number or nil
     * Helper function for chat commands.
@@ -10528,7 +10551,7 @@ Used by `ObjectRef:hud_add`. Returned by `ObjectRef:hud_get`.
 {
     type = "image",
     -- Type of element, can be "image", "text", "statbar", "inventory",
-    -- "waypoint", "image_waypoint", "compass" or "minimap"
+    -- "waypoint", "image_waypoint", "compass", "minimap" or "crosshair"
     -- If undefined "text" will be used.
 
     hud_elem_type = "image",

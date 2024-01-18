@@ -340,7 +340,7 @@ bool Hud::calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *p
 	return true;
 }
 
-void Hud::drawLuaElements(const v3s16 &camera_offset)
+void Hud::drawLuaElements(const v3s16 &camera_offset, bool draw_crosshairs)
 {
 	const u32 text_height = g_fontengine->getTextHeight();
 	gui::IGUIFont *const font = g_fontengine->getFont();
@@ -465,22 +465,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 					continue;
 
 				const video::SColor color(255, 255, 255, 255);
-				const video::SColor colors[] = {color, color, color, color};
-				core::dimension2di imgsize(texture->getOriginalSize());
-				v2s32 dstsize(imgsize.Width * e->scale.X * m_scale_factor,
-				              imgsize.Height * e->scale.Y * m_scale_factor);
-				if (e->scale.X < 0)
-					dstsize.X = m_screensize.X * (e->scale.X * -0.01);
-				if (e->scale.Y < 0)
-					dstsize.Y = m_screensize.Y * (e->scale.Y * -0.01);
-				v2s32 offset((e->align.X - 1.0) * dstsize.X / 2,
-				             (e->align.Y - 1.0) * dstsize.Y / 2);
-				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
-				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
-				                             e->offset.Y * m_scale_factor);
-				draw2DImageFilterScaled(driver, texture, rect,
-					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-					NULL, colors, true);
+				drawImage(pos, e->scale, e->align, e->offset, texture, color);
 				break; }
 			case HUD_ELEM_COMPASS: {
 				video::ITexture *texture = tsrc->getTexture(e->text);
@@ -544,6 +529,28 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				rect += pos + offset + v2s32(e->offset.X * m_scale_factor,
 				                             e->offset.Y * m_scale_factor);
 				client->getMinimap()->drawMinimap(rect);
+				break; }
+			case HUD_ELEM_CROSSHAIR: {
+				// CAMERA_MODE_THIRD_FRONT and HAVE_TOUCHSCREENGUI may disallow crosshairs.
+				// In the future it may be good to add a feature for Lua HudElements to
+				// specify CAMERA_MODE and TOUCHSCREEN behavior.
+				if (!draw_crosshairs)
+					continue;
+
+				if (e->style == 0) {
+					// Default Crosshair
+					drawCrosshair(pos, e->align, e->offset, e->scale);
+				} else if (e->style == 1) {
+					// Image Crosshair
+					const video::SColor color(255, 255, 255, 255);
+					if (pointing_at_object) {
+						drawImage(pos, e->scale, e->align, e->offset,
+								tsrc->getTexture(e->text2), color);
+					} else {
+						drawImage(pos, e->scale, e->align, e->offset,
+								tsrc->getTexture(e->text), color);
+					}
+				}
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type
@@ -794,55 +801,71 @@ void Hud::drawHotbar(u16 playeritem)
 	}
 }
 
-
-void Hud::drawCrosshair()
+void Hud::drawImage(const v2s32 &pos, const v2f &scale, const v2f &align, const v2f &offset,
+		video::ITexture *texture, const video::SColor &color)
 {
-	auto draw_image_crosshair = [this] (video::ITexture *tex) {
-		core::dimension2di orig_size(tex->getOriginalSize());
-		// Integer scaling to avoid artifacts, floor instead of round since too
-		// small looks better than too large in this case.
-		core::dimension2di scaled_size = orig_size * std::max(std::floor(m_scale_factor), 1.0f);
+	const video::SColor colors[] = {color, color, color, color};
+	core::dimension2di imgsize(texture->getOriginalSize());
+	v2s32 dstsize(imgsize.Width * scale.X * m_scale_factor,
+	              imgsize.Height * scale.Y * m_scale_factor);
+	if (scale.X < 0)
+		dstsize.X = m_screensize.X * (scale.X * -0.01);
+	if (scale.Y < 0)
+		dstsize.Y = m_screensize.Y * (scale.Y * -0.01);
+	v2s32 align_offset((align.X - 1.0) * dstsize.X / 2, (align.Y - 1.0) * dstsize.Y / 2);
 
-		core::rect<s32> src_rect(orig_size);
-		core::position2d pos(m_displaycenter.X - scaled_size.Width / 2,
-				m_displaycenter.Y - scaled_size.Height / 2);
-		core::rect<s32> dest_rect(pos, scaled_size);
+	core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
+	rect += pos + align_offset + v2s32(offset.X * m_scale_factor, offset.Y * m_scale_factor);
 
-		video::SColor colors[] = { crosshair_argb, crosshair_argb,
-				crosshair_argb, crosshair_argb };
+	draw2DImageFilterScaled(driver, texture, rect,
+core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+		NULL, colors, true);
+}
 
-		draw2DImageFilterScaled(driver, tex, dest_rect, src_rect,
-				nullptr, colors, true);
-	};
-
+void Hud::drawCrosshair(const v2s32 &pos, const v2f &align, const v2f &offset, const v2f &scale)
+{
 	if (pointing_at_object) {
 		if (use_object_crosshair_image) {
-			draw_image_crosshair(tsrc->getTexture("object_crosshair.png"));
+			drawImage(pos, scale, align, offset,
+					tsrc->getTexture("object_crosshair.png"), crosshair_argb);
 		} else {
-			s32 line_size = core::round32(OBJECT_CROSSHAIR_LINE_SIZE * m_scale_factor);
+			s32 line_size_x = core::round32(m_scale_factor * OBJECT_CROSSHAIR_LINE_SIZE * scale.X);
+			s32 line_size_y = core::round32(m_scale_factor * OBJECT_CROSSHAIR_LINE_SIZE * scale.Y);
+			v2s32 center_pos(
+					pos.X + offset.X*m_scale_factor + align.X * line_size_x,
+					pos.Y + offset.Y*m_scale_factor + align.Y * line_size_y);
 
 			driver->draw2DLine(
-					m_displaycenter - v2s32(line_size, line_size),
-					m_displaycenter + v2s32(line_size, line_size),
+					center_pos - v2s32(line_size_x, line_size_y),
+					center_pos + v2s32(line_size_x, line_size_y),
 					crosshair_argb);
 			driver->draw2DLine(
-					m_displaycenter + v2s32(line_size, -line_size),
-					m_displaycenter + v2s32(-line_size, line_size),
+					center_pos + v2s32(line_size_x, -line_size_y),
+					center_pos + v2s32(-line_size_x, line_size_y),
 					crosshair_argb);
 		}
-
 		return;
 	}
 
 	if (use_crosshair_image) {
-		draw_image_crosshair(tsrc->getTexture("crosshair.png"));
+		drawImage(pos, scale, align, offset,
+				tsrc->getTexture("crosshair.png"), crosshair_argb);
 	} else {
-		s32 line_size = core::round32(CROSSHAIR_LINE_SIZE * m_scale_factor);
+		s32 line_size_x = core::round32(m_scale_factor * CROSSHAIR_LINE_SIZE * scale.X);
+		s32 line_size_y = core::round32(m_scale_factor * CROSSHAIR_LINE_SIZE * scale.Y);
 
-		driver->draw2DLine(m_displaycenter - v2s32(line_size, 0),
-				m_displaycenter + v2s32(line_size, 0), crosshair_argb);
-		driver->draw2DLine(m_displaycenter - v2s32(0, line_size),
-				m_displaycenter + v2s32(0, line_size), crosshair_argb);
+		v2s32 center_pos(
+				pos.X + offset.X*m_scale_factor + align.X * line_size_x,
+				pos.Y + offset.Y*m_scale_factor + align.Y * line_size_y);
+
+		driver->draw2DLine(
+				center_pos - v2s32(line_size_x, 0),
+				center_pos + v2s32(line_size_x, 0),
+				crosshair_argb);
+		driver->draw2DLine(
+				center_pos - v2s32(0, line_size_y),
+				center_pos + v2s32(0, line_size_y),
+				crosshair_argb);
 	}
 }
 

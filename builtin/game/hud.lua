@@ -259,3 +259,16 @@ register_builtin_hud_element("minimap", {
 				core.get_player_information(player:get_player_name()).protocol_version >= 44
 	end,
 })
+
+--- Crosshair
+
+register_builtin_hud_element("crosshair", {
+	elem_def = {
+		type = "crosshair",
+		position = {x = 0.5, y = 0.5},
+		scale = {x = 1, y = 1},
+	},
+	show_elem = function(player, flags)
+		return flags.crosshair
+	end,
+})

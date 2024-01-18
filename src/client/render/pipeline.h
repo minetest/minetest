@@ -47,7 +47,7 @@ struct PipelineContext
 
 	bool show_hud {true};
 	bool draw_wield_tool {true};
-	bool draw_crosshair {true};
+	bool draw_crosshairs {true};
 };
 
 /**

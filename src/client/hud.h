@@ -64,9 +64,11 @@ public:
 	void disableBlockBounds();
 	void drawBlockBounds();
 
+	void drawImage(const v2s32 &pos, const v2f &scale, const v2f &align, const v2f &offset,
+			video::ITexture *texture, const video::SColor &color);
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
-	void drawCrosshair();
+	void drawCrosshair(const v2s32 &pos, const v2f &align, const v2f &offset, const v2f &scale);
 	void drawSelectionMesh();
 	void updateSelectionMesh(const v3s16 &camera_offset);
 
@@ -92,7 +94,7 @@ public:
 
 	bool hasElementOfType(HudElementType type);
 
-	void drawLuaElements(const v3s16 &camera_offset);
+	void drawLuaElements(const v3s16 &camera_offset, bool draw_crosshairs);
 
 private:
 	bool calculateScreenPos(const v3s16 &camera_offset, HudElement *e, v2s32 *pos);
