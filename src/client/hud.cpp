@@ -818,7 +818,7 @@ void Hud::drawImage(const v2s32 &pos, const v2f &scale, const v2f &align, const 
 	rect += pos + align_offset + v2s32(offset.X * m_scale_factor, offset.Y * m_scale_factor);
 
 	draw2DImageFilterScaled(driver, texture, rect,
-core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+		core::rect<s32>(core::position2d<s32>(0,0),imgsize),
 		NULL, colors, true);
 }
 
