@@ -2,14 +2,11 @@
 
 ## Requirements
 
-- [Homebrew](https://brew.sh/)
-- [Git](https://git-scm.com/downloads)
+* [Homebrew](https://brew.sh/)* [Git](https://git-scm.com/downloads)
 
 Install dependencies with homebrew:
 
-```
-brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
-```
+    brew install cmake freetype gettext gmp hiredis jpeg jsoncpp leveldb libogg libpng libvorbis luajit zstd gettext
 
 ## Download
 
