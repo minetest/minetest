@@ -211,14 +211,6 @@ minetest.register_chatcommand("zoomfov", {
 local hud_image_defs = {
 	{
 		type = "image",
-		position = {x=0.5, y=0.5},
-		scale = {x = 10, y = 10},
-		text = "crosshair.png",
-		alignment = {x=0, y=-0},
-		offset = {x=0, y=0},
-	},
-	{
-		type = "image",
 		position = {x=0.3, y=0.3},
 		scale = {x = 10, y = 10},
 		text = "default_cobble.png",
