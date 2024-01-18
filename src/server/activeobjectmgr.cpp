@@ -48,19 +48,10 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 
 void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16, ClearObjectsConfig &)> &cb, ClearObjectsConfig &config)
 {
-	// Make a defensive copy of the ids in case the passed callback changes the
-	// set of active objects.
-	// The callback is called for newly added objects iff they happen to reuse
-	// an old id.
-	std::vector<u16> ids = getAllIds();
-
-	for (u16 id : ids) {
-		auto it = m_active_objects.find(id);
-		if (it == m_active_objects.end())
-			continue; // obj was already removed
-		if (cb(it->second.get(), id, config)) {
-			// erase by id, `it` can be invalid now
-			removeObject(id);
+	for (auto &it : m_active_objects.iter()) {
+		if (cb(it.second.get(), it.first, config)) {
+			// Remove reference from m_active_objects
+			m_active_objects.remove(it.first);
 		}
 	}
 }
