@@ -1,8 +1,9 @@
 # Builtin Entities
+
 Minetest registers two entities by default: Falling nodes and dropped items.
 This document describes how they behave and what you can do with them.
 
-## Falling node (`__builtin:falling_node`)
+## Falling Node (`__builtin:falling_node`)
 
 This entity is created by `minetest.check_for_falling` in place of a node
 with the special group `falling_node=1`. Falling nodes can also be created
@@ -24,7 +25,7 @@ Default behavior:
     * If the destination node is a leveled node (`paramtype2="leveled"`) of the
       same node name, the levels of both are summed.
 
-### Entity fields
+### Entity Fields
 
 * `set_node(self, node[, meta])`
     * Function to initialize the falling node
@@ -35,7 +36,7 @@ Default behavior:
 * `meta`: Node metadata of the falling node. Will be used when the falling
   nodes tries to place itself as a node. Read-only.
 
-### Rendering / supported nodes
+### Rendering / Supported Nodes
 
 Falling nodes have visuals to look as close as possible to the original node.
 This works for most drawtypes, but there are limitations.
@@ -73,7 +74,7 @@ Supported `paramtype2` values:
 * `color4dir`
 * `color`
 
-## Dropped item stack (`__builtin:item`)
+## Dropped Item Stack (`__builtin:item`)
 
 This is an item stack in a collectable form.
 
@@ -96,7 +97,7 @@ Needs manual initialization when spawned using `/spawnentity`.
 * When it's inside a solid (`walkable=true`) node, it tries to escape to a
   neighboring non-solid (`walkable=false`) node
 
-### Entity fields
+### Entity Fields
 
 * `set_item(self, item)`:
     * Function to initialize the dropped item
