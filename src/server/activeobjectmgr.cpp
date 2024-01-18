@@ -49,8 +49,6 @@ void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16
 void ActiveObjectMgr::clearIf(const std::function<bool(ServerActiveObject *, u16, ClearObjectsConfig &)> &cb, ClearObjectsConfig &config)
 {
 	for (auto &it : m_active_objects.iter()) {
-		if (!it.second)
-			continue;
 		if (cb(it.second.get(), it.first, config)) {
 			// Remove reference from m_active_objects
 			m_active_objects.remove(it.first);
