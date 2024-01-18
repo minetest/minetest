@@ -2,19 +2,19 @@
 
 ## Dependencies
 
-| Dependency | Version | Commentary |
-| ---------- | ------- | ---------- |
-| GCC        | 7.5+    | or Clang 7.0.1+ |
-| CMake      | 3.5+    |            |
+| Dependency | Version | Commentary                                                           |
+| ---------- | ------- | -------------------------------------------------------------------- |
+| GCC        | 7.5+    | or Clang 7.0.1+                                                      |
+| CMake      | 3.5+    |                                                                      |
 | IrrlichtMt | -       | Custom version of Irrlicht, see https://github.com/minetest/irrlicht |
-| Freetype   | 2.0+    |            |
-| SQLite3    | 3+      |            |
-| Zstd       | 1.0+    |            |
-| LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present |
-| GMP        | 5.0.0+  | Bundled mini-GMP is used if not present |
-| JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present |
-| Curl       | 7.56.0+ | Optional   |
-| gettext    | -       | Optional   |
+| Freetype   | 2.0+    |                                                                      |
+| SQLite3    | 3+      |                                                                      |
+| Zstd       | 1.0+    |                                                                      |
+| LuaJIT     | 2.0+    | Bundled Lua 5.1 is used if not present                               |
+| GMP        | 5.0.0+  | Bundled mini-GMP is used if not present                              |
+| JsonCPP    | 1.0.0+  | Bundled JsonCPP is used if not present                               |
+| Curl       | 7.56.0+ | Optional                                                             |
+| gettext    | -       | Optional                                                             |
 
 For Debian/Ubuntu users:
 
@@ -98,19 +98,19 @@ Run it:
 
     ./bin/minetest
 
-- Use `cmake . -LH` to see all CMake options and their current state.
-- If you want to install it system-wide (or are making a distribution package),
+* Use `cmake . -LH` to see all CMake options and their current state.
+* If you want to install it system-wide (or are making a distribution package),
   you will want to use `-DRUN_IN_PLACE=FALSE`.
-- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
-- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
-- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
-  - Debug build is slower, but gives much more useful output in a debugger.
-- If you build a bare server you don't need to compile IrrlichtMt, just the headers suffice.
-  - In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlichtmt/include`.
+* You can build a bare server by specifying `-DBUILD_SERVER=TRUE`.
+* You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`.
+* You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`.
+    * Debug build is slower, but gives much more useful output in a debugger.
+* If you build a bare server you don't need to compile IrrlichtMt, just the headers suffice.
+    * In that case use `-DIRRLICHT_INCLUDE_DIR=/some/where/irrlichtmt/include`.
 
-- Minetest will use the IrrlichtMt package that is found first, given by the following order:
-  1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
-  2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
-  3. Installation of IrrlichtMt in the system-specific library paths
-  4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
-  - NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
+* Minetest will use the IrrlichtMt package that is found first, given by the following order:
+    1. Specified `IRRLICHTMT_BUILD_DIR` CMake variable
+    2. `${PROJECT_SOURCE_DIR}/lib/irrlichtmt` (if existent)
+    3. Installation of IrrlichtMt in the system-specific library paths
+    4. For server builds with disabled `BUILD_CLIENT` variable, the headers from `IRRLICHT_INCLUDE_DIR` will be used.
+    * NOTE: Changing the IrrlichtMt build directory (includes system installs) requires regenerating the CMake cache (`rm CMakeCache.txt`)
