@@ -56,8 +56,9 @@ public:
 
 	inline u32 next()
 	{
-		m_next = m_next * 1103515245 + 12345;
-		return (u32)(m_next / 65536) % (RANDOM_RANGE + 1);
+		m_next = (u32)m_next * 1103515245U + 12345U;
+		// Signed division is required due to backwards compatibility
+		return (u32)(m_next / 65536) % (RANDOM_RANGE + 1U);
 	}
 
 	inline s32 range(s32 min, s32 max)
