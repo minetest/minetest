@@ -7346,6 +7346,8 @@ an itemstring, a table or `nil`.
       the item breaks after `max_uses` times
     * Valid `max_uses` range is [0,65536]
     * Does nothing if item is not a tool or if `max_uses` is 0
+* `get_wear_bar_params()`: returns the wear bar parameters of the item,
+  or nil if none are defined for this item type or in the stack's meta
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to
@@ -8908,7 +8910,7 @@ Used by `minetest.register_node`, `minetest.register_craftitem`, and
         -- default color for fallback
         blend = false
         -- whether to blend the colors
-    }
+    },
 
     node_placement_prediction = nil,
     -- If nil and item is node, prediction is made automatically.

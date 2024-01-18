@@ -218,13 +218,13 @@ void WearBarParams::serialize(std::ostream &os, u16 version) const
 
 void WearBarParams::deSerialize(std::istream &is)
 {
-	int version = readU8(is);
+	u8 version = readU8(is);
 	if (version > 1)
 		throw SerializationError("unsupported WearBarParams version");
 
 	defaultColor = readARGB8(is);
 	blend = readU8(is);
-	int count = readU16(is);
+	u16 count = readU16(is);
 	params.clear();
 	for (int i = 0; i < count; i++) {
 		video::SColor color = readARGB8(is);
@@ -256,7 +256,7 @@ void WearBarParams::deserializeJson(std::istream &is)
 		if (root["values"].isArray()) {
 			Json::Value &values_array = root["values"];
 			params.clear();
-			for (unsigned int i = 0; i < values_array.size(); i++) {
+			for (Json::ArrayIndex i = 0; i < values_array.size(); i++) {
 				Json::Value &value = values_array[i];
 				if (value.isObject()) {
 					WearBarParam param;
@@ -272,6 +272,46 @@ void WearBarParams::deserializeJson(std::istream &is)
 			blend = root["blend"].asBool();
 		}
 	}
+}
+video::SColor WearBarParams::getWearBarColor(float durabilityPercent) {
+	video::SColor color = defaultColor;
+	if (blend) {
+		const video::SColor *upperBoundColor = &defaultColor;
+		const video::SColor *lowerBoundColor = &defaultColor;
+		float upperBound = 2.0f;
+		float lowerBound = -1.0f;
+		for (const WearBarParam &param: params) {
+			if (param.minPercent <= durabilityPercent && param.minPercent > lowerBound) {
+				lowerBound = param.minPercent;
+				lowerBoundColor = &param.color;
+			}
+			if (durabilityPercent < param.minPercent && param.minPercent < upperBound) {
+				upperBound = param.minPercent;
+				upperBoundColor = &param.color;
+			}
+		}
+		if (upperBound == 2.0f && lowerBound == -1.0f) {
+			color = *upperBoundColor;
+		} else {
+			if (upperBound == 2.0f) {
+				upperBound = 1.0f;
+			} else if (lowerBound == -1.0f) {
+				lowerBound = 0.0f;
+			}
+			//from lower to upper
+			float progress = (durabilityPercent - lowerBound) / (upperBound - lowerBound);
+			// TODO: add support for quadratic interpolation
+			color = upperBoundColor->getInterpolated(*lowerBoundColor, progress);
+		}
+	} else {
+		for (const WearBarParam &param: params) {
+			if (param.matches(durabilityPercent)) {
+				color = param.color;
+				break;
+			}
+		}
+	}
+	return color;
 }
 
 u32 calculateResultWear(const u32 uses, const u16 initial_wear)

@@ -128,6 +128,7 @@ struct WearBarParams
 	void deSerialize(std::istream &is);
 	void serializeJson(std::ostream &os) const;
 	void deserializeJson(std::istream &is);
+	video::SColor getWearBarColor(float durabilityPercent);
 };
 
 struct DigParams

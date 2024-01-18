@@ -1469,28 +1469,36 @@ void push_tool_capabilities(lua_State *L,
 void push_wear_bar_params(lua_State *L,
 		const WearBarParams &params)
 {
-		lua_newtable(L);
-		setstringfield(L, -1, "default", encodeHexColorString(params.defaultColor));
-		if (params.blend) {
-			// insert into table using minPercent as key, and the ColorString as the value
-			for (const WearBarParam &param : params.params)
-				setstringfield(L, -1, std::to_string(param.minPercent).c_str(), encodeHexColorString(param.color));
-		} else {
-			// For each value
-			int i = 0;
-			for (const WearBarParam &param : params.params) {
-				i++;
-				// Create value table
-				lua_newtable(L);
-				// Set simple parameters
-				setfloatfield(L, -1, "min_durability", param.minPercent);
-				setfloatfield(L, -1, "max_durability", param.maxPercent);
-				setstringfield(L, -1, "color", encodeHexColorString(param.color));
-				// Insert value table
-				lua_setfield(L, -2, std::to_string(i).c_str());
-			}
+	lua_newtable(L);
+	setstringfield(L, -1, "default", encodeHexColorString(params.defaultColor));
+	if (params.blend) {
+		// insert into table using minPercent as key, and the ColorString as the value
+		for (const WearBarParam &param : params.params) {
+			lua_pushnumber(L, param.minPercent); // key
+			lua_pushstring(L, encodeHexColorString(param.color).c_str()); // value
+			lua_rawset(L, -3);
+			//setstringfield(L, -1, std::to_string(param.minPercent).c_str(),
+			//	       encodeHexColorString(param.color));
 		}
-		setboolfield(L, -1, "blend", params.blend);
+	} else {
+		// For each value
+		int i = 0;
+		for (const WearBarParam &param : params.params) {
+			i++;
+			lua_pushnumber(L, i); // key
+
+			// Create value table
+			lua_newtable(L);
+			// Set simple parameters
+			setfloatfield(L, -1, "min_durability", param.minPercent);
+			setfloatfield(L, -1, "max_durability", param.maxPercent);
+			setstringfield(L, -1, "color", encodeHexColorString(param.color));
+
+			// Insert value table
+			lua_rawset(L, -3);
+		}
+	}
+	setboolfield(L, -1, "blend", params.blend);
 }
 
 /******************************************************************************/
@@ -1779,9 +1787,7 @@ WearBarParams read_wear_bar_params(
 	std::basic_string<char> default_color_string;
 	if (getstringfield(L, table, "default", default_color_string))
 		parseColorString(default_color_string, params.defaultColor, false);
-	bool blend;
-	if (!getboolfield(L, table, "blend", blend))
-		blend = false;
+	bool blend = getboolfield_default(L, table, "blend", false);
 	params.blend = blend;
 
 	int table_values = lua_gettop(L);
@@ -1796,7 +1802,7 @@ WearBarParams read_wear_bar_params(
 			WearBarParam param;
 			getfloatfield(L, value_table, "min_durability", param.minPercent);
 			getfloatfield(L, value_table, "max_durability", param.maxPercent);
-			std::basic_string<char> color_string;
+			std::string color_string;
 			if (getstringfield(L, value_table, "color", color_string))
 				parseColorString(color_string, param.color, false);
 			params.params.push_back(param);
