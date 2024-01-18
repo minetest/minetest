@@ -206,9 +206,180 @@ minetest.register_chatcommand("zoomfov", {
 	end,
 })
 
+-- Images
+
+local hud_image_defs = {
+	{
+		type = "image",
+		position = {x=0.5, y=0.5},
+		scale = {x = 10, y = 10},
+		text = "crosshair.png",
+		alignment = {x=0, y=-0},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "image",
+		position = {x=0.3, y=0.3},
+		scale = {x = 10, y = 10},
+		text = "default_cobble.png",
+		alignment = {x=0, y=-1},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "image",
+		position = {x=0.7, y=0.3},
+		scale = {x = 10, y = 10},
+		text = "default_lava.png",
+		alignment = {x=0, y=1},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "image",
+		position = {x=0.3, y=0.7},
+		scale = {x = 10, y = 20},
+		text = "default_gravel.png",
+		alignment = {x=0, y=0},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "image",
+		position = {x=0.7, y=0.7},
+		scale = {x = 10, y = 10},
+		text = "default_tree_top.png",
+		alignment = {x=0, y=0},
+		offset = {x=160, y=0},
+	},
+}
+
+local player_hud_images= {}
+minetest.register_chatcommand("hudimages", {
+	description = "Shows some test Lua HUD elements of type image. (add: Adds elements (default). remove: Removes elements)",
+	params = "[ add | remove ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local id_table = player_hud_images[name]
+		if not id_table then
+			id_table = {}
+			player_hud_images[name] = id_table
+		end
+
+		if params == "remove" then
+			for _, id in ipairs(id_table) do
+				player:hud_remove(id)
+			end
+			return true, "Images removed."
+		end
+
+		-- params == "add" or default
+		for _, def in ipairs(hud_image_defs) do
+			table.insert(id_table, player:hud_add(def))
+		end
+		return true, #hud_image_defs .." images added."
+	end
+})
+
+-- Crosshairs
+
+local hud_crosshair_defs = {
+	{
+		type = "crosshair",
+		position = {x=0.45, y=0.5},
+		scale = {x = 1, y = 1},
+		alignment = {x=0, y=-1},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "crosshair",
+		position = {x=0.45, y=0.5},
+		scale = {x = 1, y = 1},
+		alignment = {x=0, y=1},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "crosshair",
+		position = {x=0.5, y=0.4},
+		scale = {x = 1, y = 2},
+		alignment = {x=0, y=1},
+		offset = {x=100, y=0},
+	},
+	{
+		type = "crosshair",
+		position = {x=0.5, y=0.7},
+		scale = {x = 5, y = 2},
+		alignment = {x=0, y=-1},
+		offset = {x=0, y=100},
+	},
+	{
+		type = "crosshair",
+		position = {x=0.5, y=0.65},
+		scale = {x = 2, y = 2},
+		alignment = {x=0, y=-1},
+		offset = {x=0, y=0},
+	},
+	{
+		type = "crosshair",
+		position = {x=0.3, y=0.5},
+		scale = {x = 1, y = 1},
+		alignment = {x=0, y=0},
+		offset = {x=0, y=0},
+		style = 1,
+		text = "testhud_crosshair.png",
+		text2 = "testhud_object_crosshair.png",
+	},
+	{
+		type = "crosshair",
+		position = {x=0.3, y=0.5},
+		scale = {x = 2, y = 1},
+		alignment = {x=0, y=2},
+		offset = {x=0, y=0},
+		style = 1,
+		text = "testhud_crosshair.png",
+		text2 = "testhud_object_crosshair.png",
+	},
+}
+
+local player_hud_crosshairs= {}
+minetest.register_chatcommand("hudcrosshairs", {
+	description = "Shows some test Lua HUD elements of type crosshair. (add: Adds elements (default). remove: Removes elements)",
+	params = "[ add | remove ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local id_table = player_hud_crosshairs[name]
+		if not id_table then
+			id_table = {}
+			player_hud_crosshairs[name] = id_table
+		end
+
+		if params == "remove" then
+			for _, id in ipairs(id_table) do
+				player:hud_remove(id)
+			end
+			return true, "Crosshairs removed."
+		end
+
+		-- params == "add" or default
+		for _, def in ipairs(hud_crosshair_defs) do
+			table.insert(id_table, player:hud_add(def))
+		end
+		return true, #hud_crosshair_defs .." Crosshairs added."
+	end
+})
+
+
 minetest.register_on_leaveplayer(function(player)
-	player_font_huds[player:get_player_name()] = nil
-	player_waypoints[player:get_player_name()] = nil
+	local playername = player:get_player_name()
+	player_font_huds[playername] = nil
+	player_waypoints[playername] = nil
+	player_hud_images[playername] = nil
+	player_hud_crosshairs[playername] = nil
 end)
 
 minetest.register_chatcommand("hudprint", {
@@ -228,5 +399,28 @@ minetest.register_chatcommand("hudprint", {
 		end
 
 		return true, s
+	end
+})
+
+local hud_flags = {"hotbar", "healthbar", "crosshair", "wielditem", "breathbar",
+		"minimap", "minimap_radar", "basic_debug", "chat"}
+
+minetest.register_chatcommand("hudtoggleflag", {
+	description = "Toggles a hud flag.",
+	params = "[ ".. table.concat(hud_flags, " | ") .." ]",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local flags = player:hud_get_flags()
+		if flags[params] == nil then
+			return false, "Unknown hud flag."
+		end
+
+		flags[params] = not flags[params]
+		player:hud_set_flags(flags)
+		return true, "Flag \"".. params .."\" set to ".. tostring(flags[params]) .. "."
 	end
 })
