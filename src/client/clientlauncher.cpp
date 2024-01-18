@@ -297,9 +297,9 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 #endif
 
 		/* Save the settings when leaving the game.
-		 * This makes sure that setting changes made in-game are persisted even in
-		 * case of an unclean shutdown (e.g. a crash).
-		 * This is useful on Android because closing the app from the
+		 * This makes sure that setting changes made in-game are persisted even
+		 * in case of a later unclean exit from the mainmenu.
+		 * This is especially useful on Android because closing the app from the
 		 * "Recents screen" results in an unclean shutdown.
 		 * Caveat: This means that the settings are saved twice when exiting Minetest.
 		 */
@@ -571,9 +571,9 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	m_rendering_engine->get_scene_manager()->clear();
 
 	/* Save the settings when leaving the mainmenu.
-	 * This makes sure that settings like the selected world or the player name
-	 * are persisted even in case of an unclean shutdown (e.g. a crash).
-	 * This is necessary on Android because closing the app from the
+	 * This makes sure that setting changes made in the mainmenu are persisted
+	 * even in case of a later unclean exit from the game.
+	 * This is especially useful on Android because closing the app from the
 	 * "Recents screen" results in an unclean shutdown.
 	 * Caveat: This means that the settings are saved twice when exiting Minetest.
 	 */
