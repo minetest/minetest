@@ -2044,12 +2044,13 @@ std::string GenericCAO::debugInfoText()
 	return os.str();
 }
 
-void GenericCAO::updateMeshCulling()
+void GenericCAO::updateMeshCulling(CameraMode mode)
 {
 	if (!m_is_local_player)
 		return;
 
-	const bool hidden = m_client->getCamera()->getCameraMode() == CAMERA_MODE_FIRST;
+	const bool hidden = (mode == CAMERA_MODE_NONE ?
+		m_client->getCamera()->getCameraMode() : mode) == CAMERA_MODE_FIRST;
 
 	scene::ISceneNode *node = getSceneNode();
 

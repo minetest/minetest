@@ -306,7 +306,7 @@ void ClientMap::updateDrawList()
 	const v3s16 camera_block = getContainerPos(cam_pos_nodes, MAP_BLOCKSIZE);
 	m_drawlist = std::map<v3s16, MapBlock*, MapBlockComparer>(MapBlockComparer(camera_block));
 
-	auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
+	//auto is_frustum_culled = m_client->getCamera()->getFrustumCuller();
 
 	// Uncomment to debug occluded blocks in the wireframe mode
 	// TODO: Include this as a flag for an extended debugging setting
@@ -350,15 +350,15 @@ void ClientMap::updateDrawList()
 
 				v3s16 block_pos_nodes = block->getPosRelative();
 
-				if (mesh) {
-					mesh_sphere_center = intToFloat(block_pos_nodes, BS)
-							+ mesh->getBoundingSphereCenter();
-					mesh_sphere_radius = mesh->getBoundingRadius();
-				} else {
-					mesh_sphere_center = intToFloat(block_pos_nodes, BS)
-							+ v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
-					mesh_sphere_radius = 0.0f;
-				}
+				//if (mesh) {
+				//	mesh_sphere_center = intToFloat(block_pos_nodes, BS)
+				//			+ mesh->getBoundingSphereCenter();
+				//	mesh_sphere_radius = mesh->getBoundingRadius();
+				//} else {
+				//	mesh_sphere_center = intToFloat(block_pos_nodes, BS)
+				//			+ v3f((MAP_BLOCKSIZE * 0.5f - 0.5f) * BS);
+				//	mesh_sphere_radius = 0.0f;
+				//}
 
 				// First, perform a simple distance check.
 				if (!m_control.range_all &&
@@ -373,12 +373,12 @@ void ClientMap::updateDrawList()
 				// Frustum culling
 				// Only do coarse culling here, to account for fast camera movement.
 				// This is needed because this function is not called every frame.
-				float frustum_cull_extra_radius = 300.0f;
-				if (is_frustum_culled(mesh_sphere_center,
-						mesh_sphere_radius + frustum_cull_extra_radius)) {
-					blocks_frustum_culled++;
-					continue;
-				}
+				//float frustum_cull_extra_radius = 300.0f;
+				//if (is_frustum_culled(mesh_sphere_center,
+				//		mesh_sphere_radius + frustum_cull_extra_radius)) {
+				//	blocks_frustum_culled++;
+				//	continue;
+				//}
 
 				// Raytraced occlusion culling - send rays from the camera to the block's corners
 				if (!m_control.range_all && occlusion_culling_enabled && m_enable_raytraced_culling &&
@@ -472,12 +472,12 @@ void ClientMap::updateDrawList()
 			// Frustum culling
 			// Only do coarse culling here, to account for fast camera movement.
 			// This is needed because this function is not called every frame.
-			float frustum_cull_extra_radius = 300.0f;
-			if (is_frustum_culled(mesh_sphere_center,
-					mesh_sphere_radius + frustum_cull_extra_radius)) {
-				blocks_frustum_culled++;
-				continue;
-			}
+			//float frustum_cull_extra_radius = 300.0f;
+			//if (is_frustum_culled(mesh_sphere_center,
+			//		mesh_sphere_radius + frustum_cull_extra_radius)) {
+			//	blocks_frustum_culled++;
+			//	continue;
+			//}
 
 			// Calculate the vector from the camera block to the current block
 			// We use it to determine through which sides of the current block we can continue the search
@@ -487,12 +487,12 @@ void ClientMap::updateDrawList()
 			u8 visible_outer_sides = flags & 0x07;
 
 			// Raytraced occlusion culling - send rays from the camera to the block's corners
-			if (occlusion_culling_enabled && m_enable_raytraced_culling &&
-					block && mesh &&
-					visible_outer_sides != 0x07 && isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
-				blocks_occlusion_culled++;
-				continue;
-			}
+			//if (occlusion_culling_enabled && m_enable_raytraced_culling &&
+			//		block && mesh &&
+			//		visible_outer_sides != 0x07 && isMeshOccluded(block, mesh_grid.cell_size, cam_pos_nodes)) {
+			//	blocks_occlusion_culled++;
+			//	continue;
+			//}
 
 			if (mesh_grid.cell_size > 1) {
 				// Block meshes are stored in the corner block of a chunk
@@ -579,7 +579,7 @@ void ClientMap::updateDrawList()
 				auto traverse_far_side = [&](s8 next_pos_offset) {
 					// far side is visible if adjacent near sides are transparent, or if opposite side on dominant axis is transparent
 					bool side_visible = ((near_transparency & adjacent_sides) | (near_transparency & my_side & dominant_axis)) != 0;
-					side_visible = side_visible && ((far_side_mask & transparent_sides) != 0);
+					//side_visible = side_visible && ((far_side_mask & transparent_sides) != 0);
 
 					v3s16 next_pos = block_coord;
 					next_pos[axis] += next_pos_offset;
@@ -764,8 +764,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		v3f mesh_sphere_center = intToFloat(block->getPosRelative(), BS)
 				+ block_mesh->getBoundingSphereCenter();
 		f32 mesh_sphere_radius = block_mesh->getBoundingRadius();
-		if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
-			continue;
+		//if (is_frustum_culled(mesh_sphere_center, mesh_sphere_radius))
+		//	continue;
 
 		v3f block_pos_r = intToFloat(block->getPosRelative() + MAP_BLOCKSIZE / 2, BS);
 

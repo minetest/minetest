@@ -27,6 +27,7 @@ set(client_SRCS
 	${sound_SRCS}
 	${CMAKE_CURRENT_SOURCE_DIR}/meshgen/collector.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/anaglyph.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/render/cameras.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/core.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/factory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/render/interlaced.cpp
@@ -66,9 +67,10 @@ set(client_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/renderingengine.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sky.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/texturepaths.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/texturesource.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tile.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/universalcamera.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/wieldmesh.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadows.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/shadows/dynamicshadowsrender.cpp

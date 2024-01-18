@@ -72,7 +72,7 @@ struct Nametag
 	}
 };
 
-enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
+enum CameraMode {CAMERA_MODE_NONE = -1, CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance

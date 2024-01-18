@@ -849,7 +849,35 @@ enum ToClientCommand : u16
 			f32 center_weight_power
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x64,
+	TOCLIENT_SET_CAMERA = 0x64,
+	/*
+		u16 id
+		u16 flags
+		if flags & 0x01
+			f32[3] pos
+			#interpolation interpolate_pos
+		if flags & 0x02
+			f32[3] rotation
+			#interpolation interpolate_rotation
+		if flags & 0x04
+			f32 fov
+			#interpolation interpolate_fov
+		if flags & 0x08
+			f32 zoom
+			#interpolation interpolate_zoom
+		if flags & 0x10
+			f32[3] target
+		if flags & 0x20
+			f32[4] viewport (topleft.xy, bottomright.xy)
+		if flags & 0x40
+			u16 attachment
+		#interpolation:
+			u8 interpolate
+			if interpolate
+				f32 speed
+	 */
+
+	TOCLIENT_NUM_MSG_TYPES = 0x65,
 };
 
 enum ToServerCommand : u16

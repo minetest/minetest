@@ -102,6 +102,11 @@ public:
 		m_clear = true;
 	}
 
+	virtual v2u32 getSize(PipelineContext &context)
+	{
+		return context.target_size;
+	}
+
 protected:
 	bool m_clear {true};
 };
@@ -182,6 +187,7 @@ public:
 	TextureBufferOutput(TextureBuffer *buffer, const std::vector<u8> &texture_map, u8 depth_stencil);
 	virtual ~TextureBufferOutput() override;
 	void activate(PipelineContext &context) override;
+	v2u32 getSize(PipelineContext &context) override;
 private:
 	static const u8 NO_DEPTH_TEXTURE = 255;
 
@@ -277,6 +283,7 @@ public:
 	bool isConfigured() { return upstream != nullptr; }
 	void setRenderTarget(RenderTarget *value) { upstream = value; }
 	virtual void activate(PipelineContext &context) override;
+	virtual v2u32 getSize(PipelineContext &context) override;
 private:
 	RenderTarget *upstream { nullptr };
 };

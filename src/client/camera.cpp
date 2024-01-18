@@ -375,6 +375,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 	{
 		v3f eye_offset = player->getEyeOffset();
 		switch(m_camera_mode) {
+		case CAMERA_MODE_NONE:
 		case CAMERA_MODE_FIRST:
 			eye_offset += player->eye_offset_first;
 			break;

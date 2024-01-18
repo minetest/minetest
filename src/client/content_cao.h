@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "constants.h"
 #include <cassert>
+#include "universalcamera.h"
+#include "client/camera.h"
 #include <memory>
 
 class Camera;
@@ -289,5 +291,5 @@ public:
 		return m_prop.infotext;
 	}
 
-	void updateMeshCulling();
+	void updateMeshCulling(CameraMode mode = CAMERA_MODE_NONE);
 };
