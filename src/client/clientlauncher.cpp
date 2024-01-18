@@ -300,7 +300,7 @@ bool ClientLauncher::run(GameStartData &start_data, const Settings &cmd_args)
 		 * This makes sure that setting changes made in-game are persisted even
 		 * in case of a later unclean exit from the mainmenu.
 		 * This is especially useful on Android because closing the app from the
-		 * "Recents screen" results in an unclean shutdown.
+		 * "Recents screen" results in an unclean exit.
 		 * Caveat: This means that the settings are saved twice when exiting Minetest.
 		 */
 		if (!g_settings_path.empty())
@@ -574,7 +574,7 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	 * This makes sure that setting changes made in the mainmenu are persisted
 	 * even in case of a later unclean exit from the game.
 	 * This is especially useful on Android because closing the app from the
-	 * "Recents screen" results in an unclean shutdown.
+	 * "Recents screen" results in an unclean exit.
 	 * Caveat: This means that the settings are saved twice when exiting Minetest.
 	 */
 	if (!g_settings_path.empty())

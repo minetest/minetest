@@ -609,7 +609,7 @@ end
 
 
 -- On Android, closing the app via the "Recents screen" won't result in a clean
--- shutdown, discarding any setting changes made by the user.
+-- exit, discarding any setting changes made by the user.
 -- To avoid that, we write the settings file in more cases on Android.
 function write_settings_early()
 	if PLATFORM == "Android" then
