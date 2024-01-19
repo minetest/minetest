@@ -70,9 +70,20 @@ void TouchInteraction::serialize(std::ostream &os) const
 
 void TouchInteraction::deSerialize(std::istream &is)
 {
-	pointed_nothing = (TouchInteractionMode)readU8(is);
-	pointed_node = (TouchInteractionMode)readU8(is);
-	pointed_object = (TouchInteractionMode)readU8(is);
+	u8 tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	pointed_nothing = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	pointed_node = (TouchInteractionMode)tmp;
+
+	tmp = readU8(is);
+	if (is.eof())
+		throw SerializationError("");
+	pointed_object = (TouchInteractionMode)tmp;
 }
 
 /*
@@ -301,10 +312,6 @@ void ItemDefinition::deSerialize(std::istream &is, u16 protocol_version)
 			place_param2 = readU8(is);
 
 		wallmounted_rotate_vertical = readU8(is); // 0 if missing
-
-		if (is.eof())
-			throw SerializationError("");
-
 		touch_interaction.deSerialize(is);
 	} catch(SerializationError &e) {};
 }
