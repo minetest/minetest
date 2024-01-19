@@ -144,6 +144,8 @@ local wallmounted_to_dir = {
 	vector.new(-1,  0,  0),
 	vector.new( 0,  0,  1),
 	vector.new( 0,  0, -1),
+	vector.new( 0,  1,  0),
+	vector.new( 0, -1,  0),
 }
 function core.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted % 8]

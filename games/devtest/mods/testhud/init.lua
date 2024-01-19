@@ -152,7 +152,8 @@ minetest.register_chatcommand("hudwaypoints", {
 			type = "image_waypoint",
 			text = "testhud_waypoint.png",
 			world_pos = player:get_pos(),
-			scale = {x = 3, y = 3},
+			-- 20% of screen width, 3x image height
+			scale = {x = -20, y = 3},
 			offset = {x = 0, y = -32}
 		}
 		if not player_waypoints[name] then
@@ -209,3 +210,23 @@ minetest.register_on_leaveplayer(function(player)
 	player_font_huds[player:get_player_name()] = nil
 	player_waypoints[player:get_player_name()] = nil
 end)
+
+minetest.register_chatcommand("hudprint", {
+	description = "Writes all used Lua HUD elements into chat.",
+	func = function(name, params)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "No player."
+		end
+
+		local s = "HUD elements:"
+		for k, elem in pairs(player:hud_get_all()) do
+			local ename = dump(elem.name)
+			local etype = dump(elem.type)
+			local epos = "{x="..elem.position.x..", y="..elem.position.y.."}"
+			s = s.."\n["..k.."]  type = "..etype.." | name = "..ename.." | pos = ".. epos
+		end
+
+		return true, s
+	end
+})

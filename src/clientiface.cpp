@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include "clientiface.h"
+#include "debug.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
@@ -31,22 +32,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "log.h"
 #include "util/srp.h"
+#include "util/string.h"
 #include "face_position_cache.h"
+
+static std::string string_sanitize_ascii(const std::string &s, u32 max_length)
+{
+	std::string out;
+	for (char c : s) {
+		if (out.size() >= max_length)
+			break;
+		if (c > 32 && c < 127)
+			out.push_back(c);
+	}
+	return out;
+}
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
 	"Disconnecting",
 	"Denied",
 	"Created",
-	"AwaitingInit2",
 	"HelloSent",
+	"AwaitingInit2",
 	"InitDone",
 	"DefinitionsSent",
 	"Active",
 	"SudoMode",
 };
-
-
 
 std::string ClientInterface::state2Name(ClientState state)
 {
@@ -639,16 +651,31 @@ void RemoteClient::resetChosenMech()
 	chosen_mech = AUTH_MECHANISM_NONE;
 }
 
-u64 RemoteClient::uptime() const
+void RemoteClient::setEncryptedPassword(const std::string& pwd)
 {
-	return porting::getTimeS() - m_connection_time;
+	FATAL_ERROR_IF(!str_starts_with(pwd, "#1#"), "must be srp");
+	enc_pwd = pwd;
+	// We just set SRP encrypted password, we accept only it now
+	allowed_auth_mechs = AUTH_MECHANISM_SRP;
+}
+
+void RemoteClient::setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
+{
+	m_version_major = major;
+	m_version_minor = minor;
+	m_version_patch = patch;
+	m_full_version = string_sanitize_ascii(full, 64);
+}
+
+void RemoteClient::setLangCode(const std::string &code)
+{
+	m_lang_code = string_sanitize_ascii(code, 12);
 }
 
 ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
 :
 	m_con(con),
-	m_env(NULL),
-	m_print_info_timer(0.0f)
+	m_env(nullptr)
 {
 
 }
@@ -705,6 +732,34 @@ void ClientInterface::step(float dtime)
 	if (m_print_info_timer >= 30.0f) {
 		m_print_info_timer = 0.0f;
 		UpdatePlayerList();
+	}
+
+	m_check_linger_timer += dtime;
+	if (m_check_linger_timer < 1.0f)
+		return;
+	m_check_linger_timer = 0;
+
+	RecursiveMutexAutoLock clientslock(m_clients_mutex);
+	for (const auto &it : m_clients) {
+		auto state = it.second->getState();
+		if (state >= CS_HelloSent)
+			continue;
+		if (it.second->uptime() <= LINGER_TIMEOUT)
+			continue;
+		// CS_Created means nobody has even noticed the client is there
+		//            (this is before on_prejoinplayer runs)
+		// CS_Invalid should not happen
+		// -> log those as warning, the rest as info
+		std::ostream &os = state == CS_Created || state == CS_Invalid ?
+			warningstream : infostream;
+		try {
+			Address addr = m_con->GetPeerAddress(it.second->peer_id);
+			os << "Disconnecting lingering client from "
+				<< addr.serializeString() << " (state="
+				<< state2Name(state) << ")" << std::endl;
+			m_con->DisconnectPeer(it.second->peer_id);
+		} catch (con::PeerNotFoundException &e) {
+		}
 	}
 }
 

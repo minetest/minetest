@@ -74,7 +74,7 @@ jobs:
     env:
       VCPKG_VERSION: 8eb57355a4ffb410a2e94c07b4dca2dffbee8e50
       # 2023.10.19
-      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry
+      vcpkg_packages: zlib zstd curl[winssl] openal-soft libvorbis libogg libjpeg-turbo sqlite3 freetype luajit gmp jsoncpp opengl-registry sdl2
     strategy:
       fail-fast: false
       matrix:
@@ -124,6 +124,13 @@ jobs:
       - name: Build Minetest
         run: cmake --build . --config Release
 
+      - name: Unittests
+        # need this workaround for stdout to work
+        run: |
+          $proc = start .\bin\Release\minetest.exe --run-unittests -NoNewWindow -Wait -PassThru
+          exit $proc.ExitCode
+        continue-on-error: true # FIXME!!
+
       - name: CPack
         run: |
           If ($env:TYPE -eq "installer")
@@ -134,11 +141,9 @@ jobs:
           {
             cpack -G ZIP -B "$env:GITHUB_WORKSPACE\Package"
           }
+          rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
         env:
           TYPE: ${{matrix.type}}
-
-      - name: Package Clean
-        run: rm -r $env:GITHUB_WORKSPACE\Package\_CPack_Packages
 
       - uses: actions/upload-artifact@v3
         with:

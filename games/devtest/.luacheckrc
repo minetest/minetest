@@ -27,6 +27,7 @@ read_globals = {
 	"Settings",
 	"check",
 	"PseudoRandom",
+	"PcgRandom",
 
 	string = {fields = {"split", "trim"}},
 	table  = {fields = {"copy", "getn", "indexof", "insert_all"}},

@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #ifndef SERVER
 #include "irr_ptr.h"
+#include <IFileArchive.h>
+#include <IFileSystem.h>
 #endif
 
 namespace fs

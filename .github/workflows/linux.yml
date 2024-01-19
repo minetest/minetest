@@ -73,7 +73,10 @@ jobs:
 
       - name: Test
         run: |
-          ./bin/minetest --run-unittests
+          mkdir nowrite
+          chmod a-w nowrite
+          cd nowrite
+          ../bin/minetest --run-unittests
 
   # Older clang version (should be close to our minimum supported version)
   clang_7:

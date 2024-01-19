@@ -1230,8 +1230,13 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 
 	*pkt >> server_id >> stat;
 
+	// Do nothing if stat is not known
+	if (stat >= HudElementStat_END) {
+		return;
+	}
+
 	// Keep in sync with:server.cpp -> SendHUDChange
-	switch ((HudElementStat)stat) {
+	switch (static_cast<HudElementStat>(stat)) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
 		case HUD_STAT_ALIGN:

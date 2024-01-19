@@ -691,8 +691,12 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	init_log_streams(cmd_args);
 
 	// Initialize random seed
-	srand(time(0));
-	mysrand(time(0));
+	{
+		u32 seed = static_cast<u32>(time(nullptr)) << 16;
+		seed |= porting::getTimeUs() & 0xffff;
+		srand(seed);
+		mysrand(seed);
+	}
 
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));

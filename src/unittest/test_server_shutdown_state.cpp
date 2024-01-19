@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "test.h"
-#include "test_config.h"
 
 #include "mock_server.h"
 

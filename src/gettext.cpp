@@ -20,14 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <cstdlib>
 #include "gettext.h"
 #include "util/string.h"
+#include "porting.h"
 #include "log.h"
-
-#ifdef _WIN32
-#define setenv(n,v,o) _putenv_s(n,v)
-#endif
 
 #if USE_GETTEXT && defined(_MSC_VER)
 #include <windows.h>
@@ -119,7 +115,7 @@ static const char* MSVC_LocaleLookup(const char* raw_shortname)
 	return "";
 }
 
-static void MSVC_LocaleWorkaround()
+static void MSVC_LocaleWorkaround(int argc, char* argv[])
 {
 	errorstream << "MSVC localization workaround active.  "
 		"Restarting " PROJECT_NAME_C " in a new environment!" << std::endl;
@@ -165,7 +161,6 @@ static void MSVC_LocaleWorkaround()
 		errorstream << "*******************************************************" << std::endl;
 	}
 }
-}
 
 #endif
 
@@ -195,7 +190,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 #ifndef SERVER
 		// Hack to force gettext to see the right environment
 		if (current_language != configured_language)
-			MSVC_LocaleWorkaround();
+			MSVC_LocaleWorkaround(argc, argv);
 #else
 		errorstream << "*******************************************************" << std::endl;
 		errorstream << "Can't apply locale workaround for server!" << std::endl;

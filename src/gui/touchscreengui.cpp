@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
+#include <ISceneCollisionManager.h>
 
 #include <iostream>
 #include <algorithm>

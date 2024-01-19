@@ -116,6 +116,8 @@ private:
 	// next(self, min=0, max=32767) -> get next value
 	static int l_next(lua_State *L);
 
+	// save state
+	static int l_get_state(lua_State *L);
 public:
 	LuaPseudoRandom(s32 seed) : m_pseudo(seed) {}
 
@@ -150,6 +152,9 @@ private:
 	// get next normally distributed random value
 	static int l_rand_normal_dist(lua_State *L);
 
+	// save and restore state
+	static int l_get_state(lua_State *L);
+	static int l_set_state(lua_State *L);
 public:
 	LuaPcgRandom(u64 seed) : m_rnd(seed) {}
 	LuaPcgRandom(u64 seed, u64 seq) : m_rnd(seed, seq) {}

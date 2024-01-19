@@ -18,13 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "test.h"
-#include "test_config.h"
 
 #include "mock_inventorymanager.h"
 #include "mock_server.h"
 #include "mock_serveractiveobject.h"
 
-#include <scripting_server.h>
+#include "scripting_server.h"
 
 
 class TestMoveAction : public TestBase
@@ -47,16 +46,36 @@ public:
 
 static TestMoveAction g_test_instance;
 
+const static char *helper_lua_src = R"(
+core.register_allow_player_inventory_action(function(player, action, inventory, info)
+	if action == "move" then
+		return info.count
+	end
+
+	if info.stack:get_name() == "default:water" then
+		return 0
+	end
+	if info.stack:get_name() == "default:lava" then
+		return 5
+	end
+
+	return info.stack:get_count()
+end)
+)";
+
 void TestMoveAction::runTests(IGameDef *gamedef)
 {
-	MockServer server;
+	MockServer server(getTestTempDirectory());
+
+	const auto helper_lua = getTestTempFile();
+	std::ofstream ofs(helper_lua, std::ios::out | std::ios::binary);
+	ofs << helper_lua_src;
+	ofs.close();
 
 	ServerScripting server_scripting(&server);
 	try {
 		server_scripting.loadMod(Server::getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
-		server_scripting.loadMod(
-			std::string(HELPERS_PATH) + DIR_DELIM "helper_moveaction.lua", BUILTIN_MOD_NAME
-		);
+		server_scripting.loadMod(helper_lua, BUILTIN_MOD_NAME);
 	} catch (ModError &e) {
 		// Print backtrace in case of syntax errors
 		rawstream << e.what() << std::endl;

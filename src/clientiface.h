@@ -181,8 +181,8 @@ enum ClientState
 	CS_Disconnecting,
 	CS_Denied,
 	CS_Created,
-	CS_AwaitingInit2,
 	CS_HelloSent,
+	CS_AwaitingInit2,
 	CS_InitDone,
 	CS_DefinitionsSent,
 	CS_Active,
@@ -243,14 +243,13 @@ public:
 	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
 	void *auth_data = nullptr;
 	u32 allowed_auth_mechs = 0;
-	u32 allowed_sudo_mechs = 0;
 
 	void resetChosenMech();
 
-	bool isSudoMechAllowed(AuthMechanism mech)
-	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
+
+	void setEncryptedPassword(const std::string& pwd);
 
 	RemoteClient();
 	~RemoteClient() = default;
@@ -329,16 +328,10 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u64 uptime() const;
+	u64 uptime() const { return porting::getTimeS() - m_connection_time; }
 
 	/* set version information */
-	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
-	{
-		m_version_major = major;
-		m_version_minor = minor;
-		m_version_patch = patch;
-		m_full_version = full;
-	}
+	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full);
 
 	/* read version information */
 	u8 getMajor() const { return m_version_major; }
@@ -346,7 +339,7 @@ public:
 	u8 getPatch() const { return m_version_patch; }
 	const std::string &getFullVer() const { return m_full_version; }
 
-	void setLangCode(const std::string &code) { m_lang_code = code; }
+	void setLangCode(const std::string &code);
 	const std::string &getLangCode() const { return m_lang_code; }
 
 	void setCachedAddress(const Address &addr) { m_addr = addr; }
@@ -550,7 +543,10 @@ private:
 	// Environment
 	ServerEnvironment *m_env;
 
-	float m_print_info_timer;
+	float m_print_info_timer = 0;
+	float m_check_linger_timer = 0;
 
 	static const char *statenames[];
+
+	static constexpr int LINGER_TIMEOUT = 10;
 };

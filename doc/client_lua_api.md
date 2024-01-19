@@ -8,7 +8,7 @@ Introduction
 
 ** WARNING: The client API is currently unstable, and may break/change without warning. **
 
-Content and functionality can be added to Minetest 0.4.15-dev+ by using Lua
+Content and functionality can be added to Minetest by using Lua
 scripting in run-time loaded mods.
 
 A mod is a self-contained bunch of scripts, textures and other related
@@ -62,7 +62,7 @@ Generic:
 
 In a run-in-place version (e.g. the distributed windows version):
 
-* `minetest-0.4.x/clientmods/` (User-installed mods)
+* `minetest/clientmods/` (User-installed mods)
 
 On an installed version on Linux:
 
@@ -185,15 +185,9 @@ Examples of sound parameter tables:
     pos = {x = 1, y = 2, z = 3},
     gain = 1.0, -- default
 }
--- Play connected to an object, looped
-{
-    object = <an ObjectRef>,
-    gain = 1.0, -- default
-    loop = true,
-}
 ```
 
-Looped sounds must either be connected to an object or played locationless.
+Looped sounds must be played locationless.
 
 ### SimpleSoundSpec
 * e.g. `""`
@@ -220,387 +214,20 @@ For helper functions see "Vector helpers".
 
 Flag Specifier Format
 ---------------------
-Flags using the standardized flag specifier format can be specified in either of
-two ways, by string or table.
 
-The string format is a comma-delimited set of flag names; whitespace and
-unrecognized flag fields are ignored. Specifying a flag in the string sets the
-flag, and specifying a flag prefixed by the string `"no"` explicitly
-clears the flag from whatever the default may be.
-
-In addition to the standard string flag format, the schematic flags field can
-also be a table of flag names to boolean values representing whether or not the
-flag is set. Additionally, if a field with the flag name prefixed with `"no"`
-is present, mapped to a boolean of any value, the specified flag is unset.
-
-E.g. A flag field of value
-
-```lua
-{place_center_x = true, place_center_y=false, place_center_z=true}
-```
-
-is equivalent to
-
-```lua
-{place_center_x = true, noplace_center_y=true, place_center_z=true}
-```
-
-which is equivalent to
-
-```lua
-"place_center_x, noplace_center_y, place_center_z"
-```
-
-or even
-
-```lua
-"place_center_x, place_center_z"
-```
-
-since, by default, no schematic attributes are set.
+Refer to `lua_api.md`.
 
 Formspec
 --------
+
 Formspec defines a menu. It is a string, with a somewhat strange format.
 
-Spaces and newlines can be inserted between the blocks, as is used in the
-examples.
-
-### Examples
-
-#### Chest
-
-    size[8,9]
-    list[context;main;0,0;8,4;]
-    list[current_player;main;0,5;8,4;]
-
-#### Furnace
-
-    size[8,9]
-    list[context;fuel;2,3;1,1;]
-    list[context;src;2,1;1,1;]
-    list[context;dst;5,1;2,2;]
-    list[current_player;main;0,5;8,4;]
-
-#### Minecraft-like player inventory
-
-    size[8,7.5]
-    image[1,0.6;1,2;player.png]
-    list[current_player;main;0,3.5;8,4;]
-    list[current_player;craft;3,0;3,3;]
-    list[current_player;craftpreview;7,1;1,1;]
-
-### Elements
-
-#### `size[<W>,<H>,<fixed_size>]`
-* Define the size of the menu in inventory slots
-* `fixed_size`: `true`/`false` (optional)
-* deprecated: `invsize[<W>,<H>;]`
-
-#### `container[<X>,<Y>]`
-* Start of a container block, moves all physical elements in the container by (X, Y)
-* Must have matching container_end
-* Containers can be nested, in which case the offsets are added
-  (child containers are relative to parent containers)
-
-#### `container_end[]`
-* End of a container, following elements are no longer relative to this container
-
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
-* Show an inventory list
-
-#### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
-* Show an inventory list
-
-#### `listring[<inventory location>;<list name>]`
-* Allows to create a ring of inventory lists
-* Shift-clicking on items in one element of the ring
-  will send them to the next inventory list inside the ring
-* The first occurrence of an element inside the ring will
-  determine the inventory where items will be sent to
-
-#### `listring[]`
-* Shorthand for doing `listring[<inventory location>;<list name>]`
-  for the last two inventory lists added by list[...]
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-* Sets color of slots border
-
-#### `listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]`
-* Sets background color of slots as `ColorString`
-* Sets background color of slots on mouse hovering
-* Sets color of slots border
-* Sets default background color of tooltips
-* Sets default font color of tooltips
-
-#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
-* Adds tooltip for an element
-* `<bgcolor>` tooltip background color as `ColorString` (optional)
-* `<fontcolor>` tooltip font color as `ColorString` (optional)
-
-#### `image[<X>,<Y>;<W>,<H>;<texture name>]`
-* Show an image
-* Position and size units are inventory slots
-
-#### `item_image[<X>,<Y>;<W>,<H>;<item name>]`
-* Show an inventory image of registered item/node
-* Position and size units are inventory slots
-
-#### `bgcolor[<color>;<fullscreen>]`
-* Sets background color of formspec as `ColorString`
-* If `true`, the background color is drawn fullscreen (does not affect the size of the formspec)
-
-#### `background[<X>,<Y>;<W>,<H>;<texture name>]`
-* Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
-* Example for formspec 8x4 in 16x resolution: image shall be sized
-  8 times 16px  times  4 times 16px.
-
-#### `background[<X>,<Y>;<W>,<H>;<texture name>;<auto_clip>]`
-* Use a background. Inventory rectangles are not drawn then.
-* Position and size units are inventory slots
-* Example for formspec 8x4 in 16x resolution:
-  image shall be sized 8 times 16px  times  4 times 16px
-* If `true` the background is clipped to formspec size
-  (`x` and `y` are used as offset values, `w` and `h` are ignored)
-
-#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* Textual password style field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centered on `h`
-* Position and size units are inventory slots
-* `name` is the name of the field as returned in fields to `on_receive_fields`
-* `label`, if not blank, will be text printed on the top left above the field
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
-* Textual field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* `x` and `y` position the field relative to the top left of the menu
-* `w` and `h` are the size of the field
-* Fields are a set height, but will be vertically centered on `h`
-* Position and size units are inventory slots
-* `name` is the name of the field as returned in fields to `on_receive_fields`
-* `label`, if not blank, will be text printed on the top left above the field
-* `default` is the default value of the field
-    * `default` may contain variable references such as `${text}'` which
-      will fill the value from the metadata value `text`
-    * **Note**: no extra text or more than a single variable is supported ATM.
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field[<name>;<label>;<default>]`
-* As above, but without position/size units
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
-  of this field.
-* Special field for creating simple forms, such as sign text input
-* Must be used without a `size[]` element
-* A "Proceed" button will be added automatically
-* See field_close_on_enter to stop enter closing the formspec
-
-#### `field_close_on_enter[<name>;<close_on_enter>]`
-* <name> is the name of the field
-* if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
-* defaults to true when not specified (ie: no tag for a field)
-
-#### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
-* Same as fields above, but with multi-line input
-
-#### `label[<X>,<Y>;<label>]`
-* `x` and `y` work as per field
-* `label` is the text on the label
-* Position and size units are inventory slots
-
-#### `vertlabel[<X>,<Y>;<label>]`
-* Textual label drawn vertically
-* `x` and `y` work as per field
-* `label` is the text on the label
-* Position and size units are inventory slots
-
-#### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* Clickable button. When clicked, fields will be sent.
-* `x`, `y` and `name` work as per field
-* `w` and `h` are the size of the button
-* Fixed button height. It will be vertically centered on `h`
-* `label` is the text on the button
-* Position and size units are inventory slots
-
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
-* `texture name` is the filename of an image
-* Position and size units are inventory slots
-
-#### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
-* `x`, `y`, `w`, `h`, and `name` work as per button
-* `texture name` is the filename of an image
-* Position and size units are inventory slots
-* `noclip=true` means the image button doesn't need to be within specified formsize
-* `drawborder`: draw button border or not
-* `pressed texture name` is the filename of an image on pressed state
-
-#### `item_image_button[<X>,<Y>;<W>,<H>;<item name>;<name>;<label>]`
-* `x`, `y`, `w`, `h`, `name` and `label` work as per button
-* `item name` is the registered name of an item/node,
-   tooltip will be made out of its description
-   to override it use tooltip element
-* Position and size units are inventory slots
-
-#### `button_exit[<X>,<Y>;<W>,<H>;<name>;<label>]`
-* When clicked, fields will be sent and the form will quit.
-
-#### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
-* When clicked, fields will be sent and the form will quit.
-
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
-* Scrollable item list showing arbitrary text elements
-* `x` and `y` position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
-* `name` fieldname sent to server on doubleclick value is current selected element
-* `listelements` can be prepended by #color in hexadecimal format RRGGBB (only),
-     * if you want a listelement to start with "#" write "##".
-
-#### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]`
-* Scrollable itemlist showing arbitrary text elements
-* `x` and `y` position the item list relative to the top left of the menu
-* `w` and `h` are the size of the item list
-* `name` fieldname sent to server on doubleclick value is current selected element
-* `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
-     * if you want a listelement to start with "#" write "##"
-* Index to be selected within textlist
-* `true`/`false`: draw transparent background
-* See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
-
-#### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
-* Show a tab**header** at specific position (ignores formsize)
-* `x` and `y` position the itemlist relative to the top left of the menu
-* `name` fieldname data is transferred to Lua
-* `caption 1`...: name shown on top of tab
-* `current_tab`: index of selected tab 1...
-* `transparent` (optional): show transparent
-* `draw_border` (optional): draw border
-
-#### `box[<X>,<Y>;<W>,<H>;<color>]`
-* Simple colored semitransparent box
-* `x` and `y` position the box relative to the top left of the menu
-* `w` and `h` are the size of box
-* `color` is color specified as a `ColorString`
-
-#### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
-* Show a dropdown field
-* **Important note**: There are two different operation modes:
-     1. handle directly on change (only changed dropdown is submitted)
-     2. read the value on pressing a button (all dropdown values are available)
-* `x` and `y` position of dropdown
-* Width of dropdown
-* Fieldname data is transferred to Lua
-* Items to be shown in dropdown
-* Index of currently selected dropdown item
-
-#### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
-* Show a checkbox
-* `x` and `y`: position of checkbox
-* `name` fieldname data is transferred to Lua
-* `label` to be shown left of checkbox
-* `selected` (optional): `true`/`false`
-
-#### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
-* Show a scrollbar
-* There are two ways to use it:
-     1. handle the changed event (only changed scrollbar is available)
-     2. read the value on pressing a button (all scrollbars are available)
-* `x` and `y`: position of trackbar
-* `w` and `h`: width and height
-* `orientation`:  `vertical`/`horizontal`
-* Fieldname data is transferred to Lua
-* Value this trackbar is set to (`0`-`1000`)
-* See also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
-
-#### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
-* Show scrollable table using options defined by the previous `tableoptions[]`
-* Displays cells as defined by the previous `tablecolumns[]`
-* `x` and `y`: position the itemlist relative to the top left of the menu
-* `w` and `h` are the size of the itemlist
-* `name`: fieldname sent to server on row select or doubleclick
-* `cell 1`...`cell n`: cell contents given in row-major order
-* `selected idx`: index of row to be selected within table (first row = `1`)
-* See also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
-
-#### `tableoptions[<opt 1>;<opt 2>;...]`
-* Sets options for `table[]`
-* `color=#RRGGBB`
-     * default text color (`ColorString`), defaults to `#FFFFFF`
-* `background=#RRGGBB`
-     * table background color (`ColorString`), defaults to `#000000`
-* `border=<true/false>`
-     * should the table be drawn with a border? (default: `true`)
-* `highlight=#RRGGBB`
-     * highlight background color (`ColorString`), defaults to `#466432`
-* `highlight_text=#RRGGBB`
-     * highlight text color (`ColorString`), defaults to `#FFFFFF`
-* `opendepth=<value>`
-     * all subtrees up to `depth < value` are open (default value = `0`)
-     * only useful when there is a column of type "tree"
-
-#### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
-* Sets columns for `table[]`
-* Types: `text`, `image`, `color`, `indent`, `tree`
-    * `text`:   show cell contents as text
-    * `image`:  cell contents are an image index, use column options to define images
-    * `color`:   cell contents are a ColorString and define color of following cell
-    * `indent`: cell contents are a number and define indentation of following cell
-    * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
-* Column options:
-    * `align=<value>`
-        * for `text` and `image`: content alignment within cells.
-          Available values: `left` (default), `center`, `right`, `inline`
-    * `width=<value>`
-        * for `text` and `image`: minimum width in em (default: `0`)
-        * for `indent` and `tree`: indent width in em (default: `1.5`)
-    * `padding=<value>`: padding left of the column, in em (default `0.5`).
-      Exception: defaults to 0 for indent columns
-    * `tooltip=<value>`: tooltip text (default: empty)
-    * `image` column options:
-        * `0=<value>` sets image for image index 0
-        * `1=<value>` sets image for image index 1
-        * `2=<value>` sets image for image index 2
-        * and so on; defined indices need not be contiguous empty or
-          non-numeric cells are treated as `0`.
-    * `color` column options:
-        * `span=<value>`: number of following columns to affect (default: infinite)
-
-**Note**: do _not_ use an element name starting with `key_`; those names are reserved to
-pass key press events to formspec!
+For details, refer to `lua_api.md`.
 
 Spatial Vectors
 ---------------
-* `vector.new(a[, b, c])`: returns a vector:
-    * A copy of `a` if `a` is a vector.
-    * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
-* `vector.direction(p1, p2)`: returns a vector
-* `vector.distance(p1, p2)`: returns a number
-* `vector.length(v)`: returns a number
-* `vector.normalize(v)`: returns a vector
-* `vector.floor(v)`: returns a vector, each dimension rounded down
-* `vector.round(v)`: returns a vector, each dimension rounded to nearest int
-* `vector.apply(v, func)`: returns a vector
-* `vector.combine(v, w, func)`: returns a vector
-* `vector.equals(v1, v2)`: returns a boolean
 
-For the following functions `x` can be either a vector or a number:
-
-* `vector.add(v, x)`: returns a vector
-* `vector.subtract(v, x)`: returns a vector
-* `vector.multiply(v, x)`: returns a scaled vector or Schur product
-* `vector.divide(v, x)`: returns a scaled vector or Schur quotient
+Refer to `lua_api.md`.
 
 Helper functions
 ----------------
@@ -770,6 +397,10 @@ Call these functions only at load time!
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+    * Jobs set for earlier times are executed earlier. If multiple jobs expire
+      at exactly the same time, then they expire in the order in which they were
+      registered. This basically just applies to jobs registered on the same
+      step with the exact same delay.
 * `minetest.get_us_time()`
     * Returns time with microsecond precision. May not return wall time.
 * `minetest.get_timeofday()`
@@ -1152,6 +783,10 @@ Methods:
     * See [`HUD definition`](#hud-definition-hud_add-hud_get)
 * `hud_get(id)`
     * returns the [`definition`](#hud-definition-hud_add-hud_get) of the HUD with that ID number or `nil`, if non-existent.
+* `hud_get_all()`:
+    * Returns a table in the form `{ [id] = HUD definition, [id] = ... }`.
+    * A mod should keep track of its introduced IDs and only use this to access foreign elements.
+    * It is discouraged to change foreign HUD elements.
 * `hud_remove(id)`
     * remove the HUD element of the specified id, returns `true` on success
 * `hud_change(id, stat, value)`
@@ -1319,6 +954,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 ```
 
 ### Server info
+
 ```lua
 {
 	address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
@@ -1330,32 +966,7 @@ It can be created via `Raycast(pos1, pos2, objects, liquids)` or
 
 ### HUD Definition (`hud_add`, `hud_get`)
 
-```lua
-{
-    type = "image", -- see HUD element types, default "text"
---  ^ type of HUD element, can be either of "image", "text", "statbar", or "inventory"
-    hud_elem_type = "image",
---  ^ Deprecated, same as `type`. In case both are specified `type` will be used.
-    position = {x=0.5, y=0.5},
---  ^ Left corner position of element, default `{x=0,y=0}`.
-    name = "<name>",    -- default ""
-    scale = {x=2, y=2}, -- default {x=0,y=0}
-    text = "<text>",    -- default ""
-    number = 2,         -- default 0
-    item = 3,           -- default 0
---  ^ Selected item in inventory.  0 for no item selected.
-    direction = 0,      -- default 0
---  ^ Direction: 0: left-right, 1: right-left, 2: top-bottom, 3: bottom-top
-    alignment = {x=0, y=0},   -- default {x=0, y=0}
---  ^ See "HUD Element Types"
-    offset = {x=0, y=0},      -- default {x=0, y=0}
---  ^ See "HUD Element Types"
-    size = { x=100, y=100 },  -- default {x=0, y=0}
---  ^ Size of element in pixels
-    style = 0,
---  ^ For "text" elements sets font style: bitfield with 1 = bold, 2 = italic, 4 = monospace
-}
-```
+Refer to `lua_api.md`.
 
 Escape sequences
 ----------------
@@ -1383,177 +994,17 @@ The following functions provide escape sequences:
 
 `ColorString`
 -------------
-`#RGB` defines a color in hexadecimal format.
 
-`#RGBA` defines a color in hexadecimal format and alpha channel.
-
-`#RRGGBB` defines a color in hexadecimal format.
-
-`#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
-
-Named colors are also supported and are equivalent to
-[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
-To specify the value of the alpha channel, append `#A` or `#AA` to the end of
-the color name (e.g. `colorname#08`).
+Refer to `lua_api.md`.
 
 `Color`
 -------------
 `{a = alpha, r = red, g = green, b = blue}` defines an ARGB8 color.
 
-HUD element types
------------------
-The position field is used for all element types.
-
-To account for differing resolutions, the position coordinates are the percentage
-of the screen, ranging in value from `0` to `1`.
-
-The name field is not yet used, but should contain a description of what the
-HUD element represents. The direction field is the direction in which something
-is drawn.
-
-`0` draws from left to right, `1` draws from right to left, `2` draws from
-top to bottom, and `3` draws from bottom to top.
-
-The `alignment` field specifies how the item will be aligned. It ranges from `-1` to `1`,
-with `0` being the center, `-1` is moved to the left/up, and `1` is to the right/down.
-Fractional values can be used.
-
-The `offset` field specifies a pixel offset from the position. Contrary to position,
-the offset is not scaled to screen size. This allows for some precisely-positioned
-items in the HUD.
-
-**Note**: `offset` _will_ adapt to screen DPI as well as user defined scaling factor!
-
-Below are the specific uses for fields in each type; fields not listed for that type are ignored.
-
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
-in the experimental stages.
-
-### `image`
-Displays an image on the HUD.
-
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
-* `text`: The name of the texture that is displayed.
-* `alignment`: The alignment of the image.
-* `offset`: offset in pixels from position.
-
-### `text`
-Displays text on the HUD.
-
-* `scale`: Defines the bounding rectangle of the text.
-  A value such as `{x=100, y=100}` should work.
-* `text`: The text to be displayed in the HUD element.
-* `number`: An integer containing the RGB value of the color used to draw the text.
-  Specify `0xFFFFFF` for white text, `0xFF0000` for red, and so on.
-* `alignment`: The alignment of the text.
-* `offset`: offset in pixels from position.
-
-### `statbar`
-Displays a horizontal bar made up of half-images.
-
-* `text`: The name of the texture that is used.
-* `number`: The number of half-textures that are displayed.
-  If odd, will end with a vertically center-split texture.
-* `direction`
-* `offset`: offset in pixels from position.
-* `size`: If used, will force full-image size to this value (override texture pack image size)
-
-### `inventory`
-* `text`: The name of the inventory list to be displayed.
-* `number`: Number of items in the inventory to be displayed.
-* `item`: Position of item that is selected.
-* `direction`
-* `offset`: offset in pixels from position.
-
-### `waypoint`
-
-Displays distance to selected world position.
-
-* `name`: The name of the waypoint.
-* `text`: Distance suffix. Can be blank.
-* `precision`: Waypoint precision, integer >= 0. Defaults to 10.
-  If set to 0, distance is not shown. Shown value is `floor(distance*precision)/precision`.
-  When the precision is an integer multiple of 10, there will be `log_10(precision)` digits after the decimal point.
-  `precision = 1000`, for example, will show 3 decimal places (eg: `0.999`).
-  `precision = 2` will show multiples of `0.5`; precision = 5 will show multiples of `0.2` and so on:
-  `precision = n` will show multiples of `1/n`
-* `number:` An integer containing the RGB value of the color used to draw the
-  text.
-* `world_pos`: World position of the waypoint.
-* `offset`: offset in pixels from position.
-* `alignment`: The alignment of the waypoint.
-
-### `image_waypoint`
-
-Same as `image`, but does not accept a `position`; the position is instead determined by `world_pos`, the world position of the waypoint.
-
-* `scale`: The scale of the image, with 1 being the original texture size.
-  Only the X coordinate scale is used (positive values).
-  Negative values represent that percentage of the screen it
-  should take; e.g. `x=-100` means 100% (width).
-* `text`: The name of the texture that is displayed.
-* `alignment`: The alignment of the image.
-* `world_pos`: World position of the waypoint.
-* `offset`: offset in pixels from position.
-
 ### Particle definition (`add_particle`)
 
-```lua
-{
-    pos = {x=0, y=0, z=0},
-    velocity = {x=0, y=0, z=0},
-    acceleration = {x=0, y=0, z=0},
-    --  ^ Spawn particle at pos with velocity and acceleration
-    expirationtime = 1,
-    --  ^ Disappears after expirationtime seconds
-    size = 1,
-    collisiondetection = false,
-    --  ^ collisiondetection: if true collides with physical objects
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-    animation = {Tile Animation definition},
-    --  ^ optional, specifies how to animate the particle texture
-    glow = 0
-    --  ^ optional, specify particle self-luminescence in darkness
-}
-```
+As documented in `lua_api.md`, except for obvious reasons, the `playername` field is not supported.
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 
-```lua
-{
-    amount = 1,
-    time = 1,
-    --  ^ If time is 0 has infinite lifespan and spawns the amount on a per-second base
-    minpos = {x=0, y=0, z=0},
-    maxpos = {x=0, y=0, z=0},
-    minvel = {x=0, y=0, z=0},
-    maxvel = {x=0, y=0, z=0},
-    minacc = {x=0, y=0, z=0},
-    maxacc = {x=0, y=0, z=0},
-    minexptime = 1,
-    maxexptime = 1,
-    minsize = 1,
-    maxsize = 1,
-    --  ^ The particle's properties are random values in between the bounds:
-    --  ^ minpos/maxpos, minvel/maxvel (velocity), minacc/maxacc (acceleration),
-    --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
-    collisiondetection = false,
-    --  ^ collisiondetection: if true uses collision detection
-    collision_removal = false,
-    --  ^ collision_removal: if true then particle is removed when it collides,
-    --  ^ requires collisiondetection = true to have any effect
-    vertical = false,
-    --  ^ vertical: if true faces player using y axis only
-    texture = "image.png",
-    --  ^ Uses texture (string)
-}
-```
+As documented in `lua_api.md`, except for obvious reasons, the `playername` field is not supported.

@@ -22,11 +22,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #include "ieee_float.h"
 #include "log.h"
 #include "porting.h"
 #include <limits>
 #include <cmath>
+#include <cstring>
 
 // Given an unsigned 32-bit integer representing an IEEE-754 single-precision
 // float, return the float.

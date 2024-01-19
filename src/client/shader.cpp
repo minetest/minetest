@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IShaderConstantSetCallBack.h>
 #include "client/renderingengine.h"
 #include "EShaderTypes.h"
+#include "gettext.h"
 #include "log.h"
 #include "gamedef.h"
 #include "client/tile.h"
@@ -210,51 +211,36 @@ public:
 
 class MainShaderConstantSetter : public IShaderConstantSetter
 {
-	CachedVertexShaderSetting<f32, 16> m_world_view_proj;
-	CachedVertexShaderSetting<f32, 16> m_world;
+	CachedVertexShaderSetting<f32, 16> m_world_view_proj{"mWorldViewProj"};
+	CachedVertexShaderSetting<f32, 16> m_world{"mWorld"};
 
 	// Shadow-related
-	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj;
-	CachedPixelShaderSetting<f32, 3> m_light_direction;
-	CachedPixelShaderSetting<f32> m_texture_res;
-	CachedPixelShaderSetting<f32> m_shadow_strength;
-	CachedPixelShaderSetting<f32> m_time_of_day;
-	CachedPixelShaderSetting<f32> m_shadowfar;
-	CachedPixelShaderSetting<f32, 4> m_camera_pos;
-	CachedPixelShaderSetting<s32> m_shadow_texture;
-	CachedVertexShaderSetting<f32> m_perspective_bias0_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias0_pixel;
-	CachedVertexShaderSetting<f32> m_perspective_bias1_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_bias1_pixel;
-	CachedVertexShaderSetting<f32> m_perspective_zbias_vertex;
-	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel;
+	CachedPixelShaderSetting<f32, 16> m_shadow_view_proj{"m_ShadowViewProj"};
+	CachedPixelShaderSetting<f32, 3> m_light_direction{"v_LightDirection"};
+	CachedPixelShaderSetting<f32> m_texture_res{"f_textureresolution"};
+	CachedPixelShaderSetting<f32> m_shadow_strength{"f_shadow_strength"};
+	CachedPixelShaderSetting<f32> m_time_of_day{"f_timeofday"};
+	CachedPixelShaderSetting<f32> m_shadowfar{"f_shadowfar"};
+	CachedPixelShaderSetting<f32, 4> m_camera_pos{"CameraPos"};
+	CachedPixelShaderSetting<s32> m_shadow_texture{"ShadowMapSampler"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_bias0_vertex{"xyPerspectiveBias0"};
+	CachedPixelShaderSetting<f32>
+		m_perspective_bias0_pixel{"xyPerspectiveBias0"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_bias1_vertex{"xyPerspectiveBias1"};
+	CachedPixelShaderSetting<f32>
+		m_perspective_bias1_pixel{"xyPerspectiveBias1"};
+	CachedVertexShaderSetting<f32>
+		m_perspective_zbias_vertex{"zPerspectiveBias"};
+	CachedPixelShaderSetting<f32> m_perspective_zbias_pixel{"zPerspectiveBias"};
 
 	// Modelview matrix
-	CachedVertexShaderSetting<float, 16> m_world_view;
+	CachedVertexShaderSetting<float, 16> m_world_view{"mWorldView"};
 	// Texture matrix
-	CachedVertexShaderSetting<float, 16> m_texture;
+	CachedVertexShaderSetting<float, 16> m_texture{"mTexture"};
 
 public:
-	MainShaderConstantSetter() :
-		  m_world_view_proj("mWorldViewProj")
-		, m_world("mWorld")
-		, m_shadow_view_proj("m_ShadowViewProj")
-		, m_light_direction("v_LightDirection")
-		, m_texture_res("f_textureresolution")
-		, m_shadow_strength("f_shadow_strength")
-		, m_time_of_day("f_timeofday")
-		, m_shadowfar("f_shadowfar")
-		, m_camera_pos("CameraPos")
-		, m_shadow_texture("ShadowMapSampler")
-		, m_perspective_bias0_vertex("xyPerspectiveBias0")
-		, m_perspective_bias0_pixel("xyPerspectiveBias0")
-		, m_perspective_bias1_vertex("xyPerspectiveBias1")
-		, m_perspective_bias1_pixel("xyPerspectiveBias1")
-		, m_perspective_zbias_vertex("zPerspectiveBias")
-		, m_perspective_zbias_pixel("zPerspectiveBias")
-		, m_world_view("mWorldView")
-		, m_texture("mTexture")
-	{}
 	~MainShaderConstantSetter() = default;
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services) override
@@ -276,7 +262,7 @@ public:
 		worldViewProj *= worldView;
 		m_world_view_proj.set(*reinterpret_cast<float(*)[16]>(worldViewProj.pointer()), services);
 
-		if (driver->getDriverType() == video::EDT_OGLES2) {
+		if (driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3) {
 			core::matrix4 texture = driver->getTransform(video::ETS_TEXTURE_0);
 			m_world_view.set(*reinterpret_cast<float(*)[16]>(worldView.pointer()), services);
 			m_texture.set(*reinterpret_cast<float(*)[16]>(texture.pointer()), services);
@@ -603,23 +589,25 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
-		errorstream << "Shaders are enabled but GLSL is not supported by the driver\n";
-		return shaderinfo;
+		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
+			"supported by the driver."));
 	}
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
 	// Create shaders header
-	bool use_gles = driver->getDriverType() == video::EDT_OGLES2;
+	bool fully_programmable = driver->getDriverType() == video::EDT_OGLES2 || driver->getDriverType() == video::EDT_OPENGL3;
 	std::stringstream shaders_header;
 	shaders_header
 		<< std::noboolalpha
 		<< std::showpoint // for GLSL ES
 		;
 	std::string vertex_header, fragment_header, geometry_header;
-	if (use_gles) {
-		shaders_header << R"(
-			#version 100
-		)";
+	if (fully_programmable) {
+		if (driver->getDriverType() == video::EDT_OPENGL3) {
+			shaders_header << "#version 150\n";
+		} else {
+			shaders_header << "#version 100\n";
+		}
 		vertex_header = R"(
 			precision mediump float;
 
@@ -673,7 +661,7 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		abort();
 	}
 
-	bool use_discard = use_gles;
+	bool use_discard = fully_programmable;
 	// For renderers that should use discard instead of GL_ALPHA_TEST
 	const char *renderer = reinterpret_cast<const char*>(GL.GetString(GL.RENDERER));
 	if (strstr(renderer, "GC7000"))
@@ -805,7 +793,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		dumpShaderProgram(warningstream, "Vertex", vertex_shader);
 		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
-		return shaderinfo;
+		throw ShaderException(
+			fmtgettext("Failed to compile the \"%s\" shader.", name.c_str()) +
+			strgettext("\nCheck debug.txt for details."));
 	}
 
 	// Apply the newly created material type

@@ -388,7 +388,7 @@ public:
 		- Memory
 		- Emerge Queue (deferred disk or generate)
 	*/
-	MapBlock *getBlockOrEmerge(v3s16 p3d);
+	MapBlock *getBlockOrEmerge(v3s16 p3d, bool generate);
 
 	bool isBlockInQueue(v3s16 pos);
 

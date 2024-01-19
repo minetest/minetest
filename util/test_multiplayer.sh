@@ -29,8 +29,8 @@ printf '%s\n' >"$testspath/client1.conf" \
 	enable_{sound,minimap,shaders}=false
 
 printf '%s\n' >"$testspath/server.conf" \
-	max_block_send_distance=1 devtest_unittests_autostart=true \
-	helper_mode=devtest
+	max_block_send_distance=1 active_block_range=1 \
+	devtest_unittests_autostart=true helper_mode=devtest
 
 ln -s "$dir/helper_mod" "$worldpath/worldmods/"
 

@@ -33,9 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUICheckBox.h>
 #include <IGUIComboBox.h>
 #include <IGUIEditBox.h>
-#include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
+#include <IGUIImage.h>
+#include <IAnimatedMeshSceneNode.h>
 #include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
