@@ -289,6 +289,7 @@ public:
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	virtual const SubgameSpec* getGameSpec() const { return &m_gamespec; }
 	static std::string getBuiltinLuaPath();
+	void getEnvTextureDirs(std::vector<std::string> &paths) const;
 	virtual std::string getWorldPath() const { return m_path_world; }
 
 	inline bool isSingleplayer() const

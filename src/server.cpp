@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include "serverlist.h"
 #include "util/string.h"
+#include "util/strfnd.h"
 #include "rollback.h"
 #include "util/serialize.h"
 #include "util/thread.h"
@@ -2602,6 +2603,7 @@ void Server::fillMediaCache()
 
 	// ordered in descending priority
 	paths.push_back(getBuiltinLuaPath() + DIR_DELIM + "locale");
+	getEnvTextureDirs(paths);
 	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 	fs::GetRecursiveDirs(paths, m_gamespec.path + DIR_DELIM + "textures");
 	m_modmgr->getModsMediaPaths(paths);
@@ -3778,6 +3780,14 @@ const ModSpec *Server::getModSpec(const std::string &modname) const
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+void Server::getEnvTextureDirs(std::vector<std::string> &paths) const
+{
+	const char *c_texture_path = getenv("MINETEST_TEXTURE_PATH");
+	Strfnd search_paths(c_texture_path ? c_texture_path : "");
+	while (!search_paths.at_end())
+		fs::GetRecursiveDirs(paths, search_paths.next(PATH_DELIM));
 }
 
 // Not thread-safe.
