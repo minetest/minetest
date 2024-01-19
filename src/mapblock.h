@@ -155,7 +155,7 @@ public:
 	{
 		if (newflags != m_lighting_complete) {
 			m_lighting_complete = newflags;
-			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_COMPLETE);
+			raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SET_LIGHTING_COMPLETE);
 		}
 	}
 
