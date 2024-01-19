@@ -130,18 +130,35 @@ minetest.register_chatcommand("bench_bulk_get_node", {
 		end
 		local pos_list = get_positions_cube(player:get_pos())
 
-		minetest.chat_send_player(name, "Benchmarking minetest.bulk_get_node...")
+		minetest.chat_send_player(name, "Benchmarking minetest.bulk_set_node. Warming up ...")
+		-- warm up to cache what can be potencionally cached...
+		minetest.bulk_get_node(pos_list)
 
-		local start_time = minetest.get_us_time()
-		for i=1,#pos_list do
-			minetest.get_node(pos_list[i])
+		local nobulk_time, bulk_time
+		if math.random(0,1) == 0 then
+			minetest.chat_send_player(name, "Warming up finished, now benchmarking (get_node -> bulk_get_node) ...")
+			nobulk_time = minetest.get_us_time()
+			for i=1,#pos_list do
+				minetest.get_node(pos_list[i])
+			end
+			bulk_time = minetest.get_us_time()
+			nobulk_time = bulk_time - nobulk_time
+			minetest.bulk_get_node(pos_list)
+			bulk_time = minetest.get_us_time() - bulk_time
+		else
+			minetest.chat_send_player(name, "Warming up finished, now benchmarking (bulk_get_node -> get_node) ...")
+			bulk_time = minetest.get_us_time()
+			minetest.bulk_get_node(pos_list)
+			nobulk_time = minetest.get_us_time()
+			bulk_time = nobulk_time - bulk_time
+			for i=1,#pos_list do
+				minetest.get_node(pos_list[i])
+			end
+			nobulk_time = minetest.get_us_time() - nobulk_time
 		end
-		local middle_time = minetest.get_us_time()
-		minetest.bulk_get_node(pos_list, {name = "mapgen_stone"})
-		local end_time = minetest.get_us_time()
 		local msg = string.format("Benchmark results: minetest.get_node loop: %.2f ms; minetest.bulk_get_node: %.2f ms",
-			((middle_time - start_time)) / 1000,
-			((end_time - middle_time)) / 1000
+			nobulk_time / 1000,
+			bulk_time / 1000
 		)
 		return true, msg
 	end,
