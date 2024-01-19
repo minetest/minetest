@@ -137,6 +137,7 @@ void *ServerThread::run()
 		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		} catch (ClientNotFoundException &e) {
+			infostream<<"Server: ClientNotFoundException"<<std::endl;
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
@@ -2671,29 +2672,44 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(session_t peer_id,
-		const std::vector<std::string> &tosend)
+		const std::unordered_set<std::string> &tosend)
 {
-	verbosestream<<"Server::sendRequestedMedia(): "
-			<<"Sending files to client"<<std::endl;
+	auto *client = getClient(peer_id, CS_DefinitionsSent);
+	assert(client);
+
+	infostream << "Server::sendRequestedMedia(): Sending "
+		<< tosend.size() << " files to " << client->getName() << std::endl;
 
 	/* Read files */
 
 	// Put 5kB in one bunch (this is not accurate)
-	u32 bytes_per_bunch = 5000;
+	const u32 bytes_per_bunch = 5000;
 
-	std::vector< std::vector<SendableMedia> > file_bunches;
+	std::vector<std::vector<SendableMedia>> file_bunches;
 	file_bunches.emplace_back();
 
 	u32 file_size_bunch_total = 0;
 
 	for (const std::string &name : tosend) {
-		if (m_media.find(name) == m_media.end()) {
+		auto it = m_media.find(name);
+
+		if (it == m_media.end()) {
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
 					<<"unknown file \""<<(name)<<"\""<<std::endl;
 			continue;
 		}
+		const auto &m = it->second;
 
-		const auto &m = m_media[name];
+		// no_announce <=> usually ephemeral dynamic media, which may
+		// have duplicate filenames. So we can't check it.
+		if (!m.no_announce) {
+			if (!client->markMediaSent(name)) {
+				infostream << "Server::sendRequestedMedia(): Client asked has "
+					"requested \"" << name << "\" before, not sending it again."
+					<< std::endl;
+				continue;
+			}
+		}
 
 		// Read data
 		std::string data;
@@ -2717,11 +2733,11 @@ void Server::sendRequestedMedia(session_t peer_id,
 
 	/* Create and send packets */
 
-	u16 num_bunches = file_bunches.size();
+	const u16 num_bunches = file_bunches.size();
 	for (u16 i = 0; i < num_bunches; i++) {
+		auto &bunch = file_bunches[i];
 		/*
-			u16 command
-			u16 total number of texture bunches
+			u16 total number of media bunches
 			u16 index of this bunch
 			u32 number of files in this bunch
 			for each file {
@@ -2735,14 +2751,14 @@ void Server::sendRequestedMedia(session_t peer_id,
 		NetworkPacket pkt(TOCLIENT_MEDIA, 4 + 0, peer_id);
 		pkt << num_bunches << i << (u32) file_bunches[i].size();
 
-		for (const SendableMedia &j : file_bunches[i]) {
+		for (auto &j : bunch) {
 			pkt << j.name;
 			pkt.putLongString(j.data);
 		}
 
 		verbosestream << "Server::sendRequestedMedia(): bunch "
 				<< i << "/" << num_bunches
-				<< " files=" << file_bunches[i].size()
+				<< " files=" << bunch.size()
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
 	}

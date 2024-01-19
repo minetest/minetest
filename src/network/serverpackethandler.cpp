@@ -356,24 +356,24 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 {
-	std::vector<std::string> tosend;
+	std::unordered_set<std::string> tosend;
 	u16 numfiles;
 
 	*pkt >> numfiles;
 
 	session_t peer_id = pkt->getPeerId();
-	infostream << "Sending " << numfiles << " files to " <<
-		getPlayerName(peer_id) << std::endl;
-	verbosestream << "TOSERVER_REQUEST_MEDIA: requested file(s)" << std::endl;
+	verbosestream << "Client " << getPlayerName(peer_id)
+		<< " requested media file(s):\n";
 
 	for (u16 i = 0; i < numfiles; i++) {
 		std::string name;
 
 		*pkt >> name;
 
-		tosend.emplace_back(name);
-		verbosestream << "  " << name << std::endl;
+		tosend.emplace(name);
+		verbosestream << "  " << name << "\n";
 	}
+	verbosestream << std::flush;
 
 	sendRequestedMedia(peer_id, tosend);
 }
