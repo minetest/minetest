@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Polish (Minetest)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-12-03 18:48+0100\n"
-"PO-Revision-Date: 2023-09-08 10:04+0000\n"
-"Last-Translator: Jakub Z <mrkubax10@onet.pl>\n"
+"PO-Revision-Date: 2024-01-19 19:00+0000\n"
+"Last-Translator: Adam Jagoda <kontakt@lukasz.xyz>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
 "pl/>\n"
 "Language: pl\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 
 #: builtin/client/chatcommands.lua
 msgid "Clear the out chat queue"
@@ -283,7 +283,7 @@ msgstr "Paczki zasobów"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "The package $1 was not found."
-msgstr ""
+msgstr "Paczka $1 nie została znaleziona."
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 #: builtin/mainmenu/tab_content.lua
@@ -305,7 +305,7 @@ msgstr "Pokaż więcej informacji w przeglądarce"
 
 #: builtin/mainmenu/content/dlg_contentstore.lua
 msgid "You need to install a game before you can install a mod"
-msgstr ""
+msgstr "Musisz zainstalować grę, zanim zainstalujesz mody"
 
 #: builtin/mainmenu/content/pkgmgr.lua
 msgid "$1 (Enabled)"
@@ -653,7 +653,7 @@ msgstr "Zarejestruj się"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Dismiss"
-msgstr ""
+msgstr "Odrzuć"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
@@ -661,21 +661,25 @@ msgid ""
 "\"Minetest Game\". Since Minetest 5.8.0, Minetest ships without a default "
 "game."
 msgstr ""
+"Przez dłuższy czas, razem z silnikiem Minetest dostarczana była domyślna gra "
+"o nazwie \"Minetest Game\". Od wersji 5.8.0, Minetest jest rozpowszechniany "
+"bez domyślnej gry."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid ""
 "If you want to continue playing in your Minetest Game worlds, you need to "
 "reinstall Minetest Game."
 msgstr ""
+"Jeżeli chcesz kontynuować zabawę w Twoich światach Minetest Game, musisz ją "
+"teraz zainstalować."
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
 msgid "Minetest Game is no longer installed by default"
-msgstr ""
+msgstr "\"Minetest Game\" nie jest już domyślnie instalowana"
 
 #: builtin/mainmenu/dlg_reinstall_mtg.lua
-#, fuzzy
 msgid "Reinstall Minetest Game"
-msgstr "Zainstaluj inną grę"
+msgstr "Zainstaluj ponownie \"Minetest Game\""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
@@ -758,7 +762,7 @@ msgstr "Wybierz"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "(No description of setting given)"
-msgstr "(brak opisu)"
+msgstr "(Brak opisu ustawienia)"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "2D Noise"
@@ -766,7 +770,7 @@ msgstr "Szum 2d"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Lacunarity"
-msgstr "Lunarność"
+msgstr "Lakunarność"
 
 #: builtin/mainmenu/settings/dlg_change_mapgen_flags.lua
 msgid "Octaves"
@@ -823,11 +827,11 @@ msgstr "wygładzony"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "(Use system language)"
-msgstr ""
+msgstr "(Użyj języka systemowego)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Accessibility"
-msgstr ""
+msgstr "Dostępność"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Back"
@@ -855,18 +859,16 @@ msgid "General"
 msgstr "Ogólne"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Movement"
-msgstr "Szybkie poruszanie"
+msgstr "Poruszanie się"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
-#, fuzzy
 msgid "Reset setting to default"
-msgstr "Przywróć domyślne"
+msgstr "Przywróć wartość domyślną"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Reset setting to default ($1)"
-msgstr ""
+msgstr "Przywróć wartość domyślną ($1)"
 
 #: builtin/mainmenu/settings/dlg_settings.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
@@ -874,7 +876,7 @@ msgstr "Wyszukaj"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show advanced settings"
-msgstr ""
+msgstr "Pokaż ustawienia zaawansowane"
 
 #: builtin/mainmenu/settings/dlg_settings.lua
 msgid "Show technical names"
@@ -894,11 +896,11 @@ msgstr "Zawartość: Mody"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "(The game will need to enable shadows as well)"
-msgstr ""
+msgstr "(Gra również musi obsługiwać cienie)"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Custom"
-msgstr ""
+msgstr "Niestandardowe"
 
 #: builtin/mainmenu/settings/shadows_component.lua
 msgid "Disabled"
@@ -951,7 +953,7 @@ msgstr "Główny zespół"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Irrlicht device:"
-msgstr ""
+msgstr "Urządzenie Irrlicht:"
 
 #: builtin/mainmenu/tab_about.lua
 msgid "Open User Data Directory"
@@ -1585,21 +1587,25 @@ msgstr "Włączono nieskończony zasięg widoczności"
 #: src/client/game.cpp
 msgid "Unlimited viewing range enabled, but forbidden by game or mod"
 msgstr ""
+"Nieograniczony zasięg widoczności włączony, ale niedozwolony przez grę lub "
+"moda"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing changed to %d (the minimum)"
-msgstr "Zasięg widoczności na minimum: %d1"
+msgstr "Zasięg widoczności zmieniony na %d (minimum)"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing changed to %d (the minimum), but limited to %d by game or mod"
 msgstr ""
+"Zasięg widoczności zmieniony na %d (minimum), ale ograniczony do %d przez "
+"grę lub moda"
 
 #: src/client/game.cpp
 #, c-format
 msgid "Viewing range changed to %d"
-msgstr "Zmieniono zasięg widoczności na %d%%"
+msgstr "Zasięg widoczności zmieniony na %d"
 
 #: src/client/game.cpp
 #, fuzzy, c-format
@@ -1611,11 +1617,13 @@ msgstr "Zmieniono zasięg widoczności na %d%%"
 msgid ""
 "Viewing range changed to %d (the maximum), but limited to %d by game or mod"
 msgstr ""
+"Zasięg widoczności zmieniony na %d (maksimum), ale gra lub mod ogranicza go "
+"do %d"
 
 #: src/client/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "Viewing range changed to %d, but limited to %d by game or mod"
-msgstr "Zmieniono zasięg widoczności na %d%%"
+msgstr "Zmieniono zasięg widoczności na %d, ale gra lub mod ogranicza go do %d"
 
 #: src/client/game.cpp
 #, c-format
@@ -1698,7 +1706,7 @@ msgstr "Usuń"
 
 #: src/client/keycode.cpp
 msgid "Down Arrow"
-msgstr ""
+msgstr "Strzałka w dół"
 
 #: src/client/keycode.cpp
 msgid "End"
@@ -1934,7 +1942,7 @@ msgstr "Tab"
 
 #: src/client/keycode.cpp
 msgid "Up Arrow"
-msgstr ""
+msgstr "Strzałka w górę"
 
 #: src/client/keycode.cpp
 msgid "X Button 1"
@@ -2208,9 +2216,9 @@ msgid "Name is taken. Please choose another name"
 msgstr "Nazwa jest zajęta. Wybierz inną nazwę"
 
 #: src/server.cpp
-#, fuzzy, c-format
+#, c-format
 msgid "%s while shutting down: "
-msgstr "Wyłączanie..."
+msgstr "%s podczas wyłączania: "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2282,7 +2290,7 @@ msgstr "Szum 2D lokalizuje doliny i kanały rzeczne."
 
 #: src/settings_translation_file.cpp
 msgid "3D"
-msgstr ""
+msgstr "3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -3252,7 +3260,7 @@ msgstr "Szum generowania lochów"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Automatic Exposure"
-msgstr ""
+msgstr "Włącz automatyczną regulację ekspozycji"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Bloom"
@@ -3290,7 +3298,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Raytraced Culling"
-msgstr ""
+msgstr "Włącz culling oparty o śledzenie promieni"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3331,7 +3339,7 @@ msgstr "Włącz tryb mod security"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mouse wheel (scroll) for item selection in hotbar."
-msgstr ""
+msgstr "Włącz szybki wybór przedmiotów na hotbarze kółkiem myszy (scrollem)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -5011,7 +5019,7 @@ msgstr "Mip-Mappowanie"
 
 #: src/settings_translation_file.cpp
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Różne"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -6525,6 +6533,7 @@ msgstr ""
 msgid ""
 "URL to JSON file which provides information about the newest Minetest release"
 msgstr ""
+"Link do pliku JSON zawierającego informacje o najnowszym wydaniu Minetest"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
