@@ -326,6 +326,9 @@ if(HAVE_LINK_ATOMIC)
 	set(PLATFORM_LIBS ${PLATFORM_LIBS} "-latomic")
 endif()
 
+include(CheckSymbolExists)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
+
 check_include_files(endian.h HAVE_ENDIAN_H)
 
 configure_file(
@@ -693,9 +696,6 @@ endif()
 # Set some optimizations and tweaks
 
 include(CheckCSourceCompiles)
-include(CheckSymbolExists)
-
-check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
 
 set(CMAKE_REQUIRED_INCLUDES ${LUA_INCLUDE_DIR})
 if(USE_LUAJIT)
