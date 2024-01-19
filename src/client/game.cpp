@@ -1743,7 +1743,7 @@ bool Game::getServerContent(bool *aborted)
 		// End condition
 		if (client->mediaReceived() && client->itemdefReceived() &&
 				client->nodedefReceived()) {
-			break;
+			return true;
 		}
 
 		// Error conditions
@@ -1802,7 +1802,9 @@ bool Game::getServerContent(bool *aborted)
 		}
 	}
 
-	return true;
+	*aborted = true;
+	infostream << "Connect aborted [device]" << std::endl;
+	return false;
 }
 
 
