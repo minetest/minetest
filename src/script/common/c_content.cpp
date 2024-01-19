@@ -145,11 +145,11 @@ void read_item_definition(lua_State* L, int index,
 
 		TouchInteraction &inter = def.touch_interaction;
 		inter.pointed_nothing = (TouchInteractionMode)getenumfield(L, -1, "pointed_nothing",
-				es_TouchControlMode, inter.pointed_nothing);
+				es_TouchInteractionMode, inter.pointed_nothing);
 		inter.pointed_node = (TouchInteractionMode)getenumfield(L, -1, "pointed_node",
-				es_TouchControlMode, inter.pointed_node);
+				es_TouchInteractionMode, inter.pointed_node);
 		inter.pointed_object = (TouchInteractionMode)getenumfield(L, -1, "pointed_object",
-				es_TouchControlMode, inter.pointed_object);
+				es_TouchInteractionMode, inter.pointed_object);
 	}
 	lua_pop(L, 1);
 }
@@ -216,11 +216,11 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 
 	lua_createtable(L, 0, 3);
 	const TouchInteraction &inter = i.touch_interaction;
-	lua_pushstring(L, es_TouchControlMode[inter.pointed_nothing].str);
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_nothing].str);
 	lua_setfield(L, -2,"pointed_nothing");
-	lua_pushstring(L, es_TouchControlMode[inter.pointed_node].str);
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_node].str);
 	lua_setfield(L, -2,"pointed_node");
-	lua_pushstring(L, es_TouchControlMode[inter.pointed_object].str);
+	lua_pushstring(L, es_TouchInteractionMode[inter.pointed_object].str);
 	lua_setfield(L, -2,"pointed_object");
 	lua_setfield(L, -2, "touch_interaction");
 }

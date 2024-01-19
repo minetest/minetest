@@ -33,7 +33,7 @@ struct EnumString es_ItemType[] =
 		{0, NULL},
 	};
 
-struct EnumString es_TouchControlMode[] =
+struct EnumString es_TouchInteractionMode[] =
 	{
 		{LONG_DIG_SHORT_PLACE, "long_dig_short_place"},
 		{SHORT_DIG_LONG_PLACE, "short_dig_long_place"},
