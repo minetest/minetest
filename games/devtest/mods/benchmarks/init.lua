@@ -133,13 +133,15 @@ minetest.register_chatcommand("bench_bulk_get_node", {
 		minetest.chat_send_player(name, "Benchmarking minetest.bulk_set_node. Warming up ...")
 		-- warm up to cache what can be potencionally cached...
 		minetest.bulk_get_node(pos_list)
+		
+		local get_node = minetest.get_node
 
 		local nobulk_time, bulk_time
 		if math.random(0,1) == 0 then
 			minetest.chat_send_player(name, "Warming up finished, now benchmarking (get_node -> bulk_get_node) ...")
 			nobulk_time = minetest.get_us_time()
 			for i=1,#pos_list do
-				minetest.get_node(pos_list[i])
+				get_node(pos_list[i])
 			end
 			bulk_time = minetest.get_us_time()
 			nobulk_time = bulk_time - nobulk_time
@@ -152,7 +154,7 @@ minetest.register_chatcommand("bench_bulk_get_node", {
 			nobulk_time = minetest.get_us_time()
 			bulk_time = nobulk_time - bulk_time
 			for i=1,#pos_list do
-				minetest.get_node(pos_list[i])
+				get_node(pos_list[i])
 			end
 			nobulk_time = minetest.get_us_time() - nobulk_time
 		end
