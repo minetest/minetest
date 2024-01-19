@@ -284,10 +284,10 @@ public:
 		return m_blocks_sent.find(p) != m_blocks_sent.end();
 	}
 
-	// Increments timeouts and removes timed-out blocks from list
-	// NOTE: This doesn't fix the server-not-sending-block bug
-	//       because it is related to emerging, not sending.
-	//void RunSendingTimeouts(float dtime, float timeout);
+	bool markMediaSent(const std::string &name) {
+		auto insert_result = m_media_sent.emplace(name);
+		return insert_result.second; // true = was inserted
+	}
 
 	void PrintInfo(std::ostream &o)
 	{
@@ -310,7 +310,7 @@ public:
 
 	ClientState getState() const { return m_state; }
 
-	std::string getName() const { return m_name; }
+	const std::string &getName() const { return m_name; }
 
 	void setName(const std::string &name) { m_name = name; }
 
@@ -393,6 +393,12 @@ private:
 	const s16 m_block_cull_optimize_distance;
 	const s16 m_max_gen_distance;
 	const bool m_occ_cull;
+
+	/*
+		Set of media files the client has already requested
+		We won't send the same file twice to avoid bandwidth consumption attacks.
+	*/
+	std::unordered_set<std::string> m_media_sent;
 
 	/*
 		Blocks that are currently on the line.

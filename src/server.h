@@ -515,7 +515,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
 	void sendRequestedMedia(session_t peer_id,
-			const std::vector<std::string> &tosend);
+			const std::unordered_set<std::string> &tosend);
 	void stepPendingDynMediaCallbacks(float dtime);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
