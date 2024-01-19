@@ -55,6 +55,7 @@ enum TouchInteractionMode : u8
 {
 	LONG_DIG_SHORT_PLACE,
 	SHORT_DIG_LONG_PLACE,
+	TouchInteractionMode_END, // Dummy for validity check
 };
 
 struct TouchInteraction

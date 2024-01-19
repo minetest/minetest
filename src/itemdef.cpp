@@ -73,17 +73,20 @@ void TouchInteraction::deSerialize(std::istream &is)
 	u8 tmp = readU8(is);
 	if (is.eof())
 		throw SerializationError("");
-	pointed_nothing = (TouchInteractionMode)tmp;
+	if (tmp < TouchInteractionMode_END)
+		pointed_nothing = (TouchInteractionMode)tmp;
 
 	tmp = readU8(is);
 	if (is.eof())
 		throw SerializationError("");
-	pointed_node = (TouchInteractionMode)tmp;
+	if (tmp < TouchInteractionMode_END)
+		pointed_node = (TouchInteractionMode)tmp;
 
 	tmp = readU8(is);
 	if (is.eof())
 		throw SerializationError("");
-	pointed_object = (TouchInteractionMode)tmp;
+	if (tmp < TouchInteractionMode_END)
+		pointed_object = (TouchInteractionMode)tmp;
 }
 
 /*
