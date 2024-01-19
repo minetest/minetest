@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include "clientiface.h"
+#include "debug.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
 #include "remoteplayer.h"
@@ -31,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server/player_sao.h"
 #include "log.h"
 #include "util/srp.h"
+#include "util/string.h"
 #include "face_position_cache.h"
 
 static std::string string_sanitize_ascii(const std::string &s, u32 max_length)
@@ -647,6 +649,14 @@ void RemoteClient::resetChosenMech()
 		auth_data = nullptr;
 	}
 	chosen_mech = AUTH_MECHANISM_NONE;
+}
+
+void RemoteClient::setEncryptedPassword(const std::string& pwd)
+{
+	FATAL_ERROR_IF(!str_starts_with(pwd, "#1#"), "must be srp");
+	enc_pwd = pwd;
+	// We just set SRP encrypted password, we accept only it now
+	allowed_auth_mechs = AUTH_MECHANISM_SRP;
 }
 
 void RemoteClient::setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
