@@ -560,12 +560,12 @@ Call these functions only at load time!
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
-    * Example: `serialize({foo='bar'})`, returns `'return { ["foo"] = "bar" }'`
+    * Example: `serialize({foo='bar'})`, returns `'return {["foo"] = "bar"}'`
 * `minetest.deserialize(string)`: returns a table
     * Convert a string returned by `minetest.deserialize` into a table
     * `string` is loaded in an empty sandbox environment.
     * Will load functions, but they cannot access the global environment.
-    * Example: `deserialize('return { ["foo"] = "bar" }')`, returns `{foo='bar'}`
+    * Example: `deserialize('return {["foo"] = "bar"}')`, returns `{foo='bar'}`
     * Example: `deserialize('print("foo")')`, returns `nil` (function call fails)
         * `error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)`
 * `minetest.compress(data, method, ...)`: returns `compressed_data`

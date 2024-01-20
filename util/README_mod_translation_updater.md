@@ -80,7 +80,7 @@ each player's language:
 The reason why `NS` exists is for cases like this: Sometimes, you want to define a list of
 strings to they can be later output in a function. Like so:
 
-    local fruit = { "Apple", "Orange", "Pear" }
+    local fruit = {"Apple", "Orange", "Pear"}
     local function return_fruit(fruit_id)
        return fruit[fruit_id]
     end
@@ -90,7 +90,7 @@ If you want to translate the fruit names when `return_fruit` is run, but have th
 It will show the script the string without Minetest translating it. The script could be made
 translatable like this:
 
-    local fruit = { NS("Apple"), NS("Orange"), NS("Pear") }
+    local fruit = {NS("Apple"), NS("Orange"), NS("Pear")}
     local function return_fruit(fruit_id)
        return S(fruit[fruit_id])
     end
