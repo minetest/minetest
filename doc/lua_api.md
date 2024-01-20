@@ -1318,17 +1318,20 @@ The function of `param2` is determined by `paramtype2` in node definition.
     * 4dir modulo 4 = rotation
     * Otherwise, behavior is identical to facedir
 * `paramtype2 = "leveled"`
-    * Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
-        * Leveled nodebox:
+    * Only valid for the drawtypes `nodebox`, `plantlike` and `plantlike_rooted`
+        * Nodebox:
+            * Nodebox `type` must be set to `"leveled"`
             * The level of the top face of the nodebox is stored in `param2`.
             * The other faces are defined by 'fixed = {}' like 'type = "fixed"'
               nodeboxes.
             * The nodebox height is (`param2` / 64) nodes.
             * The maximum accepted value of `param2` is 127.
             * Boxes in '`leveled_fixed = {}`' will never change.
-        * Rooted plantlike:
+        * Plantlike:
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
+        * Rooted plantlike:
+            * Same as plantlike
 * `paramtype2 = "degrotate"`
     * Valid for `plantlike` and `mesh` drawtypes. The rotation of the node is
       stored in `param2`.
