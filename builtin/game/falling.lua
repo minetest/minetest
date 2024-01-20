@@ -315,7 +315,12 @@ core.register_entity(":__builtin:falling_node", {
 					return false
 				end
 			else
-				core.remove_node(np)
+				-- if we are a soft_falling node: do not crush buildable_to nodes
+				if core.get_item_group(self.node.name, "soft_falling") == 0 then
+					core.remove_node(np)
+				else
+					np.y = np.y + 1
+				end
 			end
 		end
 
@@ -547,6 +552,11 @@ function core.check_single_for_falling(p)
 		local n_bottom = core.get_node_or_nil(p_bottom)
 		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 		if d_bottom then
+			-- if we are a soft_falling node: do not start a falling node cascade
+			if(d_bottom.name and d_bottom.name ~= "air"
+			  and core.get_item_group(n.name, "soft_falling") > 0) then
+				return false
+			end
 			local same = n.name == n_bottom.name
 			-- Let leveled nodes fall if it can merge with the bottom node
 			if same and d_bottom.paramtype2 == "leveled" and
