@@ -1120,7 +1120,12 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 		case NODEBOX_LEVELED:
 		case NODEBOX_LEVELED_PLANTLIKE:
 		case NODEBOX_LEVELED_PLANTLIKE_ROOTED:
-			lua_pushstring(L, "leveled");
+			if (box.type == NODEBOX_LEVELED)
+				lua_pushstring(L, "leveled");
+			else if (box.type == NODEBOX_LEVELED_PLANTLIKE)
+				lua_pushstring(L, "leveled_plantlike");
+			else if (box.type == NODEBOX_LEVELED_PLANTLIKE_ROOTED)
+				lua_pushstring(L, "leveled_plantlike_rooted");
 			lua_setfield(L, -2, "type");
 			push_box(L, box.fixed);
 			lua_setfield(L, -2, "fixed");

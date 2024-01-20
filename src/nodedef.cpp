@@ -1240,7 +1240,7 @@ void boxVectorUnion(const std::vector<aabb3f> &boxes, aabb3f *box_union)
  *                            can be rotated
  * @param[in, out] box_union  the union of the arguments
  * @param          to_add     nodebox to add to union
- * @param          is_leveled true if leveled nodebox
+ * @param          nbt        node box type
  */
 void rawUnionFixed(const ContentFeatures &features,
 		aabb3f *box_union,
