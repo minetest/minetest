@@ -1119,6 +1119,7 @@ void push_nodebox(lua_State *L, const NodeBox &box)
 			break;
 		case NODEBOX_LEVELED:
 		case NODEBOX_LEVELED_PLANTLIKE:
+		case NODEBOX_LEVELED_PLANTLIKE_ROOTED:
 			lua_pushstring(L, "leveled");
 			lua_setfield(L, -2, "type");
 			push_box(L, box.fixed);
