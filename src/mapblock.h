@@ -60,7 +60,7 @@ enum ModReason : u32 {
 	MOD_REASON_STATIC_DATA_ADDED          = 1 << 13,
 	MOD_REASON_STATIC_DATA_REMOVED        = 1 << 14,
 	MOD_REASON_STATIC_DATA_CHANGED        = 1 << 15,
-	MOD_REASON_EXPIRE_DAYNIGHTDIFF        = 1 << 16,
+	MOD_REASON_EXPIRE_IS_AIR              = 1 << 16,
 	MOD_REASON_VMANIP                     = 1 << 17,
 	MOD_REASON_UNKNOWN                    = 1 << 18,
 };

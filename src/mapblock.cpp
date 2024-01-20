@@ -188,7 +188,7 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 
 void MapBlock::actuallyUpdateIsAir()
 {
-	// Running this function un-expires m_day_night_differs
+	// Running this function un-expires m_is_air
 	m_is_air_expired = false;
 
 	bool only_air = true;
@@ -339,9 +339,12 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	u8 flags = 0;
 	if(is_underground)
 		flags |= 0x01;
-	// This flag used to be day-night-differs,
-	// make sure it's always true for older versions
-	if(isAir() || version < 30)
+	// This flag used to be day-night-differs, and it is no longer used.
+	// We write it anyway so that old servers can still read this.
+	// isAir implies !day-night-differs, !isAir is good enough for old servers
+	// to check whether above ground blocks should be sent.
+	// See RemoteClient::getNextBlocks(...)
+	if(!isAir())
 		flags |= 0x02;
 	if (!m_generated)
 		flags |= 0x08;
@@ -461,12 +464,6 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
-	if (version >= 30) {
-		m_is_air = (flags & 0x02) != 0;
-	} else {
-		m_is_air = false;
-		m_is_air_expired = true;
-	}
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;
 	else
@@ -576,6 +573,9 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 					<<": Node timers (ver>=25)"<<std::endl);
 			m_node_timers.deSerialize(is, version);
 		}
+
+		u16 dummy;
+		m_is_air = nimap.size() == 1 && nimap.getId("air", dummy);
 	}
 
 	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()
@@ -690,7 +690,6 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		u8 flags;
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 0x01) != 0;
-		m_is_air = (flags & 0x02) != 0;
 		if (version >= 18)
 			m_generated = (flags & 0x08) == 0;
 
@@ -775,9 +774,13 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		// If supported, read node definition id mapping
 		if (version >= 21) {
 			nimap.deSerialize(is);
+			u16 dummy;
+			m_is_air = nimap.size() == 1 && nimap.getId("air", dummy);
 		// Else set the legacy mapping
 		} else {
 			content_mapnode_get_name_id_mapping(&nimap);
+			m_is_air = false;
+			m_is_air_expired = true;
 		}
 		correctBlockNodeIds(&nimap, data, m_gamedef);
 	}

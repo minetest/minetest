@@ -1469,7 +1469,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 			Set block as modified
 		*/
 		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-			MOD_REASON_EXPIRE_DAYNIGHTDIFF);
+			MOD_REASON_EXPIRE_IS_AIR);
 	}
 
 	/*
@@ -2064,6 +2064,7 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 
 		block->copyFrom(*this);
 		block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_VMANIP);
+		block->expireIsAirCache();
 
 		if(modified_blocks)
 			(*modified_blocks)[p] = block;
