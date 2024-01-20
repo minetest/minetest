@@ -4108,6 +4108,19 @@ Translations *Server::getTranslationLanguage(const std::string &lang_code)
 	return translations;
 }
 
+std::unordered_map<std::string, std::string> Server::getMediaList()
+{
+	MutexAutoLock env_lock(m_env_mutex);
+
+	std::unordered_map<std::string, std::string> ret;
+	for (auto &it : m_media) {
+		if (it.second.no_announce)
+			continue;
+		ret.emplace(base64_decode(it.second.sha1_digest), it.second.path);
+	}
+	return ret;
+}
+
 ModStorageDatabase *Server::openModStorageDatabase(const std::string &world_path)
 {
 	std::string world_mt_path = world_path + DIR_DELIM + "world.mt";
