@@ -1,15 +1,12 @@
-Minetest Lua Mainmenu API Reference 5.9.0
-=========================================
-
-Introduction
--------------
+# Minetest Lua Mainmenu API Reference 5.8.0
+## Introduction
 
 The main menu is defined as a formspec by Lua in `builtin/mainmenu/`
 Description of formspec language to show your menu is in `lua_api.md`
 
 
-Callbacks
----------
+
+# Callbacks
 
 * `core.button_handler(fields)`: called when a button is pressed.
   * `fields` = `{name1 = value1, name2 = value2, ...}`
@@ -17,8 +14,8 @@ Callbacks
   * `event`: `"MenuQuit"`, `"KeyEnter"`, `"ExitButton"` or `"EditBoxEnter"`
 
 
-Gamedata
---------
+
+# Gamedata
 
 The "gamedata" table is read when calling `core.start()`. It should contain:
 
@@ -34,8 +31,8 @@ The "gamedata" table is read when calling `core.start()`. It should contain:
 ```
 
 
-Functions
----------
+
+# Functions
 
 * `core.start()`
   * start game session
@@ -62,8 +59,7 @@ Functions
 
 
 
-Filesystem
-----------
+# Filesystem
 
 * `core.get_builtin_path()`
   * returns path to builtin root
@@ -91,7 +87,7 @@ Filesystem
 * `core.get_video_drivers()`
   * get list of video drivers supported by engine (not all modes are guaranteed to work)
   * returns list of available video drivers' settings name and 'friendly' display name
-    e.g. `{ {name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"} }`
+    e.g. `{{name="opengl", friendly_name="OpenGL"}, {name="software", friendly_name="Software Renderer"}}`
   * first element of returned list is guaranteed to be the NULL driver
 * `core.get_mapgen_names([include_hidden=false])` -> table of map generator algorithms
     registered in the core (possible in async calls)
@@ -101,8 +97,8 @@ Filesystem
     otherwise: returns path to the temporary folder
 
 
-HTTP Requests
--------------
+
+# HTTP Requests
 
 * `core.download_file(url, target)` (possible in async calls)
     * `url` to download, and `target` to store to
@@ -120,7 +116,7 @@ HTTP Requests
 * `HTTPApiTable.fetch_async_get(handle)`: returns `HTTPRequestResult`
     * Return response data for given asynchronous HTTP request
 
-### `HTTPRequest` definition
+## `HTTPRequest` Definition
 
 Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 
@@ -141,7 +137,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
     -- Optional, if specified replaces the default minetest user agent with
     -- given string
 
-    extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+    extra_headers = {"Accept-Language: en-us", "Accept-Charset: utf-8"},
     -- Optional, if specified adds additional headers to the HTTP request.
     -- You must make sure that the header strings follow HTTP specification
     -- ("Key: Value").
@@ -152,7 +148,7 @@ Used by `HTTPApiTable.fetch` and `HTTPApiTable.fetch_async`.
 }
 ```
 
-### `HTTPRequestResult` definition
+## `HTTPRequestResult` Definition
 
 Passed to `HTTPApiTable.fetch` callback. Returned by
 `HTTPApiTable.fetch_async_get`.
@@ -177,8 +173,8 @@ Passed to `HTTPApiTable.fetch` callback. Returned by
 ```
 
 
-Formspec
---------
+
+# Formspec
 
 * `core.update_formspec(formspec)`
 * `core.get_table_index(tablename)` -> index
@@ -195,8 +191,8 @@ Formspec
   * `formspec`: string to be added to every mainmenu formspec, to be used for theming.
 
 
-GUI
----
+
+# GUI
 
 * `core.set_background(type,texturepath,[tile],[minsize])`
   * `type`: "background", "overlay", "header" or "footer"
@@ -222,7 +218,6 @@ GUI
 * `core.get_active_irrlicht_device()`:
   * name of current irrlicht device, e.g. "SDL"
 * `core.get_window_info()`: Same as server-side `get_player_window_information` API.
-
   ```lua
   -- Note that none of these things are constant, they are likely to change
   -- as the player resizes the window and moves it between monitors
@@ -264,8 +259,7 @@ GUI
 
 
 
-Content and Packages
---------------------
+# Content and Packages
 
 Content - an installed mod, modpack, game, or texture pack (txt)
 Package - content which is downloadable from the content db, may or may not be installed.
@@ -341,8 +335,9 @@ Package - content which is downloadable from the content db, may or may not be i
       }
       ```
 
-Logging
--------
+
+
+# Logging
 
 * `core.debug(line)` (possible in async calls)
   * Always printed to `stderr` and logfile (`print()` is redirected here)
@@ -351,8 +346,8 @@ Logging
   * `loglevel` one of "error", "action", "info", "verbose"
 
 
-Settings
---------
+
+# Settings
 
 * `core.settings:set(name, value)`
 * `core.settings:get(name)` -> string or nil (possible in async calls)
@@ -361,11 +356,11 @@ Settings
 * `core.settings:save()` -> nil, save all settings to config file
 
 For a complete list of methods of the `Settings` object see
-[lua_api.md](https://github.com/minetest/minetest/blob/master/doc/lua_api.md)
+[lua_api.md](lua_api.md#methods-18)
 
 
-Worlds
-------
+
+# Worlds
 
 * `core.get_worlds()` -> list of worlds (possible in async calls)
   * returns
@@ -382,8 +377,8 @@ Worlds
 * `core.delete_world(index)`
 
 
-Helpers
--------
+
+# Helpers
 
 * `core.get_us_time()`
   * returns time with microsecond precision
@@ -413,8 +408,8 @@ Helpers
   [RFC 3986, section 2.3](https://datatracker.ietf.org/doc/html/rfc3986#section-2.3).
 
 
-Async
------
+
+# Async
 
 * `core.handle_async(async_job,parameters,finished)`
   * execute a function asynchronously
@@ -423,15 +418,15 @@ Async
   * `finished` function to be called once `async_job` has finished
     the result of `async_job` is passed to this function
 
-### Limitations of Async operations
+## Limitations of Async Operations
  * No access to global lua variables, don't even try
  * Limited set of available functions
     e.g. No access to functions modifying menu like `core.start`, `core.close`,
     `core.show_path_select_dialog`
 
 
-Background music
-----------------
+
+# Background Music
 
 The main menu supports background music.
 It looks for a `main_menu` sound in `$USER_PATH/sounds`. The same naming
