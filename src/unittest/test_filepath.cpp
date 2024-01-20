@@ -38,6 +38,8 @@ public:
 	void testRemoveLastPathComponent();
 	void testRemoveLastPathComponentWithTrailingDelimiter();
 	void testRemoveRelativePathComponent();
+	void testSafeWriteToFile();
+	void testCopyFileContents();
 };
 
 static TestFilePath g_test_instance;
@@ -49,6 +51,8 @@ void TestFilePath::runTests(IGameDef *gamedef)
 	TEST(testRemoveLastPathComponent);
 	TEST(testRemoveLastPathComponentWithTrailingDelimiter);
 	TEST(testRemoveRelativePathComponent);
+	TEST(testSafeWriteToFile);
+	TEST(testCopyFileContents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +60,7 @@ void TestFilePath::runTests(IGameDef *gamedef)
 // adjusts a POSIX path to system-specific conventions
 // -> changes '/' to DIR_DELIM
 // -> absolute paths start with "C:\\" on windows
-std::string p(std::string path)
+static std::string p(std::string path)
 {
 	for (size_t i = 0; i < path.size(); ++i) {
 		if (path[i] == '/') {
@@ -261,4 +265,48 @@ void TestFilePath::testRemoveRelativePathComponent()
 	path = p("/a/b/c/.././../d/../e/f/g/../h/i/j/../../../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == p("/a/e"));
+}
+
+
+void TestFileSys::testSafeWriteToFile()
+{
+	const std::string dest_path = getTestTempFile();
+	const std::string test_data("hello\0world", 11);
+	fs::safeWriteToFile(dest_path, test_data);
+	UASSERT(fs::PathExists(dest_path));
+	std::string contents_actual;
+	UASSERT(fs::ReadFile(dest_path, contents_actual));
+	UASSERTEQ(auto, contents_actual, test_data);
+}
+
+void TestFileSys::testCopyFileContents()
+{
+	const auto dir_path = getTestTempDirectory();
+	const auto file1 = dir_path + DIR_DELIM "src", file2 = dir_path + DIR_DELIM "dst";
+	const std::string test_data("hello\0world", 11);
+
+	// error case
+	UASSERT(!fs::CopyFileContents(file1, "somewhere"));
+
+	{
+		std::ofstream ofs(file1);
+		ofs << test_data;
+	}
+
+	// normal case
+	UASSERT(fs::CopyFileContents(file1, file2));
+	std::string contents_actual;
+	UASSERT(fs::ReadFile(file2, contents_actual));
+	UASSERTEQ(auto, contents_actual, test_data);
+
+	// should overwrite and truncate
+	{
+		std::ofstream ofs(file2);
+		for (int i = 0; i < 10; i++)
+			ofs << "OH MY GAH";
+	}
+	UASSERT(fs::CopyFileContents(file1, file2));
+	contents_actual.clear();
+	UASSERT(fs::ReadFile(file2, contents_actual));
+	UASSERTEQ(auto, contents_actual, test_data);
 }
