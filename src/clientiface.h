@@ -243,14 +243,13 @@ public:
 	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
 	void *auth_data = nullptr;
 	u32 allowed_auth_mechs = 0;
-	u32 allowed_sudo_mechs = 0;
 
 	void resetChosenMech();
 
-	bool isSudoMechAllowed(AuthMechanism mech)
-	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
+
+	void setEncryptedPassword(const std::string& pwd);
 
 	RemoteClient();
 	~RemoteClient() = default;

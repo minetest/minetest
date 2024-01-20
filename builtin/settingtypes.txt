@@ -1826,11 +1826,6 @@ mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 #    Value of 0 (default) will let Minetest autodetect the number of available threads.
 mesh_generation_threads (Mapblock mesh generation threads) int 0 0 8
 
-#    Size of the MapBlock cache of the mesh generator. Increasing this will
-#    increase the cache hit %, reducing the data being copied from the main
-#    thread, thus reducing jitter.
-meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size in MB) int 20 0 1000
-
 #    True = 256
 #    False = 128
 #    Usable to make minimap smoother on slower machines.

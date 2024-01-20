@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IShaderConstantSetCallBack.h>
 #include "client/renderingengine.h"
 #include "EShaderTypes.h"
+#include "gettext.h"
 #include "log.h"
 #include "gamedef.h"
 #include "client/tile.h"
@@ -588,8 +589,8 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 
 	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	if (!driver->queryFeature(video::EVDF_ARB_GLSL)) {
-		errorstream << "Shaders are enabled but GLSL is not supported by the driver\n";
-		return shaderinfo;
+		throw ShaderException(gettext("Shaders are enabled but GLSL is not "
+			"supported by the driver."));
 	}
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 
@@ -792,7 +793,9 @@ ShaderInfo ShaderSource::generateShader(const std::string &name,
 		dumpShaderProgram(warningstream, "Vertex", vertex_shader);
 		dumpShaderProgram(warningstream, "Fragment", fragment_shader);
 		dumpShaderProgram(warningstream, "Geometry", geometry_shader);
-		return shaderinfo;
+		throw ShaderException(
+			fmtgettext("Failed to compile the \"%s\" shader.", name.c_str()) +
+			strgettext("\nCheck debug.txt for details."));
 	}
 
 	// Apply the newly created material type

@@ -56,8 +56,9 @@ public:
 
 	inline u32 next()
 	{
-		m_next = m_next * 1103515245 + 12345;
-		return (u32)(m_next / 65536) % (RANDOM_RANGE + 1);
+		m_next = static_cast<u32>(m_next) * 1103515245U + 12345U;
+		// Signed division is required due to backwards compatibility
+		return static_cast<u32>(m_next / 65536) % (RANDOM_RANGE + 1U);
 	}
 
 	inline s32 range(s32 min, s32 max)
@@ -70,7 +71,7 @@ public:
 		PcgRandom, we cannot modify this RNG's range as it would change the
 		output of this RNG for reverse compatibility.
 		*/
-		if ((u32)(max - min) > (RANDOM_RANGE + 1) / 5)
+		if (static_cast<u32>(max - min) > (RANDOM_RANGE + 1) / 5)
 			throw PrngException("Range too large");
 
 		return (next() % (max - min + 1)) + min;

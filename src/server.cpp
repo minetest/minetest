@@ -2902,13 +2902,9 @@ void Server::acceptAuth(session_t peer_id, bool forSudoMode)
 
 		NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, peer_id);
 
-		// Right now, the auth mechs don't change between login and sudo mode.
-		u32 sudo_auth_mechs = client->allowed_auth_mechs;
-		client->allowed_sudo_mechs = sudo_auth_mechs;
-
 		resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
 				<< g_settings->getFloat("dedicated_server_step")
-				<< sudo_auth_mechs;
+				<< client->allowed_auth_mechs;
 
 		Send(&resp_pkt);
 		m_clients.event(peer_id, CSE_AuthAccept);
