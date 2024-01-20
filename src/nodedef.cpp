@@ -51,6 +51,7 @@ void NodeBox::reset()
 	type = NODEBOX_REGULAR;
 	// default is empty
 	fixed.clear();
+	leveled_fixed.clear();
 	// default is sign/ladder-like
 	wall_top = aabb3f(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2);
 	wall_bottom = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2);
@@ -72,6 +73,13 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 		for (const aabb3f &nodebox : fixed) {
 			writeV3F32(os, nodebox.MinEdge);
 			writeV3F32(os, nodebox.MaxEdge);
+		}
+		if (type == NODEBOX_LEVELED) {
+			writeU16(os, leveled_fixed.size());
+			for (const aabb3f &nodebox : leveled_fixed) {
+				writeV3F32(os, nodebox.MinEdge);
+				writeV3F32(os, nodebox.MaxEdge);
+			}
 		}
 		break;
 	case NODEBOX_WALLMOUNTED:
@@ -111,6 +119,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 		WRITEBOX(c.disconnected_right);
 		WRITEBOX(c.disconnected);
 		WRITEBOX(c.disconnected_sides);
+		WRITEBOX(leveled_fixed);
 		break;
 	}
 	default:
@@ -132,12 +141,12 @@ void NodeBox::deSerialize(std::istream &is)
 			break;
 		case NODEBOX_FIXED:
 		case NODEBOX_LEVELED: {
-			u16 fixed_count = readU16(is);
-			while(fixed_count--) {
+			u16 leveled_fixed_count = readU16(is);
+			while(leveled_fixed_count--) {
 				aabb3f box;
 				box.MinEdge = readV3F32(is);
 				box.MaxEdge = readV3F32(is);
-				fixed.push_back(box);
+				leveled_fixed.push_back(box);
 			}
 			break;
 		}
@@ -177,6 +186,7 @@ void NodeBox::deSerialize(std::istream &is)
 			READBOXES(c.disconnected_right);
 			READBOXES(c.disconnected);
 			READBOXES(c.disconnected_sides);
+			READBOXES(leveled_fixed);
 			break;
 		}
 		default:
@@ -1204,6 +1214,50 @@ void boxVectorUnion(const std::vector<aabb3f> &boxes, aabb3f *box_union)
 	}
 }
 
+/*!
+ * Helper function for fixed/leveled nodeboxes in getBoxUnionReturns.
+ * Returns the smallest box that contains all boxes
+ * in the vector. Box_union is expanded.
+ * @param[in]      features   used to decide whether the nodebox
+ *                            can be rotated
+ * @param[in, out] box_union  the union of the arguments
+ * @param          to_add     nodebox to add to union
+ * @param          is_leveled true if leveled nodebox
+ */
+void rawUnionFixed(const ContentFeatures &features,
+		aabb3f *box_union,
+		const std::vector<aabb3f> &to_add, bool is_leveled)
+{
+	// Raw union (fixed)
+	aabb3f half_processed(0, 0, 0, 0, 0, 0);
+	boxVectorUnion(to_add, &half_processed);
+	// Set leveled boxes to maximal
+	if (is_leveled) {
+		half_processed.MaxEdge.Y = +BS / 2;
+	}
+	if (features.param_type_2 == CPT2_FACEDIR ||
+			features.param_type_2 == CPT2_COLORED_FACEDIR) {
+		// Get maximal coordinate
+		f32 coords[] = {
+			fabsf(half_processed.MinEdge.X),
+			fabsf(half_processed.MinEdge.Y),
+			fabsf(half_processed.MinEdge.Z),
+			fabsf(half_processed.MaxEdge.X),
+			fabsf(half_processed.MaxEdge.Y),
+			fabsf(half_processed.MaxEdge.Z) };
+		f32 max = 0;
+		for (float coord : coords) {
+			if (max < coord) {
+				max = coord;
+			}
+		}
+		// Add the union of all possible rotated boxes
+		box_union->addInternalPoint(-max, -max, -max);
+		box_union->addInternalPoint(+max, +max, +max);
+	} else {
+		box_union->addInternalBox(half_processed);
+	}
+}
 
 /*!
  * Returns a box that contains the nodebox in every case.
@@ -1222,8 +1276,9 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			// Raw union
 			aabb3f half_processed(0, 0, 0, 0, 0, 0);
 			boxVectorUnion(nodebox.fixed, &half_processed);
+			bool is_leveled = nodebox.type == NODEBOX_LEVELED;
 			// Set leveled boxes to maximal
-			if (nodebox.type == NODEBOX_LEVELED) {
+			if (is_leveled) {
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
 			if (features.param_type_2 == CPT2_FACEDIR ||
@@ -1250,6 +1305,10 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			} else {
 				box_union->addInternalBox(half_processed);
 			}
+			if (is_leveled) {
+				rawUnionFixed(features, box_union, nodebox.leveled_fixed, false);
+			}
+			rawUnionFixed(features, box_union, nodebox.fixed, is_leveled);
 			break;
 		}
 		case NODEBOX_WALLMOUNTED: {
