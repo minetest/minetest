@@ -63,7 +63,9 @@ minetest.register_node("testnodes:nodebox_leveled", {
 })
 -- Leveled nodebox that also contains a static nodebox
 minetest.register_node("testnodes:nodebox_leveled_fixed", {
-	description = S("Combined Leveled Nodebox Test Node"),
+	description = S("Combined Leveled Nodebox Test Node").."\n"..
+		S("param2 = height of center box (0..127)").."\n"..
+		S("Other boxes are unaffected by param2"),
 	tiles = {"testnodes_nodebox.png"},
 	drawtype = "nodebox",
 	paramtype = "light",
