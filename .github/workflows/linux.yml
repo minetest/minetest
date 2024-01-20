@@ -86,7 +86,7 @@ jobs:
       - name: Install deps
         run: |
           source ./util/ci/common.sh
-          install_linux_deps clang-7 valgrind
+          install_linux_deps clang-7 llvm
 
       - name: Build
         run: |
@@ -94,14 +94,11 @@ jobs:
         env:
           CC: clang-7
           CXX: clang++-7
+          CMAKE_FLAGS: '-DCMAKE_C_FLAGS="-fsanitize=address" -DCMAKE_CXX_FLAGS="-fsanitize=address"'
 
       - name: Unittest
         run: |
           ./bin/minetest --run-unittests
-
-      - name: Valgrind
-        run: |
-          valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ./bin/minetest --run-unittests
 
   # Current clang version
   clang_14:
