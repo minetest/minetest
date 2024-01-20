@@ -1325,6 +1325,7 @@ The function of `param2` is determined by `paramtype2` in node definition.
               nodeboxes.
             * The nodebox height is (`param2` / 64) nodes.
             * The maximum accepted value of `param2` is 127.
+            * Boxes in '`leveled_fixed = {}`' will never change.
         * Rooted plantlike:
             * The height of the 'plantlike' section is stored in `param2`.
             * The height is (`param2` / 16) nodes.
@@ -1526,8 +1527,29 @@ A nodebox is defined as any of:
     -- by the node parameter 'leveled = ', or if 'paramtype2 == "leveled"'
     -- by param2.
     -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
+    -- Optionally add 'leveled_fixed = {}' for static boxes.
     type = "leveled",
-    fixed = box OR {box1, box2, ...}
+    fixed = box OR {box1, box2, ...} -- top face is variable
+    leveled_fixed = box OR {box1, box2, ...} -- never changes
+}
+{
+    -- Same as leveled, but the box height is in sync with the 'plant'
+    -- of 'plantlike' nodes (steps of 1/16).
+    -- Recommended use for this is as selection box.
+    -- Be careful when using this as a collision box -- do not exceed the
+    -- max. permissible heights of collision boxes (see collision box
+    -- definition).
+    type = "leveled_plantlike",
+    fixed, leveled_fixed = -- see above
+}
+{
+    -- Same as leveled, but the box height is in sync with the graphical
+    -- representation of of 'plantlike_rooted' nodes (steps of 1/16).
+    -- The upper box bound begins at the top side of the base cube (0.5).
+    -- Recommended use for this is as selection box.
+    -- Be careful when using this as a collision box (see above).
+    type = "leveled_plantlike_rooted",
+    fixed, leveled_fixed = -- see above
 }
 {
     -- A box like the selection box for torches
@@ -9520,6 +9542,9 @@ Used by `minetest.register_node`.
     -- Custom collision box definition. Multiple boxes can be defined.
     -- If "nodebox" drawtype is used and collision_box is nil, then node_box
     -- definition is used for the collision box.
+    -- Collision boxes that are larger than the node itself are allowed, but
+    -- only up to an absolute value of -0.5 + 127/64 on each axis. If you
+    -- exceed this limit, there's no guarantee that collisions still work.
 
     -- Support maps made in and before January 2012
     legacy_facedir_simple = false,
