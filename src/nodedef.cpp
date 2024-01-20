@@ -66,6 +66,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 
 	switch (type) {
 	case NODEBOX_LEVELED:
+	case NODEBOX_LEVELED_PLANTLIKE:
 	case NODEBOX_FIXED:
 		writeU8(os, type);
 
@@ -74,7 +75,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 			writeV3F32(os, nodebox.MinEdge);
 			writeV3F32(os, nodebox.MaxEdge);
 		}
-		if (type == NODEBOX_LEVELED) {
+		if (type == NODEBOX_LEVELED || type == NODEBOX_LEVELED_PLANTLIKE) {
 			writeU16(os, leveled_fixed.size());
 			for (const aabb3f &nodebox : leveled_fixed) {
 				writeV3F32(os, nodebox.MinEdge);
@@ -140,13 +141,15 @@ void NodeBox::deSerialize(std::istream &is)
 		case NODEBOX_REGULAR:
 			break;
 		case NODEBOX_FIXED:
-		case NODEBOX_LEVELED: {
-			u16 leveled_fixed_count = readU16(is);
-			while(leveled_fixed_count--) {
+		case NODEBOX_LEVELED:
+		case NODEBOX_LEVELED_PLANTLIIKE:
+		{
+			u16 fixed_count = readU16(is);
+			while(fixed_count--) {
 				aabb3f box;
 				box.MinEdge = readV3F32(is);
 				box.MaxEdge = readV3F32(is);
-				leveled_fixed.push_back(box);
+				fixed.push_back(box);
 			}
 			break;
 		}

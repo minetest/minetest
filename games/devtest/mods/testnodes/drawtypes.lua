@@ -363,6 +363,11 @@ minetest.register_node("testnodes:plantlike_leveled", {
 	tiles = {
 		{ name = "testnodes_plantlike_leveled.png", tileable_vertical = true },
 	},
+	-- also test the 'leveled_plantlike' nodebox
+	selection_box = {
+		type = "leveled_plantlike",
+		fixed = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },
+	},
 
 
 	-- We set a default param2 here only for convenience, to make the "plant" visible after placement

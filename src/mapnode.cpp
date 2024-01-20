@@ -187,13 +187,28 @@ void MapNode::rotateAlongYAxis(const NodeDefManager *nodemgr, Rotation rot)
 
 void buildFixedNodeBox(const MapNode &n, const NodeBox &nodebox, const NodeDefManager *nodemgr,
 		std::vector<aabb3f> &boxes, std::vector<aabb3f> input_boxes,
-		bool is_leveled) {
+		enum NodeBoxType nbt) {
 	u8 facedir = n.getFaceDir(nodemgr, true);
 	facedir &= 0x03;
 	u8 axisdir = facedir>>2;
 	for (aabb3f box : input_boxes) {
-		if (is_leveled)
+		switch (nbt) {
+		case NODEBOX_LEVELED: {
 			box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
+			break;
+		}
+		case NODEBOX_LEVELED_PLANTLIKE: {
+			u8 height = n.getParam2();
+			box.MaxEdge.Y = (-0.5f + height / 16.0f) * BS;
+                        if (box.MaxEdge.Y > SAFE_NODE_COLLISION_LIMIT * BS) {
+				box.MaxEdge.Y = SAFE_NODE_COLLISION_LIMIT * BS;
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+		}
 
 		switch (axisdir) {
 		case 0:
@@ -322,14 +337,15 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 {
 	std::vector<aabb3f> &boxes = *p_boxes;
 
-	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
+	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED ||
+			nodebox.type == NODEBOX_LEVELED_PLANTLIKE) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		const std::vector<aabb3f> &leveled_fixed = nodebox.leveled_fixed;
-		bool is_leveled = nodebox.type == NODEBOX_LEVELED;
-		if (is_leveled) {
-			buildFixedNodeBox(n, nodebox, nodemgr, boxes, leveled_fixed, false);
+		enum NodeBoxType nbt = nodebox.type;
+		if (nbt == NODEBOX_LEVELED || nbt == NODEBOX_LEVELED_PLANTLIKE) {
+			buildFixedNodeBox(n, nodebox, nodemgr, boxes, leveled_fixed, NODEBOX_FIXED);
 		}
-		buildFixedNodeBox(n, nodebox, nodemgr, boxes, fixed, is_leveled);
+		buildFixedNodeBox(n, nodebox, nodemgr, boxes, fixed, nbt);
 	}
 	else if(nodebox.type == NODEBOX_WALLMOUNTED)
 	{
