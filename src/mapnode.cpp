@@ -197,9 +197,14 @@ void buildFixedNodeBox(const MapNode &n, const NodeBox &nodebox, const NodeDefMa
 			box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
 			break;
 		}
-		case NODEBOX_LEVELED_PLANTLIKE: {
+		case NODEBOX_LEVELED_PLANTLIKE:
+		case NODEBOX_LEVELED_PLANTLIKE_ROOTED: {
 			u8 height = n.getParam2();
-			box.MaxEdge.Y = (-0.5f + height / 16.0f) * BS;
+			if (nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
+				box.MaxEdge.Y = (0.5f + height / 16.0f) * BS;
+			} else {
+				box.MaxEdge.Y = (-0.5f + height / 16.0f) * BS;
+			}
                         if (box.MaxEdge.Y > SAFE_NODE_COLLISION_LIMIT * BS) {
 				box.MaxEdge.Y = SAFE_NODE_COLLISION_LIMIT * BS;
 			}
@@ -338,11 +343,13 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	std::vector<aabb3f> &boxes = *p_boxes;
 
 	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED ||
-			nodebox.type == NODEBOX_LEVELED_PLANTLIKE) {
+			nodebox.type == NODEBOX_LEVELED_PLANTLIKE ||
+			nodebox.type == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		const std::vector<aabb3f> &leveled_fixed = nodebox.leveled_fixed;
 		enum NodeBoxType nbt = nodebox.type;
-		if (nbt == NODEBOX_LEVELED || nbt == NODEBOX_LEVELED_PLANTLIKE) {
+		if (nbt == NODEBOX_LEVELED || nbt == NODEBOX_LEVELED_PLANTLIKE ||
+				nbt == NODEBOX_LEVELED_PLANTLIKE_ROOTED) {
 			buildFixedNodeBox(n, nodebox, nodemgr, boxes, leveled_fixed, NODEBOX_FIXED);
 		}
 		buildFixedNodeBox(n, nodebox, nodemgr, boxes, fixed, nbt);

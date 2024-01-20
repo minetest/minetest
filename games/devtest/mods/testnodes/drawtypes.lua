@@ -366,7 +366,7 @@ minetest.register_node("testnodes:plantlike_leveled", {
 	-- also test the 'leveled_plantlike' nodebox
 	selection_box = {
 		type = "leveled_plantlike",
-		fixed = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },
+		fixed = { -0.4, -0.5, -0.4, 0.4, 0.4, 0.4 },
 	},
 
 
@@ -446,6 +446,12 @@ minetest.register_node("testnodes:plantlike_rooted_leveled", {
 	},
 	special_tiles = {
 		{ name = "testnodes_plantlike_rooted_leveled.png", tileable_vertical = true },
+	},
+	-- also test the 'leveled_plantlike_rooted' nodebox
+	selection_box = {
+		type = "leveled_plantlike_rooted",
+		fixed = { -0.4, 0.5, -0.4, 0.4, 0.5, 0.4 },
+		leveled_fixed = { -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 },
 	},
 
 
