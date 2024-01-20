@@ -767,7 +767,8 @@ You can use this to send disposable images such as captchas
 to individual clients, or render things that would be too
 expensive to compose with `[combine:`.
 
-> [!WARNING] Avoid sending large images this way. This is not a replacement
+> [!WARNING]
+> Avoid sending large images this way. This is not a replacement
 for asset files, do not use it to do anything that you could instead achieve
 by just using a file. In particular consider `minetest.dynamic_add_media` and
 test whether using other texture modifiers could result in a shorter string
@@ -1632,7 +1633,8 @@ The `offset` field specifies a pixel offset from the position. Contrary to
 position, the offset is not scaled to screen size. This allows for some
 precisely positioned items in the HUD.
 
-> [!NOTE] `offset` _will_ adapt to screen DPI as well as the user defined scaling factor!
+> [!NOTE]
+> `offset` _will_ adapt to screen DPI as well as the user defined scaling factor!
 
 The `z_index` field specifies the order of HUD elements from back to front.
 Lower z-index elements are displayed behind higher z-index elements. Elements
@@ -2549,10 +2551,12 @@ For colored text you can use `minetest.colorize`.
 Since formspec version 3, elements drawn in the order they are defined. All
 background elements are drawn before all other elements.
 
-> [!WARNING] Do _not_ use an element name starting with `key_`; those names are
+> [!WARNING]
+> Do _not_ use an element name starting with `key_`; those names are
   reserved to pass key press events to formspec!
 
-> [!WARNING] Minetest allows you to add elements to every single formspec instance
+> [!WARNING]
+> Minetest allows you to add elements to every single formspec instance
   using `player:set_formspec_prepend`, which may be the reason backgrounds are
   appearing when you don't expect them to, or why things are styled differently
   to normal. See [`no_prepend[]`] and [Styling Formspecs].
@@ -2662,7 +2666,8 @@ background elements are drawn before all other elements.
 
 ### `real_coordinates[<bool>]`
 
-> [!NOTE] Enable it automatically using formspec version 2 or higher.
+> [!NOTE]
+> Enable it automatically using formspec version 2 or higher.
 * When set to true, all following formspec elements will use the new coordinate system.
 * If used immediately after `size`, `position`, `anchor`, and `no_prepend` elements
   (if present), the form size will use the new coordinate system.
@@ -2717,9 +2722,10 @@ background elements are drawn before all other elements.
   Indices start at `0`. Default is `0`.
 * The number of shown slots is the minimum of `W*H` and the inventory list's size minus
   `starting item index`.
-  > [!NOTE] With the new coordinate system, the spacing between inventory slots is 1/4 the
-    size of an inventory slot by default. Also see [Styling Formspecs] for changing the
-    size of slots and spacing.
+> [!NOTE]
+> With the new coordinate system, the spacing between inventory slots is 1/4 the
+  size of an inventory slot by default. Also see [Styling Formspecs] for changing the
+  size of slots and spacing.
 
 ### `listring[<inventory location>;<list name>]`
 
@@ -2868,7 +2874,8 @@ background elements are drawn before all other elements.
 * `default` is the default value of the field
     * `default` may contain variable references such as `${text}` which
       will fill the value from the metadata value `text`
-    > [!NOTE] No extra text or more than a single variable is supported at the moment.
+> [!NOTE]
+> No extra text or more than a single variable is supported at the moment.
 * See `field_close_on_enter` to stop enter closing the formspec
 
 ### `field[<name>;<label>;<default>]`
@@ -2908,17 +2915,20 @@ background elements are drawn before all other elements.
 
 * The label formspec element displays the text set in `label`
   at the specified position.
-> [!NOTE] If the new coordinate system is enabled, labels are positioned
+> [!NOTE]
+> If the new coordinate system is enabled, labels are positioned
   from the center of the text, not the top.
 * The text is displayed directly without automatic line breaking,
   so label should not be used for big text chunks. Newlines can be
   used to make labels multiline.
-> [!NOTE] With the new coordinate system, newlines are spaced with half a
+> [!NOTE]
+> With the new coordinate system, newlines are spaced with half a
   coordinate. With the old system, newlines are spaced 2/5 of an inventory slot.
 
 ### `hypertext[<X>,<Y>;<W>,<H>;<name>;<text>]`
 * Displays a static formatted text with hyperlinks.
-> [!WARNING] This element is currently unstable and subject to change.
+> [!WARNING]
+> This element is currently unstable and subject to change.
 * `x`, `y`, `w` and `h` work as per field
 * `name` is the name of the field as returned in fields to `on_receive_fields` in case of action in text.
 * `text` is the formatted text using `Markup Language` described below.
@@ -2926,7 +2936,8 @@ background elements are drawn before all other elements.
 ### `vertlabel[<X>,<Y>;<label>]`
 * Textual label drawn vertically
 * `label` is the text on the label
-> [!NOTE] If the new coordinate system is enabled, vertlabels are positioned
+> [!NOTE]
+> If the new coordinate system is enabled, vertlabels are positioned
   from the center of the text, not the left.
 
 ### `button[<X>,<Y>;<W>,<H>;<name>;<label>]`
@@ -2939,7 +2950,8 @@ background elements are drawn before all other elements.
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 
 * `texture name` is the filename of an image
-> [!NOTE] Height is supported on both the old and new coordinate systems for `image_buttons`.
+> [!NOTE]
+> Height is supported on both the old and new coordinate systems for `image_buttons`.
 
 ### `image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>;<noclip>;<drawborder>;<pressed texture name>]`
 
@@ -2989,7 +3001,8 @@ background elements are drawn before all other elements.
 
 * Show a tab **header** at specific position (ignores formsize)
 * `X` and `Y`: position of the tabheader
-> [!NOTE] Width and height are automatically chosen with this syntax
+> [!NOTE]
+> Width and height are automatically chosen with this syntax
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
 * `current_tab`: index of selected tab 1
@@ -2999,7 +3012,8 @@ background elements are drawn before all other elements.
 ### `tabheader[<X>,<Y>;<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab **header** at specific position (ignores formsize)
-> [!WARNING] This syntax for tabheaders can only be used with the new coordinate system.
+> [!WARNING]
+> This syntax for tabheaders can only be used with the new coordinate system.
 * `X` and `Y`: position of the tabheader
 * `H`: height of the tabheader. Width is automatically determined with this syntax.
 * `name` fieldname data is transferred to Lua
@@ -3011,7 +3025,8 @@ background elements are drawn before all other elements.
 ### `tabheader[<X>,<Y>;<W>,<H>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
 
 * Show a tab **header** at specific position (ignores formsize)
-> [!WARNING] This syntax for tabheaders can only be used with the new coordinate system.
+> [!WARNING]
+> This syntax for tabheaders can only be used with the new coordinate system.
 * `X` and `Y`: position of the tabheader
 * `W` and `H`: width and height of the tabheader
 * `name` fieldname data is transferred to Lua
@@ -3031,7 +3046,8 @@ background elements are drawn before all other elements.
 ### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
-> [!NOTE] There are two different operation modes:
+> [!NOTE]
+> There are two different operation modes:
 >  1. handle directly on change (only changed dropdown is submitted)
 >  2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
@@ -3047,8 +3063,11 @@ background elements are drawn before all other elements.
 ### `dropdown[<X>,<Y>;<W>,<H>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<index event>]`
 
 * Show a dropdown field
-> [!WARNING] This syntax for dropdowns can only be used with the new coordinate system. \
-> [!NOTE] There are two different operation modes:
+> [!WARNING]
+> This syntax for dropdowns can only be used with the new coordinate system.
+
+> [!NOTE]
+> There are two different operation modes:
 >  1. handle directly on change (only changed dropdown is submitted)
 >  2. read the value on pressing a button (all dropdown values are available)
 * `X` and `Y`: position of the dropdown
@@ -3067,7 +3086,8 @@ background elements are drawn before all other elements.
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
-> [!NOTE] If the new coordinate system is enabled, checkboxes are positioned from
+> [!NOTE]
+> If the new coordinate system is enabled, checkboxes are positioned from
   the center of the checkbox, not the top.
 
 ### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
@@ -3186,7 +3206,8 @@ background elements are drawn before all other elements.
 ### `set_focus[<name>;<force>]`
 
 * Sets the focus to the element with the same `name` parameter.
-> [!NOTE] This element must be placed before the element it focuses.
+> [!NOTE]
+> This element must be placed before the element it focuses.
 * `force` (optional, default `false`): By default, focus is not applied for
   re-sent formspecs with the same name so that player-set focus is kept.
   `true` sets the focus to the specified element for every sent formspec.
@@ -3309,19 +3330,20 @@ Some types may inherit styles from parent types.
 * `box`
     * `noclip` - boolean, set to true to allow the element to exceed formspec bounds.
         * Defaults to `false` in formspec version 3 or higher
-    > [!NOTE] `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
-      * Single value (e.g. `#FF0`): All corners/borders.
-      * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
-        top and bottom,left and right.
-      * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
-      * These work similarly to CSS borders.
     * `colors` - `ColorString`. Sets the color(s) of the box corners. Default `black`.
     * `bordercolors` - `ColorString`. Sets the color(s) of the borders. Default `black`.
     * `borderwidths` - Integer. Sets the width(s) of the borders in pixels. If the width is
       negative, the border will extend inside the box, whereas positive extends outside
       the box. A width of zero results in no border; this is default.
+> [!NOTE]
+> `colors`, `bordercolors`, and `borderwidths` accept multiple input types:
+> * Single value (e.g. `#FF0`): All corners/borders.
+> * Two values (e.g. `red,#FFAAFF`): top-left and bottom-right,top-right and bottom-left/
+>   top and bottom,left and right.
+> * Four values (e.g. `blue,#A0F,green,#FFFA`): top-left/top and rotates clockwise.
+> * These work similarly to CSS borders.
 * `button`, `button_exit`, `image_button`, `item_image_button`
-    * `alph`a - boolean, whether to draw alpha in bgimg. Default `true`.
+    * `alpha` - boolean, whether to draw alpha in bgimg. Default `true`.
     * `bgcolor` - color, sets button tint.
     * `bgcolor_hovered` - color when hovered. Defaults to a lighter bgcolor when not provided.
         * This is deprecated, use states instead.
@@ -3391,8 +3413,9 @@ Some types may inherit styles from parent types.
         * This is deprecated, use states instead.
     * `fgimg_middle` - Makes the fgimg textures render in 9-sliced mode and defines the middle rect.
                      See `background9[]` documentation for more details.
-    > [!NOTE] The parameters of any given `image_button` will take precedence over `fgimg`/`fgimg_pressed`
     * `sound` - a sound to be played when triggered.
+> [!NOTE]
+> The parameters of any given `image_button` will take precedence over `fgimg`/`fgimg_pressed`
 * `scrollbar`
     * `noclip` - boolean, set to `true` to allow the element to exceed formspec bounds.
 * `tabheader`
@@ -4034,7 +4057,8 @@ markup, e.g. `minetest.get_translated_string("fr", S("Hello"))`.
 The `lang_code` to use for a given player can be retrieved from
 the table returned by `minetest.get_player_information(name)`.
 
-> [!WARNING] This functionality should only be used for sorting, filtering or
+> [!WARNING]
+> This functionality should only be used for sorting, filtering or
 similar purposes. You do not need to use this to get translated strings to show
 up on the client.
 
@@ -4126,7 +4150,8 @@ size of the finest detail you require. For example:
 if `spread` is 512 nodes, `lacunarity` is 2.0 and finest detail required is 16
 nodes, octaves will be 6 because the 'wavelengths' of the octaves will be
 512, 256, 128, 64, 32, 16 nodes.
-> [!WARNING] If the 'wavelength' of any octave falls below 1 an error will occur.
+> [!WARNING]
+> If the 'wavelength' of any octave falls below 1 an error will occur.
 
 ### `persistence`
 
@@ -4292,7 +4317,8 @@ noise_params = {
 noise_threshold = 1.6
 ```
 
-> [!WARNING] Use this ore type *very* sparingly since it is ~200x more computationally
+> [!WARNING]
+> Use this ore type *very* sparingly since it is ~200x more computationally
   expensive than any other ore.
 
 ### `stratum`
@@ -4634,13 +4660,14 @@ inside the VoxelManip.
     * returns actual emerged `pmin`, actual emerged `pmax`
 * `write_to_map([light])`: Writes the data loaded from the `VoxelManip` back to
   the map.
-    > [!NOTE] Data must be set using `VoxelManip:set_data()` before calling this.
     * if `light` is true, then lighting is automatically recalculated.
       The default value is true.
       If `light` is false, no light calculations happen, and you should correct
       all modified blocks with `minetest.fix_light()` as soon as possible.
       Keep in mind that modifying the map where light is incorrect can cause
       more lighting bugs.
+> [!NOTE]
+> Data must be set using `VoxelManip:set_data()` before calling this.
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at
@@ -5367,9 +5394,9 @@ Call these functions only at load time!
 * `minetest.unregister_biome(name)`
     * Unregisters the biome from the engine, and deletes the entry with key
       `name` from `minetest.registered_biomes`.
-    > [!WARNING] This alters the biome to biome ID correspondences, so any
-      decorations or ores using the 'biomes' field must afterwards be cleared
-      and re-registered.
+> [!WARNING]
+> This alters the biome to biome ID correspondences, so any decorations or ores
+> using the 'biomes' field must afterwards be cleared and re-registered.
 * `minetest.register_decoration(decoration definition)`
     * Returns an integer object handle uniquely identifying the registered
       decoration on success. To get the decoration ID, use
@@ -5386,9 +5413,10 @@ Call these functions only at load time!
       filename.
 * `minetest.clear_registered_biomes()`
     * Clears all biomes currently registered.
-    > [!WARNING] Clearing and re-registering biomes alters the biome to biome ID
-      correspondences, so any decorations or ores using the 'biomes' field must
-      afterwards be cleared and re-registered.
+> [!WARNING]
+> Clearing and re-registering biomes alters the biome to biome ID correspondences,
+> so any decorations or ores using the 'biomes' field must afterwards be cleared
+> and re-registered.
 * `minetest.clear_registered_decorations()`
     * Clears all decorations currently registered.
 * `minetest.clear_registered_ores()`
@@ -5407,9 +5435,9 @@ Call these functions only at load time!
       `minetest.register_craft(recipe)`. For output specify only the item,
       without a quantity.
     * Returns false if no erase candidate could be found, otherwise returns true.
-    > [!WARNING] The type field ("shaped", "cooking" or any other) will be ignored
-      if the recipe contains output. Erasing is then done independently from the
-      crafting method.
+> [!WARNING]
+> The type field ("shaped", "cooking" or any other) will be ignored if the recipe
+> contains output. Erasing is then done independently from the crafting method.
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
 * `minetest.override_chatcommand(name, redefinition)`
     * Overrides fields of a chatcommand registered with `register_chatcommand`.
@@ -5437,8 +5465,9 @@ Call these functions only at load time!
       aliases handled.
 * `minetest.register_on_shutdown(function())`
     * Called before server shutdown
-    > [!WARNING] If the server terminates abnormally (i.e. crashes), the registered
-      callbacks **will likely not be run**. Data should be saved at semi-frequent intervals as well as on server shutdown.
+> [!WARNING]
+> If the server terminates abnormally (i.e. crashes), the registered callbacks **will
+> likely not be run**. Data should be saved at semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing))`
     * Called when a node has been placed
     * If return `true` no item is taken from `itemstack`
@@ -6273,14 +6302,16 @@ You can find mod channels communication scheme in `doc/mod_channels.png`.
 * `minetest.item_place_object(itemstack, placer, pointed_thing)`
     * Place item as-is
     * returns the leftover itemstack
-    > [!WARNING] This function is deprecated and will never be called.
+> [!WARNING]
+> This function is deprecated and will never be called.
 * `minetest.item_place(itemstack, placer, pointed_thing[, param2])`
     * Wrapper that calls `minetest.item_place_node` if appropriate
     * Calls `on_rightclick` of `pointed_thing.under` if defined instead
-    > [!NOTE] Is not called when wielded item overrides `on_place`
     * `param2` overrides facedir and wallmounted `param2`
     * returns `itemstack, position`
       * `position`: the location the node was placed to. `nil` if nothing was placed.
+> [!NOTE]
+> `on_rightclick` is not called when wielded item overrides `on_place`
 * `minetest.item_pickup(itemstack, picker, pointed_thing, time_from_last_punch, ...)`
     * Runs callbacks registered by `minetest.register_on_item_pickup` and adds
       the item to the picker's `"main"` inventory list.
@@ -6532,15 +6563,16 @@ Variables:
     * `force_placement` is a boolean indicating whether nodes other than `air`
       and `ignore` are replaced by the schematic.
     * Returns nil if the schematic could not be loaded.
-    > [!WARNING] Once you have loaded a schematic from a file, it will be cached.
-      Future calls will always use the cached version and the replacement list
-      defined for it, regardless of whether the file or the replacement list
-      parameters have changed. The only way to load the file anew is to restart the
-      server.
     * `flags` is a flag field with the available flags:
         * place_center_x
         * place_center_y
         * place_center_z
+> [!WARNING]
+> Once you have loaded a schematic from a file, it will be cached.
+> Future calls will always use the cached version and the replacement list
+> defined for it, regardless of whether the file or the replacement list
+> parameters have changed. The only way to load the file anew is to restart the
+> server.
 
 * `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement, flags)`:
     * This function is analogous to minetest.place_schematic, but places a
@@ -6671,14 +6703,15 @@ Variables:
     * styled: Outputs in a human-readable format if this is set, defaults to
       false.
     * Unserializable things like functions and userdata will cause an error.
-    > [!WARNING] JSON is more strict than the Lua table format.
-        1. You can only use strings and positive integers of at least one as
-           keys.
-        2. You cannot mix string and integer keys.
-           This is due to the fact that JSON has two distinct array and object
-           values.
     * Example: `write_json({10, {a = false}})`,
       returns `'[10, {"a": false}]'`
+> [!WARNING]
+> JSON is more strict than the Lua table format.
+> 1. You can only use strings and positive integers of at least one as
+>    keys.
+> 2. You cannot mix string and integer keys.
+>    This is due to the fact that JSON has two distinct array and object
+>    values.
 * `minetest.serialize(table)`: returns a string
     * Convert a table containing tables, strings, numbers, booleans and `nil`s
       into string form readable by `minetest.deserialize`
@@ -7147,7 +7180,8 @@ Can be obtained via `item:get_meta()`.
 Base class used by [`StorageRef`], [`NodeMetaRef`], [`ItemStackMetaRef`],
 and [`PlayerMetaRef`].
 
-> [!NOTE] If a metadata value is in the format `${k}`, an attempt to get the value
+> [!NOTE]
+> If a metadata value is in the format `${k}`, an attempt to get the value
 will return the value associated with key `k`. There is a low recursion limit. This
 behavior is **deprecated** and will be removed in a future version. Usage of the
 `${k}` syntax in formspecs is not deprecated.
@@ -7310,7 +7344,8 @@ values and changes via their setter counterparts are ignored.
 
 To change position or rotation call `set_attach` again with the new values.
 
-> [!NOTE] Just like model dimensions, the relative position in `set_attach` must
+> [!NOTE]
+> Just like model dimensions, the relative position in `set_attach` must
   be multiplied by 10 compared to world positions.
 
 It is also possible to attach to a bone of the parent object. In that case the
@@ -7562,7 +7597,8 @@ child will follow movement and rotation of that bone.
     * `value` must be a string, or a number which will be converted to a
       string.
     * If `value` is `nil`, remove attribute from player.
-    > [!WARNING] Deprecated, use `get_meta` instead
+> [!WARNING]
+> Deprecated, use `get_meta` instead
 * `get_attribute(attribute)`:  DEPRECATED, use get_meta() instead
     * Returns value (a string) for extra attribute.
     * Returns `nil` if no attribute found.
@@ -7607,14 +7643,13 @@ child will follow movement and rotation of that bone.
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `speed_climb`: multiplier to default climb speed value (default: `1`)
-            * Note: The actual climb speed is the product of `speed` and `speed_climb`
+            * The actual climb speed is the product of `speed` and `speed_climb`
         * `speed_crouch`: multiplier to default sneak speed value (default: `1`)
-            * Note: The actual sneak speed is the product of `speed` and `speed_crouch`
+            * The actual sneak speed is the product of `speed` and `speed_crouch`
         * `liquid_fluidity`: multiplier to liquid movement resistance value
           (for nodes with `liquid_move_physics`); the higher this value, the lower the
           resistance to movement. At `math.huge`, the resistance is zero and you can
           move through any liquid like air. (default: `1`)
-            > [!WARNING] Values below 1 are currently unsupported.
         * `liquid_fluidity_smooth`: multiplier to default maximum liquid resistance value
           (for nodes with `liquid_move_physics`); controls deceleration when entering
           node at high speed. At higher values you come to a halt more quickly
@@ -7623,24 +7658,26 @@ child will follow movement and rotation of that bone.
           (for nodes with `liquid_move_physics`) (default: `1`)
         * `acceleration_default`: multiplier to horizontal and vertical acceleration
           on ground or when climbing (default: `1`)
-            * Note: The actual acceleration is the product of `speed` and `acceleration_default`
+            * The actual acceleration is the product of `speed` and `acceleration_default`
         * `acceleration_air`: multiplier to acceleration
           when jumping or falling (default: `1`)
-            * Note: The actual acceleration is the product of `speed` and `acceleration_air`
+            * The actual acceleration is the product of `speed` and `acceleration_air`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behavior (default: `true`)
-    * Note: All numeric fields above modify a corresponding `movement_*` setting.
+    * All numeric fields above modify a corresponding `movement_*` setting.
     * For games, we recommend for simpler code to first modify the `movement_*`
       settings (e.g. via the game's `minetest.conf`) to set a global base value
       for all players and only use `set_physics_override` when you need to change
       from the base value on a per-player basis
-    * Note: Some of the fields don't exist in old API versions, see feature
-      `physics_overrides_v2`.
+> [!WARNING]
+> Values for `liquid_fluidity` below 1 are currently unsupported.
 
+> [!NOTE]
+> Some of the fields don't exist in old API versions, see feature `physics_overrides_v2`.
 * `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
@@ -7730,19 +7767,15 @@ child will follow movement and rotation of that bone.
             * `dawn_sky`: ColorSpec, for the top half of the sky during dawn/sunset.
               (default: `#b4bafa`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              > [!WARNING] The darkening of the ColorSpec is subject to change.
             * `dawn_horizon`: ColorSpec, for the bottom half of the sky during dawn/sunset.
               (default: `#bac1f0`)
               The resulting sky color will be a darkened version of the ColorSpec.
-              > [!WARNING] The darkening of the ColorSpec is subject to change.
             * `night_sky`: ColorSpec, for the top half of the sky during the night.
               (default: `#006bff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              > [!WARNING] The darkening of the ColorSpec is subject to change.
             * `night_horizon`: ColorSpec, for the bottom half of the sky during the night.
               (default: `#4090ff`)
               The resulting sky color will be a dark version of the ColorSpec.
-              > [!WARNING] The darkening of the ColorSpec is subject to change.
             * `indoors`: ColorSpec, for when you're either indoors or underground.
               (default: `#646464`)
             * `fog_sun_tint`: ColorSpec, changes the fog tinting for the sun
@@ -7765,6 +7798,8 @@ child will follow movement and rotation of that bone.
                Any value between [0.0, 0.99] set the fog_start as a fraction of the viewing_range.
                Any value < 0, resets the behavior to being client-controlled.
                (default: -1)
+> [!WARNING]
+> The darkening of the ColorSpec is subject to change.
 * `set_sky(base_color, type, {texture names}, clouds)`
     * Deprecated. Use `set_sky(sky_parameters)`
     * `base_color`: ColorSpec, defaults to white
@@ -8144,7 +8179,8 @@ The settings have the format `key = value`. Example:
 Mod metadata: per mod metadata, saved automatically.
 Can be obtained via `minetest.get_mod_storage()` during load time.
 
-> [!WARNING] This storage backend is incapable of saving raw binary
+> [!WARNING]
+> This storage backend is incapable of saving raw binary
   data due to restrictions of JSON.
 
 ### Methods

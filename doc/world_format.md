@@ -183,7 +183,8 @@ For `load_mod_<mod>`, the possible values are:
 # Player File Format
 
 Should be pretty self-explanatory.
-> [!NOTE] Position is in `nodes * 10`
+> [!NOTE]
+> Position is in `nodes * 10`
 
 Example content:
 
@@ -410,7 +411,8 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * Always 2
 
 ## Node Data
-> [!NOTE] Zlib-compressed before map format version 29
+> [!NOTE]
+> Zlib-compressed before map format version 29
 
 * If `content_width` is 1:
     * `u8[4096]`: `param0` fields
@@ -425,7 +427,8 @@ Timestamp and node ID mappings were introduced in map format version 29.
 * The location of a node in each of those arrays is `(z*16*16 + y*16 + x)`.
 
 ### Node Metadata List
-> [!NOTE] Zlib-compressed before map version format 29
+> [!NOTE]
+> Zlib-compressed before map version format 29
 * Before map format version 23:
     * `u16` version (=1)
     * `u16` count of metadata
@@ -437,7 +440,6 @@ Timestamp and node ID mappings were introduced in map format version 29.
 
 * Since map format version 23:
     * `u8` version
-        > [!NOTE] Type was `u16` before map format version 23
         * = 1 before map format version 28
         * = 2 since map format version 28
     * `u16` count of metadata
@@ -452,13 +454,14 @@ Timestamp and node ID mappings were introduced in map format version 29.
             * `u8` `is_private`
             * only since map format version 2. 0 = not private, 1 = private
         * serialized inventory
+> [!NOTE]
+> Version type was `u16` before map format version 23
 
 ## Node Timers
 * Map format version 23:
     * `u8` unused version (always 0)
 
 * Map format version 24:
-    > [!NOTE] Not released as stable
     * `u8` `nodetimer_version`
     * if `nodetimer_version` == 1:
         * `u16` `num_of_timers`
@@ -466,6 +469,8 @@ Timestamp and node ID mappings were introduced in map format version 29.
             * `u16` timer position (`(z*16*16 + y*16 + x)`)
             * `s32` timeout * 1000
             * `s32` elapsed * 1000
+> [!NOTE]
+> Not released as stable
 
 * Since map format version 25:
     * `u8` length of the data of a single timer (always 2+4+4=10)
