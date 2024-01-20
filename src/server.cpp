@@ -2628,28 +2628,30 @@ void Server::fillMediaCache()
 
 void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_code)
 {
+	std::string lang_suffix = ".";
+	lang_suffix.append(lang_code).append(".tr");
+
+	auto include = [&] (const std::string &name, const MediaInfo &info) -> bool {
+		if (info.no_announce)
+			return false;
+		if (str_ends_with(name, ".tr") && !str_ends_with(name, lang_suffix))
+			return false;
+		return true;
+	};
+
 	// Make packet
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 
 	u16 media_sent = 0;
-	std::string lang_suffix;
-	lang_suffix.append(".").append(lang_code).append(".tr");
 	for (const auto &i : m_media) {
-		if (i.second.no_announce)
-			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
-		media_sent++;
+		if (include(i.first, i.second))
+			media_sent++;
 	}
-
 	pkt << media_sent;
 
 	for (const auto &i : m_media) {
-		if (i.second.no_announce)
-			continue;
-		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
-			continue;
-		pkt << i.first << i.second.sha1_digest;
+		if (include(i.first, i.second))
+			pkt << i.first << i.second.sha1_digest;
 	}
 
 	pkt << g_settings->get("remote_media");
@@ -2659,10 +2661,12 @@ void Server::sendMediaAnnouncement(session_t peer_id, const std::string &lang_co
 		<< "): count=" << media_sent << " size=" << pkt.getSize() << std::endl;
 }
 
+namespace {
+
 struct SendableMedia
 {
-	std::string name;
-	std::string path;
+	const std::string &name;
+	const std::string &path;
 	std::string data;
 
 	SendableMedia(const std::string &name, const std::string &path,
@@ -2670,6 +2674,8 @@ struct SendableMedia
 		name(name), path(path), data(std::move(data))
 	{}
 };
+
+}
 
 void Server::sendRequestedMedia(session_t peer_id,
 		const std::unordered_set<std::string> &tosend)
@@ -2680,16 +2686,22 @@ void Server::sendRequestedMedia(session_t peer_id,
 	infostream << "Server::sendRequestedMedia(): Sending "
 		<< tosend.size() << " files to " << client->getName() << std::endl;
 
-	/* Read files */
+	/* Read files and prepare bunches */
 
-	// Put 5kB in one bunch (this is not accurate)
+	// Put 5KB in one bunch (this is not accurate)
+	// This is a tradeoff between burdening the network with too many packets
+	// and burdening it with too large split packets.
 	const u32 bytes_per_bunch = 5000;
 
 	std::vector<std::vector<SendableMedia>> file_bunches;
 	file_bunches.emplace_back();
 
-	u32 file_size_bunch_total = 0;
+	// Note that applying a "real" bin packing algorithm here is not necessarily
+	// an improvement (might even perform worse) since games usually have lots
+	// of files larger than 5KB and the current algorithm already minimized
+	// the amount of bunches quite well (at the expense of overshooting).
 
+	u32 file_size_bunch_total = 0;
 	for (const std::string &name : tosend) {
 		auto it = m_media.find(name);
 
@@ -2728,7 +2740,6 @@ void Server::sendRequestedMedia(session_t peer_id,
 			file_bunches.emplace_back();
 			file_size_bunch_total = 0;
 		}
-
 	}
 
 	/* Create and send packets */
@@ -2747,18 +2758,20 @@ void Server::sendRequestedMedia(session_t peer_id,
 				data
 			}
 		*/
-
 		NetworkPacket pkt(TOCLIENT_MEDIA, 4 + 0, peer_id);
-		pkt << num_bunches << i << (u32) file_bunches[i].size();
+
+		const u32 bunch_size = bunch.size();
+		pkt << num_bunches << i << bunch_size;
 
 		for (auto &j : bunch) {
 			pkt << j.name;
 			pkt.putLongString(j.data);
 		}
+		bunch.clear(); // free memory early
 
 		verbosestream << "Server::sendRequestedMedia(): bunch "
 				<< i << "/" << num_bunches
-				<< " files=" << bunch.size()
+				<< " files=" << bunch_size
 				<< " size="  << pkt.getSize() << std::endl;
 		Send(&pkt);
 	}
